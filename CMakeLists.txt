@@ -11,7 +11,21 @@ endif()
 
 project ("OdbDesign")
 
+# control where the static and shared libraries are built so that on windows
+# we don't need to tinker with the path to run the executable
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
+
 # Include sub-projects.
 add_subdirectory ("OdbDesignApp")
 
 add_subdirectory("OdbDesignLib")
+
+target_link_libraries(OdbDesignApp PUBLIC OdbDesignLib)
+
+# add the binary tree to the search path for include files
+# so that we will find TutorialConfig.h
+target_include_directories(OdbDesignApp PUBLIC
+                           "${PROJECT_BINARY_DIR}"
+                           )

@@ -1,5 +1,6 @@
 ﻿// OdbDesignApp.cpp : Defines the entry point for the application.
 //
+#include "OdbDesignLib.h"
 
 #include "OdbDesignApp.h"
 
