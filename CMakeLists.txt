@@ -13,3 +13,5 @@ project ("OdbDesign")
 
 # Include sub-projects.
 add_subdirectory ("OdbDesignApp")
+
+add_subdirectory("OdbDesignLib")
