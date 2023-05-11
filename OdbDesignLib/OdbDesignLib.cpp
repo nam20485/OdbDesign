@@ -2,3 +2,10 @@
 //
 
 #include "OdbDesignLib.h"
+#include <iostream>
+
+
+void DECLSPEC helloLib()
+{
+    std::cout << "Hello CMake from OdbDesignLib." << std::endl;
+}

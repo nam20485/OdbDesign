@@ -1,4 +1,8 @@
-﻿add_library(OdbDesignLib SHARED "OdbDesignLib.cpp" "OdbDesignLib.h")
+﻿# CMakeList.txt : CMake project for OdbDesignLib, include source and define
+# project specific logic here.
+#
+
+add_library(OdbDesignLib SHARED "OdbDesignLib.cpp" "OdbDesignLib.h" "export.h")
 
 # state that anybody linking to us needs to include the current source dir
 # to find MathFunctions.h, while we don't.
@@ -7,3 +11,7 @@ target_include_directories(OdbDesignLib
                             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
                             $<INSTALL_INTERFACE:include>
                            )
+
+# define the symbol stating we are using the declspec(dllexport) when
+# building on windows
+target_compile_definitions(OdbDesignLib PRIVATE "EXPORTING_ODBDESIGNLIB")
