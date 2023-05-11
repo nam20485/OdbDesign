@@ -4,8 +4,10 @@
 #include "OdbDesignLib.h"
 #include <iostream>
 
-
-void DECLSPEC helloLib()
+namespace OdbDesign::Lib
 {
-    std::cout << "Hello CMake from OdbDesignLib." << std::endl;
+    void DECLSPEC helloLib()
+    {
+        std::cout << "Hello CMake from OdbDesignLib." << std::endl;
+    }
 }

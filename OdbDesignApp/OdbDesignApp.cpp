@@ -3,15 +3,14 @@
 #include "OdbDesignApp.h"
 #include "OdbDesign.h"
 
-//using namespace std;
 
 int main()
 {
-    OdbDesign rigidFlexOdbDesign(R"(C:\Users\nmill\OneDrive\Documents\ODB++\Samples\designodb_rigidflex)");
+    OdbDesign::Lib::OdbDesign rigidFlexOdbDesign(R"(C:\Users\nmill\OneDrive\Documents\ODB++\Samples\designodb_rigidflex)");
     auto success = rigidFlexOdbDesign.ParseDesign();
     if (!success) return 1;
 
-    OdbDesign sampleOdbDesign(R"(C:\Users\nmill\OneDrive\Documents\ODB++\Samples\sample_design)");
+    OdbDesign::Lib::OdbDesign sampleOdbDesign(R"(C:\Users\nmill\OneDrive\Documents\ODB++\Samples\sample_design)");
     success = sampleOdbDesign.ParseDesign();
     if (!success) return 1;
 

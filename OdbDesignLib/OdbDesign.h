@@ -4,27 +4,28 @@
 #include <string>
 #include "Step.h"
 
-
-class DECLSPEC OdbDesign
+namespace OdbDesign::Lib
 {
-public:
-	OdbDesign(std::string path);
-	~OdbDesign();
-	
-	std::string GetPath() const;
-	std::string GetProductName() const;
+	class DECLSPEC OdbDesign
+	{
+	public:
+		OdbDesign(std::string path);
+		~OdbDesign();
 
-	const Step::StringMap& GetStepsByName() const;
+		std::string GetPath() const;
+		std::string GetProductName() const;
 
-	bool ParseDesign();
+		const Step::StringMap& GetStepsByName() const;
 
-private:
-	std::string m_path;
-	std::string m_productName;
+		bool ParseDesign();
 
-	Step::StringMap m_stepsByName;
+	private:
+		std::string m_path;
+		std::string m_productName;
 
-	bool ParseDesignDirectory(std::filesystem::path path);
+		Step::StringMap m_stepsByName;
 
-};
+		bool ParseDesignDirectory(std::filesystem::path path);
 
+	};
+}

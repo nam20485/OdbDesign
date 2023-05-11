@@ -4,4 +4,8 @@
 
 #include "export.h"
 
-void DECLSPEC helloLib();
+
+namespace OdbDesign::Lib
+{
+	void DECLSPEC helloLib();
+}
