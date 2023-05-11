@@ -2,10 +2,13 @@
 //
 #include "OdbDesignApp.h"
 #include "OdbDesign.h"
+#include "OdbDesignLib.h"
 
 
 int main()
 {
+    OdbDesign::Lib::helloLib();
+
     OdbDesign::Lib::OdbDesign rigidFlexOdbDesign(R"(C:\Users\nmill\OneDrive\Documents\ODB++\Samples\designodb_rigidflex)");
     auto success = rigidFlexOdbDesign.ParseDesign();
     if (!success) return 1;
