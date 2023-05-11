@@ -1,0 +1,211 @@
+#include "ComponentLayer.h"
+#include <fstream>
+#include <sstream>
+#include <filesystem>
+
+
+ComponentLayer::ComponentLayer(std::filesystem::path path)
+	: Layer(path), m_id(0)
+{
+}
+
+ComponentLayer::~ComponentLayer()
+{
+	m_attributeNames.clear();
+	m_attributeTextValues.clear();
+	m_componentRecords.clear();
+	m_componentRecordsByName.clear();
+}
+
+std::string ComponentLayer::GetUnits() const
+{
+	return m_units;
+}
+
+const ComponentLayer::ComponentRecord::Vector& ComponentLayer::GetComponentRecords() const
+{
+	return m_componentRecords;
+}
+
+const ComponentLayer::ComponentRecord::StringMap& ComponentLayer::GetComponentRecordsByName() const
+{
+	return m_componentRecordsByName;
+}
+
+const std::vector<std::string>& ComponentLayer::GetAttributeNames() const
+{
+	return m_attributeNames;
+}
+
+const std::vector<std::string>& ComponentLayer::GetAttributeTextValues() const
+{
+	return m_attributeTextValues;
+}
+
+ComponentLayer::ComponentRecord::~ComponentRecord()
+{
+	m_toeprintRecords.clear();
+	m_propertyRecords.clear();
+}
+
+bool ComponentLayer::Parse()
+{
+	if (! Layer::Parse()) return false;
+
+	auto componentsFilePath = m_path / "components";
+
+	if (!std::filesystem::exists(componentsFilePath)) return false;
+	else if (!std::filesystem::is_regular_file(componentsFilePath)) return false;
+
+	std::ifstream componentsFile;
+	componentsFile.open(componentsFilePath.string(), std::ios::in);
+	if (!componentsFile.is_open()) return false;
+
+	std::shared_ptr<ComponentRecord> pCurrentComponentRecord;
+
+	std::string line;
+	while (std::getline(componentsFile, line))
+	{
+		if (!line.empty())
+		{						
+			std::stringstream lineStream(line);
+			//char firstChar = line[0];			
+
+			if (line.find(COMMENT_TOKEN) == 0)
+			{
+				// comment line
+			}
+			else if (line.find(UNITS_TOKEN) == 0)
+			{
+				// units line
+				std::string token;
+				if (!std::getline(lineStream, token, '=')) return false;
+				else if (!std::getline(lineStream, token, '=')) return false;
+				m_units = token;
+			}
+			else if (line.find(ID_TOKEN) == 0)
+			{
+				std::string token;
+				if (!std::getline(lineStream, token, '=')) return false;
+				else if (!std::getline(lineStream, token, '=')) return false;				
+				m_id = std::stoul(token);
+			}
+			else if (line.find(ATTRIBUTE_NAME_TOKEN) == 0)
+			{
+				// component attribute name line	
+				std::string token;
+				// TODO: continue on failing line parse, to make a less strict/more robust parser (make a flag: enum ParseStrictness { strict, lax })
+				if (!std::getline(lineStream, token, ' ')) return false;	
+				else if (!std::getline(lineStream, token, ' ')) return false;					
+				m_attributeNames.push_back(token);
+			}
+			else if (line.find(ATTRIBUTE_VALUE_TOKEN) == 0)
+			{
+				// component attribute text string values	
+				std::string token;
+				if (!std::getline(lineStream, token, ' ')) return false;
+				else if (!std::getline(lineStream, token, ' ')) return false;
+				m_attributeTextValues.push_back(token);
+			}
+			else if (line.find(ComponentRecord::RECORD_TOKEN) == 0)
+			{
+				// component record line
+				std::string token;
+						
+				lineStream >> token;				
+				if (token != ComponentRecord::RECORD_TOKEN) return false;
+
+				// do we have a current component record?
+				if (pCurrentComponentRecord != nullptr)
+				{					
+					// finish it up and add it to the list
+					m_componentRecords.push_back(pCurrentComponentRecord);
+					pCurrentComponentRecord.reset();
+				}
+
+				// create a new current component record
+				pCurrentComponentRecord = std::make_shared<ComponentRecord>();
+
+				lineStream >> pCurrentComponentRecord->pkg_ref;
+				lineStream >> pCurrentComponentRecord->locationX;
+				lineStream >> pCurrentComponentRecord->locationY;
+				lineStream >> pCurrentComponentRecord->rotation;
+				
+				char mirror;
+				lineStream >> mirror;
+				pCurrentComponentRecord->mirror = (mirror == 'M');
+
+				lineStream >> pCurrentComponentRecord->comp_name;
+				lineStream >> pCurrentComponentRecord->part_name;
+				lineStream >> pCurrentComponentRecord->attributes;
+
+				// TODO: parse attributes and id string
+				//std::string strId;
+				//lineStream >> strId;
+				//std::stringstream idStream(strId);
+				//if (!std::getline(idStream, token, '=')) return false;
+				//else if (!std::getline(idStream, token, '=')) return false;
+				//pCurrentComponentRecord->id = std::stoul(token);
+
+			}
+			else if (line.find(ComponentRecord::PropertyRecord::RECORD_TOKEN) == 0)
+			{
+				// component property record line
+				std::string token;
+				lineStream >> token;
+				if (token != ComponentRecord::PropertyRecord::RECORD_TOKEN) return false;
+
+				auto pPropertyRecord = std::make_shared<ComponentRecord::PropertyRecord>();
+				lineStream >> pPropertyRecord->name;
+
+				lineStream >> pPropertyRecord->value;
+				// remove leading quote
+				pPropertyRecord->value.erase(0, 1);
+				// remove trailing quote
+				pPropertyRecord->value.erase(pPropertyRecord->value.size() - 1);				
+
+				float f;
+				while (lineStream >> f)
+				{
+					pPropertyRecord->floatValues.push_back(f);
+				}
+
+				pCurrentComponentRecord->m_propertyRecords.push_back(pPropertyRecord);
+			}
+			else if (line.find(ComponentRecord::ToeprintRecord::RECORD_TOKEN) == 0)
+			{
+				// component toeprint record line
+				std::string token;
+				lineStream >> token;
+				if (token != ComponentRecord::ToeprintRecord::RECORD_TOKEN) return false;
+
+				auto pToeprintRecord = std::make_shared<ComponentRecord::ToeprintRecord>();
+				lineStream >> pToeprintRecord->pinNumber;
+				lineStream >> pToeprintRecord->locationX;
+				lineStream >> pToeprintRecord->locationY;
+				lineStream >> pToeprintRecord->rotation;
+				
+				char mirror;
+				lineStream >> mirror;
+				pToeprintRecord->mirror = (mirror == 'M');
+
+				lineStream >> pToeprintRecord->netNumber;
+				lineStream >> pToeprintRecord->subnetNumber;
+				lineStream >> pToeprintRecord->name;
+
+				pCurrentComponentRecord->m_toeprintRecords.push_back(pToeprintRecord);
+			}	
+		}	   
+	}
+
+	// do we have a current component record? (finish up the last record in the file- i.e. ran out of file)
+	if (pCurrentComponentRecord != nullptr)
+	{
+		// finish it up and add it to the list
+		m_componentRecords.push_back(pCurrentComponentRecord);
+		pCurrentComponentRecord.reset();
+	}	
+
+	componentsFile.close();
+	return true;
+}

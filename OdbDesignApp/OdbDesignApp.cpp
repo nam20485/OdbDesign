@@ -1,16 +1,21 @@
 ﻿// OdbDesignApp.cpp : Defines the entry point for the application.
 //
 #include "OdbDesignApp.h"
-#include "OdbDesignLib.h"
+#include "OdbDesign.h"
 
-using namespace std;
+//using namespace std;
 
 int main()
 {
-	cout << "Hello CMake." << endl;
+    OdbDesign rigidFlexOdbDesign(R"(C:\Users\nmill\OneDrive\Documents\ODB++\Samples\designodb_rigidflex)");
+    auto success = rigidFlexOdbDesign.ParseDesign();
+    if (!success) return 1;
 
-	// call lib import
-	helloLib();
+    OdbDesign sampleOdbDesign(R"(C:\Users\nmill\OneDrive\Documents\ODB++\Samples\sample_design)");
+    success = sampleOdbDesign.ParseDesign();
+    if (!success) return 1;
 
-	return 0;
+    std::cout << "success" << std::endl;
+
+    return 0;
 }

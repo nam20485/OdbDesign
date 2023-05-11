@@ -2,7 +2,7 @@
 # project specific logic here.
 #
 
-add_library(OdbDesignLib SHARED "OdbDesignLib.cpp" "OdbDesignLib.h" "export.h")
+add_library(OdbDesignLib SHARED "OdbDesignLib.cpp" "OdbDesignLib.h" "export.h" "ComponentLayer.cpp" "ComponentLayer.h" "EdaData.cpp" "EdaData.h" "Layer.cpp" "Layer.h" "Netlist.cpp" "Netlist.h" "OdbDesign.cpp" "OdbDesign.h" "Step.cpp" "Step.h" "string_trim.h")
 
 # state that anybody linking to us needs to include the current source dir
 # to find MathFunctions.h, while we don't.
