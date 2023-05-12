@@ -5,10 +5,12 @@
 #include <string>
 #include <memory>
 #include <filesystem>
+#include "export.h"
+
 
 namespace OdbDesign::Lib
 {
-	class Netlist
+	class DECLSPEC Netlist
 	{
 	public:
 		enum class Staggered

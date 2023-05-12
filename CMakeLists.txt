@@ -13,6 +13,15 @@ if (POLICY CMP0141)
   set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
 endif()
 
+#if (MSVC)
+    # warning level 4
+    #add_compile_options(/W4)
+    #add_compile_options(/wd4251)
+#else()
+    # additional warnings    
+    #add_compile_options(-Wall -Wextra -Wpedantic)
+#endif()
+
 project ("OdbDesign")
 
 # control where the static and shared libraries are built so that on windows

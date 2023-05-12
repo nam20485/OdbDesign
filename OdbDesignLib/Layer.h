@@ -4,11 +4,12 @@
 #include <map>
 #include <memory>
 #include <filesystem>
+#include "export.h"
 
 
 namespace OdbDesign::Lib
 {
-	class Layer
+	class DECLSPEC Layer
 	{
 	public:
 		Layer(std::filesystem::path path);

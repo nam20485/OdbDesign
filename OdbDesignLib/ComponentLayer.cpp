@@ -128,7 +128,7 @@ namespace OdbDesign::Lib
 					// create a new current component record
 					pCurrentComponentRecord = std::make_shared<ComponentRecord>();
 
-					lineStream >> pCurrentComponentRecord->pkg_ref;
+					lineStream >> pCurrentComponentRecord->pkgRef;
 					lineStream >> pCurrentComponentRecord->locationX;
 					lineStream >> pCurrentComponentRecord->locationY;
 					lineStream >> pCurrentComponentRecord->rotation;
@@ -137,8 +137,8 @@ namespace OdbDesign::Lib
 					lineStream >> mirror;
 					pCurrentComponentRecord->mirror = (mirror == 'M');
 
-					lineStream >> pCurrentComponentRecord->comp_name;
-					lineStream >> pCurrentComponentRecord->part_name;
+					lineStream >> pCurrentComponentRecord->compName;
+					lineStream >> pCurrentComponentRecord->partName;
 					lineStream >> pCurrentComponentRecord->attributes;
 
 					// TODO: parse attributes and id string

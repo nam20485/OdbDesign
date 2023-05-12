@@ -9,7 +9,7 @@
 namespace OdbDesign::Lib
 {
     Step::Step(std::filesystem::path path)
-        : m_path(path), m_edaData()
+        : m_path(path)
     {
     }
 

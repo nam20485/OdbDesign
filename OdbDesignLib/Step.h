@@ -11,7 +11,7 @@
 
 namespace OdbDesign::Lib
 {
-	class Step
+	class DECLSPEC Step
 	{
 	public:
 		Step(std::filesystem::path path);

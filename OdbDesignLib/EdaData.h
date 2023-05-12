@@ -4,10 +4,12 @@
 #include <string>
 #include <vector>
 #include <map>
+#include "export.h"
+
 
 namespace OdbDesign::Lib
-{
-	class EdaData
+{	
+	class DECLSPEC EdaData
 	{
 	public:
 		EdaData();
@@ -19,7 +21,7 @@ namespace OdbDesign::Lib
 
 		bool Parse(std::filesystem::path path);
 
-		struct PropertyRecord
+		struct DECLSPEC PropertyRecord
 		{
 			// data members
 			std::string name;
@@ -34,10 +36,27 @@ namespace OdbDesign::Lib
 			typedef std::vector<std::shared_ptr<PropertyRecord>> Vector;
 		};
 
-		struct NetRecord
+		struct DECLSPEC NetRecord
 		{
-			struct SubnetRecord
+			bool operator < (const NetRecord c) const
 			{
+				return name < c.name;
+			}
+			bool operator == (const NetRecord c) const
+			{
+				return name == c.name;
+			}
+
+			struct DECLSPEC SubnetRecord
+			{
+				bool operator < (const SubnetRecord c) const
+				{
+					return type < c.type;
+				}
+				bool operator == (const SubnetRecord c) const
+				{
+					return type == c.type;
+				}
 				enum class Type
 				{
 					Via,
@@ -46,7 +65,7 @@ namespace OdbDesign::Lib
 					Toeprint
 				};
 
-				struct FeatureIdRecord
+				struct DECLSPEC FeatureIdRecord
 				{
 					enum class Type
 					{
@@ -70,7 +89,7 @@ namespace OdbDesign::Lib
 				FeatureIdRecord::Vector m_featureIdRecords;
 			};
 
-			struct ToeprintSubnetRecord : public SubnetRecord
+			struct DECLSPEC ToeprintSubnetRecord : public SubnetRecord
 			{
 				enum class Side
 				{
@@ -78,12 +97,12 @@ namespace OdbDesign::Lib
 					Bottom
 				};
 
-				enum Side side;
+				Side side;
 				unsigned int componentNumber;
 				unsigned toeprintNumber;
 			};
 
-			struct PlaneSubnetRecord : public SubnetRecord
+			struct DECLSPEC PlaneSubnetRecord : public SubnetRecord
 			{
 				enum class FillType
 				{
@@ -116,9 +135,9 @@ namespace OdbDesign::Lib
 			PropertyRecord::Vector m_propertyRecords;
 		};
 
-		struct PackageRecord
+		struct DECLSPEC PackageRecord
 		{
-			struct PinRecord
+			struct DECLSPEC PinRecord
 			{
 				enum class Type
 				{
@@ -216,4 +235,7 @@ namespace OdbDesign::Lib
 		// RC, CR, SQ, CT, OB, OS, OC, OE, CE — Outline Records
 
 	};
+
+	//EXPIMP_TEMPLATE template class DECLSPEC std::vector<std::shared_ptr<EdaData::NetRecord>>;
+	//EXPIMP_TEMPLATE template class DECLSPEC std::map<std::string, std::shared_ptr<EdaData::NetRecord>>;
 }

@@ -7,7 +7,7 @@
 
 namespace OdbDesign::Lib
 {
-	class ComponentLayer : public Layer
+	class DECLSPEC ComponentLayer : public Layer
 	{
 	public:
 		ComponentLayer(std::filesystem::path path);
@@ -22,13 +22,13 @@ namespace OdbDesign::Lib
 			~ComponentRecord();
 
 			// data members
-			unsigned int pkg_ref;	// reference number of PKG in eda/data file
-			double locationX;
-			double locationY;
-			double rotation;
+			unsigned int pkgRef;	// reference number of PKG in eda/data file
+			float locationX;
+			float locationY;
+			float rotation;
 			bool mirror;
-			std::string comp_name;	// refDes
-			std::string part_name;
+			std::string compName;	// refDes
+			std::string partName;
 			std::string attributes;
 			unsigned int id;
 
