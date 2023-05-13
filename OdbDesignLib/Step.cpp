@@ -28,9 +28,9 @@ namespace OdbDesign::Lib
         return m_path;
     }
 
-    inline const EdaData& Step::GetEdaData() const { return m_edaData; }
-    inline const Layer::StringMap& Step::GetLayersByName() const { return m_layersByName; }
-    inline const Netlist::StringMap& Step::GetNetlistsByName() const { return m_netlistsByName; }
+    const EdaData& Step::GetEdaData() const { return m_edaData; }
+    const Layer::StringMap& Step::GetLayersByName() const { return m_layersByName; }
+    const Netlist::StringMap& Step::GetNetlistsByName() const { return m_netlistsByName; }
 
     bool Step::Parse()
     {

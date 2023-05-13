@@ -23,7 +23,7 @@ namespace OdbDesign::Lib
 		return m_productName;
 	}
 
-	inline const Step::StringMap& OdbDesign::GetStepsByName() const { return m_stepsByName; }
+	const Step::StringMap& OdbDesign::GetStepsByName() const { return m_stepsByName; }
 
 	bool OdbDesign::ParseDesign()
 	{
