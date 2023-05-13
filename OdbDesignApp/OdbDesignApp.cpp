@@ -7,21 +7,24 @@
 
 int main()
 {
+	std::cout << "OdbDesignApp v0.1.0" << std::endl;
+
     OdbDesign::Lib::helloLib();
 
-    OdbDesign::Lib::OdbDesign rigidFlexOdbDesign(R"(C:\Users\nmill\OneDrive\Documents\ODB++\Samples\designodb_rigidflex)");
+    //OdbDesign::Lib::OdbDesign rigidFlexOdbDesign(R"(C:\Users\nmill\OneDrive\Documents\ODB++\Samples\designodb_rigidflex)");
+	OdbDesign::Lib::OdbDesign rigidFlexOdbDesign(R"(/mnt/c/Users/nmill/Documents/ODB++/Samples/designodb_rigidflex)");
     auto success = rigidFlexOdbDesign.ParseDesign();
-    if (!success) return 1;
+	if (!success) return 1;
 
-    const auto& findStep = rigidFlexOdbDesign.GetStepsByName().find("cellular_flip-phone");
-    if (findStep != rigidFlexOdbDesign.GetStepsByName().end())
+    const auto& findStep = rigidFlexOdbDesign.GetStepsByName().find("cellular_flip-phone");//
+    if (findStep != rigidFlexOdbDesign.GetStepsByName().end())//
     {
         // step
         auto& pStep = findStep->second;
         auto name = pStep->GetName();
 
         // eda data
-        auto& edaData = pStep->GetEdaData();
+        auto& edaData = pStep->GetEdaData();//
         auto& netRecords = edaData.GetNetRecords();
         if (netRecords.size() > 20)
         {
@@ -34,14 +37,14 @@ int main()
         }
 
         auto& packageRecords = edaData.GetPackageRecords();
-  //      if (packageRecords.size() > 0)
-  //      {
-		//	auto& pPackageRecord = packageRecords[0];
-		//	auto packageName = pPackageRecord->name;
-		//}
+        if (packageRecords.size() > 0)
+        {
+			auto& pPackageRecord = packageRecords[0];
+			auto packageName = pPackageRecord->name;
+		}
         
         // layers
-        auto& layersByName = pStep->GetLayersByName();
+        auto& layersByName = pStep->GetLayersByName();//
         auto layerFind = layersByName.find(OdbDesign::Lib::Layer::TOP_COMPONENTS_LAYER_NAME);
         if (layerFind != layersByName.end())
         {
@@ -50,7 +53,7 @@ int main()
 		}
         
         // netlist
-        const auto& netlistsByName = pStep->GetNetlistsByName();
+        const auto& netlistsByName = pStep->GetNetlistsByName();//
         auto netlistFind = netlistsByName.find("cadnet");
         if (netlistFind != netlistsByName.end())
         {
@@ -60,7 +63,9 @@ int main()
 		}        
     }
 
-    OdbDesign::Lib::OdbDesign sampleOdbDesign(R"(C:\Users\nmill\OneDrive\Documents\ODB++\Samples\sample_design)");
+    //OdbDesign::Lib::OdbDesign sampleOdbDesign(R"(C:\Users\nmill\OneDrive\Documents\ODB++\Samples\sample_design)");
+	OdbDesign::Lib::OdbDesign sampleOdbDesign(R"(/mnt/c/Users/nmill/Documents/ODB++/Samples/sample_design)");
+	
     success = sampleOdbDesign.ParseDesign();
     if (!success) return 1;
 
