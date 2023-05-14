@@ -3,6 +3,7 @@
 #include "OdbDesignApp.h"
 #include "OdbDesign.h"
 #include "OdbDesignLib.h"
+#include "macros.h"
 
 
 int main()
@@ -11,8 +12,17 @@ int main()
 
     OdbDesign::Lib::helloLib();
 
-    //OdbDesign::Lib::OdbDesign rigidFlexOdbDesign(R"(C:\Users\nmill\OneDrive\Documents\ODB++\Samples\designodb_rigidflex)");
-	OdbDesign::Lib::OdbDesign rigidFlexOdbDesign(R"(/mnt/c/Users/nmill/Documents/ODB++/Samples/designodb_rigidflex)");
+    std::string rigidFlexDesignPath;
+    if (IsMsvc())
+    {
+        rigidFlexDesignPath = R"(C:\Users\nmill\OneDrive\Documents\ODB++\Samples\designodb_rigidflex)";
+    }
+    else
+    {
+        rigidFlexDesignPath = R"(/mnt/c/Users/nmill/Documents/ODB++/Samples/designodb_rigidflex)";		
+    }
+
+    OdbDesign::Lib::OdbDesign rigidFlexOdbDesign(rigidFlexDesignPath);
     auto success = rigidFlexOdbDesign.ParseDesign();
     if (!success)
     {
@@ -82,9 +92,17 @@ int main()
 		}        
     }
 
-    //OdbDesign::Lib::OdbDesign sampleOdbDesign(R"(C:\Users\nmill\OneDrive\Documents\ODB++\Samples\sample_design)");
-	OdbDesign::Lib::OdbDesign sampleOdbDesign(R"(/mnt/c/Users/nmill/Documents/ODB++/Samples/sample_design)");
-	
+    std::string sampleDesignPath;
+    if (IsMsvc())
+    {
+		sampleDesignPath = R"(C:\Users\nmill\OneDrive\Documents\ODB++\Samples\sample_design)";
+	}
+    else
+    {
+		sampleDesignPath = R"(/mnt/c/Users/nmill/Documents/ODB++/Samples/sample_design)";
+	}
+
+    OdbDesign::Lib::OdbDesign sampleOdbDesign(sampleDesignPath);	
     success = sampleOdbDesign.ParseDesign();
     if (!success)
     {
