@@ -1,6 +1,6 @@
 
 #if defined(_WIN32)
-#  if defined(EXPORTING_ODBDESIGNLIB)
+#  if defined(OdbDesign_EXPORTS)
 #    define DECLSPEC __declspec(dllexport)
 #	 define EXPIMP_TEMPLATE
 #  else
