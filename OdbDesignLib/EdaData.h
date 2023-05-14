@@ -38,25 +38,26 @@ namespace OdbDesign::Lib
 
 		struct DECLSPEC NetRecord
 		{
-			bool operator < (const NetRecord c) const
-			{
-				return name < c.name;
-			}
-			bool operator == (const NetRecord c) const
-			{
-				return name == c.name;
-			}
+			//bool operator < (const NetRecord c) const
+			//{
+			//	return name < c.name;
+			//}
+			//bool operator == (const NetRecord c) const
+			//{
+			//	return name == c.name;
+			//}
 
 			struct DECLSPEC SubnetRecord
 			{
-				bool operator < (const SubnetRecord c) const
-				{
-					return type < c.type;
-				}
-				bool operator == (const SubnetRecord c) const
-				{
-					return type == c.type;
-				}
+				//bool operator < (const SubnetRecord c) const
+				//{
+				//	return type < c.type;
+				//}
+				//bool operator == (const SubnetRecord c) const
+				//{
+				//	return type == c.type;
+				//}
+
 				enum class Type
 				{
 					Via,

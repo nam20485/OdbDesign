@@ -14,17 +14,20 @@ int main()
     //OdbDesign::Lib::OdbDesign rigidFlexOdbDesign(R"(C:\Users\nmill\OneDrive\Documents\ODB++\Samples\designodb_rigidflex)");
 	OdbDesign::Lib::OdbDesign rigidFlexOdbDesign(R"(/mnt/c/Users/nmill/Documents/ODB++/Samples/designodb_rigidflex)");
     auto success = rigidFlexOdbDesign.ParseDesign();
-	if (!success) return 1;
+    if (!success)
+    {
+        return 1;
+    }
 
-    const auto& findStep = rigidFlexOdbDesign.GetStepsByName().find("cellular_flip-phone");//
-    if (findStep != rigidFlexOdbDesign.GetStepsByName().end())//
+    const auto& findStep = rigidFlexOdbDesign.GetStepsByName().find("cellular_flip-phone");
+    if (findStep != rigidFlexOdbDesign.GetStepsByName().end())
     {
         // step
         auto& pStep = findStep->second;
         auto name = pStep->GetName();
 
         // eda data
-        auto& edaData = pStep->GetEdaData();//
+        auto& edaData = pStep->GetEdaData();
         auto& netRecords = edaData.GetNetRecords();
         if (netRecords.size() > 20)
         {
@@ -33,6 +36,15 @@ int main()
             {
                 auto& pSubnetRecord = pNetRecord->m_subnetRecords[44];
                 auto subnetType = pSubnetRecord->type;
+                if (subnetType == OdbDesign::Lib::EdaData::NetRecord::SubnetRecord::Type::Toeprint)
+                {
+					auto pViaSubnetRecord = std::dynamic_pointer_cast<OdbDesign::Lib::EdaData::NetRecord::ToeprintSubnetRecord>(pSubnetRecord);
+					auto viaType = pViaSubnetRecord->type;
+                    if (viaType == OdbDesign::Lib::EdaData::NetRecord::ToeprintSubnetRecord::Type::Via)
+                    {
+
+                    }
+				}               
             }
         }
 
@@ -44,7 +56,7 @@ int main()
 		}
         
         // layers
-        auto& layersByName = pStep->GetLayersByName();//
+        auto& layersByName = pStep->GetLayersByName();
         auto layerFind = layersByName.find(OdbDesign::Lib::Layer::TOP_COMPONENTS_LAYER_NAME);
         if (layerFind != layersByName.end())
         {
@@ -53,13 +65,20 @@ int main()
 		}
         
         // netlist
-        const auto& netlistsByName = pStep->GetNetlistsByName();//
+        const auto& netlistsByName = pStep->GetNetlistsByName();
         auto netlistFind = netlistsByName.find("cadnet");
         if (netlistFind != netlistsByName.end())
         {
 			auto& pNetlist = netlistFind->second;
 			auto netlistName = pNetlist->GetName();
             auto& netNames = pNetlist->GetNetNames();
+            for (auto& netName : netNames)
+            {
+                if (netName == "")
+                {
+
+                }
+			}
 		}        
     }
 
@@ -67,7 +86,10 @@ int main()
 	OdbDesign::Lib::OdbDesign sampleOdbDesign(R"(/mnt/c/Users/nmill/Documents/ODB++/Samples/sample_design)");
 	
     success = sampleOdbDesign.ParseDesign();
-    if (!success) return 1;
+    if (!success)
+    {
+        return 1;
+    }
 
     std::cout << "success" << std::endl;
 

@@ -25,7 +25,7 @@ namespace OdbDesign::Lib
 
 		typedef std::map<std::string, std::shared_ptr<Layer>> StringMap;
 
-	protected: // TODO: do subclasses really need access to these?
+	protected: // TODO: do subclasses really need access to these (private instead)?
 		std::string m_name;
 		std::filesystem::path m_path;
 

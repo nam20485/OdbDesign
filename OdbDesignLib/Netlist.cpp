@@ -121,8 +121,11 @@ namespace OdbDesign::Lib
 					// net number
 					std::string strNetNumber;
 					if (!(lineStream >> strNetNumber)) return false;
-					strNetNumber.erase(0, 1); // remove leading '$'
-					unsigned int netNumber = std::stoul(strNetNumber);
+					//strNetNumber.erase(0, 1); // remove leading '$'
+					//unsigned int netNumber = std::stoul(strNetNumber);
+					// don't use net number to specify index of net in vector,
+					// order of parsing/occurence in file dictates net number
+					// since we use vecotr.push_back() to add net names to vector
 
 					// net name
 					std::string netName;
