@@ -50,7 +50,7 @@ namespace OdbDesign::Lib
 
 	bool OdbDesign::ParseDesignDirectory(std::filesystem::path path)
 	{
-		std::filesystem::path designPath(m_path);
+		std::filesystem::path designPath(path);
 
 		if (!std::filesystem::exists(designPath)) return false;
 		else if (!std::filesystem::is_directory(designPath)) return false;
