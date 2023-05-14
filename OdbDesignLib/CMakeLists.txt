@@ -11,7 +11,3 @@ target_include_directories(OdbDesign
                             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
                             $<INSTALL_INTERFACE:include>
                            )
-
-# define the symbol stating we are using the declspec(dllexport) when
-# building on windows
-#target_compile_definitions(OdbDesign PRIVATE "EXPORTING_ODBDESIGNLIB")
