@@ -1,8 +1,7 @@
 ﻿// OdbDesignApp.cpp : Defines the entry point for the application.
 //
 #include "OdbDesignApp.h"
-#include "OdbDesign.h"
-#include "OdbDesignLib.h"
+#include "FileModel.h"
 #include "macros.h"
 
 
@@ -10,7 +9,7 @@ int main()
 {
 	std::cout << "OdbDesignApp v0.1.0" << std::endl;
 
-    OdbDesign::Lib::helloLib();
+    //OdbDesign::Lib::helloLib();
 
     std::string rigidFlexDesignPath;
     if (IsMsvc())
@@ -22,7 +21,7 @@ int main()
         rigidFlexDesignPath = R"(/mnt/c/Users/nmill/Documents/ODB++/Samples/designodb_rigidflex)";		
     }
 
-    OdbDesign::Lib::OdbDesign rigidFlexOdbDesign(rigidFlexDesignPath);
+    OdbDesign::Lib::FileModel rigidFlexOdbDesign(rigidFlexDesignPath);
     auto success = rigidFlexOdbDesign.ParseDesign();
     if (!success)
     {
@@ -102,7 +101,7 @@ int main()
 		sampleDesignPath = R"(/mnt/c/Users/nmill/Documents/ODB++/Samples/sample_design)";
 	}
 
-    OdbDesign::Lib::OdbDesign sampleOdbDesign(sampleDesignPath);	
+    OdbDesign::Lib::FileModel sampleOdbDesign(sampleDesignPath);
     success = sampleOdbDesign.ParseDesign();
     if (!success)
     {

@@ -6,11 +6,11 @@
 
 namespace OdbDesign::Lib
 {
-	class DECLSPEC OdbDesign
+	class DECLSPEC FileModel
 	{
 	public:
-		OdbDesign(std::string path);
-		~OdbDesign();
+		FileModel(std::string path);
+		~FileModel();
 
 		std::string GetPath() const;
 		std::string GetProductName() const;

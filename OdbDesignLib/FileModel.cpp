@@ -1,31 +1,31 @@
-#include "OdbDesign.h"
+#include "FileModel.h"
 #include <filesystem>
 
 namespace OdbDesign::Lib
 {
 
-	OdbDesign::OdbDesign(std::string directoryPath)
+	FileModel::FileModel(std::string directoryPath)
 		: m_path(directoryPath)
 	{
 	}
 
-	OdbDesign::~OdbDesign()
+	FileModel::~FileModel()
 	{
 	}
 
-	std::string OdbDesign::GetPath() const
+	std::string FileModel::GetPath() const
 	{
 		return m_path;
 	}
 
-	std::string OdbDesign::GetProductName() const
+	std::string FileModel::GetProductName() const
 	{
 		return m_productName;
 	}
 
-	const Step::StringMap& OdbDesign::GetStepsByName() const { return m_stepsByName; }
+	const Step::StringMap& FileModel::GetStepsByName() const { return m_stepsByName; }
 
-	bool OdbDesign::ParseDesign()
+	bool FileModel::ParseDesign()
 	{
 		std::filesystem::path designPath(m_path);
 
@@ -48,7 +48,7 @@ namespace OdbDesign::Lib
 		return true;
 	}
 
-	bool OdbDesign::ParseDesignDirectory(std::filesystem::path path)
+	bool FileModel::ParseDesignDirectory(std::filesystem::path path)
 	{
 		std::filesystem::path designPath(path);
 
