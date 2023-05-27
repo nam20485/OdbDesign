@@ -5,7 +5,7 @@
 namespace OdbDesign::Lib
 {
 	Netlist::Netlist(std::filesystem::path path)
-		: m_path(path)
+		: m_path(path), m_optimized(false), m_staggered(Staggered::Unknown)
 	{
 	}
 
