@@ -20,7 +20,7 @@ namespace Odb::Lib::FileModel::Design
 		std::string GetName();
 		std::filesystem::path GetPath();
 
-		const EdaDataFile& GetEdaData() const;
+		const EdaDataFile& GetEdaDataFile() const;
 		const LayerDirectory::StringMap& GetLayersByName() const;
 		const NetlistFile::StringMap& GetNetlistsByName() const;
 

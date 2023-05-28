@@ -36,7 +36,7 @@ int main()
         auto name = pStep->GetName();
 
         // eda data
-        auto& edaData = pStep->GetEdaData();
+        auto& edaData = pStep->GetEdaDataFile();
         auto& netRecords = edaData.GetNetRecords();
         if (netRecords.size() > 20)
         {

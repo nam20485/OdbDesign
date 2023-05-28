@@ -13,7 +13,7 @@ namespace Odb::Lib::ProductModel
 	class DECLSPEC Net
 	{
 	public:
-		Net();
+		Net(std::string name);
 		~Net();
 
 		std::string GetName() const;

@@ -41,6 +41,25 @@ namespace Odb::Lib::ProductModel
 	}
 
 	bool Design::BuildNets()
+	{		
+		const auto& steps = m_pFileModel->GetStepsByName();
+
+		if (steps.empty()) return false;
+
+		auto& pStepDirectory = steps.begin()->second;
+		const auto& edaData = pStepDirectory->GetEdaDataFile();
+		const auto& netRecords = edaData.GetNetRecords();
+
+		for (const auto& netRecord : netRecords)
+		{
+			auto pNet = std::make_shared<Net>(netRecord->name);
+			m_netsByName[pNet->GetName()] = pNet;
+		}
+
+		return true;
+	}
+
+	bool Design::BuildPackages()
 	{
 		return false;
 	}

@@ -28,7 +28,7 @@ namespace Odb::Lib::FileModel::Design
         return m_path;
     }
 
-    const EdaDataFile& StepDirectory::GetEdaData() const { return m_edaData; }
+    const EdaDataFile& StepDirectory::GetEdaDataFile() const { return m_edaData; }
     const LayerDirectory::StringMap& StepDirectory::GetLayersByName() const { return m_layersByName; }
     const NetlistFile::StringMap& StepDirectory::GetNetlistsByName() const { return m_netlistsByName; }
 

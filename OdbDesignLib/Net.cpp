@@ -3,7 +3,8 @@
 
 namespace Odb::Lib::ProductModel
 {
-	Net::Net()
+	Net::Net(std::string name)
+		: m_name(name)
 	{
 	}
 
