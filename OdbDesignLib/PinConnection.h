@@ -1,5 +1,6 @@
 #pragma once
 
+#include "export.h"
 #include <string>
 #include <vector>
 #include <map>
@@ -10,7 +11,7 @@
 
 namespace OdbDesign::Lib::Design
 {
-	class PinConnection
+	class DECLSPEC PinConnection
 	{
 	public:
 		PinConnection();

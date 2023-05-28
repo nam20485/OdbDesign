@@ -5,6 +5,7 @@
 #include "Net.h"
 #include "Component.h"
 #include "FileModel.h"
+#include "Via.h"
 
 namespace OdbDesign::Lib::Design
 {
@@ -20,6 +21,7 @@ namespace OdbDesign::Lib::Design
 
 		Net::StringMap m_netsByName;
 		Component::StringMap m_componentsByName;
+		Via::StringMap m_viasByName;
 
 		bool BuildFromFileModel();
 

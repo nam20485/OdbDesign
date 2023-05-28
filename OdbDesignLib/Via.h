@@ -1,13 +1,15 @@
 #pragma once
 
+#include "export.h"
 #include <string>
 #include <vector>
 #include <map>
 #include <memory>
 
+
 namespace OdbDesign::Lib::Design
 {
-	class Via
+	class DECLSPEC Via
 	{
 	public:
 		Via();

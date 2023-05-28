@@ -1,5 +1,6 @@
 #pragma once
 
+#include "export.h"
 #include <string>
 #include <vector>
 #include <map>
@@ -9,7 +10,7 @@
 
 namespace OdbDesign::Lib::Design
 {
-	class Net
+	class DECLSPEC Net
 	{
 	public:
 		Net();
