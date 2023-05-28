@@ -7,7 +7,7 @@
 #include <memory>
 
 
-namespace OdbDesign::Lib::Design
+namespace Odb::Lib::ProductModel
 {
 	class DECLSPEC Via
 	{
@@ -24,4 +24,4 @@ namespace OdbDesign::Lib::Design
 		std::string m_name;
 
 	};
-} // namespace OdbDesign::Lib::Design
+} // namespace Odb::Lib::ProductModel

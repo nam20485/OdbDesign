@@ -21,7 +21,7 @@ int main()
         rigidFlexDesignPath = R"(/mnt/c/Users/nmill/Documents/ODB++/Samples/designodb_rigidflex)";		
     }
 
-    OdbDesign::Lib::FileModel::FileModel rigidFlexOdbDesign(rigidFlexDesignPath);
+    Odb::Lib::FileModel::Design::FileModel rigidFlexOdbDesign(rigidFlexDesignPath);
     auto success = rigidFlexOdbDesign.ParseFileModel();
     if (!success)
     {
@@ -45,11 +45,11 @@ int main()
             {
                 auto& pSubnetRecord = pNetRecord->m_subnetRecords[44];
                 auto subnetType = pSubnetRecord->type;
-                if (subnetType == OdbDesign::Lib::FileModel::EdaDataFile::NetRecord::SubnetRecord::Type::Toeprint)
+                if (subnetType == Odb::Lib::FileModel::Design::EdaDataFile::NetRecord::SubnetRecord::Type::Toeprint)
                 {
-					auto pViaSubnetRecord = std::dynamic_pointer_cast<OdbDesign::Lib::FileModel::EdaDataFile::NetRecord::ToeprintSubnetRecord>(pSubnetRecord);
+					auto pViaSubnetRecord = std::dynamic_pointer_cast<Odb::Lib::FileModel::Design::EdaDataFile::NetRecord::ToeprintSubnetRecord>(pSubnetRecord);
 					auto viaType = pViaSubnetRecord->type;
-                    if (viaType == OdbDesign::Lib::FileModel::EdaDataFile::NetRecord::ToeprintSubnetRecord::Type::Via)
+                    if (viaType == Odb::Lib::FileModel::Design::EdaDataFile::NetRecord::ToeprintSubnetRecord::Type::Via)
                     {
 
                     }
@@ -66,7 +66,7 @@ int main()
         
         // layers
         auto& layersByName = pStep->GetLayersByName();
-        auto layerFind = layersByName.find(OdbDesign::Lib::FileModel::LayerDirectory::TOP_COMPONENTS_LAYER_NAME);
+        auto layerFind = layersByName.find(Odb::Lib::FileModel::Design::LayerDirectory::TOP_COMPONENTS_LAYER_NAME);
         if (layerFind != layersByName.end())
         {
 			auto& pLayer = layerFind->second;
@@ -101,7 +101,7 @@ int main()
 		sampleDesignPath = R"(/mnt/c/Users/nmill/Documents/ODB++/Samples/sample_design)";
 	}
 
-    OdbDesign::Lib::FileModel::FileModel sampleOdbDesign(sampleDesignPath);
+    Odb::Lib::FileModel::Design::FileModel sampleOdbDesign(sampleDesignPath);
     success = sampleOdbDesign.ParseFileModel();
     if (!success)
     {

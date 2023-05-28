@@ -7,7 +7,7 @@
 #include "export.h"
 
 
-namespace OdbDesign::Lib::FileModel
+namespace Odb::Lib::FileModel::Design
 {	
 	class DECLSPEC EdaDataFile
 	{

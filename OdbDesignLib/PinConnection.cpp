@@ -1,7 +1,7 @@
 #include "PinConnection.h"
 
 
-namespace OdbDesign::Lib::Design
+namespace Odb::Lib::ProductModel
 {
 	PinConnection::PinConnection()
 	{
@@ -10,4 +10,4 @@ namespace OdbDesign::Lib::Design
 	PinConnection::~PinConnection()
 	{
 	}
-} // namespace OdbDesign::Lib::Design
+} // namespace Odb::Lib::ProductModel

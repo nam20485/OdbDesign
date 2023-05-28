@@ -7,7 +7,7 @@
 #include <memory>
 
 
-namespace OdbDesign::Lib::Design
+namespace Odb::Lib::ProductModel
 {
 	class DECLSPEC Pin
 	{
@@ -24,4 +24,4 @@ namespace OdbDesign::Lib::Design
 		std::string m_name;
 
 	};
-} // namespace OdbDesign::Lib::Design
+} // namespace Odb::Lib::ProductModel

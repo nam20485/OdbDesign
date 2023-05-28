@@ -1,7 +1,7 @@
 #include "Net.h"
 
 
-namespace OdbDesign::Lib::Design
+namespace Odb::Lib::ProductModel
 {
 	Net::Net()
 	{

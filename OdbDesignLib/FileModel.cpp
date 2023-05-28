@@ -1,7 +1,7 @@
 #include "FileModel.h"
 #include <filesystem>
 
-namespace OdbDesign::Lib::FileModel
+namespace Odb::Lib::FileModel::Design
 {
 
 	FileModel::FileModel(std::string directoryPath)

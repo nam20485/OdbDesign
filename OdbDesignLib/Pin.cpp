@@ -1,7 +1,7 @@
 #include "Pin.h"
 
 
-namespace OdbDesign::Lib::Design
+namespace Odb::Lib::ProductModel
 {
 	Pin::Pin()
 	{

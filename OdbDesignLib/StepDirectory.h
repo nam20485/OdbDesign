@@ -9,7 +9,7 @@
 #include "EdaDataFile.h"
 #include "NetlistFile.h"
 
-namespace OdbDesign::Lib::FileModel
+namespace Odb::Lib::FileModel::Design
 {
 	class DECLSPEC StepDirectory
 	{

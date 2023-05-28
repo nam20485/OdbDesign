@@ -1,7 +1,7 @@
 #include "Component.h"
 
 
-namespace OdbDesign::Lib::Design
+namespace Odb::Lib::ProductModel
 {
 	Component::Component()
 	{
@@ -15,4 +15,4 @@ namespace OdbDesign::Lib::Design
 	{
 		return m_refDes;
 	}
-} // namespace OdbDesign::Lib::Design
+} // namespace Odb::Lib::ProductModel

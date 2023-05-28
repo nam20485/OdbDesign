@@ -1,6 +1,6 @@
 #include "Design.h"
 
-namespace OdbDesign::Lib::Design
+namespace Odb::Lib::ProductModel
 {	
 	Design::Design()
 	{
@@ -12,7 +12,7 @@ namespace OdbDesign::Lib::Design
 
 	bool Design::Build(std::string designDirectory)
 	{
-		auto pFileModel = std::make_shared<FileModel::FileModel>(designDirectory);
+		auto pFileModel = std::make_shared<FileModel::Design::FileModel>(designDirectory);
 		if (pFileModel->ParseFileModel())
 		{
 			return Build(pFileModel);
@@ -20,7 +20,7 @@ namespace OdbDesign::Lib::Design
 		return false;
 	}
 
-	bool Design::Build(std::shared_ptr<FileModel::FileModel> pFileModel)
+	bool Design::Build(std::shared_ptr<FileModel::Design::FileModel> pFileModel)
 	{
 		m_pFileModel = pFileModel;
 		return Build();		
@@ -45,4 +45,4 @@ namespace OdbDesign::Lib::Design
 		return false;
 	}
 
-} // namespace OdbDesign::Lib::Design
+} // namespace Odb::Lib::ProductModel

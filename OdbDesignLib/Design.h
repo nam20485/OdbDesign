@@ -8,7 +8,7 @@
 #include "FileModel.h"
 #include "Via.h"
 
-namespace OdbDesign::Lib::Design
+namespace Odb::Lib::ProductModel
 {
 	class DECLSPEC Design
 	{
@@ -17,14 +17,14 @@ namespace OdbDesign::Lib::Design
 		~Design();
 
 		bool Build(std::string designDirectory);
-		bool Build(std::shared_ptr<FileModel::FileModel> pFileModel);
+		bool Build(std::shared_ptr<FileModel::Design::FileModel> pFileModel);
 
 	private:
 		std::string m_productModel;
 		std::string m_name;
 
 		std::string m_designDirectory;		
-		std::shared_ptr<FileModel::FileModel> m_pFileModel;		
+		std::shared_ptr<FileModel::Design::FileModel> m_pFileModel;
 
 		Net::StringMap m_netsByName;
 		Component::StringMap m_componentsByName;

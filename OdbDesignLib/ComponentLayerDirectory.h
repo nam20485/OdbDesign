@@ -5,7 +5,7 @@
 #include <string>
 
 
-namespace OdbDesign::Lib::FileModel
+namespace Odb::Lib::FileModel::Design
 {
 	class DECLSPEC ComponentLayerDirectory : public LayerDirectory
 	{

@@ -8,7 +8,7 @@
 #include "PinConnection.h"
 
 
-namespace OdbDesign::Lib::Design
+namespace Odb::Lib::ProductModel
 {
 	class DECLSPEC Net
 	{

@@ -4,7 +4,7 @@
 #include <filesystem>
 
 
-namespace OdbDesign::Lib::FileModel
+namespace Odb::Lib::FileModel::Design
 {
 	ComponentLayerDirectory::ComponentLayerDirectory(std::filesystem::path path)
 		: LayerDirectory(path), m_id(0)

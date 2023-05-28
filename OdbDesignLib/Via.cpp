@@ -1,7 +1,7 @@
 #include "Via.h"
 
 
-namespace OdbDesign::Lib::Design
+namespace Odb::Lib::ProductModel
 {
 	Via::Via()
 	{
@@ -15,4 +15,4 @@ namespace OdbDesign::Lib::Design
 	{
 		return m_name;
 	}
-} // namespace OdbDesign::Lib::Design
+} // namespace Odb::Lib::ProductModel

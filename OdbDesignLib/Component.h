@@ -7,7 +7,7 @@
 #include <memory>
 #include "Pin.h"
 
-namespace OdbDesign::Lib::Design
+namespace Odb::Lib::ProductModel
 {
 	class DECLSPEC Component
 	{
