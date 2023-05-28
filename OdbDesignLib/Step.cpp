@@ -28,9 +28,9 @@ namespace OdbDesign::Lib::FileModel
         return m_path;
     }
 
-    const EdaData& Step::GetEdaData() const { return m_edaData; }
+    const EdaDataFile& Step::GetEdaData() const { return m_edaData; }
     const Layer::StringMap& Step::GetLayersByName() const { return m_layersByName; }
-    const Netlist::StringMap& Step::GetNetlistsByName() const { return m_netlistsByName; }
+    const NetlistFile::StringMap& Step::GetNetlistsByName() const { return m_netlistsByName; }
 
     bool Step::Parse()
     {
@@ -40,18 +40,18 @@ namespace OdbDesign::Lib::FileModel
         m_name = std::filesystem::path(m_path).filename().string();
 
         auto layersPath = m_path / "layers";
-        if (!ParseLayers(layersPath)) return false;
+        if (!ParseLayerFiles(layersPath)) return false;
 
         auto netlistsPath = m_path / "netlists";
-        if (!ParseNetlists(netlistsPath)) return false;
+        if (!ParseNetlistFiles(netlistsPath)) return false;
 
         auto edaPath = m_path / "eda";
-        if (!ParseEdaData(edaPath)) return false;
+        if (!ParseEdaDataFiles(edaPath)) return false;
 
         return true;
     }
 
-    bool Step::ParseLayers(std::filesystem::path layersPath)
+    bool Step::ParseLayerFiles(std::filesystem::path layersPath)
     {
         if (!std::filesystem::exists(layersPath)) return false;
         else if (!std::filesystem::is_directory(layersPath)) return false;
@@ -87,7 +87,7 @@ namespace OdbDesign::Lib::FileModel
         return true;
     }
 
-    bool Step::ParseEdaData(std::filesystem::path edaPath)
+    bool Step::ParseEdaDataFiles(std::filesystem::path edaPath)
     {
         if (!std::filesystem::exists(edaPath)) return false;
         else if (!std::filesystem::is_directory(edaPath)) return false;
@@ -96,7 +96,7 @@ namespace OdbDesign::Lib::FileModel
         return m_edaData.Parse(edaPath);
     }
 
-    bool Step::ParseNetlists(std::filesystem::path netlistsPath)
+    bool Step::ParseNetlistFiles(std::filesystem::path netlistsPath)
     {
         if (!std::filesystem::exists(netlistsPath)) return false;
         else if (!std::filesystem::is_directory(netlistsPath)) return false;
@@ -106,7 +106,7 @@ namespace OdbDesign::Lib::FileModel
         {
             if (std::filesystem::is_directory(d))
             {
-                auto pNetlist = std::make_shared<Netlist>(d.path());
+                auto pNetlist = std::make_shared<NetlistFile>(d.path());
                 if (pNetlist->Parse())
                 {
                     m_netlistsByName[pNetlist->GetName()] = pNetlist;

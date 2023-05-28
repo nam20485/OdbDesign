@@ -9,12 +9,12 @@
 
 namespace OdbDesign::Lib::FileModel
 {	
-	class DECLSPEC EdaData
+	class DECLSPEC EdaDataFile
 	{
 	public:
-		EdaData();
+		EdaDataFile();
 		//EdaData(std::filesystem::path path);
-		~EdaData();
+		~EdaDataFile();
 
 		std::filesystem::path GetPath() const;
 		std::string GetUnits() const;

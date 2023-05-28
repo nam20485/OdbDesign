@@ -6,8 +6,8 @@
 #include <filesystem>
 
 #include "Layer.h"
-#include "EdaData.h"
-#include "Netlist.h"
+#include "EdaDataFile.h"
+#include "NetlistFile.h"
 
 namespace OdbDesign::Lib::FileModel
 {
@@ -20,9 +20,9 @@ namespace OdbDesign::Lib::FileModel
 		std::string GetName();
 		std::filesystem::path GetPath();
 
-		const EdaData& GetEdaData() const;
+		const EdaDataFile& GetEdaData() const;
 		const Layer::StringMap& GetLayersByName() const;
-		const Netlist::StringMap& GetNetlistsByName() const;
+		const NetlistFile::StringMap& GetNetlistsByName() const;
 
 		bool Parse();
 
@@ -33,12 +33,12 @@ namespace OdbDesign::Lib::FileModel
 		std::filesystem::path m_path;
 
 		Layer::StringMap m_layersByName;
-		Netlist::StringMap m_netlistsByName;
-		EdaData m_edaData;
+		NetlistFile::StringMap m_netlistsByName;
+		EdaDataFile m_edaData;
 
-		bool ParseLayers(std::filesystem::path layersPath);
-		bool ParseNetlists(std::filesystem::path netlistsPath);
-		bool ParseEdaData(std::filesystem::path edaPath);
+		bool ParseLayerFiles(std::filesystem::path layersPath);
+		bool ParseNetlistFiles(std::filesystem::path netlistsPath);
+		bool ParseEdaDataFiles(std::filesystem::path edaPath);
 
 	};
 }

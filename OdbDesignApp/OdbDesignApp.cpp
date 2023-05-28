@@ -45,11 +45,11 @@ int main()
             {
                 auto& pSubnetRecord = pNetRecord->m_subnetRecords[44];
                 auto subnetType = pSubnetRecord->type;
-                if (subnetType == OdbDesign::Lib::FileModel::EdaData::NetRecord::SubnetRecord::Type::Toeprint)
+                if (subnetType == OdbDesign::Lib::FileModel::EdaDataFile::NetRecord::SubnetRecord::Type::Toeprint)
                 {
-					auto pViaSubnetRecord = std::dynamic_pointer_cast<OdbDesign::Lib::FileModel::EdaData::NetRecord::ToeprintSubnetRecord>(pSubnetRecord);
+					auto pViaSubnetRecord = std::dynamic_pointer_cast<OdbDesign::Lib::FileModel::EdaDataFile::NetRecord::ToeprintSubnetRecord>(pSubnetRecord);
 					auto viaType = pViaSubnetRecord->type;
-                    if (viaType == OdbDesign::Lib::FileModel::EdaData::NetRecord::ToeprintSubnetRecord::Type::Via)
+                    if (viaType == OdbDesign::Lib::FileModel::EdaDataFile::NetRecord::ToeprintSubnetRecord::Type::Via)
                     {
 
                     }

@@ -1,4 +1,4 @@
-#include "EdaData.h"
+#include "EdaDataFile.h"
 #include <fstream>
 #include <sstream>
 #include "string_trim.h"
@@ -6,7 +6,7 @@
 
 namespace OdbDesign::Lib::FileModel
 {
-    EdaData::EdaData()
+    EdaDataFile::EdaDataFile()
     {
     }
 
@@ -15,67 +15,67 @@ namespace OdbDesign::Lib::FileModel
     //{
     //}
 
-    EdaData::~EdaData()
+    EdaDataFile::~EdaDataFile()
     {
     }
 
-    std::filesystem::path EdaData::GetPath() const
+    std::filesystem::path EdaDataFile::GetPath() const
     {
         return m_path;
     }
 
-    std::string EdaData::GetUnits() const
+    std::string EdaDataFile::GetUnits() const
     {
         return m_units;
     }
 
-    EdaData::NetRecord::SubnetRecord::~SubnetRecord()
+    EdaDataFile::NetRecord::SubnetRecord::~SubnetRecord()
     {
         m_featureIdRecords.clear();
     }
 
-    EdaData::NetRecord::~NetRecord()
+    EdaDataFile::NetRecord::~NetRecord()
     {
         m_subnetRecords.clear();
         m_propertyRecords.clear();
     }
 
-    const std::vector<std::string>& EdaData::GetLayerNames() const
+    const std::vector<std::string>& EdaDataFile::GetLayerNames() const
     {
         return m_layerNames;
     }
 
-    const std::vector<std::string>& EdaData::GetAttributeNames() const
+    const std::vector<std::string>& EdaDataFile::GetAttributeNames() const
     {
         return m_attributeNames;
     }
 
-    const std::vector<std::string>& EdaData::GetAttributeTextValues() const
+    const std::vector<std::string>& EdaDataFile::GetAttributeTextValues() const
     {
         return m_attributeTextValues;
     }
 
-    const EdaData::NetRecord::Vector& EdaData::GetNetRecords() const
+    const EdaDataFile::NetRecord::Vector& EdaDataFile::GetNetRecords() const
     {
         return m_netRecords;
     }
 
-    const EdaData::NetRecord::StringMap& EdaData::GetNetRecordsByName() const
+    const EdaDataFile::NetRecord::StringMap& EdaDataFile::GetNetRecordsByName() const
     {
         return m_netRecordsByName;
     }
 
-    const EdaData::PackageRecord::Vector& EdaData::GetPackageRecords() const
+    const EdaDataFile::PackageRecord::Vector& EdaDataFile::GetPackageRecords() const
     {
         return m_packageRecords;
     }
 
-    const EdaData::PackageRecord::StringMap& EdaData::GetPackageRecordsByName() const
+    const EdaDataFile::PackageRecord::StringMap& EdaDataFile::GetPackageRecordsByName() const
     {
         return m_packageRecordsByName;
     }
 
-    bool EdaData::Parse(std::filesystem::path path)
+    bool EdaDataFile::Parse(std::filesystem::path path)
     {
         m_path = path;
 
