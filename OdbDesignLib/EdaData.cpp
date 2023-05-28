@@ -4,7 +4,7 @@
 #include "string_trim.h"
 
 
-namespace OdbDesign::Lib
+namespace OdbDesign::Lib::FileModel
 {
     EdaData::EdaData()
     {

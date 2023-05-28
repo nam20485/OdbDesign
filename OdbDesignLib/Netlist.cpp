@@ -2,7 +2,7 @@
 #include <fstream>
 #include <sstream>
 
-namespace OdbDesign::Lib
+namespace OdbDesign::Lib::FileModel
 {
 	Netlist::Netlist(std::filesystem::path path)
 		: m_path(path), m_optimized(false), m_staggered(Staggered::Unknown)
@@ -142,4 +142,4 @@ namespace OdbDesign::Lib
 
 		return true;
 	}
-} // namespace OdbDesign::Lib
+} // namespace OdbDesign::Lib::FileModel

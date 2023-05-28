@@ -5,7 +5,7 @@
 #include <string>
 
 
-namespace OdbDesign::Lib
+namespace OdbDesign::Lib::FileModel
 {
 	class DECLSPEC ComponentLayer : public Layer
 	{

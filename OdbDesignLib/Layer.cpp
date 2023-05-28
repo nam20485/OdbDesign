@@ -1,6 +1,6 @@
 #include "Layer.h"
 
-namespace OdbDesign::Lib
+namespace OdbDesign::Lib::FileModel
 {
 	Layer::Layer(std::filesystem::path path)
 		: m_path(path)

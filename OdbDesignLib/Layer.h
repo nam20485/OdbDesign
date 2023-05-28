@@ -7,7 +7,7 @@
 #include "export.h"
 
 
-namespace OdbDesign::Lib
+namespace OdbDesign::Lib::FileModel
 {
 	class DECLSPEC Layer
 	{

@@ -9,7 +9,7 @@
 #include "EdaData.h"
 #include "Netlist.h"
 
-namespace OdbDesign::Lib
+namespace OdbDesign::Lib::FileModel
 {
 	class DECLSPEC Step
 	{

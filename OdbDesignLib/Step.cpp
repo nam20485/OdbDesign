@@ -6,7 +6,7 @@
 #include <sstream>
 
 
-namespace OdbDesign::Lib
+namespace OdbDesign::Lib::FileModel
 {
     Step::Step(std::filesystem::path path)
         : m_path(path)

@@ -4,7 +4,7 @@
 #include <string>
 #include "Step.h"
 
-namespace OdbDesign::Lib
+namespace OdbDesign::Lib::FileModel
 {
 	class DECLSPEC FileModel
 	{
