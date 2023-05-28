@@ -2,7 +2,7 @@
 
 #include "export.h"
 #include <string>
-#include "Step.h"
+#include "StepDirectory.h"
 
 namespace OdbDesign::Lib::FileModel
 {
@@ -15,15 +15,15 @@ namespace OdbDesign::Lib::FileModel
 		std::string GetPath() const;
 		std::string GetProductName() const;
 
-		const Step::StringMap& GetStepsByName() const;
+		const StepDirectory::StringMap& GetStepsByName() const;
 
-		bool ParseDesign();
+		bool ParseFileModel();
 
 	private:
 		std::string m_path;
 		std::string m_productName;
 
-		Step::StringMap m_stepsByName;
+		StepDirectory::StringMap m_stepsByName;
 
 		bool ParseDesignDirectory(std::filesystem::path path);
 

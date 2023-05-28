@@ -22,7 +22,7 @@ int main()
     }
 
     OdbDesign::Lib::FileModel::FileModel rigidFlexOdbDesign(rigidFlexDesignPath);
-    auto success = rigidFlexOdbDesign.ParseDesign();
+    auto success = rigidFlexOdbDesign.ParseFileModel();
     if (!success)
     {
         return 1;
@@ -102,7 +102,7 @@ int main()
 	}
 
     OdbDesign::Lib::FileModel::FileModel sampleOdbDesign(sampleDesignPath);
-    success = sampleOdbDesign.ParseDesign();
+    success = sampleOdbDesign.ParseFileModel();
     if (!success)
     {
         return 1;

@@ -23,9 +23,9 @@ namespace OdbDesign::Lib::FileModel
 		return m_productName;
 	}
 
-	const Step::StringMap& FileModel::GetStepsByName() const { return m_stepsByName; }
+	const StepDirectory::StringMap& FileModel::GetStepsByName() const { return m_stepsByName; }
 
-	bool FileModel::ParseDesign()
+	bool FileModel::ParseFileModel()
 	{
 		std::filesystem::path designPath(m_path);
 
@@ -62,7 +62,7 @@ namespace OdbDesign::Lib::FileModel
 		{
 			if (std::filesystem::is_directory(d))
 			{
-				auto pStep = std::make_shared<Step>(d.path());
+				auto pStep = std::make_shared<StepDirectory>(d.path());
 				if (pStep->Parse())
 				{
 					m_stepsByName[pStep->GetName()] = pStep;

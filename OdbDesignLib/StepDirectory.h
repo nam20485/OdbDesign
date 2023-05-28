@@ -11,11 +11,11 @@
 
 namespace OdbDesign::Lib::FileModel
 {
-	class DECLSPEC Step
+	class DECLSPEC StepDirectory
 	{
 	public:
-		Step(std::filesystem::path path);
-		~Step();
+		StepDirectory(std::filesystem::path path);
+		~StepDirectory();
 
 		std::string GetName();
 		std::filesystem::path GetPath();
@@ -26,7 +26,7 @@ namespace OdbDesign::Lib::FileModel
 
 		bool Parse();
 
-		typedef std::map<std::string, std::shared_ptr<Step>> StringMap;
+		typedef std::map<std::string, std::shared_ptr<StepDirectory>> StringMap;
 
 	private:
 		std::string m_name;
