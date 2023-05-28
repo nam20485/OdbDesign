@@ -1,17 +1,17 @@
 #pragma once
 
-#include "Layer.h"
+#include "LayerDirectory.h"
 #include <vector>
 #include <string>
 
 
 namespace OdbDesign::Lib::FileModel
 {
-	class DECLSPEC ComponentLayer : public Layer
+	class DECLSPEC ComponentLayerDirectory : public LayerDirectory
 	{
 	public:
-		ComponentLayer(std::filesystem::path path);
-		~ComponentLayer();
+		ComponentLayerDirectory(std::filesystem::path path);
+		~ComponentLayerDirectory();
 
 		bool Parse() override;
 

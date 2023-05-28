@@ -1,7 +1,7 @@
 #include "StepDirectory.h"
 #include <filesystem>
-#include "Layer.h"
-#include "ComponentLayer.h"
+#include "LayerDirectory.h"
+#include "ComponentLayerDirectory.h"
 #include <fstream>
 #include <sstream>
 
@@ -29,7 +29,7 @@ namespace OdbDesign::Lib::FileModel
     }
 
     const EdaDataFile& StepDirectory::GetEdaData() const { return m_edaData; }
-    const Layer::StringMap& StepDirectory::GetLayersByName() const { return m_layersByName; }
+    const LayerDirectory::StringMap& StepDirectory::GetLayersByName() const { return m_layersByName; }
     const NetlistFile::StringMap& StepDirectory::GetNetlistsByName() const { return m_netlistsByName; }
 
     bool StepDirectory::Parse()
@@ -60,17 +60,17 @@ namespace OdbDesign::Lib::FileModel
         {
             if (std::filesystem::is_directory(d))
             {
-                std::shared_ptr<Layer> pLayer;
+                std::shared_ptr<LayerDirectory> pLayer;
 
                 auto layerName = d.path().filename().string();
-                if (layerName == Layer::TOP_COMPONENTS_LAYER_NAME ||
-                    layerName == Layer::BOTTOM_COMPONENTS_LAYER_NAME)
+                if (layerName == LayerDirectory::TOP_COMPONENTS_LAYER_NAME ||
+                    layerName == LayerDirectory::BOTTOM_COMPONENTS_LAYER_NAME)
                 {
-                    pLayer = std::make_shared<ComponentLayer>(d.path());
+                    pLayer = std::make_shared<ComponentLayerDirectory>(d.path());
                 }
                 else
                 {
-                    pLayer = std::make_shared<Layer>(d.path());
+                    pLayer = std::make_shared<LayerDirectory>(d.path());
                 }
 
                 if (pLayer->Parse())

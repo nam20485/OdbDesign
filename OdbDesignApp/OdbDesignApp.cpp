@@ -66,7 +66,7 @@ int main()
         
         // layers
         auto& layersByName = pStep->GetLayersByName();
-        auto layerFind = layersByName.find(OdbDesign::Lib::FileModel::Layer::TOP_COMPONENTS_LAYER_NAME);
+        auto layerFind = layersByName.find(OdbDesign::Lib::FileModel::LayerDirectory::TOP_COMPONENTS_LAYER_NAME);
         if (layerFind != layersByName.end())
         {
 			auto& pLayer = layerFind->second;
