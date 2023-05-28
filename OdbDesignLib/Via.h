@@ -5,19 +5,21 @@
 #include <map>
 #include <memory>
 
-
-class Via
+namespace OdbDesign::Lib::Design
 {
-public:
-	Via();
-	~Via();
+	class Via
+	{
+	public:
+		Via();
+		~Via();
 
-	std::string GetName() const;
+		std::string GetName() const;
 
-	typedef std::vector<std::shared_ptr<Via>> Vector;
-	typedef std::map<std::string, std::shared_ptr<Via>> StringMap;
+		typedef std::vector<std::shared_ptr<Via>> Vector;
+		typedef std::map<std::string, std::shared_ptr<Via>> StringMap;
 
-private:
-	std::string m_name;
+	private:
+		std::string m_name;
 
-};
+	};
+} // namespace OdbDesign::Lib::Design

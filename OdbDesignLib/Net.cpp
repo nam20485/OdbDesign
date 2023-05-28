@@ -1,14 +1,18 @@
 #include "Net.h"
 
-Net::Net()
-{
-}
 
-Net::~Net()
+namespace OdbDesign::Lib::Design
 {
-}
+	Net::Net()
+	{
+	}
 
-std::string Net::GetName() const
-{
-	return m_name;
+	Net::~Net()
+	{
+	}
+
+	std::string Net::GetName() const
+	{
+		return m_name;
+	}
 }

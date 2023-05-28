@@ -6,20 +6,22 @@
 #include <memory>
 #include "Pin.h"
 
-
-class Component
+namespace OdbDesign::Lib::Design
 {
-public:
-	Component();
-	~Component();
+	class Component
+	{
+	public:
+		Component();
+		~Component();
 
-	std::string GetRefDes() const;
+		std::string GetRefDes() const;
 
-	typedef std::vector<std::shared_ptr<Component>> Vector;
-	typedef std::map<std::string, std::shared_ptr<Component>> StringMap;
+		typedef std::vector<std::shared_ptr<Component>> Vector;
+		typedef std::map<std::string, std::shared_ptr<Component>> StringMap;
 
-private:
-	std::string m_refDes;
-	Pin::Vector m_pins;
+	private:
+		std::string m_refDes;
+		Pin::Vector m_pins;
 
-};
+	};
+}

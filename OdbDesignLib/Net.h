@@ -6,19 +6,23 @@
 #include <memory>
 #include "PinConnection.h"
 
-class Net
+
+namespace OdbDesign::Lib::Design
 {
-public:
-	Net();
-	~Net();
+	class Net
+	{
+	public:
+		Net();
+		~Net();
 
-	std::string GetName() const;
+		std::string GetName() const;
 
-	typedef std::vector<std::shared_ptr<Net>> Vector;
-	typedef std::map<std::string, std::shared_ptr<Net>> StringMap;
+		typedef std::vector<std::shared_ptr<Net>> Vector;
+		typedef std::map<std::string, std::shared_ptr<Net>> StringMap;
 
-private:
-	std::string m_name;
-	PinConnection::Vector m_pinConnections;
+	private:
+		std::string m_name;
+		PinConnection::Vector m_pinConnections;
 
-};
+	};
+}

@@ -1,24 +1,27 @@
 #pragma once
 
+#include "export.h"
 #include <string>
 #include "Net.h"
 #include "Component.h"
 #include "FileModel.h"
 
-
-class Design
+namespace OdbDesign::Lib::Design
 {
-public:
-	//Design(const FileModel& fileModel);
-	~Design();	
+	class DECLSPEC Design
+	{
+	public:
+		Design(const OdbDesign::Lib::FileModel::FileModel& fileModel);
+		~Design();
 
-private:
-	std::string m_productModel;
-	std::string m_name;
+	private:
+		std::string m_productModel;
+		std::string m_name;
 
-	Net::StringMap m_netsByName;
-	Component::StringMap m_componentsByName;
+		Net::StringMap m_netsByName;
+		Component::StringMap m_componentsByName;
 
-	bool BuildFromFileModel();
+		bool BuildFromFileModel();
 
-};
+	};
+}

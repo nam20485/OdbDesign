@@ -1,14 +1,18 @@
 #include "Pin.h"
 
-Pin::Pin()
-{
-}
 
-Pin::~Pin()
+namespace OdbDesign::Lib::Design
 {
-}
+	Pin::Pin()
+	{
+	}
 
-std::string Pin::GetName() const
-{
-	return m_name;
+	Pin::~Pin()
+	{
+	}
+
+	std::string Pin::GetName() const
+	{
+		return m_name;
+	}
 }

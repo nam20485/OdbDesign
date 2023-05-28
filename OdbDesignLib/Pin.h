@@ -6,18 +6,21 @@
 #include <memory>
 
 
-class Pin
+namespace OdbDesign::Lib::Design
 {
-public:
-	Pin();
-	~Pin();
+	class Pin
+	{
+	public:
+		Pin();
+		~Pin();
 
-	std::string GetName() const;
+		std::string GetName() const;
 
-	typedef std::vector<std::shared_ptr<Pin>> Vector;
-	typedef std::map<std::string, std::shared_ptr<Pin>> StringMap;
+		typedef std::vector<std::shared_ptr<Pin>> Vector;
+		typedef std::map<std::string, std::shared_ptr<Pin>> StringMap;
 
-private:
-	std::string m_name;
+	private:
+		std::string m_name;
 
-};
+	};
+} // namespace OdbDesign::Lib::Design

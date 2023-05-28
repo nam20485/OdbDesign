@@ -1,9 +1,13 @@
 #include "PinConnection.h"
 
-PinConnection::PinConnection()
-{
-}
 
-PinConnection::~PinConnection()
+namespace OdbDesign::Lib::Design
 {
-}
+	PinConnection::PinConnection()
+	{
+	}
+
+	PinConnection::~PinConnection()
+	{
+	}
+} // namespace OdbDesign::Lib::Design

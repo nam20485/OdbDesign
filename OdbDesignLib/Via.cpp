@@ -1,14 +1,18 @@
 #include "Via.h"
 
-Via::Via()
-{
-}
 
-Via::~Via()
+namespace OdbDesign::Lib::Design
 {
-}
+	Via::Via()
+	{
+	}
 
-std::string Via::GetName() const
-{
-	return m_name;
-}
+	Via::~Via()
+	{
+	}
+
+	std::string Via::GetName() const
+	{
+		return m_name;
+	}
+} // namespace OdbDesign::Lib::Design

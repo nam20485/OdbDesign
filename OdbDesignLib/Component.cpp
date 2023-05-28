@@ -1,14 +1,18 @@
 #include "Component.h"
 
-Component::Component()
-{
-}
 
-Component::~Component()
+namespace OdbDesign::Lib::Design
 {
-}
+	Component::Component()
+	{
+	}
 
-std::string Component::GetRefDes() const
-{
-	return m_refDes;
-}
+	Component::~Component()
+	{
+	}
+
+	std::string Component::GetRefDes() const
+	{
+		return m_refDes;
+	}
+} // namespace OdbDesign::Lib::Design
