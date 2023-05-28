@@ -99,8 +99,8 @@ namespace OdbDesign::Lib::FileModel
 				};
 
 				Side side;
-				unsigned int componentNumber;
-				unsigned toeprintNumber;
+				unsigned int componentNumber;	// component index in the layer components/placements file
+				unsigned toeprintNumber;		// toeprint index of component reference in the layer components/placements file
 			};
 
 			struct DECLSPEC PlaneSubnetRecord : public SubnetRecord
@@ -157,9 +157,9 @@ namespace OdbDesign::Lib::FileModel
 				enum class MountType
 				{
 					Smt,
-					RecommenedSmtPad,
+					RecommendedSmtPad,
 					ThroughHole,
-					RecommenedThroughHole,
+					RecommendedThroughHole,
 					Pressfit,
 					NonBoard,
 					Hole,

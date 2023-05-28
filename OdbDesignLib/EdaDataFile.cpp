@@ -511,7 +511,7 @@ namespace OdbDesign::Lib::FileModel
                     }
                     else if (token == "D")
                     {
-                        pPinRecord->mountType = PackageRecord::PinRecord::MountType::RecommenedSmtPad;
+                        pPinRecord->mountType = PackageRecord::PinRecord::MountType::RecommendedSmtPad;
                     }
                     else if (token == "T")
                     {
@@ -519,7 +519,7 @@ namespace OdbDesign::Lib::FileModel
                     }
                     else if (token == "R")
                     {
-                        pPinRecord->mountType = PackageRecord::PinRecord::MountType::RecommenedThroughHole;
+                        pPinRecord->mountType = PackageRecord::PinRecord::MountType::RecommendedThroughHole;
                     }
                     else if (token == "P")
                     {
