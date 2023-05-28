@@ -4,6 +4,7 @@
 #include <vector>
 #include <map>
 #include <memory>
+#include "PinConnection.h"
 
 class Net
 {
@@ -18,6 +19,6 @@ public:
 
 private:
 	std::string m_name;
-
+	PinConnection::Vector m_pinConnections;
 
 };

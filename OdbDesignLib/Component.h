@@ -4,6 +4,7 @@
 #include <vector>
 #include <map>
 #include <memory>
+#include "Pin.h"
 
 
 class Component
@@ -19,5 +20,6 @@ public:
 
 private:
 	std::string m_refDes;
+	Pin::Vector m_pins;
 
 };
