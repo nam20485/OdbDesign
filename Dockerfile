@@ -1,9 +1,9 @@
 FROM gcc:13.1.0
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends build-essential \
-                                               cmake \
-                                               ninja-build
+    apt-get install -y --no-install-recommends \
+        build-essential \
+        cmake
 
 RUN mkdir -p /src/OdbDesign
 WORKDIR /src/OdbDesign
