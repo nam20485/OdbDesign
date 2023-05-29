@@ -1,0 +1,7 @@
+out/
+.vs/
+.github/
+.git/
+.gitignore
+Dockerfile
+docker-compose.yml
