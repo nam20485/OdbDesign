@@ -179,7 +179,7 @@ namespace Odb::Lib::FileModel::Design
 				ElectricalType electricalType;
 				MountType mountType;
 				unsigned int id;
-				unsigned long index;
+				size_t index;
 			};
 
 			typedef std::vector<std::shared_ptr<PackageRecord>> Vector;

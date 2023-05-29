@@ -549,9 +549,8 @@ namespace Odb::Lib::FileModel::Design
                     idStream >> pPinRecord->id;
 
                     if (pCurrentPackageRecord != nullptr)
-                    {
-                        // TODO: figure out how to handle size_t -> non-size_t conversion
-                        pPinRecord->index = static_cast<unsigned long>(pCurrentPackageRecord->m_pinRecords.size());
+                    {                        
+                        pPinRecord->index = pCurrentPackageRecord->m_pinRecords.size();
                         pCurrentPackageRecord->m_pinRecords.push_back(pPinRecord);
                     }
                     else

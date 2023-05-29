@@ -77,8 +77,9 @@ namespace Odb::Lib::ProductModel
 			auto pPackage = std::make_shared<Package>(pPackageRecord->name);
 
 			for (const auto& pPinRecord : pPackageRecord->m_pinRecords)
-			{
-				pPackage->AddPin(pPinRecord->name, pPinRecord->index);
+			{				
+				// TODO: figure out how to handle size_t -> non-size_t conversion
+				pPackage->AddPin(pPinRecord->name, static_cast<unsigned long>(pPinRecord->index));
 			}
 
 			m_packagesByName[pPackage->GetName()] = pPackage;

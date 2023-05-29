@@ -32,7 +32,7 @@ namespace Odb::Lib::FileModel::Design
 			std::string attributes;
 			unsigned int id;
 			// TODO: deal with index of records
-			unsigned long index;
+			size_t index;
 
 			// constants
 			inline static const std::string RECORD_TOKEN = "CMP";
