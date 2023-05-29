@@ -6,23 +6,30 @@
 #include <map>
 #include <memory>
 #include "Pin.h"
+#include "Package.h"
+
 
 namespace Odb::Lib::ProductModel
 {
 	class DECLSPEC Component
 	{
 	public:
-		Component();
+		Component(std::string refDes, std::string partName, std::shared_ptr<Package> pPackage, unsigned int index);
 		~Component();
 
 		std::string GetRefDes() const;
+		std::string GetPartName() const;
+		std::shared_ptr<Package> GetPackage() const;
+		unsigned int GetIndex() const;
 
 		typedef std::vector<std::shared_ptr<Component>> Vector;
 		typedef std::map<std::string, std::shared_ptr<Component>> StringMap;
 
 	private:
 		std::string m_refDes;
-		Pin::Vector m_pins;
+		std::string m_partName;		
+		std::shared_ptr<Package> m_pPackage;
+		unsigned int m_index;
 
 	};
 }

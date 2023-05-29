@@ -28,10 +28,14 @@ namespace Odb::Lib::ProductModel
 		std::string m_designDirectory;		
 		std::shared_ptr<FileModel::Design::FileModel> m_pFileModel;
 
-		Net::StringMap m_netsByName;		
+		Net::Vector m_nets;
+		Net::StringMap m_netsByName;
+
+		Package::Vector m_packages;
 		Package::StringMap m_packagesByName;
+
+		Component::Vector m_components;
 		Component::StringMap m_componentsByName;		
-		Via::StringMap m_viasByName;
 
 		bool Build();
 		bool BuildComponents();

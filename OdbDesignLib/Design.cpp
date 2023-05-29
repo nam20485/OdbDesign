@@ -49,8 +49,16 @@ namespace Odb::Lib::ProductModel
 		auto pTopComponentsLayerDir = pStepDirectory->GetTopComponentLayerDir();
 		if (pTopComponentsLayerDir == nullptr) return false;
 
-		//for (const )
+		const auto& componentRecords = pTopComponentsLayerDir->GetComponentRecords();
+		for (const auto& pComponentRecord : componentRecords)
+		{
+			auto pPackage = m_packages[pComponentRecord->pkgRef];
+			auto index = static_cast<unsigned int>(m_components.size());
+			auto pComponent = std::make_shared<Component>(pComponentRecord->compName, pComponentRecord->partName, pPackage, index);
 
+			m_components.push_back(pComponent);
+			m_componentsByName[pComponent->GetRefDes()] = pComponent;
+		}
 
 		return false;
 	}
@@ -67,7 +75,8 @@ namespace Odb::Lib::ProductModel
 
 		for (const auto& pNetRecord : netRecords)
 		{
-			auto pNet = std::make_shared<Net>(pNetRecord->name);
+			auto pNet = std::make_shared<Net>(pNetRecord->name, static_cast<unsigned int>(m_nets.size()));
+			m_nets.push_back(pNet);
 			m_netsByName[pNet->GetName()] = pNet;
 		}	
 
@@ -86,14 +95,15 @@ namespace Odb::Lib::ProductModel
 
 		for (const auto& pPackageRecord : packageRecords)
 		{
-			auto pPackage = std::make_shared<Package>(pPackageRecord->name);
+			auto pPackage = std::make_shared<Package>(pPackageRecord->name, static_cast<unsigned int>(m_packages.size()));
 
 			for (const auto& pPinRecord : pPackageRecord->m_pinRecords)
 			{				
 				// TODO: figure out how to handle size_t -> non-size_t conversion
-				pPackage->AddPin(pPinRecord->name, static_cast<unsigned long>(pPinRecord->index));
+				pPackage->AddPin(pPinRecord->name);
 			}
 
+			m_packages.push_back(pPackage);
 			m_packagesByName[pPackage->GetName()] = pPackage;
 		}		
 

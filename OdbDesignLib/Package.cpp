@@ -2,9 +2,9 @@
 
 namespace Odb::Lib::ProductModel
 {
-
-	Package::Package(std::string name)
+	Package::Package(std::string name, unsigned int index)
 		: m_name(name)
+		, m_index(index)
 	{
 	}
 
@@ -18,8 +18,15 @@ namespace Odb::Lib::ProductModel
 		return m_pins;
 	}
 
-	void Package::AddPin(std::string name, unsigned long index)
+	unsigned int Package::GetIndex() const
 	{
+		return m_index;
+	}
+
+	void Package::AddPin(std::string name)
+	{
+		auto index = static_cast<unsigned int>(m_pins.size());
 		m_pins.push_back(std::make_shared<Pin>(name, index));
 	}
-}
+
+} // namespace Odb::Lib::ProductModel
