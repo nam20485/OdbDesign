@@ -12,16 +12,18 @@ namespace Odb::Lib::ProductModel
 	class DECLSPEC Pin
 	{
 	public:
-		Pin();
-		~Pin();
+		Pin(std::string name, unsigned int index);
+		//~Pin();
 
 		std::string GetName() const;
+		unsigned int GetIndex() const;
 
 		typedef std::vector<std::shared_ptr<Pin>> Vector;
 		typedef std::map<std::string, std::shared_ptr<Pin>> StringMap;
 
 	private:
 		std::string m_name;
+		unsigned int m_index;
 
 	};
 } // namespace Odb::Lib::ProductModel

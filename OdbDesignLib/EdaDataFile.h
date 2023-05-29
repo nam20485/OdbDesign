@@ -131,6 +131,8 @@ namespace Odb::Lib::FileModel::Design
 
 			std::string name;
 			std::string attributesIdString;
+			// TODO: store index of records
+			unsigned long index;
 
 			SubnetRecord::Vector m_subnetRecords;
 			PropertyRecord::Vector m_propertyRecords;
@@ -171,12 +173,13 @@ namespace Odb::Lib::FileModel::Design
 
 				std::string name;
 				Type type;
-				float centerX;
-				float centerY;
+				float xCenter;
+				float yCenter;
 				float finishedHoleSize;	// unused, set to 0
 				ElectricalType electricalType;
 				MountType mountType;
-				unsigned int Id;
+				unsigned int id;
+				unsigned long index;
 			};
 
 			typedef std::vector<std::shared_ptr<PackageRecord>> Vector;
@@ -184,8 +187,8 @@ namespace Odb::Lib::FileModel::Design
 
 			std::string name;
 			float pitch;
-			float xmin, ymin;
-			float xmax, ymax;
+			float xMin, yMin;
+			float xMax, yMax;
 			std::string attributesIdString;
 
 			PinRecord::Vector m_pinRecords;

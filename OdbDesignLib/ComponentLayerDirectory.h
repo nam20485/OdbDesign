@@ -31,6 +31,8 @@ namespace Odb::Lib::FileModel::Design
 			std::string partName;
 			std::string attributes;
 			unsigned int id;
+			// TODO: deal with index of records
+			unsigned long index;
 
 			// constants
 			inline static const std::string RECORD_TOKEN = "CMP";
@@ -91,6 +93,7 @@ namespace Odb::Lib::FileModel::Design
 		std::vector<std::string> m_attributeTextValues;
 
 		ComponentRecord::Vector m_componentRecords;
+		// TODO: add records to maps by name while adding to their vectors
 		ComponentRecord::StringMap m_componentRecordsByName;
 
 		inline static const std::string UNITS_TOKEN = "UNITS";

@@ -1,4 +1,5 @@
 #include "Design.h"
+#include "Package.h"
 
 namespace Odb::Lib::ProductModel
 {	
@@ -42,17 +43,18 @@ namespace Odb::Lib::ProductModel
 
 	bool Design::BuildNets()
 	{		
-		const auto& steps = m_pFileModel->GetStepsByName();
+		if (m_pFileModel == nullptr) return false;
 
+		const auto& steps = m_pFileModel->GetStepsByName();
 		if (steps.empty()) return false;
 
 		auto& pStepDirectory = steps.begin()->second;
 		const auto& edaData = pStepDirectory->GetEdaDataFile();
 		const auto& netRecords = edaData.GetNetRecords();
 
-		for (const auto& netRecord : netRecords)
+		for (const auto& pNetRecord : netRecords)
 		{
-			auto pNet = std::make_shared<Net>(netRecord->name);
+			auto pNet = std::make_shared<Net>(pNetRecord->name);
 			m_netsByName[pNet->GetName()] = pNet;
 		}
 
@@ -61,7 +63,28 @@ namespace Odb::Lib::ProductModel
 
 	bool Design::BuildPackages()
 	{
-		return false;
+		if (m_pFileModel == nullptr) return false;
+
+		const auto& steps = m_pFileModel->GetStepsByName();
+		if (steps.empty()) return false;
+
+		auto& pStepDirectory = steps.begin()->second;
+		const auto& edaData = pStepDirectory->GetEdaDataFile();
+		const auto& packageRecords = edaData.GetPackageRecords();
+
+		for (const auto& pPackageRecord : packageRecords)
+		{
+			auto pPackage = std::make_shared<Package>(pPackageRecord->name);
+
+			for (const auto& pPinRecord : pPackageRecord->m_pinRecords)
+			{
+				pPackage->AddPin(pPinRecord->name, pPinRecord->index);
+			}
+
+			m_packagesByName[pPackage->GetName()] = pPackage;
+		}		
+
+		return true;
 	}
 
 } // namespace Odb::Lib::ProductModel

@@ -424,16 +424,16 @@ namespace Odb::Lib::FileModel::Design
                     if (!(lineStream >> pCurrentPackageRecord->pitch)) return false;
 
                     // xmin, ymin
-                    if (!(lineStream >> pCurrentPackageRecord->xmin >> pCurrentPackageRecord->ymin)) return false;
+                    if (!(lineStream >> pCurrentPackageRecord->xMin >> pCurrentPackageRecord->yMin)) return false;
 
                     // xmax
-                    if (!(lineStream >> pCurrentPackageRecord->xmax)) return false;
+                    if (!(lineStream >> pCurrentPackageRecord->xMax)) return false;
 
                     // ymax and attributes/ID string
                     if (!std::getline(lineStream, token, ';')) return false;
 
                     // ymax
-                    pCurrentPackageRecord->ymax = std::stof(token);
+                    pCurrentPackageRecord->yMax = std::stof(token);
 
                     lineStream >> pCurrentPackageRecord->attributesIdString;
                 }
@@ -479,7 +479,7 @@ namespace Odb::Lib::FileModel::Design
                     }
 
                     // xc, xy
-                    if (!(lineStream >> pPinRecord->centerX >> pPinRecord->centerY)) return false;
+                    if (!(lineStream >> pPinRecord->xCenter >> pPinRecord->yCenter)) return false;
 
                     // finished hole size (fhs)
                     if (!(lineStream >> pPinRecord->finishedHoleSize)) return false;
@@ -546,10 +546,12 @@ namespace Odb::Lib::FileModel::Design
                     if (!(lineStream >> token)) return false;
                     std::stringstream idStream(token);
                     if (!std::getline(idStream, token, '=') || token != "ID") return false;
-                    idStream >> pPinRecord->Id;
+                    idStream >> pPinRecord->id;
 
                     if (pCurrentPackageRecord != nullptr)
                     {
+                        // TODO: figure out how to handle size_t -> non-size_t conversion
+                        pPinRecord->index = static_cast<unsigned long>(pCurrentPackageRecord->m_pinRecords.size());
                         pCurrentPackageRecord->m_pinRecords.push_back(pPinRecord);
                     }
                     else

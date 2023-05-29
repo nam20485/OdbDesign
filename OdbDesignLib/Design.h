@@ -7,6 +7,8 @@
 #include "Component.h"
 #include "FileModel.h"
 #include "Via.h"
+#include "Package.h"
+
 
 namespace Odb::Lib::ProductModel
 {
@@ -26,8 +28,9 @@ namespace Odb::Lib::ProductModel
 		std::string m_designDirectory;		
 		std::shared_ptr<FileModel::Design::FileModel> m_pFileModel;
 
-		Net::StringMap m_netsByName;
-		Component::StringMap m_componentsByName;
+		Net::StringMap m_netsByName;		
+		Package::StringMap m_packagesByName;
+		Component::StringMap m_componentsByName;		
 		Via::StringMap m_viasByName;
 
 		bool Build();
