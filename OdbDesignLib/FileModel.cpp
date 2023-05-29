@@ -1,31 +1,31 @@
-#include "OdbDesign.h"
+#include "FileModel.h"
 #include <filesystem>
 
-namespace OdbDesign::Lib
+namespace Odb::Lib::FileModel::Design
 {
 
-	OdbDesign::OdbDesign(std::string directoryPath)
+	FileModel::FileModel(std::string directoryPath)
 		: m_path(directoryPath)
 	{
 	}
 
-	OdbDesign::~OdbDesign()
+	FileModel::~FileModel()
 	{
 	}
 
-	std::string OdbDesign::GetPath() const
+	std::string FileModel::GetPath() const
 	{
 		return m_path;
 	}
 
-	std::string OdbDesign::GetProductName() const
+	std::string FileModel::GetProductName() const
 	{
 		return m_productName;
 	}
 
-	const Step::StringMap& OdbDesign::GetStepsByName() const { return m_stepsByName; }
+	const StepDirectory::StringMap& FileModel::GetStepsByName() const { return m_stepsByName; }
 
-	bool OdbDesign::ParseDesign()
+	bool FileModel::ParseFileModel()
 	{
 		std::filesystem::path designPath(m_path);
 
@@ -48,7 +48,7 @@ namespace OdbDesign::Lib
 		return true;
 	}
 
-	bool OdbDesign::ParseDesignDirectory(std::filesystem::path path)
+	bool FileModel::ParseDesignDirectory(std::filesystem::path path)
 	{
 		std::filesystem::path designPath(path);
 
@@ -62,7 +62,7 @@ namespace OdbDesign::Lib
 		{
 			if (std::filesystem::is_directory(d))
 			{
-				auto pStep = std::make_shared<Step>(d.path());
+				auto pStep = std::make_shared<StepDirectory>(d.path());
 				if (pStep->Parse())
 				{
 					m_stepsByName[pStep->GetName()] = pStep;
@@ -76,4 +76,29 @@ namespace OdbDesign::Lib
 
 		return true;
 	}
+
+	//const EdaDataFile& FileModel::GetStepEdaDataFile(std::string stepName) const
+	//{		
+	//	auto findIt = m_stepsByName.find(stepName);
+	//	if (findIt != m_stepsByName.end())
+	//	{
+	//		return findIt->second->GetEdaDataFile();
+	//	}
+	//	else
+	//	{
+	//		return EdaDataFile::EMPTY;
+	//	}		
+	//}
+
+	//const EdaDataFile& FileModel::GetFirstStepEdaDataFile() const
+	//{
+	//	if (!m_stepsByName.empty())
+	//	{
+	//		return m_stepsByName.begin()->second->GetEdaDataFile();
+	//	}
+	//	else
+	//	{
+	//		return EdaDataFile::EMPTY;
+	//	}
+	//}
 }

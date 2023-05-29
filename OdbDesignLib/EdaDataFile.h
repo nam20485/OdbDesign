@@ -5,21 +5,25 @@
 #include <vector>
 #include <map>
 #include "export.h"
+#include "enums.h"
 
 
-namespace OdbDesign::Lib
+namespace Odb::Lib::FileModel::Design
 {	
-	class DECLSPEC EdaData
+	class DECLSPEC EdaDataFile
 	{
 	public:
-		EdaData();
+		EdaDataFile();
 		//EdaData(std::filesystem::path path);
-		~EdaData();
+		~EdaDataFile();
 
 		std::filesystem::path GetPath() const;
 		std::string GetUnits() const;
 
 		bool Parse(std::filesystem::path path);
+
+		// the invalid "null" case
+		//static const EdaDataFile EMPTY;
 
 		struct DECLSPEC PropertyRecord
 		{
@@ -29,7 +33,7 @@ namespace OdbDesign::Lib
 			std::vector<float> floatValues;
 
 			// constants
-			inline static const std::string RECORD_TOKEN = "PRP";
+			inline static const std::string RECORD_TOKEN = "PRP";			
 
 			// typedefs
 			typedef std::map<std::string, std::shared_ptr<PropertyRecord>> StringMap;
@@ -37,27 +41,9 @@ namespace OdbDesign::Lib
 		};
 
 		struct DECLSPEC NetRecord
-		{
-			//bool operator < (const NetRecord c) const
-			//{
-			//	return name < c.name;
-			//}
-			//bool operator == (const NetRecord c) const
-			//{
-			//	return name == c.name;
-			//}
-
+		{			
 			struct DECLSPEC SubnetRecord
-			{
-				//bool operator < (const SubnetRecord c) const
-				//{
-				//	return type < c.type;
-				//}
-				//bool operator == (const SubnetRecord c) const
-				//{
-				//	return type == c.type;
-				//}
-
+			{				
 				enum class Type
 				{
 					Via,
@@ -91,16 +77,10 @@ namespace OdbDesign::Lib
 			};
 
 			struct DECLSPEC ToeprintSubnetRecord : public SubnetRecord
-			{
-				enum class Side
-				{
-					Top,
-					Bottom
-				};
-
-				Side side;
-				unsigned int componentNumber;
-				unsigned toeprintNumber;
+			{				
+				BoardSide side;
+				unsigned int componentNumber;	// component index in the layer components/placements file
+				unsigned toeprintNumber;		// toeprint index of component reference in the layer components/placements file
 			};
 
 			struct DECLSPEC PlaneSubnetRecord : public SubnetRecord
@@ -131,6 +111,8 @@ namespace OdbDesign::Lib
 
 			std::string name;
 			std::string attributesIdString;
+			// TODO: store index of records
+			unsigned long index;
 
 			SubnetRecord::Vector m_subnetRecords;
 			PropertyRecord::Vector m_propertyRecords;
@@ -157,9 +139,9 @@ namespace OdbDesign::Lib
 				enum class MountType
 				{
 					Smt,
-					RecommenedSmtPad,
+					RecommendedSmtPad,
 					ThroughHole,
-					RecommenedThroughHole,
+					RecommendedThroughHole,
 					Pressfit,
 					NonBoard,
 					Hole,
@@ -171,12 +153,13 @@ namespace OdbDesign::Lib
 
 				std::string name;
 				Type type;
-				float centerX;
-				float centerY;
+				float xCenter;
+				float yCenter;
 				float finishedHoleSize;	// unused, set to 0
 				ElectricalType electricalType;
 				MountType mountType;
-				unsigned int Id;
+				unsigned int id;
+				size_t index;
 			};
 
 			typedef std::vector<std::shared_ptr<PackageRecord>> Vector;
@@ -184,8 +167,8 @@ namespace OdbDesign::Lib
 
 			std::string name;
 			float pitch;
-			float xmin, ymin;
-			float xmax, ymax;
+			float xMin, yMin;
+			float xMax, yMax;
 			std::string attributesIdString;
 
 			PinRecord::Vector m_pinRecords;

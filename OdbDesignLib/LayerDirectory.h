@@ -7,13 +7,13 @@
 #include "export.h"
 
 
-namespace OdbDesign::Lib
+namespace Odb::Lib::FileModel::Design
 {
-	class DECLSPEC Layer
+	class DECLSPEC LayerDirectory
 	{
 	public:
-		Layer(std::filesystem::path path);
-		~Layer();
+		LayerDirectory(std::filesystem::path path);
+		~LayerDirectory();
 
 		inline static const std::string TOP_COMPONENTS_LAYER_NAME = "comp_+_top";
 		inline static const std::string BOTTOM_COMPONENTS_LAYER_NAME = "comp_+_bot";
@@ -23,7 +23,7 @@ namespace OdbDesign::Lib
 
 		virtual bool Parse();
 
-		typedef std::map<std::string, std::shared_ptr<Layer>> StringMap;
+		typedef std::map<std::string, std::shared_ptr<LayerDirectory>> StringMap;
 
 	protected: // TODO: do subclasses really need access to these (private instead)?
 		std::string m_name;

@@ -1,17 +1,18 @@
-#include "ComponentLayer.h"
+#include "ComponentLayerDirectory.h"
 #include <fstream>
 #include <sstream>
 #include <filesystem>
 
 
-namespace OdbDesign::Lib
+namespace Odb::Lib::FileModel::Design
 {
-	ComponentLayer::ComponentLayer(std::filesystem::path path)
-		: Layer(path), m_id(0)
+	ComponentLayerDirectory::ComponentLayerDirectory(std::filesystem::path path, BoardSide side)
+		: LayerDirectory(path), m_id(0)
+		, m_side(side)
 	{
 	}
 
-	ComponentLayer::~ComponentLayer()
+	ComponentLayerDirectory::~ComponentLayerDirectory()
 	{
 		m_attributeNames.clear();
 		m_attributeTextValues.clear();
@@ -19,40 +20,45 @@ namespace OdbDesign::Lib
 		m_componentRecordsByName.clear();
 	}
 
-	std::string ComponentLayer::GetUnits() const
+	std::string ComponentLayerDirectory::GetUnits() const
 	{
 		return m_units;
 	}
 
-	const ComponentLayer::ComponentRecord::Vector& ComponentLayer::GetComponentRecords() const
+	BoardSide ComponentLayerDirectory::GetSide() const
+	{
+		return m_side;
+	}
+
+	const ComponentLayerDirectory::ComponentRecord::Vector& ComponentLayerDirectory::GetComponentRecords() const
 	{
 		return m_componentRecords;
 	}
 
-	const ComponentLayer::ComponentRecord::StringMap& ComponentLayer::GetComponentRecordsByName() const
+	const ComponentLayerDirectory::ComponentRecord::StringMap& ComponentLayerDirectory::GetComponentRecordsByName() const
 	{
 		return m_componentRecordsByName;
 	}
 
-	const std::vector<std::string>& ComponentLayer::GetAttributeNames() const
+	const std::vector<std::string>& ComponentLayerDirectory::GetAttributeNames() const
 	{
 		return m_attributeNames;
 	}
 
-	const std::vector<std::string>& ComponentLayer::GetAttributeTextValues() const
+	const std::vector<std::string>& ComponentLayerDirectory::GetAttributeTextValues() const
 	{
 		return m_attributeTextValues;
 	}
 
-	ComponentLayer::ComponentRecord::~ComponentRecord()
+	ComponentLayerDirectory::ComponentRecord::~ComponentRecord()
 	{
 		m_toeprintRecords.clear();
 		m_propertyRecords.clear();
 	}
 
-	bool ComponentLayer::Parse()
+	bool ComponentLayerDirectory::Parse()
 	{
-		if (!Layer::Parse()) return false;
+		if (!LayerDirectory::Parse()) return false;
 
 		auto componentsFilePath = m_path / "components";
 

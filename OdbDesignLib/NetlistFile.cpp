@@ -1,49 +1,49 @@
-#include "Netlist.h"
+#include "NetlistFile.h"
 #include <fstream>
 #include <sstream>
 
-namespace OdbDesign::Lib
+namespace Odb::Lib::FileModel::Design
 {
-	Netlist::Netlist(std::filesystem::path path)
-		: m_path(path)
+	NetlistFile::NetlistFile(std::filesystem::path path)
+		: m_path(path), m_optimized(false), m_staggered(Staggered::Unknown)
 	{
 	}
 
-	Netlist::~Netlist()
+	NetlistFile::~NetlistFile()
 	{
 	}
 
-	std::filesystem::path Netlist::GetPath() const
+	std::filesystem::path NetlistFile::GetPath() const
 	{
 		return m_path;
 	}
 
-	std::string Netlist::GetName() const
+	std::string NetlistFile::GetName() const
 	{
 		return m_name;
 	}
 
-	std::string Netlist::GetUnits() const
+	std::string NetlistFile::GetUnits() const
 	{
 		return m_units;
 	}
 
-	bool Netlist::GetOptimized() const
+	bool NetlistFile::GetOptimized() const
 	{
 		return m_optimized;
 	}
 
-	Netlist::Staggered Netlist::GetStaggered() const
+	NetlistFile::Staggered NetlistFile::GetStaggered() const
 	{
 		return m_staggered;
 	}
 
-	const std::vector<std::string>& Netlist::GetNetNames() const
+	const std::vector<std::string>& NetlistFile::GetNetNames() const
 	{
 		return m_netNames;
 	}
 
-	bool Netlist::Parse()
+	bool NetlistFile::Parse()
 	{
 		m_name = std::filesystem::path(m_path).filename().string();
 
@@ -142,4 +142,4 @@ namespace OdbDesign::Lib
 
 		return true;
 	}
-} // namespace OdbDesign::Lib
+} // namespace Odb::Lib::FileModel::Design

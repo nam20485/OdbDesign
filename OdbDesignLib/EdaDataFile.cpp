@@ -1,12 +1,13 @@
-#include "EdaData.h"
+#include "EdaDataFile.h"
 #include <fstream>
 #include <sstream>
 #include "string_trim.h"
+#include "enums.h"
 
 
-namespace OdbDesign::Lib
+namespace Odb::Lib::FileModel::Design
 {
-    EdaData::EdaData()
+    EdaDataFile::EdaDataFile()
     {
     }
 
@@ -15,67 +16,69 @@ namespace OdbDesign::Lib
     //{
     //}
 
-    EdaData::~EdaData()
+    EdaDataFile::~EdaDataFile()
     {
     }
 
-    std::filesystem::path EdaData::GetPath() const
+     ///*static*/ const EdaDataFile EdaDataFile::EMPTY;
+
+    std::filesystem::path EdaDataFile::GetPath() const
     {
         return m_path;
     }
 
-    std::string EdaData::GetUnits() const
+    std::string EdaDataFile::GetUnits() const
     {
         return m_units;
     }
 
-    EdaData::NetRecord::SubnetRecord::~SubnetRecord()
+    EdaDataFile::NetRecord::SubnetRecord::~SubnetRecord()
     {
         m_featureIdRecords.clear();
     }
 
-    EdaData::NetRecord::~NetRecord()
+    EdaDataFile::NetRecord::~NetRecord()
     {
         m_subnetRecords.clear();
         m_propertyRecords.clear();
     }
 
-    const std::vector<std::string>& EdaData::GetLayerNames() const
+    const std::vector<std::string>& EdaDataFile::GetLayerNames() const
     {
         return m_layerNames;
     }
 
-    const std::vector<std::string>& EdaData::GetAttributeNames() const
+    const std::vector<std::string>& EdaDataFile::GetAttributeNames() const
     {
         return m_attributeNames;
     }
 
-    const std::vector<std::string>& EdaData::GetAttributeTextValues() const
+    const std::vector<std::string>& EdaDataFile::GetAttributeTextValues() const
     {
         return m_attributeTextValues;
     }
 
-    const EdaData::NetRecord::Vector& EdaData::GetNetRecords() const
+    const EdaDataFile::NetRecord::Vector& EdaDataFile::GetNetRecords() const
     {
         return m_netRecords;
     }
 
-    const EdaData::NetRecord::StringMap& EdaData::GetNetRecordsByName() const
+    const EdaDataFile::NetRecord::StringMap& EdaDataFile::GetNetRecordsByName() const
     {
         return m_netRecordsByName;
     }
 
-    const EdaData::PackageRecord::Vector& EdaData::GetPackageRecords() const
+    const EdaDataFile::PackageRecord::Vector& EdaDataFile::GetPackageRecords() const
     {
         return m_packageRecords;
     }
 
-    const EdaData::PackageRecord::StringMap& EdaData::GetPackageRecordsByName() const
+    const EdaDataFile::PackageRecord::StringMap& EdaDataFile::GetPackageRecordsByName() const
     {
         return m_packageRecordsByName;
     }
 
-    bool EdaData::Parse(std::filesystem::path path)
+    bool EdaDataFile::Parse(std::filesystem::path path)
     {
         m_path = path;
 
@@ -313,11 +316,11 @@ namespace OdbDesign::Lib
                         lineStream >> token;
                         if (token == "T")
                         {
-                            std::dynamic_pointer_cast<NetRecord::ToeprintSubnetRecord>(pCurrentSubnetRecord)->side = NetRecord::ToeprintSubnetRecord::Side::Top;
+                            std::dynamic_pointer_cast<NetRecord::ToeprintSubnetRecord>(pCurrentSubnetRecord)->side = BoardSide::Top;
                         }
                         else if (token == "B")
                         {
-                            std::dynamic_pointer_cast<NetRecord::ToeprintSubnetRecord>(pCurrentSubnetRecord)->side = NetRecord::ToeprintSubnetRecord::Side::Bottom;
+                            std::dynamic_pointer_cast<NetRecord::ToeprintSubnetRecord>(pCurrentSubnetRecord)->side = BoardSide::Bottom;
                         }
                         else
                         {
@@ -424,16 +427,16 @@ namespace OdbDesign::Lib
                     if (!(lineStream >> pCurrentPackageRecord->pitch)) return false;
 
                     // xmin, ymin
-                    if (!(lineStream >> pCurrentPackageRecord->xmin >> pCurrentPackageRecord->ymin)) return false;
+                    if (!(lineStream >> pCurrentPackageRecord->xMin >> pCurrentPackageRecord->yMin)) return false;
 
                     // xmax
-                    if (!(lineStream >> pCurrentPackageRecord->xmax)) return false;
+                    if (!(lineStream >> pCurrentPackageRecord->xMax)) return false;
 
                     // ymax and attributes/ID string
                     if (!std::getline(lineStream, token, ';')) return false;
 
                     // ymax
-                    pCurrentPackageRecord->ymax = std::stof(token);
+                    pCurrentPackageRecord->yMax = std::stof(token);
 
                     lineStream >> pCurrentPackageRecord->attributesIdString;
                 }
@@ -479,7 +482,7 @@ namespace OdbDesign::Lib
                     }
 
                     // xc, xy
-                    if (!(lineStream >> pPinRecord->centerX >> pPinRecord->centerY)) return false;
+                    if (!(lineStream >> pPinRecord->xCenter >> pPinRecord->yCenter)) return false;
 
                     // finished hole size (fhs)
                     if (!(lineStream >> pPinRecord->finishedHoleSize)) return false;
@@ -511,7 +514,7 @@ namespace OdbDesign::Lib
                     }
                     else if (token == "D")
                     {
-                        pPinRecord->mountType = PackageRecord::PinRecord::MountType::RecommenedSmtPad;
+                        pPinRecord->mountType = PackageRecord::PinRecord::MountType::RecommendedSmtPad;
                     }
                     else if (token == "T")
                     {
@@ -519,7 +522,7 @@ namespace OdbDesign::Lib
                     }
                     else if (token == "R")
                     {
-                        pPinRecord->mountType = PackageRecord::PinRecord::MountType::RecommenedThroughHole;
+                        pPinRecord->mountType = PackageRecord::PinRecord::MountType::RecommendedThroughHole;
                     }
                     else if (token == "P")
                     {
@@ -546,10 +549,11 @@ namespace OdbDesign::Lib
                     if (!(lineStream >> token)) return false;
                     std::stringstream idStream(token);
                     if (!std::getline(idStream, token, '=') || token != "ID") return false;
-                    idStream >> pPinRecord->Id;
+                    idStream >> pPinRecord->id;
 
                     if (pCurrentPackageRecord != nullptr)
-                    {
+                    {                        
+                        pPinRecord->index = pCurrentPackageRecord->m_pinRecords.size();
                         pCurrentPackageRecord->m_pinRecords.push_back(pPinRecord);
                     }
                     else

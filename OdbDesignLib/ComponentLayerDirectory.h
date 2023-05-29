@@ -1,21 +1,23 @@
 #pragma once
 
-#include "Layer.h"
+#include "LayerDirectory.h"
 #include <vector>
 #include <string>
+#include "enums.h"
 
 
-namespace OdbDesign::Lib
+namespace Odb::Lib::FileModel::Design
 {
-	class DECLSPEC ComponentLayer : public Layer
+	class DECLSPEC ComponentLayerDirectory : public LayerDirectory
 	{
 	public:
-		ComponentLayer(std::filesystem::path path);
-		~ComponentLayer();
+		ComponentLayerDirectory(std::filesystem::path path, BoardSide side);
+		~ComponentLayerDirectory();
 
 		bool Parse() override;
 
 		std::string GetUnits() const;
+		BoardSide GetSide() const;
 
 		struct ComponentRecord
 		{
@@ -31,6 +33,8 @@ namespace OdbDesign::Lib
 			std::string partName;
 			std::string attributes;
 			unsigned int id;
+			// TODO: deal with index of records
+			size_t index;
 
 			// constants
 			inline static const std::string RECORD_TOKEN = "CMP";
@@ -56,15 +60,15 @@ namespace OdbDesign::Lib
 
 			struct ToeprintRecord
 			{
-				// data members
-				unsigned int pinNumber;
+				// TODO: use pinNumber
+				unsigned int pinNumber;		// what does this refer to? own pin # or packages pin #?
 				float locationX;
 				float locationY;
 				float rotation;
 				bool mirror;
 				unsigned int netNumber;		// net number of NET in eda/data file
 				unsigned int subnetNumber;	// subnet number of NET in eda/data file
-				std::string name;
+				std::string name;			// pin name
 
 				// constants
 				inline static const std::string RECORD_TOKEN = "TOP";
@@ -86,11 +90,13 @@ namespace OdbDesign::Lib
 	private:
 		std::string m_units;
 		unsigned int m_id;
+		BoardSide m_side;
 
 		std::vector<std::string> m_attributeNames;
 		std::vector<std::string> m_attributeTextValues;
 
 		ComponentRecord::Vector m_componentRecords;
+		// TODO: add records to maps by name while adding to their vectors
 		ComponentRecord::StringMap m_componentRecordsByName;
 
 		inline static const std::string UNITS_TOKEN = "UNITS";
@@ -98,7 +104,6 @@ namespace OdbDesign::Lib
 		inline static const std::string ATTRIBUTE_NAME_TOKEN = "@";
 		inline static const std::string ATTRIBUTE_VALUE_TOKEN = "&";
 		inline static const std::string COMMENT_TOKEN = "#";
-
 
 		// TODO: deal with BOM DATA section lines later
 		inline static const std::string BOM_DESCR_RECORD_TOKEN_CPN = "CPN";

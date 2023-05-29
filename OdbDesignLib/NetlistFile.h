@@ -8,9 +8,9 @@
 #include "export.h"
 
 
-namespace OdbDesign::Lib
+namespace Odb::Lib::FileModel::Design
 {
-	class DECLSPEC Netlist
+	class DECLSPEC NetlistFile
 	{
 	public:
 		enum class Staggered
@@ -20,8 +20,8 @@ namespace OdbDesign::Lib
 			Unknown
 		};
 
-		Netlist(std::filesystem::path path);
-		~Netlist();
+		NetlistFile(std::filesystem::path path);
+		~NetlistFile();
 
 		std::filesystem::path GetPath() const;
 		std::string GetName() const;
@@ -34,8 +34,8 @@ namespace OdbDesign::Lib
 
 		bool Parse();
 
-		typedef std::vector<std::shared_ptr<Netlist>> Vector;
-		typedef std::map<std::string, std::shared_ptr<Netlist>> StringMap;
+		typedef std::vector<std::shared_ptr<NetlistFile>> Vector;
+		typedef std::map<std::string, std::shared_ptr<NetlistFile>> StringMap;
 
 	private:
 		std::filesystem::path m_path;

@@ -1,8 +1,7 @@
 ﻿// OdbDesignApp.cpp : Defines the entry point for the application.
 //
 #include "OdbDesignApp.h"
-#include "OdbDesign.h"
-#include "OdbDesignLib.h"
+#include "FileModel.h"
 #include "macros.h"
 
 
@@ -10,7 +9,7 @@ int main()
 {
 	std::cout << "OdbDesignApp v0.1.0" << std::endl;
 
-    OdbDesign::Lib::helloLib();
+    //OdbDesign::Lib::helloLib();
 
     std::string rigidFlexDesignPath;
     if (IsMsvc())
@@ -22,8 +21,8 @@ int main()
         rigidFlexDesignPath = R"(/mnt/c/Users/nmill/Documents/ODB++/Samples/designodb_rigidflex)";		
     }
 
-    OdbDesign::Lib::OdbDesign rigidFlexOdbDesign(rigidFlexDesignPath);
-    auto success = rigidFlexOdbDesign.ParseDesign();
+    Odb::Lib::FileModel::Design::FileModel rigidFlexOdbDesign(rigidFlexDesignPath);
+    auto success = rigidFlexOdbDesign.ParseFileModel();
     if (!success)
     {
         return 1;
@@ -37,7 +36,7 @@ int main()
         auto name = pStep->GetName();
 
         // eda data
-        auto& edaData = pStep->GetEdaData();
+        auto& edaData = pStep->GetEdaDataFile();
         auto& netRecords = edaData.GetNetRecords();
         if (netRecords.size() > 20)
         {
@@ -46,11 +45,11 @@ int main()
             {
                 auto& pSubnetRecord = pNetRecord->m_subnetRecords[44];
                 auto subnetType = pSubnetRecord->type;
-                if (subnetType == OdbDesign::Lib::EdaData::NetRecord::SubnetRecord::Type::Toeprint)
+                if (subnetType == Odb::Lib::FileModel::Design::EdaDataFile::NetRecord::SubnetRecord::Type::Toeprint)
                 {
-					auto pViaSubnetRecord = std::dynamic_pointer_cast<OdbDesign::Lib::EdaData::NetRecord::ToeprintSubnetRecord>(pSubnetRecord);
+					auto pViaSubnetRecord = std::dynamic_pointer_cast<Odb::Lib::FileModel::Design::EdaDataFile::NetRecord::ToeprintSubnetRecord>(pSubnetRecord);
 					auto viaType = pViaSubnetRecord->type;
-                    if (viaType == OdbDesign::Lib::EdaData::NetRecord::ToeprintSubnetRecord::Type::Via)
+                    if (viaType == Odb::Lib::FileModel::Design::EdaDataFile::NetRecord::ToeprintSubnetRecord::Type::Via)
                     {
 
                     }
@@ -67,7 +66,7 @@ int main()
         
         // layers
         auto& layersByName = pStep->GetLayersByName();
-        auto layerFind = layersByName.find(OdbDesign::Lib::Layer::TOP_COMPONENTS_LAYER_NAME);
+        auto layerFind = layersByName.find(Odb::Lib::FileModel::Design::LayerDirectory::TOP_COMPONENTS_LAYER_NAME);
         if (layerFind != layersByName.end())
         {
 			auto& pLayer = layerFind->second;
@@ -102,8 +101,8 @@ int main()
 		sampleDesignPath = R"(/mnt/c/Users/nmill/Documents/ODB++/Samples/sample_design)";
 	}
 
-    OdbDesign::Lib::OdbDesign sampleOdbDesign(sampleDesignPath);	
-    success = sampleOdbDesign.ParseDesign();
+    Odb::Lib::FileModel::Design::FileModel sampleOdbDesign(sampleDesignPath);
+    success = sampleOdbDesign.ParseFileModel();
     if (!success)
     {
         return 1;
