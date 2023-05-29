@@ -34,6 +34,7 @@ namespace Odb::Lib::ProductModel
 		if (! BuildNets()) return false;
 		if (! BuildPackages()) return false;
 		if (! BuildComponents()) return false;
+		if (! BuildParts()) return false;
 		if (! BuildPlacements()) return false;
 
 		return true;
@@ -46,13 +47,25 @@ namespace Odb::Lib::ProductModel
 		if (steps.empty()) return false;
 		auto& pStepDirectory = steps.begin()->second;
 
+		// top components layer
 		auto pTopComponentsLayerDir = pStepDirectory->GetTopComponentLayerDir();
-		if (pTopComponentsLayerDir == nullptr) return false;
+		if (pTopComponentsLayerDir != nullptr) return false;
+		if (! BuildLayerComponents(pTopComponentsLayerDir)) return false;
 
-		const auto& componentRecords = pTopComponentsLayerDir->GetComponentRecords();
+		// bottom layer components
+		auto pBottomComponentsLayerDir = pStepDirectory->GetBottomComponentLayerDir();
+		if (pBottomComponentsLayerDir == nullptr) return false;
+		if (!BuildLayerComponents(pBottomComponentsLayerDir)) return false;
+
+		return true;
+	}
+
+	bool Design::BuildLayerComponents(std::shared_ptr<Odb::Lib::FileModel::Design::ComponentLayerDirectory>& pComponentsLayerDir)
+	{
+		const auto& componentRecords = pComponentsLayerDir->GetComponentRecords();
 		for (const auto& pComponentRecord : componentRecords)
 		{
-			auto pPackage = m_packages[pComponentRecord->pkgRef];
+			auto& pPackage = m_packages[pComponentRecord->pkgRef];
 			auto index = static_cast<unsigned int>(m_components.size());
 			auto pComponent = std::make_shared<Component>(pComponentRecord->compName, pComponentRecord->partName, pPackage, index);
 
@@ -60,7 +73,7 @@ namespace Odb::Lib::ProductModel
 			m_componentsByName[pComponent->GetRefDes()] = pComponent;
 		}
 
-		return false;
+		return true;
 	}
 
 	bool Design::BuildNets()
@@ -110,9 +123,53 @@ namespace Odb::Lib::ProductModel
 		return true;
 	}
 
+	bool Design::BuildParts()
+	{
+		if (m_pFileModel == nullptr) return false;
+		const auto& steps = m_pFileModel->GetStepsByName();
+		if (steps.empty()) return false;
+		auto& pStepDirectory = steps.begin()->second;
+
+		auto pTopComponentsLayerDir = pStepDirectory->GetTopComponentLayerDir();
+		if (pTopComponentsLayerDir == nullptr) return false;
+
+		const auto& componentRecords = pTopComponentsLayerDir->GetComponentRecords();
+		for (const auto& pComponentRecord : componentRecords)
+		{
+			auto& partName = pComponentRecord->partName;
+			auto findIt = m_partsByName.find(partName);
+			if (findIt == m_partsByName.end())
+			{
+				auto pPart = std::make_shared<Part>(partName);				
+				m_partsByName[partName] = pPart;
+			}
+		}
+
+		return true;		
+	}
+
 	bool Design::BuildPlacements()
 	{
-		return false;
+		if (m_pFileModel == nullptr) return false;
+		const auto& steps = m_pFileModel->GetStepsByName();
+		if (steps.empty()) return false;
+		auto& pStepDirectory = steps.begin()->second;
+
+		auto pTopComponentsLayerDir = pStepDirectory->GetTopComponentLayerDir();
+		if (pTopComponentsLayerDir == nullptr) return false;
+
+		const auto& componentRecords = pTopComponentsLayerDir->GetComponentRecords();
+		for (const auto& pComponentRecord : componentRecords)
+		{
+			auto pPackage = m_packages[pComponentRecord->pkgRef];
+			auto index = static_cast<unsigned int>(m_components.size());
+			auto pComponent = std::make_shared<Component>(pComponentRecord->compName, pComponentRecord->partName, pPackage, index);
+
+			m_components.push_back(pComponent);
+			m_componentsByName[pComponent->GetRefDes()] = pComponent;
+		}
+
+		return true;
 	}
 
 } // namespace Odb::Lib::ProductModel

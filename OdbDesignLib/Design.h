@@ -8,6 +8,7 @@
 #include "FileModel.h"
 #include "Via.h"
 #include "Package.h"
+#include "Part.h"
 
 
 namespace Odb::Lib::ProductModel
@@ -35,12 +36,16 @@ namespace Odb::Lib::ProductModel
 		Package::StringMap m_packagesByName;
 
 		Component::Vector m_components;
-		Component::StringMap m_componentsByName;		
+		Component::StringMap m_componentsByName;
+		
+		Part::StringMap m_partsByName;
 
 		bool Build();
 		bool BuildComponents();
+		bool BuildLayerComponents(std::shared_ptr<Odb::Lib::FileModel::Design::ComponentLayerDirectory>& pTopComponentsLayerDir);
 		bool BuildNets();
 		bool BuildPackages();
+		bool BuildParts();
 		bool BuildPlacements();
 
 	};
