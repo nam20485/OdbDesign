@@ -66,7 +66,8 @@ namespace Odb::Lib::FileModel::Design
                 if (layerName == LayerDirectory::TOP_COMPONENTS_LAYER_NAME ||
                     layerName == LayerDirectory::BOTTOM_COMPONENTS_LAYER_NAME)
                 {
-                    pLayer = std::make_shared<ComponentLayerDirectory>(d.path());
+                    auto boardSide = layerName == LayerDirectory::TOP_COMPONENTS_LAYER_NAME ? BoardSide::Top : BoardSide::Bottom;
+                    pLayer = std::make_shared<ComponentLayerDirectory>(d.path(), boardSide);
                 }
                 else
                 {

@@ -14,8 +14,8 @@ namespace Odb::Lib::ProductModel
 	class DECLSPEC PinConnection
 	{
 	public:
-		PinConnection();
-		~PinConnection();	
+		PinConnection(std::shared_ptr<Component> pComponent, std::shared_ptr<Pin> pPin, std::string name);
+		//~PinConnection();	
 
 		std::shared_ptr<Pin> GetPin() const;
 		std::shared_ptr<Component> GetComponent() const;

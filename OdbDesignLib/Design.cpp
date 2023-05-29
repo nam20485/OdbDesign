@@ -67,7 +67,7 @@ namespace Odb::Lib::ProductModel
 		{
 			auto& pPackage = m_packages[pComponentRecord->pkgRef];
 			auto index = static_cast<unsigned int>(m_components.size());
-			auto pComponent = std::make_shared<Component>(pComponentRecord->compName, pComponentRecord->partName, pPackage, index);
+			auto pComponent = std::make_shared<Component>(pComponentRecord->compName, pComponentRecord->partName, pPackage, index, pComponentsLayerDir->GetSide());
 
 			m_components.push_back(pComponent);
 			m_componentsByName[pComponent->GetRefDes()] = pComponent;
@@ -79,10 +79,11 @@ namespace Odb::Lib::ProductModel
 	bool Design::BuildNets()
 	{		
 		if (m_pFileModel == nullptr) return false;
+
 		const auto& steps = m_pFileModel->GetStepsByName();
 		if (steps.empty()) return false;
-		auto& pStepDirectory = steps.begin()->second;
 
+		auto& pStepDirectory = steps.begin()->second;
 		const auto& edaData = pStepDirectory->GetEdaDataFile();
 		const auto& netRecords = edaData.GetNetRecords();
 
@@ -99,10 +100,11 @@ namespace Odb::Lib::ProductModel
 	bool Design::BuildPackages()
 	{
 		if (m_pFileModel == nullptr) return false;
+
 		const auto& steps = m_pFileModel->GetStepsByName();
 		if (steps.empty()) return false;
+		
 		auto& pStepDirectory = steps.begin()->second;
-
 		const auto& edaData = pStepDirectory->GetEdaDataFile();
 		const auto& packageRecords = edaData.GetPackageRecords();
 
@@ -126,47 +128,84 @@ namespace Odb::Lib::ProductModel
 	bool Design::BuildParts()
 	{
 		if (m_pFileModel == nullptr) return false;
+
 		const auto& steps = m_pFileModel->GetStepsByName();
 		if (steps.empty()) return false;
+
 		auto& pStepDirectory = steps.begin()->second;
 
 		auto pTopComponentsLayerDir = pStepDirectory->GetTopComponentLayerDir();
 		if (pTopComponentsLayerDir == nullptr) return false;
+		if (! BuildLayerParts(pTopComponentsLayerDir)) return false;
 
-		const auto& componentRecords = pTopComponentsLayerDir->GetComponentRecords();
+		auto pBottomComponentsLayerDir = pStepDirectory->GetBottomComponentLayerDir();
+		if (pBottomComponentsLayerDir == nullptr) return false;
+		if (!BuildLayerParts(pBottomComponentsLayerDir)) return false;
+
+		return true;
+	}
+
+	bool Design::BuildLayerParts(std::shared_ptr<Odb::Lib::FileModel::Design::ComponentLayerDirectory>& pComponentsLayerDir)
+	{
+		const auto& componentRecords = pComponentsLayerDir->GetComponentRecords();
 		for (const auto& pComponentRecord : componentRecords)
 		{
 			auto& partName = pComponentRecord->partName;
 			auto findIt = m_partsByName.find(partName);
 			if (findIt == m_partsByName.end())
 			{
-				auto pPart = std::make_shared<Part>(partName);				
+				auto pPart = std::make_shared<Part>(partName);
 				m_partsByName[partName] = pPart;
 			}
 		}
 
-		return true;		
+		return true;
 	}
 
 	bool Design::BuildPlacements()
 	{
 		if (m_pFileModel == nullptr) return false;
+
 		const auto& steps = m_pFileModel->GetStepsByName();
 		if (steps.empty()) return false;
+
 		auto& pStepDirectory = steps.begin()->second;
 
 		auto pTopComponentsLayerDir = pStepDirectory->GetTopComponentLayerDir();
 		if (pTopComponentsLayerDir == nullptr) return false;
+		if (! BuildLayerPlacements(pTopComponentsLayerDir)) return false;
 
-		const auto& componentRecords = pTopComponentsLayerDir->GetComponentRecords();
+		auto pBottomComponentsLayerDir = pStepDirectory->GetBottomComponentLayerDir();
+		if (pBottomComponentsLayerDir == nullptr) return false;
+		if (!BuildLayerPlacements(pBottomComponentsLayerDir)) return false;
+
+		return true;
+	}
+
+	bool Design::BuildLayerPlacements(std::shared_ptr<Odb::Lib::FileModel::Design::ComponentLayerDirectory>& pComponentsLayerDir)
+	{
+		const auto& componentRecords = pComponentsLayerDir->GetComponentRecords();
 		for (const auto& pComponentRecord : componentRecords)
 		{
-			auto pPackage = m_packages[pComponentRecord->pkgRef];
-			auto index = static_cast<unsigned int>(m_components.size());
-			auto pComponent = std::make_shared<Component>(pComponentRecord->compName, pComponentRecord->partName, pPackage, index);
+			const auto& toeprintRecords = pComponentRecord->m_toeprintRecords;
+			for (const auto& pToeprintRecord : toeprintRecords)
+			{
+				auto toeprintName = pToeprintRecord->name;;
+				auto pinNumber = pToeprintRecord->pinNumber;
+				auto netNumber = pToeprintRecord->netNumber;
+				//auto subnetNumber = pToeprintRecord->subnetNumber;
 
-			m_components.push_back(pComponent);
-			m_componentsByName[pComponent->GetRefDes()] = pComponent;
+				auto& pComponent = m_componentsByName[pComponentRecord->compName];
+				if (pComponent == nullptr) return false;
+
+				auto pPin = pComponent->GetPackage()->GetPin(pinNumber);
+				if (pPin == nullptr) return false;
+
+				auto& pNet = m_nets[netNumber];
+				if (pNet == nullptr) return false;
+
+				if (! pNet->AddPinConnection(pComponent, pPin, toeprintName)) return false;
+			}
 		}
 
 		return true;

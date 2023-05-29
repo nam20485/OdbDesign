@@ -3,6 +3,7 @@
 #include "LayerDirectory.h"
 #include <vector>
 #include <string>
+#include "enums.h"
 
 
 namespace Odb::Lib::FileModel::Design
@@ -10,12 +11,13 @@ namespace Odb::Lib::FileModel::Design
 	class DECLSPEC ComponentLayerDirectory : public LayerDirectory
 	{
 	public:
-		ComponentLayerDirectory(std::filesystem::path path);
+		ComponentLayerDirectory(std::filesystem::path path, BoardSide side);
 		~ComponentLayerDirectory();
 
 		bool Parse() override;
 
 		std::string GetUnits() const;
+		BoardSide GetSide() const;
 
 		struct ComponentRecord
 		{
@@ -58,15 +60,15 @@ namespace Odb::Lib::FileModel::Design
 
 			struct ToeprintRecord
 			{
-				// data members
-				unsigned int pinNumber;
+				// TODO: use pinNumber
+				unsigned int pinNumber;		// what does this refer to? own pin # or packages pin #?
 				float locationX;
 				float locationY;
 				float rotation;
 				bool mirror;
 				unsigned int netNumber;		// net number of NET in eda/data file
 				unsigned int subnetNumber;	// subnet number of NET in eda/data file
-				std::string name;
+				std::string name;			// pin name
 
 				// constants
 				inline static const std::string RECORD_TOKEN = "TOP";
@@ -88,6 +90,7 @@ namespace Odb::Lib::FileModel::Design
 	private:
 		std::string m_units;
 		unsigned int m_id;
+		BoardSide m_side;
 
 		std::vector<std::string> m_attributeNames;
 		std::vector<std::string> m_attributeTextValues;
@@ -101,7 +104,6 @@ namespace Odb::Lib::FileModel::Design
 		inline static const std::string ATTRIBUTE_NAME_TOKEN = "@";
 		inline static const std::string ATTRIBUTE_VALUE_TOKEN = "&";
 		inline static const std::string COMMENT_TOKEN = "#";
-
 
 		// TODO: deal with BOM DATA section lines later
 		inline static const std::string BOM_DESCR_RECORD_TOKEN_CPN = "CPN";

@@ -5,6 +5,7 @@
 #include <vector>
 #include <map>
 #include "export.h"
+#include "enums.h"
 
 
 namespace Odb::Lib::FileModel::Design
@@ -76,14 +77,8 @@ namespace Odb::Lib::FileModel::Design
 			};
 
 			struct DECLSPEC ToeprintSubnetRecord : public SubnetRecord
-			{
-				enum class Side
-				{
-					Top,
-					Bottom
-				};
-
-				Side side;
+			{				
+				BoardSide side;
 				unsigned int componentNumber;	// component index in the layer components/placements file
 				unsigned toeprintNumber;		// toeprint index of component reference in the layer components/placements file
 			};

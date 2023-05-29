@@ -6,8 +6,9 @@
 
 namespace Odb::Lib::FileModel::Design
 {
-	ComponentLayerDirectory::ComponentLayerDirectory(std::filesystem::path path)
+	ComponentLayerDirectory::ComponentLayerDirectory(std::filesystem::path path, BoardSide side)
 		: LayerDirectory(path), m_id(0)
+		, m_side(side)
 	{
 	}
 
@@ -22,6 +23,11 @@ namespace Odb::Lib::FileModel::Design
 	std::string ComponentLayerDirectory::GetUnits() const
 	{
 		return m_units;
+	}
+
+	BoardSide ComponentLayerDirectory::GetSide() const
+	{
+		return m_side;
 	}
 
 	const ComponentLayerDirectory::ComponentRecord::Vector& ComponentLayerDirectory::GetComponentRecords() const

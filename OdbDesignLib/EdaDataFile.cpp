@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include "string_trim.h"
+#include "enums.h"
 
 
 namespace Odb::Lib::FileModel::Design
@@ -315,11 +316,11 @@ namespace Odb::Lib::FileModel::Design
                         lineStream >> token;
                         if (token == "T")
                         {
-                            std::dynamic_pointer_cast<NetRecord::ToeprintSubnetRecord>(pCurrentSubnetRecord)->side = NetRecord::ToeprintSubnetRecord::Side::Top;
+                            std::dynamic_pointer_cast<NetRecord::ToeprintSubnetRecord>(pCurrentSubnetRecord)->side = BoardSide::Top;
                         }
                         else if (token == "B")
                         {
-                            std::dynamic_pointer_cast<NetRecord::ToeprintSubnetRecord>(pCurrentSubnetRecord)->side = NetRecord::ToeprintSubnetRecord::Side::Bottom;
+                            std::dynamic_pointer_cast<NetRecord::ToeprintSubnetRecord>(pCurrentSubnetRecord)->side = BoardSide::Bottom;
                         }
                         else
                         {

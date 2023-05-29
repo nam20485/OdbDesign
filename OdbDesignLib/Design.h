@@ -20,7 +20,7 @@ namespace Odb::Lib::ProductModel
 		~Design();
 
 		bool Build(std::string designDirectory);
-		bool Build(std::shared_ptr<FileModel::Design::FileModel> pFileModel);
+		bool Build(std::shared_ptr<FileModel::Design::FileModel> pFileModel);		
 
 	private:
 		std::string m_productModel;
@@ -41,12 +41,14 @@ namespace Odb::Lib::ProductModel
 		Part::StringMap m_partsByName;
 
 		bool Build();
-		bool BuildComponents();
-		bool BuildLayerComponents(std::shared_ptr<Odb::Lib::FileModel::Design::ComponentLayerDirectory>& pTopComponentsLayerDir);
 		bool BuildNets();
 		bool BuildPackages();
 		bool BuildParts();
+		bool BuildComponents();
+		bool BuildLayerComponents(std::shared_ptr<Odb::Lib::FileModel::Design::ComponentLayerDirectory>& pTopComponentsLayerDir);
+		bool BuildLayerParts(std::shared_ptr<Odb::Lib::FileModel::Design::ComponentLayerDirectory>& pTopComponentsLayerDir);
 		bool BuildPlacements();
+		bool BuildLayerPlacements(std::shared_ptr<Odb::Lib::FileModel::Design::ComponentLayerDirectory>& pTopComponentsLayerDir);
 
 	};
 }
