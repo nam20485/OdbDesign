@@ -31,24 +31,37 @@ namespace Odb::Lib::ProductModel
 	{
 		if (m_pFileModel == nullptr) return false;
 
-		BuildNets();
+		if (! BuildNets()) return false;
+		if (! BuildPackages()) return false;
+		if (! BuildComponents()) return false;
+		if (! BuildPlacements()) return false;
 
 		return true;
 	}
 
 	bool Design::BuildComponents()
 	{
+		if (m_pFileModel == nullptr) return false;
+		const auto& steps = m_pFileModel->GetStepsByName();
+		if (steps.empty()) return false;
+		auto& pStepDirectory = steps.begin()->second;
+
+		auto pTopComponentsLayerDir = pStepDirectory->GetTopComponentLayerDir();
+		if (pTopComponentsLayerDir == nullptr) return false;
+
+		//for (const )
+
+
 		return false;
 	}
 
 	bool Design::BuildNets()
 	{		
 		if (m_pFileModel == nullptr) return false;
-
 		const auto& steps = m_pFileModel->GetStepsByName();
 		if (steps.empty()) return false;
-
 		auto& pStepDirectory = steps.begin()->second;
+
 		const auto& edaData = pStepDirectory->GetEdaDataFile();
 		const auto& netRecords = edaData.GetNetRecords();
 
@@ -56,7 +69,7 @@ namespace Odb::Lib::ProductModel
 		{
 			auto pNet = std::make_shared<Net>(pNetRecord->name);
 			m_netsByName[pNet->GetName()] = pNet;
-		}
+		}	
 
 		return true;
 	}
@@ -64,11 +77,10 @@ namespace Odb::Lib::ProductModel
 	bool Design::BuildPackages()
 	{
 		if (m_pFileModel == nullptr) return false;
-
 		const auto& steps = m_pFileModel->GetStepsByName();
 		if (steps.empty()) return false;
-
 		auto& pStepDirectory = steps.begin()->second;
+
 		const auto& edaData = pStepDirectory->GetEdaDataFile();
 		const auto& packageRecords = edaData.GetPackageRecords();
 
@@ -86,6 +98,11 @@ namespace Odb::Lib::ProductModel
 		}		
 
 		return true;
+	}
+
+	bool Design::BuildPlacements()
+	{
+		return false;
 	}
 
 } // namespace Odb::Lib::ProductModel

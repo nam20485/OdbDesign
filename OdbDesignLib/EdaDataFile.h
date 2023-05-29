@@ -21,6 +21,9 @@ namespace Odb::Lib::FileModel::Design
 
 		bool Parse(std::filesystem::path path);
 
+		// the invalid "null" case
+		//static const EdaDataFile EMPTY;
+
 		struct DECLSPEC PropertyRecord
 		{
 			// data members
@@ -29,7 +32,7 @@ namespace Odb::Lib::FileModel::Design
 			std::vector<float> floatValues;
 
 			// constants
-			inline static const std::string RECORD_TOKEN = "PRP";
+			inline static const std::string RECORD_TOKEN = "PRP";			
 
 			// typedefs
 			typedef std::map<std::string, std::shared_ptr<PropertyRecord>> StringMap;
@@ -37,27 +40,9 @@ namespace Odb::Lib::FileModel::Design
 		};
 
 		struct DECLSPEC NetRecord
-		{
-			//bool operator < (const NetRecord c) const
-			//{
-			//	return name < c.name;
-			//}
-			//bool operator == (const NetRecord c) const
-			//{
-			//	return name == c.name;
-			//}
-
+		{			
 			struct DECLSPEC SubnetRecord
-			{
-				//bool operator < (const SubnetRecord c) const
-				//{
-				//	return type < c.type;
-				//}
-				//bool operator == (const SubnetRecord c) const
-				//{
-				//	return type == c.type;
-				//}
-
+			{				
 				enum class Type
 				{
 					Via,

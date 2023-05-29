@@ -116,4 +116,30 @@ namespace Odb::Lib::FileModel::Design
 
         return true;
     }
+
+    std::shared_ptr<ComponentLayerDirectory> StepDirectory::GetTopComponentLayerDir() const
+    {
+        auto findIt = m_layersByName.find(LayerDirectory::TOP_COMPONENTS_LAYER_NAME);
+        if (findIt != m_layersByName.end())
+        {
+			return std::dynamic_pointer_cast<ComponentLayerDirectory>(findIt->second);
+		}
+        else
+        {
+			return nullptr;
+		}
+    }
+
+    std::shared_ptr<ComponentLayerDirectory> StepDirectory::GetBottomComponentLayerDir() const
+    {
+        auto findIt = m_layersByName.find(LayerDirectory::BOTTOM_COMPONENTS_LAYER_NAME);
+        if (findIt != m_layersByName.end())
+        {
+            return std::dynamic_pointer_cast<ComponentLayerDirectory>(findIt->second);
+        }
+        else
+        {
+			return nullptr;
+		}
+    }
 }

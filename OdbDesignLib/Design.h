@@ -37,6 +37,7 @@ namespace Odb::Lib::ProductModel
 		bool BuildComponents();
 		bool BuildNets();
 		bool BuildPackages();
+		bool BuildPlacements();
 
 	};
 }

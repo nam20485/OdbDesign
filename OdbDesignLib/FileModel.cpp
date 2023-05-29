@@ -76,4 +76,29 @@ namespace Odb::Lib::FileModel::Design
 
 		return true;
 	}
+
+	//const EdaDataFile& FileModel::GetStepEdaDataFile(std::string stepName) const
+	//{		
+	//	auto findIt = m_stepsByName.find(stepName);
+	//	if (findIt != m_stepsByName.end())
+	//	{
+	//		return findIt->second->GetEdaDataFile();
+	//	}
+	//	else
+	//	{
+	//		return EdaDataFile::EMPTY;
+	//	}		
+	//}
+
+	//const EdaDataFile& FileModel::GetFirstStepEdaDataFile() const
+	//{
+	//	if (!m_stepsByName.empty())
+	//	{
+	//		return m_stepsByName.begin()->second->GetEdaDataFile();
+	//	}
+	//	else
+	//	{
+	//		return EdaDataFile::EMPTY;
+	//	}
+	//}
 }

@@ -5,9 +5,12 @@
 #include <memory>
 #include <filesystem>
 
+#include "export.h"
+#include "ComponentLayerDirectory.h"
 #include "LayerDirectory.h"
 #include "EdaDataFile.h"
 #include "NetlistFile.h"
+
 
 namespace Odb::Lib::FileModel::Design
 {
@@ -23,6 +26,9 @@ namespace Odb::Lib::FileModel::Design
 		const EdaDataFile& GetEdaDataFile() const;
 		const LayerDirectory::StringMap& GetLayersByName() const;
 		const NetlistFile::StringMap& GetNetlistsByName() const;
+
+		std::shared_ptr<ComponentLayerDirectory> GetTopComponentLayerDir() const;
+		std::shared_ptr<ComponentLayerDirectory> GetBottomComponentLayerDir() const;
 
 		bool Parse();
 

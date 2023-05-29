@@ -19,6 +19,8 @@ namespace Odb::Lib::FileModel::Design
     {
     }
 
+     ///*static*/ const EdaDataFile EdaDataFile::EMPTY;
+
     std::filesystem::path EdaDataFile::GetPath() const
     {
         return m_path;
