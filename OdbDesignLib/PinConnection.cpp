@@ -8,9 +8,9 @@ namespace Odb::Lib::ProductModel
 	//}
 
 	PinConnection::PinConnection(std::shared_ptr<Component> pComponent, std::shared_ptr<Pin> pPin, std::string name)
-		: m_pComponent(pComponent)
-		, m_pPin(pPin)
-		, m_name(name)
+		: m_name(name)
+		, m_pComponent(pComponent)
+		, m_pPin(pPin)		
 	{
 	}
 
