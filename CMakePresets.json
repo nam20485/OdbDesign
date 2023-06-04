@@ -1,5 +1,9 @@
 ﻿{
   "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 21
+  },
   "configurePresets": [
     {
       "name": "windows-base",
@@ -133,7 +137,7 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
         "CMAKE_C_COMPILER": "x86_64-w64-mingw32-gcc",
-        "CMAKE_CXX_COMPILER": "x86_64-w64-mingw32-g++",        
+        "CMAKE_CXX_COMPILER": "x86_64-w64-mingw32-g++",
         "CMAKE_CXX_FLAGS": "-static-libgcc -static-libstdc++"
       },
       "condition": {
@@ -166,6 +170,14 @@
           "sourceDir": "$env{HOME}/.vs/$ms{projectDirName}"
         }
       }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "x64-debug",
+      "displayName": "x64 Debug",
+      
+     
     }
   ]
 }
