@@ -174,10 +174,100 @@
   ],
   "buildPresets": [
     {
+      "name": "windows-base",
+      "hidden": true,
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
+      "cleanFirst": true
+    },
+    {
       "name": "x64-debug",
       "displayName": "x64 Debug",
-      
-     
+      "inherits": "windows-base",
+      "configurePreset": "x64-debug"
+    },
+    {
+      "name": "x64-release",
+      "displayName": "x64 Release",
+      "inherits": "windows-base",
+      "configurePreset": "x64-release"
+    },
+    {
+      "name": "x86-debug",
+      "displayName": "x86 Debug",
+      "inherits": "windows-base",
+      "configurePreset": "x86-debug"
+    },
+    {
+      "name": "x86-release",
+      "displayName": "x86 Release",
+      "inherits": "windows-base",
+      "configurePreset": "x86-release"
+    },
+    {
+      "name": "linux-base",
+      "hidden": true,
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      },
+      "cleanFirst": true
+    },
+    {
+      "name": "linux-debug",
+      "displayName": "Linux Debug",
+      "configurePreset": "linux-debug",
+      "inherits": "linux-base"
+    },
+    {
+      "name": "linux-release",
+      "displayName": "Linux Release",
+      "configurePreset": "linux-release",
+      "inherits": "linux-base"
+    },
+    {
+      "name": "linux-mingw-w64-base",
+      "hidden": true,
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      },
+      "cleanFirst": true
+    },
+    {
+      "name": "linux-mingw-w64-debug",
+      "displayName": "Linux MinGW-w64 Debug",
+      "configurePreset": "linux-mingw-w64-debug",
+      "inherits": "linux-mingw-w64-base"
+    },
+    {
+      "name": "linux-mingw-w64-release",
+      "displayName": "Linux MinGW-w64 Release",
+      "configurePreset": "linux-mingw-w64-release",
+      "inherits": "linux-mingw-w64-base"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "x64-Debug",
+      "configurePreset": "x64-debug"
+    },
+    {
+      "name": "x64-Release",
+      "configurePreset": "x64-release"
+    },
+    {
+      "name": "x86-Debug",
+      "configurePreset": "x86-debug"
+    },
+    {
+      "name": "x86-Release",
+      "configurePreset": "x86-release"
     }
   ]
 }
