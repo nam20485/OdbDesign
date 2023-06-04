@@ -15,6 +15,6 @@ COPY . .
 RUN cmake -B ./build -DCMAKE_BUILD_TYPE=Release
 RUN cmake --build ./build --config Release
 
-FROM debian:bookworm-20230522-slim AS run
-COPY --from=build /src/OdbDesign/build/OdbDesignApp ./OdbDesignApp
-ENTRYPOINT ["./OdbDesignApp"]
+# run
+WORKDIR /src/OdbDesign/build/OdbDesignApp
+ENTRYPOINT [ "./OdbDesignApp" ]
