@@ -181,7 +181,7 @@
         "lhs": "${hostSystemName}",
         "rhs": "Windows"
       },
-      "cleanFirst": true
+      "cleanFirst": false
     },
     {
       "name": "x64-debug",
@@ -215,7 +215,7 @@
         "lhs": "${hostSystemName}",
         "rhs": "Linux"
       },
-      "cleanFirst": true
+      "cleanFirst": false
     },
     {
       "name": "linux-debug",
@@ -237,7 +237,7 @@
         "lhs": "${hostSystemName}",
         "rhs": "Linux"
       },
-      "cleanFirst": true
+      "cleanFirst": false
     },
     {
       "name": "linux-mingw-w64-debug",
