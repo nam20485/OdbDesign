@@ -101,7 +101,7 @@ namespace Odb::Lib::FileModel::Design
         while (std::getline(edaDataFile, line))
         {
             // trim whitespace from beginning and end of line
-            ::trim(line);
+            trim(line);
             if (!line.empty())
             {
                 std::stringstream lineStream(line);
@@ -148,7 +148,7 @@ namespace Odb::Lib::FileModel::Design
 
                     // read the rest of the line as the source
                     if (!std::getline(lineStream, m_source)) return false;
-                    ::trim(m_source);
+                    trim(m_source);
                 }
                 else if (line.find(LAYER_NAMES_RECORD_TOKEN) == 0)
                 {
