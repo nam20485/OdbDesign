@@ -1,7 +1,7 @@
 ﻿// OdbDesignApp.cpp : Defines the entry point for the application.
 //
 #include "OdbDesignApp.h"
-#include "FileModel.h"
+#include "FileArchive.h"
 #include "macros.h"
 
 
@@ -12,7 +12,7 @@ int main()
     //OdbDesign::Lib::helloLib();
 
     std::string rigidFlexDesignPath;
-    if (IsMsvc())
+    if (Odb::Lib::IsMsvc())
     {
         rigidFlexDesignPath = R"(C:\Users\nmill\OneDrive\Documents\ODB++\Samples\designodb_rigidflex)";
     }
@@ -21,7 +21,7 @@ int main()
         rigidFlexDesignPath = R"(/mnt/c/Users/nmill/Documents/ODB++/Samples/designodb_rigidflex)";		
     }
 
-    Odb::Lib::FileModel::Design::FileModel rigidFlexOdbDesign(rigidFlexDesignPath);
+    Odb::Lib::FileModel::Design::FileArchive rigidFlexOdbDesign(rigidFlexDesignPath);
     auto success = rigidFlexOdbDesign.ParseFileModel();
     if (!success)
     {
@@ -92,7 +92,7 @@ int main()
     }
 
     std::string sampleDesignPath;
-    if (IsMsvc())
+    if (Odb::Lib::IsMsvc())
     {
 		sampleDesignPath = R"(C:\Users\nmill\OneDrive\Documents\ODB++\Samples\sample_design)";
 	}
@@ -101,7 +101,7 @@ int main()
 		sampleDesignPath = R"(/mnt/c/Users/nmill/Documents/ODB++/Samples/sample_design)";
 	}
 
-    Odb::Lib::FileModel::Design::FileModel sampleOdbDesign(sampleDesignPath);
+    Odb::Lib::FileModel::Design::FileArchive sampleOdbDesign(sampleDesignPath);
     success = sampleOdbDesign.ParseFileModel();
     if (!success)
     {
