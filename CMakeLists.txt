@@ -10,6 +10,11 @@ set(CMAKE_CXX_STANDARD ${MY_CXX_STANDARD})
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 #set(CXX_STANDARD_REQUIRED True)
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+## treat warnings as errors (https://cmake.org/cmake/help/latest/variable/CMAKE_COMPILE_WARNING_AS_ERROR.html#variable:CMAKE_COMPILE_WARNING_AS_ERROR)
+#set(CMAKE_COMPILE_WARNING_AS_ERROR True)
+
 # Enable Hot Reload for MSVC compilers if supported.
 if (POLICY CMP0141)
   cmake_policy(SET CMP0141 NEW)
@@ -29,13 +34,19 @@ endif()
 if (MSVC)
     # warning level 4
     add_compile_options(/W4)
-    # treat warnings as errors
-    add_compile_options(/WX)
-    # ignore warning C4251: 'identifier' : class 'type' needs to have dll-interface to be used by clients of class 'type2'
+#    # treat warnings as errors
+#    add_compile_options(/WX)
+    # ignore C4251: 'identifier' : class 'type' needs to have dll-interface to be used by clients of class 'type2'
     add_compile_options(/wd4251)
+    # ignore C4100: 'identifier': unreferenced formal parameter
+    add_compile_options(/wd4100)
 else()
     # additional warnings    
     add_compile_options(-Wall -Wextra -Wpedantic)
+    # treat warnings as errors
+    #add_compile_options(-Werror)
+    # ignore warning: unused parameter 'self'
+    add_compile_options(-Wno-unused-parameter)
 endif()
 
 # Include sub-projects.

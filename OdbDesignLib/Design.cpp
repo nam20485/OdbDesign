@@ -13,7 +13,7 @@ namespace Odb::Lib::ProductModel
 
 	bool Design::Build(std::string designDirectory)
 	{
-		auto pFileModel = std::make_shared<FileModel::Design::FileModel>(designDirectory);
+		auto pFileModel = std::make_shared<FileModel::Design::FileArchive>(designDirectory);
 		if (pFileModel->ParseFileModel())
 		{
 			return Build(pFileModel);
@@ -21,7 +21,7 @@ namespace Odb::Lib::ProductModel
 		return false;
 	}
 
-	bool Design::Build(std::shared_ptr<FileModel::Design::FileModel> pFileModel)
+	bool Design::Build(std::shared_ptr<FileModel::Design::FileArchive> pFileModel)
 	{
 		m_pFileModel = pFileModel;
 		return Build();		

@@ -1,31 +1,31 @@
-#include "FileModel.h"
+#include "FileArchive.h"
 #include <filesystem>
 
 namespace Odb::Lib::FileModel::Design
 {
 
-	FileModel::FileModel(std::string directoryPath)
+	FileArchive::FileArchive(std::string directoryPath)
 		: m_path(directoryPath)
 	{
 	}
 
-	FileModel::~FileModel()
+	FileArchive::~FileArchive()
 	{
 	}
 
-	std::string FileModel::GetPath() const
+	std::string FileArchive::GetPath() const
 	{
 		return m_path;
 	}
 
-	std::string FileModel::GetProductName() const
+	std::string FileArchive::GetProductName() const
 	{
 		return m_productName;
 	}
 
-	const StepDirectory::StringMap& FileModel::GetStepsByName() const { return m_stepsByName; }
+	const StepDirectory::StringMap& FileArchive::GetStepsByName() const { return m_stepsByName; }
 
-	bool FileModel::ParseFileModel()
+	bool FileArchive::ParseFileModel()
 	{
 		std::filesystem::path designPath(m_path);
 
@@ -48,7 +48,7 @@ namespace Odb::Lib::FileModel::Design
 		return true;
 	}
 
-	bool FileModel::ParseDesignDirectory(std::filesystem::path path)
+	bool FileArchive::ParseDesignDirectory(std::filesystem::path path)
 	{
 		std::filesystem::path designPath(path);
 
