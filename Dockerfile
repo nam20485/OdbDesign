@@ -30,6 +30,7 @@ WORKDIR /src/OdbDesign
 COPY . .
 
 # generate SWIG python bindings
+RUN chmod +x swig/generate-python-lib.ps1
 RUN swig/generate-python-lib.ps1
 
 # configure & build using presets
