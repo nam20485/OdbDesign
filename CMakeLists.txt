@@ -31,17 +31,23 @@ if (MSVC)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
 endif()
 
-#if (MSVC)
-#    # warning level 4
-#    add_compile_options(/W4)
+if (MSVC)
+    # warning level 4
+    add_compile_options(/W4)
 #    # treat warnings as errors
 #    add_compile_options(/WX)
-#    # ignore warning C4251: 'identifier' : class 'type' needs to have dll-interface to be used by clients of class 'type2'
-#    add_compile_options(/wd4251)
-#else()
-#    # additional warnings    
-#    add_compile_options(-Wall -Wextra -Wpedantic)
-#endif()
+    # ignore C4251: 'identifier' : class 'type' needs to have dll-interface to be used by clients of class 'type2'
+    add_compile_options(/wd4251)
+    # ignore C4100: 'identifier': unreferenced formal parameter
+    add_compile_options(/wd4100)
+else()
+    # additional warnings    
+    add_compile_options(-Wall -Wextra -Wpedantic)
+    # treat warnings as errors
+    #add_compile_options(-Werror)
+    # ignore warning: unused parameter 'self'
+    add_compile_options(-Wno-unused-parameter)
+endif()
 
 # Include sub-projects.
 add_subdirectory("OdbDesignApp")
