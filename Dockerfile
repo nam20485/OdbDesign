@@ -12,6 +12,8 @@ RUN apt-get update && \
         g++ \
         ninja-build \
         python3-dev \
+        python3-pip \
+        python3-virtualenv \
         # mingw-w64 \        
         swig      
 
@@ -30,8 +32,8 @@ WORKDIR /src/OdbDesign
 COPY . .
 
 # generate SWIG python bindings
-RUN chmod +x swig/generate-python-lib.ps1
-RUN swig/generate-python-lib.ps1
+RUN chmod +x scripts/generate-python-module.ps1
+RUN scripts/generate-python-module.ps1
 
 # configure & build using presets
 # linux-release
@@ -41,22 +43,40 @@ RUN cmake --build --preset linux-release
 # RUN cmake --preset linux-debug
 # RUN cmake --build --preset linux-debug
 
+# build PyOdbDesignLib python package
+RUN python3 -m pip install -r requirements.txt --break-system-packages
+WORKDIR /src/OdbDesign/PyOdbDesignLib
+# copy C++ wrapper library to a format that Python expects for extension modules
+RUN cp /src/OdbDesign/out/build/linux-release/OdbDesignLib/libOdbDesign.so ./_PyOdbDesignLib.so
+# build Python package
+RUN python3 -m build
+
 # much smaller runtime image
 FROM debian:bookworm-20230522-slim AS run
 
-# install Python3
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        python3-dev
-
 RUN mkdir /OdbDesign
 WORKDIR /OdbDesign
-COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignLib/libOdbDesign.so .
-COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignApp/OdbDesignApp .
-# copy to a format that Python expects for extension modules
-RUN cp libOdbDesign.so _PyOdbDesignLib.so
-COPY --from=build /src/OdbDesign/swig/PyOdbDesignLib.py .
-ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/OdbDesign/
+
+# copy binaries
+RUN mkdir bin
+COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignLib/libOdbDesign.so ./bin/
+COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignApp/OdbDesignApp ./bin/
+# copy Python files
+COPY --from=build /src/OdbDesign/PyOdbDesignLib /OdbDesign/PyOdbDesignLib
+
+# install Python3 dev
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        python3-dev \
+        python3-pip \
+        python3-virtualenv
+
+# # install package into Python environment
+# RUN python3 -m pip install --break-system-packages \
+#                            --no-index \
+#                            --find-links PyOdbDesignLib/dist/*.whl \
+#                            PyOdbDesignLib
 
 # run
-ENTRYPOINT [ "./OdbDesignApp" ]
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/OdbDesign/bin
+ENTRYPOINT [ "bin/OdbDesignApp" ]
