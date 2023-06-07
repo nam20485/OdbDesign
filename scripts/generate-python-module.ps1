@@ -1,1 +1,1 @@
-swig -c++ -outdir PyOdbDesignLib -python OdbDesignLib/OdbDesignLib.i
+swig -c++ -outdir ./PyOdbDesignLib -python ./OdbDesignLib/OdbDesignLib.i
