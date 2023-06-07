@@ -5,7 +5,7 @@
 #include <memory>
 #include "Net.h"
 #include "Component.h"
-#include "FileModel.h"
+#include "FileArchive.h"
 #include "Via.h"
 #include "Package.h"
 #include "Part.h"
@@ -20,14 +20,14 @@ namespace Odb::Lib::ProductModel
 		~Design();
 
 		bool Build(std::string designDirectory);
-		bool Build(std::shared_ptr<FileModel::Design::FileModel> pFileModel);		
+		bool Build(std::shared_ptr<FileModel::Design::FileArchive> pFileModel);		
 
 	private:
 		std::string m_productModel;
 		std::string m_name;
 
 		std::string m_designDirectory;		
-		std::shared_ptr<FileModel::Design::FileModel> m_pFileModel;
+		std::shared_ptr<FileModel::Design::FileArchive> m_pFileModel;
 
 		Net::Vector m_nets;
 		Net::StringMap m_netsByName;

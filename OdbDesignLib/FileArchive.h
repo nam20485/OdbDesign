@@ -8,11 +8,11 @@
 
 namespace Odb::Lib::FileModel::Design
 {
-	class DECLSPEC FileModel
+	class DECLSPEC FileArchive
 	{
 	public:
-		FileModel(std::string path);
-		~FileModel();
+		FileArchive(std::string path);
+		~FileArchive();
 
 		std::string GetPath() const;
 		std::string GetProductName() const;
