@@ -1,5 +1,3 @@
-#pragma once
-
 #include "string_trim.h"
 #include <iostream>
 #include <string>
