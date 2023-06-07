@@ -3,5 +3,7 @@ out/
 .github/
 .git/
 .gitignore
+.gitattributes
 Dockerfile
 docker-compose.yml
+*.code-workspace
