@@ -37,9 +37,9 @@ RUN swig/generate-python-lib.ps1
 # linux-release
 RUN cmake --preset linux-release
 RUN cmake --build --preset linux-release
-# linux-debug
-RUN cmake --preset linux-debug
-RUN cmake --build --preset linux-debug
+# # linux-debug
+# RUN cmake --preset linux-debug
+# RUN cmake --build --preset linux-debug
 
 # much smaller runtime image
 FROM debian:bookworm-20230522-slim AS run
