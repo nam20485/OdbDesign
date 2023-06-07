@@ -30,6 +30,12 @@ using namespace Odb::Lib;
 using StepDirectory = Odb::Lib::FileModel::Design::StepDirectory;
 %}
 
+// for std::string
+%include <std_string.i>
+
+// std::vector
+%include <vector.i>
+
 // to handle declspec(dllexport) on Windows
 %include <windows.i>
 %include "export.h"
