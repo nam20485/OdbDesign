@@ -39,21 +39,21 @@ namespace Odb::Lib
     // trim from start (copying)
     std::string ltrim_copy(std::string s)
     {
-        //auto copy(s);
-        return ltrim(std::string(s) );
+        auto copy(s);
+        return ltrim(copy);
     }
 
     // trim from end (copying)
     std::string rtrim_copy(std::string s)
     {
-        //auto copy(s);
-        return rtrim(std::string(s));
+        auto copy(s);
+        return rtrim(copy);
     }
 
     // trim from both ends (copying)
     std::string trim_copy(std::string s)
     {
-        //auto copy(s);
-        return trim(std::string(s));
+        auto copy(s);
+        return trim(copy);
     }
 }
