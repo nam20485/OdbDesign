@@ -44,4 +44,4 @@ jobs:
       with:
         user: __token__
         password: ${{ secrets.PYPI_API_TOKEN_PYODBDESIGNLIB }}
-        packages_dir: PyOdbDesign/dist
+        packages_dir: PyOdbDesignLib/dist
