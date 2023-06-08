@@ -14,6 +14,7 @@ on:
   push:
     branches:
       - release
+      - development
 
 permissions:
   contents: read
@@ -43,3 +44,4 @@ jobs:
       with:
         user: __token__
         password: ${{ secrets.PYPI_API_TOKEN_PYODBDESIGNLIB }}
+        packages_dir: PyOdbDesign/dist
