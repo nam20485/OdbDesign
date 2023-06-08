@@ -1,0 +1,28 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "PyOdbDesignLib"
+version = "0.0.1"
+authors = [{ name = "Nathan Miller", email = "nmiller217+odbdesign@gmail.com" }]
+maintainers = [{ name = "Nathan Miller", email = "nmiller217@gmail.com" }]
+description = "Thin Python3 wrapper for the (C++) OdbDesignLib"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    #"Operating System :: OS Independent",
+    "Operating System :: POSIX :: Linux",
+]
+keywords = [
+    "Odb",
+     "Odb++"
+]
+
+[project.urls]
+"Homepage" = "https://nam20485.github.io/OdbDesign/"
+"Repository" = "https://github.com/nam20485/OdbDesign"
+"Bug Tracker" = "https://github.com/nam20485/OdbDesign/issues"

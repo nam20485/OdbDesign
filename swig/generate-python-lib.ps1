@@ -1,1 +1,0 @@
-swig -c++ -outdir ./swig -python OdbDesignLib/OdbDesignLib.i
