@@ -16,3 +16,4 @@ OdbDesignServer/pyvenv.cfg
 OdbDesignServer/db.sqlite3
 OdbDesignServer/Scripts/
 OdbDesignServer/api/__pycache__/
+OdbDesignServer/PyOdbDesignLib/
