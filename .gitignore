@@ -5,10 +5,14 @@
 /.vs
 /out
 OdbDesignLib/OdbDesignLib_wrap.cxx
-swig/PyOdbDesignLib.py
-PyOdbDesignLib/dist/pyodbdesignlib-0.0.1-py3-none-any.whl
-PyOdbDesignLib/dist/pyodbdesignlib-0.0.1.tar.gz
+PyOdbDesignLib/dist/
 PyOdbDesignLib/_PyOdbDesignLib.dll
 PyOdbDesignLib/PyOdbDesignLib.py
 PyOdbDesignLib/_PyOdbDesignLib.pyd
 PyOdbDesignLib/__pycache__/
+OdbDesignServer/Lib/
+OdbDesignServer/OdbDesignServer/__pycache__/
+OdbDesignServer/pyvenv.cfg
+OdbDesignServer/db.sqlite3
+OdbDesignServer/Scripts/
+OdbDesignServer/api/__pycache__/
