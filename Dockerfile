@@ -71,11 +71,11 @@ RUN apt-get update && \
         python3-pip \
         python3-virtualenv
 
-# # install package into Python environment
-# RUN python3 -m pip install --break-system-packages \
-#                            --no-index \
-#                            --find-links PyOdbDesignLib/dist/*.whl \
-#                            PyOdbDesignLib
+# install package into Python environment
+RUN python3 -m pip install --break-system-packages \
+                           --no-index \
+                           --find-links PyOdbDesignLib/dist/*.whl \
+                           PyOdbDesignLib
 
 # run
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/OdbDesign/bin
