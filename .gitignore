@@ -5,4 +5,15 @@
 /.vs
 /out
 OdbDesignLib/OdbDesignLib_wrap.cxx
-swig/PyOdbDesignLib.py
+PyOdbDesignLib/dist/
+PyOdbDesignLib/_PyOdbDesignLib.dll
+PyOdbDesignLib/PyOdbDesignLib.py
+PyOdbDesignLib/_PyOdbDesignLib.pyd
+PyOdbDesignLib/__pycache__/
+OdbDesignServer/Lib/
+OdbDesignServer/OdbDesignServer/__pycache__/
+OdbDesignServer/pyvenv.cfg
+OdbDesignServer/db.sqlite3
+OdbDesignServer/Scripts/
+OdbDesignServer/api/__pycache__/
+OdbDesignServer/PyOdbDesignLib/
