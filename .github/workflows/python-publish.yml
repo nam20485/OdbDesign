@@ -14,7 +14,7 @@ on:
   push:
     branches:
       - release
-      - development
+      #- development
 
 permissions:
   contents: read
