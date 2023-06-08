@@ -12,8 +12,8 @@ RUN apt-get update && \
         g++ \
         ninja-build \
         python3-dev \
-        python3-pip \
-        python3-virtualenv \
+        #python3-pip \
+        #python3-virtualenv \
         # mingw-w64 \        
         swig      
 
@@ -43,13 +43,13 @@ RUN cmake --build --preset linux-release
 # RUN cmake --preset linux-debug
 # RUN cmake --build --preset linux-debug
 
-# build PyOdbDesignLib python package
-RUN python3 -m pip install -r requirements.txt --break-system-packages
+## build PyOdbDesignLib python package
+#RUN python3 -m pip install -r PyOdbDesignLib/pkg-build-requirements.txt --break-system-packages
 WORKDIR /src/OdbDesign/PyOdbDesignLib
 # copy C++ wrapper library to a format that Python expects for extension modules
 RUN cp /src/OdbDesign/out/build/linux-release/OdbDesignLib/libOdbDesign.so ./_PyOdbDesignLib.so
-# build Python package
-RUN python3 -m build
+## build Python package
+#RUN python3 -m build
 
 # much smaller runtime image
 FROM debian:bookworm-20230522-slim AS run
@@ -67,15 +67,15 @@ COPY --from=build /src/OdbDesign/PyOdbDesignLib /OdbDesign/PyOdbDesignLib
 # install Python3 dev
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        python3-dev \
-        python3-pip \
-        python3-virtualenv
+        python3-dev
+        #python3-pip \
+        #python3-virtualenv
 
-# install package into Python environment
-RUN python3 -m pip install --break-system-packages \
-                           --no-index \
-                           --find-links PyOdbDesignLib/dist/*.whl \
-                           PyOdbDesignLib
+# # install package into Python environment
+# RUN python3 -m pip install --break-system-packages \
+#                            --no-index \
+#                            --find-links PyOdbDesignLib/dist/*.whl \
+#                            PyOdbDesignLib
 
 # run
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/OdbDesign/bin
