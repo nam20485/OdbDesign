@@ -38,11 +38,27 @@
       }
     },
     {
+      "name": "python-x64-debug",
+      "displayName": "Python x64 Debug",
+      "inherits": "x64-debug",
+      "cacheVariables": {
+        "CMAKE_PYTHON_BUILD": true
+      }
+    },
+    {
       "name": "x64-release",
       "displayName": "x64 Release",
       "inherits": "x64-debug",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "python-x64-release",
+      "displayName": "Python x64 Release",
+      "inherits": "x64-release",
+      "cacheVariables": {
+        "CMAKE_PYTHON_BUILD": true
       }
     },
     {
@@ -103,6 +119,22 @@
         "microsoft.com/VisualStudioRemoteSettings/CMake/1.0": {
           "sourceDir": "$env{HOME}/.vs/$ms{projectDirName}"
         }
+      }
+    },
+    {
+      "name": "python-linux-release",
+      "displayName": "Python Linux Release",
+      "inherits": "linux-release",
+      "cacheVariables": {        
+        "CMAKE_PYTHON_BUILD": true
+      }
+    },
+    {
+      "name": "python-linux-debug",
+      "displayName": "Python Linux Debug",
+      "inherits": "linux-debug",
+      "cacheVariables": {        
+        "CMAKE_PYTHON_BUILD": true
       }
     },
     {
