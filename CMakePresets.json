@@ -42,7 +42,7 @@
       "displayName": "Python x64 Debug",
       "inherits": "x64-debug",
       "cacheVariables": {
-        "CMAKE_PYTHON_BUILD": true
+        "PYTHON_MODULE_BUILD": true
       }
     },
     {
@@ -58,7 +58,7 @@
       "displayName": "Python x64 Release",
       "inherits": "x64-release",
       "cacheVariables": {
-        "CMAKE_PYTHON_BUILD": true
+        "PYTHON_MODULE_BUILD": true
       }
     },
     {
@@ -126,7 +126,7 @@
       "displayName": "Python Linux Release",
       "inherits": "linux-release",
       "cacheVariables": {        
-        "CMAKE_PYTHON_BUILD": true
+        "PYTHON_MODULE_BUILD": true
       }
     },
     {
@@ -134,7 +134,7 @@
       "displayName": "Python Linux Debug",
       "inherits": "linux-debug",
       "cacheVariables": {        
-        "CMAKE_PYTHON_BUILD": true
+        "PYTHON_MODULE_BUILD": true
       }
     },
     {

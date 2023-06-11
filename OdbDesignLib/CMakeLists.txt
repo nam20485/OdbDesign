@@ -13,7 +13,7 @@ target_include_directories(OdbDesign
                            $<INSTALL_INTERFACE:include>
                            )
 
-if (CMAKE_PYTHON_BUILD)      
+if (PYTHON_MODULE_BUILD)      
  #   add_custom_command(TARGET OdbDesign 
  #                      PRE_BUILD
  #                      COMMAND scripts/generate-python-module.ps1
@@ -23,7 +23,7 @@ if (CMAKE_PYTHON_BUILD)
 
     # include and link to Python3                           
     find_package(Python3 COMPONENTS Development REQUIRED)
-    target_include_directories(OdbDesign PUBLIC ${Python3_INCLUDE_DIRS})
+    target_include_directories(OdbDesign PRIVATE ${Python3_INCLUDE_DIRS})
     #include_directories(${Python3_INCLUDE_DIRS})
     target_link_libraries(OdbDesign ${Python3_LIBRARIES})
 endif()
