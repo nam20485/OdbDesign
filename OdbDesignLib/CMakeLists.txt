@@ -13,17 +13,35 @@ target_include_directories(OdbDesign
                            $<INSTALL_INTERFACE:include>
                            )
 
-if (PYTHON_MODULE_BUILD)      
+if (PYTHON_MODULE_BUILD)
+ #   # run swig to generate wrapper file
  #   add_custom_command(TARGET OdbDesign 
  #                      PRE_BUILD
  #                      COMMAND scripts/generate-python-module.ps1
  #                      )
 
+ if (MSVC)
+    # make a copy of output library with name expected by Python module extensions
+    add_custom_command(TARGET OdbDesign
+                       POST_BUILD
+                       COMMAND ${CMAKE_COMMAND}
+                       ARGS -E copy $<TARGET_FILE:OdbDesign> ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/_PyOdbDesignLib.pyd
+                       COMMENT Copying to Python module extension
+                       )
+elseif(LINUX)
+    # make a copy of output library with name expected by Python module extensions
+    add_custom_command(TARGET OdbDesign
+                       POST_BUILD
+                       COMMAND ${CMAKE_COMMAND}
+                       ARGS -E copy $<TARGET_FILE:OdbDesign> ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/_PyOdbDesignLib.so
+                       COMMENT Copying to Python module extension
+                       )
+endif()
+
     target_sources(OdbDesign PRIVATE "OdbDesignLib_wrap.cxx")
 
     # include and link to Python3                           
     find_package(Python3 COMPONENTS Development REQUIRED)
-    target_include_directories(OdbDesign PRIVATE ${Python3_INCLUDE_DIRS})
-    #include_directories(${Python3_INCLUDE_DIRS})
+    target_include_directories(OdbDesign PRIVATE ${Python3_INCLUDE_DIRS})    
     target_link_libraries(OdbDesign ${Python3_LIBRARIES})
 endif()
