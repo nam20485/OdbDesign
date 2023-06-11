@@ -17,8 +17,7 @@ if (PYTHON_MODULE_BUILD)
  #   # run swig to generate wrapper file
  #   add_custom_command(TARGET OdbDesign 
  #                      PRE_BUILD
- #                      COMMAND scripts/generate-python-module.ps1
- #                      )
+ #                      COMMAND scripts/generate-python-module.ps1)
 
  if (MSVC)
     # make a copy of output library with name expected by Python module extensions
