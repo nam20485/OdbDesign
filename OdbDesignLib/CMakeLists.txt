@@ -1,5 +1,4 @@
-﻿# CMakeList.txt : CMake project for OdbDesignLib, include source and define
-# project specific logic here.
+﻿# CMakeList.txt : CMake project for OdbDesignLib
 #
 
 add_library(OdbDesign SHARED "export.h" "ComponentLayerDirectory.cpp" "ComponentLayerDirectory.h" "EdaDataFile.cpp" "EdaDataFile.h" "LayerDirectory.cpp" "LayerDirectory.h" "NetlistFile.cpp" "NetlistFile.h" "FileArchive.cpp" "FileArchive.h" "StepDirectory.cpp" "StepDirectory.h" "string_trim.h" "macros.h" "Net.h" "Net.cpp" "Component.h" "Component.cpp" "Pin.h" "Pin.cpp" "PinConnection.h" "PinConnection.cpp" "Package.h" "Package.cpp" "Part.h" "Part.cpp" "Via.h" "Via.cpp" "Design.h" "Design.cpp" "enums.h" "string_trim.cpp")
@@ -13,6 +12,7 @@ target_include_directories(OdbDesign
                            $<INSTALL_INTERFACE:include>
                            )
 
+# Python extension module build settings                           
 if (PYTHON_MODULE_BUILD)
  #   # run swig to generate wrapper file
  #   add_custom_command(TARGET OdbDesign 
@@ -24,7 +24,7 @@ if (PYTHON_MODULE_BUILD)
     add_custom_command(TARGET OdbDesign
                        POST_BUILD
                        COMMAND ${CMAKE_COMMAND}
-                       ARGS -E copy $<TARGET_FILE:OdbDesign> ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/_PyOdbDesignLib.pyd
+                       ARGS -E copy $<TARGET_FILE:OdbDesign> $<TARGET_FILE_DIR:OdbDesign>/_PyOdbDesignLib.pyd
                        COMMENT Copying to Python module extension
                        )
 elseif(LINUX)
@@ -32,7 +32,7 @@ elseif(LINUX)
     add_custom_command(TARGET OdbDesign
                        POST_BUILD
                        COMMAND ${CMAKE_COMMAND}
-                       ARGS -E copy $<TARGET_FILE:OdbDesign> ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/_PyOdbDesignLib.so
+                       ARGS -E copy $<TARGET_FILE:OdbDesign> $<TARGET_FILE_DIR:OdbDesign>/_PyOdbDesignLib.so
                        COMMENT Copying to Python module extension
                        )
 endif()
