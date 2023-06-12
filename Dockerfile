@@ -22,22 +22,22 @@ WORKDIR /src/OdbDesign
 
 # generate SWIG python bindings
 RUN chmod +x scripts/generate-python-module.sh
-RUN scripts/generate-python-module.sh
+RUN ./scripts/generate-python-module.sh
 
 # configure & build using presets
 # linux-release
-RUN cmake --preset linux-release
-RUN cmake --build --preset linux-release
+RUN cmake --preset python-linux-release
+RUN cmake --build --preset python-linux-release
 
 # much smaller runtime image
 #FROM python:3.11.4-bullseye AS run
-FROM debian:bookworm-20230522-slim
+FROM debian:bookworm-20230522-slim as run
 
 # copy PyOdbDesignServer files
 COPY --from=build /src/OdbDesign/OdbDesignServer OdbDesignServer
 
 # copy PyOdbDesignLib files
-COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignLib/libOdbDesign.so /OdbDesignServer/PyOdbDesignLib/_PyOdbDesignLib.so
+COPY --from=build /src/OdbDesign/out/build/python-linux-release/OdbDesignLib/_PyOdbDesignLib.so /OdbDesignServer/PyOdbDesignLib/
 COPY --from=build /src/OdbDesign/PyOdbDesignLib/PyOdbDesignLib.py /OdbDesignServer/PyOdbDesignLib/
 RUN touch /OdbDesignServer/PyOdbDesignLib/__init__.py
 
