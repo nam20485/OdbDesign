@@ -226,7 +226,7 @@
       "displayName": "x64 Release",
       "inherits": "windows-base",
       "configurePreset": "x64-release"
-    },
+    },    
     {
       "name": "x86-debug",
       "displayName": "x86 Debug",
@@ -238,6 +238,18 @@
       "displayName": "x86 Release",
       "inherits": "windows-base",
       "configurePreset": "x86-release"
+    },
+    {
+      "name": "python-x64-debug",
+      "displayName": "Python x64 Debug",
+      "inherits": "windows-base",
+      "configurePreset": "python-x64-debug"
+    },
+    {
+      "name": "python-x64-release",
+      "displayName": "Python x64 Release",
+      "inherits": "windows-base",
+      "configurePreset": "python-x64-release"
     },
     {
       "name": "linux-base",
@@ -259,6 +271,18 @@
       "name": "linux-release",
       "displayName": "Linux Release",
       "configurePreset": "linux-release",
+      "inherits": "linux-base"
+    },
+    {
+      "name": "python-linux-debug",
+      "displayName": "Python Linux Debug",
+      "configurePreset": "python-linux-debug",
+      "inherits": "linux-base"
+    },
+    {
+      "name": "python-linux-release",
+      "displayName": "Python Linux Release",
+      "configurePreset": "python-linux-release",
       "inherits": "linux-base"
     },
     {
