@@ -88,7 +88,11 @@
       "binaryDir": "${sourceDir}/out/build/${presetName}",
       "installDir": "${sourceDir}/out/install/${presetName}",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_TOOLCHAIN_FILE": {
+          "value": "$env{HOME}/src/github/microsoft/vcpkg/scripts/buildsystems/vcpkg.cmake",
+          "type": "FILEPATH"
+        }
       },
       "condition": {
         "type": "equals",
@@ -108,7 +112,11 @@
       "binaryDir": "${sourceDir}/out/build/${presetName}",
       "installDir": "${sourceDir}/out/install/${presetName}",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_TOOLCHAIN_FILE": {
+          "value": "$env{HOME}/src/github/microsoft/vcpkg/scripts/buildsystems/vcpkg.cmake",
+          "type": "FILEPATH"
+        }
       },
       "condition": {
         "type": "equals",
@@ -147,7 +155,11 @@
         "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_C_COMPILER": "x86_64-w64-mingw32-gcc",
         "CMAKE_CXX_COMPILER": "x86_64-w64-mingw32-g++",
-        "CMAKE_CXX_FLAGS": "-static-libgcc -static-libstdc++"
+        "CMAKE_CXX_FLAGS": "-static-libgcc -static-libstdc++",
+        "CMAKE_TOOLCHAIN_FILE": {
+          "value": "$env{HOME}/src/github/microsoft/vcpkg/scripts/buildsystems/vcpkg.cmake",
+          "type": "FILEPATH"
+        }
       },
       "condition": {
         "type": "equals",
@@ -170,7 +182,11 @@
         "CMAKE_BUILD_TYPE": "Release",
         "CMAKE_C_COMPILER": "x86_64-w64-mingw32-gcc",
         "CMAKE_CXX_COMPILER": "x86_64-w64-mingw32-g++",
-        "CMAKE_CXX_FLAGS": "-static-libgcc -static-libstdc++"
+        "CMAKE_CXX_FLAGS": "-static-libgcc -static-libstdc++",
+        "CMAKE_TOOLCHAIN_FILE": {
+          "value": "$env{HOME}/src/github/microsoft/vcpkg/scripts/buildsystems/vcpkg.cmake",
+          "type": "FILEPATH"
+        }
       },
       "condition": {
         "type": "equals",
