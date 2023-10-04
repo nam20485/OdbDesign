@@ -12,6 +12,11 @@ target_include_directories(OdbDesign
                            $<INSTALL_INTERFACE:include>
                            )
 
+# Link libarchive
+find_package(libarchive REQUIRED)
+target_include_directories(OdbDesign PRIVATE ${libarchive_INCLUDE_DIRS})
+target_link_libraries(OdbDesign ${libarchive_LIBRARIES})
+
 # Python extension module build settings                           
 if (PYTHON_MODULE_BUILD)
  #   # run swig to generate wrapper file
