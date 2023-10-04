@@ -13,9 +13,9 @@ target_include_directories(OdbDesign
                            )
 
 # Link libarchive
-find_package(libarchive REQUIRED)
-target_include_directories(OdbDesign PRIVATE ${libarchive_INCLUDE_DIRS})
-target_link_libraries(OdbDesign ${libarchive_LIBRARIES})
+find_package(LibArchive REQUIRED)
+target_include_directories(OdbDesign PRIVATE ${LibArchive_INCLUDE_DIRS})
+target_link_libraries(OdbDesign PRIVATE ${LibArchive_LIBRARIES})
 
 # Python extension module build settings                           
 if (PYTHON_MODULE_BUILD)
