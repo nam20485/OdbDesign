@@ -18,7 +18,7 @@ int main()
     }
     else
     {
-        rigidFlexDesignPath = R"(/mnt/c/Users/nmill/Documents/ODB++/Samples/designodb_rigidflex)";		
+        rigidFlexDesignPath = R"(/mnt/c/Users/nmill/OneDrive/Documents/ODB++/Samples/designodb_rigidflex)";		
     }
 
     Odb::Lib::FileModel::Design::FileArchive rigidFlexOdbDesign(rigidFlexDesignPath);
@@ -98,7 +98,7 @@ int main()
 	}
     else
     {
-		sampleDesignPath = R"(/mnt/c/Users/nmill/Documents/ODB++/Samples/sample_design)";
+		sampleDesignPath = R"(/mnt/c/Users/nmill/OneDrive/Documents/ODB++/Samples/sample_design)";
 	}
 
     Odb::Lib::FileModel::Design::FileArchive sampleOdbDesign(sampleDesignPath);
