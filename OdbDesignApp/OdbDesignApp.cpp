@@ -4,13 +4,14 @@
 #include "FileArchive.h"
 #include "macros.h"
 
+
 bool TestRigidFlexDesign();
 bool TestSampleDesign();
 
 
 int main()
 {
-	std::cout << "OdbDesignApp v0.1.0" << std::endl;
+    std::cout << "OdbDesignApp v0.1.0" << std::endl << std::endl;
 
     //OdbDesign::Lib::helloLib();
 
