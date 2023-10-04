@@ -3,6 +3,7 @@
 #include "OdbDesignApp.h"
 #include "FileArchive.h"
 #include "macros.h"
+#include "ExitCode.h"
 
 
 bool TestRigidFlexDesign();
@@ -18,7 +19,7 @@ int main()
     auto success = TestRigidFlexDesign();
     if (!success)
     {
-        return 1;
+        return (int) ExitCode::UnknownError;
     }
 
     std::cout << "success!" << std::endl;
@@ -26,12 +27,12 @@ int main()
     success = TestSampleDesign();
     if (!success)
     {
-        return 1;
+        return (int) ExitCode::UnknownError;
     }
 
     std::cout << "success!" << std::endl;    
 
-    return 0;
+    return (int) ExitCode::Success;
 }
 
 bool TestSampleDesign()
