@@ -61,7 +61,7 @@ int main()
         if (packageRecords.size() > 0)
         {
 			auto& pPackageRecord = packageRecords[0];
-			auto packageName = pPackageRecord->name;
+			auto& packageName = pPackageRecord->name;
 		}
         
         // layers
