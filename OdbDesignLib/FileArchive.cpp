@@ -1,5 +1,7 @@
 #include "FileArchive.h"
 #include <filesystem>
+#include "ArchiveExtractor.h"
+
 
 namespace Odb::Lib::FileModel::Design
 {
@@ -30,22 +32,26 @@ namespace Odb::Lib::FileModel::Design
 		std::filesystem::path designPath(m_path);
 
 		if (!std::filesystem::exists(designPath)) return false;
-
+		
 		if (std::filesystem::is_regular_file(designPath))
 		{
-			if (designPath.extension() == ".tar.gz")
-			{
-				// unzip and change designPath to point to the unzipped directory
+			if (! ArchiveExtractor::IsArchiveTypeSupported(designPath)) return false;
+			
+			ArchiveExtractor extractor(designPath.string());
+			if (!extractor.Extract()) return false;
 
-			}
-		}
-
+			auto extractedPath = std::filesystem::path(extractor.GetExtractedPath());
+			if (! std::filesystem::exists(extractedPath)) return false;
+				
+			designPath = extractedPath;						
+		}			
+		
 		if (std::filesystem::is_directory(designPath))
 		{
 			return ParseDesignDirectory(designPath);
-		}
+		}		
 
-		return true;
+		return false;
 	}
 
 	bool FileArchive::ParseDesignDirectory(std::filesystem::path path)
