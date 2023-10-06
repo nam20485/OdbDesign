@@ -20,15 +20,17 @@ std::string ArchiveExtractor::GetExtractedPath() const
 
 bool ArchiveExtractor::IsArchiveTypeSupported(const std::filesystem::path& file)
 {
-	for (const auto& ext : SupportedExtensions)
-	{
-		if (file.extension() == "."+ext)
-		{
-			return true;
-		}
-	}
+	return true;
 
-	return false;
+	//for (const auto& ext : SupportedExtensions)
+	//{
+	//	if (file.extension() == "."+ext)
+	//	{
+	//		return true;
+	//	}
+	//}
+
+	//return false;
 }
 
 bool ArchiveExtractor::IsArchiveTypeSupported(const std::string& file)
