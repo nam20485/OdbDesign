@@ -40,7 +40,8 @@ bool extract(const char* filename, const char* destDir)
     ext = archive_write_disk_new();
     archive_write_disk_set_options(ext, flags);
     archive_write_disk_set_standard_lookup(ext);
-    if ((r = archive_read_open_filename(a, filename, 1024*10)))
+    r = archive_read_open_filename(a, filename, 1024 * 10);
+    if (r)
     {
         return false;
     }
