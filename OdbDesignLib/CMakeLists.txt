@@ -1,7 +1,7 @@
 ﻿# CMakeList.txt : CMake project for OdbDesignLib
 #
 
-add_library(OdbDesign SHARED "export.h" "ComponentLayerDirectory.cpp" "ComponentLayerDirectory.h" "EdaDataFile.cpp" "EdaDataFile.h" "LayerDirectory.cpp" "LayerDirectory.h" "NetlistFile.cpp" "NetlistFile.h" "FileArchive.cpp" "FileArchive.h" "StepDirectory.cpp" "StepDirectory.h" "string_trim.h" "macros.h" "Net.h" "Net.cpp" "Component.h" "Component.cpp" "Pin.h" "Pin.cpp" "PinConnection.h" "PinConnection.cpp" "Package.h" "Package.cpp" "Part.h" "Part.cpp" "Via.h" "Via.cpp" "Design.h" "Design.cpp" "enums.h" "string_trim.cpp" "ArchiveExtractor.h" "ArchiveExtractor.cpp" "libarchive_extract.h" "libarchive_extract.cpp")
+add_library(OdbDesign SHARED "export.h" "ComponentLayerDirectory.cpp" "ComponentLayerDirectory.h" "EdaDataFile.cpp" "EdaDataFile.h" "LayerDirectory.cpp" "LayerDirectory.h" "NetlistFile.cpp" "NetlistFile.h" "FileArchive.cpp" "FileArchive.h" "StepDirectory.cpp" "StepDirectory.h" "string_trim.h" "macros.h" "Net.h" "Net.cpp" "Component.h" "Component.cpp" "Pin.h" "Pin.cpp" "PinConnection.h" "PinConnection.cpp" "Package.h" "Package.cpp" "Part.h" "Part.cpp" "Via.h" "Via.cpp" "Design.h" "Design.cpp" "enums.h" "string_trim.cpp" "ArchiveExtractor.h" "ArchiveExtractor.cpp" "libarchive_extract.h" "libarchive_extract.cpp"  "OdbDesign.h")
 set_property(TARGET OdbDesign PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 # state that anybody linking to us needs to include the current source dir,
@@ -12,10 +12,14 @@ target_include_directories(OdbDesign
                            $<INSTALL_INTERFACE:include>
                            )
 
-# Link libarchive
+# Link to LibArchive
 find_package(LibArchive REQUIRED)
 target_include_directories(OdbDesign PRIVATE ${LibArchive_INCLUDE_DIRS})
 target_link_libraries(OdbDesign PRIVATE ${LibArchive_LIBRARIES})
+
+# link to Crow
+find_package(Crow REQUIRED)
+target_link_libraries(OdbDesign PUBLIC Crow::Crow)
 
 # Python extension module build settings                           
 if (PYTHON_MODULE_BUILD)
