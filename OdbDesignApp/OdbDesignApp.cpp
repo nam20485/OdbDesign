@@ -40,11 +40,11 @@ bool TestSampleDesign()
     std::string sampleDesignPath;
     if (Odb::Lib::IsMsvc())
     {
-        sampleDesignPath = R"(C:\Users\nmill\OneDrive\Documents\ODB++\Samples\sample_design)";
+        sampleDesignPath = R"(C:\Users\nmill\OneDrive\Documents\ODB++\Samples\sample_design.tgz)";
     }
     else
     {
-        sampleDesignPath = R"(/mnt/c/Users/nmill/OneDrive/Documents/ODB++/Samples/sample_design)";
+        sampleDesignPath = R"(/mnt/c/Users/nmill/OneDrive/Documents/ODB++/Samples/sample_design.tgz)";
     }
 
     std::cout << "Parsing " << sampleDesignPath << "... ";
@@ -64,11 +64,11 @@ bool TestRigidFlexDesign()
     std::string rigidFlexDesignPath;
     if (Odb::Lib::IsMsvc())
     {
-        rigidFlexDesignPath = R"(C:\Users\nmill\OneDrive\Documents\ODB++\Samples\designodb_rigidflex)";
+        rigidFlexDesignPath = R"(C:\Users\nmill\OneDrive\Documents\ODB++\Samples\designodb_rigidflex.tgz)";
     }
     else
     {
-        rigidFlexDesignPath = R"(/mnt/c/Users/nmill/OneDrive/Documents/ODB++/Samples/designodb_rigidflex)";
+        rigidFlexDesignPath = R"(/mnt/c/Users/nmill/OneDrive/Documents/ODB++/Samples/designodb_rigidflex.tgz)";
     }
 
     std::cout << "Parsing " << rigidFlexDesignPath << "... ";
