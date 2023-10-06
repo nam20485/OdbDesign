@@ -31,6 +31,7 @@ if (MSVC)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
 endif()
 
+# increase warnings in a compiler-specific manner
 if (MSVC)
     # warning level 4
     add_compile_options(/W4)
@@ -53,4 +54,6 @@ endif()
 add_subdirectory("OdbDesignApp")
 add_subdirectory("OdbDesignLib")
 
+# link to OdbDesign library in both executable targets
+target_link_libraries(OdbDesignApp PUBLIC OdbDesign)
 target_link_libraries(OdbDesignApp PUBLIC OdbDesign)
