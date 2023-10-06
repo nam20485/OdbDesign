@@ -22,7 +22,7 @@ int main()
         return (int) ExitCode::UnknownError;
     }
 
-    std::cout << "success!" << std::endl;
+    //std::cout << "success!" << std::endl;
 
     success = TestSampleDesign();
     if (!success)
@@ -30,7 +30,7 @@ int main()
         return (int) ExitCode::UnknownError;
     }
 
-    std::cout << "success!" << std::endl;    
+    //std::cout << "success!" << std::endl;    
 
     return (int) ExitCode::Success;
 }
@@ -47,7 +47,7 @@ bool TestSampleDesign()
         sampleDesignPath = R"(/mnt/c/Users/nmill/OneDrive/Documents/ODB++/Samples/sample_design.tgz)";
     }
 
-    std::cout << "Parsing " << sampleDesignPath << "... ";
+    std::cout << "Processing " << sampleDesignPath << "... " << std::endl;
 
     Odb::Lib::FileModel::Design::FileArchive sampleOdbDesign(sampleDesignPath);
     auto success = sampleOdbDesign.ParseFileModel();
@@ -71,7 +71,7 @@ bool TestRigidFlexDesign()
         rigidFlexDesignPath = R"(/mnt/c/Users/nmill/OneDrive/Documents/ODB++/Samples/designodb_rigidflex.tgz)";
     }
 
-    std::cout << "Parsing " << rigidFlexDesignPath << "... ";
+    std::cout << "Processing " << rigidFlexDesignPath << "... " << std::endl;
 
     Odb::Lib::FileModel::Design::FileArchive rigidFlexOdbDesign(rigidFlexDesignPath);
     auto success = rigidFlexOdbDesign.ParseFileModel();
