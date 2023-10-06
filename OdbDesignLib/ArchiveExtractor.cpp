@@ -39,15 +39,19 @@ bool ArchiveExtractor::IsArchiveTypeSupported(const std::string& file)
 bool ArchiveExtractor::Extract()
 {
 	auto path = std::filesystem::path(m_path);
-	auto extractionPath = path.replace_extension().string();
+	//auto extractionPath = path.replace_extension().string();
+	auto extractionPath = path.parent_path().string();
 	return Extract(extractionPath);
 }
 
 bool ArchiveExtractor::Extract(const std::string& destinationPath)
 {
-	if (extract(m_path.c_str()))
+	if (extract(m_path.c_str(), destinationPath.c_str()))
 	{
-		m_extractedPath = destinationPath;
+		std::filesystem::path p(destinationPath);
+		p /= std::filesystem::path(m_path).stem();
+		m_extractedPath = p.string();
+
 		return true;
 	}
 		
