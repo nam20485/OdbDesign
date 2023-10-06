@@ -190,7 +190,7 @@ namespace Odb::Lib::ProductModel
 			const auto& toeprintRecords = pComponentRecord->m_toeprintRecords;
 			for (const auto& pToeprintRecord : toeprintRecords)
 			{
-				auto toeprintName = pToeprintRecord->name;;
+				auto& toeprintName = pToeprintRecord->name;;
 				auto pinNumber = pToeprintRecord->pinNumber;
 				auto netNumber = pToeprintRecord->netNumber;
 				//auto subnetNumber = pToeprintRecord->subnetNumber;
