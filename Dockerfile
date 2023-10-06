@@ -33,22 +33,22 @@ RUN cmake --build --preset python-linux-release
 #FROM python:3.11.4-bullseye AS run
 FROM debian:bookworm-20230522-slim as run
 
-# copy PyOdbDesignServer files
-COPY --from=build /src/OdbDesign/OdbDesignServer OdbDesignServer
+# copy PyPyPyOdbDesignServer files
+COPY --from=build /src/OdbDesign/PyOdbDesignServer PyOdbDesignServer
 
 # copy PyOdbDesignLib files
-COPY --from=build /src/OdbDesign/out/build/python-linux-release/OdbDesignLib/_PyOdbDesignLib.so /OdbDesignServer/PyOdbDesignLib/
-COPY --from=build /src/OdbDesign/PyOdbDesignLib/PyOdbDesignLib.py /OdbDesignServer/PyOdbDesignLib/
-RUN touch /OdbDesignServer/PyOdbDesignLib/__init__.py
+COPY --from=build /src/OdbDesign/out/build/python-linux-release/OdbDesignLib/_PyOdbDesignLib.so /PyOdbDesignServer/PyOdbDesignLib/
+COPY --from=build /src/OdbDesign/PyOdbDesignLib/PyOdbDesignLib.py /PyOdbDesignServer/PyOdbDesignLib/
+RUN touch /PyOdbDesignServer/PyOdbDesignLib/__init__.py
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \       
         python3-dev \
         python3-pip
 
-RUN python3 -m pip install -r /OdbDesignServer/requirements.txt --break-system-packages
+RUN python3 -m pip install -r /PyOdbDesignServer/requirements.txt --break-system-packages
 
 # run
-WORKDIR /OdbDesignServer
+WORKDIR /PyOdbDesignServer
 EXPOSE 8000
-CMD ["gunicorn", "--bind", ":8000", "--workers", "3", "OdbDesignServer.wsgi:application"]
+CMD ["gunicorn", "--bind", ":8000", "--workers", "3", "PyOdbDesignServer.wsgi:application"]
