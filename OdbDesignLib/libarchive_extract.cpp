@@ -9,7 +9,9 @@
 
 int copy_data(struct archive* ar, struct archive* aw);
 
-bool extract(const char* filename, const char* destPath)
+const bool SECURE_EXTRACTION = true;
+
+bool extract(const char* filename, const char* destDir)
 {
     struct archive* a;
     struct archive* ext;
@@ -19,17 +21,26 @@ bool extract(const char* filename, const char* destPath)
 
     /* Select which attributes we want to restore. */
     flags = ARCHIVE_EXTRACT_TIME;
-    //flags |= ARCHIVE_EXTRACT_PERM;
-    //flags |= ARCHIVE_EXTRACT_ACL;
-    //flags |= ARCHIVE_EXTRACT_FFLAGS;
+    flags |= ARCHIVE_EXTRACT_PERM;
+    flags |= ARCHIVE_EXTRACT_ACL;
+    flags |= ARCHIVE_EXTRACT_FFLAGS;
+
+    if (SECURE_EXTRACTION)
+    {
+        flags |= ARCHIVE_EXTRACT_SECURE_SYMLINKS;
+        flags |= ARCHIVE_EXTRACT_SECURE_NODOTDOT;
+        flags |= ARCHIVE_EXTRACT_SECURE_NOABSOLUTEPATHS;        
+    }
 
     a = archive_read_new();
-    archive_read_support_format_tar(a);
-    archive_read_support_filter_gzip(a);
+    archive_read_support_format_all(a);
+    archive_read_support_filter_all(a);
+    //archive_read_support_format_tar(a);
+    //archive_read_support_filter_gzip(a);
     ext = archive_write_disk_new();
     archive_write_disk_set_options(ext, flags);
     archive_write_disk_set_standard_lookup(ext);
-    if ((r = archive_read_open_filename(a, filename, 10240)))
+    if ((r = archive_read_open_filename(a, filename, 1024*10)))
     {
         return false;
     }
@@ -46,10 +57,10 @@ bool extract(const char* filename, const char* destPath)
         }
 
         // prepend destPath to beginning of entry to extract it in the destination path
-        //auto entryPathname = archive_entry_pathname(entry);
-        //std::filesystem::path entryDestinationPathname(destPath);
-        //entryDestinationPathname /= entryPathname;
-        //archive_entry_set_pathname(entry, entryDestinationPathname.string().c_str());
+        auto entryPathname = archive_entry_pathname(entry);
+        std::filesystem::path entryDestinationPathname(destDir);
+        entryDestinationPathname /= entryPathname;
+        archive_entry_set_pathname(entry, entryDestinationPathname.string().c_str());
         
         r = archive_write_header(ext, entry);
         if (r < ARCHIVE_OK)
