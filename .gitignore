@@ -18,3 +18,5 @@ OdbDesignServer/Scripts/
 OdbDesignServer/api/__pycache__/
 OdbDesignServer/PyOdbDesignLib/
 /cmake-build-debug
+build/
+/vcpkg_installed
