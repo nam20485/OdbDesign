@@ -1,13 +1,15 @@
 #include "libarchive_extract.h"
 #include <archive.h>
 #include <archive_entry.h>
+#include <iostream>
+#include <filesystem>
 
 
 // from: https://github.com/libarchive/libarchive/wiki/Examples#user-content-A_Complete_Extractor
 
 int copy_data(struct archive* ar, struct archive* aw);
 
-bool extract(const char* filename)
+bool extract(const char* filename, const char* destPath)
 {
     struct archive* a;
     struct archive* ext;
@@ -17,17 +19,17 @@ bool extract(const char* filename)
 
     /* Select which attributes we want to restore. */
     flags = ARCHIVE_EXTRACT_TIME;
-    flags |= ARCHIVE_EXTRACT_PERM;
-    flags |= ARCHIVE_EXTRACT_ACL;
-    flags |= ARCHIVE_EXTRACT_FFLAGS;
+    //flags |= ARCHIVE_EXTRACT_PERM;
+    //flags |= ARCHIVE_EXTRACT_ACL;
+    //flags |= ARCHIVE_EXTRACT_FFLAGS;
 
     a = archive_read_new();
-    archive_read_support_format_all(a);
-    archive_read_support_filter_all(a);
+    archive_read_support_format_tar(a);
+    archive_read_support_filter_gzip(a);
     ext = archive_write_disk_new();
     archive_write_disk_set_options(ext, flags);
     archive_write_disk_set_standard_lookup(ext);
-    if ((r = archive_read_open_filename(a, filename, 1024*10)))
+    if ((r = archive_read_open_filename(a, filename, 10240)))
     {
         return false;
     }
@@ -42,6 +44,13 @@ bool extract(const char* filename)
         {
             return false;
         }
+
+        // prepend destPath to beginning of entry to extract it in the destination path
+        //auto entryPathname = archive_entry_pathname(entry);
+        //std::filesystem::path entryDestinationPathname(destPath);
+        //entryDestinationPathname /= entryPathname;
+        //archive_entry_set_pathname(entry, entryDestinationPathname.string().c_str());
+        
         r = archive_write_header(ext, entry);
         if (r < ARCHIVE_OK)
             fprintf(stderr, "%s\n", archive_error_string(ext));

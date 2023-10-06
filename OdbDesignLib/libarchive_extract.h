@@ -3,4 +3,4 @@
 #include <archive.h>
 
 
-bool extract(const char* filename);
+bool extract(const char* filename, const char* destPath);
