@@ -23,14 +23,15 @@ endif()
 
 project ("OdbDesign")
 
-if (MSVC)
-    # control where the static and shared libraries are built so that on windows
-    # we don't need to tinker with the path to run the executable
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
-endif()
+#if (false AND MSVC)
+#    # control where the static and shared libraries are built so that on windows
+#    # we don't need to tinker with the path to run the executable
+#    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
+#    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
+#    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
+#endif()
 
+# increase warnings in a compiler-specific manner
 if (MSVC)
     # warning level 4
     add_compile_options(/W4)
@@ -50,7 +51,10 @@ else()
 endif()
 
 # Include sub-projects.
-add_subdirectory("OdbDesignApp")
 add_subdirectory("OdbDesignLib")
+add_subdirectory("OdbDesignApp")
+add_subdirectory("OdbDesignServer")
 
+# link to OdbDesign library in both executable targets
 target_link_libraries(OdbDesignApp PUBLIC OdbDesign)
+target_link_libraries(OdbDesignServer PUBLIC OdbDesign)

@@ -1,3 +1,4 @@
+#FROM debian:bookworm-20230522-slim AS build
 FROM debian:bookworm-20230522-slim AS build
 
 # install dependencies
@@ -11,72 +12,43 @@ RUN apt-get update && \
         cmake \            
         g++ \
         ninja-build \
-        python3-dev \
-        #python3-pip \
-        #python3-virtualenv \
+        python3-dev \   
         # mingw-w64 \        
         swig      
 
-# add MS PowerShell repo
-RUN curl https://packages.microsoft.com/keys/microsoft.asc | gpg --yes --dearmor --output /usr/share/keyrings/microsoft.gpg
-RUN sh -c 'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/microsoft-debian-bullseye-prod bullseye main" > /etc/apt/sources.list.d/microsoft.list'
-
-# install PowerShell
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        powershell
-
 # copy source
-RUN mkdir -p /src/OdbDesign
+COPY . /src/OdbDesign
 WORKDIR /src/OdbDesign
-COPY . .
 
 # generate SWIG python bindings
-RUN chmod +x scripts/generate-python-module.ps1
-RUN scripts/generate-python-module.ps1
+RUN chmod +x scripts/generate-python-module.sh
+RUN ./scripts/generate-python-module.sh
 
 # configure & build using presets
 # linux-release
-RUN cmake --preset linux-release
-RUN cmake --build --preset linux-release
-# # linux-debug
-# RUN cmake --preset linux-debug
-# RUN cmake --build --preset linux-debug
-
-## build PyOdbDesignLib python package
-#RUN python3 -m pip install -r PyOdbDesignLib/pkg-build-requirements.txt --break-system-packages
-WORKDIR /src/OdbDesign/PyOdbDesignLib
-# copy C++ wrapper library to a format that Python expects for extension modules
-RUN cp /src/OdbDesign/out/build/linux-release/OdbDesignLib/libOdbDesign.so ./_PyOdbDesignLib.so
-## build Python package
-#RUN python3 -m build
+RUN cmake --preset python-linux-release
+RUN cmake --build --preset python-linux-release
 
 # much smaller runtime image
-FROM debian:bookworm-20230522-slim AS run
+#FROM python:3.11.4-bullseye AS run
+FROM debian:bookworm-20230522-slim as run
 
-RUN mkdir /OdbDesign
-WORKDIR /OdbDesign
+# copy PyPyPyOdbDesignServer files
+COPY --from=build /src/OdbDesign/PyOdbDesignServer PyOdbDesignServer
 
-# copy binaries
-RUN mkdir bin
-COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignLib/libOdbDesign.so ./bin/
-COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignApp/OdbDesignApp ./bin/
-# copy Python files
-COPY --from=build /src/OdbDesign/PyOdbDesignLib /OdbDesign/PyOdbDesignLib
+# copy PyOdbDesignLib files
+COPY --from=build /src/OdbDesign/out/build/python-linux-release/OdbDesignLib/_PyOdbDesignLib.so /PyOdbDesignServer/PyOdbDesignLib/
+COPY --from=build /src/OdbDesign/PyOdbDesignLib/PyOdbDesignLib.py /PyOdbDesignServer/PyOdbDesignLib/
+RUN touch /PyOdbDesignServer/PyOdbDesignLib/__init__.py
 
-# install Python3 dev
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        python3-dev
-        #python3-pip \
-        #python3-virtualenv
+    apt-get install -y --no-install-recommends \       
+        python3-dev \
+        python3-pip
 
-# # install package into Python environment
-# RUN python3 -m pip install --break-system-packages \
-#                            --no-index \
-#                            --find-links PyOdbDesignLib/dist/*.whl \
-#                            PyOdbDesignLib
+RUN python3 -m pip install -r /PyOdbDesignServer/requirements.txt --break-system-packages
 
 # run
-ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/OdbDesign/bin
-ENTRYPOINT [ "bin/OdbDesignApp" ]
+WORKDIR /PyOdbDesignServer
+EXPOSE 8000
+CMD ["gunicorn", "--bind", ":8000", "--workers", "3", "PyOdbDesignServer.wsgi:application"]

@@ -1,5 +1,8 @@
 #include "FileArchive.h"
 #include <filesystem>
+#include "ArchiveExtractor.h"
+#include <iostream>
+
 
 namespace Odb::Lib::FileModel::Design
 {
@@ -27,25 +30,50 @@ namespace Odb::Lib::FileModel::Design
 
 	bool FileArchive::ParseFileModel()
 	{
-		std::filesystem::path designPath(m_path);
-
-		if (!std::filesystem::exists(designPath)) return false;
-
-		if (std::filesystem::is_regular_file(designPath))
+		try
 		{
-			if (designPath.extension() == ".tar.gz")
+			std::filesystem::path designPath(m_path);
+
+			if (!std::filesystem::exists(designPath)) return false;
+		
+			if (std::filesystem::is_regular_file(designPath))
 			{
-				// unzip and change designPath to point to the unzipped directory
+				std::cout << " - Extracting... ";
 
-			}
-		}
+				if (! ArchiveExtractor::IsArchiveTypeSupported(designPath)) return false;
+			
+				ArchiveExtractor extractor(designPath.string());
+				if (!extractor.Extract()) return false;				
 
-		if (std::filesystem::is_directory(designPath))
+				auto extractedPath = std::filesystem::path(extractor.GetExtractedPath());
+				if (! std::filesystem::exists(extractedPath)) return false;
+				
+				designPath = extractedPath;		
+
+				std::cout << "success." << std::endl;
+			}			
+		
+			if (std::filesystem::is_directory(designPath))
+			{
+				std::cout << " - Parsing... ";
+
+				if (ParseDesignDirectory(designPath))
+				{
+					std::cout << "success." << std::endl << std::endl;
+					return true;
+				}
+			}		
+		}		
+		catch (std::filesystem::filesystem_error& fe)
 		{
-			return ParseDesignDirectory(designPath);
+			std::cout << fe.what() << std::endl;
+		}
+		catch (std::exception& e)
+		{
+			std::cout << e.what() << std::endl;
 		}
 
-		return true;
+		return false;
 	}
 
 	bool FileArchive::ParseDesignDirectory(std::filesystem::path path)
