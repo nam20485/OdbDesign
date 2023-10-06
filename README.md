@@ -1,6 +1,6 @@
 # OdbDesign
 
-A free open source cross-platform C++ library for parsing ODB++ Design archives and building net list product models with a Python server exposing a REST API, all packaged inside of a Docker image.
+A free open source cross-platform C++ library for parsing ODB++ Design archives and building net list product models exposed via a REST API, all packaged inside of a Docker image.
 
 ## Overview
 
