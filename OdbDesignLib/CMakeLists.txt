@@ -9,16 +9,19 @@ set_property(TARGET OdbDesign PROPERTY POSITION_INDEPENDENT_CODE ON)
 target_include_directories(OdbDesign
                            INTERFACE
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-                           $<INSTALL_INTERFACE:include>
-                           )
+                           $<INSTALL_INTERFACE:include>)
 
 # Link to LibArchive
 find_package(LibArchive REQUIRED)
 target_include_directories(OdbDesign PRIVATE ${LibArchive_INCLUDE_DIRS})
-target_link_libraries(OdbDesign PRIVATE ${LibArchive_LIBRARIES})
+target_link_libraries(OdbDesign PUBLIC ${LibArchive_LIBRARIES})
 
 # link to Crow
+#ADD_DEFINITIONS ("-DCROW_ENABLE_SSL")
+#set(CROW_FEATURES ssl compression)
+#set(CROW_FEATURES "ssl;compression")
 find_package(Crow REQUIRED)
+#target_include_directories(OdbDesign PRIVATE Crow::Crow)
 target_link_libraries(OdbDesign PUBLIC Crow::Crow)
 
 # Python extension module build settings                           
