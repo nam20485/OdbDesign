@@ -1,6 +1,7 @@
 #include "FileArchive.h"
 #include <filesystem>
 #include "ArchiveExtractor.h"
+#include <iostream>
 
 
 namespace Odb::Lib::FileModel::Design
@@ -29,27 +30,48 @@ namespace Odb::Lib::FileModel::Design
 
 	bool FileArchive::ParseFileModel()
 	{
-		std::filesystem::path designPath(m_path);
-
-		if (!std::filesystem::exists(designPath)) return false;
-		
-		if (std::filesystem::is_regular_file(designPath))
+		try
 		{
-			if (! ArchiveExtractor::IsArchiveTypeSupported(designPath)) return false;
+			std::filesystem::path designPath(m_path);
+
+			if (!std::filesystem::exists(designPath)) return false;
+		
+			if (std::filesystem::is_regular_file(designPath))
+			{
+				std::cout << " - Extracting... ";
+
+				if (! ArchiveExtractor::IsArchiveTypeSupported(designPath)) return false;
 			
-			ArchiveExtractor extractor(designPath.string());
-			if (!extractor.Extract()) return false;
+				ArchiveExtractor extractor(designPath.string());
+				if (!extractor.Extract()) return false;				
 
-			auto extractedPath = std::filesystem::path(extractor.GetExtractedPath());
-			if (! std::filesystem::exists(extractedPath)) return false;
+				auto extractedPath = std::filesystem::path(extractor.GetExtractedPath());
+				if (! std::filesystem::exists(extractedPath)) return false;
 				
-			designPath = extractedPath;						
-		}			
+				designPath = extractedPath;		
+
+				std::cout << "success." << std::endl;
+			}			
 		
-		if (std::filesystem::is_directory(designPath))
-		{
-			return ParseDesignDirectory(designPath);
+			if (std::filesystem::is_directory(designPath))
+			{
+				std::cout << " - Parsing... ";
+
+				if (ParseDesignDirectory(designPath))
+				{
+					std::cout << "success." << std::endl << std::endl;
+					return true;
+				}
+			}		
 		}		
+		catch (std::filesystem::filesystem_error& fe)
+		{
+			std::cout << fe.what() << std::endl;
+		}
+		catch (std::exception& e)
+		{
+			std::cout << e.what() << std::endl;
+		}
 
 		return false;
 	}
