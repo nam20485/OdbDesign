@@ -1,7 +1,11 @@
 #pragma once
 
-enum class ExitCode
+
+namespace Lib::Utils
 {
-	Success = 0,
-	UnknownError
-};
+	enum class ExitCode
+	{
+		Success = 0,
+		UnknownError
+	};
+}
