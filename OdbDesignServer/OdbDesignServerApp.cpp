@@ -20,7 +20,7 @@ namespace Odb::App::Server
 		m_vecArgv.clear();
 	}
 
-	ExitCode OdbDesignServerApp::Run()
+	Utils::ExitCode OdbDesignServerApp::Run()
 	{
 		//m_crowApp.loglevel(crow::LogLevel::Debug);	
 
@@ -30,7 +30,7 @@ namespace Odb::App::Server
 		// run the server
 		m_crowApp.port(18080).multithreaded().run();
 
-		return ExitCode::Success;
+		return Utils::ExitCode::Success;
 	}
 
 	void DefineRoutes(crow::SimpleApp& app)

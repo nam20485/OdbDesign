@@ -1,7 +1,7 @@
 #pragma once
 
 
-namespace Lib::Utils
+namespace Utils
 {
 	enum class ExitCode
 	{

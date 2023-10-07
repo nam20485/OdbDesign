@@ -20,7 +20,7 @@ int main()
     auto success = TestRigidFlexDesign();
     if (!success)
     {
-        return (int) Lib::Utils::ExitCode::UnknownError;
+        return (int) Utils::ExitCode::UnknownError;
     }
 
     //std::cout << "success!" << std::endl;
@@ -28,12 +28,12 @@ int main()
     success = TestSampleDesign();
     if (!success)
     {
-        return (int) Lib::Utils::ExitCode::UnknownError;
+        return (int) Utils::ExitCode::UnknownError;
     }
 
     //std::cout << "success!" << std::endl;    
 
-    return (int) Lib::Utils::ExitCode::Success;
+    return (int) Utils::ExitCode::Success;
 }
 
 bool TestSampleDesign()

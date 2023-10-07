@@ -14,7 +14,7 @@ namespace Odb::App::Server
 		OdbDesignServerApp(int argc, char* argv[]);
 		~OdbDesignServerApp();
 
-		ExitCode Run();
+		Utils::ExitCode Run();
 
 	private:
 		crow::SimpleApp m_crowApp;
