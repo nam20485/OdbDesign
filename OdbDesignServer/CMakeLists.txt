@@ -1,7 +1,7 @@
 ﻿# CMakeList.txt : CMake project for OdbDesignServer
 #
 
-add_executable(OdbDesignServer "OdbDesignServer.cpp" "OdbDesignServer.h" "Controllers/RouteController.h" "Controllers/RouteController.cpp" "Controllers/HelloWorldController.h" "Controllers/HelloWorldController.cpp" "StepsEdaDataController.h" "StepsEdaDataController.cpp"   "OdbDesignServerApp.h" "OdbDesignServerApp.cpp")
+add_executable(OdbDesignServer "OdbDesignServer.cpp" "OdbDesignServer.h" "Controllers/RouteController.h" "Controllers/RouteController.cpp" "Controllers/HelloWorldController.h" "Controllers/HelloWorldController.cpp"     "OdbDesignServerApp.h" "OdbDesignServerApp.cpp" "Controllers/StepsEdaDataController.cpp" "Controllers/StepsEdaDataController.h")
 
 # link to Crow
 #set(CROW_FEATURES ssl compression)
@@ -15,3 +15,10 @@ add_custom_command(
         COMMAND ${CMAKE_COMMAND} -E copy_directory
                 ${CMAKE_SOURCE_DIR}/OdbDesignServer/templates
                 ${CMAKE_CURRENT_BINARY_DIR}/templates)
+
+# copy designs directory to output directory 
+add_custom_command(
+        TARGET OdbDesignServer POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+                ${CMAKE_SOURCE_DIR}/OdbDesignServer/designs
+                ${CMAKE_CURRENT_BINARY_DIR}/designs)
