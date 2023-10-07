@@ -8,7 +8,7 @@ A free open source cross-platform C++ library for parsing ODB++ Design archives 
 
 The diagram describes the current state of parser implementation and data availability. Green color describes areas of the ODB++ archive file that are implemented and have their data available for use. Red color describes areas that are not parsed so their data is not yet available.
 
-![image](https://github.com/nam20485/OdbDesign/assets/1829396/6c45831b-af62-4c45-b17c-137bc1f730aa)
+![image](https://github.com/nam20485/OdbDesign/assets/1829396/2b902d94-c9ba-40cb-9b79-e0e6c4ba775a)
 
 ### Architecture
 
