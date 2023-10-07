@@ -7,7 +7,7 @@
 #include <memory>
 #include "Pin.h"
 #include "Package.h"
-#include "enums.h"
+#include "BoardSide.h"
 
 
 namespace Odb::Lib::ProductModel
