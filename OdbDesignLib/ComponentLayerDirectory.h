@@ -3,7 +3,7 @@
 #include "LayerDirectory.h"
 #include <vector>
 #include <string>
-#include "enums.h"
+#include "BoardSide.h"
 
 
 namespace Odb::Lib::FileModel::Design

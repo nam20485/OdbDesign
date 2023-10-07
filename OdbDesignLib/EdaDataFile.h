@@ -5,7 +5,7 @@
 #include <vector>
 #include <map>
 #include "export.h"
-#include "enums.h"
+#include "BoardSide.h"
 
 
 namespace Odb::Lib::FileModel::Design

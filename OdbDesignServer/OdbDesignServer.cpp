@@ -2,23 +2,10 @@
 //
 
 #include "OdbDesignServer.h"
-#include "OdbDesign.h"
-#include "crow.h"
+#include "OdbDesignServerApp.h"
 
-int main()
+
+int main(int argc, char* argv[])
 {
-	crow::SimpleApp app;
-
-	app.loglevel(crow::LogLevel::Info);
-
-	CROW_ROUTE(app, "/")([]() {
-		//return "Hello world";
-		auto page = crow::mustache::load_text("helloworld.html");
-		return page;
-		});
-
-
-	app.port(18080).multithreaded().run();
-
-	return 0;
+	return (int) Odb::App::Server::OdbDesignServerApp(argc, argv).Run();				
 }

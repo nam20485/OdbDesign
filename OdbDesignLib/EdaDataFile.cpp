@@ -2,7 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include "string_trim.h"
-#include "enums.h"
+#include "BoardSide.h"
 
 
 namespace Odb::Lib::FileModel::Design
