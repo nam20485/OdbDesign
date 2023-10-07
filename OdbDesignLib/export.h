@@ -7,6 +7,6 @@
 #    define DECLSPEC __declspec(dllimport)
 #	 //define EXPIMP_TEMPLATE extern
 #  endif
-#else // non windows
+#else // non windows define it to nothing (Linux exports by default)
 #  define DECLSPEC
 #endif
