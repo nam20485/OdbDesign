@@ -54,7 +54,12 @@ endif()
 add_subdirectory("OdbDesignLib")
 add_subdirectory("OdbDesignApp")
 add_subdirectory("OdbDesignServer")
+add_subdirectory("Utils")
 
 # link to OdbDesign library in both executable targets
 target_link_libraries(OdbDesignApp PUBLIC OdbDesign)
 target_link_libraries(OdbDesignServer PUBLIC OdbDesign)
+
+target_link_libraries(OdbDesignApp PUBLIC Utils)
+target_link_libraries(OdbDesignServer PUBLIC Utils)
+target_link_libraries(OdbDesign PUBLIC Utils)
