@@ -8,7 +8,6 @@ set(MY_CXX_STANDARD 17)
 set(CXX_STANDARD ${MY_CXX_STANDARD})
 set(CMAKE_CXX_STANDARD ${MY_CXX_STANDARD})
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-#set(CXX_STANDARD_REQUIRED True)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
@@ -22,14 +21,6 @@ if (POLICY CMP0141)
 endif()
 
 project ("OdbDesign")
-
-#if (false AND MSVC)
-#    # control where the static and shared libraries are built so that on windows
-#    # we don't need to tinker with the path to run the executable
-#    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
-#    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
-#    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
-#endif()
 
 # increase warnings in a compiler-specific manner
 if (MSVC)
