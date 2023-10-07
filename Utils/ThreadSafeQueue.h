@@ -14,7 +14,7 @@
 #include <chrono>
 
 
-namespace Utils::Lib
+namespace Utils
 {
     /** std::_queue wrapped in thread-safety mechanisms
      *
