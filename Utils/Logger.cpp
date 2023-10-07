@@ -4,6 +4,7 @@
 namespace Utils
 {
 	Logger::Logger()
+		: m_level(LogLevel::Info)
 	{
 	}
 

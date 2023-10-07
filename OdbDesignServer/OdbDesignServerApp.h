@@ -5,6 +5,7 @@
 #include "ExitCode.h"
 #include "DesignCache.h"
 #include <vector>
+#include "Logger.h"
 
 
 namespace Odb::App::Server
@@ -14,6 +15,8 @@ namespace Odb::App::Server
 	public:
 		OdbDesignServerApp(int argc, char* argv[]);
 		~OdbDesignServerApp();
+
+		Utils::Logger m_logger;
 
 		Utils::ExitCode Run();
 
