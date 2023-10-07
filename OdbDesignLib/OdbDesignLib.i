@@ -45,7 +45,7 @@ using StepDirectory = Odb::Lib::FileModel::Design::StepDirectory;
 %include "Component.h"
 %include "Design.h"
 %include "EdaDataFile.h"
-%include "enums.h"
+%include "BoardSide.h"
 %include "FileArchive.h"
 %include "LayerDirectory.h"
 %include "ComponentLayerDirectory.h"
