@@ -31,9 +31,13 @@ namespace Utils
 	{
 		std::stringstream ss;
 
-		ss << logMessage.timeStamp.time_since_epoch().count()
+		ss << "["
+			<< logMessage.timeStamp.time_since_epoch().count()
+			<< "]"
 			<< " "
-			<< logLevelToString(logMessage.level);
+			<< logLevelToString(logMessage.level)
+			<< " "
+			<< "-";
 
 		if (logMessage.file != "" &&
 			logMessage.line != -1)
@@ -51,7 +55,7 @@ namespace Utils
 	}
 
 	std::string Logger::logLevelToString(LogLevel level) const
-	{
+	{		
 		return LogLevelStrings[(int)level];
 	}
 }
