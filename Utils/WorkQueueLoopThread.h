@@ -18,6 +18,7 @@ namespace Utils
     public:
         typedef std::function<bool(TWorkItem&)> processWorkItemFunc;
 
+        WorkQueueLoopThread();
         explicit WorkQueueLoopThread(processWorkItemFunc processWorkItemProc);
 
         void addWorkItem(TWorkItem&& workItem);
@@ -32,11 +33,26 @@ namespace Utils
 
         void processWorkItemsLoop();
 
+        virtual bool processWorkItem(TWorkItem& workItem);
+
     private:
         const bool _stopProcessingOnWorkItemFail{ true };
 
     };
+    
+    template<typename TWorkItem>
+    /*virtual*/ bool WorkQueueLoopThread<TWorkItem>::processWorkItem(TWorkItem& workItem)
+    {
+        if (_processWorkItemProc == nullptr) return false;       
+        return _processWorkItemProc(workItem);       
+    }
 
+
+    template<typename TWorkItem>
+    inline WorkQueueLoopThread<TWorkItem>::WorkQueueLoopThread()
+        : WorkQueueLoopThread(nullptr)
+    {
+    }
 
     template<typename TWorkItem>
     WorkQueueLoopThread<TWorkItem>::WorkQueueLoopThread(WorkQueueLoopThread::processWorkItemFunc processWorkItemProc)
@@ -61,7 +77,7 @@ namespace Utils
             while (!_workItemQueue.empty())
             {
                 auto workItem = _workItemQueue.front(false);
-                if (!_processWorkItemProc(workItem))
+                if (!processWorkItem(workItem))
                 {
                     if (_stopProcessingOnWorkItemFail)
                     {
