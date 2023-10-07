@@ -1,7 +1,7 @@
 ﻿# CMakeList.txt : CMake project for OdbDesignLib
 #
 
-add_library(OdbDesign SHARED "export.h" "ComponentLayerDirectory.cpp" "ComponentLayerDirectory.h" "EdaDataFile.cpp" "EdaDataFile.h" "LayerDirectory.cpp" "LayerDirectory.h" "NetlistFile.cpp" "NetlistFile.h" "FileArchive.cpp" "FileArchive.h" "StepDirectory.cpp" "StepDirectory.h" "string_trim.h" "macros.h" "Net.h" "Net.cpp" "Component.h" "Component.cpp" "Pin.h" "Pin.cpp" "PinConnection.h" "PinConnection.cpp" "Package.h" "Package.cpp" "Part.h" "Part.cpp" "Via.h" "Via.cpp" "Design.h" "Design.cpp" "enums.h" "string_trim.cpp" "ArchiveExtractor.h" "ArchiveExtractor.cpp" "libarchive_extract.h" "libarchive_extract.cpp"  "OdbDesign.h" "DesignCache.h" "DesignCache.cpp" "CrowReturnable.h" "CrowReturnable.cpp")
+add_library(OdbDesign SHARED "export.h" "ComponentLayerDirectory.cpp" "ComponentLayerDirectory.h" "EdaDataFile.cpp" "EdaDataFile.h" "LayerDirectory.cpp" "LayerDirectory.h" "NetlistFile.cpp" "NetlistFile.h" "FileArchive.cpp" "FileArchive.h" "StepDirectory.cpp" "StepDirectory.h" "string_trim.h" "macros.h" "Net.h" "Net.cpp" "Component.h" "Component.cpp" "Pin.h" "Pin.cpp" "PinConnection.h" "PinConnection.cpp" "Package.h" "Package.cpp" "Part.h" "Part.cpp" "Via.h" "Via.cpp" "Design.h" "Design.cpp" "BoardSide.h" "string_trim.cpp" "ArchiveExtractor.h" "ArchiveExtractor.cpp" "libarchive_extract.h" "libarchive_extract.cpp"  "OdbDesign.h" "DesignCache.h" "DesignCache.cpp" "CrowReturnable.h" "CrowReturnable.cpp")
 
 # required for SWIG
 set_property(TARGET OdbDesign PROPERTY POSITION_INDEPENDENT_CODE ON)
