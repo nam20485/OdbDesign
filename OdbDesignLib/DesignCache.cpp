@@ -4,41 +4,35 @@
 
 namespace Odb::Lib
 {
-
-    Odb::Lib::DesignCache::DesignCache()
+    DesignCache::DesignCache()
         : DesignCache(".")
     {
     }
 
-    Odb::Lib::DesignCache::DesignCache(std::string directory) :
+    DesignCache::DesignCache(std::string directory) :
         m_directory(directory)
     {
     }
 
-    Odb::Lib::DesignCache::~DesignCache()
+    DesignCache::~DesignCache()
     {
         m_fileArchivesByName.clear();
         m_designsByName.clear();
     }
 
-    std::shared_ptr<ProductModel::Design> Odb::Lib::DesignCache::GetDesign(std::string designName)
+    std::shared_ptr<ProductModel::Design> DesignCache::GetDesign(std::string designName)
     {
         auto findIt = m_designsByName.find(designName);
         if (findIt == m_designsByName.end())
         {
-            LoadDesign(designName);            
+            auto pDesign = LoadDesign(designName);             
+            return pDesign;
 		}
 
-        findIt = m_designsByName.find(designName);
-        if (findIt == m_designsByName.end())
-        {
-            return findIt->second;
-        }
-
-        return nullptr;
+        return m_designsByName[designName];
     }
 
-    std::shared_ptr<FileModel::Design::FileArchive> Odb::Lib::DesignCache::GetFileArchive(std::string designName)
+    std::shared_ptr<FileModel::Design::FileArchive> DesignCache::GetFileArchive(std::string designName)
     {
         auto findIt = m_fileArchivesByName.find(designName);
         if (findIt == m_fileArchivesByName.end())
@@ -50,7 +44,7 @@ namespace Odb::Lib
         return m_fileArchivesByName[designName];        
     }
 
-    std::shared_ptr<ProductModel::Design> Odb::Lib::DesignCache::LoadDesign(std::string designName)
+    std::shared_ptr<ProductModel::Design> DesignCache::LoadDesign(std::string designName)
     {
         std::filesystem::path dir(m_directory);
 
@@ -73,7 +67,7 @@ namespace Odb::Lib
         return nullptr;
     }
 
-    std::shared_ptr<FileModel::Design::FileArchive> Odb::Lib::DesignCache::LoadFileArchive(std::string designName)
+    std::shared_ptr<FileModel::Design::FileArchive> DesignCache::LoadFileArchive(std::string designName)
     {
         std::filesystem::path dir(m_directory);
 
