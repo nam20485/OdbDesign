@@ -6,6 +6,7 @@
 #include "DesignCache.h"
 #include <vector>
 #include "Logger.h"
+#include "CommandLineArgs.h"
 
 
 namespace Odb::App::Server
@@ -17,14 +18,14 @@ namespace Odb::App::Server
 		~OdbDesignServerApp();
 
 		Utils::Logger m_logger;
+		Odb::Lib::DesignCache m_designCache;
+		crow::SimpleApp m_crowApp;
+		Utils::CommandLineArgs m_commandLineArgs;
 
 		Utils::ExitCode Run();
 
-	private:
-		crow::SimpleApp m_crowApp;
-		Odb::Lib::DesignCache m_designCache;
-
-		std::vector<std::string> m_vecArgv;
+	private:				
+		void AddRoutes();
 
 	};
 }
