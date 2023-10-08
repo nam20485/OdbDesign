@@ -25,23 +25,23 @@ if (PYTHON_MODULE_BUILD)
  #                      PRE_BUILD
  #                      COMMAND scripts/generate-python-module.ps1)
 
- if (MSVC)
-    # make a copy of output library with name expected by Python module extensions
-    add_custom_command(TARGET OdbDesign
-                       POST_BUILD
-                       COMMAND ${CMAKE_COMMAND}
-                       ARGS -E copy $<TARGET_FILE:OdbDesign> $<TARGET_FILE_DIR:OdbDesign>/_PyOdbDesignLib.pyd
-                       COMMENT Copying to Python module extension
-                       )
-elseif(LINUX)
-    # make a copy of output library with name expected by Python module extensions
-    add_custom_command(TARGET OdbDesign
-                       POST_BUILD
-                       COMMAND ${CMAKE_COMMAND}
-                       ARGS -E copy $<TARGET_FILE:OdbDesign> $<TARGET_FILE_DIR:OdbDesign>/_PyOdbDesignLib.so
-                       COMMENT Copying to Python module extension
-                       )
-endif()
+     if (MSVC)
+        # make a copy of output library with name expected by Python module extensions
+        add_custom_command(TARGET OdbDesign
+                           POST_BUILD
+                           COMMAND ${CMAKE_COMMAND}
+                           ARGS -E copy $<TARGET_FILE:OdbDesign> $<TARGET_FILE_DIR:OdbDesign>/_PyOdbDesignLib.pyd
+                           COMMENT Copying to Python module extension
+                           )
+    elseif(LINUX)
+        # make a copy of output library with name expected by Python module extensions
+        add_custom_command(TARGET OdbDesign
+                           POST_BUILD
+                           COMMAND ${CMAKE_COMMAND}
+                           ARGS -E copy $<TARGET_FILE:OdbDesign> $<TARGET_FILE_DIR:OdbDesign>/_PyOdbDesignLib.so
+                           COMMENT Copying to Python module extension
+                           )
+    endif()
 
     target_sources(OdbDesign PRIVATE "OdbDesignLib_wrap.cxx")
 
