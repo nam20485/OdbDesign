@@ -3,12 +3,14 @@
 #include "RouteController.h"
 
 
-class HelloWorldController : public RouteController
+namespace Odb::App::Server
 {
-public:
-	HelloWorldController(crow::SimpleApp& crowApp);
-	HelloWorldController(crow::SimpleApp& crowApp, const std::string& prefix);
+	class HelloWorldController : public RouteController
+	{
+	public:
+		HelloWorldController(OdbDesignServerApp* pServerApp);
 
-	void AddRoutes() override;
+		void AddRoutes() override;
 
-};
+	};
+}

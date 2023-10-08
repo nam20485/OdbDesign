@@ -2,16 +2,24 @@
 
 #include "../OdbDesignServer.h"
 #include "crow.h"
+#include "../OdbDesignServerApp.h"
 
 
-class RouteController
+namespace Odb::App::Server
 {
-public:
-	RouteController(crow::SimpleApp& crowApp);
+	class RouteController
+	{
+	public:		
+		RouteController(OdbDesignServerApp* pServerApp);
+
+		virtual void AddRoutes() = 0;
+
+	protected:		
+		OdbDesignServerApp* m_pServerApp;
+
+	};
+}
 
 	virtual void AddRoutes() = 0;
-	
-protected:
-	crow::SimpleApp& m_crowApp;
 
 };

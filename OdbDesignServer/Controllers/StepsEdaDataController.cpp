@@ -1,11 +1,11 @@
 #include "StepsEdaDataController.h"
 #include "FileArchive.h"
 
+
 namespace Odb::App::Server
 {
-
-	StepsEdaDataController::StepsEdaDataController(crow::SimpleApp& crowApp)
-		: RouteController(crowApp)
+	StepsEdaDataController::StepsEdaDataController(OdbDesignServerApp* pServerApp)
+		: RouteController(pServerApp)
 	{
 	}
 

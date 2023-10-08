@@ -1,8 +1,10 @@
 #include "RouteController.h"
 
 
-RouteController::RouteController(crow::SimpleApp& crowApp)
-	: m_crowApp(crowApp)
+namespace Odb::App::Server
 {
-	//AddRoutes();
+	RouteController::RouteController(OdbDesignServerApp* pServerApp)
+		: m_pServerApp(pServerApp)
+	{
+	}
 }

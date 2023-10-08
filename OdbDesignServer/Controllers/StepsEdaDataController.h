@@ -8,7 +8,7 @@ namespace Odb::App::Server
 	class StepsEdaDataController : public RouteController
 	{
 	public:
-		StepsEdaDataController(crow::SimpleApp& crowApp);
+		StepsEdaDataController(OdbDesignServerApp* pServerApp);
 
 		void AddRoutes() override;
 	};
