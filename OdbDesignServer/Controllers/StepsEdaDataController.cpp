@@ -12,31 +12,32 @@ namespace Odb::App::Server
 	void StepsEdaDataController::AddRoutes()
 	{
 		//
-		//	/steps/edadata/package_records
+		//	/steps/edadata/package_records?design=sample_design
 		//
-		CROW_ROUTE(m_crowApp, "/steps/edadata/package_records")
-			([](const crow::request& req/*,
-				const crow::response resp*/) {
 
-				// /steps/edadata/package_records?design=sample_design
-
+		// for capturing in lambda below
+		//auto pServerApp = m_pServerApp;
+		
+		// this capture expression works too: 'controller = *this'
+		CROW_ROUTE(m_pServerApp->m_crowApp, "/steps/edadata/package_records")
+			([pServerApp = this->m_pServerApp](const crow::request& req/*,
+											   const crow::response resp*/)
+				{				
 					auto designName = req.url_params.get("design");
-					if (designName)
+					if (designName && strlen(designName))
 					{
-						Odb::Lib::FileModel::Design::FileArchive odbDesign(designName);
-						auto success = odbDesign.ParseFileModel();
-						if (!success)
+						auto pFileArchive = pServerApp->m_designCache.GetFileArchive(designName);
+						if (pFileArchive)
 						{
-							//return crow::response(crow::status::BAD_REQUEST);
-							//resp.end();
-						}
+							auto productName = pFileArchive->GetProductName();
+							return crow::response(crow::status::OK, productName);
 
-						//auto packageRecords = odbDesign.GetPackageRecords();
-						//packageRecords.				
+							//	auto page = crow::mustache::load_text("helloworld.html");
+							//	return page;
+						}
 					}
 
 					return crow::response(crow::status::BAD_REQUEST);
-
 				});
 	}
 }
