@@ -9,6 +9,7 @@ set(CXX_STANDARD ${MY_CXX_STANDARD})
 set(CMAKE_CXX_STANDARD ${MY_CXX_STANDARD})
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+# required for SWIG python wrapper
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 ## treat warnings as errors (https://cmake.org/cmake/help/latest/variable/CMAKE_COMPILE_WARNING_AS_ERROR.html#variable:CMAKE_COMPILE_WARNING_AS_ERROR)
@@ -59,6 +60,7 @@ add_subdirectory("Utils")
 target_link_libraries(OdbDesignApp PUBLIC OdbDesign)
 target_link_libraries(OdbDesignServer PUBLIC OdbDesign)
 
+# link to Utils lib in all targets
 target_link_libraries(OdbDesignApp PUBLIC Utils)
 target_link_libraries(OdbDesignServer PUBLIC Utils)
 target_link_libraries(OdbDesign PUBLIC Utils)
