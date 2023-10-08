@@ -16,6 +16,8 @@ namespace Odb::Lib
 		
 		std::shared_ptr<ProductModel::Design> GetDesign(std::string designName);
 		std::shared_ptr<FileModel::Design::FileArchive> GetFileArchive(std::string designName);
+
+		void Clear();
 		
 	private:
 		std::string m_directory;

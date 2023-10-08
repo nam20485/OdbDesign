@@ -16,8 +16,7 @@ namespace Odb::Lib
 
     DesignCache::~DesignCache()
     {
-        m_fileArchivesByName.clear();
-        m_designsByName.clear();
+        Clear();
     }
 
     std::shared_ptr<ProductModel::Design> DesignCache::GetDesign(std::string designName)
@@ -42,6 +41,12 @@ namespace Odb::Lib
         }
 
         return m_fileArchivesByName[designName];        
+    }
+
+    void DesignCache::Clear()
+    {
+        m_fileArchivesByName.clear();
+        m_designsByName.clear();
     }
 
     std::shared_ptr<ProductModel::Design> DesignCache::LoadDesign(std::string designName)
