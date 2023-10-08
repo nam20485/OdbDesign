@@ -18,6 +18,11 @@ find_package(LibArchive REQUIRED)
 target_include_directories(OdbDesign PRIVATE ${LibArchive_INCLUDE_DIRS})
 target_link_libraries(OdbDesign PUBLIC ${LibArchive_LIBRARIES})
 
+# Link to Protobuf
+find_package(Protobuf REQUIRED)
+target_include_directories(OdbDesign PRIVATE ${Protobuf_INCLUDE_DIRS})
+target_link_libraries(OdbDesign PUBLIC ${Protobuf_LIBRARIES})
+
 # Python extension module build settings                           
 if (PYTHON_MODULE_BUILD)
  #   # run swig to generate wrapper file
