@@ -20,6 +20,3 @@ namespace Odb::App::Server
 	};
 }
 
-	virtual void AddRoutes() = 0;
-
-};
