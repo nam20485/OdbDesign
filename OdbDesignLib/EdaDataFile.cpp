@@ -1,8 +1,11 @@
 #include "EdaDataFile.h"
+#include "EdaDataFile.h"
+#include "EdaDataFile.h"
 #include <fstream>
 #include <sstream>
-#include "string_trim.h"
+#include "str_trim.h"
 #include "BoardSide.h"
+#include "proto/edadatafile.pb.h"
 
 
 namespace Odb::Lib::FileModel::Design
@@ -78,6 +81,16 @@ namespace Odb::Lib::FileModel::Design
         return m_packageRecordsByName;
     }
 
+    //std::string EdaDataFile::to_json() const
+    //{
+    //    return std::string();
+    //}
+
+    //std::shared_ptr<EdaDataFile> EdaDataFile::from_json(const std::string& json)
+    //{
+    //    return std::shared_ptr<EdaDataFile>();
+    //}
+
     bool EdaDataFile::Parse(std::filesystem::path path)
     {
         m_path = path;
@@ -101,7 +114,7 @@ namespace Odb::Lib::FileModel::Design
         while (std::getline(edaDataFile, line))
         {
             // trim whitespace from beginning and end of line
-            trim(line);
+            Utils::str_trim(line);
             if (!line.empty())
             {
                 std::stringstream lineStream(line);
@@ -148,7 +161,7 @@ namespace Odb::Lib::FileModel::Design
 
                     // read the rest of the line as the source
                     if (!std::getline(lineStream, m_source)) return false;
-                    trim(m_source);
+                    Utils::str_trim(m_source);
                 }
                 else if (line.find(LAYER_NAMES_RECORD_TOKEN) == 0)
                 {
@@ -518,7 +531,7 @@ namespace Odb::Lib::FileModel::Design
                     }
                     else if (token == "T")
                     {
-                        pPinRecord->mountType = PackageRecord::PinRecord::MountType::ThroughHole;
+                        pPinRecord->mountType = PackageRecord::PinRecord::MountType::MT_ThroughHole;
                     }
                     else if (token == "R")
                     {
@@ -538,7 +551,7 @@ namespace Odb::Lib::FileModel::Design
                     }
                     else if (token == "U")
                     {
-                        pPinRecord->mountType = PackageRecord::PinRecord::MountType::Undefined;
+                        pPinRecord->mountType = PackageRecord::PinRecord::MountType::MT_Undefined;
                     }
                     else
                     {

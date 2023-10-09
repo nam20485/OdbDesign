@@ -6,6 +6,8 @@
 #include <map>
 #include "export.h"
 #include "BoardSide.h"
+//#include "proto/edadatafile.pb.h"
+//#include <google/protobuf/message.h>
 
 
 namespace Odb::Lib::FileModel::Design
@@ -13,8 +15,7 @@ namespace Odb::Lib::FileModel::Design
 	class DECLSPEC EdaDataFile
 	{
 	public:
-		EdaDataFile();
-		//EdaData(std::filesystem::path path);
+		EdaDataFile();		
 		~EdaDataFile();
 
 		std::filesystem::path GetPath() const;
@@ -140,12 +141,12 @@ namespace Odb::Lib::FileModel::Design
 				{
 					Smt,
 					RecommendedSmtPad,
-					ThroughHole,
+					MT_ThroughHole,
 					RecommendedThroughHole,
 					Pressfit,
 					NonBoard,
 					Hole,
-					Undefined	// default
+					MT_Undefined	// default
 				};
 
 				typedef std::vector<std::shared_ptr<PinRecord>> Vector;
@@ -185,6 +186,12 @@ namespace Odb::Lib::FileModel::Design
 		const NetRecord::StringMap& GetNetRecordsByName() const;
 		const PackageRecord::Vector& GetPackageRecords() const;
 		const PackageRecord::StringMap& GetPackageRecordsByName() const;
+
+		//google::protobuf::Message* to_protobuf() const;
+		//static std::shared_ptr<EdaDataFile> from_protobuf(const google::protobuf::Message& message);
+
+		//std::string to_json() const;
+		//static std::shared_ptr<EdaDataFile> from_json(const std::string& json);
 
 	private:
 		std::filesystem::path m_path;

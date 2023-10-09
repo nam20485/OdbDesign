@@ -70,9 +70,9 @@ namespace Odb::Lib::FileModel::Design
 	{
 		std::cout << " - Extracting... ";
 
-		if (!ArchiveExtractor::IsArchiveTypeSupported(path)) return false;
+		if (!Utils::ArchiveExtractor::IsArchiveTypeSupported(path)) return false;
 
-		ArchiveExtractor extractor(path.string());
+		Utils::ArchiveExtractor extractor(path.string());
 		if (!extractor.Extract()) return false;
 
 		auto extracted = std::filesystem::path(extractor.GetExtractedPath());
