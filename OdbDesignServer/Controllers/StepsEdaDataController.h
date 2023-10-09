@@ -14,7 +14,7 @@ namespace Odb::App::Server
 		void register_routes() override;		
 
 	private:
-		crow::response steps_edadata_route_handler(const crow::request& req);
+		crow::response steps_edadata_route_handler(const crow::request& req, OdbDesignServerApp* pServerApp);
 
 	};
 }

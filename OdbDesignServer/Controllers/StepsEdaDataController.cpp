@@ -17,10 +17,11 @@ namespace Odb::App::Server
 		//	/steps/edadata/package_records?design=sample_design&step=stepName
 		//
 
+		// TODO: figure out why capture here is wierd (i.e. how to capture pServerApp so it can be used in the member fxn handler)
 		CROW_ROUTE(m_pServerApp->m_crowApp, "/steps/edadata/package_records")
-			([&](const crow::request& req)
+			([&, pServerApp = this->m_pServerApp](const crow::request& req)
 				{
-					return steps_edadata_route_handler(req);
+					return this->steps_edadata_route_handler(req, pServerApp);
 				});
 
 		//register_route_handler("/steps/edadata/package_records", std::bind(&StepsEdaDataController::steps_edadata_route_handler, this, std::placeholders::_1));			
@@ -30,7 +31,7 @@ namespace Odb::App::Server
 		});*/
 	}	
 
-	crow::response StepsEdaDataController::steps_edadata_route_handler(const crow::request& req)
+	crow::response StepsEdaDataController::steps_edadata_route_handler(const crow::request& req, OdbDesignServerApp* pServerApp)
 	{
 		auto designName = req.url_params.get("design");
 		if (designName == nullptr || strlen(designName) == 0)
@@ -44,7 +45,7 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "step name not specified");
 		}
 
-		auto pFileArchive = m_pServerApp->m_designCache.GetFileArchive(designName);
+		auto pFileArchive = pServerApp->m_designCache.GetFileArchive(designName);
 		if (pFileArchive == nullptr)
 		{
 			return crow::response(crow::status::BAD_REQUEST, std::format("design: \"{0}\" not found", designName));
