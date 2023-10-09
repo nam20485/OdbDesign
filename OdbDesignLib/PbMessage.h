@@ -1,6 +1,7 @@
 #pragma once
 
 #include <google/protobuf/message.h>
+#include <google/protobuf/util/json_util.h>
 
 
 namespace Odb::Lib
