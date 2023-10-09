@@ -23,7 +23,7 @@ namespace Odb::App::Server
 		//m_crowApp.loglevel(crow::LogLevel::Debug);	
 
 		// controller routes
-		AddRoutes();
+		register_routes();
 
 		// run the server
 		m_crowApp.port(18080).multithreaded().run();
@@ -31,12 +31,12 @@ namespace Odb::App::Server
 		return Utils::ExitCode::Success;
 	}
 
-	void OdbDesignServerApp::AddRoutes()
+	void OdbDesignServerApp::register_routes()
 	{
 		HelloWorldController helloWorld(this);
-		helloWorld.AddRoutes();
+		helloWorld.register_routes();
 
 		StepsEdaDataController edaData(this);
-		edaData.AddRoutes();
+		edaData.register_routes();
 	}
 }

@@ -8,7 +8,7 @@ namespace Odb::App::Server
 	{
 	}
 
-	void HelloWorldController::AddRoutes()
+	void HelloWorldController::register_routes()
 	{
 		// /helloworld
 		CROW_ROUTE(m_pServerApp->m_crowApp, "/helloworld")([]() {

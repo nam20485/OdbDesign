@@ -1,6 +1,7 @@
 #pragma once
 
 #include "RouteController.h"
+#include "crow_win.h"
 
 
 namespace Odb::App::Server
@@ -10,6 +11,10 @@ namespace Odb::App::Server
 	public:
 		StepsEdaDataController(OdbDesignServerApp* pServerApp);
 
-		void AddRoutes() override;
+		void register_routes() override;		
+
+	private:
+		crow::response steps_edadata_route_handler(const crow::request& req);
+
 	};
 }

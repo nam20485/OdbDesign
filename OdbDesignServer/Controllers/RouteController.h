@@ -12,11 +12,14 @@ namespace Odb::App::Server
 	public:		
 		RouteController(OdbDesignServerApp* pServerApp);
 
-		virtual void AddRoutes() = 0;
+		virtual void register_routes() = 0;
 
 	protected:		
 		OdbDesignServerApp* m_pServerApp;
 
+		typedef std::function<crow::response(const crow::request& req)> TRouteHandlerFunction;
+
+		void register_route_handler(const std::string& route, TRouteHandlerFunction handler);	
 	};
 }
 

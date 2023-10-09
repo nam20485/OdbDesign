@@ -25,7 +25,7 @@ namespace Odb::App::Server
 		Utils::ExitCode Run();
 
 	private:				
-		void AddRoutes();
+		void register_routes();
 
 	};
 }

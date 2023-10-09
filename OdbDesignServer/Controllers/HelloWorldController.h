@@ -10,7 +10,7 @@ namespace Odb::App::Server
 	public:
 		HelloWorldController(OdbDesignServerApp* pServerApp);
 
-		void AddRoutes() override;
+		void register_routes() override;
 
 	};
 }
