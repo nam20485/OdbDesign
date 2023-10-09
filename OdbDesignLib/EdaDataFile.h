@@ -19,12 +19,6 @@ namespace Odb::Lib::FileModel::Design
 		EdaDataFile();		
 		~EdaDataFile();
 
-		//// Inherited via returnable
-		//std::string dump() const override
-		//{
-		//	return to_json();
-		//}
-
 		std::filesystem::path GetPath() const;
 		std::string GetUnits() const;
 

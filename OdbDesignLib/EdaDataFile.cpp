@@ -83,20 +83,13 @@ namespace Odb::Lib::FileModel::Design
     {
         auto pEdaDataFile = new odbdesign::proto::EdaDataFile();
 
-        //std::filesystem::path m_path;
-        //std::string m_units;
-
-        //std::string m_source;
-        //std::vector<std::string> m_layerNames;
-
-        //std::vector<std::string> m_attributeNames;
-        //std::vector<std::string> m_attributeTextValues;
-
- /*       NetRecord::Vector m_netRecords;
+ /*       
+        NetRecord::Vector m_netRecords;
         NetRecord::StringMap m_netRecordsByName;
 
         PackageRecord::Vector m_packageRecords;
-        PackageRecord::StringMap m_packageRecordsByName;*/
+        PackageRecord::StringMap m_packageRecordsByName;
+*/
         
         pEdaDataFile->set_path(m_path.string());
         pEdaDataFile->set_units(m_units);
@@ -125,26 +118,7 @@ namespace Odb::Lib::FileModel::Design
     void EdaDataFile::from_protobuf(const odbdesign::proto::EdaDataFile& message)
     {
        
-    }
-
-    //std::string EdaDataFile::to_json() const
-    //{
-    //    return std::string();
-    //}
-
-    //void EdaDataFile::from_json(const std::string& json)
-    //{
-    //}
-
-    //std::string EdaDataFile::to_json() const
-    //{
-    //    return std::string();
-    //}
-
-    //std::shared_ptr<EdaDataFile> EdaDataFile::from_json(const std::string& json)
-    //{
-    //    return std::shared_ptr<EdaDataFile>();
-    //}
+    }    
 
     bool EdaDataFile::Parse(std::filesystem::path path)
     {
