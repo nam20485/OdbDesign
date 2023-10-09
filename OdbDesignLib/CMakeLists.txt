@@ -1,7 +1,7 @@
 ﻿# CMakeList.txt : CMake project for OdbDesignLib
 #
 
-add_library(OdbDesign SHARED "export.h" "ComponentLayerDirectory.cpp" "ComponentLayerDirectory.h" "EdaDataFile.cpp" "EdaDataFile.h" "LayerDirectory.cpp" "LayerDirectory.h" "NetlistFile.cpp" "NetlistFile.h" "FileArchive.cpp" "FileArchive.h" "StepDirectory.cpp" "StepDirectory.h" "string_trim.h" "macros.h" "Net.h" "Net.cpp" "Component.h" "Component.cpp" "Pin.h" "Pin.cpp" "PinConnection.h" "PinConnection.cpp" "Package.h" "Package.cpp" "Part.h" "Part.cpp" "Via.h" "Via.cpp" "Design.h" "Design.cpp" "BoardSide.h" "string_trim.cpp" "ArchiveExtractor.h" "ArchiveExtractor.cpp" "libarchive_extract.h" "libarchive_extract.cpp"  "OdbDesign.h" "DesignCache.h" "DesignCache.cpp" "CrowReturnable.h" "CrowReturnable.cpp")
+add_library(OdbDesign SHARED "export.h" "ComponentLayerDirectory.cpp" "ComponentLayerDirectory.h" "EdaDataFile.cpp" "EdaDataFile.h" "LayerDirectory.cpp" "LayerDirectory.h" "NetlistFile.cpp" "NetlistFile.h" "FileArchive.cpp" "FileArchive.h" "StepDirectory.cpp" "StepDirectory.h" "Net.h" "Net.cpp" "Component.h" "Component.cpp" "Pin.h" "Pin.cpp" "PinConnection.h" "PinConnection.cpp" "Package.h" "Package.cpp" "Part.h" "Part.cpp" "Via.h" "Via.cpp" "Design.h" "Design.cpp" "BoardSide.h" "OdbDesign.h" "DesignCache.h" "DesignCache.cpp" "CrowReturnable.h" "CrowReturnable.cpp" "win.h"   "proto/edadatafile.pb.h" "proto/edadatafile.pb.cc" "PbMessage.h" "PbMessage.cpp" "IProtoBuffable.h" "IProtoBuffable.cpp")
 
 # required for SWIG
 set_property(TARGET OdbDesign PROPERTY POSITION_INDEPENDENT_CODE ON)
@@ -13,15 +13,16 @@ target_include_directories(OdbDesign
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
                            $<INSTALL_INTERFACE:include>)
 
-# Link to LibArchive
-find_package(LibArchive REQUIRED)
-target_include_directories(OdbDesign PRIVATE ${LibArchive_INCLUDE_DIRS})
-target_link_libraries(OdbDesign PUBLIC ${LibArchive_LIBRARIES})
-
 # Link to Protobuf
-find_package(Protobuf REQUIRED)
-target_include_directories(OdbDesign PRIVATE ${Protobuf_INCLUDE_DIRS})
-target_link_libraries(OdbDesign PUBLIC ${Protobuf_LIBRARIES})
+find_package(Protobuf CONFIG REQUIRED)
+#protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS protoc/edadatafile.proto)
+#target_link_libraries(OdbDesign PUBLIC protobuf::libprotoc protobuf::libprotobuf protobuf::libprotobuf-lite)
+target_link_libraries(OdbDesign PUBLIC protobuf::libprotobuf)
+#target_include_directories(OdbDesign PRIVATE ${Protobuf_INCLUDE_DIRS})
+# mark the generated Protofbuf C++ files as generated
+#set_source_files_properties(${PROTO_SRC} ${PROTO_HDRS} PROPERTIES GENERATED TRUE)
+# add the generated Protobuf C++ files to the target
+#target_sources(OdbDesign PRIVATE ${PROTO_SRCS} ${PROTO_HDRS})
 
 # Python extension module build settings                           
 if (PYTHON_MODULE_BUILD)
