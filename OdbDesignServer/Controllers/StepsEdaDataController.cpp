@@ -1,5 +1,6 @@
 #include "StepsEdaDataController.h"
 #include "FileArchive.h"
+#include "EdaDataFile.h"
 
 
 namespace Odb::App::Server
@@ -12,7 +13,7 @@ namespace Odb::App::Server
 	void StepsEdaDataController::AddRoutes()
 	{
 		//
-		//	/steps/edadata/package_records?design=sample_design
+		//	/steps/edadata/package_records?design=sample_design&step=stepName
 		//
 
 		// for capturing in lambda below
@@ -26,14 +27,22 @@ namespace Odb::App::Server
 					auto designName = req.url_params.get("design");
 					if (designName && strlen(designName))
 					{
-						auto pFileArchive = pServerApp->m_designCache.GetFileArchive(designName);
-						if (pFileArchive)
+						auto stepName = req.url_params.get("step");
+						if (stepName && strlen(stepName))
 						{
-							auto productName = pFileArchive->GetProductName();
-							return crow::response(crow::status::OK, productName);
-
-							//	auto page = crow::mustache::load_text("helloworld.html");
-							//	return page;
+							auto pFileArchive = pServerApp->m_designCache.GetFileArchive(designName);
+							if (pFileArchive)
+							{
+								auto stepsByName = pFileArchive->GetStepsByName();
+								auto findIt = stepsByName.find(stepName);
+								if (findIt != stepsByName.end())
+								{
+									auto step = findIt->second;
+									auto edaDataFile = step->GetEdaDataFile();									
+									//return crow::response(edaDataFile);
+									return crow::response(edaDataFile.to_json());
+								}
+							}
 						}
 					}
 
