@@ -9,8 +9,7 @@
 
 namespace Odb::Lib::FileModel::Design
 {
-    EdaDataFile::EdaDataFile()
-    //    : returnable("application/json")
+    EdaDataFile::EdaDataFile()    
     {
     }
 
@@ -79,9 +78,9 @@ namespace Odb::Lib::FileModel::Design
         return m_packageRecordsByName;
     }
 
-    odbdesign::proto::EdaDataFile* EdaDataFile::to_protobuf() const
+    std::unique_ptr<odbdesign::proto::EdaDataFile> EdaDataFile::to_protobuf() const
     {
-        auto pEdaDataFile = new odbdesign::proto::EdaDataFile();
+        auto pEdaDataFile = std::make_unique<odbdesign::proto::EdaDataFile>();
 
  /*       
         NetRecord::Vector m_netRecords;

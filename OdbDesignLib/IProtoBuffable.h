@@ -16,7 +16,7 @@ namespace Odb::Lib
 	class IProtoBuffable : public IJsonConvertable, public crow::returnable
 	{
 	public:		
-		virtual TMessage* to_protobuf() const = 0;
+		virtual std::unique_ptr<TMessage> to_protobuf() const = 0;
 		virtual void from_protobuf(const TMessage& message) = 0;
 
 		std::string to_json() const;
@@ -48,8 +48,8 @@ namespace Odb::Lib
 
 		// use default options
 		google::protobuf::util::JsonOptions jsonOptions;		
-		auto pMessage = static_cast<Message*>(to_protobuf());
-		auto status = MessageToJsonString(*pMessage, &json, jsonOptions);
+		//auto pMessage = static_cast<Message*>(to_protobuf());
+		auto status = MessageToJsonString(*to_protobuf(), &json, jsonOptions);
 		if (!status.ok()) json.clear();
 
 		return json;

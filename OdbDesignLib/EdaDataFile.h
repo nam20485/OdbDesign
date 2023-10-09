@@ -186,7 +186,7 @@ namespace Odb::Lib::FileModel::Design
 		const PackageRecord::StringMap& GetPackageRecordsByName() const;
 
 		// Inherited via IProtoBuffable
-		odbdesign::proto::EdaDataFile* to_protobuf() const override;
+		std::unique_ptr<odbdesign::proto::EdaDataFile> to_protobuf() const override;
 		void from_protobuf(const odbdesign::proto::EdaDataFile& message) override;		
 
 	private:
