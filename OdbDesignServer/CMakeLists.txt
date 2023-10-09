@@ -4,7 +4,7 @@
 add_executable(OdbDesignServer "main.cpp"  "Controllers/RouteController.h" "Controllers/RouteController.cpp" "Controllers/HelloWorldController.h" "Controllers/HelloWorldController.cpp"     "OdbDesignServerApp.h" "OdbDesignServerApp.cpp" "Controllers/StepsEdaDataController.cpp" "Controllers/StepsEdaDataController.h" "OdbDesignServer.h")
 
 # link to Crow
-#set(CROW_FEATURES ssl compression)
+set(CROW_FEATURES ssl compression)
 #set(CROW_FEATURES "ssl;compression")
 find_package(Crow CONFIG REQUIRED)
 target_link_libraries(OdbDesignServer PRIVATE Crow::Crow)
