@@ -6,25 +6,29 @@
 #include <map>
 #include "export.h"
 #include "BoardSide.h"
-//#include "proto/edadatafile.pb.h"
-//#include <google/protobuf/message.h>
+#include "proto/edadatafile.pb.h"
+#include <google/protobuf/message.h>
+#include "IProtoBuffable.h"
 
 
 namespace Odb::Lib::FileModel::Design
 {	
-	class DECLSPEC EdaDataFile
+	class DECLSPEC EdaDataFile : public IProtoBuffable<odbdesign::proto::EdaDataFile>
 	{
 	public:
 		EdaDataFile();		
 		~EdaDataFile();
 
+		//// Inherited via returnable
+		//std::string dump() const override
+		//{
+		//	return to_json();
+		//}
+
 		std::filesystem::path GetPath() const;
 		std::string GetUnits() const;
 
-		bool Parse(std::filesystem::path path);
-
-		// the invalid "null" case
-		//static const EdaDataFile EMPTY;
+		bool Parse(std::filesystem::path path);		
 
 		struct DECLSPEC PropertyRecord
 		{
@@ -187,11 +191,9 @@ namespace Odb::Lib::FileModel::Design
 		const PackageRecord::Vector& GetPackageRecords() const;
 		const PackageRecord::StringMap& GetPackageRecordsByName() const;
 
-		//google::protobuf::Message* to_protobuf() const;
-		//static std::shared_ptr<EdaDataFile> from_protobuf(const google::protobuf::Message& message);
-
-		//std::string to_json() const;
-		//static std::shared_ptr<EdaDataFile> from_json(const std::string& json);
+		// Inherited via IProtoBuffable
+		odbdesign::proto::EdaDataFile* to_protobuf() const override;
+		void from_protobuf(const odbdesign::proto::EdaDataFile& message) override;		
 
 	private:
 		std::filesystem::path m_path;
@@ -224,8 +226,8 @@ namespace Odb::Lib::FileModel::Design
 		inline static const std::string FEATURE_GROUP_RECORD_TOKEN = "FGR";
 		// TODO: Outline records:
 		// RC, CR, SQ, CT, OB, OS, OC, OE, CE — Outline Records
-
-	};
+	
+};
 
 	//EXPIMP_TEMPLATE template class DECLSPEC std::vector<std::shared_ptr<EdaData::NetRecord>>;
 	//EXPIMP_TEMPLATE template class DECLSPEC std::map<std::string, std::shared_ptr<EdaData::NetRecord>>;

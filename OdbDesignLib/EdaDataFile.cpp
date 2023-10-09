@@ -1,16 +1,16 @@
 #include "EdaDataFile.h"
-#include "EdaDataFile.h"
-#include "EdaDataFile.h"
 #include <fstream>
 #include <sstream>
 #include "str_trim.h"
 #include "BoardSide.h"
 #include "proto/edadatafile.pb.h"
+#include <google/protobuf/message.h>
 
 
 namespace Odb::Lib::FileModel::Design
 {
     EdaDataFile::EdaDataFile()
+    //    : returnable("application/json")
     {
     }
 
@@ -22,8 +22,6 @@ namespace Odb::Lib::FileModel::Design
     EdaDataFile::~EdaDataFile()
     {
     }
-
-     ///*static*/ const EdaDataFile EdaDataFile::EMPTY;
 
     std::filesystem::path EdaDataFile::GetPath() const
     {
@@ -80,6 +78,63 @@ namespace Odb::Lib::FileModel::Design
     {
         return m_packageRecordsByName;
     }
+
+    odbdesign::proto::EdaDataFile* EdaDataFile::to_protobuf() const
+    {
+        auto pEdaDataFile = new odbdesign::proto::EdaDataFile();
+
+        //std::filesystem::path m_path;
+        //std::string m_units;
+
+        //std::string m_source;
+        //std::vector<std::string> m_layerNames;
+
+        //std::vector<std::string> m_attributeNames;
+        //std::vector<std::string> m_attributeTextValues;
+
+ /*       NetRecord::Vector m_netRecords;
+        NetRecord::StringMap m_netRecordsByName;
+
+        PackageRecord::Vector m_packageRecords;
+        PackageRecord::StringMap m_packageRecordsByName;*/
+        
+        pEdaDataFile->set_path(m_path.string());
+        pEdaDataFile->set_units(m_units);
+        pEdaDataFile->set_source(m_source);
+        for (const auto& layerName : m_layerNames)
+        {
+			pEdaDataFile->add_layernames(layerName);
+		}
+        for (const auto& attributeName : m_attributeNames)
+        {
+            pEdaDataFile->add_attributenames(attributeName);
+        }
+        for (const auto& attrTextValue : m_attributeTextValues)
+        {
+            pEdaDataFile->add_attributetextvalues(attrTextValue);
+        }
+
+        for (const auto& pNetRecord : m_netRecords)
+        {
+            //pEdaDataFile->add_netrecords(pNetRecord->to_protobuf());
+        }
+        
+        return pEdaDataFile;
+    }
+
+    void EdaDataFile::from_protobuf(const odbdesign::proto::EdaDataFile& message)
+    {
+       
+    }
+
+    //std::string EdaDataFile::to_json() const
+    //{
+    //    return std::string();
+    //}
+
+    //void EdaDataFile::from_json(const std::string& json)
+    //{
+    //}
 
     //std::string EdaDataFile::to_json() const
     //{
