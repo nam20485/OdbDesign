@@ -1,0 +1,146 @@
+syntax = "proto3";
+
+package odbdesign.proto;
+
+//
+//  EdaDataFile.h
+//
+
+message EdaDataFile {
+
+    enum BoardSide {
+        TOP = 0;
+        BOTTOM = 1;
+    };
+
+    message PropertyRecord {   
+
+        optional string name = 1;
+        optional string value = 2;
+        repeated float floatValues = 3;
+    }    
+
+    message NetRecord {
+
+        message SubnetRecord {
+
+            enum Type {
+                VIA = 0;
+                TRACE = 1;
+                PLANE = 2;
+                TOEPRINT = 3;
+            };
+
+            message FeatureIdRecord {
+                
+                enum Type {
+                    COPPER = 0;
+                    LAMINATE = 1;
+                    HOLE = 2;
+                };
+                
+                optional Type type = 2;
+                optional uint32 layerNumber = 3;
+                optional uint32 featureNumber = 4;
+            };
+
+            optional Type type = 1;
+            repeated FeatureIdRecord featureIdRecords = 2;
+        };
+       
+        message ToeprintSubnetRecord {
+
+            //optional SubnetRecord subnetRecord = 1;
+            optional BoardSide side = 2;
+            optional uint32 componentNumber = 3;
+            optional uint32 toeprintNumber = 4;
+        };
+
+        message PlaneSubnetRecord {
+
+            //optional SubnetRecord subnetRecord = 1;
+
+            enum FillType {
+                SOLID = 0;
+                OUTLINE = 1;
+            };
+
+            enum CutoutType {
+                CIRCLE = 0;
+                RECTANGLE = 1;
+                OCTAGON = 2;
+                EXACT = 3;
+            };
+
+            optional FillType fillType = 2;
+            optional CutoutType cutoutType = 3;
+            optional float fillSize = 4;
+        };
+
+        optional string name = 1;
+        optional string attributesIdString = 2;
+        optional uint32 index = 3;    
+    }
+
+    message PackageRecord {    
+
+        optional string name = 1;
+        optional float pitch = 2;
+        optional float xMin = 3;
+        optional float yMin = 4;
+        optional float xMax = 5;
+        optional float yMax = 6;
+        optional string attributesIdString = 7;
+
+        repeated PinRecord pinRecords = 8;
+        map<string, PinRecord> pinRecordsByName = 9;
+        repeated PropertyRecord propertyRecords = 10;
+
+        message PinRecord {                      
+
+            enum Type {
+                THROUGH_HOLE = 0;
+                BLIND = 1;
+                SURFACE = 2;
+            };
+
+            enum ElectricalType {
+                ELECTRICAL = 0;
+                NON_ELECTRICAL = 1;
+                UNDEFINED = 2;
+            };
+
+            enum MountType {
+                SMT = 0;
+                RECOMMENDED_SMT_PAD = 1;
+                MT_THROUGH_HOLE = 2;
+                RECOMMENDED_THROUGH_HOLE = 3;
+                PRESSFIT = 4;
+                NON_BOARD = 5;
+                HOLE = 6;
+                MT_UNDEFINED = 7;  // default
+            };
+
+            optional string name = 1;
+            optional Type type = 2;
+            optional float xCenter = 3;
+            optional float yCenter = 4;
+            optional float finishedHoleSize = 5;    // unused, set to 0
+            optional ElectricalType electricalType = 6;
+            optional MountType mountType = 7;
+            optional uint32 id = 8;
+            optional uint32 index = 9;            
+        }
+    }   
+
+    optional string path = 1;
+    optional string units = 2;
+    optional string source = 3;
+    repeated string layerNames = 4;
+    repeated string attributeNames = 5;
+    repeated string attributeTextValues = 6;
+    repeated NetRecord netRecords = 7;
+    map<string, NetRecord> netRecordsByName = 8;
+    repeated PackageRecord packageRecords = 9;
+    map<string, PackageRecord> packageRecordsByName = 10;
+}
