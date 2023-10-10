@@ -1,8 +1,11 @@
 #include "StepsEdaDataController.h"
 #include "FileArchive.h"
 #include "EdaDataFile.h"
-#include <format>
+#include "JsonCrowReturnable.h"
+#include <sstream>
 
+using namespace Odb::Lib;
+using namespace FileModel::Design;
 
 namespace Odb::App::Server
 {
@@ -17,7 +20,7 @@ namespace Odb::App::Server
 		//	/steps/edadata/package_records?design=sample_design&step=stepName
 		//
 
-		// TODO: figure out why capture here is wierd (i.e. how to capture pServerApp so it can be used in the member fxn handler)
+		// TODO: figure out why capture here is weird (i.e. how to capture pServerApp so it can be used in the member fxn handler)
 		CROW_ROUTE(m_pServerApp->m_crowApp, "/steps/edadata/package_records")
 			([&, pServerApp = this->m_pServerApp](const crow::request& req)
 				{
@@ -48,18 +51,22 @@ namespace Odb::App::Server
 		auto pFileArchive = pServerApp->m_designCache.GetFileArchive(designName);
 		if (pFileArchive == nullptr)
 		{
-			return crow::response(crow::status::BAD_REQUEST, std::format("design: \"{0}\" not found", designName));
+			std::stringstream ss;
+			ss << "design: \"" << designName << "\" not found";			
+			return crow::response(crow::status::BAD_REQUEST, ss.str());
 		}
 
 		auto stepsByName = pFileArchive->GetStepsByName();
 		auto findIt = stepsByName.find(stepName);
 		if (findIt == stepsByName.end())
 		{
-			return crow::response(crow::status::BAD_REQUEST, std::format("step: \"{0}\" not found", stepName));
+			std::stringstream ss;
+			ss << "step: \"" << stepName << "\" not found";
+			return crow::response(crow::status::BAD_REQUEST, ss.str());
 		}
 
 		auto step = findIt->second;
 		auto edaDataFile = step->GetEdaDataFile();
-		return crow::response(edaDataFile);
+		return crow::response(JsonCrowReturnable(edaDataFile));
 	}
 }
