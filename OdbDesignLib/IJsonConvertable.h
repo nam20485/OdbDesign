@@ -9,8 +9,7 @@ namespace Odb::Lib
 	{
 	public:			
 		virtual std::string to_json() const = 0;
-		//void from_json(const std::string& json);
-		//static TMessage* from_json(const std::string& json);
+		virtual void from_json(const std::string& json) = 0;
 
 	protected:
 		// abstract class/interface

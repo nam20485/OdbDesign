@@ -12,59 +12,60 @@ using namespace google::protobuf::util;
 
 namespace Odb::Lib
 {
-	template<typename TMessage>
+	template<typename TPbMessage>
 	class IProtoBuffable : public IJsonConvertable, public crow::returnable
 	{
 	public:		
-		virtual std::unique_ptr<TMessage> to_protobuf() const = 0;
-		virtual void from_protobuf(const TMessage& message) = 0;
+		virtual std::unique_ptr<TPbMessage> to_protobuf() const = 0;
+		virtual void from_protobuf(const TPbMessage& message) = 0;
 
-		std::string to_json() const;
-		//void from_json(const std::string& json);
-		//static TMessage* message_from_json(const std::string& json);
-	
-		// TMessage MUST derive from Message (must use this until template type contraints are added)
-		static_assert(std::is_base_of<Message, TMessage>::value, "type parameter TMessage must derive from Message class");	
+		// Inherited via IJsonConvertable
+		std::string to_json() const;		
+		void from_json(const std::string& json) override;
 
+		// Inherited via returnable
+		std::string dump() const override;
+				
 	protected:
 		// abstract class
 		IProtoBuffable()
 			: returnable("application/json")
-		{
-		}
+		{}
 
-		// Inherited via returnable
-		std::string dump() const override
-		{
-			return to_json();
-		}
-
+		// TMessage MUST derive from Message (must use this until template type contraints are added)
+		static_assert(std::is_base_of<Message, TPbMessage>::value, "type parameter TMessage must derive from Message class");
+		
 	};
 
-	template<typename TMessage>
-	std::string IProtoBuffable<TMessage>::to_json() const
+	template<typename TPbMessage>
+	std::string IProtoBuffable<TPbMessage>::to_json() const
 	{
 		std::string json;
 
 		// use default options
 		google::protobuf::util::JsonOptions jsonOptions;		
-		//auto pMessage = static_cast<Message*>(to_protobuf());
 		auto status = MessageToJsonString(*to_protobuf(), &json, jsonOptions);
 		if (!status.ok()) json.clear();
 
 		return json;
 	}
 
-	//template<typename TMessage>
-	//TMessage* IProtoBuffable<TMessage>::message_from_json(const std::string& json)
-	//{
-	//	auto pMessage = new TMessage();
-	//	//Message* pMessage = nullptr;
+	template<typename TPbMessage>
+	inline void IProtoBuffable<TPbMessage>::from_json(const std::string& json)
+	{
+		auto pMessage = std::unique_ptr<TPbMessage>();
+		//auto pMessage = new TPbMessage();
+		google::protobuf::StringPiece sp_json(json);
+		google::protobuf::util::JsonOptions jsonOptions;
 
-	//	google::protobuf::StringPiece sp(json);
-	//	google::protobuf::util::JsonOptions jsonOptions;
-	//	auto status = google::protobuf::util::JsonStringToMessage(sp, pMessage);
+		auto status = google::protobuf::util::JsonStringToMessage(sp_json, pMessage.get());
+		if (!status.ok()) return;		
+		from_protobuf(*pMessage);		
+	}
 
-	//	return pMessage;
-	//}
+	template<typename TPbMessage>
+	inline std::string IProtoBuffable<TPbMessage>::dump() const
+	{
+		return to_json();
+	}	
 }
