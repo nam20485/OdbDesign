@@ -13,7 +13,7 @@ using namespace google::protobuf::util;
 namespace Odb::Lib
 {
 	template<typename TPbMessage>
-	class IProtoBuffable : public IJsonConvertable, public crow::returnable
+	class IProtoBuffable : public IJsonConvertable
 	{
 	public:		
 		virtual std::unique_ptr<TPbMessage> to_protobuf() const = 0;
@@ -21,51 +21,40 @@ namespace Odb::Lib
 
 		// Inherited via IJsonConvertable
 		std::string to_json() const;		
-		void from_json(const std::string& json) override;
-
-		// Inherited via returnable
-		std::string dump() const override;
+		void from_json(const std::string& json) override;		
 				
 	protected:
 		// abstract class
-		IProtoBuffable()
-			: returnable("application/json")
+		IProtoBuffable()		
 		{}
 
-		// TMessage MUST derive from Message (must use this until template type contraints are added)
-		static_assert(std::is_base_of<Message, TPbMessage>::value, "type parameter TMessage must derive from Message class");
+		// TMessage MUST derive from Message (must use this until template type contraints support is added)
+		static_assert(std::is_base_of<Message, TPbMessage>::value, "template parameter type TPbMessage must derive from Protobuf Message class");
 		
 	};
 
 	template<typename TPbMessage>
 	std::string IProtoBuffable<TPbMessage>::to_json() const
-	{
-		std::string json;
-
+	{	
 		// use default options
-		google::protobuf::util::JsonOptions jsonOptions;		
+		JsonOptions jsonOptions;	
+
+		std::string json;
 		auto status = MessageToJsonString(*to_protobuf(), &json, jsonOptions);
 		if (!status.ok()) json.clear();
-
 		return json;
 	}
 
 	template<typename TPbMessage>
 	inline void IProtoBuffable<TPbMessage>::from_json(const std::string& json)
-	{
-		auto pMessage = std::unique_ptr<TPbMessage>();
-		//auto pMessage = new TPbMessage();
-		google::protobuf::StringPiece sp_json(json);
-		google::protobuf::util::JsonOptions jsonOptions;
+	{			
+		StringPiece sp_json(json);
+		// use default options
+		JsonOptions jsonOptions;
 
-		auto status = google::protobuf::util::JsonStringToMessage(sp_json, pMessage.get());
+		auto pMessage = std::unique_ptr<TPbMessage>();
+		auto status = JsonStringToMessage(sp_json, pMessage.get());
 		if (!status.ok()) return;		
 		from_protobuf(*pMessage);		
-	}
-
-	template<typename TPbMessage>
-	inline std::string IProtoBuffable<TPbMessage>::dump() const
-	{
-		return to_json();
 	}	
 }
