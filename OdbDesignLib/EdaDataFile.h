@@ -19,8 +19,9 @@ namespace Odb::Lib::FileModel::Design
 		EdaDataFile();		
 		~EdaDataFile();
 
-		std::filesystem::path GetPath() const;
-		std::string GetUnits() const;
+		const std::filesystem::path& GetPath() const;
+		const std::string& GetUnits() const;
+		const std::string& GetSource() const;
 
 		bool Parse(std::filesystem::path path);		
 

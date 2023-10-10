@@ -22,14 +22,19 @@ namespace Odb::Lib::FileModel::Design
     {
     }
 
-    std::filesystem::path EdaDataFile::GetPath() const
+    const std::filesystem::path& EdaDataFile::GetPath() const
     {
         return m_path;
     }
 
-    std::string EdaDataFile::GetUnits() const
+    const std::string& EdaDataFile::GetUnits() const
     {
         return m_units;
+    }
+
+    const std::string& EdaDataFile::GetSource() const
+    {
+        return m_source;
     }
 
     EdaDataFile::NetRecord::SubnetRecord::~SubnetRecord()
@@ -109,7 +114,30 @@ namespace Odb::Lib::FileModel::Design
         for (const auto& pNetRecord : m_netRecords)
         {
             //pEdaDataFile->add_netrecords(pNetRecord->to_protobuf());
+        }        
+
+        for (const auto& pNetRecord : m_netRecords)
+        {
+            //pEdaDataFile->add_netrecords(pNetRecord->to_protobuf());
         }
+
+        for (const auto& kv : m_netRecordsByName)
+        {
+
+        }
+
+        for (const auto& pPackageRecord : m_packageRecords)
+        {
+            //pEdaDataFile->add_netrecords(pNetRecord->to_protobuf());
+        }
+
+        for (const auto& kv : m_packageRecordsByName)
+        {
+            auto pPackageRecordMessage = pEdaDataFile->add_packagerecords();
+            //pPackageRecordMessage->CopyFrom(kv.second->to_protobuf());
+        }
+
+        return pEdaDataFile;
         
         return pEdaDataFile;
     }
