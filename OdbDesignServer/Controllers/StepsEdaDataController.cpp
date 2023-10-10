@@ -21,7 +21,7 @@ namespace Odb::App::Server
 		//
 
 		// TODO: figure out why capture here is weird (i.e. how to capture pServerApp so it can be used in the member fxn handler)
-		CROW_ROUTE(m_pServerApp->get_crow_app(), "/steps/edadata/package_records")
+		CROW_ROUTE(m_pServerApp->crow_app(), "/steps/edadata/package_records")
 			([&, pServerApp = this->m_pServerApp](const crow::request& req)
 				{
 					return this->steps_edadata_route_handler(req, pServerApp);
@@ -48,7 +48,7 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "step name not specified");
 		}
 
-		auto pFileArchive = pServerApp->get_design_cache().GetFileArchive(designName);
+		auto pFileArchive = pServerApp->design_cache().GetFileArchive(designName);
 		if (pFileArchive == nullptr)
 		{
 			std::stringstream ss;

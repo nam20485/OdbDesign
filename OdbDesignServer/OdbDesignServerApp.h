@@ -8,6 +8,8 @@
 #include "Logger.h"
 #include "CommandLineArgs.h"
 
+using namespace Utils;
+using namespace Odb::Lib;
 
 namespace Odb::App::Server
 {
@@ -17,18 +19,18 @@ namespace Odb::App::Server
 		OdbDesignServerApp(int argc, char* argv[]);
 		~OdbDesignServerApp();
 
-		static Utils::Logger m_logger;
+		static Logger m_logger;
 
-		inline const Utils::CommandLineArgs& get_args() const { return m_commandLineArgs; }
-		inline crow::SimpleApp& get_crow_app() { return m_crowApp; }
-		inline Odb::Lib::DesignCache& get_design_cache() { return m_designCache; }
+		inline const CommandLineArgs& arguments() const { return m_commandLineArgs; }
+		inline crow::SimpleApp& crow_app() { return m_crowApp; }
+		inline DesignCache& design_cache() { return m_designCache; }
 				
-		Utils::ExitCode Run();		
+		ExitCode Run();		
 
 	private:				
-		Odb::Lib::DesignCache m_designCache;
+		DesignCache m_designCache;
 		crow::SimpleApp m_crowApp;
-		Utils::CommandLineArgs m_commandLineArgs;
+		CommandLineArgs m_commandLineArgs;
 
 		void register_routes();
 
