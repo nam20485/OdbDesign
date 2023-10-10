@@ -14,13 +14,13 @@ namespace Odb::App::Server
 	}
 
 	OdbDesignServerApp::~OdbDesignServerApp()
-	{		
-		//m_designCache.Clear();
+	{				
 	}
 
 	Utils::ExitCode OdbDesignServerApp::Run()
 	{
-		//m_crowApp.loglevel(crow::LogLevel::Debug);	
+		//m_crowApp.loglevel(crow::LogLevel::Debug)
+		//m_crowApp.use_compression(crow::compression::algorithm::GZIP);
 
 		// controller routes
 		register_routes();

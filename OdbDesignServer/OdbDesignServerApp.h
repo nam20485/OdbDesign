@@ -17,14 +17,19 @@ namespace Odb::App::Server
 		OdbDesignServerApp(int argc, char* argv[]);
 		~OdbDesignServerApp();
 
-		Utils::Logger m_logger;
+		static Utils::Logger m_logger;
+
+		inline const Utils::CommandLineArgs& get_args() const { return m_commandLineArgs; }
+		inline crow::SimpleApp& get_crow_app() { return m_crowApp; }
+		inline Odb::Lib::DesignCache& get_design_cache() { return m_designCache; }
+				
+		Utils::ExitCode Run();		
+
+	private:				
 		Odb::Lib::DesignCache m_designCache;
 		crow::SimpleApp m_crowApp;
 		Utils::CommandLineArgs m_commandLineArgs;
 
-		Utils::ExitCode Run();
-
-	private:				
 		void register_routes();
 
 	};

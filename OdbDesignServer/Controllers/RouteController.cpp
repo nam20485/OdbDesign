@@ -10,7 +10,7 @@ namespace Odb::App::Server
 
 	void RouteController::register_route_handler(const std::string& route, TRouteHandlerFunction handler)
 	{		
-		CROW_ROUTE(m_pServerApp->m_crowApp, "/steps/edadata/package_records")
+		CROW_ROUTE(m_pServerApp->get_crow_app(), "/steps/edadata/package_records")
 			([&](const crow::request& req)
 				{
 					return handler(req);
