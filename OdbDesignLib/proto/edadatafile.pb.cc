@@ -73,7 +73,6 @@ PROTOBUF_CONSTEXPR EdaDataFile_NetRecord_ToeprintSubnetRecord::EdaDataFile_NetRe
     ::_pbi::ConstantInitialized): _impl_{
     /*decltype(_impl_._has_bits_)*/{}
   , /*decltype(_impl_._cached_size_)*/{}
-  , /*decltype(_impl_.side_)*/0
   , /*decltype(_impl_.componentnumber_)*/0u
   , /*decltype(_impl_.toeprintnumber_)*/0u} {}
 struct EdaDataFile_NetRecord_ToeprintSubnetRecordDefaultTypeInternal {
@@ -105,6 +104,8 @@ PROTOBUF_CONSTEXPR EdaDataFile_NetRecord::EdaDataFile_NetRecord(
     ::_pbi::ConstantInitialized): _impl_{
     /*decltype(_impl_._has_bits_)*/{}
   , /*decltype(_impl_._cached_size_)*/{}
+  , /*decltype(_impl_.subnetrecords_)*/{}
+  , /*decltype(_impl_.propertyrecords_)*/{}
   , /*decltype(_impl_.name_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.attributesidstring_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.index_)*/0u} {}
@@ -265,12 +266,10 @@ const uint32_t TableStruct_edadatafile_2eproto::offsets[] PROTOBUF_SECTION_VARIA
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::odbdesign::proto::EdaDataFile_NetRecord_ToeprintSubnetRecord, _impl_.side_),
   PROTOBUF_FIELD_OFFSET(::odbdesign::proto::EdaDataFile_NetRecord_ToeprintSubnetRecord, _impl_.componentnumber_),
   PROTOBUF_FIELD_OFFSET(::odbdesign::proto::EdaDataFile_NetRecord_ToeprintSubnetRecord, _impl_.toeprintnumber_),
   0,
   1,
-  2,
   PROTOBUF_FIELD_OFFSET(::odbdesign::proto::EdaDataFile_NetRecord_PlaneSubnetRecord, _impl_._has_bits_),
   PROTOBUF_FIELD_OFFSET(::odbdesign::proto::EdaDataFile_NetRecord_PlaneSubnetRecord, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -292,9 +291,13 @@ const uint32_t TableStruct_edadatafile_2eproto::offsets[] PROTOBUF_SECTION_VARIA
   PROTOBUF_FIELD_OFFSET(::odbdesign::proto::EdaDataFile_NetRecord, _impl_.name_),
   PROTOBUF_FIELD_OFFSET(::odbdesign::proto::EdaDataFile_NetRecord, _impl_.attributesidstring_),
   PROTOBUF_FIELD_OFFSET(::odbdesign::proto::EdaDataFile_NetRecord, _impl_.index_),
+  PROTOBUF_FIELD_OFFSET(::odbdesign::proto::EdaDataFile_NetRecord, _impl_.subnetrecords_),
+  PROTOBUF_FIELD_OFFSET(::odbdesign::proto::EdaDataFile_NetRecord, _impl_.propertyrecords_),
   0,
   1,
   2,
+  ~0u,
+  ~0u,
   PROTOBUF_FIELD_OFFSET(::odbdesign::proto::EdaDataFile_PackageRecord_PinRecordsByNameEntry_DoNotUse, _has_bits_),
   PROTOBUF_FIELD_OFFSET(::odbdesign::proto::EdaDataFile_PackageRecord_PinRecordsByNameEntry_DoNotUse, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -406,15 +409,15 @@ static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protode
   { 0, 9, -1, sizeof(::odbdesign::proto::EdaDataFile_PropertyRecord)},
   { 12, 21, -1, sizeof(::odbdesign::proto::EdaDataFile_NetRecord_SubnetRecord_FeatureIdRecord)},
   { 24, 32, -1, sizeof(::odbdesign::proto::EdaDataFile_NetRecord_SubnetRecord)},
-  { 34, 43, -1, sizeof(::odbdesign::proto::EdaDataFile_NetRecord_ToeprintSubnetRecord)},
-  { 46, 55, -1, sizeof(::odbdesign::proto::EdaDataFile_NetRecord_PlaneSubnetRecord)},
-  { 58, 67, -1, sizeof(::odbdesign::proto::EdaDataFile_NetRecord)},
-  { 70, 78, -1, sizeof(::odbdesign::proto::EdaDataFile_PackageRecord_PinRecordsByNameEntry_DoNotUse)},
-  { 80, 95, -1, sizeof(::odbdesign::proto::EdaDataFile_PackageRecord_PinRecord)},
-  { 104, 120, -1, sizeof(::odbdesign::proto::EdaDataFile_PackageRecord)},
-  { 130, 138, -1, sizeof(::odbdesign::proto::EdaDataFile_NetRecordsByNameEntry_DoNotUse)},
-  { 140, 148, -1, sizeof(::odbdesign::proto::EdaDataFile_PackageRecordsByNameEntry_DoNotUse)},
-  { 150, 166, -1, sizeof(::odbdesign::proto::EdaDataFile)},
+  { 34, 42, -1, sizeof(::odbdesign::proto::EdaDataFile_NetRecord_ToeprintSubnetRecord)},
+  { 44, 53, -1, sizeof(::odbdesign::proto::EdaDataFile_NetRecord_PlaneSubnetRecord)},
+  { 56, 67, -1, sizeof(::odbdesign::proto::EdaDataFile_NetRecord)},
+  { 72, 80, -1, sizeof(::odbdesign::proto::EdaDataFile_PackageRecord_PinRecordsByNameEntry_DoNotUse)},
+  { 82, 97, -1, sizeof(::odbdesign::proto::EdaDataFile_PackageRecord_PinRecord)},
+  { 106, 122, -1, sizeof(::odbdesign::proto::EdaDataFile_PackageRecord)},
+  { 132, 140, -1, sizeof(::odbdesign::proto::EdaDataFile_NetRecordsByNameEntry_DoNotUse)},
+  { 142, 150, -1, sizeof(::odbdesign::proto::EdaDataFile_PackageRecordsByNameEntry_DoNotUse)},
+  { 152, 168, -1, sizeof(::odbdesign::proto::EdaDataFile)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
@@ -433,7 +436,7 @@ static const ::_pb::Message* const file_default_instances[] = {
 };
 
 const char descriptor_table_protodef_edadatafile_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
-  "\n\021edadatafile.proto\022\017odbdesign.proto\"\270\032\n"
+  "\n\021edadatafile.proto\022\017odbdesign.proto\"\205\033\n"
   "\013EdaDataFile\022\021\n\004path\030\001 \001(\tH\000\210\001\001\022\022\n\005units"
   "\030\002 \001(\tH\001\210\001\001\022\023\n\006source\030\003 \001(\tH\002\210\001\001\022\022\n\nlaye"
   "rNames\030\004 \003(\t\022\026\n\016attributeNames\030\005 \003(\t\022\033\n\023"
@@ -447,82 +450,84 @@ const char descriptor_table_protodef_edadatafile_2eproto[] PROTOBUF_SECTION_VARI
   "EdaDataFile.PackageRecordsByNameEntry\032_\n"
   "\016PropertyRecord\022\021\n\004name\030\001 \001(\tH\000\210\001\001\022\022\n\005va"
   "lue\030\002 \001(\tH\001\210\001\001\022\023\n\013floatValues\030\003 \003(\002B\007\n\005_"
-  "nameB\010\n\006_value\032\250\t\n\tNetRecord\022\021\n\004name\030\001 \001"
+  "nameB\010\n\006_value\032\365\t\n\tNetRecord\022\021\n\004name\030\001 \001"
   "(\tH\000\210\001\001\022\037\n\022attributesIdString\030\002 \001(\tH\001\210\001\001"
-  "\022\022\n\005index\030\003 \001(\rH\002\210\001\001\032\366\003\n\014SubnetRecord\022K\n"
-  "\004type\030\001 \001(\01628.odbdesign.proto.EdaDataFil"
-  "e.NetRecord.SubnetRecord.TypeH\000\210\001\001\022]\n\020fe"
-  "atureIdRecords\030\002 \003(\0132C.odbdesign.proto.E"
-  "daDataFile.NetRecord.SubnetRecord.Featur"
-  "eIdRecord\032\373\001\n\017FeatureIdRecord\022[\n\004type\030\002 "
-  "\001(\0162H.odbdesign.proto.EdaDataFile.NetRec"
-  "ord.SubnetRecord.FeatureIdRecord.TypeH\000\210"
-  "\001\001\022\030\n\013layerNumber\030\003 \001(\rH\001\210\001\001\022\032\n\rfeatureN"
-  "umber\030\004 \001(\rH\002\210\001\001\"*\n\004Type\022\n\n\006COPPER\020\000\022\014\n\010"
-  "LAMINATE\020\001\022\010\n\004HOLE\020\002B\007\n\005_typeB\016\n\014_layerN"
-  "umberB\020\n\016_featureNumber\"3\n\004Type\022\007\n\003VIA\020\000"
-  "\022\t\n\005TRACE\020\001\022\t\n\005PLANE\020\002\022\014\n\010TOEPRINT\020\003B\007\n\005"
-  "_type\032\274\001\n\024ToeprintSubnetRecord\0229\n\004side\030\002"
-  " \001(\0162&.odbdesign.proto.EdaDataFile.Board"
-  "SideH\000\210\001\001\022\034\n\017componentNumber\030\003 \001(\rH\001\210\001\001\022"
-  "\033\n\016toeprintNumber\030\004 \001(\rH\002\210\001\001B\007\n\005_sideB\022\n"
-  "\020_componentNumberB\021\n\017_toeprintNumber\032\360\002\n"
-  "\021PlaneSubnetRecord\022X\n\010fillType\030\002 \001(\0162A.o"
-  "dbdesign.proto.EdaDataFile.NetRecord.Pla"
-  "neSubnetRecord.FillTypeH\000\210\001\001\022\\\n\ncutoutTy"
-  "pe\030\003 \001(\0162C.odbdesign.proto.EdaDataFile.N"
-  "etRecord.PlaneSubnetRecord.CutoutTypeH\001\210"
-  "\001\001\022\025\n\010fillSize\030\004 \001(\002H\002\210\001\001\"\"\n\010FillType\022\t\n"
-  "\005SOLID\020\000\022\013\n\007OUTLINE\020\001\"\?\n\nCutoutType\022\n\n\006C"
-  "IRCLE\020\000\022\r\n\tRECTANGLE\020\001\022\013\n\007OCTAGON\020\002\022\t\n\005E"
-  "XACT\020\003B\013\n\t_fillTypeB\r\n\013_cutoutTypeB\013\n\t_f"
-  "illSizeB\007\n\005_nameB\025\n\023_attributesIdStringB"
-  "\010\n\006_index\032\351\n\n\rPackageRecord\022\021\n\004name\030\001 \001("
-  "\tH\000\210\001\001\022\022\n\005pitch\030\002 \001(\002H\001\210\001\001\022\021\n\004xMin\030\003 \001(\002"
-  "H\002\210\001\001\022\021\n\004yMin\030\004 \001(\002H\003\210\001\001\022\021\n\004xMax\030\005 \001(\002H\004"
-  "\210\001\001\022\021\n\004yMax\030\006 \001(\002H\005\210\001\001\022\037\n\022attributesIdSt"
-  "ring\030\007 \001(\tH\006\210\001\001\022H\n\npinRecords\030\010 \003(\01324.od"
-  "bdesign.proto.EdaDataFile.PackageRecord."
-  "PinRecord\022Z\n\020pinRecordsByName\030\t \003(\0132@.od"
-  "bdesign.proto.EdaDataFile.PackageRecord."
-  "PinRecordsByNameEntry\022D\n\017propertyRecords"
-  "\030\n \003(\0132+.odbdesign.proto.EdaDataFile.Pro"
-  "pertyRecord\032m\n\025PinRecordsByNameEntry\022\013\n\003"
-  "key\030\001 \001(\t\022C\n\005value\030\002 \001(\01324.odbdesign.pro"
-  "to.EdaDataFile.PackageRecord.PinRecord:\002"
-  "8\001\032\232\006\n\tPinRecord\022\021\n\004name\030\001 \001(\tH\000\210\001\001\022L\n\004t"
-  "ype\030\002 \001(\01629.odbdesign.proto.EdaDataFile."
-  "PackageRecord.PinRecord.TypeH\001\210\001\001\022\024\n\007xCe"
-  "nter\030\003 \001(\002H\002\210\001\001\022\024\n\007yCenter\030\004 \001(\002H\003\210\001\001\022\035\n"
-  "\020finishedHoleSize\030\005 \001(\002H\004\210\001\001\022`\n\016electric"
-  "alType\030\006 \001(\0162C.odbdesign.proto.EdaDataFi"
-  "le.PackageRecord.PinRecord.ElectricalTyp"
-  "eH\005\210\001\001\022V\n\tmountType\030\007 \001(\0162>.odbdesign.pr"
-  "oto.EdaDataFile.PackageRecord.PinRecord."
-  "MountTypeH\006\210\001\001\022\017\n\002id\030\010 \001(\rH\007\210\001\001\022\022\n\005index"
-  "\030\t \001(\rH\010\210\001\001\"0\n\004Type\022\020\n\014THROUGH_HOLE\020\000\022\t\n"
-  "\005BLIND\020\001\022\013\n\007SURFACE\020\002\"C\n\016ElectricalType\022"
-  "\016\n\nELECTRICAL\020\000\022\022\n\016NON_ELECTRICAL\020\001\022\r\n\tU"
-  "NDEFINED\020\002\"\231\001\n\tMountType\022\007\n\003SMT\020\000\022\027\n\023REC"
-  "OMMENDED_SMT_PAD\020\001\022\023\n\017MT_THROUGH_HOLE\020\002\022"
-  "\034\n\030RECOMMENDED_THROUGH_HOLE\020\003\022\014\n\010PRESSFI"
-  "T\020\004\022\r\n\tNON_BOARD\020\005\022\010\n\004HOLE\020\006\022\020\n\014MT_UNDEF"
-  "INED\020\007B\007\n\005_nameB\007\n\005_typeB\n\n\010_xCenterB\n\n\010"
-  "_yCenterB\023\n\021_finishedHoleSizeB\021\n\017_electr"
-  "icalTypeB\014\n\n_mountTypeB\005\n\003_idB\010\n\006_indexB"
-  "\007\n\005_nameB\010\n\006_pitchB\007\n\005_xMinB\007\n\005_yMinB\007\n\005"
-  "_xMaxB\007\n\005_yMaxB\025\n\023_attributesIdString\032_\n"
-  "\025NetRecordsByNameEntry\022\013\n\003key\030\001 \001(\t\0225\n\005v"
-  "alue\030\002 \001(\0132&.odbdesign.proto.EdaDataFile"
-  ".NetRecord:\0028\001\032g\n\031PackageRecordsByNameEn"
-  "try\022\013\n\003key\030\001 \001(\t\0229\n\005value\030\002 \001(\0132*.odbdes"
-  "ign.proto.EdaDataFile.PackageRecord:\0028\001\""
-  " \n\tBoardSide\022\007\n\003TOP\020\000\022\n\n\006BOTTOM\020\001B\007\n\005_pa"
-  "thB\010\n\006_unitsB\t\n\007_sourceb\006proto3"
+  "\022\022\n\005index\030\003 \001(\rH\002\210\001\001\022J\n\rsubnetRecords\030\004 "
+  "\003(\01323.odbdesign.proto.EdaDataFile.NetRec"
+  "ord.SubnetRecord\022D\n\017propertyRecords\030\005 \003("
+  "\0132+.odbdesign.proto.EdaDataFile.Property"
+  "Record\032\366\003\n\014SubnetRecord\022K\n\004type\030\001 \001(\01628."
+  "odbdesign.proto.EdaDataFile.NetRecord.Su"
+  "bnetRecord.TypeH\000\210\001\001\022]\n\020featureIdRecords"
+  "\030\002 \003(\0132C.odbdesign.proto.EdaDataFile.Net"
+  "Record.SubnetRecord.FeatureIdRecord\032\373\001\n\017"
+  "FeatureIdRecord\022[\n\004type\030\001 \001(\0162H.odbdesig"
+  "n.proto.EdaDataFile.NetRecord.SubnetReco"
+  "rd.FeatureIdRecord.TypeH\000\210\001\001\022\030\n\013layerNum"
+  "ber\030\002 \001(\rH\001\210\001\001\022\032\n\rfeatureNumber\030\003 \001(\rH\002\210"
+  "\001\001\"*\n\004Type\022\n\n\006COPPER\020\000\022\014\n\010LAMINATE\020\001\022\010\n\004"
+  "HOLE\020\002B\007\n\005_typeB\016\n\014_layerNumberB\020\n\016_feat"
+  "ureNumber\"3\n\004Type\022\007\n\003VIA\020\000\022\t\n\005TRACE\020\001\022\t\n"
+  "\005PLANE\020\002\022\014\n\010TOEPRINT\020\003B\007\n\005_type\032x\n\024Toepr"
+  "intSubnetRecord\022\034\n\017componentNumber\030\002 \001(\r"
+  "H\000\210\001\001\022\033\n\016toeprintNumber\030\003 \001(\rH\001\210\001\001B\022\n\020_c"
+  "omponentNumberB\021\n\017_toeprintNumber\032\360\002\n\021Pl"
+  "aneSubnetRecord\022X\n\010fillType\030\001 \001(\0162A.odbd"
+  "esign.proto.EdaDataFile.NetRecord.PlaneS"
+  "ubnetRecord.FillTypeH\000\210\001\001\022\\\n\ncutoutType\030"
+  "\002 \001(\0162C.odbdesign.proto.EdaDataFile.NetR"
+  "ecord.PlaneSubnetRecord.CutoutTypeH\001\210\001\001\022"
+  "\025\n\010fillSize\030\003 \001(\002H\002\210\001\001\"\"\n\010FillType\022\t\n\005SO"
+  "LID\020\000\022\013\n\007OUTLINE\020\001\"\?\n\nCutoutType\022\n\n\006CIRC"
+  "LE\020\000\022\r\n\tRECTANGLE\020\001\022\013\n\007OCTAGON\020\002\022\t\n\005EXAC"
+  "T\020\003B\013\n\t_fillTypeB\r\n\013_cutoutTypeB\013\n\t_fill"
+  "SizeB\007\n\005_nameB\025\n\023_attributesIdStringB\010\n\006"
+  "_index\032\351\n\n\rPackageRecord\022\021\n\004name\030\001 \001(\tH\000"
+  "\210\001\001\022\022\n\005pitch\030\002 \001(\002H\001\210\001\001\022\021\n\004xMin\030\003 \001(\002H\002\210"
+  "\001\001\022\021\n\004yMin\030\004 \001(\002H\003\210\001\001\022\021\n\004xMax\030\005 \001(\002H\004\210\001\001"
+  "\022\021\n\004yMax\030\006 \001(\002H\005\210\001\001\022\037\n\022attributesIdStrin"
+  "g\030\007 \001(\tH\006\210\001\001\022H\n\npinRecords\030\010 \003(\01324.odbde"
+  "sign.proto.EdaDataFile.PackageRecord.Pin"
+  "Record\022Z\n\020pinRecordsByName\030\t \003(\0132@.odbde"
+  "sign.proto.EdaDataFile.PackageRecord.Pin"
+  "RecordsByNameEntry\022D\n\017propertyRecords\030\n "
+  "\003(\0132+.odbdesign.proto.EdaDataFile.Proper"
+  "tyRecord\032m\n\025PinRecordsByNameEntry\022\013\n\003key"
+  "\030\001 \001(\t\022C\n\005value\030\002 \001(\01324.odbdesign.proto."
+  "EdaDataFile.PackageRecord.PinRecord:\0028\001\032"
+  "\232\006\n\tPinRecord\022\021\n\004name\030\001 \001(\tH\000\210\001\001\022L\n\004type"
+  "\030\002 \001(\01629.odbdesign.proto.EdaDataFile.Pac"
+  "kageRecord.PinRecord.TypeH\001\210\001\001\022\024\n\007xCente"
+  "r\030\003 \001(\002H\002\210\001\001\022\024\n\007yCenter\030\004 \001(\002H\003\210\001\001\022\035\n\020fi"
+  "nishedHoleSize\030\005 \001(\002H\004\210\001\001\022`\n\016electricalT"
+  "ype\030\006 \001(\0162C.odbdesign.proto.EdaDataFile."
+  "PackageRecord.PinRecord.ElectricalTypeH\005"
+  "\210\001\001\022V\n\tmountType\030\007 \001(\0162>.odbdesign.proto"
+  ".EdaDataFile.PackageRecord.PinRecord.Mou"
+  "ntTypeH\006\210\001\001\022\017\n\002id\030\010 \001(\rH\007\210\001\001\022\022\n\005index\030\t "
+  "\001(\rH\010\210\001\001\"0\n\004Type\022\020\n\014THROUGH_HOLE\020\000\022\t\n\005BL"
+  "IND\020\001\022\013\n\007SURFACE\020\002\"C\n\016ElectricalType\022\016\n\n"
+  "ELECTRICAL\020\000\022\022\n\016NON_ELECTRICAL\020\001\022\r\n\tUNDE"
+  "FINED\020\002\"\231\001\n\tMountType\022\007\n\003SMT\020\000\022\027\n\023RECOMM"
+  "ENDED_SMT_PAD\020\001\022\023\n\017MT_THROUGH_HOLE\020\002\022\034\n\030"
+  "RECOMMENDED_THROUGH_HOLE\020\003\022\014\n\010PRESSFIT\020\004"
+  "\022\r\n\tNON_BOARD\020\005\022\010\n\004HOLE\020\006\022\020\n\014MT_UNDEFINE"
+  "D\020\007B\007\n\005_nameB\007\n\005_typeB\n\n\010_xCenterB\n\n\010_yC"
+  "enterB\023\n\021_finishedHoleSizeB\021\n\017_electrica"
+  "lTypeB\014\n\n_mountTypeB\005\n\003_idB\010\n\006_indexB\007\n\005"
+  "_nameB\010\n\006_pitchB\007\n\005_xMinB\007\n\005_yMinB\007\n\005_xM"
+  "axB\007\n\005_yMaxB\025\n\023_attributesIdString\032_\n\025Ne"
+  "tRecordsByNameEntry\022\013\n\003key\030\001 \001(\t\0225\n\005valu"
+  "e\030\002 \001(\0132&.odbdesign.proto.EdaDataFile.Ne"
+  "tRecord:\0028\001\032g\n\031PackageRecordsByNameEntry"
+  "\022\013\n\003key\030\001 \001(\t\0229\n\005value\030\002 \001(\0132*.odbdesign"
+  ".proto.EdaDataFile.PackageRecord:\0028\001\" \n\t"
+  "BoardSide\022\007\n\003TOP\020\000\022\n\n\006BOTTOM\020\001B\007\n\005_pathB"
+  "\010\n\006_unitsB\t\n\007_sourceb\006proto3"
   ;
 static ::_pbi::once_flag descriptor_table_edadatafile_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_edadatafile_2eproto = {
-    false, false, 3431, descriptor_table_protodef_edadatafile_2eproto,
+    false, false, 3508, descriptor_table_protodef_edadatafile_2eproto,
     "edadatafile.proto",
     &descriptor_table_edadatafile_2eproto_once, nullptr, 0, 12,
     schemas, file_default_instances, TableStruct_edadatafile_2eproto::offsets,
@@ -1136,27 +1141,27 @@ const char* EdaDataFile_NetRecord_SubnetRecord_FeatureIdRecord::_InternalParse(c
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // optional .odbdesign.proto.EdaDataFile.NetRecord.SubnetRecord.FeatureIdRecord.Type type = 2;
-      case 2:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 16)) {
+      // optional .odbdesign.proto.EdaDataFile.NetRecord.SubnetRecord.FeatureIdRecord.Type type = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
           uint64_t val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
           _internal_set_type(static_cast<::odbdesign::proto::EdaDataFile_NetRecord_SubnetRecord_FeatureIdRecord_Type>(val));
         } else
           goto handle_unusual;
         continue;
-      // optional uint32 layerNumber = 3;
-      case 3:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 24)) {
+      // optional uint32 layerNumber = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 16)) {
           _Internal::set_has_layernumber(&has_bits);
           _impl_.layernumber_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
           CHK_(ptr);
         } else
           goto handle_unusual;
         continue;
-      // optional uint32 featureNumber = 4;
-      case 4:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 32)) {
+      // optional uint32 featureNumber = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 24)) {
           _Internal::set_has_featurenumber(&has_bits);
           _impl_.featurenumber_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
           CHK_(ptr);
@@ -1193,23 +1198,23 @@ uint8_t* EdaDataFile_NetRecord_SubnetRecord_FeatureIdRecord::_InternalSerialize(
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // optional .odbdesign.proto.EdaDataFile.NetRecord.SubnetRecord.FeatureIdRecord.Type type = 2;
+  // optional .odbdesign.proto.EdaDataFile.NetRecord.SubnetRecord.FeatureIdRecord.Type type = 1;
   if (_internal_has_type()) {
     target = stream->EnsureSpace(target);
     target = ::_pbi::WireFormatLite::WriteEnumToArray(
-      2, this->_internal_type(), target);
+      1, this->_internal_type(), target);
   }
 
-  // optional uint32 layerNumber = 3;
+  // optional uint32 layerNumber = 2;
   if (_internal_has_layernumber()) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteUInt32ToArray(3, this->_internal_layernumber(), target);
+    target = ::_pbi::WireFormatLite::WriteUInt32ToArray(2, this->_internal_layernumber(), target);
   }
 
-  // optional uint32 featureNumber = 4;
+  // optional uint32 featureNumber = 3;
   if (_internal_has_featurenumber()) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteUInt32ToArray(4, this->_internal_featurenumber(), target);
+    target = ::_pbi::WireFormatLite::WriteUInt32ToArray(3, this->_internal_featurenumber(), target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -1230,18 +1235,18 @@ size_t EdaDataFile_NetRecord_SubnetRecord_FeatureIdRecord::ByteSizeLong() const 
 
   cached_has_bits = _impl_._has_bits_[0];
   if (cached_has_bits & 0x00000007u) {
-    // optional .odbdesign.proto.EdaDataFile.NetRecord.SubnetRecord.FeatureIdRecord.Type type = 2;
+    // optional .odbdesign.proto.EdaDataFile.NetRecord.SubnetRecord.FeatureIdRecord.Type type = 1;
     if (cached_has_bits & 0x00000001u) {
       total_size += 1 +
         ::_pbi::WireFormatLite::EnumSize(this->_internal_type());
     }
 
-    // optional uint32 layerNumber = 3;
+    // optional uint32 layerNumber = 2;
     if (cached_has_bits & 0x00000002u) {
       total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(this->_internal_layernumber());
     }
 
-    // optional uint32 featureNumber = 4;
+    // optional uint32 featureNumber = 3;
     if (cached_has_bits & 0x00000004u) {
       total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(this->_internal_featurenumber());
     }
@@ -1541,14 +1546,11 @@ void EdaDataFile_NetRecord_SubnetRecord::InternalSwap(EdaDataFile_NetRecord_Subn
 class EdaDataFile_NetRecord_ToeprintSubnetRecord::_Internal {
  public:
   using HasBits = decltype(std::declval<EdaDataFile_NetRecord_ToeprintSubnetRecord>()._impl_._has_bits_);
-  static void set_has_side(HasBits* has_bits) {
+  static void set_has_componentnumber(HasBits* has_bits) {
     (*has_bits)[0] |= 1u;
   }
-  static void set_has_componentnumber(HasBits* has_bits) {
-    (*has_bits)[0] |= 2u;
-  }
   static void set_has_toeprintnumber(HasBits* has_bits) {
-    (*has_bits)[0] |= 4u;
+    (*has_bits)[0] |= 2u;
   }
 };
 
@@ -1564,14 +1566,13 @@ EdaDataFile_NetRecord_ToeprintSubnetRecord::EdaDataFile_NetRecord_ToeprintSubnet
   new (&_impl_) Impl_{
       decltype(_impl_._has_bits_){from._impl_._has_bits_}
     , /*decltype(_impl_._cached_size_)*/{}
-    , decltype(_impl_.side_){}
     , decltype(_impl_.componentnumber_){}
     , decltype(_impl_.toeprintnumber_){}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  ::memcpy(&_impl_.side_, &from._impl_.side_,
+  ::memcpy(&_impl_.componentnumber_, &from._impl_.componentnumber_,
     static_cast<size_t>(reinterpret_cast<char*>(&_impl_.toeprintnumber_) -
-    reinterpret_cast<char*>(&_impl_.side_)) + sizeof(_impl_.toeprintnumber_));
+    reinterpret_cast<char*>(&_impl_.componentnumber_)) + sizeof(_impl_.toeprintnumber_));
   // @@protoc_insertion_point(copy_constructor:odbdesign.proto.EdaDataFile.NetRecord.ToeprintSubnetRecord)
 }
 
@@ -1582,7 +1583,6 @@ inline void EdaDataFile_NetRecord_ToeprintSubnetRecord::SharedCtor(
   new (&_impl_) Impl_{
       decltype(_impl_._has_bits_){}
     , /*decltype(_impl_._cached_size_)*/{}
-    , decltype(_impl_.side_){0}
     , decltype(_impl_.componentnumber_){0u}
     , decltype(_impl_.toeprintnumber_){0u}
   };
@@ -1612,10 +1612,10 @@ void EdaDataFile_NetRecord_ToeprintSubnetRecord::Clear() {
   (void) cached_has_bits;
 
   cached_has_bits = _impl_._has_bits_[0];
-  if (cached_has_bits & 0x00000007u) {
-    ::memset(&_impl_.side_, 0, static_cast<size_t>(
+  if (cached_has_bits & 0x00000003u) {
+    ::memset(&_impl_.componentnumber_, 0, static_cast<size_t>(
         reinterpret_cast<char*>(&_impl_.toeprintnumber_) -
-        reinterpret_cast<char*>(&_impl_.side_)) + sizeof(_impl_.toeprintnumber_));
+        reinterpret_cast<char*>(&_impl_.componentnumber_)) + sizeof(_impl_.toeprintnumber_));
   }
   _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
@@ -1628,27 +1628,18 @@ const char* EdaDataFile_NetRecord_ToeprintSubnetRecord::_InternalParse(const cha
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // optional .odbdesign.proto.EdaDataFile.BoardSide side = 2;
+      // optional uint32 componentNumber = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 16)) {
-          uint64_t val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
-          CHK_(ptr);
-          _internal_set_side(static_cast<::odbdesign::proto::EdaDataFile_BoardSide>(val));
-        } else
-          goto handle_unusual;
-        continue;
-      // optional uint32 componentNumber = 3;
-      case 3:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 24)) {
           _Internal::set_has_componentnumber(&has_bits);
           _impl_.componentnumber_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
           CHK_(ptr);
         } else
           goto handle_unusual;
         continue;
-      // optional uint32 toeprintNumber = 4;
-      case 4:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 32)) {
+      // optional uint32 toeprintNumber = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 24)) {
           _Internal::set_has_toeprintnumber(&has_bits);
           _impl_.toeprintnumber_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
           CHK_(ptr);
@@ -1685,23 +1676,16 @@ uint8_t* EdaDataFile_NetRecord_ToeprintSubnetRecord::_InternalSerialize(
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // optional .odbdesign.proto.EdaDataFile.BoardSide side = 2;
-  if (_internal_has_side()) {
-    target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteEnumToArray(
-      2, this->_internal_side(), target);
-  }
-
-  // optional uint32 componentNumber = 3;
+  // optional uint32 componentNumber = 2;
   if (_internal_has_componentnumber()) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteUInt32ToArray(3, this->_internal_componentnumber(), target);
+    target = ::_pbi::WireFormatLite::WriteUInt32ToArray(2, this->_internal_componentnumber(), target);
   }
 
-  // optional uint32 toeprintNumber = 4;
+  // optional uint32 toeprintNumber = 3;
   if (_internal_has_toeprintnumber()) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteUInt32ToArray(4, this->_internal_toeprintnumber(), target);
+    target = ::_pbi::WireFormatLite::WriteUInt32ToArray(3, this->_internal_toeprintnumber(), target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -1721,20 +1705,14 @@ size_t EdaDataFile_NetRecord_ToeprintSubnetRecord::ByteSizeLong() const {
   (void) cached_has_bits;
 
   cached_has_bits = _impl_._has_bits_[0];
-  if (cached_has_bits & 0x00000007u) {
-    // optional .odbdesign.proto.EdaDataFile.BoardSide side = 2;
+  if (cached_has_bits & 0x00000003u) {
+    // optional uint32 componentNumber = 2;
     if (cached_has_bits & 0x00000001u) {
-      total_size += 1 +
-        ::_pbi::WireFormatLite::EnumSize(this->_internal_side());
-    }
-
-    // optional uint32 componentNumber = 3;
-    if (cached_has_bits & 0x00000002u) {
       total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(this->_internal_componentnumber());
     }
 
-    // optional uint32 toeprintNumber = 4;
-    if (cached_has_bits & 0x00000004u) {
+    // optional uint32 toeprintNumber = 3;
+    if (cached_has_bits & 0x00000002u) {
       total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(this->_internal_toeprintnumber());
     }
 
@@ -1758,14 +1736,11 @@ void EdaDataFile_NetRecord_ToeprintSubnetRecord::MergeImpl(::PROTOBUF_NAMESPACE_
   (void) cached_has_bits;
 
   cached_has_bits = from._impl_._has_bits_[0];
-  if (cached_has_bits & 0x00000007u) {
+  if (cached_has_bits & 0x00000003u) {
     if (cached_has_bits & 0x00000001u) {
-      _this->_impl_.side_ = from._impl_.side_;
-    }
-    if (cached_has_bits & 0x00000002u) {
       _this->_impl_.componentnumber_ = from._impl_.componentnumber_;
     }
-    if (cached_has_bits & 0x00000004u) {
+    if (cached_has_bits & 0x00000002u) {
       _this->_impl_.toeprintnumber_ = from._impl_.toeprintnumber_;
     }
     _this->_impl_._has_bits_[0] |= cached_has_bits;
@@ -1791,9 +1766,9 @@ void EdaDataFile_NetRecord_ToeprintSubnetRecord::InternalSwap(EdaDataFile_NetRec
   ::PROTOBUF_NAMESPACE_ID::internal::memswap<
       PROTOBUF_FIELD_OFFSET(EdaDataFile_NetRecord_ToeprintSubnetRecord, _impl_.toeprintnumber_)
       + sizeof(EdaDataFile_NetRecord_ToeprintSubnetRecord::_impl_.toeprintnumber_)
-      - PROTOBUF_FIELD_OFFSET(EdaDataFile_NetRecord_ToeprintSubnetRecord, _impl_.side_)>(
-          reinterpret_cast<char*>(&_impl_.side_),
-          reinterpret_cast<char*>(&other->_impl_.side_));
+      - PROTOBUF_FIELD_OFFSET(EdaDataFile_NetRecord_ToeprintSubnetRecord, _impl_.componentnumber_)>(
+          reinterpret_cast<char*>(&_impl_.componentnumber_),
+          reinterpret_cast<char*>(&other->_impl_.componentnumber_));
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata EdaDataFile_NetRecord_ToeprintSubnetRecord::GetMetadata() const {
@@ -1894,27 +1869,27 @@ const char* EdaDataFile_NetRecord_PlaneSubnetRecord::_InternalParse(const char* 
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // optional .odbdesign.proto.EdaDataFile.NetRecord.PlaneSubnetRecord.FillType fillType = 2;
-      case 2:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 16)) {
+      // optional .odbdesign.proto.EdaDataFile.NetRecord.PlaneSubnetRecord.FillType fillType = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
           uint64_t val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
           _internal_set_filltype(static_cast<::odbdesign::proto::EdaDataFile_NetRecord_PlaneSubnetRecord_FillType>(val));
         } else
           goto handle_unusual;
         continue;
-      // optional .odbdesign.proto.EdaDataFile.NetRecord.PlaneSubnetRecord.CutoutType cutoutType = 3;
-      case 3:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 24)) {
+      // optional .odbdesign.proto.EdaDataFile.NetRecord.PlaneSubnetRecord.CutoutType cutoutType = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 16)) {
           uint64_t val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
           _internal_set_cutouttype(static_cast<::odbdesign::proto::EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType>(val));
         } else
           goto handle_unusual;
         continue;
-      // optional float fillSize = 4;
-      case 4:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 37)) {
+      // optional float fillSize = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 29)) {
           _Internal::set_has_fillsize(&has_bits);
           _impl_.fillsize_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
           ptr += sizeof(float);
@@ -1951,24 +1926,24 @@ uint8_t* EdaDataFile_NetRecord_PlaneSubnetRecord::_InternalSerialize(
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // optional .odbdesign.proto.EdaDataFile.NetRecord.PlaneSubnetRecord.FillType fillType = 2;
+  // optional .odbdesign.proto.EdaDataFile.NetRecord.PlaneSubnetRecord.FillType fillType = 1;
   if (_internal_has_filltype()) {
     target = stream->EnsureSpace(target);
     target = ::_pbi::WireFormatLite::WriteEnumToArray(
-      2, this->_internal_filltype(), target);
+      1, this->_internal_filltype(), target);
   }
 
-  // optional .odbdesign.proto.EdaDataFile.NetRecord.PlaneSubnetRecord.CutoutType cutoutType = 3;
+  // optional .odbdesign.proto.EdaDataFile.NetRecord.PlaneSubnetRecord.CutoutType cutoutType = 2;
   if (_internal_has_cutouttype()) {
     target = stream->EnsureSpace(target);
     target = ::_pbi::WireFormatLite::WriteEnumToArray(
-      3, this->_internal_cutouttype(), target);
+      2, this->_internal_cutouttype(), target);
   }
 
-  // optional float fillSize = 4;
+  // optional float fillSize = 3;
   if (_internal_has_fillsize()) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteFloatToArray(4, this->_internal_fillsize(), target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(3, this->_internal_fillsize(), target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -1989,19 +1964,19 @@ size_t EdaDataFile_NetRecord_PlaneSubnetRecord::ByteSizeLong() const {
 
   cached_has_bits = _impl_._has_bits_[0];
   if (cached_has_bits & 0x00000007u) {
-    // optional .odbdesign.proto.EdaDataFile.NetRecord.PlaneSubnetRecord.FillType fillType = 2;
+    // optional .odbdesign.proto.EdaDataFile.NetRecord.PlaneSubnetRecord.FillType fillType = 1;
     if (cached_has_bits & 0x00000001u) {
       total_size += 1 +
         ::_pbi::WireFormatLite::EnumSize(this->_internal_filltype());
     }
 
-    // optional .odbdesign.proto.EdaDataFile.NetRecord.PlaneSubnetRecord.CutoutType cutoutType = 3;
+    // optional .odbdesign.proto.EdaDataFile.NetRecord.PlaneSubnetRecord.CutoutType cutoutType = 2;
     if (cached_has_bits & 0x00000002u) {
       total_size += 1 +
         ::_pbi::WireFormatLite::EnumSize(this->_internal_cutouttype());
     }
 
-    // optional float fillSize = 4;
+    // optional float fillSize = 3;
     if (cached_has_bits & 0x00000004u) {
       total_size += 1 + 4;
     }
@@ -2098,6 +2073,8 @@ EdaDataFile_NetRecord::EdaDataFile_NetRecord(const EdaDataFile_NetRecord& from)
   new (&_impl_) Impl_{
       decltype(_impl_._has_bits_){from._impl_._has_bits_}
     , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.subnetrecords_){from._impl_.subnetrecords_}
+    , decltype(_impl_.propertyrecords_){from._impl_.propertyrecords_}
     , decltype(_impl_.name_){}
     , decltype(_impl_.attributesidstring_){}
     , decltype(_impl_.index_){}};
@@ -2130,6 +2107,8 @@ inline void EdaDataFile_NetRecord::SharedCtor(
   new (&_impl_) Impl_{
       decltype(_impl_._has_bits_){}
     , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.subnetrecords_){arena}
+    , decltype(_impl_.propertyrecords_){arena}
     , decltype(_impl_.name_){}
     , decltype(_impl_.attributesidstring_){}
     , decltype(_impl_.index_){0u}
@@ -2155,6 +2134,8 @@ EdaDataFile_NetRecord::~EdaDataFile_NetRecord() {
 
 inline void EdaDataFile_NetRecord::SharedDtor() {
   GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  _impl_.subnetrecords_.~RepeatedPtrField();
+  _impl_.propertyrecords_.~RepeatedPtrField();
   _impl_.name_.Destroy();
   _impl_.attributesidstring_.Destroy();
 }
@@ -2169,6 +2150,8 @@ void EdaDataFile_NetRecord::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
+  _impl_.subnetrecords_.Clear();
+  _impl_.propertyrecords_.Clear();
   cached_has_bits = _impl_._has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
     if (cached_has_bits & 0x00000001u) {
@@ -2216,6 +2199,32 @@ const char* EdaDataFile_NetRecord::_InternalParse(const char* ptr, ::_pbi::Parse
           _Internal::set_has_index(&has_bits);
           _impl_.index_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
           CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // repeated .odbdesign.proto.EdaDataFile.NetRecord.SubnetRecord subnetRecords = 4;
+      case 4:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 34)) {
+          ptr -= 1;
+          do {
+            ptr += 1;
+            ptr = ctx->ParseMessage(_internal_add_subnetrecords(), ptr);
+            CHK_(ptr);
+            if (!ctx->DataAvailable(ptr)) break;
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<34>(ptr));
+        } else
+          goto handle_unusual;
+        continue;
+      // repeated .odbdesign.proto.EdaDataFile.PropertyRecord propertyRecords = 5;
+      case 5:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 42)) {
+          ptr -= 1;
+          do {
+            ptr += 1;
+            ptr = ctx->ParseMessage(_internal_add_propertyrecords(), ptr);
+            CHK_(ptr);
+            if (!ctx->DataAvailable(ptr)) break;
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<42>(ptr));
         } else
           goto handle_unusual;
         continue;
@@ -2275,6 +2284,22 @@ uint8_t* EdaDataFile_NetRecord::_InternalSerialize(
     target = ::_pbi::WireFormatLite::WriteUInt32ToArray(3, this->_internal_index(), target);
   }
 
+  // repeated .odbdesign.proto.EdaDataFile.NetRecord.SubnetRecord subnetRecords = 4;
+  for (unsigned i = 0,
+      n = static_cast<unsigned>(this->_internal_subnetrecords_size()); i < n; i++) {
+    const auto& repfield = this->_internal_subnetrecords(i);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+        InternalWriteMessage(4, repfield, repfield.GetCachedSize(), target, stream);
+  }
+
+  // repeated .odbdesign.proto.EdaDataFile.PropertyRecord propertyRecords = 5;
+  for (unsigned i = 0,
+      n = static_cast<unsigned>(this->_internal_propertyrecords_size()); i < n; i++) {
+    const auto& repfield = this->_internal_propertyrecords(i);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+        InternalWriteMessage(5, repfield, repfield.GetCachedSize(), target, stream);
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -2290,6 +2315,20 @@ size_t EdaDataFile_NetRecord::ByteSizeLong() const {
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
+
+  // repeated .odbdesign.proto.EdaDataFile.NetRecord.SubnetRecord subnetRecords = 4;
+  total_size += 1UL * this->_internal_subnetrecords_size();
+  for (const auto& msg : this->_impl_.subnetrecords_) {
+    total_size +=
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(msg);
+  }
+
+  // repeated .odbdesign.proto.EdaDataFile.PropertyRecord propertyRecords = 5;
+  total_size += 1UL * this->_internal_propertyrecords_size();
+  for (const auto& msg : this->_impl_.propertyrecords_) {
+    total_size +=
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(msg);
+  }
 
   cached_has_bits = _impl_._has_bits_[0];
   if (cached_has_bits & 0x00000007u) {
@@ -2331,6 +2370,8 @@ void EdaDataFile_NetRecord::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, 
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
+  _this->_impl_.subnetrecords_.MergeFrom(from._impl_.subnetrecords_);
+  _this->_impl_.propertyrecords_.MergeFrom(from._impl_.propertyrecords_);
   cached_has_bits = from._impl_._has_bits_[0];
   if (cached_has_bits & 0x00000007u) {
     if (cached_has_bits & 0x00000001u) {
@@ -2364,6 +2405,8 @@ void EdaDataFile_NetRecord::InternalSwap(EdaDataFile_NetRecord* other) {
   auto* rhs_arena = other->GetArenaForAllocation();
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  _impl_.subnetrecords_.InternalSwap(&other->_impl_.subnetrecords_);
+  _impl_.propertyrecords_.InternalSwap(&other->_impl_.propertyrecords_);
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
       &_impl_.name_, lhs_arena,
       &other->_impl_.name_, rhs_arena

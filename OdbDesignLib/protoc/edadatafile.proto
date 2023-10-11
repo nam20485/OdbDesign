@@ -39,9 +39,9 @@ message EdaDataFile {
                     HOLE = 2;
                 };
                 
-                optional Type type = 2;
-                optional uint32 layerNumber = 3;
-                optional uint32 featureNumber = 4;
+                optional Type type = 1;
+                optional uint32 layerNumber = 2;
+                optional uint32 featureNumber = 3;
             };
 
             optional Type type = 1;
@@ -51,9 +51,8 @@ message EdaDataFile {
         message ToeprintSubnetRecord {
 
             //optional SubnetRecord subnetRecord = 1;
-            optional BoardSide side = 2;
-            optional uint32 componentNumber = 3;
-            optional uint32 toeprintNumber = 4;
+            optional uint32 componentNumber = 2;
+            optional uint32 toeprintNumber = 3;
         };
 
         message PlaneSubnetRecord {
@@ -72,14 +71,17 @@ message EdaDataFile {
                 EXACT = 3;
             };
 
-            optional FillType fillType = 2;
-            optional CutoutType cutoutType = 3;
-            optional float fillSize = 4;
+            optional FillType fillType = 1;
+            optional CutoutType cutoutType = 2;
+            optional float fillSize = 3;
         };
 
         optional string name = 1;
         optional string attributesIdString = 2;
         optional uint32 index = 3;    
+
+        repeated SubnetRecord subnetRecords = 4;
+        repeated PropertyRecord propertyRecords = 5;
     }
 
     message PackageRecord {    
