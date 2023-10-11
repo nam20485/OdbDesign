@@ -46,8 +46,9 @@ namespace Odb::Lib::FileModel::Design
 
 		struct DECLSPEC NetRecord : public IProtoBuffable<odbdesign::proto::EdaDataFile::NetRecord>
 		{
-			struct DECLSPEC SubnetRecord// : public IProtoBuffable<odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord>
+			struct DECLSPEC SubnetRecord : public IProtoBuffable<odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord>
 			{
+				// common subnet enums
 				enum class Type
 				{
 					Via,
@@ -55,6 +56,21 @@ namespace Odb::Lib::FileModel::Design
 					Plane,
 					Toeprint
 				};
+
+				// Plane subnet type enums
+				enum class FillType
+				{
+					Solid,
+					Outline
+				};
+
+				enum class CutoutType
+				{
+					Circle,
+					Rectangle,
+					Octagon,
+					Exact
+				};				
 
 				struct DECLSPEC FeatureIdRecord : public IProtoBuffable<odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord>
 				{
@@ -80,8 +96,19 @@ namespace Odb::Lib::FileModel::Design
 
 				virtual ~SubnetRecord();
 
+				// common subnet fields
 				Type type;
 				FeatureIdRecord::Vector m_featureIdRecords;
+
+				// Toeprint subnet type fields
+				BoardSide side;
+				unsigned int componentNumber;	// component index in the layer components/placements file
+				unsigned toeprintNumber;		// toeprint index of component reference in the layer components/placements file
+
+				// Plane subnet type fields
+				FillType fillType;
+				CutoutType cutoutType;
+				float fillSize;
 
 				inline static const std::string RECORD_TOKEN = "SNT";
 				inline static const std::string RECORD_TYPE_TRACE_TOKEN = "TRC";
@@ -89,44 +116,50 @@ namespace Odb::Lib::FileModel::Design
 				inline static const std::string RECORD_TYPE_TOEPRINT_TOKEN = "TOP";
 				inline static const std::string RECORD_TYPE_PLANE_TOKEN = "PLN";
 				
+
+				// Inherited via IProtoBuffable
+				std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord> to_protobuf() const override;
+				void from_protobuf(const odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord& message) override;
+
 			}; // SubnetRecord
 
-			struct DECLSPEC ToeprintSubnetRecord : public SubnetRecord, public IProtoBuffable<odbdesign::proto::EdaDataFile::NetRecord::ToeprintSubnetRecord>
-			{
-				BoardSide side;
-				unsigned int componentNumber;	// component index in the layer components/placements file
-				unsigned toeprintNumber;		// toeprint index of component reference in the layer components/placements file
+			//struct DECLSPEC ToeprintSubnetRecord : public SubnetRecord, public IProtoBuffable<odbdesign::proto::EdaDataFile::NetRecord::ToeprintSubnetRecord>
+			//{
+			//	BoardSide side;
+			//	unsigned int componentNumber;	// component index in the layer components/placements file
+			//	unsigned toeprintNumber;		// toeprint index of component reference in the layer components/placements file
 
-				// Inherited via IProtoBuffable
-				std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord::ToeprintSubnetRecord> to_protobuf() const override;
-				void from_protobuf(const odbdesign::proto::EdaDataFile::NetRecord::ToeprintSubnetRecord& message) override;
-			}; // ToeprintSubnetRecord
+			//	// Inherited via IProtoBuffable
+			//	std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord::ToeprintSubnetRecord> to_protobuf() const override;
+			//	void from_protobuf(const odbdesign::proto::EdaDataFile::NetRecord::ToeprintSubnetRecord& message) override;
 
-			struct DECLSPEC PlaneSubnetRecord : public SubnetRecord, public IProtoBuffable<odbdesign::proto::EdaDataFile::NetRecord::PlaneSubnetRecord>
-			{
-				enum class FillType
-				{
-					Solid,
-					Outline
-				};
+			//}; // ToeprintSubnetRecord
 
-				enum class CutoutType
-				{
-					Circle,
-					Rectangle,
-					Octagon,
-					Exact
-				};
+			//struct DECLSPEC PlaneSubnetRecord : public SubnetRecord, public IProtoBuffable<odbdesign::proto::EdaDataFile::NetRecord::PlaneSubnetRecord>
+			//{
+			//	enum class FillType
+			//	{
+			//		Solid,
+			//		Outline
+			//	};
 
-				FillType fillType;
-				CutoutType cutoutType;
-				float fillSize;
+			//	enum class CutoutType
+			//	{
+			//		Circle,
+			//		Rectangle,
+			//		Octagon,
+			//		Exact
+			//	};
 
-				// Inherited via IProtoBuffable
-				std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord::PlaneSubnetRecord> to_protobuf() const override;
-				void from_protobuf(const odbdesign::proto::EdaDataFile::NetRecord::PlaneSubnetRecord& message) override;
+			//	FillType fillType;
+			//	CutoutType cutoutType;
+			//	float fillSize;
 
-			}; // PlaneSubnetRecord
+			//	// Inherited via IProtoBuffable
+			//	std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord::PlaneSubnetRecord> to_protobuf() const override;
+			//	void from_protobuf(const odbdesign::proto::EdaDataFile::NetRecord::PlaneSubnetRecord& message) override;
+
+			//}; // PlaneSubnetRecord
 
 			typedef std::vector<std::shared_ptr<NetRecord>> Vector;
 			typedef std::map<std::string, std::shared_ptr<NetRecord>> StringMap;

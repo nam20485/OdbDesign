@@ -1,6 +1,10 @@
 #include "EdaDataFile.h"
 #include "EdaDataFile.h"
 #include "EdaDataFile.h"
+#include "EdaDataFile.h"
+#include "EdaDataFile.h"
+#include "EdaDataFile.h"
+#include "EdaDataFile.h"
 #include <fstream>
 #include <sstream>
 #include "str_trim.h"
@@ -42,6 +46,15 @@ namespace Odb::Lib::FileModel::Design
     EdaDataFile::NetRecord::SubnetRecord::~SubnetRecord()
     {
         m_featureIdRecords.clear();
+    }
+
+    std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord> EdaDataFile::NetRecord::SubnetRecord::to_protobuf() const
+    {
+        return std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord>();
+    }
+
+    void EdaDataFile::NetRecord::SubnetRecord::from_protobuf(const odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord& message)
+    {
     }
 
     EdaDataFile::NetRecord::~NetRecord()
@@ -92,29 +105,29 @@ namespace Odb::Lib::FileModel::Design
 
     }
 
-    // Inherited via IProtoBuffable
-    std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord::ToeprintSubnetRecord> EdaDataFile::NetRecord::ToeprintSubnetRecord::to_protobuf() const
-    {
-        auto pToeprintSubnetRecordMessage = std::make_unique<odbdesign::proto::EdaDataFile::NetRecord::ToeprintSubnetRecord>();
-        return pToeprintSubnetRecordMessage;
-    }
+    //// Inherited via IProtoBuffable
+    //std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord::ToeprintSubnetRecord> EdaDataFile::NetRecord::ToeprintSubnetRecord::to_protobuf() const
+    //{
+    //    auto pToeprintSubnetRecordMessage = std::make_unique<odbdesign::proto::EdaDataFile::NetRecord::ToeprintSubnetRecord>();
+    //    return pToeprintSubnetRecordMessage;
+    //}
 
-    void EdaDataFile::NetRecord::ToeprintSubnetRecord::from_protobuf(const odbdesign::proto::EdaDataFile::NetRecord::ToeprintSubnetRecord& message)
-    {
+    //void EdaDataFile::NetRecord::ToeprintSubnetRecord::from_protobuf(const odbdesign::proto::EdaDataFile::NetRecord::ToeprintSubnetRecord& message)
+    //{
 
-    }
+    //}
 
-    // Inherited via IProtoBuffable
-    std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord::PlaneSubnetRecord> EdaDataFile::NetRecord::PlaneSubnetRecord::to_protobuf() const
-    {
-        auto pPlaneSubnetRecordMessage = std::make_unique<odbdesign::proto::EdaDataFile::NetRecord::PlaneSubnetRecord>();
-        return pPlaneSubnetRecordMessage;
-    }
-    
-    void EdaDataFile::NetRecord::PlaneSubnetRecord::from_protobuf(const odbdesign::proto::EdaDataFile::NetRecord::PlaneSubnetRecord& message)
-    {
-       
-    }
+    //// Inherited via IProtoBuffable
+    //std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord::PlaneSubnetRecord> EdaDataFile::NetRecord::PlaneSubnetRecord::to_protobuf() const
+    //{
+    //    auto pPlaneSubnetRecordMessage = std::make_unique<odbdesign::proto::EdaDataFile::NetRecord::PlaneSubnetRecord>();
+    //    return pPlaneSubnetRecordMessage;
+    //}
+    //
+    //void EdaDataFile::NetRecord::PlaneSubnetRecord::from_protobuf(const odbdesign::proto::EdaDataFile::NetRecord::PlaneSubnetRecord& message)
+    //{
+    //   
+    //}
 
     const std::vector<std::string>& EdaDataFile::GetLayerNames() const
     {
@@ -367,32 +380,31 @@ namespace Odb::Lib::FileModel::Design
                         }
                     }
 
+                    pCurrentSubnetRecord = std::make_shared<NetRecord::SubnetRecord>();
+
                     // subnet type
                     lineStream >> token;
                     if (token == NetRecord::SubnetRecord::RECORD_TYPE_VIA_TOKEN)
-                    {
-                        pCurrentSubnetRecord = std::make_shared<NetRecord::SubnetRecord>();
+                    {                        
                         pCurrentSubnetRecord->type = NetRecord::SubnetRecord::Type::Via;
                     }
                     else if (token == NetRecord::SubnetRecord::RECORD_TYPE_TRACE_TOKEN)
-                    {
-                        pCurrentSubnetRecord = std::make_shared<NetRecord::SubnetRecord>();
+                    {                        
                         pCurrentSubnetRecord->type = NetRecord::SubnetRecord::Type::Trace;
                     }
                     else if (token == NetRecord::SubnetRecord::RECORD_TYPE_PLANE_TOKEN)
                     {
-                        pCurrentSubnetRecord = std::make_shared<NetRecord::PlaneSubnetRecord>();
                         pCurrentSubnetRecord->type = NetRecord::SubnetRecord::Type::Plane;
 
                         // fill type
                         lineStream >> token;
                         if (token == "S")
                         {
-                            std::dynamic_pointer_cast<NetRecord::PlaneSubnetRecord>(pCurrentSubnetRecord)->fillType = NetRecord::PlaneSubnetRecord::FillType::Solid;
+                            pCurrentSubnetRecord->fillType = NetRecord::SubnetRecord::FillType::Solid;
                         }
                         else if (token == "O")
                         {
-                            std::dynamic_pointer_cast<NetRecord::PlaneSubnetRecord>(pCurrentSubnetRecord)->fillType = NetRecord::PlaneSubnetRecord::FillType::Outline;
+                            pCurrentSubnetRecord->fillType = NetRecord::SubnetRecord::FillType::Outline;
                         }
                         else
                         {
@@ -403,19 +415,19 @@ namespace Odb::Lib::FileModel::Design
                         lineStream >> token;
                         if (token == "C")
                         {
-                            std::dynamic_pointer_cast<NetRecord::PlaneSubnetRecord>(pCurrentSubnetRecord)->cutoutType = NetRecord::PlaneSubnetRecord::CutoutType::Circle;
+                            pCurrentSubnetRecord->cutoutType = NetRecord::SubnetRecord::CutoutType::Circle;
                         }
                         else if (token == "R")
                         {
-                            std::dynamic_pointer_cast<NetRecord::PlaneSubnetRecord>(pCurrentSubnetRecord)->cutoutType = NetRecord::PlaneSubnetRecord::CutoutType::Rectangle;
+                            pCurrentSubnetRecord->cutoutType = NetRecord::SubnetRecord::CutoutType::Rectangle;
                         }
                         else if (token == "O")
                         {
-                            std::dynamic_pointer_cast<NetRecord::PlaneSubnetRecord>(pCurrentSubnetRecord)->cutoutType = NetRecord::PlaneSubnetRecord::CutoutType::Octagon;
+                            pCurrentSubnetRecord->cutoutType = NetRecord::SubnetRecord::CutoutType::Octagon;
                         }
                         else if (token == "E")
                         {
-                            std::dynamic_pointer_cast<NetRecord::PlaneSubnetRecord>(pCurrentSubnetRecord)->cutoutType = NetRecord::PlaneSubnetRecord::CutoutType::Exact;
+                            pCurrentSubnetRecord->cutoutType = NetRecord::SubnetRecord::CutoutType::Exact;
                         }
                         else
                         {
@@ -423,22 +435,21 @@ namespace Odb::Lib::FileModel::Design
                         }
 
                         // fill size
-                        lineStream >> std::dynamic_pointer_cast<NetRecord::PlaneSubnetRecord>(pCurrentSubnetRecord)->fillSize;
+                        lineStream >> pCurrentSubnetRecord->fillSize;
                     }
                     else if (token == NetRecord::SubnetRecord::RECORD_TYPE_TOEPRINT_TOKEN)
                     {
-                        pCurrentSubnetRecord = std::make_shared<NetRecord::ToeprintSubnetRecord>();
                         pCurrentSubnetRecord->type = NetRecord::SubnetRecord::Type::Toeprint;
 
                         // side
                         lineStream >> token;
                         if (token == "T")
                         {
-                            std::dynamic_pointer_cast<NetRecord::ToeprintSubnetRecord>(pCurrentSubnetRecord)->side = BoardSide::Top;
+                            pCurrentSubnetRecord->side = BoardSide::Top;
                         }
                         else if (token == "B")
                         {
-                            std::dynamic_pointer_cast<NetRecord::ToeprintSubnetRecord>(pCurrentSubnetRecord)->side = BoardSide::Bottom;
+                            pCurrentSubnetRecord->side = BoardSide::Bottom;
                         }
                         else
                         {
@@ -446,10 +457,10 @@ namespace Odb::Lib::FileModel::Design
                         }
 
                         // componentNumber
-                        lineStream >> std::dynamic_pointer_cast<NetRecord::ToeprintSubnetRecord>(pCurrentSubnetRecord)->componentNumber;
+                        lineStream >> pCurrentSubnetRecord->componentNumber;
 
                         // toeprintNumber
-                        lineStream >> std::dynamic_pointer_cast<NetRecord::ToeprintSubnetRecord>(pCurrentSubnetRecord)->toeprintNumber;
+                        lineStream >> pCurrentSubnetRecord->toeprintNumber;
                     }
                     else
                     {
