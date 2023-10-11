@@ -17,14 +17,17 @@ namespace Odb::App::Server
 	void StepsEdaDataController::register_routes()
 	{
 		//
-		//	/steps/edadata/package_records?design=sample_design&step=stepName
+		//	/steps/edadata?design=sample_design&step=stepName
 		//
 
+		//app.route<crow::black_magick::get_parameter_tag(url)>(url)
+		//app.route_dynamic(url)
+
 		// TODO: figure out why capture here is weird (i.e. how to capture pServerApp so it can be used in the member fxn handler)
-		CROW_ROUTE(m_pServerApp->crow_app(), "/steps/edadata/package_records")
-			([&, pServerApp = this->m_pServerApp](const crow::request& req)
+		CROW_ROUTE(m_pServerApp->crow_app(), "/steps/eda_data")
+			([&](const crow::request& req)
 				{
-					return this->steps_edadata_route_handler(req, pServerApp);
+					return this->steps_edadata_route_handler(req);
 				});
 
 		//register_route_handler("/steps/edadata/package_records", std::bind(&StepsEdaDataController::steps_edadata_route_handler, this, std::placeholders::_1));			
@@ -34,7 +37,7 @@ namespace Odb::App::Server
 		});*/
 	}	
 
-	crow::response StepsEdaDataController::steps_edadata_route_handler(const crow::request& req, OdbDesignServerApp* pServerApp)
+	crow::response StepsEdaDataController::steps_edadata_route_handler(const crow::request& req)
 	{
 		auto designName = req.url_params.get("design");
 		if (designName == nullptr || strlen(designName) == 0)
@@ -48,7 +51,7 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "step name not specified");
 		}
 
-		auto pFileArchive = pServerApp->design_cache().GetFileArchive(designName);
+		auto pFileArchive = m_pServerApp->design_cache().GetFileArchive(designName);
 		if (pFileArchive == nullptr)
 		{
 			std::stringstream ss;
