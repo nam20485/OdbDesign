@@ -85,16 +85,8 @@ namespace Odb::Lib::FileModel::Design
 
     std::unique_ptr<odbdesign::proto::EdaDataFile> EdaDataFile::to_protobuf() const
     {
-        auto pEdaDataFile = std::make_unique<odbdesign::proto::EdaDataFile>();
-
- /*       
-        NetRecord::Vector m_netRecords;
-        NetRecord::StringMap m_netRecordsByName;
-
-        PackageRecord::Vector m_packageRecords;
-        PackageRecord::StringMap m_packageRecordsByName;
-*/
-        
+        std::unique_ptr<odbdesign::proto::EdaDataFile> pEdaDataFile(new odbdesign::proto::EdaDataFile);
+                
         pEdaDataFile->set_path(m_path.string());
         pEdaDataFile->set_units(m_units);
         pEdaDataFile->set_source(m_source);
@@ -110,34 +102,23 @@ namespace Odb::Lib::FileModel::Design
         {
             pEdaDataFile->add_attributetextvalues(attrTextValue);
         }
-
         for (const auto& pNetRecord : m_netRecords)
         {
-            //pEdaDataFile->add_netrecords(pNetRecord->to_protobuf());
-        }        
-
-        for (const auto& pNetRecord : m_netRecords)
-        {
-            //pEdaDataFile->add_netrecords(pNetRecord->to_protobuf());
-        }
-
+            //auto pNetRecordMessage = pEdaDataFile->add_netrecords(*pNetRecord->to_protobuf());
+        }              
         for (const auto& kv : m_netRecordsByName)
         {
 
         }
-
         for (const auto& pPackageRecord : m_packageRecords)
         {
-            //pEdaDataFile->add_netrecords(pNetRecord->to_protobuf());
-        }
-
-        for (const auto& kv : m_packageRecordsByName)
-        {
             auto pPackageRecordMessage = pEdaDataFile->add_packagerecords();
-            //pPackageRecordMessage->CopyFrom(kv.second->to_protobuf());
+            pPackageRecordMessage->CopyFrom(*pPackageRecord->to_protobuf());
         }
-
-        return pEdaDataFile;
+        for (const auto& kvPackageRecord : m_packageRecordsByName)
+        {
+            (*pEdaDataFile->mutable_packagerecordsbyname())[kvPackageRecord.first] = *kvPackageRecord.second->to_protobuf();
+        }        
         
         return pEdaDataFile;
     }
@@ -682,4 +663,76 @@ namespace Odb::Lib::FileModel::Design
 
         return true;
     }
+
+    // Inherited via IProtoBuffable
+    std::unique_ptr<odbdesign::proto::EdaDataFile::PropertyRecord>
+    EdaDataFile::PropertyRecord::to_protobuf() const
+    {     
+        auto pPropertyRecordMessage = std::make_unique<odbdesign::proto::EdaDataFile::PropertyRecord>();            
+        pPropertyRecordMessage->set_name(name);
+        pPropertyRecordMessage->set_value(value);
+        for (const auto& f : floatValues)
+        {
+			pPropertyRecordMessage->add_floatvalues(f);
+		}
+        return pPropertyRecordMessage;
+    }
+
+    void EdaDataFile::PropertyRecord::from_protobuf(const odbdesign::proto::EdaDataFile::PropertyRecord& message)
+    {
+    };
+
+    // Inherited via IProtoBuffable
+    std::unique_ptr<odbdesign::proto::EdaDataFile::PackageRecord>
+    EdaDataFile::PackageRecord::to_protobuf() const
+    {              
+        auto pPackageRecordMessage = std::make_unique<odbdesign::proto::EdaDataFile::PackageRecord>();
+        pPackageRecordMessage->set_name(name);
+        pPackageRecordMessage->set_pitch(pitch);
+        pPackageRecordMessage->set_xmin(xMin);
+        pPackageRecordMessage->set_ymin(yMin);
+        pPackageRecordMessage->set_xmax(xMax);
+        pPackageRecordMessage->set_ymax(yMax);
+        pPackageRecordMessage->set_attributesidstring(attributesIdString);
+        for (const auto& pinRecord : m_pinRecords)
+        {
+            auto pPinRecordMessage = pPackageRecordMessage->add_pinrecords();
+            pPinRecordMessage->CopyFrom(*pinRecord->to_protobuf());
+        }
+        for (const auto& kvPinRecord : m_pinRecordsByName)
+        {
+            (*pPackageRecordMessage->mutable_pinrecordsbyname())[kvPinRecord.first] = *kvPinRecord.second->to_protobuf();
+        }
+        for (const auto& propertyRecord : m_propertyRecords)
+        {
+            auto pPropertyRecordMessage = pPackageRecordMessage->add_propertyrecords();
+            pPropertyRecordMessage->CopyFrom(*propertyRecord->to_protobuf());
+        }
+        return pPackageRecordMessage;
+    }
+
+    void EdaDataFile::PackageRecord::from_protobuf(const odbdesign::proto::EdaDataFile::PackageRecord& message)
+    {
+    };
+
+    // Inherited via IProtoBuffable
+    std::unique_ptr<odbdesign::proto::EdaDataFile::PackageRecord::PinRecord>
+    EdaDataFile::PackageRecord::PinRecord::to_protobuf() const
+    {       
+        auto pPinRecordMessage = std::make_unique<odbdesign::proto::EdaDataFile::PackageRecord::PinRecord>();
+        pPinRecordMessage->set_name(name);
+        pPinRecordMessage->set_type((odbdesign::proto::EdaDataFile::PackageRecord::PinRecord::Type)type);
+        pPinRecordMessage->set_xcenter(xCenter);
+        pPinRecordMessage->set_ycenter(yCenter);
+        pPinRecordMessage->set_finishedholesize(finishedHoleSize);
+        pPinRecordMessage->set_electricaltype((odbdesign::proto::EdaDataFile::PackageRecord::PinRecord::ElectricalType)electricalType);
+        pPinRecordMessage->set_mounttype((odbdesign::proto::EdaDataFile::PackageRecord::PinRecord::MountType)mountType);
+        pPinRecordMessage->set_id(id);
+        pPinRecordMessage->set_index(index);
+        return pPinRecordMessage;
+    }
+
+    void EdaDataFile::PackageRecord::PinRecord::from_protobuf(const odbdesign::proto::EdaDataFile::PackageRecord::PinRecord& message)
+    {
+    };
 }

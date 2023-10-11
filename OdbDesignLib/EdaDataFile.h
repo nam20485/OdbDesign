@@ -25,7 +25,7 @@ namespace Odb::Lib::FileModel::Design
 
 		bool Parse(std::filesystem::path path);		
 
-		struct DECLSPEC PropertyRecord
+		struct DECLSPEC PropertyRecord : public IProtoBuffable<odbdesign::proto::EdaDataFile::PropertyRecord>
 		{
 			// data members
 			std::string name;
@@ -38,6 +38,10 @@ namespace Odb::Lib::FileModel::Design
 			// typedefs
 			typedef std::map<std::string, std::shared_ptr<PropertyRecord>> StringMap;
 			typedef std::vector<std::shared_ptr<PropertyRecord>> Vector;
+
+			// Inherited via IProtoBuffable
+			std::unique_ptr<odbdesign::proto::EdaDataFile::PropertyRecord> to_protobuf() const override;
+			void from_protobuf(const odbdesign::proto::EdaDataFile::PropertyRecord& message) override;
 		};
 
 		struct DECLSPEC NetRecord
@@ -118,9 +122,9 @@ namespace Odb::Lib::FileModel::Design
 			PropertyRecord::Vector m_propertyRecords;
 		};
 
-		struct DECLSPEC PackageRecord
+		struct DECLSPEC PackageRecord : public IProtoBuffable<odbdesign::proto::EdaDataFile::PackageRecord>
 		{
-			struct DECLSPEC PinRecord
+			struct DECLSPEC PinRecord : public IProtoBuffable<odbdesign::proto::EdaDataFile::PackageRecord::PinRecord>
 			{
 				enum class Type
 				{
@@ -160,6 +164,10 @@ namespace Odb::Lib::FileModel::Design
 				MountType mountType;
 				unsigned int id;
 				size_t index;
+
+				// Inherited via IProtoBuffable
+				std::unique_ptr<odbdesign::proto::EdaDataFile::PackageRecord::PinRecord> to_protobuf() const override;
+				void from_protobuf(const odbdesign::proto::EdaDataFile::PackageRecord::PinRecord& message) override;
 			};
 
 			typedef std::vector<std::shared_ptr<PackageRecord>> Vector;
@@ -175,6 +183,10 @@ namespace Odb::Lib::FileModel::Design
 			PinRecord::StringMap m_pinRecordsByName;
 
 			PropertyRecord::Vector m_propertyRecords;
+
+			// Inherited via IProtoBuffable
+			std::unique_ptr<odbdesign::proto::EdaDataFile::PackageRecord> to_protobuf() const override;
+			void from_protobuf(const odbdesign::proto::EdaDataFile::PackageRecord& message) override;
 		};
 
 		const std::vector<std::string>& GetLayerNames() const;
