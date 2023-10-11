@@ -56,5 +56,5 @@ using StepDirectory = Odb::Lib::FileModel::Design::StepDirectory;
 %include "Pin.h"
 %include "PinConnection.h"
 %include "StepDirectory.h"
-%include "string_trim.h"
+%include "str_trim.h"
 %include "Via.h"
