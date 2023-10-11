@@ -100,12 +100,12 @@ bool TestRigidFlexDesign()
                 auto subnetType = pSubnetRecord->type;
                 if (subnetType == Odb::Lib::FileModel::Design::EdaDataFile::NetRecord::SubnetRecord::Type::Toeprint)
                 {
-                    auto pViaSubnetRecord = std::dynamic_pointer_cast<Odb::Lib::FileModel::Design::EdaDataFile::NetRecord::ToeprintSubnetRecord>(pSubnetRecord);
-                    auto viaType = pViaSubnetRecord->type;
-                    if (viaType == Odb::Lib::FileModel::Design::EdaDataFile::NetRecord::ToeprintSubnetRecord::Type::Via)
-                    {
+                    //auto pToeprintSubnetRecord = pSubnetRecord;
+                    //auto viaType = pToeprintSubnetRecord->type;
+                    //if (viaType == Odb::Lib::FileModel::Design::EdaDataFile::NetRecord::ToeprintSubnetRecord::Type::Via)
+                    //{
 
-                    }
+                    //}
                 }
             }
         }
