@@ -1,9 +1,4 @@
-#include "EdaDataFile.h"
-#include "EdaDataFile.h"
-#include "EdaDataFile.h"
-#include "EdaDataFile.h"
-#include "EdaDataFile.h"
-#include "EdaDataFile.h"
+#include "crow_win.h"
 #include "EdaDataFile.h"
 #include <fstream>
 #include <sstream>
@@ -45,7 +40,31 @@ namespace Odb::Lib::FileModel::Design
 
     std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord> EdaDataFile::NetRecord::SubnetRecord::to_protobuf() const
     {
-        return std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord>();
+        //auto pSubnetRecordMessage = std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord>();
+        std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord> pSubnetRecordMessage(new odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord);
+       
+        pSubnetRecordMessage->set_type((odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord::Type) type);
+
+        if (type == Type::Toeprint)
+        {
+            pSubnetRecordMessage->set_componentnumber(componentNumber);
+            pSubnetRecordMessage->set_toeprintnumber(toeprintNumber);
+            pSubnetRecordMessage->set_side((odbdesign::proto::EdaDataFile_BoardSide)side);
+        }
+        else if (type == Type::Plane)
+        {
+            pSubnetRecordMessage->set_filltype((odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord::FillType)fillType);
+            pSubnetRecordMessage->set_cutouttype((odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord::CutoutType) cutoutType);
+            pSubnetRecordMessage->set_fillsize(fillSize);
+        }
+
+        for (const auto& featureIdRecord : m_featureIdRecords)
+        {
+            auto pFeatureIdRecordMessage = pSubnetRecordMessage->add_featureidrecords();
+            pFeatureIdRecordMessage->CopyFrom(*featureIdRecord->to_protobuf());
+        }
+
+        return pSubnetRecordMessage;
     }
 
     void EdaDataFile::NetRecord::SubnetRecord::from_protobuf(const odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord& message)
@@ -90,6 +109,11 @@ namespace Odb::Lib::FileModel::Design
     EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord::to_protobuf() const
     {
         auto pFeatureIdRecordMessage = std::make_unique<odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord>();
+
+        pFeatureIdRecordMessage->set_type((odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord::Type) type);
+        pFeatureIdRecordMessage->set_layernumber(layerNumber);
+        pFeatureIdRecordMessage->set_featurenumber(featureNumber);
+
         return pFeatureIdRecordMessage;
     }
 
@@ -135,42 +159,43 @@ namespace Odb::Lib::FileModel::Design
 
     std::unique_ptr<odbdesign::proto::EdaDataFile> EdaDataFile::to_protobuf() const
     {
-        std::unique_ptr<odbdesign::proto::EdaDataFile> pEdaDataFile(new odbdesign::proto::EdaDataFile);
+        std::unique_ptr<odbdesign::proto::EdaDataFile> pEdaDataFileMessage(new odbdesign::proto::EdaDataFile);
                 
-        pEdaDataFile->set_path(m_path.string());
-        pEdaDataFile->set_units(m_units);
-        pEdaDataFile->set_source(m_source);
+        pEdaDataFileMessage->set_path(m_path.string());
+        pEdaDataFileMessage->set_units(m_units);
+        pEdaDataFileMessage->set_source(m_source);
         for (const auto& layerName : m_layerNames)
         {
-			pEdaDataFile->add_layernames(layerName);
+			pEdaDataFileMessage->add_layernames(layerName);
 		}
         for (const auto& attributeName : m_attributeNames)
         {
-            pEdaDataFile->add_attributenames(attributeName);
+            pEdaDataFileMessage->add_attributenames(attributeName);
         }
         for (const auto& attrTextValue : m_attributeTextValues)
         {
-            pEdaDataFile->add_attributetextvalues(attrTextValue);
+            pEdaDataFileMessage->add_attributetextvalues(attrTextValue);
         }
         for (const auto& pNetRecord : m_netRecords)
         {
-            //auto pNetRecordMessage = pEdaDataFile->add_netrecords(*pNetRecord->to_protobuf());
+            auto pNetRecordMessage = pEdaDataFileMessage->add_netrecords();
+            pNetRecordMessage->CopyFrom(*pNetRecord->to_protobuf());
         }              
         for (const auto& kvNetRecord : m_netRecordsByName)
         {
-            (*pEdaDataFile->mutable_netrecordsbyname())[kvNetRecord.first] = *kvNetRecord.second->to_protobuf();
+            (*pEdaDataFileMessage->mutable_netrecordsbyname())[kvNetRecord.first] = *kvNetRecord.second->to_protobuf();
         }
         for (const auto& pPackageRecord : m_packageRecords)
         {
-            auto pPackageRecordMessage = pEdaDataFile->add_packagerecords();
+            auto pPackageRecordMessage = pEdaDataFileMessage->add_packagerecords();
             pPackageRecordMessage->CopyFrom(*pPackageRecord->to_protobuf());
         }
         for (const auto& kvPackageRecord : m_packageRecordsByName)
         {
-            (*pEdaDataFile->mutable_packagerecordsbyname())[kvPackageRecord.first] = *kvPackageRecord.second->to_protobuf();
+            (*pEdaDataFileMessage->mutable_packagerecordsbyname())[kvPackageRecord.first] = *kvPackageRecord.second->to_protobuf();
         }        
         
-        return pEdaDataFile;
+        return pEdaDataFileMessage;
     }
 
     void EdaDataFile::from_protobuf(const odbdesign::proto::EdaDataFile& message)
