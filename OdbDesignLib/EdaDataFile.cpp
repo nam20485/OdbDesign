@@ -40,11 +40,8 @@ namespace Odb::Lib::FileModel::Design
 
     std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord> EdaDataFile::NetRecord::SubnetRecord::to_protobuf() const
     {
-        //auto pSubnetRecordMessage = std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord>();
-        std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord> pSubnetRecordMessage(new odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord);
-       
+        std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord> pSubnetRecordMessage(new odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord);       
         pSubnetRecordMessage->set_type((odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord::Type) type);
-
         if (type == Type::Toeprint)
         {
             pSubnetRecordMessage->set_componentnumber(componentNumber);
@@ -63,7 +60,6 @@ namespace Odb::Lib::FileModel::Design
             auto pFeatureIdRecordMessage = pSubnetRecordMessage->add_featureidrecords();
             pFeatureIdRecordMessage->CopyFrom(*featureIdRecord->to_protobuf());
         }
-
         return pSubnetRecordMessage;
     }
 
@@ -79,8 +75,7 @@ namespace Odb::Lib::FileModel::Design
 
     std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord> EdaDataFile::NetRecord::to_protobuf() const
     {
-        auto pNetRecordMessage = std::make_unique<odbdesign::proto::EdaDataFile::NetRecord>();
-
+        std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord> pNetRecordMessage(new odbdesign::proto::EdaDataFile::NetRecord);        
         pNetRecordMessage->set_name(name);
         pNetRecordMessage->set_attributesidstring(attributesIdString);
         pNetRecordMessage->set_index(index);
@@ -95,8 +90,7 @@ namespace Odb::Lib::FileModel::Design
         {
 			auto pSubnetRecordMessage = pNetRecordMessage->add_subnetrecords();
 			pSubnetRecordMessage->CopyFrom(*subnetRecord->to_protobuf());
-        }
-        
+        }        
         return pNetRecordMessage;
     }
 
@@ -108,12 +102,10 @@ namespace Odb::Lib::FileModel::Design
     std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord>
     EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord::to_protobuf() const
     {
-        auto pFeatureIdRecordMessage = std::make_unique<odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord>();
-
+        std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord> pFeatureIdRecordMessage(new odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord);        
         pFeatureIdRecordMessage->set_type((odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord::Type) type);
         pFeatureIdRecordMessage->set_layernumber(layerNumber);
         pFeatureIdRecordMessage->set_featurenumber(featureNumber);
-
         return pFeatureIdRecordMessage;
     }
 
@@ -159,8 +151,7 @@ namespace Odb::Lib::FileModel::Design
 
     std::unique_ptr<odbdesign::proto::EdaDataFile> EdaDataFile::to_protobuf() const
     {
-        std::unique_ptr<odbdesign::proto::EdaDataFile> pEdaDataFileMessage(new odbdesign::proto::EdaDataFile);
-                
+        std::unique_ptr<odbdesign::proto::EdaDataFile> pEdaDataFileMessage(new odbdesign::proto::EdaDataFile);                
         pEdaDataFileMessage->set_path(m_path.string());
         pEdaDataFileMessage->set_units(m_units);
         pEdaDataFileMessage->set_source(m_source);
@@ -193,8 +184,7 @@ namespace Odb::Lib::FileModel::Design
         for (const auto& kvPackageRecord : m_packageRecordsByName)
         {
             (*pEdaDataFileMessage->mutable_packagerecordsbyname())[kvPackageRecord.first] = *kvPackageRecord.second->to_protobuf();
-        }        
-        
+        }                
         return pEdaDataFileMessage;
     }
 
@@ -741,7 +731,7 @@ namespace Odb::Lib::FileModel::Design
     std::unique_ptr<odbdesign::proto::EdaDataFile::PropertyRecord>
     EdaDataFile::PropertyRecord::to_protobuf() const
     {     
-        auto pPropertyRecordMessage = std::make_unique<odbdesign::proto::EdaDataFile::PropertyRecord>();            
+        std::unique_ptr<odbdesign::proto::EdaDataFile::PropertyRecord> pPropertyRecordMessage(new odbdesign::proto::EdaDataFile::PropertyRecord);
         pPropertyRecordMessage->set_name(name);
         pPropertyRecordMessage->set_value(value);
         for (const auto& f : floatValues)
@@ -758,8 +748,8 @@ namespace Odb::Lib::FileModel::Design
     // Inherited via IProtoBuffable
     std::unique_ptr<odbdesign::proto::EdaDataFile::PackageRecord>
     EdaDataFile::PackageRecord::to_protobuf() const
-    {              
-        auto pPackageRecordMessage = std::make_unique<odbdesign::proto::EdaDataFile::PackageRecord>();
+    {                      
+        std::unique_ptr<odbdesign::proto::EdaDataFile::PackageRecord> pPackageRecordMessage(new odbdesign::proto::EdaDataFile::PackageRecord);
         pPackageRecordMessage->set_name(name);
         pPackageRecordMessage->set_pitch(pitch);
         pPackageRecordMessage->set_xmin(xMin);
@@ -792,7 +782,7 @@ namespace Odb::Lib::FileModel::Design
     std::unique_ptr<odbdesign::proto::EdaDataFile::PackageRecord::PinRecord>
     EdaDataFile::PackageRecord::PinRecord::to_protobuf() const
     {       
-        auto pPinRecordMessage = std::make_unique<odbdesign::proto::EdaDataFile::PackageRecord::PinRecord>();
+        std::unique_ptr<odbdesign::proto::EdaDataFile::PackageRecord::PinRecord> pPinRecordMessage(new odbdesign::proto::EdaDataFile::PackageRecord::PinRecord);
         pPinRecordMessage->set_name(name);
         pPinRecordMessage->set_type((odbdesign::proto::EdaDataFile::PackageRecord::PinRecord::Type)type);
         pPinRecordMessage->set_xcenter(xCenter);
