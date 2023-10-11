@@ -18,12 +18,7 @@ namespace Odb::Lib::FileModel::Design
     EdaDataFile::EdaDataFile()    
     {
     }
-
-    //EdaData::EdaData(std::filesystem::path path)
-    //	: m_path(path)
-    //{
-    //}
-
+   
     EdaDataFile::~EdaDataFile()
     {
     }
@@ -709,7 +704,7 @@ namespace Odb::Lib::FileModel::Design
         }
 
         // finish current (previous) net record
-            // this is the case where the last line of the file is not a net record (and there are no PKG records)
+        // this is the case where the last line of the file is not a net record (and there are no PKG records)
         if (pCurrentNetRecord != nullptr)
         {
             // finish current (previous) subnet record
