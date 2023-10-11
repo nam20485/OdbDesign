@@ -106,9 +106,9 @@ namespace Odb::Lib::FileModel::Design
         {
             //auto pNetRecordMessage = pEdaDataFile->add_netrecords(*pNetRecord->to_protobuf());
         }              
-        for (const auto& kv : m_netRecordsByName)
+        for (const auto& kvNetRecord : m_netRecordsByName)
         {
-
+            //(*pEdaDataFile->mutable_netrecordsbyname())[kvNetRecord.first] = *kvNetRecord.second->to_protobuf();
         }
         for (const auto& pPackageRecord : m_packageRecords)
         {
