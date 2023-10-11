@@ -1,4 +1,5 @@
 #include "RouteController.h"
+#include "crow_win.h"
 
 
 namespace Odb::App::Server
@@ -9,11 +10,12 @@ namespace Odb::App::Server
 	}
 
 	void RouteController::register_route_handler(const std::string& route, TRouteHandlerFunction handler)
-	{		
-		CROW_ROUTE(m_pServerApp->crow_app(), "/steps/edadata/package_records")
-			([&](const crow::request& req)
-				{
-					return handler(req);
-				});
+	{				
+		////.template register_handler<crow::black_magic::crow_internal::get_parameter_tag()>(m_pServerApp->crow_app(), handler);
+		//CROW_ROUTE(m_pServerApp->crow_app(), "/steps/edadata")
+		//	([&](const crow::request& req)
+		//		{
+		//			return handler(req);
+		//		});
 	}
 }
