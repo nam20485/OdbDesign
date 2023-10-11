@@ -114,52 +114,13 @@ namespace Odb::Lib::FileModel::Design
 				inline static const std::string RECORD_TYPE_TRACE_TOKEN = "TRC";
 				inline static const std::string RECORD_TYPE_VIA_TOKEN = "VIA";
 				inline static const std::string RECORD_TYPE_TOEPRINT_TOKEN = "TOP";
-				inline static const std::string RECORD_TYPE_PLANE_TOKEN = "PLN";
-				
+				inline static const std::string RECORD_TYPE_PLANE_TOKEN = "PLN";				
 
 				// Inherited via IProtoBuffable
 				std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord> to_protobuf() const override;
 				void from_protobuf(const odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord& message) override;
 
-			}; // SubnetRecord
-
-			//struct DECLSPEC ToeprintSubnetRecord : public SubnetRecord, public IProtoBuffable<odbdesign::proto::EdaDataFile::NetRecord::ToeprintSubnetRecord>
-			//{
-			//	BoardSide side;
-			//	unsigned int componentNumber;	// component index in the layer components/placements file
-			//	unsigned toeprintNumber;		// toeprint index of component reference in the layer components/placements file
-
-			//	// Inherited via IProtoBuffable
-			//	std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord::ToeprintSubnetRecord> to_protobuf() const override;
-			//	void from_protobuf(const odbdesign::proto::EdaDataFile::NetRecord::ToeprintSubnetRecord& message) override;
-
-			//}; // ToeprintSubnetRecord
-
-			//struct DECLSPEC PlaneSubnetRecord : public SubnetRecord, public IProtoBuffable<odbdesign::proto::EdaDataFile::NetRecord::PlaneSubnetRecord>
-			//{
-			//	enum class FillType
-			//	{
-			//		Solid,
-			//		Outline
-			//	};
-
-			//	enum class CutoutType
-			//	{
-			//		Circle,
-			//		Rectangle,
-			//		Octagon,
-			//		Exact
-			//	};
-
-			//	FillType fillType;
-			//	CutoutType cutoutType;
-			//	float fillSize;
-
-			//	// Inherited via IProtoBuffable
-			//	std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord::PlaneSubnetRecord> to_protobuf() const override;
-			//	void from_protobuf(const odbdesign::proto::EdaDataFile::NetRecord::PlaneSubnetRecord& message) override;
-
-			//}; // PlaneSubnetRecord
+			}; // SubnetRecord	
 
 			typedef std::vector<std::shared_ptr<NetRecord>> Vector;
 			typedef std::map<std::string, std::shared_ptr<NetRecord>> StringMap;
@@ -226,7 +187,8 @@ namespace Odb::Lib::FileModel::Design
 				// Inherited via IProtoBuffable
 				std::unique_ptr<odbdesign::proto::EdaDataFile::PackageRecord::PinRecord> to_protobuf() const override;
 				void from_protobuf(const odbdesign::proto::EdaDataFile::PackageRecord::PinRecord& message) override;
-			};
+
+			}; // PinRecord
 
 			typedef std::vector<std::shared_ptr<PackageRecord>> Vector;
 			typedef std::map<std::string, std::shared_ptr<PackageRecord>> StringMap;
@@ -245,7 +207,8 @@ namespace Odb::Lib::FileModel::Design
 			// Inherited via IProtoBuffable
 			std::unique_ptr<odbdesign::proto::EdaDataFile::PackageRecord> to_protobuf() const override;
 			void from_protobuf(const odbdesign::proto::EdaDataFile::PackageRecord& message) override;
-		};
+
+		}; // PackageRecord
 
 		const std::vector<std::string>& GetLayerNames() const;
 		const std::vector<std::string>& GetAttributeNames() const;
@@ -284,7 +247,6 @@ namespace Odb::Lib::FileModel::Design
 		inline static const std::string ATTRIBUTE_NAME_TOKEN = "@";
 		inline static const std::string ATTRIBUTE_VALUE_TOKEN = "&";
 		inline static const std::string NET_RECORD_TOKEN = "NET";
-		//inline static const std::string SUBNET_RECORD_TOKEN = "SNT";		
 		inline static const std::string FEATURE_ID_RECORD_TOKEN = "FID";
 		inline static const std::string PACKAGE_RECORD_TOKEN = "PKG";
 		inline static const std::string PIN_RECORD_TOKEN = "PIN";
@@ -292,7 +254,7 @@ namespace Odb::Lib::FileModel::Design
 		// TODO: Outline records:
 		// RC, CR, SQ, CT, OB, OS, OC, OE, CE — Outline Records
 	
-};
+	}; // EdaDataFile
 
 	//EXPIMP_TEMPLATE template class DECLSPEC std::vector<std::shared_ptr<EdaData::NetRecord>>;
 	//EXPIMP_TEMPLATE template class DECLSPEC std::map<std::string, std::shared_ptr<EdaData::NetRecord>>;
