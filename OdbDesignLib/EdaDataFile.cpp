@@ -1,4 +1,6 @@
 #include "EdaDataFile.h"
+#include "EdaDataFile.h"
+#include "EdaDataFile.h"
 #include <fstream>
 #include <sstream>
 #include "str_trim.h"
@@ -46,6 +48,72 @@ namespace Odb::Lib::FileModel::Design
     {
         m_subnetRecords.clear();
         m_propertyRecords.clear();
+    }
+
+    std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord> EdaDataFile::NetRecord::to_protobuf() const
+    {
+        auto pNetRecordMessage = std::make_unique<odbdesign::proto::EdaDataFile::NetRecord>();
+
+        pNetRecordMessage->set_name(name);
+        pNetRecordMessage->set_attributesidstring(attributesIdString);
+        pNetRecordMessage->set_index(index);
+
+        for (const auto& propertyRecord : m_propertyRecords)
+        {
+            auto pPropertyRecordMessage = pNetRecordMessage->add_propertyrecords();
+            pPropertyRecordMessage->CopyFrom(*propertyRecord->to_protobuf());
+        }
+
+        for (const auto& subnetRecord : m_subnetRecords)
+        {
+			//auto pSubnetRecordMessage = pNetRecordMessage->add_subnetrecords();
+			//pSubnetRecordMessage->CopyFrom(*subnetRecord->to_protobuf());
+        }
+
+        //SubnetRecord::Vector m_subnetRecords;        
+        
+        return pNetRecordMessage;
+    }
+
+    void EdaDataFile::NetRecord::from_protobuf(const odbdesign::proto::EdaDataFile::NetRecord& message)
+    {
+      
+    }
+
+    std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord>
+    EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord::to_protobuf() const
+    {
+        auto pFeatureIdRecordMessage = std::make_unique<odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord>();
+        return pFeatureIdRecordMessage;
+    }
+
+    void EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord::from_protobuf(const odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord& message)
+    {
+
+    }
+
+    // Inherited via IProtoBuffable
+    std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord::ToeprintSubnetRecord> EdaDataFile::NetRecord::ToeprintSubnetRecord::to_protobuf() const
+    {
+        auto pToeprintSubnetRecordMessage = std::make_unique<odbdesign::proto::EdaDataFile::NetRecord::ToeprintSubnetRecord>();
+        return pToeprintSubnetRecordMessage;
+    }
+
+    void EdaDataFile::NetRecord::ToeprintSubnetRecord::from_protobuf(const odbdesign::proto::EdaDataFile::NetRecord::ToeprintSubnetRecord& message)
+    {
+
+    }
+
+    // Inherited via IProtoBuffable
+    std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord::PlaneSubnetRecord> EdaDataFile::NetRecord::PlaneSubnetRecord::to_protobuf() const
+    {
+        auto pPlaneSubnetRecordMessage = std::make_unique<odbdesign::proto::EdaDataFile::NetRecord::PlaneSubnetRecord>();
+        return pPlaneSubnetRecordMessage;
+    }
+    
+    void EdaDataFile::NetRecord::PlaneSubnetRecord::from_protobuf(const odbdesign::proto::EdaDataFile::NetRecord::PlaneSubnetRecord& message)
+    {
+       
     }
 
     const std::vector<std::string>& EdaDataFile::GetLayerNames() const

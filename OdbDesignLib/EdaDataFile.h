@@ -44,10 +44,10 @@ namespace Odb::Lib::FileModel::Design
 			void from_protobuf(const odbdesign::proto::EdaDataFile::PropertyRecord& message) override;
 		};
 
-		struct DECLSPEC NetRecord
-		{			
-			struct DECLSPEC SubnetRecord
-			{				
+		struct DECLSPEC NetRecord : public IProtoBuffable<odbdesign::proto::EdaDataFile::NetRecord>
+		{
+			struct DECLSPEC SubnetRecord// : public IProtoBuffable<odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord>
+			{
 				enum class Type
 				{
 					Via,
@@ -56,7 +56,7 @@ namespace Odb::Lib::FileModel::Design
 					Toeprint
 				};
 
-				struct DECLSPEC FeatureIdRecord
+				struct DECLSPEC FeatureIdRecord : public IProtoBuffable<odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord>
 				{
 					enum class Type
 					{
@@ -70,6 +70,10 @@ namespace Odb::Lib::FileModel::Design
 					Type type;
 					unsigned int layerNumber;
 					unsigned int featureNumber;
+
+					// Inherited via IProtoBuffable
+					std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord> to_protobuf() const override;
+					void from_protobuf(const odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord& message) override;
 				};
 
 				typedef std::vector<std::shared_ptr<SubnetRecord>> Vector;
@@ -78,16 +82,20 @@ namespace Odb::Lib::FileModel::Design
 
 				Type type;
 				FeatureIdRecord::Vector m_featureIdRecords;
-			};
+			}; // SubnetRecord
 
-			struct DECLSPEC ToeprintSubnetRecord : public SubnetRecord
-			{				
+			struct DECLSPEC ToeprintSubnetRecord : public SubnetRecord, public IProtoBuffable<odbdesign::proto::EdaDataFile::NetRecord::ToeprintSubnetRecord>
+			{
 				BoardSide side;
 				unsigned int componentNumber;	// component index in the layer components/placements file
 				unsigned toeprintNumber;		// toeprint index of component reference in the layer components/placements file
-			};
 
-			struct DECLSPEC PlaneSubnetRecord : public SubnetRecord
+				// Inherited via IProtoBuffable
+				std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord::ToeprintSubnetRecord> to_protobuf() const override;
+				void from_protobuf(const odbdesign::proto::EdaDataFile::NetRecord::ToeprintSubnetRecord& message) override;
+			}; // ToeprintSubnetRecord
+
+			struct DECLSPEC PlaneSubnetRecord : public SubnetRecord, public IProtoBuffable<odbdesign::proto::EdaDataFile::NetRecord::PlaneSubnetRecord>
 			{
 				enum class FillType
 				{
@@ -106,7 +114,12 @@ namespace Odb::Lib::FileModel::Design
 				FillType fillType;
 				CutoutType cutoutType;
 				float fillSize;
-			};
+
+				// Inherited via IProtoBuffable
+				std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord::PlaneSubnetRecord> to_protobuf() const override;
+				void from_protobuf(const odbdesign::proto::EdaDataFile::NetRecord::PlaneSubnetRecord& message) override;
+
+			}; // PlaneSubnetRecord
 
 			typedef std::vector<std::shared_ptr<NetRecord>> Vector;
 			typedef std::map<std::string, std::shared_ptr<NetRecord>> StringMap;
@@ -120,7 +133,12 @@ namespace Odb::Lib::FileModel::Design
 
 			SubnetRecord::Vector m_subnetRecords;
 			PropertyRecord::Vector m_propertyRecords;
-		};
+
+			// Inherited via IProtoBuffable
+			std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord> to_protobuf() const override;
+			void from_protobuf(const odbdesign::proto::EdaDataFile::NetRecord& message) override;
+
+		}; // NetRecord
 
 		struct DECLSPEC PackageRecord : public IProtoBuffable<odbdesign::proto::EdaDataFile::PackageRecord>
 		{
