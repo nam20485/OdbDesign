@@ -68,8 +68,9 @@ message EdaDataFile {
             optional float fillSize = 5;
 
             // Toeprint subnet type fields
-            optional uint32 componentNumber = 6;
-            optional uint32 toeprintNumber = 7;
+            optional BoardSide side = 6;
+            optional uint32 componentNumber = 7;
+            optional uint32 toeprintNumber = 8;
         };
        
         // message ToeprintSubnetRecord {

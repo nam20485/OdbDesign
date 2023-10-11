@@ -955,8 +955,9 @@ class EdaDataFile_NetRecord_SubnetRecord final :
     kFillTypeFieldNumber = 3,
     kCutoutTypeFieldNumber = 4,
     kFillSizeFieldNumber = 5,
-    kComponentNumberFieldNumber = 6,
-    kToeprintNumberFieldNumber = 7,
+    kSideFieldNumber = 6,
+    kComponentNumberFieldNumber = 7,
+    kToeprintNumberFieldNumber = 8,
   };
   // repeated .odbdesign.proto.EdaDataFile.NetRecord.SubnetRecord.FeatureIdRecord featureIdRecords = 2;
   int featureidrecords_size() const;
@@ -1028,7 +1029,20 @@ class EdaDataFile_NetRecord_SubnetRecord final :
   void _internal_set_fillsize(float value);
   public:
 
-  // optional uint32 componentNumber = 6;
+  // optional .odbdesign.proto.EdaDataFile.BoardSide side = 6;
+  bool has_side() const;
+  private:
+  bool _internal_has_side() const;
+  public:
+  void clear_side();
+  ::odbdesign::proto::EdaDataFile_BoardSide side() const;
+  void set_side(::odbdesign::proto::EdaDataFile_BoardSide value);
+  private:
+  ::odbdesign::proto::EdaDataFile_BoardSide _internal_side() const;
+  void _internal_set_side(::odbdesign::proto::EdaDataFile_BoardSide value);
+  public:
+
+  // optional uint32 componentNumber = 7;
   bool has_componentnumber() const;
   private:
   bool _internal_has_componentnumber() const;
@@ -1041,7 +1055,7 @@ class EdaDataFile_NetRecord_SubnetRecord final :
   void _internal_set_componentnumber(uint32_t value);
   public:
 
-  // optional uint32 toeprintNumber = 7;
+  // optional uint32 toeprintNumber = 8;
   bool has_toeprintnumber() const;
   private:
   bool _internal_has_toeprintnumber() const;
@@ -1069,6 +1083,7 @@ class EdaDataFile_NetRecord_SubnetRecord final :
     int filltype_;
     int cutouttype_;
     float fillsize_;
+    int side_;
     uint32_t componentnumber_;
     uint32_t toeprintnumber_;
   };
@@ -2928,9 +2943,37 @@ inline void EdaDataFile_NetRecord_SubnetRecord::set_fillsize(float value) {
   // @@protoc_insertion_point(field_set:odbdesign.proto.EdaDataFile.NetRecord.SubnetRecord.fillSize)
 }
 
-// optional uint32 componentNumber = 6;
-inline bool EdaDataFile_NetRecord_SubnetRecord::_internal_has_componentnumber() const {
+// optional .odbdesign.proto.EdaDataFile.BoardSide side = 6;
+inline bool EdaDataFile_NetRecord_SubnetRecord::_internal_has_side() const {
   bool value = (_impl_._has_bits_[0] & 0x00000010u) != 0;
+  return value;
+}
+inline bool EdaDataFile_NetRecord_SubnetRecord::has_side() const {
+  return _internal_has_side();
+}
+inline void EdaDataFile_NetRecord_SubnetRecord::clear_side() {
+  _impl_.side_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000010u;
+}
+inline ::odbdesign::proto::EdaDataFile_BoardSide EdaDataFile_NetRecord_SubnetRecord::_internal_side() const {
+  return static_cast< ::odbdesign::proto::EdaDataFile_BoardSide >(_impl_.side_);
+}
+inline ::odbdesign::proto::EdaDataFile_BoardSide EdaDataFile_NetRecord_SubnetRecord::side() const {
+  // @@protoc_insertion_point(field_get:odbdesign.proto.EdaDataFile.NetRecord.SubnetRecord.side)
+  return _internal_side();
+}
+inline void EdaDataFile_NetRecord_SubnetRecord::_internal_set_side(::odbdesign::proto::EdaDataFile_BoardSide value) {
+  _impl_._has_bits_[0] |= 0x00000010u;
+  _impl_.side_ = value;
+}
+inline void EdaDataFile_NetRecord_SubnetRecord::set_side(::odbdesign::proto::EdaDataFile_BoardSide value) {
+  _internal_set_side(value);
+  // @@protoc_insertion_point(field_set:odbdesign.proto.EdaDataFile.NetRecord.SubnetRecord.side)
+}
+
+// optional uint32 componentNumber = 7;
+inline bool EdaDataFile_NetRecord_SubnetRecord::_internal_has_componentnumber() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000020u) != 0;
   return value;
 }
 inline bool EdaDataFile_NetRecord_SubnetRecord::has_componentnumber() const {
@@ -2938,7 +2981,7 @@ inline bool EdaDataFile_NetRecord_SubnetRecord::has_componentnumber() const {
 }
 inline void EdaDataFile_NetRecord_SubnetRecord::clear_componentnumber() {
   _impl_.componentnumber_ = 0u;
-  _impl_._has_bits_[0] &= ~0x00000010u;
+  _impl_._has_bits_[0] &= ~0x00000020u;
 }
 inline uint32_t EdaDataFile_NetRecord_SubnetRecord::_internal_componentnumber() const {
   return _impl_.componentnumber_;
@@ -2948,7 +2991,7 @@ inline uint32_t EdaDataFile_NetRecord_SubnetRecord::componentnumber() const {
   return _internal_componentnumber();
 }
 inline void EdaDataFile_NetRecord_SubnetRecord::_internal_set_componentnumber(uint32_t value) {
-  _impl_._has_bits_[0] |= 0x00000010u;
+  _impl_._has_bits_[0] |= 0x00000020u;
   _impl_.componentnumber_ = value;
 }
 inline void EdaDataFile_NetRecord_SubnetRecord::set_componentnumber(uint32_t value) {
@@ -2956,9 +2999,9 @@ inline void EdaDataFile_NetRecord_SubnetRecord::set_componentnumber(uint32_t val
   // @@protoc_insertion_point(field_set:odbdesign.proto.EdaDataFile.NetRecord.SubnetRecord.componentNumber)
 }
 
-// optional uint32 toeprintNumber = 7;
+// optional uint32 toeprintNumber = 8;
 inline bool EdaDataFile_NetRecord_SubnetRecord::_internal_has_toeprintnumber() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000020u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000040u) != 0;
   return value;
 }
 inline bool EdaDataFile_NetRecord_SubnetRecord::has_toeprintnumber() const {
@@ -2966,7 +3009,7 @@ inline bool EdaDataFile_NetRecord_SubnetRecord::has_toeprintnumber() const {
 }
 inline void EdaDataFile_NetRecord_SubnetRecord::clear_toeprintnumber() {
   _impl_.toeprintnumber_ = 0u;
-  _impl_._has_bits_[0] &= ~0x00000020u;
+  _impl_._has_bits_[0] &= ~0x00000040u;
 }
 inline uint32_t EdaDataFile_NetRecord_SubnetRecord::_internal_toeprintnumber() const {
   return _impl_.toeprintnumber_;
@@ -2976,7 +3019,7 @@ inline uint32_t EdaDataFile_NetRecord_SubnetRecord::toeprintnumber() const {
   return _internal_toeprintnumber();
 }
 inline void EdaDataFile_NetRecord_SubnetRecord::_internal_set_toeprintnumber(uint32_t value) {
-  _impl_._has_bits_[0] |= 0x00000020u;
+  _impl_._has_bits_[0] |= 0x00000040u;
   _impl_.toeprintnumber_ = value;
 }
 inline void EdaDataFile_NetRecord_SubnetRecord::set_toeprintnumber(uint32_t value) {
