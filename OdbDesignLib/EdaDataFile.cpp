@@ -74,11 +74,9 @@ namespace Odb::Lib::FileModel::Design
 
         for (const auto& subnetRecord : m_subnetRecords)
         {
-			//auto pSubnetRecordMessage = pNetRecordMessage->add_subnetrecords();
-			//pSubnetRecordMessage->CopyFrom(*subnetRecord->to_protobuf());
+			auto pSubnetRecordMessage = pNetRecordMessage->add_subnetrecords();
+			pSubnetRecordMessage->CopyFrom(*subnetRecord->to_protobuf());
         }
-
-        //SubnetRecord::Vector m_subnetRecords;        
         
         return pNetRecordMessage;
     }
@@ -98,31 +96,7 @@ namespace Odb::Lib::FileModel::Design
     void EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord::from_protobuf(const odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord& message)
     {
 
-    }
-
-    //// Inherited via IProtoBuffable
-    //std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord::ToeprintSubnetRecord> EdaDataFile::NetRecord::ToeprintSubnetRecord::to_protobuf() const
-    //{
-    //    auto pToeprintSubnetRecordMessage = std::make_unique<odbdesign::proto::EdaDataFile::NetRecord::ToeprintSubnetRecord>();
-    //    return pToeprintSubnetRecordMessage;
-    //}
-
-    //void EdaDataFile::NetRecord::ToeprintSubnetRecord::from_protobuf(const odbdesign::proto::EdaDataFile::NetRecord::ToeprintSubnetRecord& message)
-    //{
-
-    //}
-
-    //// Inherited via IProtoBuffable
-    //std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord::PlaneSubnetRecord> EdaDataFile::NetRecord::PlaneSubnetRecord::to_protobuf() const
-    //{
-    //    auto pPlaneSubnetRecordMessage = std::make_unique<odbdesign::proto::EdaDataFile::NetRecord::PlaneSubnetRecord>();
-    //    return pPlaneSubnetRecordMessage;
-    //}
-    //
-    //void EdaDataFile::NetRecord::PlaneSubnetRecord::from_protobuf(const odbdesign::proto::EdaDataFile::NetRecord::PlaneSubnetRecord& message)
-    //{
-    //   
-    //}
+    }    
 
     const std::vector<std::string>& EdaDataFile::GetLayerNames() const
     {
@@ -184,7 +158,7 @@ namespace Odb::Lib::FileModel::Design
         }              
         for (const auto& kvNetRecord : m_netRecordsByName)
         {
-            //(*pEdaDataFile->mutable_netrecordsbyname())[kvNetRecord.first] = *kvNetRecord.second->to_protobuf();
+            (*pEdaDataFile->mutable_netrecordsbyname())[kvNetRecord.first] = *kvNetRecord.second->to_protobuf();
         }
         for (const auto& pPackageRecord : m_packageRecords)
         {
