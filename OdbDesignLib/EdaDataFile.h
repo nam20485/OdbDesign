@@ -82,6 +82,13 @@ namespace Odb::Lib::FileModel::Design
 
 				Type type;
 				FeatureIdRecord::Vector m_featureIdRecords;
+
+				inline static const std::string RECORD_TOKEN = "SNT";
+				inline static const std::string RECORD_TYPE_TRACE_TOKEN = "TRC";
+				inline static const std::string RECORD_TYPE_VIA_TOKEN = "VIA";
+				inline static const std::string RECORD_TYPE_TOEPRINT_TOKEN = "TOP";
+				inline static const std::string RECORD_TYPE_PLANE_TOKEN = "PLN";
+				
 			}; // SubnetRecord
 
 			struct DECLSPEC ToeprintSubnetRecord : public SubnetRecord, public IProtoBuffable<odbdesign::proto::EdaDataFile::NetRecord::ToeprintSubnetRecord>
@@ -244,7 +251,7 @@ namespace Odb::Lib::FileModel::Design
 		inline static const std::string ATTRIBUTE_NAME_TOKEN = "@";
 		inline static const std::string ATTRIBUTE_VALUE_TOKEN = "&";
 		inline static const std::string NET_RECORD_TOKEN = "NET";
-		inline static const std::string SUBNET_RECORD_TOKEN = "SNT";
+		//inline static const std::string SUBNET_RECORD_TOKEN = "SNT";		
 		inline static const std::string FEATURE_ID_RECORD_TOKEN = "FID";
 		inline static const std::string PACKAGE_RECORD_TOKEN = "PKG";
 		inline static const std::string PIN_RECORD_TOKEN = "PIN";

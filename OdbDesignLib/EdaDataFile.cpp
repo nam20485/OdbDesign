@@ -349,13 +349,13 @@ namespace Odb::Lib::FileModel::Design
 
                     lineStream >> pCurrentNetRecord->attributesIdString;
                 }
-                else if (line.find(SUBNET_RECORD_TOKEN) == 0)
+                else if (line.find(NetRecord::SubnetRecord::RECORD_TOKEN) == 0)
                 {
                     // component record line
                     std::string token;
 
                     lineStream >> token;
-                    if (token != SUBNET_RECORD_TOKEN) return false;
+                    if (token != NetRecord::SubnetRecord::RECORD_TOKEN) return false;
 
                     if (pCurrentNetRecord != nullptr)
                     {
@@ -369,17 +369,17 @@ namespace Odb::Lib::FileModel::Design
 
                     // subnet type
                     lineStream >> token;
-                    if (token == "VIA")
+                    if (token == NetRecord::SubnetRecord::RECORD_TYPE_VIA_TOKEN)
                     {
                         pCurrentSubnetRecord = std::make_shared<NetRecord::SubnetRecord>();
                         pCurrentSubnetRecord->type = NetRecord::SubnetRecord::Type::Via;
                     }
-                    else if (token == "TRC")
+                    else if (token == NetRecord::SubnetRecord::RECORD_TYPE_TRACE_TOKEN)
                     {
                         pCurrentSubnetRecord = std::make_shared<NetRecord::SubnetRecord>();
                         pCurrentSubnetRecord->type = NetRecord::SubnetRecord::Type::Trace;
                     }
-                    else if (token == "PLN")
+                    else if (token == NetRecord::SubnetRecord::RECORD_TYPE_PLANE_TOKEN)
                     {
                         pCurrentSubnetRecord = std::make_shared<NetRecord::PlaneSubnetRecord>();
                         pCurrentSubnetRecord->type = NetRecord::SubnetRecord::Type::Plane;
@@ -425,7 +425,7 @@ namespace Odb::Lib::FileModel::Design
                         // fill size
                         lineStream >> std::dynamic_pointer_cast<NetRecord::PlaneSubnetRecord>(pCurrentSubnetRecord)->fillSize;
                     }
-                    else if (token == "TOP")
+                    else if (token == NetRecord::SubnetRecord::RECORD_TYPE_TOEPRINT_TOKEN)
                     {
                         pCurrentSubnetRecord = std::make_shared<NetRecord::ToeprintSubnetRecord>();
                         pCurrentSubnetRecord->type = NetRecord::SubnetRecord::Type::Toeprint;
