@@ -4,7 +4,6 @@
 #include "Controllers/StepsEdaDataController.h"
 
 
-
 namespace Odb::App::Server
 {
 	OdbDesignServerApp::OdbDesignServerApp(int argc, char* argv[])
@@ -33,10 +32,10 @@ namespace Odb::App::Server
 
 	void OdbDesignServerApp::register_routes()
 	{
-		HelloWorldController helloWorld(this);
-		helloWorld.register_routes();
+		HelloWorldController* pHelloWorldRoutes = new HelloWorldController(this);
+		pHelloWorldRoutes->register_routes();
 
-		StepsEdaDataController edaData(this);
-		edaData.register_routes();
+		StepsEdaDataController* pStepsEdaDataRoutes = new StepsEdaDataController(this);
+		pStepsEdaDataRoutes->register_routes();
 	}
 }
