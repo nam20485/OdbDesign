@@ -56,18 +56,12 @@ extern EdaDataFileDefaultTypeInternal _EdaDataFile_default_instance_;
 class EdaDataFile_NetRecord;
 struct EdaDataFile_NetRecordDefaultTypeInternal;
 extern EdaDataFile_NetRecordDefaultTypeInternal _EdaDataFile_NetRecord_default_instance_;
-class EdaDataFile_NetRecord_PlaneSubnetRecord;
-struct EdaDataFile_NetRecord_PlaneSubnetRecordDefaultTypeInternal;
-extern EdaDataFile_NetRecord_PlaneSubnetRecordDefaultTypeInternal _EdaDataFile_NetRecord_PlaneSubnetRecord_default_instance_;
 class EdaDataFile_NetRecord_SubnetRecord;
 struct EdaDataFile_NetRecord_SubnetRecordDefaultTypeInternal;
 extern EdaDataFile_NetRecord_SubnetRecordDefaultTypeInternal _EdaDataFile_NetRecord_SubnetRecord_default_instance_;
 class EdaDataFile_NetRecord_SubnetRecord_FeatureIdRecord;
 struct EdaDataFile_NetRecord_SubnetRecord_FeatureIdRecordDefaultTypeInternal;
 extern EdaDataFile_NetRecord_SubnetRecord_FeatureIdRecordDefaultTypeInternal _EdaDataFile_NetRecord_SubnetRecord_FeatureIdRecord_default_instance_;
-class EdaDataFile_NetRecord_ToeprintSubnetRecord;
-struct EdaDataFile_NetRecord_ToeprintSubnetRecordDefaultTypeInternal;
-extern EdaDataFile_NetRecord_ToeprintSubnetRecordDefaultTypeInternal _EdaDataFile_NetRecord_ToeprintSubnetRecord_default_instance_;
 class EdaDataFile_NetRecordsByNameEntry_DoNotUse;
 struct EdaDataFile_NetRecordsByNameEntry_DoNotUseDefaultTypeInternal;
 extern EdaDataFile_NetRecordsByNameEntry_DoNotUseDefaultTypeInternal _EdaDataFile_NetRecordsByNameEntry_DoNotUse_default_instance_;
@@ -91,10 +85,8 @@ extern EdaDataFile_PropertyRecordDefaultTypeInternal _EdaDataFile_PropertyRecord
 PROTOBUF_NAMESPACE_OPEN
 template<> ::odbdesign::proto::EdaDataFile* Arena::CreateMaybeMessage<::odbdesign::proto::EdaDataFile>(Arena*);
 template<> ::odbdesign::proto::EdaDataFile_NetRecord* Arena::CreateMaybeMessage<::odbdesign::proto::EdaDataFile_NetRecord>(Arena*);
-template<> ::odbdesign::proto::EdaDataFile_NetRecord_PlaneSubnetRecord* Arena::CreateMaybeMessage<::odbdesign::proto::EdaDataFile_NetRecord_PlaneSubnetRecord>(Arena*);
 template<> ::odbdesign::proto::EdaDataFile_NetRecord_SubnetRecord* Arena::CreateMaybeMessage<::odbdesign::proto::EdaDataFile_NetRecord_SubnetRecord>(Arena*);
 template<> ::odbdesign::proto::EdaDataFile_NetRecord_SubnetRecord_FeatureIdRecord* Arena::CreateMaybeMessage<::odbdesign::proto::EdaDataFile_NetRecord_SubnetRecord_FeatureIdRecord>(Arena*);
-template<> ::odbdesign::proto::EdaDataFile_NetRecord_ToeprintSubnetRecord* Arena::CreateMaybeMessage<::odbdesign::proto::EdaDataFile_NetRecord_ToeprintSubnetRecord>(Arena*);
 template<> ::odbdesign::proto::EdaDataFile_NetRecordsByNameEntry_DoNotUse* Arena::CreateMaybeMessage<::odbdesign::proto::EdaDataFile_NetRecordsByNameEntry_DoNotUse>(Arena*);
 template<> ::odbdesign::proto::EdaDataFile_PackageRecord* Arena::CreateMaybeMessage<::odbdesign::proto::EdaDataFile_PackageRecord>(Arena*);
 template<> ::odbdesign::proto::EdaDataFile_PackageRecord_PinRecord* Arena::CreateMaybeMessage<::odbdesign::proto::EdaDataFile_PackageRecord_PinRecord>(Arena*);
@@ -158,57 +150,57 @@ inline bool EdaDataFile_NetRecord_SubnetRecord_Type_Parse(
   return ::PROTOBUF_NAMESPACE_ID::internal::ParseNamedEnum<EdaDataFile_NetRecord_SubnetRecord_Type>(
     EdaDataFile_NetRecord_SubnetRecord_Type_descriptor(), name, value);
 }
-enum EdaDataFile_NetRecord_PlaneSubnetRecord_FillType : int {
-  EdaDataFile_NetRecord_PlaneSubnetRecord_FillType_SOLID = 0,
-  EdaDataFile_NetRecord_PlaneSubnetRecord_FillType_OUTLINE = 1,
-  EdaDataFile_NetRecord_PlaneSubnetRecord_FillType_EdaDataFile_NetRecord_PlaneSubnetRecord_FillType_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
-  EdaDataFile_NetRecord_PlaneSubnetRecord_FillType_EdaDataFile_NetRecord_PlaneSubnetRecord_FillType_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
+enum EdaDataFile_NetRecord_SubnetRecord_FillType : int {
+  EdaDataFile_NetRecord_SubnetRecord_FillType_SOLID = 0,
+  EdaDataFile_NetRecord_SubnetRecord_FillType_OUTLINE = 1,
+  EdaDataFile_NetRecord_SubnetRecord_FillType_EdaDataFile_NetRecord_SubnetRecord_FillType_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
+  EdaDataFile_NetRecord_SubnetRecord_FillType_EdaDataFile_NetRecord_SubnetRecord_FillType_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
-bool EdaDataFile_NetRecord_PlaneSubnetRecord_FillType_IsValid(int value);
-constexpr EdaDataFile_NetRecord_PlaneSubnetRecord_FillType EdaDataFile_NetRecord_PlaneSubnetRecord_FillType_FillType_MIN = EdaDataFile_NetRecord_PlaneSubnetRecord_FillType_SOLID;
-constexpr EdaDataFile_NetRecord_PlaneSubnetRecord_FillType EdaDataFile_NetRecord_PlaneSubnetRecord_FillType_FillType_MAX = EdaDataFile_NetRecord_PlaneSubnetRecord_FillType_OUTLINE;
-constexpr int EdaDataFile_NetRecord_PlaneSubnetRecord_FillType_FillType_ARRAYSIZE = EdaDataFile_NetRecord_PlaneSubnetRecord_FillType_FillType_MAX + 1;
+bool EdaDataFile_NetRecord_SubnetRecord_FillType_IsValid(int value);
+constexpr EdaDataFile_NetRecord_SubnetRecord_FillType EdaDataFile_NetRecord_SubnetRecord_FillType_FillType_MIN = EdaDataFile_NetRecord_SubnetRecord_FillType_SOLID;
+constexpr EdaDataFile_NetRecord_SubnetRecord_FillType EdaDataFile_NetRecord_SubnetRecord_FillType_FillType_MAX = EdaDataFile_NetRecord_SubnetRecord_FillType_OUTLINE;
+constexpr int EdaDataFile_NetRecord_SubnetRecord_FillType_FillType_ARRAYSIZE = EdaDataFile_NetRecord_SubnetRecord_FillType_FillType_MAX + 1;
 
-const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* EdaDataFile_NetRecord_PlaneSubnetRecord_FillType_descriptor();
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* EdaDataFile_NetRecord_SubnetRecord_FillType_descriptor();
 template<typename T>
-inline const std::string& EdaDataFile_NetRecord_PlaneSubnetRecord_FillType_Name(T enum_t_value) {
-  static_assert(::std::is_same<T, EdaDataFile_NetRecord_PlaneSubnetRecord_FillType>::value ||
+inline const std::string& EdaDataFile_NetRecord_SubnetRecord_FillType_Name(T enum_t_value) {
+  static_assert(::std::is_same<T, EdaDataFile_NetRecord_SubnetRecord_FillType>::value ||
     ::std::is_integral<T>::value,
-    "Incorrect type passed to function EdaDataFile_NetRecord_PlaneSubnetRecord_FillType_Name.");
+    "Incorrect type passed to function EdaDataFile_NetRecord_SubnetRecord_FillType_Name.");
   return ::PROTOBUF_NAMESPACE_ID::internal::NameOfEnum(
-    EdaDataFile_NetRecord_PlaneSubnetRecord_FillType_descriptor(), enum_t_value);
+    EdaDataFile_NetRecord_SubnetRecord_FillType_descriptor(), enum_t_value);
 }
-inline bool EdaDataFile_NetRecord_PlaneSubnetRecord_FillType_Parse(
-    ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, EdaDataFile_NetRecord_PlaneSubnetRecord_FillType* value) {
-  return ::PROTOBUF_NAMESPACE_ID::internal::ParseNamedEnum<EdaDataFile_NetRecord_PlaneSubnetRecord_FillType>(
-    EdaDataFile_NetRecord_PlaneSubnetRecord_FillType_descriptor(), name, value);
+inline bool EdaDataFile_NetRecord_SubnetRecord_FillType_Parse(
+    ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, EdaDataFile_NetRecord_SubnetRecord_FillType* value) {
+  return ::PROTOBUF_NAMESPACE_ID::internal::ParseNamedEnum<EdaDataFile_NetRecord_SubnetRecord_FillType>(
+    EdaDataFile_NetRecord_SubnetRecord_FillType_descriptor(), name, value);
 }
-enum EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType : int {
-  EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType_CIRCLE = 0,
-  EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType_RECTANGLE = 1,
-  EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType_OCTAGON = 2,
-  EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType_EXACT = 3,
-  EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType_EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
-  EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType_EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
+enum EdaDataFile_NetRecord_SubnetRecord_CutoutType : int {
+  EdaDataFile_NetRecord_SubnetRecord_CutoutType_CIRCLE = 0,
+  EdaDataFile_NetRecord_SubnetRecord_CutoutType_RECTANGLE = 1,
+  EdaDataFile_NetRecord_SubnetRecord_CutoutType_OCTAGON = 2,
+  EdaDataFile_NetRecord_SubnetRecord_CutoutType_EXACT = 3,
+  EdaDataFile_NetRecord_SubnetRecord_CutoutType_EdaDataFile_NetRecord_SubnetRecord_CutoutType_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
+  EdaDataFile_NetRecord_SubnetRecord_CutoutType_EdaDataFile_NetRecord_SubnetRecord_CutoutType_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
-bool EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType_IsValid(int value);
-constexpr EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType_CutoutType_MIN = EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType_CIRCLE;
-constexpr EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType_CutoutType_MAX = EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType_EXACT;
-constexpr int EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType_CutoutType_ARRAYSIZE = EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType_CutoutType_MAX + 1;
+bool EdaDataFile_NetRecord_SubnetRecord_CutoutType_IsValid(int value);
+constexpr EdaDataFile_NetRecord_SubnetRecord_CutoutType EdaDataFile_NetRecord_SubnetRecord_CutoutType_CutoutType_MIN = EdaDataFile_NetRecord_SubnetRecord_CutoutType_CIRCLE;
+constexpr EdaDataFile_NetRecord_SubnetRecord_CutoutType EdaDataFile_NetRecord_SubnetRecord_CutoutType_CutoutType_MAX = EdaDataFile_NetRecord_SubnetRecord_CutoutType_EXACT;
+constexpr int EdaDataFile_NetRecord_SubnetRecord_CutoutType_CutoutType_ARRAYSIZE = EdaDataFile_NetRecord_SubnetRecord_CutoutType_CutoutType_MAX + 1;
 
-const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType_descriptor();
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* EdaDataFile_NetRecord_SubnetRecord_CutoutType_descriptor();
 template<typename T>
-inline const std::string& EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType_Name(T enum_t_value) {
-  static_assert(::std::is_same<T, EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType>::value ||
+inline const std::string& EdaDataFile_NetRecord_SubnetRecord_CutoutType_Name(T enum_t_value) {
+  static_assert(::std::is_same<T, EdaDataFile_NetRecord_SubnetRecord_CutoutType>::value ||
     ::std::is_integral<T>::value,
-    "Incorrect type passed to function EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType_Name.");
+    "Incorrect type passed to function EdaDataFile_NetRecord_SubnetRecord_CutoutType_Name.");
   return ::PROTOBUF_NAMESPACE_ID::internal::NameOfEnum(
-    EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType_descriptor(), enum_t_value);
+    EdaDataFile_NetRecord_SubnetRecord_CutoutType_descriptor(), enum_t_value);
 }
-inline bool EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType_Parse(
-    ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType* value) {
-  return ::PROTOBUF_NAMESPACE_ID::internal::ParseNamedEnum<EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType>(
-    EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType_descriptor(), name, value);
+inline bool EdaDataFile_NetRecord_SubnetRecord_CutoutType_Parse(
+    ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, EdaDataFile_NetRecord_SubnetRecord_CutoutType* value) {
+  return ::PROTOBUF_NAMESPACE_ID::internal::ParseNamedEnum<EdaDataFile_NetRecord_SubnetRecord_CutoutType>(
+    EdaDataFile_NetRecord_SubnetRecord_CutoutType_descriptor(), name, value);
 }
 enum EdaDataFile_PackageRecord_PinRecord_Type : int {
   EdaDataFile_PackageRecord_PinRecord_Type_THROUGH_HOLE = 0,
@@ -891,11 +883,80 @@ class EdaDataFile_NetRecord_SubnetRecord final :
     return EdaDataFile_NetRecord_SubnetRecord_Type_Parse(name, value);
   }
 
+  typedef EdaDataFile_NetRecord_SubnetRecord_FillType FillType;
+  static constexpr FillType SOLID =
+    EdaDataFile_NetRecord_SubnetRecord_FillType_SOLID;
+  static constexpr FillType OUTLINE =
+    EdaDataFile_NetRecord_SubnetRecord_FillType_OUTLINE;
+  static inline bool FillType_IsValid(int value) {
+    return EdaDataFile_NetRecord_SubnetRecord_FillType_IsValid(value);
+  }
+  static constexpr FillType FillType_MIN =
+    EdaDataFile_NetRecord_SubnetRecord_FillType_FillType_MIN;
+  static constexpr FillType FillType_MAX =
+    EdaDataFile_NetRecord_SubnetRecord_FillType_FillType_MAX;
+  static constexpr int FillType_ARRAYSIZE =
+    EdaDataFile_NetRecord_SubnetRecord_FillType_FillType_ARRAYSIZE;
+  static inline const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor*
+  FillType_descriptor() {
+    return EdaDataFile_NetRecord_SubnetRecord_FillType_descriptor();
+  }
+  template<typename T>
+  static inline const std::string& FillType_Name(T enum_t_value) {
+    static_assert(::std::is_same<T, FillType>::value ||
+      ::std::is_integral<T>::value,
+      "Incorrect type passed to function FillType_Name.");
+    return EdaDataFile_NetRecord_SubnetRecord_FillType_Name(enum_t_value);
+  }
+  static inline bool FillType_Parse(::PROTOBUF_NAMESPACE_ID::ConstStringParam name,
+      FillType* value) {
+    return EdaDataFile_NetRecord_SubnetRecord_FillType_Parse(name, value);
+  }
+
+  typedef EdaDataFile_NetRecord_SubnetRecord_CutoutType CutoutType;
+  static constexpr CutoutType CIRCLE =
+    EdaDataFile_NetRecord_SubnetRecord_CutoutType_CIRCLE;
+  static constexpr CutoutType RECTANGLE =
+    EdaDataFile_NetRecord_SubnetRecord_CutoutType_RECTANGLE;
+  static constexpr CutoutType OCTAGON =
+    EdaDataFile_NetRecord_SubnetRecord_CutoutType_OCTAGON;
+  static constexpr CutoutType EXACT =
+    EdaDataFile_NetRecord_SubnetRecord_CutoutType_EXACT;
+  static inline bool CutoutType_IsValid(int value) {
+    return EdaDataFile_NetRecord_SubnetRecord_CutoutType_IsValid(value);
+  }
+  static constexpr CutoutType CutoutType_MIN =
+    EdaDataFile_NetRecord_SubnetRecord_CutoutType_CutoutType_MIN;
+  static constexpr CutoutType CutoutType_MAX =
+    EdaDataFile_NetRecord_SubnetRecord_CutoutType_CutoutType_MAX;
+  static constexpr int CutoutType_ARRAYSIZE =
+    EdaDataFile_NetRecord_SubnetRecord_CutoutType_CutoutType_ARRAYSIZE;
+  static inline const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor*
+  CutoutType_descriptor() {
+    return EdaDataFile_NetRecord_SubnetRecord_CutoutType_descriptor();
+  }
+  template<typename T>
+  static inline const std::string& CutoutType_Name(T enum_t_value) {
+    static_assert(::std::is_same<T, CutoutType>::value ||
+      ::std::is_integral<T>::value,
+      "Incorrect type passed to function CutoutType_Name.");
+    return EdaDataFile_NetRecord_SubnetRecord_CutoutType_Name(enum_t_value);
+  }
+  static inline bool CutoutType_Parse(::PROTOBUF_NAMESPACE_ID::ConstStringParam name,
+      CutoutType* value) {
+    return EdaDataFile_NetRecord_SubnetRecord_CutoutType_Parse(name, value);
+  }
+
   // accessors -------------------------------------------------------
 
   enum : int {
     kFeatureIdRecordsFieldNumber = 2,
     kTypeFieldNumber = 1,
+    kFillTypeFieldNumber = 3,
+    kCutoutTypeFieldNumber = 4,
+    kFillSizeFieldNumber = 5,
+    kComponentNumberFieldNumber = 6,
+    kToeprintNumberFieldNumber = 7,
   };
   // repeated .odbdesign.proto.EdaDataFile.NetRecord.SubnetRecord.FeatureIdRecord featureIdRecords = 2;
   int featureidrecords_size() const;
@@ -928,408 +989,33 @@ class EdaDataFile_NetRecord_SubnetRecord final :
   void _internal_set_type(::odbdesign::proto::EdaDataFile_NetRecord_SubnetRecord_Type value);
   public:
 
-  // @@protoc_insertion_point(class_scope:odbdesign.proto.EdaDataFile.NetRecord.SubnetRecord)
- private:
-  class _Internal;
-
-  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
-  typedef void InternalArenaConstructable_;
-  typedef void DestructorSkippable_;
-  struct Impl_ {
-    ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
-    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
-    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::odbdesign::proto::EdaDataFile_NetRecord_SubnetRecord_FeatureIdRecord > featureidrecords_;
-    int type_;
-  };
-  union { Impl_ _impl_; };
-  friend struct ::TableStruct_edadatafile_2eproto;
-};
-// -------------------------------------------------------------------
-
-class EdaDataFile_NetRecord_ToeprintSubnetRecord final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:odbdesign.proto.EdaDataFile.NetRecord.ToeprintSubnetRecord) */ {
- public:
-  inline EdaDataFile_NetRecord_ToeprintSubnetRecord() : EdaDataFile_NetRecord_ToeprintSubnetRecord(nullptr) {}
-  ~EdaDataFile_NetRecord_ToeprintSubnetRecord() override;
-  explicit PROTOBUF_CONSTEXPR EdaDataFile_NetRecord_ToeprintSubnetRecord(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
-
-  EdaDataFile_NetRecord_ToeprintSubnetRecord(const EdaDataFile_NetRecord_ToeprintSubnetRecord& from);
-  EdaDataFile_NetRecord_ToeprintSubnetRecord(EdaDataFile_NetRecord_ToeprintSubnetRecord&& from) noexcept
-    : EdaDataFile_NetRecord_ToeprintSubnetRecord() {
-    *this = ::std::move(from);
-  }
-
-  inline EdaDataFile_NetRecord_ToeprintSubnetRecord& operator=(const EdaDataFile_NetRecord_ToeprintSubnetRecord& from) {
-    CopyFrom(from);
-    return *this;
-  }
-  inline EdaDataFile_NetRecord_ToeprintSubnetRecord& operator=(EdaDataFile_NetRecord_ToeprintSubnetRecord&& from) noexcept {
-    if (this == &from) return *this;
-    if (GetOwningArena() == from.GetOwningArena()
-  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
-        && GetOwningArena() != nullptr
-  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
-    ) {
-      InternalSwap(&from);
-    } else {
-      CopyFrom(from);
-    }
-    return *this;
-  }
-
-  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
-    return GetDescriptor();
-  }
-  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
-    return default_instance().GetMetadata().descriptor;
-  }
-  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
-    return default_instance().GetMetadata().reflection;
-  }
-  static const EdaDataFile_NetRecord_ToeprintSubnetRecord& default_instance() {
-    return *internal_default_instance();
-  }
-  static inline const EdaDataFile_NetRecord_ToeprintSubnetRecord* internal_default_instance() {
-    return reinterpret_cast<const EdaDataFile_NetRecord_ToeprintSubnetRecord*>(
-               &_EdaDataFile_NetRecord_ToeprintSubnetRecord_default_instance_);
-  }
-  static constexpr int kIndexInFileMessages =
-    3;
-
-  friend void swap(EdaDataFile_NetRecord_ToeprintSubnetRecord& a, EdaDataFile_NetRecord_ToeprintSubnetRecord& b) {
-    a.Swap(&b);
-  }
-  inline void Swap(EdaDataFile_NetRecord_ToeprintSubnetRecord* other) {
-    if (other == this) return;
-  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
-    if (GetOwningArena() != nullptr &&
-        GetOwningArena() == other->GetOwningArena()) {
-   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
-    if (GetOwningArena() == other->GetOwningArena()) {
-  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
-      InternalSwap(other);
-    } else {
-      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
-    }
-  }
-  void UnsafeArenaSwap(EdaDataFile_NetRecord_ToeprintSubnetRecord* other) {
-    if (other == this) return;
-    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
-    InternalSwap(other);
-  }
-
-  // implements Message ----------------------------------------------
-
-  EdaDataFile_NetRecord_ToeprintSubnetRecord* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
-    return CreateMaybeMessage<EdaDataFile_NetRecord_ToeprintSubnetRecord>(arena);
-  }
-  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
-  void CopyFrom(const EdaDataFile_NetRecord_ToeprintSubnetRecord& from);
-  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
-  void MergeFrom( const EdaDataFile_NetRecord_ToeprintSubnetRecord& from) {
-    EdaDataFile_NetRecord_ToeprintSubnetRecord::MergeImpl(*this, from);
-  }
-  private:
-  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
-  public:
-  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
-  bool IsInitialized() const final;
-
-  size_t ByteSizeLong() const final;
-  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
-  uint8_t* _InternalSerialize(
-      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
-  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
-
-  private:
-  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
-  void SharedDtor();
-  void SetCachedSize(int size) const final;
-  void InternalSwap(EdaDataFile_NetRecord_ToeprintSubnetRecord* other);
-
-  private:
-  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
-  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "odbdesign.proto.EdaDataFile.NetRecord.ToeprintSubnetRecord";
-  }
-  protected:
-  explicit EdaDataFile_NetRecord_ToeprintSubnetRecord(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                       bool is_message_owned = false);
-  public:
-
-  static const ClassData _class_data_;
-  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
-
-  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
-
-  // nested types ----------------------------------------------------
-
-  // accessors -------------------------------------------------------
-
-  enum : int {
-    kComponentNumberFieldNumber = 2,
-    kToeprintNumberFieldNumber = 3,
-  };
-  // optional uint32 componentNumber = 2;
-  bool has_componentnumber() const;
-  private:
-  bool _internal_has_componentnumber() const;
-  public:
-  void clear_componentnumber();
-  uint32_t componentnumber() const;
-  void set_componentnumber(uint32_t value);
-  private:
-  uint32_t _internal_componentnumber() const;
-  void _internal_set_componentnumber(uint32_t value);
-  public:
-
-  // optional uint32 toeprintNumber = 3;
-  bool has_toeprintnumber() const;
-  private:
-  bool _internal_has_toeprintnumber() const;
-  public:
-  void clear_toeprintnumber();
-  uint32_t toeprintnumber() const;
-  void set_toeprintnumber(uint32_t value);
-  private:
-  uint32_t _internal_toeprintnumber() const;
-  void _internal_set_toeprintnumber(uint32_t value);
-  public:
-
-  // @@protoc_insertion_point(class_scope:odbdesign.proto.EdaDataFile.NetRecord.ToeprintSubnetRecord)
- private:
-  class _Internal;
-
-  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
-  typedef void InternalArenaConstructable_;
-  typedef void DestructorSkippable_;
-  struct Impl_ {
-    ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
-    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
-    uint32_t componentnumber_;
-    uint32_t toeprintnumber_;
-  };
-  union { Impl_ _impl_; };
-  friend struct ::TableStruct_edadatafile_2eproto;
-};
-// -------------------------------------------------------------------
-
-class EdaDataFile_NetRecord_PlaneSubnetRecord final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:odbdesign.proto.EdaDataFile.NetRecord.PlaneSubnetRecord) */ {
- public:
-  inline EdaDataFile_NetRecord_PlaneSubnetRecord() : EdaDataFile_NetRecord_PlaneSubnetRecord(nullptr) {}
-  ~EdaDataFile_NetRecord_PlaneSubnetRecord() override;
-  explicit PROTOBUF_CONSTEXPR EdaDataFile_NetRecord_PlaneSubnetRecord(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
-
-  EdaDataFile_NetRecord_PlaneSubnetRecord(const EdaDataFile_NetRecord_PlaneSubnetRecord& from);
-  EdaDataFile_NetRecord_PlaneSubnetRecord(EdaDataFile_NetRecord_PlaneSubnetRecord&& from) noexcept
-    : EdaDataFile_NetRecord_PlaneSubnetRecord() {
-    *this = ::std::move(from);
-  }
-
-  inline EdaDataFile_NetRecord_PlaneSubnetRecord& operator=(const EdaDataFile_NetRecord_PlaneSubnetRecord& from) {
-    CopyFrom(from);
-    return *this;
-  }
-  inline EdaDataFile_NetRecord_PlaneSubnetRecord& operator=(EdaDataFile_NetRecord_PlaneSubnetRecord&& from) noexcept {
-    if (this == &from) return *this;
-    if (GetOwningArena() == from.GetOwningArena()
-  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
-        && GetOwningArena() != nullptr
-  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
-    ) {
-      InternalSwap(&from);
-    } else {
-      CopyFrom(from);
-    }
-    return *this;
-  }
-
-  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
-    return GetDescriptor();
-  }
-  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
-    return default_instance().GetMetadata().descriptor;
-  }
-  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
-    return default_instance().GetMetadata().reflection;
-  }
-  static const EdaDataFile_NetRecord_PlaneSubnetRecord& default_instance() {
-    return *internal_default_instance();
-  }
-  static inline const EdaDataFile_NetRecord_PlaneSubnetRecord* internal_default_instance() {
-    return reinterpret_cast<const EdaDataFile_NetRecord_PlaneSubnetRecord*>(
-               &_EdaDataFile_NetRecord_PlaneSubnetRecord_default_instance_);
-  }
-  static constexpr int kIndexInFileMessages =
-    4;
-
-  friend void swap(EdaDataFile_NetRecord_PlaneSubnetRecord& a, EdaDataFile_NetRecord_PlaneSubnetRecord& b) {
-    a.Swap(&b);
-  }
-  inline void Swap(EdaDataFile_NetRecord_PlaneSubnetRecord* other) {
-    if (other == this) return;
-  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
-    if (GetOwningArena() != nullptr &&
-        GetOwningArena() == other->GetOwningArena()) {
-   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
-    if (GetOwningArena() == other->GetOwningArena()) {
-  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
-      InternalSwap(other);
-    } else {
-      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
-    }
-  }
-  void UnsafeArenaSwap(EdaDataFile_NetRecord_PlaneSubnetRecord* other) {
-    if (other == this) return;
-    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
-    InternalSwap(other);
-  }
-
-  // implements Message ----------------------------------------------
-
-  EdaDataFile_NetRecord_PlaneSubnetRecord* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
-    return CreateMaybeMessage<EdaDataFile_NetRecord_PlaneSubnetRecord>(arena);
-  }
-  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
-  void CopyFrom(const EdaDataFile_NetRecord_PlaneSubnetRecord& from);
-  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
-  void MergeFrom( const EdaDataFile_NetRecord_PlaneSubnetRecord& from) {
-    EdaDataFile_NetRecord_PlaneSubnetRecord::MergeImpl(*this, from);
-  }
-  private:
-  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
-  public:
-  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
-  bool IsInitialized() const final;
-
-  size_t ByteSizeLong() const final;
-  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
-  uint8_t* _InternalSerialize(
-      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
-  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
-
-  private:
-  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
-  void SharedDtor();
-  void SetCachedSize(int size) const final;
-  void InternalSwap(EdaDataFile_NetRecord_PlaneSubnetRecord* other);
-
-  private:
-  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
-  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "odbdesign.proto.EdaDataFile.NetRecord.PlaneSubnetRecord";
-  }
-  protected:
-  explicit EdaDataFile_NetRecord_PlaneSubnetRecord(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                       bool is_message_owned = false);
-  public:
-
-  static const ClassData _class_data_;
-  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
-
-  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
-
-  // nested types ----------------------------------------------------
-
-  typedef EdaDataFile_NetRecord_PlaneSubnetRecord_FillType FillType;
-  static constexpr FillType SOLID =
-    EdaDataFile_NetRecord_PlaneSubnetRecord_FillType_SOLID;
-  static constexpr FillType OUTLINE =
-    EdaDataFile_NetRecord_PlaneSubnetRecord_FillType_OUTLINE;
-  static inline bool FillType_IsValid(int value) {
-    return EdaDataFile_NetRecord_PlaneSubnetRecord_FillType_IsValid(value);
-  }
-  static constexpr FillType FillType_MIN =
-    EdaDataFile_NetRecord_PlaneSubnetRecord_FillType_FillType_MIN;
-  static constexpr FillType FillType_MAX =
-    EdaDataFile_NetRecord_PlaneSubnetRecord_FillType_FillType_MAX;
-  static constexpr int FillType_ARRAYSIZE =
-    EdaDataFile_NetRecord_PlaneSubnetRecord_FillType_FillType_ARRAYSIZE;
-  static inline const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor*
-  FillType_descriptor() {
-    return EdaDataFile_NetRecord_PlaneSubnetRecord_FillType_descriptor();
-  }
-  template<typename T>
-  static inline const std::string& FillType_Name(T enum_t_value) {
-    static_assert(::std::is_same<T, FillType>::value ||
-      ::std::is_integral<T>::value,
-      "Incorrect type passed to function FillType_Name.");
-    return EdaDataFile_NetRecord_PlaneSubnetRecord_FillType_Name(enum_t_value);
-  }
-  static inline bool FillType_Parse(::PROTOBUF_NAMESPACE_ID::ConstStringParam name,
-      FillType* value) {
-    return EdaDataFile_NetRecord_PlaneSubnetRecord_FillType_Parse(name, value);
-  }
-
-  typedef EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType CutoutType;
-  static constexpr CutoutType CIRCLE =
-    EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType_CIRCLE;
-  static constexpr CutoutType RECTANGLE =
-    EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType_RECTANGLE;
-  static constexpr CutoutType OCTAGON =
-    EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType_OCTAGON;
-  static constexpr CutoutType EXACT =
-    EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType_EXACT;
-  static inline bool CutoutType_IsValid(int value) {
-    return EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType_IsValid(value);
-  }
-  static constexpr CutoutType CutoutType_MIN =
-    EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType_CutoutType_MIN;
-  static constexpr CutoutType CutoutType_MAX =
-    EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType_CutoutType_MAX;
-  static constexpr int CutoutType_ARRAYSIZE =
-    EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType_CutoutType_ARRAYSIZE;
-  static inline const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor*
-  CutoutType_descriptor() {
-    return EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType_descriptor();
-  }
-  template<typename T>
-  static inline const std::string& CutoutType_Name(T enum_t_value) {
-    static_assert(::std::is_same<T, CutoutType>::value ||
-      ::std::is_integral<T>::value,
-      "Incorrect type passed to function CutoutType_Name.");
-    return EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType_Name(enum_t_value);
-  }
-  static inline bool CutoutType_Parse(::PROTOBUF_NAMESPACE_ID::ConstStringParam name,
-      CutoutType* value) {
-    return EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType_Parse(name, value);
-  }
-
-  // accessors -------------------------------------------------------
-
-  enum : int {
-    kFillTypeFieldNumber = 1,
-    kCutoutTypeFieldNumber = 2,
-    kFillSizeFieldNumber = 3,
-  };
-  // optional .odbdesign.proto.EdaDataFile.NetRecord.PlaneSubnetRecord.FillType fillType = 1;
+  // optional .odbdesign.proto.EdaDataFile.NetRecord.SubnetRecord.FillType fillType = 3;
   bool has_filltype() const;
   private:
   bool _internal_has_filltype() const;
   public:
   void clear_filltype();
-  ::odbdesign::proto::EdaDataFile_NetRecord_PlaneSubnetRecord_FillType filltype() const;
-  void set_filltype(::odbdesign::proto::EdaDataFile_NetRecord_PlaneSubnetRecord_FillType value);
+  ::odbdesign::proto::EdaDataFile_NetRecord_SubnetRecord_FillType filltype() const;
+  void set_filltype(::odbdesign::proto::EdaDataFile_NetRecord_SubnetRecord_FillType value);
   private:
-  ::odbdesign::proto::EdaDataFile_NetRecord_PlaneSubnetRecord_FillType _internal_filltype() const;
-  void _internal_set_filltype(::odbdesign::proto::EdaDataFile_NetRecord_PlaneSubnetRecord_FillType value);
+  ::odbdesign::proto::EdaDataFile_NetRecord_SubnetRecord_FillType _internal_filltype() const;
+  void _internal_set_filltype(::odbdesign::proto::EdaDataFile_NetRecord_SubnetRecord_FillType value);
   public:
 
-  // optional .odbdesign.proto.EdaDataFile.NetRecord.PlaneSubnetRecord.CutoutType cutoutType = 2;
+  // optional .odbdesign.proto.EdaDataFile.NetRecord.SubnetRecord.CutoutType cutoutType = 4;
   bool has_cutouttype() const;
   private:
   bool _internal_has_cutouttype() const;
   public:
   void clear_cutouttype();
-  ::odbdesign::proto::EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType cutouttype() const;
-  void set_cutouttype(::odbdesign::proto::EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType value);
+  ::odbdesign::proto::EdaDataFile_NetRecord_SubnetRecord_CutoutType cutouttype() const;
+  void set_cutouttype(::odbdesign::proto::EdaDataFile_NetRecord_SubnetRecord_CutoutType value);
   private:
-  ::odbdesign::proto::EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType _internal_cutouttype() const;
-  void _internal_set_cutouttype(::odbdesign::proto::EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType value);
+  ::odbdesign::proto::EdaDataFile_NetRecord_SubnetRecord_CutoutType _internal_cutouttype() const;
+  void _internal_set_cutouttype(::odbdesign::proto::EdaDataFile_NetRecord_SubnetRecord_CutoutType value);
   public:
 
-  // optional float fillSize = 3;
+  // optional float fillSize = 5;
   bool has_fillsize() const;
   private:
   bool _internal_has_fillsize() const;
@@ -1342,7 +1028,33 @@ class EdaDataFile_NetRecord_PlaneSubnetRecord final :
   void _internal_set_fillsize(float value);
   public:
 
-  // @@protoc_insertion_point(class_scope:odbdesign.proto.EdaDataFile.NetRecord.PlaneSubnetRecord)
+  // optional uint32 componentNumber = 6;
+  bool has_componentnumber() const;
+  private:
+  bool _internal_has_componentnumber() const;
+  public:
+  void clear_componentnumber();
+  uint32_t componentnumber() const;
+  void set_componentnumber(uint32_t value);
+  private:
+  uint32_t _internal_componentnumber() const;
+  void _internal_set_componentnumber(uint32_t value);
+  public:
+
+  // optional uint32 toeprintNumber = 7;
+  bool has_toeprintnumber() const;
+  private:
+  bool _internal_has_toeprintnumber() const;
+  public:
+  void clear_toeprintnumber();
+  uint32_t toeprintnumber() const;
+  void set_toeprintnumber(uint32_t value);
+  private:
+  uint32_t _internal_toeprintnumber() const;
+  void _internal_set_toeprintnumber(uint32_t value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:odbdesign.proto.EdaDataFile.NetRecord.SubnetRecord)
  private:
   class _Internal;
 
@@ -1352,9 +1064,13 @@ class EdaDataFile_NetRecord_PlaneSubnetRecord final :
   struct Impl_ {
     ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::odbdesign::proto::EdaDataFile_NetRecord_SubnetRecord_FeatureIdRecord > featureidrecords_;
+    int type_;
     int filltype_;
     int cutouttype_;
     float fillsize_;
+    uint32_t componentnumber_;
+    uint32_t toeprintnumber_;
   };
   union { Impl_ _impl_; };
   friend struct ::TableStruct_edadatafile_2eproto;
@@ -1409,7 +1125,7 @@ class EdaDataFile_NetRecord final :
                &_EdaDataFile_NetRecord_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    5;
+    3;
 
   friend void swap(EdaDataFile_NetRecord& a, EdaDataFile_NetRecord& b) {
     a.Swap(&b);
@@ -1480,8 +1196,6 @@ class EdaDataFile_NetRecord final :
   // nested types ----------------------------------------------------
 
   typedef EdaDataFile_NetRecord_SubnetRecord SubnetRecord;
-  typedef EdaDataFile_NetRecord_ToeprintSubnetRecord ToeprintSubnetRecord;
-  typedef EdaDataFile_NetRecord_PlaneSubnetRecord PlaneSubnetRecord;
 
   // accessors -------------------------------------------------------
 
@@ -1672,7 +1386,7 @@ class EdaDataFile_PackageRecord_PinRecord final :
                &_EdaDataFile_PackageRecord_PinRecord_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    7;
+    5;
 
   friend void swap(EdaDataFile_PackageRecord_PinRecord& a, EdaDataFile_PackageRecord_PinRecord& b) {
     a.Swap(&b);
@@ -2056,7 +1770,7 @@ class EdaDataFile_PackageRecord final :
                &_EdaDataFile_PackageRecord_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    8;
+    6;
 
   friend void swap(EdaDataFile_PackageRecord& a, EdaDataFile_PackageRecord& b) {
     a.Swap(&b);
@@ -2428,7 +2142,7 @@ class EdaDataFile final :
                &_EdaDataFile_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    11;
+    9;
 
   friend void swap(EdaDataFile& a, EdaDataFile& b) {
     a.Swap(&b);
@@ -3130,152 +2844,144 @@ EdaDataFile_NetRecord_SubnetRecord::featureidrecords() const {
   return _impl_.featureidrecords_;
 }
 
-// -------------------------------------------------------------------
-
-// EdaDataFile_NetRecord_ToeprintSubnetRecord
-
-// optional uint32 componentNumber = 2;
-inline bool EdaDataFile_NetRecord_ToeprintSubnetRecord::_internal_has_componentnumber() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
-  return value;
-}
-inline bool EdaDataFile_NetRecord_ToeprintSubnetRecord::has_componentnumber() const {
-  return _internal_has_componentnumber();
-}
-inline void EdaDataFile_NetRecord_ToeprintSubnetRecord::clear_componentnumber() {
-  _impl_.componentnumber_ = 0u;
-  _impl_._has_bits_[0] &= ~0x00000001u;
-}
-inline uint32_t EdaDataFile_NetRecord_ToeprintSubnetRecord::_internal_componentnumber() const {
-  return _impl_.componentnumber_;
-}
-inline uint32_t EdaDataFile_NetRecord_ToeprintSubnetRecord::componentnumber() const {
-  // @@protoc_insertion_point(field_get:odbdesign.proto.EdaDataFile.NetRecord.ToeprintSubnetRecord.componentNumber)
-  return _internal_componentnumber();
-}
-inline void EdaDataFile_NetRecord_ToeprintSubnetRecord::_internal_set_componentnumber(uint32_t value) {
-  _impl_._has_bits_[0] |= 0x00000001u;
-  _impl_.componentnumber_ = value;
-}
-inline void EdaDataFile_NetRecord_ToeprintSubnetRecord::set_componentnumber(uint32_t value) {
-  _internal_set_componentnumber(value);
-  // @@protoc_insertion_point(field_set:odbdesign.proto.EdaDataFile.NetRecord.ToeprintSubnetRecord.componentNumber)
-}
-
-// optional uint32 toeprintNumber = 3;
-inline bool EdaDataFile_NetRecord_ToeprintSubnetRecord::_internal_has_toeprintnumber() const {
+// optional .odbdesign.proto.EdaDataFile.NetRecord.SubnetRecord.FillType fillType = 3;
+inline bool EdaDataFile_NetRecord_SubnetRecord::_internal_has_filltype() const {
   bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
   return value;
 }
-inline bool EdaDataFile_NetRecord_ToeprintSubnetRecord::has_toeprintnumber() const {
-  return _internal_has_toeprintnumber();
-}
-inline void EdaDataFile_NetRecord_ToeprintSubnetRecord::clear_toeprintnumber() {
-  _impl_.toeprintnumber_ = 0u;
-  _impl_._has_bits_[0] &= ~0x00000002u;
-}
-inline uint32_t EdaDataFile_NetRecord_ToeprintSubnetRecord::_internal_toeprintnumber() const {
-  return _impl_.toeprintnumber_;
-}
-inline uint32_t EdaDataFile_NetRecord_ToeprintSubnetRecord::toeprintnumber() const {
-  // @@protoc_insertion_point(field_get:odbdesign.proto.EdaDataFile.NetRecord.ToeprintSubnetRecord.toeprintNumber)
-  return _internal_toeprintnumber();
-}
-inline void EdaDataFile_NetRecord_ToeprintSubnetRecord::_internal_set_toeprintnumber(uint32_t value) {
-  _impl_._has_bits_[0] |= 0x00000002u;
-  _impl_.toeprintnumber_ = value;
-}
-inline void EdaDataFile_NetRecord_ToeprintSubnetRecord::set_toeprintnumber(uint32_t value) {
-  _internal_set_toeprintnumber(value);
-  // @@protoc_insertion_point(field_set:odbdesign.proto.EdaDataFile.NetRecord.ToeprintSubnetRecord.toeprintNumber)
-}
-
-// -------------------------------------------------------------------
-
-// EdaDataFile_NetRecord_PlaneSubnetRecord
-
-// optional .odbdesign.proto.EdaDataFile.NetRecord.PlaneSubnetRecord.FillType fillType = 1;
-inline bool EdaDataFile_NetRecord_PlaneSubnetRecord::_internal_has_filltype() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
-  return value;
-}
-inline bool EdaDataFile_NetRecord_PlaneSubnetRecord::has_filltype() const {
+inline bool EdaDataFile_NetRecord_SubnetRecord::has_filltype() const {
   return _internal_has_filltype();
 }
-inline void EdaDataFile_NetRecord_PlaneSubnetRecord::clear_filltype() {
+inline void EdaDataFile_NetRecord_SubnetRecord::clear_filltype() {
   _impl_.filltype_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000001u;
-}
-inline ::odbdesign::proto::EdaDataFile_NetRecord_PlaneSubnetRecord_FillType EdaDataFile_NetRecord_PlaneSubnetRecord::_internal_filltype() const {
-  return static_cast< ::odbdesign::proto::EdaDataFile_NetRecord_PlaneSubnetRecord_FillType >(_impl_.filltype_);
-}
-inline ::odbdesign::proto::EdaDataFile_NetRecord_PlaneSubnetRecord_FillType EdaDataFile_NetRecord_PlaneSubnetRecord::filltype() const {
-  // @@protoc_insertion_point(field_get:odbdesign.proto.EdaDataFile.NetRecord.PlaneSubnetRecord.fillType)
-  return _internal_filltype();
-}
-inline void EdaDataFile_NetRecord_PlaneSubnetRecord::_internal_set_filltype(::odbdesign::proto::EdaDataFile_NetRecord_PlaneSubnetRecord_FillType value) {
-  _impl_._has_bits_[0] |= 0x00000001u;
-  _impl_.filltype_ = value;
-}
-inline void EdaDataFile_NetRecord_PlaneSubnetRecord::set_filltype(::odbdesign::proto::EdaDataFile_NetRecord_PlaneSubnetRecord_FillType value) {
-  _internal_set_filltype(value);
-  // @@protoc_insertion_point(field_set:odbdesign.proto.EdaDataFile.NetRecord.PlaneSubnetRecord.fillType)
-}
-
-// optional .odbdesign.proto.EdaDataFile.NetRecord.PlaneSubnetRecord.CutoutType cutoutType = 2;
-inline bool EdaDataFile_NetRecord_PlaneSubnetRecord::_internal_has_cutouttype() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
-  return value;
-}
-inline bool EdaDataFile_NetRecord_PlaneSubnetRecord::has_cutouttype() const {
-  return _internal_has_cutouttype();
-}
-inline void EdaDataFile_NetRecord_PlaneSubnetRecord::clear_cutouttype() {
-  _impl_.cutouttype_ = 0;
   _impl_._has_bits_[0] &= ~0x00000002u;
 }
-inline ::odbdesign::proto::EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType EdaDataFile_NetRecord_PlaneSubnetRecord::_internal_cutouttype() const {
-  return static_cast< ::odbdesign::proto::EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType >(_impl_.cutouttype_);
+inline ::odbdesign::proto::EdaDataFile_NetRecord_SubnetRecord_FillType EdaDataFile_NetRecord_SubnetRecord::_internal_filltype() const {
+  return static_cast< ::odbdesign::proto::EdaDataFile_NetRecord_SubnetRecord_FillType >(_impl_.filltype_);
 }
-inline ::odbdesign::proto::EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType EdaDataFile_NetRecord_PlaneSubnetRecord::cutouttype() const {
-  // @@protoc_insertion_point(field_get:odbdesign.proto.EdaDataFile.NetRecord.PlaneSubnetRecord.cutoutType)
-  return _internal_cutouttype();
+inline ::odbdesign::proto::EdaDataFile_NetRecord_SubnetRecord_FillType EdaDataFile_NetRecord_SubnetRecord::filltype() const {
+  // @@protoc_insertion_point(field_get:odbdesign.proto.EdaDataFile.NetRecord.SubnetRecord.fillType)
+  return _internal_filltype();
 }
-inline void EdaDataFile_NetRecord_PlaneSubnetRecord::_internal_set_cutouttype(::odbdesign::proto::EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType value) {
+inline void EdaDataFile_NetRecord_SubnetRecord::_internal_set_filltype(::odbdesign::proto::EdaDataFile_NetRecord_SubnetRecord_FillType value) {
   _impl_._has_bits_[0] |= 0x00000002u;
-  _impl_.cutouttype_ = value;
+  _impl_.filltype_ = value;
 }
-inline void EdaDataFile_NetRecord_PlaneSubnetRecord::set_cutouttype(::odbdesign::proto::EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType value) {
-  _internal_set_cutouttype(value);
-  // @@protoc_insertion_point(field_set:odbdesign.proto.EdaDataFile.NetRecord.PlaneSubnetRecord.cutoutType)
+inline void EdaDataFile_NetRecord_SubnetRecord::set_filltype(::odbdesign::proto::EdaDataFile_NetRecord_SubnetRecord_FillType value) {
+  _internal_set_filltype(value);
+  // @@protoc_insertion_point(field_set:odbdesign.proto.EdaDataFile.NetRecord.SubnetRecord.fillType)
 }
 
-// optional float fillSize = 3;
-inline bool EdaDataFile_NetRecord_PlaneSubnetRecord::_internal_has_fillsize() const {
+// optional .odbdesign.proto.EdaDataFile.NetRecord.SubnetRecord.CutoutType cutoutType = 4;
+inline bool EdaDataFile_NetRecord_SubnetRecord::_internal_has_cutouttype() const {
   bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
   return value;
 }
-inline bool EdaDataFile_NetRecord_PlaneSubnetRecord::has_fillsize() const {
-  return _internal_has_fillsize();
+inline bool EdaDataFile_NetRecord_SubnetRecord::has_cutouttype() const {
+  return _internal_has_cutouttype();
 }
-inline void EdaDataFile_NetRecord_PlaneSubnetRecord::clear_fillsize() {
-  _impl_.fillsize_ = 0;
+inline void EdaDataFile_NetRecord_SubnetRecord::clear_cutouttype() {
+  _impl_.cutouttype_ = 0;
   _impl_._has_bits_[0] &= ~0x00000004u;
 }
-inline float EdaDataFile_NetRecord_PlaneSubnetRecord::_internal_fillsize() const {
+inline ::odbdesign::proto::EdaDataFile_NetRecord_SubnetRecord_CutoutType EdaDataFile_NetRecord_SubnetRecord::_internal_cutouttype() const {
+  return static_cast< ::odbdesign::proto::EdaDataFile_NetRecord_SubnetRecord_CutoutType >(_impl_.cutouttype_);
+}
+inline ::odbdesign::proto::EdaDataFile_NetRecord_SubnetRecord_CutoutType EdaDataFile_NetRecord_SubnetRecord::cutouttype() const {
+  // @@protoc_insertion_point(field_get:odbdesign.proto.EdaDataFile.NetRecord.SubnetRecord.cutoutType)
+  return _internal_cutouttype();
+}
+inline void EdaDataFile_NetRecord_SubnetRecord::_internal_set_cutouttype(::odbdesign::proto::EdaDataFile_NetRecord_SubnetRecord_CutoutType value) {
+  _impl_._has_bits_[0] |= 0x00000004u;
+  _impl_.cutouttype_ = value;
+}
+inline void EdaDataFile_NetRecord_SubnetRecord::set_cutouttype(::odbdesign::proto::EdaDataFile_NetRecord_SubnetRecord_CutoutType value) {
+  _internal_set_cutouttype(value);
+  // @@protoc_insertion_point(field_set:odbdesign.proto.EdaDataFile.NetRecord.SubnetRecord.cutoutType)
+}
+
+// optional float fillSize = 5;
+inline bool EdaDataFile_NetRecord_SubnetRecord::_internal_has_fillsize() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000008u) != 0;
+  return value;
+}
+inline bool EdaDataFile_NetRecord_SubnetRecord::has_fillsize() const {
+  return _internal_has_fillsize();
+}
+inline void EdaDataFile_NetRecord_SubnetRecord::clear_fillsize() {
+  _impl_.fillsize_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000008u;
+}
+inline float EdaDataFile_NetRecord_SubnetRecord::_internal_fillsize() const {
   return _impl_.fillsize_;
 }
-inline float EdaDataFile_NetRecord_PlaneSubnetRecord::fillsize() const {
-  // @@protoc_insertion_point(field_get:odbdesign.proto.EdaDataFile.NetRecord.PlaneSubnetRecord.fillSize)
+inline float EdaDataFile_NetRecord_SubnetRecord::fillsize() const {
+  // @@protoc_insertion_point(field_get:odbdesign.proto.EdaDataFile.NetRecord.SubnetRecord.fillSize)
   return _internal_fillsize();
 }
-inline void EdaDataFile_NetRecord_PlaneSubnetRecord::_internal_set_fillsize(float value) {
-  _impl_._has_bits_[0] |= 0x00000004u;
+inline void EdaDataFile_NetRecord_SubnetRecord::_internal_set_fillsize(float value) {
+  _impl_._has_bits_[0] |= 0x00000008u;
   _impl_.fillsize_ = value;
 }
-inline void EdaDataFile_NetRecord_PlaneSubnetRecord::set_fillsize(float value) {
+inline void EdaDataFile_NetRecord_SubnetRecord::set_fillsize(float value) {
   _internal_set_fillsize(value);
-  // @@protoc_insertion_point(field_set:odbdesign.proto.EdaDataFile.NetRecord.PlaneSubnetRecord.fillSize)
+  // @@protoc_insertion_point(field_set:odbdesign.proto.EdaDataFile.NetRecord.SubnetRecord.fillSize)
+}
+
+// optional uint32 componentNumber = 6;
+inline bool EdaDataFile_NetRecord_SubnetRecord::_internal_has_componentnumber() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000010u) != 0;
+  return value;
+}
+inline bool EdaDataFile_NetRecord_SubnetRecord::has_componentnumber() const {
+  return _internal_has_componentnumber();
+}
+inline void EdaDataFile_NetRecord_SubnetRecord::clear_componentnumber() {
+  _impl_.componentnumber_ = 0u;
+  _impl_._has_bits_[0] &= ~0x00000010u;
+}
+inline uint32_t EdaDataFile_NetRecord_SubnetRecord::_internal_componentnumber() const {
+  return _impl_.componentnumber_;
+}
+inline uint32_t EdaDataFile_NetRecord_SubnetRecord::componentnumber() const {
+  // @@protoc_insertion_point(field_get:odbdesign.proto.EdaDataFile.NetRecord.SubnetRecord.componentNumber)
+  return _internal_componentnumber();
+}
+inline void EdaDataFile_NetRecord_SubnetRecord::_internal_set_componentnumber(uint32_t value) {
+  _impl_._has_bits_[0] |= 0x00000010u;
+  _impl_.componentnumber_ = value;
+}
+inline void EdaDataFile_NetRecord_SubnetRecord::set_componentnumber(uint32_t value) {
+  _internal_set_componentnumber(value);
+  // @@protoc_insertion_point(field_set:odbdesign.proto.EdaDataFile.NetRecord.SubnetRecord.componentNumber)
+}
+
+// optional uint32 toeprintNumber = 7;
+inline bool EdaDataFile_NetRecord_SubnetRecord::_internal_has_toeprintnumber() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000020u) != 0;
+  return value;
+}
+inline bool EdaDataFile_NetRecord_SubnetRecord::has_toeprintnumber() const {
+  return _internal_has_toeprintnumber();
+}
+inline void EdaDataFile_NetRecord_SubnetRecord::clear_toeprintnumber() {
+  _impl_.toeprintnumber_ = 0u;
+  _impl_._has_bits_[0] &= ~0x00000020u;
+}
+inline uint32_t EdaDataFile_NetRecord_SubnetRecord::_internal_toeprintnumber() const {
+  return _impl_.toeprintnumber_;
+}
+inline uint32_t EdaDataFile_NetRecord_SubnetRecord::toeprintnumber() const {
+  // @@protoc_insertion_point(field_get:odbdesign.proto.EdaDataFile.NetRecord.SubnetRecord.toeprintNumber)
+  return _internal_toeprintnumber();
+}
+inline void EdaDataFile_NetRecord_SubnetRecord::_internal_set_toeprintnumber(uint32_t value) {
+  _impl_._has_bits_[0] |= 0x00000020u;
+  _impl_.toeprintnumber_ = value;
+}
+inline void EdaDataFile_NetRecord_SubnetRecord::set_toeprintnumber(uint32_t value) {
+  _internal_set_toeprintnumber(value);
+  // @@protoc_insertion_point(field_set:odbdesign.proto.EdaDataFile.NetRecord.SubnetRecord.toeprintNumber)
 }
 
 // -------------------------------------------------------------------
@@ -4809,10 +4515,6 @@ EdaDataFile::mutable_packagerecordsbyname() {
 
 // -------------------------------------------------------------------
 
-// -------------------------------------------------------------------
-
-// -------------------------------------------------------------------
-
 
 // @@protoc_insertion_point(namespace_scope)
 
@@ -4831,15 +4533,15 @@ template <>
 inline const EnumDescriptor* GetEnumDescriptor< ::odbdesign::proto::EdaDataFile_NetRecord_SubnetRecord_Type>() {
   return ::odbdesign::proto::EdaDataFile_NetRecord_SubnetRecord_Type_descriptor();
 }
-template <> struct is_proto_enum< ::odbdesign::proto::EdaDataFile_NetRecord_PlaneSubnetRecord_FillType> : ::std::true_type {};
+template <> struct is_proto_enum< ::odbdesign::proto::EdaDataFile_NetRecord_SubnetRecord_FillType> : ::std::true_type {};
 template <>
-inline const EnumDescriptor* GetEnumDescriptor< ::odbdesign::proto::EdaDataFile_NetRecord_PlaneSubnetRecord_FillType>() {
-  return ::odbdesign::proto::EdaDataFile_NetRecord_PlaneSubnetRecord_FillType_descriptor();
+inline const EnumDescriptor* GetEnumDescriptor< ::odbdesign::proto::EdaDataFile_NetRecord_SubnetRecord_FillType>() {
+  return ::odbdesign::proto::EdaDataFile_NetRecord_SubnetRecord_FillType_descriptor();
 }
-template <> struct is_proto_enum< ::odbdesign::proto::EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType> : ::std::true_type {};
+template <> struct is_proto_enum< ::odbdesign::proto::EdaDataFile_NetRecord_SubnetRecord_CutoutType> : ::std::true_type {};
 template <>
-inline const EnumDescriptor* GetEnumDescriptor< ::odbdesign::proto::EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType>() {
-  return ::odbdesign::proto::EdaDataFile_NetRecord_PlaneSubnetRecord_CutoutType_descriptor();
+inline const EnumDescriptor* GetEnumDescriptor< ::odbdesign::proto::EdaDataFile_NetRecord_SubnetRecord_CutoutType>() {
+  return ::odbdesign::proto::EdaDataFile_NetRecord_SubnetRecord_CutoutType_descriptor();
 }
 template <> struct is_proto_enum< ::odbdesign::proto::EdaDataFile_PackageRecord_PinRecord_Type> : ::std::true_type {};
 template <>

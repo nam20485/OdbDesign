@@ -24,12 +24,26 @@ message EdaDataFile {
 
         message SubnetRecord {
 
+            // common subnet enums
             enum Type {
                 VIA = 0;
                 TRACE = 1;
                 PLANE = 2;
                 TOEPRINT = 3;
             };
+
+            // Plane subnet type enums
+            enum FillType {
+                SOLID = 0;
+                OUTLINE = 1;
+            };
+
+            enum CutoutType {
+                CIRCLE = 0;
+                RECTANGLE = 1;
+                OCTAGON = 2;
+                EXACT = 3;
+            };           
 
             message FeatureIdRecord {
                 
@@ -44,37 +58,47 @@ message EdaDataFile {
                 optional uint32 featureNumber = 3;
             };
 
+            // common subnet fields
             optional Type type = 1;
             repeated FeatureIdRecord featureIdRecords = 2;
+
+            // Plane subnet type fields
+            optional FillType fillType = 3;
+            optional CutoutType cutoutType = 4;
+            optional float fillSize = 5;
+
+            // Toeprint subnet type fields
+            optional uint32 componentNumber = 6;
+            optional uint32 toeprintNumber = 7;
         };
        
-        message ToeprintSubnetRecord {
+        // message ToeprintSubnetRecord {
 
-            //optional SubnetRecord subnetRecord = 1;
-            optional uint32 componentNumber = 2;
-            optional uint32 toeprintNumber = 3;
-        };
+        //     //optional SubnetRecord subnetRecord = 1;
+        //     optional uint32 componentNumber = 2;
+        //     optional uint32 toeprintNumber = 3;
+        // };
 
-        message PlaneSubnetRecord {
+        // message PlaneSubnetRecord {
 
-            //optional SubnetRecord subnetRecord = 1;
+        //     //optional SubnetRecord subnetRecord = 1;
 
-            enum FillType {
-                SOLID = 0;
-                OUTLINE = 1;
-            };
+        //     enum FillType {
+        //         SOLID = 0;
+        //         OUTLINE = 1;
+        //     };
 
-            enum CutoutType {
-                CIRCLE = 0;
-                RECTANGLE = 1;
-                OCTAGON = 2;
-                EXACT = 3;
-            };
+        //     enum CutoutType {
+        //         CIRCLE = 0;
+        //         RECTANGLE = 1;
+        //         OCTAGON = 2;
+        //         EXACT = 3;
+        //     };
 
-            optional FillType fillType = 1;
-            optional CutoutType cutoutType = 2;
-            optional float fillSize = 3;
-        };
+        //     optional FillType fillType = 1;
+        //     optional CutoutType cutoutType = 2;
+        //     optional float fillSize = 3;
+        // };
 
         optional string name = 1;
         optional string attributesIdString = 2;
