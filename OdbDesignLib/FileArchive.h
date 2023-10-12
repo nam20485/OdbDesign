@@ -1,6 +1,6 @@
 #pragma once
 
-#include "export.h"
+#include "odbdesign_export.h"
 #include <string>
 #include "StepDirectory.h"
 #include "EdaDataFile.h"
@@ -10,7 +10,7 @@
 
 namespace Odb::Lib::FileModel::Design
 {
-	class DECLSPEC FileArchive
+	class ODBDESIGN_EXPORT FileArchive
 	{
 	public:
 		FileArchive(std::string path);

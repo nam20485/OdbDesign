@@ -2,12 +2,12 @@
 
 #include "FileArchive.h"
 #include "Design.h"
-#include "export.h"
+#include "odbdesign_export.h"
 
 
 namespace Odb::Lib
 {
-	class DECLSPEC DesignCache
+	class ODBDESIGN_EXPORT DesignCache
 	{
 	public:
 		DesignCache();

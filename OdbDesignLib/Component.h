@@ -1,6 +1,6 @@
 #pragma once
 
-#include "export.h"
+#include "odbdesign_export.h"
 #include <string>
 #include <vector>
 #include <map>
@@ -12,7 +12,7 @@
 
 namespace Odb::Lib::ProductModel
 {
-	class DECLSPEC Component
+	class ODBDESIGN_EXPORT Component
 	{
 	public:
 		Component(std::string refDes, std::string partName, std::shared_ptr<Package> pPackage, unsigned int index, BoardSide side);

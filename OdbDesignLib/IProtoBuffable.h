@@ -3,8 +3,8 @@
 #include <google/protobuf/message.h>
 #include <google/protobuf/util/json_util.h>
 #include <crow.h>
-#include "IJsonConvertable.h"
-#include "export.h"
+#include "IJsonable.h"
+#include "odbdesign_export.h"
 
 using namespace google::protobuf;
 using namespace google::protobuf::util;
@@ -13,7 +13,7 @@ using namespace google::protobuf::util;
 namespace Odb::Lib
 {
 	template<typename TPbMessage>
-	class IProtoBuffable : public IJsonConvertable
+	class IProtoBuffable : public Utils::IJsonable
 	{
 	public:		
 		virtual std::unique_ptr<TPbMessage> to_protobuf() const = 0;

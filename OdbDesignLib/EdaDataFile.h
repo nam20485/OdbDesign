@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 #include <map>
-#include "export.h"
+#include "odbdesign_export.h"
 #include "BoardSide.h"
 #include "proto/edadatafile.pb.h"
 #include <google/protobuf/message.h>
@@ -13,7 +13,7 @@
 
 namespace Odb::Lib::FileModel::Design
 {	
-	class DECLSPEC EdaDataFile : public IProtoBuffable<odbdesign::proto::EdaDataFile>
+	class ODBDESIGN_EXPORT EdaDataFile : public IProtoBuffable<odbdesign::proto::EdaDataFile>
 	{
 	public:
 		EdaDataFile();		
@@ -25,7 +25,7 @@ namespace Odb::Lib::FileModel::Design
 
 		bool Parse(std::filesystem::path path);		
 
-		struct DECLSPEC PropertyRecord : public IProtoBuffable<odbdesign::proto::EdaDataFile::PropertyRecord>
+		struct ODBDESIGN_EXPORT PropertyRecord : public IProtoBuffable<odbdesign::proto::EdaDataFile::PropertyRecord>
 		{
 			// data members
 			std::string name;
@@ -44,9 +44,9 @@ namespace Odb::Lib::FileModel::Design
 			void from_protobuf(const odbdesign::proto::EdaDataFile::PropertyRecord& message) override;
 		};
 
-		struct DECLSPEC NetRecord : public IProtoBuffable<odbdesign::proto::EdaDataFile::NetRecord>
+		struct ODBDESIGN_EXPORT NetRecord : public IProtoBuffable<odbdesign::proto::EdaDataFile::NetRecord>
 		{
-			struct DECLSPEC SubnetRecord : public IProtoBuffable<odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord>
+			struct ODBDESIGN_EXPORT SubnetRecord : public IProtoBuffable<odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord>
 			{
 				// common subnet enums
 				enum class Type
@@ -72,7 +72,7 @@ namespace Odb::Lib::FileModel::Design
 					Exact
 				};				
 
-				struct DECLSPEC FeatureIdRecord : public IProtoBuffable<odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord>
+				struct ODBDESIGN_EXPORT FeatureIdRecord : public IProtoBuffable<odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord>
 				{
 					enum class Type
 					{
@@ -141,9 +141,9 @@ namespace Odb::Lib::FileModel::Design
 
 		}; // NetRecord
 
-		struct DECLSPEC PackageRecord : public IProtoBuffable<odbdesign::proto::EdaDataFile::PackageRecord>
+		struct ODBDESIGN_EXPORT PackageRecord : public IProtoBuffable<odbdesign::proto::EdaDataFile::PackageRecord>
 		{
-			struct DECLSPEC PinRecord : public IProtoBuffable<odbdesign::proto::EdaDataFile::PackageRecord::PinRecord>
+			struct ODBDESIGN_EXPORT PinRecord : public IProtoBuffable<odbdesign::proto::EdaDataFile::PackageRecord::PinRecord>
 			{
 				enum class Type
 				{
@@ -182,7 +182,7 @@ namespace Odb::Lib::FileModel::Design
 				ElectricalType electricalType;
 				MountType mountType;
 				unsigned int id;
-				size_t index;
+				unsigned int index;
 
 				// Inherited via IProtoBuffable
 				std::unique_ptr<odbdesign::proto::EdaDataFile::PackageRecord::PinRecord> to_protobuf() const override;
@@ -256,6 +256,6 @@ namespace Odb::Lib::FileModel::Design
 	
 	}; // EdaDataFile
 
-	//EXPIMP_TEMPLATE template class DECLSPEC std::vector<std::shared_ptr<EdaData::NetRecord>>;
-	//EXPIMP_TEMPLATE template class DECLSPEC std::map<std::string, std::shared_ptr<EdaData::NetRecord>>;
+	//EXPIMP_TEMPLATE template class ODBDESIGN_EXPORT std::vector<std::shared_ptr<EdaData::NetRecord>>;
+	//EXPIMP_TEMPLATE template class ODBDESIGN_EXPORT std::map<std::string, std::shared_ptr<EdaData::NetRecord>>;
 }
