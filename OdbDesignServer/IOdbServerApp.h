@@ -21,7 +21,6 @@ namespace Odb::App::Server
 	protected:
 		// abstract class/interface
 		IOdbServerApp() = default;
-
-		virtual void register_routes() = 0;
+		
 	};
 }
