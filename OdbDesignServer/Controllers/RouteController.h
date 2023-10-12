@@ -2,17 +2,22 @@
 
 #include "../OdbDesignServer.h"
 #include "crow.h"
-#include "../OdbDesignServerApp.h"
+//#include "../OdbDesignServerApp.h"
 
 
 namespace Odb::App::Server
 {
+	// forward declaration
+	class OdbDesignServerApp;
+
 	class RouteController
 	{
 	public:		
 		RouteController(OdbDesignServerApp* pServerApp);
 
 		virtual void register_routes() = 0;
+
+		typedef std::vector<std::shared_ptr<RouteController>> Vector;
 
 	protected:		
 		OdbDesignServerApp* m_pServerApp;
