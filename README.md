@@ -64,7 +64,7 @@ This project is free and open source under the MIT [license](https://github.com/
 
 If you are interested in using the parser in your application or code, or have any questions about it please do not hesistate to contact me. If you need support for integration of the parser into your own product and/or need its feature set extended, I am available for consulting at very reasonable fees.
 
-* [Email Nathan (maintainer)](mailto:nmiller217@gmail.com?subject=OdbDesign)
+* [Email me (maintainer)](mailto:nmiller217@gmail.com?subject=OdbDesign)
 * [GitHub](https://github.com/nam20485/odbdesign)
 * [LinkedIn](https://www.linkedin.com/in/namiller/)
 
@@ -74,4 +74,4 @@ If you are interested in using the parser in your application or code, or have a
 * [ODB++ Format Documentation & Resources](https://odbplusplus.com/design/our-resources/)
 * [ODB++ Format Specification v8.1 update 3](https://odbplusplus.com//wp-content/uploads/sites/2/2021/02/odb_spec_user.pdf)
 
->_ODB++ is a registered trademark of Siemens and Mentor Graphics Corporation._
+_ODB++ is a registered trademark of Siemens and Mentor Graphics Corporation._
