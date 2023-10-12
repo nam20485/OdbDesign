@@ -13,7 +13,8 @@ namespace Odb::App::Server
 	}
 
 	OdbDesignServerApp::~OdbDesignServerApp()
-	{				
+	{			
+		m_vecControllers.clear();
 	}
 
 	Utils::ExitCode OdbDesignServerApp::Run()
