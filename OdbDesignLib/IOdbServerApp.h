@@ -4,10 +4,11 @@
 #include "DesignCache.h"
 #include "ExitCode.h"
 #include "crow_win.h"
+#include "odbdesign_export.h"
 
-namespace Odb::App::Server
+namespace Odb::Lib
 {
-	class IOdbServerApp
+	class ODBDESIGN_EXPORT IOdbServerApp
 	{
 	public:
 		virtual ~IOdbServerApp() {}
