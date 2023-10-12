@@ -1,6 +1,6 @@
 #pragma once
 
-#include "export.h"
+#include "odbdesign_export.h"
 #include <string>
 #include <memory>
 #include "Net.h"
@@ -13,20 +13,23 @@
 
 namespace Odb::Lib::ProductModel
 {
-	class DECLSPEC Design
+	class ODBDESIGN_EXPORT Design
 	{
 	public:	
 		Design();
 		~Design();
 
-		bool Build(std::string designDirectory);
-		bool Build(std::shared_ptr<FileModel::Design::FileArchive> pFileModel);		
+		bool Build(std::string path);
+		bool Build(std::shared_ptr<FileModel::Design::FileArchive> pFileModel);	
+
+		typedef std::vector<std::shared_ptr<Design>> Vector;
+		typedef std::map<std::string, std::shared_ptr<Design>> StringMap;
 
 	private:
 		std::string m_productModel;
 		std::string m_name;
 
-		std::string m_designDirectory;		
+		std::string m_path;		
 		std::shared_ptr<FileModel::Design::FileArchive> m_pFileModel;
 
 		Net::Vector m_nets;
@@ -39,8 +42,7 @@ namespace Odb::Lib::ProductModel
 		Component::StringMap m_componentsByName;
 		
 		Part::StringMap m_partsByName;
-
-		bool Build();
+		
 		bool BuildNets();
 		bool BuildPackages();
 		bool BuildParts();

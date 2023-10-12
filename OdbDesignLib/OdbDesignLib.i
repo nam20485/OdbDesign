@@ -30,11 +30,11 @@ using namespace Odb::Lib;
 using StepDirectory = Odb::Lib::FileModel::Design::StepDirectory;
 %}
 
-// for std::string
+// support for STL types
 %include <std_string.i>
-
-// std::vector
 %include <std_vector.i>
+%include <std_map.i>
+%include <std_pair.i>
 
 // to handle declspec(dllexport) on Windows
 %include <windows.i>
@@ -45,7 +45,7 @@ using StepDirectory = Odb::Lib::FileModel::Design::StepDirectory;
 %include "Component.h"
 %include "Design.h"
 %include "EdaDataFile.h"
-%include "enums.h"
+%include "BoardSide.h"
 %include "FileArchive.h"
 %include "LayerDirectory.h"
 %include "ComponentLayerDirectory.h"
@@ -56,5 +56,5 @@ using StepDirectory = Odb::Lib::FileModel::Design::StepDirectory;
 %include "Pin.h"
 %include "PinConnection.h"
 %include "StepDirectory.h"
-%include "string_trim.h"
+%include "str_trim.h"
 %include "Via.h"

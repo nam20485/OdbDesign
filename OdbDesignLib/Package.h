@@ -1,6 +1,6 @@
 #pragma once
 
-#include "export.h"
+#include "odbdesign_export.h"
 #include <string>
 #include <memory>
 #include <vector>
@@ -10,7 +10,7 @@
 
 namespace Odb::Lib::ProductModel
 {
-	class DECLSPEC Package
+	class ODBDESIGN_EXPORT Package
 	{
 	public:
 		Package(std::string name, unsigned int index);

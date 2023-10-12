@@ -3,12 +3,12 @@
 #include "LayerDirectory.h"
 #include <vector>
 #include <string>
-#include "enums.h"
+#include "BoardSide.h"
 
 
 namespace Odb::Lib::FileModel::Design
 {
-	class DECLSPEC ComponentLayerDirectory : public LayerDirectory
+	class ODBDESIGN_EXPORT ComponentLayerDirectory : public LayerDirectory
 	{
 	public:
 		ComponentLayerDirectory(std::filesystem::path path, BoardSide side);

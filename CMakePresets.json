@@ -38,11 +38,27 @@
       }
     },
     {
+      "name": "python-x64-debug",
+      "displayName": "Python x64 Debug",
+      "inherits": "x64-debug",
+      "cacheVariables": {
+        "PYTHON_MODULE_BUILD": true
+      }
+    },
+    {
       "name": "x64-release",
       "displayName": "x64 Release",
       "inherits": "x64-debug",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "python-x64-release",
+      "displayName": "Python x64 Release",
+      "inherits": "x64-release",
+      "cacheVariables": {
+        "PYTHON_MODULE_BUILD": true
       }
     },
     {
@@ -72,7 +88,12 @@
       "binaryDir": "${sourceDir}/out/build/${presetName}",
       "installDir": "${sourceDir}/out/install/${presetName}",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_TOOLCHAIN_FILE": {
+          "value": "$env{HOME}/src/github/microsoft/vcpkg/scripts/buildsystems/vcpkg.cmake",
+          //"value": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+          "type": "FILEPATH"
+        }
       },
       "condition": {
         "type": "equals",
@@ -92,7 +113,11 @@
       "binaryDir": "${sourceDir}/out/build/${presetName}",
       "installDir": "${sourceDir}/out/install/${presetName}",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_TOOLCHAIN_FILE": {
+          "value": "$env{HOME}/src/github/microsoft/vcpkg/scripts/buildsystems/vcpkg.cmake",
+          "type": "FILEPATH"
+        }
       },
       "condition": {
         "type": "equals",
@@ -106,6 +131,22 @@
       }
     },
     {
+      "name": "python-linux-release",
+      "displayName": "Python Linux Release",
+      "inherits": "linux-release",
+      "cacheVariables": {        
+        "PYTHON_MODULE_BUILD": true
+      }
+    },
+    {
+      "name": "python-linux-debug",
+      "displayName": "Python Linux Debug",
+      "inherits": "linux-debug",
+      "cacheVariables": {        
+        "PYTHON_MODULE_BUILD": true
+      }
+    },
+    {
       "name": "linux-mingw-w64-debug",
       "displayName": "Linux MinGW-w64 Debug",
       "generator": "Ninja",
@@ -115,7 +156,11 @@
         "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_C_COMPILER": "x86_64-w64-mingw32-gcc",
         "CMAKE_CXX_COMPILER": "x86_64-w64-mingw32-g++",
-        "CMAKE_CXX_FLAGS": "-static-libgcc -static-libstdc++"
+        "CMAKE_CXX_FLAGS": "-static-libgcc -static-libstdc++",
+        "CMAKE_TOOLCHAIN_FILE": {
+          "value": "$env{HOME}/src/github/microsoft/vcpkg/scripts/buildsystems/vcpkg.cmake",
+          "type": "FILEPATH"
+        }
       },
       "condition": {
         "type": "equals",
@@ -138,7 +183,11 @@
         "CMAKE_BUILD_TYPE": "Release",
         "CMAKE_C_COMPILER": "x86_64-w64-mingw32-gcc",
         "CMAKE_CXX_COMPILER": "x86_64-w64-mingw32-g++",
-        "CMAKE_CXX_FLAGS": "-static-libgcc -static-libstdc++"
+        "CMAKE_CXX_FLAGS": "-static-libgcc -static-libstdc++",
+        "CMAKE_TOOLCHAIN_FILE": {
+          "value": "$env{HOME}/src/github/microsoft/vcpkg/scripts/buildsystems/vcpkg.cmake",
+          "type": "FILEPATH"
+        }
       },
       "condition": {
         "type": "equals",
@@ -194,7 +243,7 @@
       "displayName": "x64 Release",
       "inherits": "windows-base",
       "configurePreset": "x64-release"
-    },
+    },    
     {
       "name": "x86-debug",
       "displayName": "x86 Debug",
@@ -206,6 +255,18 @@
       "displayName": "x86 Release",
       "inherits": "windows-base",
       "configurePreset": "x86-release"
+    },
+    {
+      "name": "python-x64-debug",
+      "displayName": "Python x64 Debug",
+      "inherits": "windows-base",
+      "configurePreset": "python-x64-debug"
+    },
+    {
+      "name": "python-x64-release",
+      "displayName": "Python x64 Release",
+      "inherits": "windows-base",
+      "configurePreset": "python-x64-release"
     },
     {
       "name": "linux-base",
@@ -227,6 +288,18 @@
       "name": "linux-release",
       "displayName": "Linux Release",
       "configurePreset": "linux-release",
+      "inherits": "linux-base"
+    },
+    {
+      "name": "python-linux-debug",
+      "displayName": "Python Linux Debug",
+      "configurePreset": "python-linux-debug",
+      "inherits": "linux-base"
+    },
+    {
+      "name": "python-linux-release",
+      "displayName": "Python Linux Release",
+      "configurePreset": "python-linux-release",
       "inherits": "linux-base"
     },
     {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "export.h"
+#include "odbdesign_export.h"
 #include <string>
 #include <vector>
 #include <map>
@@ -9,7 +9,7 @@
 
 namespace Odb::Lib::ProductModel
 {
-	class DECLSPEC Pin
+	class ODBDESIGN_EXPORT Pin
 	{
 	public:
 		Pin(std::string name, unsigned int index);

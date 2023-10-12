@@ -4,28 +4,28 @@
 #include <string>
 #include <vector>
 #include <map>
-#include "export.h"
-#include "enums.h"
+#include "odbdesign_export.h"
+#include "BoardSide.h"
+#include "proto/edadatafile.pb.h"
+#include <google/protobuf/message.h>
+#include "IProtoBuffable.h"
 
 
 namespace Odb::Lib::FileModel::Design
 {	
-	class DECLSPEC EdaDataFile
+	class ODBDESIGN_EXPORT EdaDataFile : public IProtoBuffable<odbdesign::proto::EdaDataFile>
 	{
 	public:
-		EdaDataFile();
-		//EdaData(std::filesystem::path path);
+		EdaDataFile();		
 		~EdaDataFile();
 
-		std::filesystem::path GetPath() const;
-		std::string GetUnits() const;
+		const std::filesystem::path& GetPath() const;
+		const std::string& GetUnits() const;
+		const std::string& GetSource() const;
 
-		bool Parse(std::filesystem::path path);
+		bool Parse(std::filesystem::path path);		
 
-		// the invalid "null" case
-		//static const EdaDataFile EMPTY;
-
-		struct DECLSPEC PropertyRecord
+		struct ODBDESIGN_EXPORT PropertyRecord : public IProtoBuffable<odbdesign::proto::EdaDataFile::PropertyRecord>
 		{
 			// data members
 			std::string name;
@@ -38,12 +38,17 @@ namespace Odb::Lib::FileModel::Design
 			// typedefs
 			typedef std::map<std::string, std::shared_ptr<PropertyRecord>> StringMap;
 			typedef std::vector<std::shared_ptr<PropertyRecord>> Vector;
+
+			// Inherited via IProtoBuffable
+			std::unique_ptr<odbdesign::proto::EdaDataFile::PropertyRecord> to_protobuf() const override;
+			void from_protobuf(const odbdesign::proto::EdaDataFile::PropertyRecord& message) override;
 		};
 
-		struct DECLSPEC NetRecord
-		{			
-			struct DECLSPEC SubnetRecord
-			{				
+		struct ODBDESIGN_EXPORT NetRecord : public IProtoBuffable<odbdesign::proto::EdaDataFile::NetRecord>
+		{
+			struct ODBDESIGN_EXPORT SubnetRecord : public IProtoBuffable<odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord>
+			{
+				// common subnet enums
 				enum class Type
 				{
 					Via,
@@ -52,7 +57,22 @@ namespace Odb::Lib::FileModel::Design
 					Toeprint
 				};
 
-				struct DECLSPEC FeatureIdRecord
+				// Plane subnet type enums
+				enum class FillType
+				{
+					Solid,
+					Outline
+				};
+
+				enum class CutoutType
+				{
+					Circle,
+					Rectangle,
+					Octagon,
+					Exact
+				};				
+
+				struct ODBDESIGN_EXPORT FeatureIdRecord : public IProtoBuffable<odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord>
 				{
 					enum class Type
 					{
@@ -66,43 +86,41 @@ namespace Odb::Lib::FileModel::Design
 					Type type;
 					unsigned int layerNumber;
 					unsigned int featureNumber;
+
+					// Inherited via IProtoBuffable
+					std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord> to_protobuf() const override;
+					void from_protobuf(const odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord& message) override;
 				};
 
 				typedef std::vector<std::shared_ptr<SubnetRecord>> Vector;
 
 				virtual ~SubnetRecord();
 
+				// common subnet fields
 				Type type;
 				FeatureIdRecord::Vector m_featureIdRecords;
-			};
 
-			struct DECLSPEC ToeprintSubnetRecord : public SubnetRecord
-			{				
+				// Toeprint subnet type fields
 				BoardSide side;
 				unsigned int componentNumber;	// component index in the layer components/placements file
 				unsigned toeprintNumber;		// toeprint index of component reference in the layer components/placements file
-			};
 
-			struct DECLSPEC PlaneSubnetRecord : public SubnetRecord
-			{
-				enum class FillType
-				{
-					Solid,
-					Outline
-				};
-
-				enum class CutoutType
-				{
-					Circle,
-					Rectangle,
-					Octagon,
-					Exact
-				};
-
+				// Plane subnet type fields
 				FillType fillType;
 				CutoutType cutoutType;
 				float fillSize;
-			};
+
+				inline static const std::string RECORD_TOKEN = "SNT";
+				inline static const std::string RECORD_TYPE_TRACE_TOKEN = "TRC";
+				inline static const std::string RECORD_TYPE_VIA_TOKEN = "VIA";
+				inline static const std::string RECORD_TYPE_TOEPRINT_TOKEN = "TOP";
+				inline static const std::string RECORD_TYPE_PLANE_TOKEN = "PLN";				
+
+				// Inherited via IProtoBuffable
+				std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord> to_protobuf() const override;
+				void from_protobuf(const odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord& message) override;
+
+			}; // SubnetRecord	
 
 			typedef std::vector<std::shared_ptr<NetRecord>> Vector;
 			typedef std::map<std::string, std::shared_ptr<NetRecord>> StringMap;
@@ -116,11 +134,16 @@ namespace Odb::Lib::FileModel::Design
 
 			SubnetRecord::Vector m_subnetRecords;
 			PropertyRecord::Vector m_propertyRecords;
-		};
 
-		struct DECLSPEC PackageRecord
+			// Inherited via IProtoBuffable
+			std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord> to_protobuf() const override;
+			void from_protobuf(const odbdesign::proto::EdaDataFile::NetRecord& message) override;
+
+		}; // NetRecord
+
+		struct ODBDESIGN_EXPORT PackageRecord : public IProtoBuffable<odbdesign::proto::EdaDataFile::PackageRecord>
 		{
-			struct DECLSPEC PinRecord
+			struct ODBDESIGN_EXPORT PinRecord : public IProtoBuffable<odbdesign::proto::EdaDataFile::PackageRecord::PinRecord>
 			{
 				enum class Type
 				{
@@ -140,12 +163,12 @@ namespace Odb::Lib::FileModel::Design
 				{
 					Smt,
 					RecommendedSmtPad,
-					ThroughHole,
+					MT_ThroughHole,
 					RecommendedThroughHole,
 					Pressfit,
 					NonBoard,
 					Hole,
-					Undefined	// default
+					MT_Undefined	// default
 				};
 
 				typedef std::vector<std::shared_ptr<PinRecord>> Vector;
@@ -159,8 +182,13 @@ namespace Odb::Lib::FileModel::Design
 				ElectricalType electricalType;
 				MountType mountType;
 				unsigned int id;
-				size_t index;
-			};
+				unsigned int index;
+
+				// Inherited via IProtoBuffable
+				std::unique_ptr<odbdesign::proto::EdaDataFile::PackageRecord::PinRecord> to_protobuf() const override;
+				void from_protobuf(const odbdesign::proto::EdaDataFile::PackageRecord::PinRecord& message) override;
+
+			}; // PinRecord
 
 			typedef std::vector<std::shared_ptr<PackageRecord>> Vector;
 			typedef std::map<std::string, std::shared_ptr<PackageRecord>> StringMap;
@@ -175,7 +203,12 @@ namespace Odb::Lib::FileModel::Design
 			PinRecord::StringMap m_pinRecordsByName;
 
 			PropertyRecord::Vector m_propertyRecords;
-		};
+
+			// Inherited via IProtoBuffable
+			std::unique_ptr<odbdesign::proto::EdaDataFile::PackageRecord> to_protobuf() const override;
+			void from_protobuf(const odbdesign::proto::EdaDataFile::PackageRecord& message) override;
+
+		}; // PackageRecord
 
 		const std::vector<std::string>& GetLayerNames() const;
 		const std::vector<std::string>& GetAttributeNames() const;
@@ -185,6 +218,10 @@ namespace Odb::Lib::FileModel::Design
 		const NetRecord::StringMap& GetNetRecordsByName() const;
 		const PackageRecord::Vector& GetPackageRecords() const;
 		const PackageRecord::StringMap& GetPackageRecordsByName() const;
+
+		// Inherited via IProtoBuffable
+		std::unique_ptr<odbdesign::proto::EdaDataFile> to_protobuf() const override;
+		void from_protobuf(const odbdesign::proto::EdaDataFile& message) override;		
 
 	private:
 		std::filesystem::path m_path;
@@ -210,16 +247,15 @@ namespace Odb::Lib::FileModel::Design
 		inline static const std::string ATTRIBUTE_NAME_TOKEN = "@";
 		inline static const std::string ATTRIBUTE_VALUE_TOKEN = "&";
 		inline static const std::string NET_RECORD_TOKEN = "NET";
-		inline static const std::string SUBNET_RECORD_TOKEN = "SNT";
 		inline static const std::string FEATURE_ID_RECORD_TOKEN = "FID";
 		inline static const std::string PACKAGE_RECORD_TOKEN = "PKG";
 		inline static const std::string PIN_RECORD_TOKEN = "PIN";
 		inline static const std::string FEATURE_GROUP_RECORD_TOKEN = "FGR";
 		// TODO: Outline records:
 		// RC, CR, SQ, CT, OB, OS, OC, OE, CE — Outline Records
+	
+	}; // EdaDataFile
 
-	};
-
-	//EXPIMP_TEMPLATE template class DECLSPEC std::vector<std::shared_ptr<EdaData::NetRecord>>;
-	//EXPIMP_TEMPLATE template class DECLSPEC std::map<std::string, std::shared_ptr<EdaData::NetRecord>>;
+	//EXPIMP_TEMPLATE template class ODBDESIGN_EXPORT std::vector<std::shared_ptr<EdaData::NetRecord>>;
+	//EXPIMP_TEMPLATE template class ODBDESIGN_EXPORT std::map<std::string, std::shared_ptr<EdaData::NetRecord>>;
 }

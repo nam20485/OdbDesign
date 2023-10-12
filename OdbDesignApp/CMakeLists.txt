@@ -3,6 +3,6 @@
 #
 
 # Add source to this project's executable.
-add_executable (OdbDesignApp "OdbDesignApp.cpp" "OdbDesignApp.h" )
+add_executable (OdbDesignApp "OdbDesignApp.cpp" "OdbDesignApp.h"  )
 
 # TODO: Add tests and install targets if needed.

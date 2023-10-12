@@ -1,35 +1,36 @@
+#include "crow_win.h"
 #include "EdaDataFile.h"
 #include <fstream>
 #include <sstream>
-#include "string_trim.h"
-#include "enums.h"
+#include "str_trim.h"
+#include "BoardSide.h"
+#include "proto/edadatafile.pb.h"
+#include <google/protobuf/message.h>
 
 
 namespace Odb::Lib::FileModel::Design
 {
-    EdaDataFile::EdaDataFile()
+    EdaDataFile::EdaDataFile()    
     {
     }
-
-    //EdaData::EdaData(std::filesystem::path path)
-    //	: m_path(path)
-    //{
-    //}
-
+   
     EdaDataFile::~EdaDataFile()
     {
     }
 
-     ///*static*/ const EdaDataFile EdaDataFile::EMPTY;
-
-    std::filesystem::path EdaDataFile::GetPath() const
+    const std::filesystem::path& EdaDataFile::GetPath() const
     {
         return m_path;
     }
 
-    std::string EdaDataFile::GetUnits() const
+    const std::string& EdaDataFile::GetUnits() const
     {
         return m_units;
+    }
+
+    const std::string& EdaDataFile::GetSource() const
+    {
+        return m_source;
     }
 
     EdaDataFile::NetRecord::SubnetRecord::~SubnetRecord()
@@ -37,11 +38,81 @@ namespace Odb::Lib::FileModel::Design
         m_featureIdRecords.clear();
     }
 
+    std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord> EdaDataFile::NetRecord::SubnetRecord::to_protobuf() const
+    {
+        std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord> pSubnetRecordMessage(new odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord);       
+        pSubnetRecordMessage->set_type((odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord::Type) type);
+        if (type == Type::Toeprint)
+        {
+            pSubnetRecordMessage->set_componentnumber(componentNumber);
+            pSubnetRecordMessage->set_toeprintnumber(toeprintNumber);
+            pSubnetRecordMessage->set_side((odbdesign::proto::EdaDataFile_BoardSide)side);
+        }
+        else if (type == Type::Plane)
+        {
+            pSubnetRecordMessage->set_filltype((odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord::FillType)fillType);
+            pSubnetRecordMessage->set_cutouttype((odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord::CutoutType) cutoutType);
+            pSubnetRecordMessage->set_fillsize(fillSize);
+        }
+
+        for (const auto& featureIdRecord : m_featureIdRecords)
+        {
+            auto pFeatureIdRecordMessage = pSubnetRecordMessage->add_featureidrecords();
+            pFeatureIdRecordMessage->CopyFrom(*featureIdRecord->to_protobuf());
+        }
+        return pSubnetRecordMessage;
+    }
+
+    void EdaDataFile::NetRecord::SubnetRecord::from_protobuf(const odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord& message)
+    {
+    }
+
     EdaDataFile::NetRecord::~NetRecord()
     {
         m_subnetRecords.clear();
         m_propertyRecords.clear();
     }
+
+    std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord> EdaDataFile::NetRecord::to_protobuf() const
+    {
+        std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord> pNetRecordMessage(new odbdesign::proto::EdaDataFile::NetRecord);        
+        pNetRecordMessage->set_name(name);
+        pNetRecordMessage->set_attributesidstring(attributesIdString);
+        pNetRecordMessage->set_index(index);
+
+        for (const auto& propertyRecord : m_propertyRecords)
+        {
+            auto pPropertyRecordMessage = pNetRecordMessage->add_propertyrecords();
+            pPropertyRecordMessage->CopyFrom(*propertyRecord->to_protobuf());
+        }
+
+        for (const auto& subnetRecord : m_subnetRecords)
+        {
+			auto pSubnetRecordMessage = pNetRecordMessage->add_subnetrecords();
+			pSubnetRecordMessage->CopyFrom(*subnetRecord->to_protobuf());
+        }        
+        return pNetRecordMessage;
+    }
+
+    void EdaDataFile::NetRecord::from_protobuf(const odbdesign::proto::EdaDataFile::NetRecord& message)
+    {
+      
+    }
+
+    std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord>
+    EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord::to_protobuf() const
+    {
+        std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord> pFeatureIdRecordMessage(new odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord);        
+        pFeatureIdRecordMessage->set_type((odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord::Type) type);
+        pFeatureIdRecordMessage->set_layernumber(layerNumber);
+        pFeatureIdRecordMessage->set_featurenumber(featureNumber);
+        return pFeatureIdRecordMessage;
+    }
+
+    void EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord::from_protobuf(const odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord& message)
+    {
+
+    }    
 
     const std::vector<std::string>& EdaDataFile::GetLayerNames() const
     {
@@ -78,6 +149,50 @@ namespace Odb::Lib::FileModel::Design
         return m_packageRecordsByName;
     }
 
+    std::unique_ptr<odbdesign::proto::EdaDataFile> EdaDataFile::to_protobuf() const
+    {
+        std::unique_ptr<odbdesign::proto::EdaDataFile> pEdaDataFileMessage(new odbdesign::proto::EdaDataFile);                
+        pEdaDataFileMessage->set_path(m_path.string());
+        pEdaDataFileMessage->set_units(m_units);
+        pEdaDataFileMessage->set_source(m_source);
+        for (const auto& layerName : m_layerNames)
+        {
+			pEdaDataFileMessage->add_layernames(layerName);
+		}
+        for (const auto& attributeName : m_attributeNames)
+        {
+            pEdaDataFileMessage->add_attributenames(attributeName);
+        }
+        for (const auto& attrTextValue : m_attributeTextValues)
+        {
+            pEdaDataFileMessage->add_attributetextvalues(attrTextValue);
+        }
+        for (const auto& pNetRecord : m_netRecords)
+        {
+            auto pNetRecordMessage = pEdaDataFileMessage->add_netrecords();
+            pNetRecordMessage->CopyFrom(*pNetRecord->to_protobuf());
+        }              
+        for (const auto& kvNetRecord : m_netRecordsByName)
+        {
+            (*pEdaDataFileMessage->mutable_netrecordsbyname())[kvNetRecord.first] = *kvNetRecord.second->to_protobuf();
+        }
+        for (const auto& pPackageRecord : m_packageRecords)
+        {
+            auto pPackageRecordMessage = pEdaDataFileMessage->add_packagerecords();
+            pPackageRecordMessage->CopyFrom(*pPackageRecord->to_protobuf());
+        }
+        for (const auto& kvPackageRecord : m_packageRecordsByName)
+        {
+            (*pEdaDataFileMessage->mutable_packagerecordsbyname())[kvPackageRecord.first] = *kvPackageRecord.second->to_protobuf();
+        }                
+        return pEdaDataFileMessage;
+    }
+
+    void EdaDataFile::from_protobuf(const odbdesign::proto::EdaDataFile& message)
+    {
+       
+    }    
+
     bool EdaDataFile::Parse(std::filesystem::path path)
     {
         m_path = path;
@@ -101,7 +216,7 @@ namespace Odb::Lib::FileModel::Design
         while (std::getline(edaDataFile, line))
         {
             // trim whitespace from beginning and end of line
-            trim(line);
+            Utils::str_trim(line);
             if (!line.empty())
             {
                 std::stringstream lineStream(line);
@@ -148,7 +263,7 @@ namespace Odb::Lib::FileModel::Design
 
                     // read the rest of the line as the source
                     if (!std::getline(lineStream, m_source)) return false;
-                    trim(m_source);
+                    Utils::str_trim(m_source);
                 }
                 else if (line.find(LAYER_NAMES_RECORD_TOKEN) == 0)
                 {
@@ -231,13 +346,13 @@ namespace Odb::Lib::FileModel::Design
 
                     lineStream >> pCurrentNetRecord->attributesIdString;
                 }
-                else if (line.find(SUBNET_RECORD_TOKEN) == 0)
+                else if (line.find(NetRecord::SubnetRecord::RECORD_TOKEN) == 0)
                 {
                     // component record line
                     std::string token;
 
                     lineStream >> token;
-                    if (token != SUBNET_RECORD_TOKEN) return false;
+                    if (token != NetRecord::SubnetRecord::RECORD_TOKEN) return false;
 
                     if (pCurrentNetRecord != nullptr)
                     {
@@ -249,32 +364,31 @@ namespace Odb::Lib::FileModel::Design
                         }
                     }
 
+                    pCurrentSubnetRecord = std::make_shared<NetRecord::SubnetRecord>();
+
                     // subnet type
                     lineStream >> token;
-                    if (token == "VIA")
-                    {
-                        pCurrentSubnetRecord = std::make_shared<NetRecord::SubnetRecord>();
+                    if (token == NetRecord::SubnetRecord::RECORD_TYPE_VIA_TOKEN)
+                    {                        
                         pCurrentSubnetRecord->type = NetRecord::SubnetRecord::Type::Via;
                     }
-                    else if (token == "TRC")
-                    {
-                        pCurrentSubnetRecord = std::make_shared<NetRecord::SubnetRecord>();
+                    else if (token == NetRecord::SubnetRecord::RECORD_TYPE_TRACE_TOKEN)
+                    {                        
                         pCurrentSubnetRecord->type = NetRecord::SubnetRecord::Type::Trace;
                     }
-                    else if (token == "PLN")
+                    else if (token == NetRecord::SubnetRecord::RECORD_TYPE_PLANE_TOKEN)
                     {
-                        pCurrentSubnetRecord = std::make_shared<NetRecord::PlaneSubnetRecord>();
                         pCurrentSubnetRecord->type = NetRecord::SubnetRecord::Type::Plane;
 
                         // fill type
                         lineStream >> token;
                         if (token == "S")
                         {
-                            std::dynamic_pointer_cast<NetRecord::PlaneSubnetRecord>(pCurrentSubnetRecord)->fillType = NetRecord::PlaneSubnetRecord::FillType::Solid;
+                            pCurrentSubnetRecord->fillType = NetRecord::SubnetRecord::FillType::Solid;
                         }
                         else if (token == "O")
                         {
-                            std::dynamic_pointer_cast<NetRecord::PlaneSubnetRecord>(pCurrentSubnetRecord)->fillType = NetRecord::PlaneSubnetRecord::FillType::Outline;
+                            pCurrentSubnetRecord->fillType = NetRecord::SubnetRecord::FillType::Outline;
                         }
                         else
                         {
@@ -285,19 +399,19 @@ namespace Odb::Lib::FileModel::Design
                         lineStream >> token;
                         if (token == "C")
                         {
-                            std::dynamic_pointer_cast<NetRecord::PlaneSubnetRecord>(pCurrentSubnetRecord)->cutoutType = NetRecord::PlaneSubnetRecord::CutoutType::Circle;
+                            pCurrentSubnetRecord->cutoutType = NetRecord::SubnetRecord::CutoutType::Circle;
                         }
                         else if (token == "R")
                         {
-                            std::dynamic_pointer_cast<NetRecord::PlaneSubnetRecord>(pCurrentSubnetRecord)->cutoutType = NetRecord::PlaneSubnetRecord::CutoutType::Rectangle;
+                            pCurrentSubnetRecord->cutoutType = NetRecord::SubnetRecord::CutoutType::Rectangle;
                         }
                         else if (token == "O")
                         {
-                            std::dynamic_pointer_cast<NetRecord::PlaneSubnetRecord>(pCurrentSubnetRecord)->cutoutType = NetRecord::PlaneSubnetRecord::CutoutType::Octagon;
+                            pCurrentSubnetRecord->cutoutType = NetRecord::SubnetRecord::CutoutType::Octagon;
                         }
                         else if (token == "E")
                         {
-                            std::dynamic_pointer_cast<NetRecord::PlaneSubnetRecord>(pCurrentSubnetRecord)->cutoutType = NetRecord::PlaneSubnetRecord::CutoutType::Exact;
+                            pCurrentSubnetRecord->cutoutType = NetRecord::SubnetRecord::CutoutType::Exact;
                         }
                         else
                         {
@@ -305,22 +419,21 @@ namespace Odb::Lib::FileModel::Design
                         }
 
                         // fill size
-                        lineStream >> std::dynamic_pointer_cast<NetRecord::PlaneSubnetRecord>(pCurrentSubnetRecord)->fillSize;
+                        lineStream >> pCurrentSubnetRecord->fillSize;
                     }
-                    else if (token == "TOP")
+                    else if (token == NetRecord::SubnetRecord::RECORD_TYPE_TOEPRINT_TOKEN)
                     {
-                        pCurrentSubnetRecord = std::make_shared<NetRecord::ToeprintSubnetRecord>();
                         pCurrentSubnetRecord->type = NetRecord::SubnetRecord::Type::Toeprint;
 
                         // side
                         lineStream >> token;
                         if (token == "T")
                         {
-                            std::dynamic_pointer_cast<NetRecord::ToeprintSubnetRecord>(pCurrentSubnetRecord)->side = BoardSide::Top;
+                            pCurrentSubnetRecord->side = BoardSide::Top;
                         }
                         else if (token == "B")
                         {
-                            std::dynamic_pointer_cast<NetRecord::ToeprintSubnetRecord>(pCurrentSubnetRecord)->side = BoardSide::Bottom;
+                            pCurrentSubnetRecord->side = BoardSide::Bottom;
                         }
                         else
                         {
@@ -328,10 +441,10 @@ namespace Odb::Lib::FileModel::Design
                         }
 
                         // componentNumber
-                        lineStream >> std::dynamic_pointer_cast<NetRecord::ToeprintSubnetRecord>(pCurrentSubnetRecord)->componentNumber;
+                        lineStream >> pCurrentSubnetRecord->componentNumber;
 
                         // toeprintNumber
-                        lineStream >> std::dynamic_pointer_cast<NetRecord::ToeprintSubnetRecord>(pCurrentSubnetRecord)->toeprintNumber;
+                        lineStream >> pCurrentSubnetRecord->toeprintNumber;
                     }
                     else
                     {
@@ -518,7 +631,7 @@ namespace Odb::Lib::FileModel::Design
                     }
                     else if (token == "T")
                     {
-                        pPinRecord->mountType = PackageRecord::PinRecord::MountType::ThroughHole;
+                        pPinRecord->mountType = PackageRecord::PinRecord::MountType::MT_ThroughHole;
                     }
                     else if (token == "R")
                     {
@@ -538,7 +651,7 @@ namespace Odb::Lib::FileModel::Design
                     }
                     else if (token == "U")
                     {
-                        pPinRecord->mountType = PackageRecord::PinRecord::MountType::Undefined;
+                        pPinRecord->mountType = PackageRecord::PinRecord::MountType::MT_Undefined;
                     }
                     else
                     {
@@ -580,7 +693,7 @@ namespace Odb::Lib::FileModel::Design
         }
 
         // finish current (previous) net record
-            // this is the case where the last line of the file is not a net record (and there are no PKG records)
+        // this is the case where the last line of the file is not a net record (and there are no PKG records)
         if (pCurrentNetRecord != nullptr)
         {
             // finish current (previous) subnet record
@@ -613,4 +726,76 @@ namespace Odb::Lib::FileModel::Design
 
         return true;
     }
+
+    // Inherited via IProtoBuffable
+    std::unique_ptr<odbdesign::proto::EdaDataFile::PropertyRecord>
+    EdaDataFile::PropertyRecord::to_protobuf() const
+    {     
+        std::unique_ptr<odbdesign::proto::EdaDataFile::PropertyRecord> pPropertyRecordMessage(new odbdesign::proto::EdaDataFile::PropertyRecord);
+        pPropertyRecordMessage->set_name(name);
+        pPropertyRecordMessage->set_value(value);
+        for (const auto& f : floatValues)
+        {
+			pPropertyRecordMessage->add_floatvalues(f);
+		}
+        return pPropertyRecordMessage;
+    }
+
+    void EdaDataFile::PropertyRecord::from_protobuf(const odbdesign::proto::EdaDataFile::PropertyRecord& message)
+    {
+    };
+
+    // Inherited via IProtoBuffable
+    std::unique_ptr<odbdesign::proto::EdaDataFile::PackageRecord>
+    EdaDataFile::PackageRecord::to_protobuf() const
+    {                      
+        std::unique_ptr<odbdesign::proto::EdaDataFile::PackageRecord> pPackageRecordMessage(new odbdesign::proto::EdaDataFile::PackageRecord);
+        pPackageRecordMessage->set_name(name);
+        pPackageRecordMessage->set_pitch(pitch);
+        pPackageRecordMessage->set_xmin(xMin);
+        pPackageRecordMessage->set_ymin(yMin);
+        pPackageRecordMessage->set_xmax(xMax);
+        pPackageRecordMessage->set_ymax(yMax);
+        pPackageRecordMessage->set_attributesidstring(attributesIdString);
+        for (const auto& pinRecord : m_pinRecords)
+        {
+            auto pPinRecordMessage = pPackageRecordMessage->add_pinrecords();
+            pPinRecordMessage->CopyFrom(*pinRecord->to_protobuf());
+        }
+        for (const auto& kvPinRecord : m_pinRecordsByName)
+        {
+            (*pPackageRecordMessage->mutable_pinrecordsbyname())[kvPinRecord.first] = *kvPinRecord.second->to_protobuf();
+        }
+        for (const auto& propertyRecord : m_propertyRecords)
+        {
+            auto pPropertyRecordMessage = pPackageRecordMessage->add_propertyrecords();
+            pPropertyRecordMessage->CopyFrom(*propertyRecord->to_protobuf());
+        }
+        return pPackageRecordMessage;
+    }
+
+    void EdaDataFile::PackageRecord::from_protobuf(const odbdesign::proto::EdaDataFile::PackageRecord& message)
+    {
+    };
+
+    // Inherited via IProtoBuffable
+    std::unique_ptr<odbdesign::proto::EdaDataFile::PackageRecord::PinRecord>
+    EdaDataFile::PackageRecord::PinRecord::to_protobuf() const
+    {       
+        std::unique_ptr<odbdesign::proto::EdaDataFile::PackageRecord::PinRecord> pPinRecordMessage(new odbdesign::proto::EdaDataFile::PackageRecord::PinRecord);
+        pPinRecordMessage->set_name(name);
+        pPinRecordMessage->set_type((odbdesign::proto::EdaDataFile::PackageRecord::PinRecord::Type)type);
+        pPinRecordMessage->set_xcenter(xCenter);
+        pPinRecordMessage->set_ycenter(yCenter);
+        pPinRecordMessage->set_finishedholesize(finishedHoleSize);
+        pPinRecordMessage->set_electricaltype((odbdesign::proto::EdaDataFile::PackageRecord::PinRecord::ElectricalType)electricalType);
+        pPinRecordMessage->set_mounttype((odbdesign::proto::EdaDataFile::PackageRecord::PinRecord::MountType)mountType);
+        pPinRecordMessage->set_id(id);
+        pPinRecordMessage->set_index(index);
+        return pPinRecordMessage;
+    }
+
+    void EdaDataFile::PackageRecord::PinRecord::from_protobuf(const odbdesign::proto::EdaDataFile::PackageRecord::PinRecord& message)
+    {
+    };
 }
