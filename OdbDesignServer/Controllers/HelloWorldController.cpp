@@ -1,4 +1,5 @@
 #include "HelloWorldController.h"
+#include "../OdbDesignServerApp.h"
 
 
 namespace Odb::App::Server

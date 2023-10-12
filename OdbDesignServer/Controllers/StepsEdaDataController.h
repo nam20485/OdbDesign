@@ -6,6 +6,9 @@
 
 namespace Odb::App::Server
 {
+	// forward declaration
+	class OdbDesignServerApp;
+
 	class StepsEdaDataController : public RouteController
 	{
 	public:

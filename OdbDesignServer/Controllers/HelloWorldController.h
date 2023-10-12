@@ -5,6 +5,9 @@
 
 namespace Odb::App::Server
 {
+	// forward declaration
+	class OdbDesignServerApp;
+
 	class HelloWorldController : public RouteController
 	{
 	public:

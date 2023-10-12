@@ -3,6 +3,7 @@
 #include "EdaDataFile.h"
 #include "JsonCrowReturnable.h"
 #include <sstream>
+#include "../OdbDesignServerApp.h"
 
 using namespace Odb::Lib;
 using namespace FileModel::Design;
