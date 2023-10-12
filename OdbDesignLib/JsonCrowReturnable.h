@@ -19,7 +19,7 @@ namespace Odb::Lib
 		std::string to_string() const override;
 
 		// TJsonable MUST derive from IJsonConvertable (must use this until template type contraints support is added)
-		static_assert(std::is_base_of<IJsonable, TJsonable>::value, "template parameter type TJsonable must derive from IJsonConvertable interface class");
+		static_assert(std::is_base_of<Utils::IJsonable, TJsonable>::value, "template parameter type TJsonable must derive from IJsonConvertable interface class");
 
 	};
 
