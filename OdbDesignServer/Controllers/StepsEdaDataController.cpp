@@ -6,6 +6,7 @@
 
 using namespace Odb::Lib;
 using namespace Odb::Lib::FileModel::Design;
+using namespace Utils;
 
 namespace Odb::App::Server
 {

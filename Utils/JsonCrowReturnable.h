@@ -3,14 +3,14 @@
 #include "IJsonable.h"
 #include "CrowReturnable.h"
 
-namespace Odb::Lib
+namespace Utils
 {
 	template<typename TJsonable>
-	class JsonCrowReturnable : public CrowReturnable<TJsonable>
+	class JsonCrowReturnable : public Utils::CrowReturnable<TJsonable>
 	{
 	public:
 		JsonCrowReturnable(const TJsonable& odbObject)
-			: CrowReturnable<TJsonable>(odbObject, CONTENT_TYPE)
+			: Utils::CrowReturnable<TJsonable>(odbObject, CONTENT_TYPE)
 		{}
 
 		inline static const std::string CONTENT_TYPE = "application/json";

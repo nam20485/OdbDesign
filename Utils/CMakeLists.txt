@@ -1,7 +1,7 @@
 ﻿# CMakeList.txt : CMake project for OdbDesignServer
 #
 
-add_library(Utils SHARED "utils_export.h"   "ExitCode.h" "ThreadSafeQueue.h" "WorkQueueLoopThread.h" "Logger.h" "Logger.cpp" "CommandLineArgs.h" "CommandLineArgs.cpp" "bin2ascii.h" "ArchiveExtractor.cpp" "ArchiveExtractor.h" "libarchive_extract.cpp" "libarchive_extract.h" "str_trim.cpp" "str_trim.h"  "IJsonable.h" "IJsonable.cpp")
+add_library(Utils SHARED "utils_export.h"   "ExitCode.h" "ThreadSafeQueue.h" "WorkQueueLoopThread.h" "Logger.h" "Logger.cpp" "CommandLineArgs.h" "CommandLineArgs.cpp" "bin2ascii.h" "ArchiveExtractor.cpp" "ArchiveExtractor.h" "libarchive_extract.cpp" "libarchive_extract.h" "str_trim.cpp" "str_trim.h"  "IJsonable.h" "IJsonable.cpp" "CrowReturnable.h" "JsonCrowReturnable.h")
 
 # state that anybody linking to us needs to include the current source dir,
 # while we don't.
