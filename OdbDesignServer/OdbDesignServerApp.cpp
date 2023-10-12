@@ -7,37 +7,30 @@
 namespace Odb::App::Server
 {
 	OdbDesignServerApp::OdbDesignServerApp(int argc, char* argv[])
-		: m_designCache("designs")
-		, m_commandLineArgs(argc, argv)
+		: OdbServerAppBase(argc, argv)
 	{		
 	}
 
 	OdbDesignServerApp::~OdbDesignServerApp()
-	{			
-		m_vecControllers.clear();
+	{					
 	}
 
 	Utils::ExitCode OdbDesignServerApp::Run()
 	{
-		//m_crowApp.loglevel(crow::LogLevel::Debug)
-		m_crowApp.use_compression(crow::compression::algorithm::GZIP);
+		//
+		// do any initialization here
+		//
 
-		// controller routes
-		register_routes();
+		return OdbServerAppBase::Run();
 
-		// run the server
-		m_crowApp.port(18080).multithreaded().run();
-
-		return Utils::ExitCode::Success;
+		//
+		// do any cleanup here
+		//
 	}
 
-	void OdbDesignServerApp::register_routes()
+	void OdbDesignServerApp::add_controllers()
 	{
-		// TODO: fix how to handle controllers so they aren't destroyed after this method scope
-		HelloWorldController* pHelloWorldRoutes = new HelloWorldController(this);
-		pHelloWorldRoutes->register_routes();
-
-		StepsEdaDataController* pStepsEdaDataRoutes = new StepsEdaDataController(this);
-		pStepsEdaDataRoutes->register_routes();
-	}
+		m_vecControllers.push_back(std::make_shared<HelloWorldController>(this));
+		m_vecControllers.push_back(std::make_shared<StepsEdaDataController>(this));
+	}	
 }

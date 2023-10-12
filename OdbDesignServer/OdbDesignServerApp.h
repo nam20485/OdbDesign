@@ -1,43 +1,20 @@
 #pragma once
 
 #include "OdbDesignServer.h"
-#include "crow_win.h"
-#include "ExitCode.h"
-#include "DesignCache.h"
-#include <vector>
-#include "Logger.h"
-#include "CommandLineArgs.h"
-#include "Controllers/RouteController.h"
-#include "IOdbServerApp.h"
-
-
-using namespace Utils;
-using namespace Odb::Lib;
+#include "OdbServerAppBase.h"
 
 namespace Odb::App::Server
 {
-	class OdbDesignServerApp : public IOdbServerApp
+	class OdbDesignServerApp : public OdbServerAppBase
 	{
 	public:
 		OdbDesignServerApp(int argc, char* argv[]);
-		~OdbDesignServerApp();
-
-		static Logger m_logger;
-
-		inline const CommandLineArgs& arguments() const override { return m_commandLineArgs; }
-		inline crow::SimpleApp& crow_app() override { return m_crowApp; }
-		inline DesignCache& design_cache() override { return m_designCache; }
+		~OdbDesignServerApp();	
 				
 		ExitCode Run() override;		
 
-	private:				
-		DesignCache m_designCache;
-		crow::SimpleApp m_crowApp;
-		CommandLineArgs m_commandLineArgs;
-		
-		RouteController::Vector m_vecControllers;		
-
-		void register_routes();
+	protected:												
+		void add_controllers() override;
 
 	};
 }
