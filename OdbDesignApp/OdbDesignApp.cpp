@@ -20,7 +20,7 @@ int main()
     auto success = TestRigidFlexDesign();
     if (!success)
     {
-        return (int) ExitCode::UnknownError;
+        return (int) Utils::ExitCode::UnknownError;
     }
 
     //std::cout << "success!" << std::endl;
@@ -28,12 +28,12 @@ int main()
     success = TestSampleDesign();
     if (!success)
     {
-        return (int) ExitCode::UnknownError;
+        return (int) Utils::ExitCode::UnknownError;
     }
 
     //std::cout << "success!" << std::endl;    
 
-    return (int) ExitCode::Success;
+    return (int) Utils::ExitCode::Success;
 }
 
 bool TestSampleDesign()
@@ -100,12 +100,12 @@ bool TestRigidFlexDesign()
                 auto subnetType = pSubnetRecord->type;
                 if (subnetType == Odb::Lib::FileModel::Design::EdaDataFile::NetRecord::SubnetRecord::Type::Toeprint)
                 {
-                    auto pViaSubnetRecord = std::dynamic_pointer_cast<Odb::Lib::FileModel::Design::EdaDataFile::NetRecord::ToeprintSubnetRecord>(pSubnetRecord);
-                    auto viaType = pViaSubnetRecord->type;
-                    if (viaType == Odb::Lib::FileModel::Design::EdaDataFile::NetRecord::ToeprintSubnetRecord::Type::Via)
-                    {
+                    //auto pToeprintSubnetRecord = pSubnetRecord;
+                    //auto viaType = pToeprintSubnetRecord->type;
+                    //if (viaType == Odb::Lib::FileModel::Design::EdaDataFile::NetRecord::ToeprintSubnetRecord::Type::Via)
+                    //{
 
-                    }
+                    //}
                 }
             }
         }

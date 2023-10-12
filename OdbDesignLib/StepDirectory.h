@@ -5,7 +5,7 @@
 #include <memory>
 #include <filesystem>
 
-#include "export.h"
+#include "odbdesign_export.h"
 #include "ComponentLayerDirectory.h"
 #include "LayerDirectory.h"
 #include "EdaDataFile.h"
@@ -14,7 +14,7 @@
 
 namespace Odb::Lib::FileModel::Design
 {
-	class DECLSPEC StepDirectory
+	class ODBDESIGN_EXPORT StepDirectory
 	{
 	public:
 		StepDirectory(std::filesystem::path path);

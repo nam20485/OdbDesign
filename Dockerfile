@@ -14,7 +14,21 @@ RUN apt-get update && \
         ninja-build \
         python3-dev \   
         # mingw-w64 \        
-        swig      
+        swig \
+        build-essential \
+        git \
+        cmake \
+        zip \
+        unzip \
+        tar  && \
+    rm -rf /var/lib/apt/lists/* 
+
+# install vcpkg
+# /root/src/github/microsoft/vcpkg/scripts/buildsystems/vcpkg.cmake
+WORKDIR /root/src/github/microsoft
+RUN git clone https://github.com/Microsoft/vcpkg.git
+WORKDIR /root/src/github/microsoft/vcpkg
+RUN ./bootstrap-vcpkg.sh
 
 # copy source
 COPY . /src/OdbDesign

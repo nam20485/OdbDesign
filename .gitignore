@@ -20,3 +20,5 @@ PyOdbDesignServer/PyOdbDesignLib/
 /cmake-build-debug
 build/
 /vcpkg_installed
+/OdbDesignServer/designs/
+/cmake-build-debug-visual-studio

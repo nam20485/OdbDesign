@@ -1,14 +1,16 @@
 #pragma once
 
-#include "export.h"
+#include "odbdesign_export.h"
 #include <string>
 #include "StepDirectory.h"
 #include "EdaDataFile.h"
+#include <map>
+#include <vector>
 
 
 namespace Odb::Lib::FileModel::Design
 {
-	class DECLSPEC FileArchive
+	class ODBDESIGN_EXPORT FileArchive
 	{
 	public:
 		FileArchive(std::string path);
@@ -21,9 +23,12 @@ namespace Odb::Lib::FileModel::Design
 
 		// TODO: fix these to use pointer return types
 		//const EdaDataFile& GetStepEdaDataFile(std::string stepName) const;
-		//const EdaDataFile& GetFirstStepEdaDataFile() const;
+		//const EdaDataFile& GetFirstStepEdaDataFile() const;		
 
 		bool ParseFileModel();
+
+		typedef std::vector<std::shared_ptr<FileArchive>> Vector;
+		typedef std::map<std::string, std::shared_ptr<FileArchive>> StringMap;
 
 	private:
 		std::string m_path;
@@ -32,6 +37,7 @@ namespace Odb::Lib::FileModel::Design
 		StepDirectory::StringMap m_stepsByName;
 
 		bool ParseDesignDirectory(std::filesystem::path path);
+		bool ExtractDesignArchive(const std::filesystem::path& path, std::filesystem::path& extractedPath) const;
 
 	};
 }

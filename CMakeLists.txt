@@ -4,12 +4,12 @@
 cmake_minimum_required (VERSION 3.21)
 
 # require C++0x17 compiler
-set(MY_CXX_STANDARD 17)
+set(MY_CXX_STANDARD 20)
 set(CXX_STANDARD ${MY_CXX_STANDARD})
 set(CMAKE_CXX_STANDARD ${MY_CXX_STANDARD})
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-#set(CXX_STANDARD_REQUIRED True)
 
+# required for SWIG python wrapper
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 ## treat warnings as errors (https://cmake.org/cmake/help/latest/variable/CMAKE_COMPILE_WARNING_AS_ERROR.html#variable:CMAKE_COMPILE_WARNING_AS_ERROR)
@@ -51,9 +51,16 @@ else()
 endif()
 
 # Include sub-projects.
-add_subdirectory("OdbDesignApp")
 add_subdirectory("OdbDesignLib")
+add_subdirectory("OdbDesignApp")
+add_subdirectory("OdbDesignServer")
+add_subdirectory("Utils")
 
 # link to OdbDesign library in both executable targets
 target_link_libraries(OdbDesignApp PUBLIC OdbDesign)
-target_link_libraries(OdbDesignApp PUBLIC OdbDesign)
+target_link_libraries(OdbDesignServer PUBLIC OdbDesign)
+
+# link to Utils lib in all targets
+target_link_libraries(OdbDesignApp PUBLIC Utils)
+target_link_libraries(OdbDesignServer PUBLIC Utils)
+target_link_libraries(OdbDesign PUBLIC Utils)

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "export.h"
+#include "odbdesign_export.h"
 #include <string>
 #include <vector>
 #include <map>
@@ -9,7 +9,7 @@
 
 namespace Odb::Lib::ProductModel
 {
-	class DECLSPEC Via
+	class ODBDESIGN_EXPORT Via
 	{
 	public:
 		Via();

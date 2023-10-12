@@ -7,8 +7,8 @@
 namespace Odb::Lib::FileModel::Design
 {
 
-	FileArchive::FileArchive(std::string directoryPath)
-		: m_path(directoryPath)
+	FileArchive::FileArchive(std::string path)
+		: m_path(path)
 	{
 	}
 
@@ -32,32 +32,22 @@ namespace Odb::Lib::FileModel::Design
 	{
 		try
 		{
-			std::filesystem::path designPath(m_path);
+			std::filesystem::path path(m_path);
 
-			if (!std::filesystem::exists(designPath)) return false;
+			if (!std::filesystem::exists(path)) return false;
 		
-			if (std::filesystem::is_regular_file(designPath))
+			if (std::filesystem::is_regular_file(path))
 			{
-				std::cout << " - Extracting... ";
-
-				if (! ArchiveExtractor::IsArchiveTypeSupported(designPath)) return false;
-			
-				ArchiveExtractor extractor(designPath.string());
-				if (!extractor.Extract()) return false;				
-
-				auto extractedPath = std::filesystem::path(extractor.GetExtractedPath());
-				if (! std::filesystem::exists(extractedPath)) return false;
-				
-				designPath = extractedPath;		
-
-				std::cout << "success." << std::endl;
+				std::filesystem::path extractedPath;
+				if (! ExtractDesignArchive(path, extractedPath)) return false;
+				path = extractedPath;
 			}			
 		
-			if (std::filesystem::is_directory(designPath))
+			if (std::filesystem::is_directory(path))
 			{
 				std::cout << " - Parsing... ";
 
-				if (ParseDesignDirectory(designPath))
+				if (ParseDesignDirectory(path))
 				{
 					std::cout << "success." << std::endl << std::endl;
 					return true;
@@ -74,6 +64,26 @@ namespace Odb::Lib::FileModel::Design
 		}
 
 		return false;
+	}
+
+	bool FileArchive::ExtractDesignArchive(const std::filesystem::path& path, std::filesystem::path& extractedPath) const
+	{
+		std::cout << " - Extracting... ";
+
+		if (!Utils::ArchiveExtractor::IsArchiveTypeSupported(path)) return false;
+
+		Utils::ArchiveExtractor extractor(path.string());
+		if (!extractor.Extract()) return false;
+
+		auto extracted = std::filesystem::path(extractor.GetExtractedPath());
+		if (!std::filesystem::exists(extracted)) return false;
+		
+		extractedPath = extracted;
+
+		std::cout << "success." << std::endl;
+
+		return true;
+				
 	}
 
 	bool FileArchive::ParseDesignDirectory(std::filesystem::path path)
