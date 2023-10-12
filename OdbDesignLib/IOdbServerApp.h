@@ -5,7 +5,7 @@
 #include "ExitCode.h"
 #include "crow_win.h"
 
-namespace Odb::Lib
+namespace Odb::App::Server
 {
 	class IOdbServerApp
 	{
