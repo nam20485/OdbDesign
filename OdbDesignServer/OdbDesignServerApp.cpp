@@ -32,6 +32,7 @@ namespace Odb::App::Server
 
 	void OdbDesignServerApp::register_routes()
 	{
+		// TODO: fix how to handle controllers so they aren't destroyed after this method scope
 		HelloWorldController* pHelloWorldRoutes = new HelloWorldController(this);
 		pHelloWorldRoutes->register_routes();
 
