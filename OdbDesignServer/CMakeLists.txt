@@ -1,7 +1,7 @@
 ﻿# CMakeList.txt : CMake project for OdbDesignServer
 #
 
-add_executable(OdbDesignServer "main.cpp" "Controllers/RouteController.h" "Controllers/RouteController.cpp" "Controllers/HelloWorldController.h" "Controllers/HelloWorldController.cpp"     "OdbDesignServerApp.h" "OdbDesignServerApp.cpp" "Controllers/StepsEdaDataController.cpp" "Controllers/StepsEdaDataController.h" "OdbDesignServer.h" "IOdbServerApp.h")
+add_executable(OdbDesignServer "main.cpp" "Controllers/RouteController.h" "Controllers/RouteController.cpp" "Controllers/HelloWorldController.h" "Controllers/HelloWorldController.cpp"     "OdbDesignServerApp.h" "OdbDesignServerApp.cpp" "Controllers/StepsEdaDataController.cpp" "Controllers/StepsEdaDataController.h" "OdbDesignServer.h" "IOdbServerApp.h" "OdbServerAppBase.h" "OdbServerAppBase.cpp")
 
 # link to zlib (required for Crow HTTP compression)
 find_package(ZLIB REQUIRED)
