@@ -2,12 +2,12 @@
 
 #include <string>
 #include <filesystem>
-#include "export.h"
+#include "utils_export.h"
 
 
 namespace Utils
 {
-	class DECLSPEC ArchiveExtractor
+	class UTILS_EXPORT ArchiveExtractor
 	{
 	public:
 		ArchiveExtractor(const std::string& path);

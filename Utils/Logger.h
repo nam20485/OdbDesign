@@ -2,7 +2,7 @@
 
 #include "WorkQueueLoopThread.h"
 #include <chrono>
-#include "export.h"
+#include "utils_export.h"
 
 
 namespace Utils
@@ -30,7 +30,7 @@ namespace Utils
 		}
 	};	
 
-	class DECLSPEC Logger : public WorkQueueLoopThread<struct LogMessage>
+	class UTILS_EXPORT Logger : public WorkQueueLoopThread<struct LogMessage>
 	{
 	public:
 		Logger();

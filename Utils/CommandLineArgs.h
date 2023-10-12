@@ -2,12 +2,12 @@
 
 #include <vector>
 #include <string>
-#include "export.h"
+#include "utils_export.h"
 
 
 namespace Utils
 {
-	class DECLSPEC CommandLineArgs
+	class UTILS_EXPORT CommandLineArgs
 	{
 	public:
 		CommandLineArgs(int argc, char* argv[]);

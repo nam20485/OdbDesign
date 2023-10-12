@@ -9,7 +9,7 @@
 
 namespace Utils
 {
-	inline DECLSPEC std::string hex2bin(const std::string& s)
+	inline UTILS_EXPORT std::string hex2bin(const std::string& s)
 	{
 		if (s.size() % 2)
 			throw std::runtime_error("Odd hex data size");
@@ -43,7 +43,7 @@ namespace Utils
 		return r;
 	}
 
-	inline DECLSPEC std::string bin2hex(const std::string& s)
+	inline UTILS_EXPORT std::string bin2hex(const std::string& s)
 	{
 		static const char lookup[] = "0123456789abcdef";
 		std::string r;
@@ -57,7 +57,7 @@ namespace Utils
 		return r;
 	}
 
-	inline DECLSPEC std::string b64_encode(const std::string& s)
+	inline UTILS_EXPORT std::string b64_encode(const std::string& s)
 	{
 		typedef unsigned char u1;
 		static const char lookup[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -84,7 +84,7 @@ namespace Utils
 		return r;
 	}
 
-	inline DECLSPEC std::string b64_decode(const std::string& s)
+	inline UTILS_EXPORT std::string b64_decode(const std::string& s)
 	{
 		typedef unsigned char u1;
 		static const char lookup[] = ""
