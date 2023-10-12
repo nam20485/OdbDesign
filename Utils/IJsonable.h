@@ -1,11 +1,11 @@
 #pragma once
 
 #include <string>
-#include "export.h"
+#include "utils_export.h"
 
-namespace Odb::Lib
+namespace Utils
 {
-	class DECLSPEC IJsonConvertable
+	class UTILS_EXPORT IJsonable
 	{
 	public:			
 		virtual std::string to_json() const = 0;
@@ -13,7 +13,7 @@ namespace Odb::Lib
 
 	protected:
 		// abstract class/interface
-		IJsonConvertable() = default;		
+		IJsonable() = default;		
 
 	};
 }
