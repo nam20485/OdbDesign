@@ -1,6 +1,13 @@
 {
   "dependencies": [
     "libarchive",
-    "crow"
+    "zlib",
+    "crow",    
+    {
+      "name": "protobuf",
+      "features": [
+        "zlib"        
+      ]
+    }
   ]
 }

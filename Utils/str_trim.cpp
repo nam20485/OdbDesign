@@ -1,13 +1,13 @@
-#include "string_trim.h"
+#include "str_trim.h"
 #include <iostream>
 #include <string>
 #include <algorithm>
 
 
-namespace Odb::Lib
+namespace Utils
 {
     // trim from start (in place)
-    std::string& ltrim(std::string& s)
+    std::string& str_ltrim(std::string& s)
     {
         auto it = std::find_if(s.begin(), s.end(),
             [](char c) {
@@ -18,7 +18,7 @@ namespace Odb::Lib
     }
 
     // trim from end (in place)
-    std::string& rtrim(std::string& s)
+    std::string& str_rtrim(std::string& s)
     {
         auto it = std::find_if(s.rbegin(), s.rend(),
             [](char c) {
@@ -29,29 +29,29 @@ namespace Odb::Lib
     }
 
     // trim from both ends (in place)
-    std::string& trim(std::string& s)
+    std::string& str_trim(std::string& s)
     {
-        return ltrim(rtrim(s));
+        return str_ltrim(str_rtrim(s));
     }
 
     // trim from start (copying)
-    std::string ltrim_copy(std::string s)
+    std::string str_ltrim_copy(std::string s)
     {
         auto copy(s);
-        return ltrim(copy);
+        return str_ltrim(copy);
     }
 
     // trim from end (copying)
-    std::string rtrim_copy(std::string s)
+    std::string str_rtrim_copy(std::string s)
     {
         auto copy(s);
-        return rtrim(copy);
+        return str_rtrim(copy);
     }
 
     // trim from both ends (copying)
-    std::string trim_copy(std::string s)
+    std::string str_trim_copy(std::string s)
     {
         auto copy(s);
-        return trim(copy);
+        return str_trim(copy);
     }
 }

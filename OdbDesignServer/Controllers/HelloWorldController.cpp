@@ -1,24 +1,28 @@
 #include "HelloWorldController.h"
+#include "../OdbDesignServerApp.h"
 
 
-HelloWorldController::HelloWorldController(crow::SimpleApp& crowApp)
-	: RouteController(crowApp)
+namespace Odb::App::Server
 {
-}
+	HelloWorldController::HelloWorldController(IOdbServerApp* pServerApp)
+		: RouteController(pServerApp)
+	{
+	}
 
-void HelloWorldController::AddRoutes()
-{
-	// /helloworld
-	CROW_ROUTE(m_crowApp, "/helloworld")([]() {
-		//return "Hello world";
-		auto page = crow::mustache::load_text("helloworld.html");
-		return page;
-		});
+	void HelloWorldController::register_routes()
+	{
+		// /helloworld
+		CROW_ROUTE(m_pServerApp->crow_app(), "/helloworld")([]() {
+			//return "Hello world";
+			auto page = crow::mustache::load_text("helloworld.html");
+			return page;
+			});
 
-	// /hellodesign/<string>
-	CROW_ROUTE(m_crowApp, "/hellodesign/<string>")([](std::string designName) {
-		auto page = crow::mustache::load("helloworld.html");
-		crow::mustache::context ctx({ {"design", designName} });
-		return page.render(ctx);
-		});
+		// /hellodesign/<string>
+		CROW_ROUTE(m_pServerApp->crow_app(), "/hellodesign/<string>")([](std::string designName) {
+			auto page = crow::mustache::load("helloworld.html");
+			crow::mustache::context ctx({ {"design", designName} });
+			return page.render(ctx);
+			});
+	}
 }

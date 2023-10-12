@@ -1,6 +1,6 @@
 #pragma once
 
-#include "export.h"
+#include "odbdesign_export.h"
 #include <string>
 #include <vector>
 #include <map>
@@ -12,7 +12,7 @@
 
 namespace Odb::Lib::ProductModel
 {
-	class DECLSPEC Net
+	class ODBDESIGN_EXPORT Net
 	{
 	public:
 		Net(std::string name, unsigned int index);

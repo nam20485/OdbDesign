@@ -1,6 +1,6 @@
 #pragma once
 
-#include "export.h"
+#include "odbdesign_export.h"
 #include <string>
 #include <vector>
 #include <map>
@@ -11,7 +11,7 @@
 
 namespace Odb::Lib::ProductModel
 {
-	class DECLSPEC PinConnection
+	class ODBDESIGN_EXPORT PinConnection
 	{
 	public:
 		PinConnection(std::shared_ptr<Component> pComponent, std::shared_ptr<Pin> pPin, std::string name);

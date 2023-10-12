@@ -16,8 +16,7 @@ namespace Odb::Lib
 
     DesignCache::~DesignCache()
     {
-        m_fileArchivesByName.clear();
-        m_designsByName.clear();
+        Clear();
     }
 
     std::shared_ptr<ProductModel::Design> DesignCache::GetDesign(std::string designName)
@@ -34,6 +33,8 @@ namespace Odb::Lib
 
     std::shared_ptr<FileModel::Design::FileArchive> DesignCache::GetFileArchive(std::string designName)
     {
+        std::cout << std::format("Retrieving \"{}\" from cache... ", designName) << std::endl;
+
         auto findIt = m_fileArchivesByName.find(designName);
         if (findIt == m_fileArchivesByName.end())
         {
@@ -42,6 +43,12 @@ namespace Odb::Lib
         }
 
         return m_fileArchivesByName[designName];        
+    }
+
+    void DesignCache::Clear()
+    {
+        m_fileArchivesByName.clear();
+        m_designsByName.clear();
     }
 
     std::shared_ptr<ProductModel::Design> DesignCache::LoadDesign(std::string designName)

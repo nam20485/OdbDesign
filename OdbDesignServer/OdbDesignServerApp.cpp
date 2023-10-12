@@ -1,60 +1,36 @@
 #include "OdbDesignServerApp.h"
 #include "OdbDesign.h"
 #include "Controllers/HelloWorldController.h"
-
+#include "Controllers/StepsEdaDataController.h"
 
 
 namespace Odb::App::Server
 {
-	OdbDesignServerApp::OdbDesignServerApp(int argc, char* argv[])		
-	{
-		// save arguments in std::string vector
-		for (int i = 0; i < argc; i++)
-		{
-			m_vecArgv.push_back(argv[i]);
-		}
+	OdbDesignServerApp::OdbDesignServerApp(int argc, char* argv[])
+		: OdbServerAppBase(argc, argv)
+	{		
 	}
 
 	OdbDesignServerApp::~OdbDesignServerApp()
-	{
-		m_vecArgv.clear();
+	{					
 	}
 
 	Utils::ExitCode OdbDesignServerApp::Run()
 	{
-		//m_crowApp.loglevel(crow::LogLevel::Debug);	
+		//
+		// do any initialization here
+		//
 
-		// controllers/routes
-		HelloWorldController(m_crowApp).AddRoutes();
+		return OdbServerAppBase::Run();
 
-		// run the server
-		m_crowApp.port(18080).multithreaded().run();
-
-		return Utils::ExitCode::Success;
+		//
+		// do any cleanup here
+		//
 	}
 
-	void DefineRoutes(crow::SimpleApp& app)
+	void OdbDesignServerApp::add_controllers()
 	{
-		//app.loglevel(crow::LogLevel::Info);	
-
-		//CROW_ROUTE(app, "/helloworld")([]() {
-		//	//return "Hello world";
-		//	auto page = crow::mustache::load_text("helloworld.html");
-		//	return page;
-		//	});
-
-		//CROW_ROUTE(app, "/hellodesign/<string>")([](std::string designName) {
-		//	auto page = crow::mustache::load("helloworld.html");
-		//	crow::mustache::context ctx({ {"design", designName} });
-		//	return page.render(ctx);
-		//	});
-
-		CROW_ROUTE(app, "/steps/edadata/package_records")([]() {
-
-			// /steps/edadata/package_records?design=sample_design
-
-			auto page = crow::mustache::load_text("helloworld.html");
-			return page;
-			});
-	}
+		m_vecControllers.push_back(std::make_shared<HelloWorldController>(this));
+		m_vecControllers.push_back(std::make_shared<StepsEdaDataController>(this));
+	}	
 }

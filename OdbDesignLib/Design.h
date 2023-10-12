@@ -1,6 +1,6 @@
 #pragma once
 
-#include "export.h"
+#include "odbdesign_export.h"
 #include <string>
 #include <memory>
 #include "Net.h"
@@ -13,7 +13,7 @@
 
 namespace Odb::Lib::ProductModel
 {
-	class DECLSPEC Design
+	class ODBDESIGN_EXPORT Design
 	{
 	public:	
 		Design();

@@ -1,27 +1,20 @@
 #pragma once
 
 #include "OdbDesignServer.h"
-#include "crow.h"
-#include "ExitCode.h"
-#include "DesignCache.h"
-#include <vector>
-
+#include "OdbServerAppBase.h"
 
 namespace Odb::App::Server
 {
-	class OdbDesignServerApp
+	class OdbDesignServerApp : public OdbServerAppBase
 	{
 	public:
 		OdbDesignServerApp(int argc, char* argv[]);
-		~OdbDesignServerApp();
+		~OdbDesignServerApp();	
+				
+		ExitCode Run() override;		
 
-		Utils::ExitCode Run();
-
-	private:
-		crow::SimpleApp m_crowApp;
-		Odb::Lib::DesignCache m_designCache;
-
-		std::vector<std::string> m_vecArgv;
+	protected:												
+		void add_controllers() override;
 
 	};
 }

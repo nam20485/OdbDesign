@@ -1,14 +1,18 @@
 #pragma once
 
 #include "RouteController.h"
+#include "IOdbServerApp.h"
 
+using namespace Odb::Lib;
 
-class HelloWorldController : public RouteController
+namespace Odb::App::Server
 {
-public:
-	HelloWorldController(crow::SimpleApp& crowApp);
-	HelloWorldController(crow::SimpleApp& crowApp, const std::string& prefix);
+	class HelloWorldController : public RouteController
+	{
+	public:
+		HelloWorldController(IOdbServerApp* pServerApp);
 
-	void AddRoutes() override;
+		void register_routes() override;
 
-};
+	};
+}
