@@ -73,6 +73,17 @@ namespace Utils
         while (!_stopProcessingWorkItemsFlag.load())
         {
             auto wait_result = _workItemQueue.wait(/*std::chrono::milliseconds(1)*/);
+            switch (wait_result)
+            {
+                case ThreadSafeQueue<TWorkItem>::wait_result::timed_out:
+                    break;
+                case ThreadSafeQueue<TWorkItem>::wait_result::interrupted:
+					break;
+                case ThreadSafeQueue<TWorkItem>::wait_result::notified:
+					break;
+				default:
+					break;
+            }                  
 
             while (!_workItemQueue.empty())
             {
