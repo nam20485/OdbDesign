@@ -2,7 +2,7 @@
 #include "crow_win.h"
 
 
-namespace Odb::App::Server
+namespace Odb::Lib
 {
 	RouteController::RouteController(IOdbServerApp* pServerApp)
 		: m_pServerApp(pServerApp)

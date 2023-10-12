@@ -5,14 +5,14 @@
 #include "DesignCache.h"
 #include "Logger.h"
 #include "CommandLineArgs.h"
-#include "Controllers/RouteController.h"
+#include "RouteController.h"
+#include "odbdesign_export.h"
 
 using namespace Utils;
-using namespace Odb::Lib;
 
-namespace Odb::App::Server
+namespace Odb::Lib
 {
-	class OdbServerAppBase : public IOdbServerApp
+	class ODBDESIGN_EXPORT OdbServerAppBase : public IOdbServerApp
 	{
 	public:
 		OdbServerAppBase(int argc, char* argv[]);

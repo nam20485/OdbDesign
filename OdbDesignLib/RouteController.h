@@ -1,14 +1,12 @@
 #pragma once
 
-#include "../OdbDesignServer.h"
-//#include "../OdbDesignServerApp.h"
+#include "crow_win.h"
 #include "IOdbServerApp.h"
+#include "odbdesign_export.h"
 
-using namespace Odb::Lib;
-
-namespace Odb::App::Server
+namespace Odb::Lib
 {
-	class RouteController
+	class ODBDESIGN_EXPORT RouteController
 	{
 	public:		
 		RouteController(IOdbServerApp* pServerApp);

@@ -1,6 +1,6 @@
 #include "OdbServerAppBase.h"
 
-namespace Odb::App::Server
+namespace Odb::Lib
 {
     OdbServerAppBase::OdbServerAppBase(int argc, char* argv[])
         : m_designCache("designs")
