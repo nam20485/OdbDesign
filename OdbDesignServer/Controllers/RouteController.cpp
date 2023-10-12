@@ -4,7 +4,7 @@
 
 namespace Odb::App::Server
 {
-	RouteController::RouteController(OdbDesignServerApp* pServerApp)
+	RouteController::RouteController(IOdbServerApp* pServerApp)
 		: m_pServerApp(pServerApp)
 	{
 	}

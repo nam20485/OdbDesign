@@ -2,17 +2,16 @@
 
 #include "RouteController.h"
 #include "crow_win.h"
+#include "IOdbServerApp.h"
 
+using namespace Odb::Lib;
 
 namespace Odb::App::Server
 {
-	// forward declaration
-	class OdbDesignServerApp;
-
 	class StepsEdaDataController : public RouteController
 	{
 	public:
-		StepsEdaDataController(OdbDesignServerApp* pServerApp);
+		StepsEdaDataController(IOdbServerApp* pServerApp);
 
 		void register_routes() override;		
 

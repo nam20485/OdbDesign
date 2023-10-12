@@ -1,17 +1,16 @@
 #pragma once
 
 #include "RouteController.h"
+#include "IOdbServerApp.h"
 
+using namespace Odb::Lib;
 
 namespace Odb::App::Server
 {
-	// forward declaration
-	class OdbDesignServerApp;
-
 	class HelloWorldController : public RouteController
 	{
 	public:
-		HelloWorldController(OdbDesignServerApp* pServerApp);
+		HelloWorldController(IOdbServerApp* pServerApp);
 
 		void register_routes() override;
 

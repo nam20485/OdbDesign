@@ -1,26 +1,24 @@
 #pragma once
 
 #include "../OdbDesignServer.h"
-#include "crow.h"
 //#include "../OdbDesignServerApp.h"
+#include "IOdbServerApp.h"
 
+using namespace Odb::Lib;
 
 namespace Odb::App::Server
 {
-	// forward declaration
-	class OdbDesignServerApp;
-
 	class RouteController
 	{
 	public:		
-		RouteController(OdbDesignServerApp* pServerApp);
+		RouteController(IOdbServerApp* pServerApp);
 
 		virtual void register_routes() = 0;
 
 		typedef std::vector<std::shared_ptr<RouteController>> Vector;
 
 	protected:		
-		OdbDesignServerApp* m_pServerApp;
+		IOdbServerApp* m_pServerApp;
 
 		typedef std::function<crow::response(const crow::request& req)> TRouteHandlerFunction;
 

@@ -4,7 +4,7 @@
 
 namespace Odb::App::Server
 {
-	HelloWorldController::HelloWorldController(OdbDesignServerApp* pServerApp)
+	HelloWorldController::HelloWorldController(IOdbServerApp* pServerApp)
 		: RouteController(pServerApp)
 	{
 	}

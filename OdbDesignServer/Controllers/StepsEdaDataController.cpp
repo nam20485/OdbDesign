@@ -3,14 +3,13 @@
 #include "EdaDataFile.h"
 #include "JsonCrowReturnable.h"
 #include <sstream>
-#include "../OdbDesignServerApp.h"
 
 using namespace Odb::Lib;
-using namespace FileModel::Design;
+using namespace Odb::Lib::FileModel::Design;
 
 namespace Odb::App::Server
 {
-	StepsEdaDataController::StepsEdaDataController(OdbDesignServerApp* pServerApp)
+	StepsEdaDataController::StepsEdaDataController(IOdbServerApp* pServerApp)
 		: RouteController(pServerApp)
 	{
 	}
