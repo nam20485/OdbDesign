@@ -33,7 +33,6 @@ RUN ./bootstrap-vcpkg.sh
 RUN mkdir -p /src/OdbDesign
 WORKDIR /src/OdbDesign
 COPY ./vcpkg.json .
-
 RUN /root/src/github/microsoft/vcpkg/vcpkg install
 
 # copy source
