@@ -14,8 +14,8 @@ namespace Odb::Lib
 		DesignCache(std::string directory);
 		~DesignCache();
 		
-		std::shared_ptr<ProductModel::Design> GetDesign(std::string designName);
-		std::shared_ptr<FileModel::Design::FileArchive> GetFileArchive(std::string designName);
+		std::shared_ptr<ProductModel::Design> GetDesign(const std::string& designName);
+		std::shared_ptr<FileModel::Design::FileArchive> GetFileArchive(const std::string& designName);
 
 		void Clear();
 		
@@ -25,8 +25,8 @@ namespace Odb::Lib
 		FileModel::Design::FileArchive::StringMap m_fileArchivesByName;
 		ProductModel::Design::StringMap m_designsByName;
 
-		std::shared_ptr<ProductModel::Design> LoadDesign(std::string designName);
-		std::shared_ptr<FileModel::Design::FileArchive> LoadFileArchive(std::string designName);
+		std::shared_ptr<ProductModel::Design> LoadDesign(const std::string& designName);
+		std::shared_ptr<FileModel::Design::FileArchive> LoadFileArchive(const std::string& designName);
 
 	};
 }

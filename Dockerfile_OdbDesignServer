@@ -1,0 +1,67 @@
+FROM debian:bookworm-20230522-slim AS build
+
+# install dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        gpg \
+        curl \
+        apt-transport-https \
+        build-essential \
+        ca-certificates \
+        cmake \            
+        g++ \
+        ninja-build \
+        python3-dev \     
+        # mingw-w64 \        
+        swig \
+        build-essential \
+        git \
+        cmake \
+        zip \
+        unzip \
+        tar  \
+        pkg-config && \
+    rm -rf /var/lib/apt/lists/* 
+
+# install vcpkg
+WORKDIR /root/src/github/microsoft
+RUN git clone https://github.com/Microsoft/vcpkg.git
+WORKDIR /root/src/github/microsoft/vcpkg
+RUN ./bootstrap-vcpkg.sh
+
+# pre-install vcpgk packages BEFORE cmake configure
+RUN mkdir -p /src/OdbDesign
+WORKDIR /src/OdbDesign
+COPY ./vcpkg.json .
+RUN /root/src/github/microsoft/vcpkg/vcpkg install
+
+# copy source
+COPY . .
+
+# configure & build using presets
+# linux-release
+RUN cmake --preset linux-release
+RUN cmake --build --preset linux-release
+# # linux-debug
+# RUN cmake --preset linux-debug
+# RUN cmake --build --preset linux-debug
+
+# much smaller runtime image
+FROM debian:bookworm-20230522-slim AS run
+
+RUN mkdir --parents /OdbDesign/bin
+WORKDIR /OdbDesign/bin
+
+# copy binaries
+COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignLib/libOdbDesign.so .
+COPY --from=build /src/OdbDesign/out/build/linux-release/Utils/libUtils.so .
+COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignServer/OdbDesignServer .
+COPY --from=build /src/OdbDesign/out/build/linux-release/*.so .
+# copy designs and templates directories
+COPY --from=build /src/OdbDesign/designs ./designs
+COPY --from=build /src/OdbDesign/templates ./templates
+
+# run
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/OdbDesign/bin
+RUN chmod +x ./OdbDesignServer
+ENTRYPOINT [ "./OdbDesignServer" ]

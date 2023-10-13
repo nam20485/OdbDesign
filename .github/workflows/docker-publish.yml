@@ -77,6 +77,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          file: Dockerfile_OdbDesignServer
 
 
       # Sign the resulting Docker image digest except on PRs.

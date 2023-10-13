@@ -72,34 +72,6 @@ message EdaDataFile {
             optional uint32 componentNumber = 7;
             optional uint32 toeprintNumber = 8;
         };
-       
-        // message ToeprintSubnetRecord {
-
-        //     //optional SubnetRecord subnetRecord = 1;
-        //     optional uint32 componentNumber = 2;
-        //     optional uint32 toeprintNumber = 3;
-        // };
-
-        // message PlaneSubnetRecord {
-
-        //     //optional SubnetRecord subnetRecord = 1;
-
-        //     enum FillType {
-        //         SOLID = 0;
-        //         OUTLINE = 1;
-        //     };
-
-        //     enum CutoutType {
-        //         CIRCLE = 0;
-        //         RECTANGLE = 1;
-        //         OCTAGON = 2;
-        //         EXACT = 3;
-        //     };
-
-        //     optional FillType fillType = 1;
-        //     optional CutoutType cutoutType = 2;
-        //     optional float fillSize = 3;
-        // };
 
         optional string name = 1;
         optional string attributesIdString = 2;
