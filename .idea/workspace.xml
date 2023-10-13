@@ -3,53 +3,43 @@
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
-  <component name="CMakePresetLoader"><![CDATA[{
-  "useNewFormat": true
-}]]></component>
+  <component name="CMakePresetLoader">{
+  &quot;useNewFormat&quot;: true
+}</component>
   <component name="CMakeReloadState">
     <option name="reloaded" value="true" />
   </component>
   <component name="CMakeRunConfigurationManager">
-    <generated />
+    <generated>
+      <config projectName="OdbDesign" targetName="OdbDesign" />
+      <config projectName="OdbDesign" targetName="OdbDesignServer" />
+      <config projectName="OdbDesign" targetName="Utils" />
+      <config projectName="OdbDesign" targetName="OdbDesignApp" />
+    </generated>
   </component>
   <component name="CMakeSettings" AUTO_RELOAD="true">
     <configurations>
-      <configuration PROFILE_NAME="Debug" ENABLED="true" CONFIG_NAME="Debug" />
+      <configuration PROFILE_NAME="Debug-Visual Studio" ENABLED="false" CONFIG_NAME="Debug" TOOLCHAIN_NAME="Visual Studio" />
       <configuration PROFILE_NAME="x64-debug" ENABLED="true" FROM_PRESET="true" GENERATION_DIR="$PROJECT_DIR$/out/build/x64-debug" />
       <configuration PROFILE_NAME="x64-release" ENABLED="true" FROM_PRESET="true" GENERATION_DIR="$PROJECT_DIR$/out/build/x64-release" />
+      <configuration PROFILE_NAME="x86-debug" ENABLED="true" FROM_PRESET="true" GENERATION_DIR="$PROJECT_DIR$/out/build/x86-debug" />
+      <configuration PROFILE_NAME="x86-release" ENABLED="true" FROM_PRESET="true" GENERATION_DIR="$PROJECT_DIR$/out/build/x86-release" />
       <configuration PROFILE_NAME="python-x64-debug" ENABLED="false" FROM_PRESET="true" GENERATION_DIR="$PROJECT_DIR$/out/build/python-x64-debug" />
       <configuration PROFILE_NAME="python-x64-release" ENABLED="false" FROM_PRESET="true" GENERATION_DIR="$PROJECT_DIR$/out/build/python-x64-release" />
-      <configuration PROFILE_NAME="x86-debug" ENABLED="false" FROM_PRESET="true" GENERATION_DIR="$PROJECT_DIR$/out/build/x86-debug" />
-      <configuration PROFILE_NAME="x86-release" ENABLED="false" FROM_PRESET="true" GENERATION_DIR="$PROJECT_DIR$/out/build/x86-release" />
-      <configuration PROFILE_NAME="linux-debug" ENABLED="false" FROM_PRESET="true" GENERATION_DIR="$PROJECT_DIR$/out/build/linux-debug" />
-      <configuration PROFILE_NAME="linux-release" ENABLED="false" FROM_PRESET="true" GENERATION_DIR="$PROJECT_DIR$/out/build/linux-release" />
-      <configuration PROFILE_NAME="python-linux-release" ENABLED="false" FROM_PRESET="true" GENERATION_DIR="$PROJECT_DIR$/out/build/python-linux-release" />
-      <configuration PROFILE_NAME="python-linux-debug" ENABLED="false" FROM_PRESET="true" GENERATION_DIR="$PROJECT_DIR$/out/build/python-linux-debug" />
-      <configuration PROFILE_NAME="linux-mingw-w64-debug" ENABLED="false" FROM_PRESET="true" GENERATION_DIR="$PROJECT_DIR$/out/build/linux-mingw-w64-debug" />
-      <configuration PROFILE_NAME="linux-mingw-w64-release" ENABLED="false" FROM_PRESET="true" GENERATION_DIR="$PROJECT_DIR$/out/build/linux-mingw-w64-release" />
-      <configuration PROFILE_NAME="macos-debug" ENABLED="false" FROM_PRESET="true" GENERATION_DIR="$PROJECT_DIR$/out/build/macos-debug" />
       <configuration PROFILE_NAME="x64-debug - x64-debug" ENABLED="false" FROM_PRESET="true" GENERATION_DIR="$PROJECT_DIR$/out/build/x64-debug" />
       <configuration PROFILE_NAME="x64-release - x64-release" ENABLED="false" FROM_PRESET="true" GENERATION_DIR="$PROJECT_DIR$/out/build/x64-release" />
       <configuration PROFILE_NAME="x86-debug - x86-debug" ENABLED="false" FROM_PRESET="true" GENERATION_DIR="$PROJECT_DIR$/out/build/x86-debug" />
       <configuration PROFILE_NAME="x86-release - x86-release" ENABLED="false" FROM_PRESET="true" GENERATION_DIR="$PROJECT_DIR$/out/build/x86-release" />
       <configuration PROFILE_NAME="python-x64-debug - python-x64-debug" ENABLED="false" FROM_PRESET="true" GENERATION_DIR="$PROJECT_DIR$/out/build/python-x64-debug" />
       <configuration PROFILE_NAME="python-x64-release - python-x64-release" ENABLED="false" FROM_PRESET="true" GENERATION_DIR="$PROJECT_DIR$/out/build/python-x64-release" />
-      <configuration PROFILE_NAME="linux-debug - linux-debug" ENABLED="false" FROM_PRESET="true" GENERATION_DIR="$PROJECT_DIR$/out/build/linux-debug" />
-      <configuration PROFILE_NAME="linux-release - linux-release" ENABLED="false" FROM_PRESET="true" GENERATION_DIR="$PROJECT_DIR$/out/build/linux-release" />
-      <configuration PROFILE_NAME="python-linux-debug - python-linux-debug" ENABLED="false" FROM_PRESET="true" GENERATION_DIR="$PROJECT_DIR$/out/build/python-linux-debug" />
-      <configuration PROFILE_NAME="python-linux-release - python-linux-release" ENABLED="false" FROM_PRESET="true" GENERATION_DIR="$PROJECT_DIR$/out/build/python-linux-release" />
-      <configuration PROFILE_NAME="linux-mingw-w64-debug - linux-mingw-w64-debug" ENABLED="false" FROM_PRESET="true" GENERATION_DIR="$PROJECT_DIR$/out/build/linux-mingw-w64-debug" />
-      <configuration PROFILE_NAME="linux-mingw-w64-release - linux-mingw-w64-release" ENABLED="false" FROM_PRESET="true" GENERATION_DIR="$PROJECT_DIR$/out/build/linux-mingw-w64-release" />
     </configurations>
   </component>
   <component name="ChangeListManager">
     <list default="true" id="19727434-f434-4b5f-812a-d482d659f1e2" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/OdbDesignLib/DesignCache.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/OdbDesignLib/DesignCache.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Utils/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Utils/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Utils/Logger.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Utils/Logger.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Utils/Logger.h" beforeDir="false" afterPath="$PROJECT_DIR$/Utils/Logger.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/OdbDesignLib/DesignCache.h" beforeDir="false" afterPath="$PROJECT_DIR$/OdbDesignLib/DesignCache.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/OdbDesignLib/protoc/edadatafile.proto" beforeDir="false" afterPath="$PROJECT_DIR$/OdbDesignLib/protoc/edadatafile.proto" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,21 +49,31 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:x64-debug" />
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitLabDefaultAccount">
+    <option name="defaultAccountId" value="e7db7693-673b-4e12-8e6e-d07d19f5da74" />
+  </component>
+  <component name="GithubDefaultAccount">
+    <option name="defaultAccountId" value="73ce5487-f96b-408d-ace0-0336c203aa8f" />
+  </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectApplicationVersion">
     <option name="ide" value="CLion" />
     <option name="majorVersion" value="2023" />
     <option name="minorVersion" value="3" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "",
-  "associatedIndex": 6
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 6
+}</component>
   <component name="ProjectId" id="2WiNwILbMEy82CzT61CvuOKtM56" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -89,20 +89,47 @@
     "cidr.known.project.marker": "true",
     "git-widget-placeholder": "development",
     "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/vcpkg",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
-    "settings.editor.selected.configurable": "CMakeSettings",
+    "settings.editor.selected.configurable": "reference.settings.ide.settings.new.ui",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RunManager">
-    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
+  <component name="RunManager" selected="CMake Application.OdbDesignServer">
+    <configuration name="OdbDesign" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="OdbDesign" TARGET_NAME="OdbDesign" CONFIG_NAME="x64-debug">
       <method v="2">
-        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
+    <configuration name="OdbDesignApp" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="OdbDesign" TARGET_NAME="OdbDesignApp" CONFIG_NAME="x64-debug" RUN_TARGET_PROJECT_NAME="OdbDesign" RUN_TARGET_NAME="OdbDesignApp">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="OdbDesignServer" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="OdbDesign" TARGET_NAME="OdbDesignServer" CONFIG_NAME="x64-debug" RUN_TARGET_PROJECT_NAME="OdbDesign" RUN_TARGET_NAME="OdbDesignServer">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Utils" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="OdbDesign" TARGET_NAME="Utils" CONFIG_NAME="x64-debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="CMake Application.OdbDesignApp" />
+      <item itemvalue="CMake Application.OdbDesign" />
+      <item itemvalue="CMake Application.OdbDesignServer" />
+      <item itemvalue="CMake Application.Utils" />
+    </list>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -112,7 +139,12 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1697211678944</updated>
-      <workItem from="1697211681503" duration="686000" />
+      <workItem from="1697211681503" duration="1944000" />
+      <workItem from="1697221718280" duration="465000" />
+      <workItem from="1697222193022" duration="886000" />
+      <workItem from="1697223181080" duration="211000" />
+      <workItem from="1697223873285" duration="903000" />
+      <workItem from="1697225267301" duration="1184000" />
     </task>
     <servers />
   </component>
@@ -123,5 +155,16 @@
     <isAutomaticCheckingOnLaunch value="false" />
     <isAutomaticFoundErrors value="true" />
     <isAutomaticReloadCMake value="true" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>
