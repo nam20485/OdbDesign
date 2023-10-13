@@ -57,6 +57,6 @@ namespace Utils
 
 	std::string Logger::logLevelToString(LogLevel level) const
 	{		
-		return LogLevelStrings[(int)level];
+		return LogLevelStrings[static_cast<int>(level)];
 	}
 }
