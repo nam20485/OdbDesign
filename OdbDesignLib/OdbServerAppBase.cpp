@@ -1,40 +1,47 @@
 #include "OdbServerAppBase.h"
 
+
 namespace Odb::Lib
 {
-    OdbServerAppBase::OdbServerAppBase(int argc, char* argv[])
-        : m_designCache("designs")
-        , m_commandLineArgs(argc, argv)
-    {
-    }
+	Odb::Lib::OdbServerAppBase::OdbServerAppBase(int argc, char* argv[])
+		: OdbAppBase(argc, argv)
+	{
+	}
 
-    OdbServerAppBase::~OdbServerAppBase()
-    {
-        m_vecControllers.clear();
-    }
+	Odb::Lib::OdbServerAppBase::~OdbServerAppBase()
+	{
+		m_vecControllers.clear();
+	}
 
-    Utils::ExitCode OdbServerAppBase::Run()
-    {
-        //m_crowApp.loglevel(crow::LogLevel::Debug)
-        m_crowApp.use_compression(crow::compression::algorithm::GZIP);
+	ExitCode Odb::Lib::OdbServerAppBase::Run()
+	{
+		auto result = OdbAppBase::Run();
+		if (result != ExitCode::Success) return result;
 
-        // let subclasses add controller types
-        add_controllers();
+		m_crowApp.use_compression(crow::compression::algorithm::GZIP);
 
-        // register all controllers' routes
-        register_routes();
+		// let subclasses add controller types
+		add_controllers();
 
-        // run the server
-        m_crowApp.port(18080).multithreaded().run();
+		// register all added controllers' routes
+		register_routes();
 
-        return Utils::ExitCode::Success;
-    }
+		// run the server
+		m_crowApp.port(18080).multithreaded().run();
 
-    void OdbServerAppBase::register_routes()
-    {
-        for (const auto& pController : m_vecControllers)
-        {
-            pController->register_routes();
-        }
-    }
+		return ExitCode::Success;
+	}
+
+	crow::SimpleApp& Odb::Lib::OdbServerAppBase::crow_app()
+	{
+		return m_crowApp;
+	}
+
+	void OdbServerAppBase::register_routes()
+	{
+		for (const auto& pController : m_vecControllers)
+		{
+			pController->register_routes();
+		}
+	}
 }
