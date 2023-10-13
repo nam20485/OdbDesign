@@ -3,6 +3,8 @@
 #include "OdbDesignServer.h"
 #include "OdbServerAppBase.h"
 
+using namespace Odb::Lib;
+
 namespace Odb::App::Server
 {
 	class OdbDesignServerApp : public OdbServerAppBase

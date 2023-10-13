@@ -24,8 +24,8 @@ namespace Utils
 		std::string file;
 		int line;
 
-		LogMessage(std::string message, std::string file, int line, LogLevel level)
-			: message(message), file(file), line(line), level(level), timeStamp(std::chrono::system_clock::now())
+		LogMessage(std::string message, LogLevel level, std::string file, int line)
+			: message(message), level(level), timeStamp(std::chrono::system_clock::now()), file(file), line(line)
 		{
 		}
 	};	

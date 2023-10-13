@@ -30,7 +30,7 @@ namespace Odb::App::Server
 
 	void OdbDesignServerApp::add_controllers()
 	{
-		m_vecControllers.push_back(std::make_shared<HelloWorldController>(this));
-		m_vecControllers.push_back(std::make_shared<StepsEdaDataController>(this));
+		m_vecControllers.push_back(std::make_shared<HelloWorldController>(*this));
+		m_vecControllers.push_back(std::make_shared<StepsEdaDataController>(*this));
 	}	
 }

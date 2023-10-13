@@ -11,7 +11,7 @@ namespace Odb::App::Server
 	class StepsEdaDataController : public RouteController
 	{
 	public:
-		StepsEdaDataController(IOdbServerApp* pServerApp);
+		StepsEdaDataController(IOdbServerApp& serverApp);
 
 		void register_routes() override;		
 
