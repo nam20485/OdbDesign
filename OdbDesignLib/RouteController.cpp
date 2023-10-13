@@ -4,8 +4,8 @@
 
 namespace Odb::Lib
 {
-	RouteController::RouteController(IOdbServerApp* pServerApp)
-		: m_pServerApp(pServerApp)
+	RouteController::RouteController(IOdbServerApp& serverApp)
+		: m_serverApp(serverApp)
 	{
 	}
 

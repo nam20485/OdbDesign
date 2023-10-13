@@ -10,8 +10,8 @@ using namespace Utils;
 
 namespace Odb::App::Server
 {
-	StepsEdaDataController::StepsEdaDataController(IOdbServerApp* pServerApp)
-		: RouteController(pServerApp)
+	StepsEdaDataController::StepsEdaDataController(IOdbServerApp& serverApp)
+		: RouteController(serverApp)
 	{
 	}
 
@@ -25,7 +25,7 @@ namespace Odb::App::Server
 		//app.route_dynamic(url)
 
 		// TODO: figure out why capture here is weird (i.e. how to capture pServerApp so it can be used in the member fxn handler)
-		CROW_ROUTE(m_pServerApp->crow_app(), "/steps/eda_data")
+		CROW_ROUTE(m_serverApp.crow_app(), "/steps/eda_data")
 			([&](const crow::request& req)
 				{
 					return this->steps_edadata_route_handler(req);
@@ -52,7 +52,7 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "step name not specified");
 		}
 
-		auto pFileArchive = m_pServerApp->design_cache().GetFileArchive(designName);
+		auto pFileArchive = m_serverApp.design_cache().GetFileArchive(designName);
 		if (pFileArchive == nullptr)
 		{
 			std::stringstream ss;
