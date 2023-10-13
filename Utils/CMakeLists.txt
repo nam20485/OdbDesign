@@ -16,4 +16,4 @@ target_include_directories(Utils
 #target_link_libraries(OdbDesign PUBLIC ${LibArchive_LIBRARIES})
 
 find_package(LibArchive REQUIRED)
-target_link_libraries(Utils PRIVATE LibArchive::LibArchive) # CMake >= 3.17
+target_link_libraries(Utils PRIVATE LibArchive::LibArchive)
