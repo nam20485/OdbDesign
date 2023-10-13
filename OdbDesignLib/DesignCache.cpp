@@ -1,5 +1,6 @@
 #include "DesignCache.h"
 #include <filesystem>
+#include <utility>
 
 
 namespace Odb::Lib
@@ -10,7 +11,7 @@ namespace Odb::Lib
     }
 
     DesignCache::DesignCache(std::string directory) :
-        m_directory(directory)
+        m_directory(std::move(directory))
     {
     }
 
@@ -19,7 +20,7 @@ namespace Odb::Lib
         Clear();
     }
 
-    std::shared_ptr<ProductModel::Design> DesignCache::GetDesign(std::string designName)
+    std::shared_ptr<ProductModel::Design> DesignCache::GetDesign(const std::string& designName)
     {
         auto findIt = m_designsByName.find(designName);
         if (findIt == m_designsByName.end())
@@ -31,7 +32,7 @@ namespace Odb::Lib
         return m_designsByName[designName];
     }
 
-    std::shared_ptr<FileModel::Design::FileArchive> DesignCache::GetFileArchive(std::string designName)
+    std::shared_ptr<FileModel::Design::FileArchive> DesignCache::GetFileArchive(const std::string& designName)
     {
         std::stringstream ss;
         ss << "Retrieving \"" << designName << "\" from cache... " << std::endl;
@@ -53,7 +54,7 @@ namespace Odb::Lib
         m_designsByName.clear();
     }
 
-    std::shared_ptr<ProductModel::Design> DesignCache::LoadDesign(std::string designName)
+    std::shared_ptr<ProductModel::Design> DesignCache::LoadDesign(const std::string& designName)
     {
         std::filesystem::path dir(m_directory);
 
@@ -76,7 +77,7 @@ namespace Odb::Lib
         return nullptr;
     }
 
-    std::shared_ptr<FileModel::Design::FileArchive> DesignCache::LoadFileArchive(std::string designName)
+    std::shared_ptr<FileModel::Design::FileArchive> DesignCache::LoadFileArchive(const std::string& designName)
     {
         std::filesystem::path dir(m_directory);
 
