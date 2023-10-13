@@ -12,13 +12,15 @@ OdbDesign ODB++ parser is differentiated from other offerings by three key featu
 
 ### Performance
 
-OdbDesign is implemented in C++ and is designed and optimized to be fast. Unlike higher-level languages that use interpreters or virtual machines, that means it is compiled into native code for your machine, whether your platform is Windows, Linux, or Mac. The parser is also multi-threaded to take advantage of modern multi-core CPUs.
+OdbDesign is implemented in C++ and is designed and optimized to be fast. Unlike higher-level languages that use interpreters or virtual machines, that means it is compiled into native code for your machine, whether your platform is Windows, Linux, or Mac.
+
+>The parser is also multi-threaded to take advantage of modern multi-core CPUs.
 
 ### Cross-Platform Flexibility
 
 The library itself can run directly on all major platforms (i.e. Windows, Linux, and Mac) and also exposes a REST API so that parsed data can be accessed from any application or programming language that can connect to a REST API. The REST API and library are also exposed via a Docker image that can be run on any platform that supports Docker.
 
-Both options support running the parser on a different machine than the one running the application that needs the parsed data. This allows the parser to be run on a high-performance server or workstation while the application that needs the data runs on a low-power device like a Raspberry Pi, mobile device, or the web.
+>Both options support running the parser on a different machine than the one running the application that needs the parsed data. This allows the parser to be run on a high-performance server or workstation while the application that needs the data runs on a low-power device like a Raspberry Pi, mobile device, or the web.
 
 ### Expertise
 
@@ -41,8 +43,8 @@ The diagram describes the current state of parser implementation and data availa
 > If you are building on Windows and have a modern version of Visual Studio installed then all of the dependencies listed below are already installed on your system (except for maybe Docker). You can skip to the next section.
 
 > If you are building on a Linux system then the dependencies listed below can be installed using your package manager. For example on Ubuntu you can install them (except for vcpkg and Docker) using the following command:
->
-> ```$ sudo apt install git cmake ninja-build build-essential```
+
+`$ sudo apt install git cmake ninja-build build-essential`
 
 * git ([install instructions for your platform](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git))
 * vcpkg ([install instructions for your platform](https://vcpkg.io/en/getting-started.html))
@@ -97,7 +99,9 @@ $ cmake --build --preset linux-release
 
 #### Docker Image for REST API Server
 
-```$ docker build -f Dockerfile_OdbDesignServer . -t odbdesign-server```
+```Bash
+$ docker build -f Dockerfile_OdbDesignServer . -t odbdesign-server
+```
 
 ## Integration
 
@@ -125,7 +129,9 @@ This project is free and open source under the MIT [license](https://github.com/
 
 ## Contact
 
-If you are interested in using the parser in your application or code, or have any questions about it please do not hesitate to contact me. If you need support for integration of the parser into your own product and/or need its feature set extended, I am available for consulting at very reasonable fees.
+If you are interested in using the parser in your application or code, or have any questions about it please do not hesitate to contact me.
+
+>If you need support for integration of the parser into your own product and/or need its feature set extended, I am available for consulting at very reasonable fees.
 
 * [Email me (maintainer)](mailto:nmiller217@gmail.com?subject=OdbDesign)
 * [GitHub](https://github.com/nam20485/odbdesign)
@@ -138,4 +144,4 @@ If you are interested in using the parser in your application or code, or have a
 * [ODB++ Format Documentation & Resources](https://odbplusplus.com/design/our-resources/)
 * [ODB++ Format Specification v8.1 update 3](https://odbplusplus.com//wp-content/uploads/sites/2/2021/02/odb_spec_user.pdf)
 
-*ODB++ is a registered trademark of Siemens and is © Siemens 2021*
+*ODB++ is a registered trademark of Siemens and © Siemens 2021*
