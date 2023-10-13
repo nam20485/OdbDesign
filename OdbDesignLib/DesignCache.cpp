@@ -33,7 +33,9 @@ namespace Odb::Lib
 
     std::shared_ptr<FileModel::Design::FileArchive> DesignCache::GetFileArchive(std::string designName)
     {
-        std::cout << std::format("Retrieving \"{}\" from cache... ", designName) << std::endl;
+        std::stringstream ss;
+        ss << "Retrieving \"" << designName << "\" from cache... " << std::endl;
+        std::cout << ss.str();        
 
         auto findIt = m_fileArchivesByName.find(designName);
         if (findIt == m_fileArchivesByName.end())
