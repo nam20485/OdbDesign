@@ -11,9 +11,5 @@ target_include_directories(Utils
                            $<INSTALL_INTERFACE:include>)
 
 # Link to LibArchive
-#find_package(LibArchive REQUIRED)
-#target_include_directories(OdbDesign PRIVATE ${LibArchive_INCLUDE_DIRS})
-#target_link_libraries(OdbDesign PUBLIC ${LibArchive_LIBRARIES})
-
 find_package(LibArchive REQUIRED)
 target_link_libraries(Utils PRIVATE LibArchive::LibArchive)
