@@ -6,7 +6,11 @@ add_library(OdbDesign SHARED "odbdesign_export.h" "ComponentLayerDirectory.cpp" 
         MatrixFile.h
         MiscInfoFile.cpp
         MiscInfoFile.h
-        constants.h)
+        "Constants.h"
+        AttrListFile.cpp
+        AttrListFile.h
+        SysAttrFile.cpp
+        SysAttrFile.h)
 
 # required for SWIG
 set_property(TARGET OdbDesign PROPERTY POSITION_INDEPENDENT_CODE ON)
