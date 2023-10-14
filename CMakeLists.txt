@@ -63,4 +63,4 @@ target_link_libraries(OdbDesignServer PUBLIC OdbDesign)
 # link to Utils lib in all targets
 #target_link_libraries(OdbDesignApp PUBLIC Utils)
 #target_link_libraries(OdbDesignServer PUBLIC Utils)
-target_link_libraries(OdbDesign PUBLIC Utils)
+#target_link_libraries(OdbDesign PUBLIC Utils)

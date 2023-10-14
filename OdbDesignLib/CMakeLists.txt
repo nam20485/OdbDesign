@@ -21,6 +21,9 @@ target_compile_options(OdbDesign PRIVATE
 # required for SWIG
 set_property(TARGET OdbDesign PROPERTY POSITION_INDEPENDENT_CODE ON)
 
+target_link_libraries(OdbDesign PUBLIC Utils)
+
+
 # state that anybody linking to us needs to include the current source dir, while we don't.
 target_include_directories(OdbDesign
                            INTERFACE
