@@ -28,7 +28,7 @@ namespace Odb::Lib
 
     Utils::ExitCode OdbAppBase::Run()
     {                
-        Logger::instance()->SetLogLevel(Utils::LogLevel::Info);
+        Logger::instance()->logLevel(Utils::LogLevel::Info);
         Logger::instance()->start();
 
         return Utils::ExitCode::Success;
