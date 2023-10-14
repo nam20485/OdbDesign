@@ -3,7 +3,9 @@
 #include "ArchiveExtractor.h"
 #include "MiscInfoFile.h"
 #include <iostream>
+#include "Logger.h"
 
+using namespace Utils;
 
 namespace Odb::Lib::FileModel::Design
 {
@@ -46,22 +48,22 @@ namespace Odb::Lib::FileModel::Design
 		
 			if (std::filesystem::is_directory(path))
 			{
-				std::cout << " - Parsing... ";
+				Logger::instance()->info(" - Parsing... ");
 
 				if (ParseDesignDirectory(path))
 				{
-					std::cout << "success." << std::endl << std::endl;
+					Logger::instance()->info("success.");
 					return true;
 				}
 			}		
 		}		
 		catch (std::filesystem::filesystem_error& fe)
 		{
-			std::cout << fe.what() << std::endl;
+			Logger::instance()->exception(fe);
 		}
 		catch (std::exception& e)
 		{
-			std::cout << e.what() << std::endl;
+			Logger::instance()->exception(e);
 		}
 
 		return false;
@@ -69,7 +71,7 @@ namespace Odb::Lib::FileModel::Design
 
 	bool FileArchive::ExtractDesignArchive(const std::filesystem::path& path, std::filesystem::path& extractedPath)
 	{
-		std::cout << " - Extracting... ";
+		Logger::instance()->info(" - Extracting... ");
 
 		if (!Utils::ArchiveExtractor::IsArchiveTypeSupported(path)) return false;
 
@@ -81,7 +83,7 @@ namespace Odb::Lib::FileModel::Design
 		
 		extractedPath = extracted;
 
-		std::cout << "success." << std::endl;
+		Logger::instance()->info("success.");
 
 		return true;
 				

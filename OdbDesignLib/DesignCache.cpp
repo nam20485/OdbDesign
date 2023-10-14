@@ -1,7 +1,9 @@
 #include "DesignCache.h"
 #include <filesystem>
 #include <utility>
+#include "Logger.h"
 
+using namespace Utils;
 
 namespace Odb::Lib
 {
@@ -36,14 +38,18 @@ namespace Odb::Lib
     {
         std::stringstream ss;
         ss << "Retrieving \"" << designName << "\" from cache... " << std::endl;
-        std::cout << ss.str();        
+        Logger::instance()->info(ss.str());
 
         auto findIt = m_fileArchivesByName.find(designName);
         if (findIt == m_fileArchivesByName.end())
         {
+            Logger::instance()->info(" - Not found. Loading from file... ");
+
             auto pFileArchive = LoadFileArchive(designName);
             return pFileArchive;
         }
+
+        Logger::instance()->info(" - Found. Returning from cache.");
 
         return m_fileArchivesByName[designName];        
     }
