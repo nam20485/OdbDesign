@@ -6,44 +6,49 @@
 
 
 namespace Utils
-{
-	enum class LogLevel
-	{
-		None,
-		Debug,
-		Info,		
-		Warning,	
-		Error,
-	};	
-
-	struct LogMessage
-	{
-		std::string message;		
-		LogLevel level;
-		std::chrono::time_point<std::chrono::system_clock> timeStamp;
-		std::string file;
-		int line;
-
-		LogMessage(std::string message, LogLevel level, std::string file, int line)
-			: message(message), level(level), timeStamp(std::chrono::system_clock::now()), file(file), line(line)
-		{
-		}
-	};	
-
+{	
 	class UTILS_EXPORT Logger// : public WorkQueueLoopThread<struct LogMessage>
 	{
 	public:
+		enum class Level
+		{
+			None,
+			Debug,
+			Info,
+			Warning,
+			Error,
+		};
+
+		struct Message
+		{
+			std::string message;
+			Level level;
+			std::chrono::time_point<std::chrono::system_clock> timeStamp;
+			std::string file;
+			int line;
+
+			Message(std::string message, Level level)
+				: message(message), level(level), timeStamp(std::chrono::system_clock::now()), file(""), line(-1)
+			{
+			}
+
+			Message(std::string message, Level level, std::string file, int line)
+				: message(message), level(level), timeStamp(std::chrono::system_clock::now()), file(file), line(line)
+			{
+			}
+		};
+
 		Logger();
 
 		static Logger* instance();
 
-		LogLevel logLevel() const;
-		void logLevel(LogLevel level);
+		Level logLevel() const;
+		void logLevel(Level level);
 
 		void start();
 		void stop();
 
-		void log(LogLevel level, const std::string& message, const std::string& file = "", int line = -1);
+		void log(Level level, const std::string& message, const std::string& file = "", int line = -1);
 		void error(const std::string& message, const std::string& file = "", int line = -1);
 		void warning(const std::string& message, const std::string& file = "", int line = -1);
 		void info(const std::string& message, const std::string& file = "", int line = -1);
@@ -55,15 +60,15 @@ namespace Utils
 		Logger& operator<<(const T& output);
 
 	private:
-		LogLevel m_level;
+		Level m_level;
 
 		//bool processWorkItem(struct LogMessage& logMessage) override;
-		std::string formatLogMessage(const struct LogMessage& logMessage);
-		bool logMessage(const struct LogMessage& logMessage);
+		std::string formatLogMessage(const struct Message& logMessage);
+		bool logMessage(const struct Message& logMessage);
 
-		WorkQueueLoopThread<struct LogMessage> m_logMessageLoop;
+		WorkQueueLoopThread<struct Message> m_logMessageLoop;
 
-		std::string logLevelToString(LogLevel level) const;
+		std::string logLevelToString(Level level) const;
 
 		const std::string LogLevelStrings[5] = { "None", "Debug", "Info", "WARNING", "ERROR" };
 
@@ -73,7 +78,7 @@ namespace Utils
 	template<class T>
 	inline Logger& Logger::operator<<(const T& output)
 	{
-		log(LogLevel::Info, output);
+		log(Level::Info, output);
 		return *this;
 	}
 }

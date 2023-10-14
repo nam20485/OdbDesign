@@ -4,11 +4,11 @@
 namespace Utils
 {
 	Logger::Logger()		
-		: m_logMessageLoop([&](LogMessage& message)
+		: m_logMessageLoop([&](Message& message)
 			{
 				return logMessage(message);
 			})
-		, m_level(LogLevel::Info)
+		, m_level(Level::Info)
 	{
 	}
 
@@ -23,14 +23,14 @@ namespace Utils
 
 	/*static*/ Logger* Logger::_instance = nullptr;
 
-	inline LogLevel Logger::logLevel() const { return m_level; }
-	inline void Logger::logLevel(LogLevel level) { m_level = level; }
+	inline Logger::Level Logger::logLevel() const { return m_level; }
+	inline void Logger::logLevel(Logger::Level level) { m_level = level; }
 
-	void Logger::log(LogLevel level, const std::string& message, const std::string& file, int line)
+	void Logger::log(Level level, const std::string& message, const std::string& file, int line)
 	{
 		if (level >= m_level)
 		{
-			LogMessage logMessage
+			Message logMessage
 			{
 				message,
 				level,
@@ -44,17 +44,17 @@ namespace Utils
 
 	void Logger::error(const std::string& message, const std::string& file, int line)
 	{
-		log(LogLevel::Error, message, file, line);
+		log(Level::Error, message, file, line);
 	}
 
 	void Logger::warning(const std::string& message, const std::string& file, int line)
 	{
-		log(LogLevel::Warning, message, file, line);
+		log(Level::Warning, message, file, line);
 	}
 
 	void Logger::info(const std::string& message, const std::string& file, int line)
 	{
-		log(LogLevel::Info, message, file, line);
+		log(Level::Info, message, file, line);
 	}
 
 	void Logger::info(const std::stringstream& stream, const std::string& file, int line)
@@ -64,7 +64,7 @@ namespace Utils
 
 	void Logger::debug(const std::string& message, const std::string& file, int line)
 	{
-		log(LogLevel::Debug, message, file, line);
+		log(Level::Debug, message, file, line);
 	}
 
 	void Logger::exception(const std::exception& e, const std::string& file, int line)
@@ -87,7 +87,7 @@ namespace Utils
 	//	return this->logMessage(logMessage);
 	//}
 
-	std::string Logger::formatLogMessage(const LogMessage& logMessage)
+	std::string Logger::formatLogMessage(const Message& logMessage)
 	{
 		std::stringstream ss;
 
@@ -113,7 +113,7 @@ namespace Utils
 		return ss.str();
 	}
 
-	bool Logger::logMessage(const LogMessage& logMessage)
+	bool Logger::logMessage(const Message& logMessage)
 	{
 		auto message = formatLogMessage(logMessage);
 
@@ -126,7 +126,7 @@ namespace Utils
 		return true;
 	}
 
-	std::string Logger::logLevelToString(LogLevel level) const
+	std::string Logger::logLevelToString(Level level) const
 	{		
 		return LogLevelStrings[static_cast<int>(level)];
 	}
