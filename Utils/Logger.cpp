@@ -3,42 +3,99 @@
 
 namespace Utils
 {
-	Logger::Logger()
-		: m_level(LogLevel::Info)
+	Logger::Logger()		
+		: m_logMessageLoop([&](LogMessage& message)
+			{
+				return logMessage(message);
+			})
+		, m_level(LogLevel::Info)
 	{
 	}
 
-	inline LogLevel Logger::GetLogLevel() const { return m_level; }
-	inline void Logger::SetLogLevel(LogLevel level) { m_level = level; }
-
-	void Logger::Log(LogLevel level, const std::string& message, const std::string& file, int line)
+	inline Logger* Logger::instance()
 	{
-	}
-
-	bool Logger::processWorkItem(LogMessage& logMessage)
-	{
-		auto message = formatLogMessage(logMessage);
-
-		std::cout << message << std::endl;
-		if (logMessage.level <= LogLevel::Warning)
+		if (_instance == nullptr)
 		{
-			std::cerr << message << std::endl;
-		}		
-
-		return true;
+			_instance = new Logger();
+		}
+		return _instance;
 	}
+
+	/*static*/ Logger* Logger::_instance = nullptr;
+
+	inline LogLevel Logger::logLevel() const { return m_level; }
+	inline void Logger::logLevel(LogLevel level) { m_level = level; }
+
+	void Logger::log(LogLevel level, const std::string& message, const std::string& file, int line)
+	{
+		if (level >= m_level)
+		{
+			LogMessage logMessage
+			{
+				message,
+				level,
+				file,
+				line
+			};
+
+			m_logMessageLoop.addWorkItem(std::move(logMessage));
+		}				
+	}
+
+	void Logger::error(const std::string& message, const std::string& file, int line)
+	{
+		log(LogLevel::Error, message, file, line);
+	}
+
+	void Logger::warning(const std::string& message, const std::string& file, int line)
+	{
+		log(LogLevel::Warning, message, file, line);
+	}
+
+	void Logger::info(const std::string& message, const std::string& file, int line)
+	{
+		log(LogLevel::Info, message, file, line);
+	}
+
+	void Logger::info(const std::stringstream& stream, const std::string& file, int line)
+	{
+		info(stream.str(), file, line);
+	}
+
+	void Logger::debug(const std::string& message, const std::string& file, int line)
+	{
+		log(LogLevel::Debug, message, file, line);
+	}
+
+	void Logger::exception(const std::exception& e, const std::string& file, int line)
+	{
+		error(e.what(), file, line);
+	}
+
+	void Logger::start()
+	{
+		m_logMessageLoop.startProcessing();
+	}
+
+	void Logger::stop()
+	{
+		m_logMessageLoop.stopProcessing();
+	}
+
+	//bool Logger::processWorkItem(LogMessage& logMessage)
+	//{
+	//	return this->logMessage(logMessage);
+	//}
 
 	std::string Logger::formatLogMessage(const LogMessage& logMessage)
 	{
 		std::stringstream ss;
 
 		ss << "["
-			<< logMessage.timeStamp.time_since_epoch().count()
-			<< "]"
+			<< logMessage.timeStamp			
 			<< " "
-			<< logLevelToString(logMessage.level)
-			<< " "
-			<< "-";
+			<< logLevelToString(logMessage.level)			
+			<< "]";
 
 		if (logMessage.file != "" &&
 			logMessage.line != -1)
@@ -49,10 +106,24 @@ namespace Utils
 				<< logMessage.line;
 		}
 		
-		ss << " " 
-			<< logMessage.message;
+		ss << " "
+			<< logMessage.message
+			<< std::endl;
 
 		return ss.str();
+	}
+
+	bool Logger::logMessage(const LogMessage& logMessage)
+	{
+		auto message = formatLogMessage(logMessage);
+
+		std::cout << message;
+		//if (logMessage.level >= LogLevel::Warning)
+		//{
+		//	std::cerr << message;
+		//}
+
+		return true;
 	}
 
 	std::string Logger::logLevelToString(LogLevel level) const

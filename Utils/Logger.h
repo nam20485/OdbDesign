@@ -10,11 +10,11 @@ namespace Utils
 	enum class LogLevel
 	{
 		None,
-		Error,
-		Warning,
-		Info,
 		Debug,
-	};
+		Info,		
+		Warning,	
+		Error,
+	};	
 
 	struct LogMessage
 	{
@@ -30,25 +30,52 @@ namespace Utils
 		}
 	};	
 
-	class UTILS_EXPORT Logger : public WorkQueueLoopThread<struct LogMessage>
+	class UTILS_EXPORT Logger// : public WorkQueueLoopThread<struct LogMessage>
 	{
 	public:
 		Logger();
 
-		LogLevel GetLogLevel() const;
-		void SetLogLevel(LogLevel level);
+		static Logger* instance();
 
-		void Log(LogLevel level, const std::string& message, const std::string& file = "", int line = -1);
+		LogLevel logLevel() const;
+		void logLevel(LogLevel level);
+
+		void start();
+		void stop();
+
+		void log(LogLevel level, const std::string& message, const std::string& file = "", int line = -1);
+		void error(const std::string& message, const std::string& file = "", int line = -1);
+		void warning(const std::string& message, const std::string& file = "", int line = -1);
+		void info(const std::string& message, const std::string& file = "", int line = -1);
+		void info(const std::stringstream& message, const std::string& file = "", int line = -1);
+		void debug(const std::string& message, const std::string& file = "", int line = -1);
+		void exception(const std::exception& e, const std::string& file = "", int line = -1);
+
+		template<class T>
+		Logger& operator<<(const T& output);
 
 	private:
 		LogLevel m_level;
 
-		bool processWorkItem(struct LogMessage& logMessage) override;
+		//bool processWorkItem(struct LogMessage& logMessage) override;
 		std::string formatLogMessage(const struct LogMessage& logMessage);
+		bool logMessage(const struct LogMessage& logMessage);
+
+		WorkQueueLoopThread<struct LogMessage> m_logMessageLoop;
 
 		std::string logLevelToString(LogLevel level) const;
 
-		const std::string LogLevelStrings[5] = { "None", "Error", "Warning", "Info", "Debug" };
+		const std::string LogLevelStrings[5] = { "None", "Debug", "Info", "WARNING", "ERROR" };
 
+		static Logger* _instance;
 	};
+
+	//static Logger g_Logger;
+
+	template<class T>
+	inline Logger& Logger::operator<<(const T& output)
+	{
+		log(LogLevel::Info, output);
+		return *this;
+	}
 }
