@@ -68,9 +68,7 @@ namespace Utils
 		const std::string LogLevelStrings[5] = { "None", "Debug", "Info", "WARNING", "ERROR" };
 
 		static Logger* _instance;
-	};
-
-	//static Logger g_Logger;
+	};	
 
 	template<class T>
 	inline Logger& Logger::operator<<(const T& output)
