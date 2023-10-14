@@ -20,7 +20,7 @@ namespace Odb::Lib
 		virtual void from_protobuf(const TPbMessage& message) = 0;
 
 		// Inherited via IJsonConvertable
-		std::string to_json() const;		
+		std::string to_json() const override;
 		void from_json(const std::string& json) override;		
 				
 	protected:
