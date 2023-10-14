@@ -35,8 +35,11 @@ namespace Odb::Lib::FileModel::Design
                 }
                 else
                 {
+                    return false;
                 }
             }
         }
+
+        return true;
 	}
 }

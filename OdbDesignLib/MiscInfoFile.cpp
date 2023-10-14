@@ -111,6 +111,8 @@ namespace Odb::Lib::FileModel::Design
                 }
             }
         }
+
+        return true;
     }
 
     std::string MiscInfoFile::GetProductModelName() const
