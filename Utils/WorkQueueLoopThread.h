@@ -18,7 +18,7 @@ namespace Utils
     public:
         typedef std::function<bool(TWorkItem&)> processWorkItemFunc;
 
-        //WorkQueueLoopThread();
+        WorkQueueLoopThread();
         explicit WorkQueueLoopThread(processWorkItemFunc processWorkItemProc);
 
         void addWorkItem(TWorkItem&& workItem);
@@ -49,11 +49,11 @@ namespace Utils
     }
 
 
-    //template<typename TWorkItem>
-    //inline WorkQueueLoopThread<TWorkItem>::WorkQueueLoopThread()
-    //    : _stopProcessingWorkItemsFlag(false)
-    //{
-    //}
+    template<typename TWorkItem>
+    inline WorkQueueLoopThread<TWorkItem>::WorkQueueLoopThread()
+        : WorkQueueLoopThread(nullptr)
+    {
+    }
 
     template<typename TWorkItem>
     WorkQueueLoopThread<TWorkItem>::WorkQueueLoopThread(WorkQueueLoopThread::processWorkItemFunc processWorkItemProc)
