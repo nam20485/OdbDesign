@@ -7,7 +7,8 @@ namespace Odb::Lib::FileModel
         return m_path;
     }
 
-    bool OdbFile::Parse(std::filesystem::path path) {
+    bool OdbFile::Parse(std::filesystem::path path)
+    {
         m_path = path;
         if (!std::filesystem::exists(m_path)) return false;
 
