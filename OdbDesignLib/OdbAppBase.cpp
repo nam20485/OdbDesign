@@ -1,6 +1,8 @@
 #include "OdbServerAppBase.h"
 #include "Logger.h"
 
+using namespace Utils;
+
 namespace Odb::Lib
 {
     OdbAppBase::OdbAppBase(int argc, char* argv[])
@@ -28,7 +30,7 @@ namespace Odb::Lib
 
     Utils::ExitCode OdbAppBase::Run()
     {                
-        Logger::instance()->logLevel(Utils::LogLevel::Info);
+        Logger::instance()->logLevel(Logger::Level::Info);
         Logger::instance()->start();
 
         return Utils::ExitCode::Success;
