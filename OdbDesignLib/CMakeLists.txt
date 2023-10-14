@@ -12,6 +12,12 @@ add_library(OdbDesign SHARED "odbdesign_export.h" "ComponentLayerDirectory.cpp" 
         SysAttrFile.cpp
         SysAttrFile.h)
 
+target_compile_options(OdbDesign PRIVATE
+    $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>:
+        -Wall>
+    $<$<CXX_COMPILER_ID:MSVC>:
+        /wd4250>)
+
 # required for SWIG
 set_property(TARGET OdbDesign PROPERTY POSITION_INDEPENDENT_CODE ON)
 
