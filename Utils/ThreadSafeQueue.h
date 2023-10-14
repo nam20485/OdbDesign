@@ -113,7 +113,7 @@ namespace Utils
 
             _queue.push(item);
 
-            ss.clear();
+            ss.str(""); // clear the stream out
             ss << "[ThreadSafeQueue<TResults>::push] item pushed, _queue.size(): " << _queue.size();
             logInternal(ss.str());
         }
