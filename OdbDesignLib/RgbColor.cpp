@@ -10,7 +10,7 @@ namespace Odb::Lib::FileModel::Design
     {
     }
 
-    inline RgbColor::RgbColor(const std::string& str)
+    RgbColor::RgbColor(const std::string& str)
         : RgbColor()
     {
         from_string(str);
