@@ -24,7 +24,7 @@ list(REMOVE_ITEM _CROW_ICD "_CROW_ICD-NOTFOUND")
 set_target_properties(Crow::Crow PROPERTIES INTERFACE_COMPILE_DEFINITIONS "${_CROW_ICD}")
 
 # link to OdbDesign library
-target_link_libraries(OdbDesignServer PUBLIC OdbDesign)
+target_link_libraries(OdbDesignServer PRIVATE OdbDesign)
 
 if (NOT CI)
     # TODO: add POST_BUILD commands for Linux (dest. directory will be ${CMAKE_CURRENT_BINARY_DIR})
