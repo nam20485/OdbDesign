@@ -1,4 +1,6 @@
 #include "Logger.h"
+#include <iostream>
+#include "timestamp.h"
 
 
 namespace Utils
@@ -92,7 +94,9 @@ namespace Utils
 		std::stringstream ss;
 
 		ss << "["
-			<< logMessage.timeStamp			
+			//<< std::format("", logMessage.timeStamp)
+			//<< logMessage.timeStamp.
+			<< make_timestamp(logMessage.timeStamp)
 			<< " "
 			<< logLevelToString(logMessage.level)			
 			<< "]";

@@ -8,6 +8,7 @@
 #include <sstream>
 #include "str_trim.h"
 #include "Constants.h"
+#include "timestamp.h"
 
 namespace Odb::Lib::FileModel::Design
 {
@@ -76,13 +77,15 @@ namespace Odb::Lib::FileModel::Design
                     {
                         std::istringstream iss(value);
                         // yyyymmdd.hhmmss
-                        iss >> std::chrono::parse("%Y%m%d.%H%M%S", m_creationDateDate);
+                        //iss >> std::chrono::parse("%Y%m%d.%H%M%S", m_creationDateDate);
+                        m_creationDateDate = Utils::parse_timestamp(value);
                     }
                     else if (attribute == "save_date" ||
                              attribute == "SAVE_DATE")
                     {
-                        // yyyymmdd.hhmmss
-                        std::istringstream(value) >> std::chrono::parse("%Y%m%d.%H%M%S", m_saveDate);
+                        // yyyymmdd.hhmmss                        
+                        //std::istringstream(value) >> std::chrono::parse("%Y%m%d.%H%M%S", m_saveDate);
+                        m_saveDate = Utils::parse_timestamp(value);
                     }
                     else if (attribute == "save_app" ||
                              attribute == "SAVE_APP")

@@ -4,6 +4,8 @@
 #include <chrono>
 #include "utils_export.h"
 
+using namespace std::chrono;
+
 
 namespace Utils
 {	
@@ -23,7 +25,7 @@ namespace Utils
 		{
 			std::string message;
 			Level level;
-			std::chrono::time_point<std::chrono::system_clock> timeStamp;
+			system_clock::time_point timeStamp;
 			std::string file;
 			int line;
 
