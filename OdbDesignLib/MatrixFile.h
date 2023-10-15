@@ -22,7 +22,7 @@ namespace Odb::Lib::FileModel::Design
         struct StepRecord
         {
             unsigned int column;
-            unsigned int id;
+            unsigned int id = (unsigned int) -1;
             std::string name;
 
             typedef std::vector<std::shared_ptr<StepRecord>> Vector;	
@@ -83,18 +83,18 @@ namespace Odb::Lib::FileModel::Design
             Type type;
             std::string name;
             Polarity polarity;
-            DielectricType dielectricType;
+            DielectricType dielectricType = DielectricType::None;
             std::string dielectricName;
-            Form form;
-            unsigned int cuTop;
-            unsigned int cuBottom;
-            unsigned int ref;
+            Form form = Form::Rigid;
+            unsigned int cuTop = (unsigned int) -1;
+            unsigned int cuBottom = (unsigned int) -1;
+            unsigned int ref = (unsigned int) -1;
             std::string startName;
             std::string endName;
             std::string oldName;
             std::string addType;
-            RgbColor color;
-            unsigned int id;
+            RgbColor color{"0"};
+            unsigned int id = (unsigned int) -1;
 
             inline static const char* RECORD_TOKEN = "LAYER";
 
