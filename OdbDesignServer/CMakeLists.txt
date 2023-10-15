@@ -18,6 +18,11 @@ add_compile_definitions(CROW_ENABLE_COMPRESSION)
 find_package(Crow CONFIG REQUIRED)
 target_link_libraries(OdbDesignServer PRIVATE Crow::Crow)
 
+# workaround to remove error: "C++ command-line error: invalid macro definition: _CROW_ICD-NOTFOUND"
+# (see https://github.com/CrowCpp/Crow/issues/661#issuecomment-1702544225)
+list(REMOVE_ITEM _CROW_ICD "_CROW_ICD-NOTFOUND")
+set_target_properties(Crow::Crow PROPERTIES INTERFACE_COMPILE_DEFINITIONS "${_CROW_ICD}")
+
 # link to OdbDesign library
 target_link_libraries(OdbDesignServer PUBLIC OdbDesign)
 
