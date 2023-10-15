@@ -7,7 +7,7 @@
 #include <string>
 #include <sstream>
 #include "str_trim.h"
-#include "constants.h"
+#include "Constants.h"
 
 namespace Odb::Lib::FileModel::Design
 {
