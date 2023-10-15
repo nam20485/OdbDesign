@@ -48,12 +48,16 @@ namespace Odb::Lib::FileModel::Design
 		
 			if (std::filesystem::is_directory(path))
 			{
-				Logger::instance()->info(" - Parsing... ");
+				Logger::instance()->info("Parsing... ");
 
 				if (ParseDesignDirectory(path))
 				{
-					Logger::instance()->info("success.");
+					Logger::instance()->info("Successfully parsed.");
 					return true;
+				}
+				else
+				{
+					Logger::instance()->info("Parsing failed.");
 				}
 			}		
 		}		
@@ -71,7 +75,7 @@ namespace Odb::Lib::FileModel::Design
 
 	bool FileArchive::ExtractDesignArchive(const std::filesystem::path& path, std::filesystem::path& extractedPath)
 	{
-		Logger::instance()->info(" - Extracting... ");
+		Logger::instance()->info("Extracting... ");
 
 		if (!Utils::ArchiveExtractor::IsArchiveTypeSupported(path)) return false;
 
@@ -83,7 +87,7 @@ namespace Odb::Lib::FileModel::Design
 		
 		extractedPath = extracted;
 
-		Logger::instance()->info("success.");
+		Logger::instance()->info("Successfully extracted.");
 
 		return true;
 				
@@ -134,7 +138,7 @@ namespace Odb::Lib::FileModel::Design
 	{
 		auto matrixDir = path / "matrix";
 		if (!std::filesystem::exists(matrixDir)) return false;
-		if (!std::filesystem::is_regular_file(matrixDir)) return false;
+		if (!std::filesystem::is_directory(matrixDir)) return false;
 
 		if (!m_matrixFile.Parse(matrixDir)) return false;
 
