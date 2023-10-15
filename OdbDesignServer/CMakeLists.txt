@@ -3,6 +3,12 @@
 
 add_executable(OdbDesignServer "main.cpp"   "Controllers/HelloWorldController.h" "Controllers/HelloWorldController.cpp"     "OdbDesignServerApp.h" "OdbDesignServerApp.cpp" "Controllers/StepsEdaDataController.cpp" "Controllers/StepsEdaDataController.h" "OdbDesignServer.h"   )
 
+target_compile_options(OdbDesignServer PRIVATE
+    $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>:
+        -Wall>
+    $<$<CXX_COMPILER_ID:MSVC>:
+        /wd4250>)
+
 # link to zlib (required for Crow HTTP compression)
 find_package(ZLIB REQUIRED)
 target_link_libraries(OdbDesignServer PRIVATE ZLIB::ZLIB)
