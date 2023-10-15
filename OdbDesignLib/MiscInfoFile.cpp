@@ -9,6 +9,7 @@
 #include "str_trim.h"
 #include "Constants.h"
 #include "timestamp.h"
+#include "Logger.h"
 
 namespace Odb::Lib::FileModel::Design
 {
@@ -75,17 +76,32 @@ namespace Odb::Lib::FileModel::Design
                     else if (attribute == "creation_date" ||
                              attribute == "CREATION_DATE")
                     {
-                        std::istringstream iss(value);
-                        // yyyymmdd.hhmmss
+                        //std::istringstream iss(value);
+                        //// yyyymmdd.hhmmss
                         //iss >> std::chrono::parse("%Y%m%d.%H%M%S", m_creationDateDate);
-                        m_creationDateDate = Utils::parse_timestamp(value);
+                        m_creationDateDate = Utils::parse_timestamp(value, "%Y%m%d.%H%M%S");
+
+#if defined(_DEBUG)
+
+                        auto createdDate = Utils::make_timestamp(m_creationDateDate);
+                        std::stringstream ss;
+                        ss << "value: " << value << ", parsed createdDate: " << createdDate;
+                        Utils::Logger::instance()->info(ss.str());
+#endif // _DEBUG
                     }
                     else if (attribute == "save_date" ||
                              attribute == "SAVE_DATE")
                     {
-                        // yyyymmdd.hhmmss                        
+                        //// yyyymmdd.hhmmss                        
                         //std::istringstream(value) >> std::chrono::parse("%Y%m%d.%H%M%S", m_saveDate);
-                        m_saveDate = Utils::parse_timestamp(value);
+                        m_saveDate = Utils::parse_timestamp(value, "%Y%m%d.%H%M%S");
+#if defined(_DEBUG)
+                        auto saveDate = Utils::make_timestamp(m_saveDate);
+
+                        std::stringstream ss;
+                        ss << "value: " << value << ", parsed saveDate: " << saveDate;
+                        Utils::Logger::instance()->info(ss.str());
+#endif // _DEBUG                                                
                     }
                     else if (attribute == "save_app" ||
                              attribute == "SAVE_APP")
