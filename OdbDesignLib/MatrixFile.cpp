@@ -7,6 +7,7 @@
 #include "str_trim.h"
 #include <string>
 #include "Constants.h"
+#include <sstream>
 
 namespace Odb::Lib::FileModel::Design
 {
@@ -37,7 +38,7 @@ namespace Odb::Lib::FileModel::Design
                 {
                     // comment line
                 }
-                else if (line.find(StepRecord::RECORD_TOKEN))
+                else if (line.find(StepRecord::RECORD_TOKEN) == 0)
                 {
                     std::string token;
                     if (!(lineStream >> token)) return false;
@@ -58,7 +59,7 @@ namespace Odb::Lib::FileModel::Design
                         }
                     }
                 }
-                else if (line.find(LayerRecord::RECORD_TOKEN))
+                else if (line.find(LayerRecord::RECORD_TOKEN) == 0)
                 {
                     std::string token;
                     if (!(lineStream >> token)) return false;
@@ -123,217 +124,218 @@ namespace Odb::Lib::FileModel::Design
                     std::string value;
 
                     if (!std::getline(lineStream, attribute, '=')) return false;
-                    if (!std::getline(lineStream, value)) return false;
-
-                    Utils::str_trim(attribute);
-                    Utils::str_trim(value);
-
-                    if (pCurrentStepRecord != nullptr && openBraceFound)
+                    if (std::getline(lineStream, value))
                     {
-                        if (attribute == "COL" || attribute == "col")
+                        Utils::str_trim(attribute);
+                        Utils::str_trim(value);
+
+                        if (pCurrentStepRecord != nullptr && openBraceFound)
                         {
-                            pCurrentStepRecord->column = std::stoi(value);
+                            if (attribute == "COL" || attribute == "col")
+                            {
+                                pCurrentStepRecord->column = std::stoi(value);
+                            }
+                            else if (attribute == "NAME" || attribute == "name")
+                            {
+                                pCurrentStepRecord->name = value;
+                            }
+                            else if (attribute == "ID" || attribute == "id")
+                            {
+                                pCurrentStepRecord->id = (unsigned int)std::stoul(value);
+                            }
+                            else
+                            {
+                                return false;
+                            }
                         }
-                        else if (attribute == "NAME" || attribute == "name")
+                        else if (pCurrentLayerRecord != nullptr && openBraceFound)
                         {
-                            pCurrentStepRecord->name = value;
-                        }
-                        else if (attribute == "ID" || attribute == "id")
-                        {
-                            pCurrentStepRecord->id = (unsigned int) std::stoul(value);
+                            if (attribute == "ROW" || attribute == "row")
+                            {
+                                pCurrentLayerRecord->row = std::stoi(value);                                
+                            }
+                            else if (attribute == "NAME" || attribute == "name")
+                            {
+                                pCurrentLayerRecord->name = value;
+                            }
+                            else if (attribute == "ID" || attribute == "id")
+                            {
+                                pCurrentLayerRecord->id = (unsigned int)std::stoul(value);
+                            }
+                            else if (attribute == "TYPE" || attribute == "type")
+                            {
+                                if (value == "SIGNAL")
+                                {
+                                    pCurrentLayerRecord->type = LayerRecord::Type::Signal;
+                                }
+                                else if (value == "POWER_GROUND")
+                                {
+                                    pCurrentLayerRecord->type = LayerRecord::Type::PowerGround;
+                                }
+                                else if (value == "DIELECTRIC")
+                                {
+                                    pCurrentLayerRecord->type = LayerRecord::Type::Dielectric;
+                                }
+                                else if (value == "MIXED")
+                                {
+                                    pCurrentLayerRecord->type = LayerRecord::Type::Mixed;
+                                }
+                                else if (value == "SOLDER_MASK")
+                                {
+                                    pCurrentLayerRecord->type = LayerRecord::Type::SolderMask;
+                                }
+                                else if (value == "SOLDER_PASTE")
+                                {
+                                    pCurrentLayerRecord->type = LayerRecord::Type::SolderPaste;
+                                }
+                                else if (value == "SILK_SCREEN")
+                                {
+                                    pCurrentLayerRecord->type = LayerRecord::Type::SilkScreen;
+                                }
+                                else if (value == "DRILL")
+                                {
+                                    pCurrentLayerRecord->type = LayerRecord::Type::Drill;
+                                }
+                                else if (value == "ROUT")
+                                {
+                                    pCurrentLayerRecord->type = LayerRecord::Type::Rout;
+                                }
+                                else if (value == "DOCUMENT")
+                                {
+                                    pCurrentLayerRecord->type = LayerRecord::Type::Document;
+                                }
+                                else if (value == "COMPONENT")
+                                {
+                                    pCurrentLayerRecord->type = LayerRecord::Type::Component;
+                                }
+                                else if (value == "MASK")
+                                {
+                                    pCurrentLayerRecord->type = LayerRecord::Type::Mask;
+                                }
+                                else if (value == "CONDUCTIVE_PASTE")
+                                {
+                                    pCurrentLayerRecord->type = LayerRecord::Type::ConductivePaste;
+                                }
+                                else
+                                {
+                                    return false;
+                                }
+                            }
+                            else if (attribute == "CONTEXT" || attribute == "context")
+                            {
+                                if (value == "BOARD")
+                                {
+                                    pCurrentLayerRecord->context = LayerRecord::Context::Board;
+                                }
+                                else if (value == "MISC")
+                                {
+                                    pCurrentLayerRecord->context = LayerRecord::Context::Misc;
+                                }
+                                else
+                                {
+                                    return false;
+                                }
+                            }
+                            else if (attribute == "OLD_NAME" || attribute == "old_name")
+                            {
+                                pCurrentLayerRecord->oldName = value;
+                            }
+                            else if (attribute == "POLARITY" || attribute == "polarity")
+                            {
+                                if (value == "POSITIVE")
+                                {
+                                    pCurrentLayerRecord->polarity = LayerRecord::Polarity::Positive;
+                                }
+                                else if (value == "NEGATIVE")
+                                {
+                                    pCurrentLayerRecord->polarity = LayerRecord::Polarity::Negative;
+                                }
+                                else
+                                {
+                                    return false;
+                                }
+                            }
+                            else if (attribute == "DIELECTRIC_TYPE" || attribute == "dielectric_type")
+                            {
+                                if (value == "NONE")
+                                {
+                                    pCurrentLayerRecord->dielectricType = LayerRecord::DielectricType::None;
+                                }
+                                else if (value == "PREPREG")
+                                {
+                                    pCurrentLayerRecord->dielectricType = LayerRecord::DielectricType::Prepreg;
+                                }
+                                else if (value == "CORE")
+                                {
+                                    pCurrentLayerRecord->dielectricType = LayerRecord::DielectricType::Core;
+                                }
+                                else
+                                {
+                                    return false;
+                                }
+                            }
+                            else if (attribute == "DIELECTRIC_NAME" || attribute == "dielectric_name")
+                            {
+                                pCurrentLayerRecord->dielectricName = value;
+                            }
+                            else if (attribute == "FORM" || attribute == "form")
+                            {
+                                if (value == "RIGID")
+                                {
+                                    pCurrentLayerRecord->form = LayerRecord::Form::Rigid;
+                                }
+                                else if (value == "FLEX")
+                                {
+                                    pCurrentLayerRecord->form = LayerRecord::Form::Flex;
+                                }
+                                else
+                                {
+                                    return false;
+                                }
+                            }
+                            else if (attribute == "CU_TOP" || attribute == "cu_top")
+                            {
+                                pCurrentLayerRecord->cuTop = std::stoul(value);
+                            }
+                            else if (attribute == "CU_TOP" || attribute == "cu_top")
+                            {
+                                pCurrentLayerRecord->cuTop = std::stoul(value);
+                            }
+                            else if (attribute == "CU_BOTTOM" || attribute == "cu_bottom")
+                            {
+                                pCurrentLayerRecord->cuBottom = std::stoul(value);
+                            }
+                            else if (attribute == "REF" || attribute == "ref")
+                            {
+                                pCurrentLayerRecord->ref = std::stoul(value);
+                            }
+                            else if (attribute == "START_NAME" || attribute == "start_name")
+                            {
+                                pCurrentLayerRecord->startName = value;
+                            }
+                            else if (attribute == "END_NAME" || attribute == "end_name")
+                            {
+                                pCurrentLayerRecord->endName = value;
+                            }
+                            else if (attribute == "ADD_TYPE" || attribute == "add_type")
+                            {
+                                pCurrentLayerRecord->addType = value;
+                            }
+                            else if (attribute == "COLOR" || attribute == "color")
+                            {
+                                if (!pCurrentLayerRecord->color.from_string(value)) return false;
+                            }
+                            else
+                            {
+                                return false;
+                            }
                         }
                         else
                         {
+                            // found a name-value pair but aren't currently parsing a step or layer array record
                             return false;
                         }
                     }
-					else if (pCurrentLayerRecord != nullptr && openBraceFound)
-					{
-                        if (attribute == "ROW" || attribute == "row")
-                        {
-                            pCurrentLayerRecord->row = std::stoi(value);
-                        }
-                        else if (attribute == "NAME" || attribute == "name")
-                        {
-                            pCurrentLayerRecord->name = value;
-                        }
-                        else if (attribute == "ID" || attribute == "id")
-                        {
-                            pCurrentLayerRecord->id = (unsigned int)std::stoul(value);
-                        }
-                        else if (attribute == "TYPE" || attribute == "type")
-                        {
-                            if (value == "SIGNAL")
-                            {
-                                pCurrentLayerRecord->type = LayerRecord::Type::Signal;
-                            }
-                            else if (value == "POWER_GROUND")
-                            {
-                                pCurrentLayerRecord->type = LayerRecord::Type::PowerGround;
-							}
-							else if (value == "DIELECTRIC")
-							{
-								pCurrentLayerRecord->type = LayerRecord::Type::Dielectric;
-							}
-							else if (value == "MIXED")
-							{
-								pCurrentLayerRecord->type = LayerRecord::Type::Mixed;
-							}
-							else if (value == "SOLDE_RMASK")
-							{
-								pCurrentLayerRecord->type = LayerRecord::Type::SolderMask;
-							}
-							else if (value == "SOLDER_PASTE")
-							{
-								pCurrentLayerRecord->type = LayerRecord::Type::SolderPaste;
-							}
-							else if (value == "SILK_SCREEN")
-							{
-								pCurrentLayerRecord->type = LayerRecord::Type::SilkScreen;
-							}
-							else if (value == "DRILL")
-							{
-								pCurrentLayerRecord->type = LayerRecord::Type::Drill;
-							}
-							else if (value == "ROUT")
-							{
-								pCurrentLayerRecord->type = LayerRecord::Type::Rout;
-							}
-							else if (value == "DOCUMENT")
-							{
-								pCurrentLayerRecord->type = LayerRecord::Type::Document;
-							}
-							else if (value == "COMPONENT")
-							{
-								pCurrentLayerRecord->type = LayerRecord::Type::Component;
-							}
-							else if (value == "MASK")
-							{
-								pCurrentLayerRecord->type = LayerRecord::Type::Mask;
-							}
-                            else if (value == "CONDUCTIVE_PASTE")
-                            {
-                                pCurrentLayerRecord->type = LayerRecord::Type::ConductivePaste;
-                            }
-                            else
-                            {
-                                return false;
-                            }
-                        }
-                        else if (attribute == "CONTEXT" || attribute == "context")
-                        {
-                            if (value == "BOARD")
-                            {
-                                pCurrentLayerRecord->context = LayerRecord::Context::Board;
-                            }
-                            else if (value == "MISC")
-                            {
-                                pCurrentLayerRecord->context = LayerRecord::Context::Misc;
-                            }
-                            else
-                            {
-                                return false;
-                            }
-                        }
-                        else if (attribute == "OLD_NAME" || attribute == "old_name")
-                        {
-                            pCurrentLayerRecord->oldName = value;
-                        }
-                        else if (attribute == "POLARITY" || attribute == "polarity")
-                        {
-                            if (value == "POSITIVE")
-                            {
-                                pCurrentLayerRecord->polarity = LayerRecord::Polarity::Positive;
-                            }
-                            else if (value == "NEGATIVE")
-                            {
-                                pCurrentLayerRecord->polarity = LayerRecord::Polarity::Negative;
-                            }
-                            else
-                            {
-                                return false;
-                            }
-                        }
-                        else if (attribute == "DIELECTRIC_TYPE" || attribute == "dielectric_type")
-                        {
-                            if (value == "NONE")
-                            {
-								pCurrentLayerRecord->dielectricType = LayerRecord::DielectricType::None;
-							}
-                            else if (value == "PREPREG")
-                            {
-								pCurrentLayerRecord->dielectricType = LayerRecord::DielectricType::Prepreg;
-							}
-                            else if (value == "CORE")
-                            {
-								pCurrentLayerRecord->dielectricType = LayerRecord::DielectricType::Core;
-							}
-                            else
-                            {
-								return false;
-							}
-                        }
-                        else if (attribute == "DIELECTRIC_NAME" || attribute == "dielectric_name")
-                        {
-                            pCurrentLayerRecord->dielectricName = value;
-                        }
-                        else if (attribute == "FORM" || attribute == "form")
-                        {
-                            if (value == "RIGID")
-                            {
-                                pCurrentLayerRecord->form = LayerRecord::Form::Rigid;
-                            }
-                            else if (value == "FLEX")
-                            {
-								pCurrentLayerRecord->form = LayerRecord::Form::Flex;
-							}
-                            else
-                            {
-								return false;
-							}
-                        }
-                        else if (attribute == "CU_TOP" || attribute == "cu_top")
-                        {
-                            pCurrentLayerRecord->cuTop = std::stoul(value);
-                        }
-                        else if (attribute == "CU_TOP" || attribute == "cu_top")
-                        {
-                            pCurrentLayerRecord->cuTop = std::stoul(value);
-                        }
-                        else if (attribute == "CU_BOTTOM" || attribute == "cu_bottom")
-                        {
-							pCurrentLayerRecord->cuBottom = std::stoul(value);
-						}
-                        else if (attribute == "REF" || attribute == "ref")
-                        {
-                            pCurrentLayerRecord->ref = std::stoul(value);
-                        }
-                        else if (attribute == "START_NAME" || attribute == "start_name")
-                        {
-                            pCurrentLayerRecord->startName = value;
-                        }
-                        else if (attribute == "END_NAME" || attribute == "end_name")
-                        {
-                            pCurrentLayerRecord->endName = value;
-                        }
-                        else if (attribute == "ADD_TYPE" || attribute == "add_type")
-                        {
-                            pCurrentLayerRecord->addType = value;
-                        }
-                        else if (attribute == "COLOR" || attribute == "color")
-                        {
-                            if (!pCurrentLayerRecord->color.from_string(value)) return false;
-                        }
-                        else
-                        {
-                            return false;
-                        }
-					}
-                    else
-                    {
-                        // found a name-value pair but aren't currently parsing a step or layer array record
-                        return false;
-                    }                    
                 }
             }
         }
