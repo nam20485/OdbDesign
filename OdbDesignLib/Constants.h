@@ -15,5 +15,3 @@ namespace Odb::Lib::FileModel::Design
 
     };
 }
-
-#endif //ODBDESIGN_CONSTANTS_H
