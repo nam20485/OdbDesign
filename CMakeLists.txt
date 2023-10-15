@@ -3,6 +3,8 @@
 #
 cmake_minimum_required(VERSION 3.21)
 
+project ("OdbDesign")
+
 # require C++0x17 compiler
 set(MY_CXX_STANDARD 17)
 set(CXX_STANDARD ${MY_CXX_STANDARD})
@@ -12,16 +14,21 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # required for SWIG python wrapper
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-## treat warnings as errors (https://cmake.org/cmake/help/latest/variable/CMAKE_COMPILE_WARNING_AS_ERROR.html#variable:CMAKE_COMPILE_WARNING_AS_ERROR)
-#set(CMAKE_COMPILE_WARNING_AS_ERROR True)
+# GoogleTest support
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+  URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
+)
+# For Windows: Prevent overriding the parent project's compiler/linker settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
 
 # Enable Hot Reload for MSVC compilers if supported.
 if (POLICY CMP0141)
   cmake_policy(SET CMP0141 NEW)
   set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
 endif()
-
-project ("OdbDesign")
 
 if (MSVC)
     # control where the static and shared libraries are built so that on windows
@@ -30,6 +37,9 @@ if (MSVC)
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
 endif()
+
+## treat warnings as errors (https://cmake.org/cmake/help/latest/variable/CMAKE_COMPILE_WARNING_AS_ERROR.html#variable:CMAKE_COMPILE_WARNING_AS_ERROR)
+#set(CMAKE_COMPILE_WARNING_AS_ERROR True)
 
 # increase warnings in a compiler-specific manner
 if (MSVC)
@@ -55,10 +65,12 @@ add_subdirectory("OdbDesignLib")
 #add_subdirectory("OdbDesignApp")
 add_subdirectory("OdbDesignServer")
 add_subdirectory("Utils")
+add_subdirectory("OdbDesignTests")
 
 # link to OdbDesign library in both executable targets
 #target_link_libraries(OdbDesignApp PUBLIC OdbDesign)
 target_link_libraries(OdbDesignServer PUBLIC OdbDesign)
+target_link_libraries(OdbDesignTests PUBLIC OdbDesign)
 
 # link to Utils lib in all targets
 #target_link_libraries(OdbDesignApp PUBLIC Utils)
