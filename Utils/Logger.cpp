@@ -5,12 +5,12 @@
 
 namespace Utils
 {
-	Logger::Logger()		
-		: m_logMessageLoop([&](Message& message)
+	Logger::Logger()
+		: m_level(Level::Info)
+		, m_logMessageLoop([&](Message& message)
 			{
 				return logMessage(message);
 			})
-		, m_level(Level::Info)
 	{
 	}
 
