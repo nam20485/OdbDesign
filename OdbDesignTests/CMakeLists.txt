@@ -6,5 +6,8 @@ add_executable(OdbDesignTests
 )
 target_link_libraries(OdbDesignTests PUBLIC GTest::gtest_main)
 
+# link to OdbDesign library
+target_link_libraries(OdbDesignTests PUBLIC OdbDesign)
+
 include(GoogleTest)
 gtest_discover_tests(OdbDesignTests)

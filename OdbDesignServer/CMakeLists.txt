@@ -18,6 +18,9 @@ add_compile_definitions(CROW_ENABLE_COMPRESSION)
 find_package(Crow CONFIG REQUIRED)
 target_link_libraries(OdbDesignServer PRIVATE Crow::Crow)
 
+# link to OdbDesign library
+target_link_libraries(OdbDesignServer PUBLIC OdbDesign)
+
 if (NOT CI)
     # TODO: add POST_BUILD commands for Linux (dest. directory will be ${CMAKE_CURRENT_BINARY_DIR})
     # copy templates directory to output directory 
