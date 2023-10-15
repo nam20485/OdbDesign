@@ -114,6 +114,7 @@ namespace Odb::Lib::FileModel::Design
 		}
 
         if (! ParseMiscInfoFile(path)) return false;
+		if (! ParseMatrixFile(path)) return false;
 
 		return true;
 	}
@@ -129,10 +130,26 @@ namespace Odb::Lib::FileModel::Design
         return true;
     }
 
+	bool FileArchive::ParseMatrixFile(const std::filesystem::path& path)
+	{
+		auto matrixDir = path / "matrix";
+		if (!std::filesystem::exists(matrixDir)) return false;
+		if (!std::filesystem::is_regular_file(matrixDir)) return false;
+
+		if (!m_matrixFile.Parse(matrixDir)) return false;
+
+		return true;
+	}	
+
     const MiscInfoFile &FileArchive::GetMiscInfoFile() const
     {
         return m_miscInfoFile;
     }
+
+	const MatrixFile& FileArchive::GetMatrixFile() const
+	{
+		return m_matrixFile;
+	}
 
     //const EdaDataFile& FileModel::GetStepEdaDataFile(std::string stepName) const
 	//{		
