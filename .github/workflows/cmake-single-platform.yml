@@ -11,6 +11,7 @@ on:
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
+  VCPKG_ROOT: ~/src/github/microsoft/vcpkg
 
 jobs:
   build:
@@ -21,6 +22,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+
+    # does not run vcpkg or install vcpkg dependencies
+    - name: Setup vcpkg
+      uses: lukka/run-vcpkg@v11
+      with:
+        vcpkgDirectory: ${{env.VCPKG_ROOT}}
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
