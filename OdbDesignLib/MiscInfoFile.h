@@ -17,7 +17,7 @@ namespace Odb::Lib::FileModel::Design
     {
     public:
         MiscInfoFile() = default;
-        ~MiscInfoFile() override = default;
+        ~MiscInfoFile() = default;
 
         std::string GetProductModelName() const;
         std::string GetJobName() const;
