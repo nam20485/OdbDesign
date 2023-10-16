@@ -18,8 +18,8 @@ target_compile_options(OdbDesign PRIVATE
     $<$<CXX_COMPILER_ID:MSVC>:
         /wd4250>)
 
-# required for SWIG
-set_property(TARGET OdbDesign PROPERTY POSITION_INDEPENDENT_CODE ON)
+## required for SWIG
+#set_property(TARGET OdbDesign PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 target_link_libraries(OdbDesign PUBLIC Utils)
 
