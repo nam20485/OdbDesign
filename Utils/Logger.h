@@ -13,6 +13,18 @@ namespace Utils
 #ifndef loginfo
 #	define loginfo(s) Utils::Logger::instance()->info(s, __FILE__, __LINE__)
 #endif // loginfo
+#ifndef logerror
+#	define logerror(s) Utils::Logger::instance()->error(s, __FILE__, __LINE__)
+#endif // logerror
+#ifndef logwarn
+#	define logwarn(s) Utils::Logger::instance()->warn(s, __FILE__, __LINE__)
+#endif // logwarn
+#ifndef logdebug
+#	define logdebug(s) Utils::Logger::instance()->debug(s, __FILE__, __LINE__)
+#endif // logdebug
+#ifndef logexception
+#	define logexception(s) Utils::Logger::instance()->exception(s, __FILE__, __LINE__)
+#endif // logexception
 
 	class UTILS_EXPORT Logger// : public WorkQueueLoopThread<struct LogMessage>
 	{
@@ -57,7 +69,7 @@ namespace Utils
 
 		void log(Level level, const std::string& message, const std::string& file = "", int line = -1);
 		void error(const std::string& message, const std::string& file = "", int line = -1);
-		void warning(const std::string& message, const std::string& file = "", int line = -1);
+		void warn(const std::string& message, const std::string& file = "", int line = -1);
 		void info(const std::string& message, const std::string& file = "", int line = -1);
 		void info(const std::stringstream& message, const std::string& file = "", int line = -1);
 		void debug(const std::string& message, const std::string& file = "", int line = -1);

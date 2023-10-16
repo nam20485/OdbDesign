@@ -52,7 +52,7 @@ namespace Utils
 		log(Level::Error, message, file, line);
 	}
 
-	void Logger::warning(const std::string& message, const std::string& file, int line)
+	void Logger::warn(const std::string& message, const std::string& file, int line)
 	{
 		log(Level::Warning, message, file, line);
 	}
@@ -111,7 +111,7 @@ namespace Utils
 				<< std::setw(4)
 				<< logMessage.line;
 		}
-
+		
 		ss << " "
 			<< std::setw(5)
 			<< logLevelToString(logMessage.level)
