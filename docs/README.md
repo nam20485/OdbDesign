@@ -131,7 +131,7 @@ This project is free and open source under the MIT [license](https://github.com/
 
 If you are interested in using the parser in your application or code, or have any questions about it please do not hesitate to contact me.
 
->If you need support for integration of the parser into your own product and/or need its feature set extended, I am available for consulting at very reasonable fees.
+>If you need support for integration of the parser into your own product and/or need its feature set extended, I am available for consulting.
 
 * [Email me (maintainer)](mailto:nmiller217@gmail.com?subject=OdbDesign)
 * [GitHub](https://github.com/nam20485/odbdesign)
