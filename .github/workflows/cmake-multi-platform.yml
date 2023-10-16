@@ -9,7 +9,7 @@ on:
     branches: [ "development" ]
 
 env:
-  VCPKG_ROOT: ~/src/github/microsoft/vcpkg
+  VCPKG_ROOT: /~/src/github/microsoft/vcpkg
 
 jobs:
   build:

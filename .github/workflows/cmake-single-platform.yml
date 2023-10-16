@@ -11,7 +11,7 @@ on:
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
-  VCPKG_ROOT: ~/src/github/microsoft/vcpkg
+  VCPKG_ROOT: /~/src/github/microsoft/vcpkg
 
 jobs:
   build:
