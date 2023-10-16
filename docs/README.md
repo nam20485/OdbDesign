@@ -32,7 +32,7 @@ The maintainer has well over a decade of experience in the PCB Manufacturing and
 
 The diagram describes the current state of parser implementation and data availability. Green color describes areas of the ODB++ archive file that are implemented and have their data available for use. Red color describes areas that are not parsed so their data is not yet available.
 
-![image](https://github.com/nam20485/OdbDesign/assets/1829396/2b902d94-c9ba-40cb-9b79-e0e6c4ba775a)
+![image](https://github.com/nam20485/OdbDesign/assets/1829396/d92b77f1-7edc-4c90-b6df-21cea3ee92fe)
 
 ### Architecture
 
