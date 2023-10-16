@@ -743,7 +743,7 @@ namespace Odb::Lib::FileModel::Design
 
     void EdaDataFile::PropertyRecord::from_protobuf(const odbdesign::proto::EdaDataFile::PropertyRecord& message)
     {
-    };
+    }
 
     // Inherited via IProtoBuffable
     std::unique_ptr<odbdesign::proto::EdaDataFile::PackageRecord>
@@ -776,7 +776,7 @@ namespace Odb::Lib::FileModel::Design
 
     void EdaDataFile::PackageRecord::from_protobuf(const odbdesign::proto::EdaDataFile::PackageRecord& message)
     {
-    };
+    }
 
     // Inherited via IProtoBuffable
     std::unique_ptr<odbdesign::proto::EdaDataFile::PackageRecord::PinRecord>
@@ -797,5 +797,5 @@ namespace Odb::Lib::FileModel::Design
 
     void EdaDataFile::PackageRecord::PinRecord::from_protobuf(const odbdesign::proto::EdaDataFile::PackageRecord::PinRecord& message)
     {
-    };
+    }
 }
