@@ -13,7 +13,7 @@
 
 namespace Odb::Lib::FileModel::Design
 {	
-	class ODBDESIGN_EXPORT EdaDataFile : public IProtoBuffable<odbdesign::proto::EdaDataFile>
+	class ODBDESIGN_EXPORT EdaDataFile : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile>
 	{
 	public:
 		EdaDataFile();		
@@ -25,7 +25,7 @@ namespace Odb::Lib::FileModel::Design
 
 		bool Parse(std::filesystem::path path);		
 
-		struct ODBDESIGN_EXPORT PropertyRecord : public IProtoBuffable<odbdesign::proto::EdaDataFile::PropertyRecord>
+		struct ODBDESIGN_EXPORT PropertyRecord : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::PropertyRecord>
 		{
 			// data members
 			std::string name;
@@ -40,13 +40,13 @@ namespace Odb::Lib::FileModel::Design
 			typedef std::vector<std::shared_ptr<PropertyRecord>> Vector;
 
 			// Inherited via IProtoBuffable
-			std::unique_ptr<odbdesign::proto::EdaDataFile::PropertyRecord> to_protobuf() const override;
-			void from_protobuf(const odbdesign::proto::EdaDataFile::PropertyRecord& message) override;
+			std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::PropertyRecord> to_protobuf() const override;
+			void from_protobuf(const Odb::Lib::Protobuf::EdaDataFile::PropertyRecord& message) override;
 		};
 
-		struct ODBDESIGN_EXPORT NetRecord : public IProtoBuffable<odbdesign::proto::EdaDataFile::NetRecord>
+		struct ODBDESIGN_EXPORT NetRecord : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::NetRecord>
 		{
-			struct ODBDESIGN_EXPORT SubnetRecord : public IProtoBuffable<odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord>
+			struct ODBDESIGN_EXPORT SubnetRecord : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord>
 			{
 				// common subnet enums
 				enum class Type
@@ -72,7 +72,7 @@ namespace Odb::Lib::FileModel::Design
 					Exact
 				};				
 
-				struct ODBDESIGN_EXPORT FeatureIdRecord : public IProtoBuffable<odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord>
+				struct ODBDESIGN_EXPORT FeatureIdRecord : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord>
 				{
 					enum class Type
 					{
@@ -88,8 +88,8 @@ namespace Odb::Lib::FileModel::Design
 					unsigned int featureNumber;
 
 					// Inherited via IProtoBuffable
-					std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord> to_protobuf() const override;
-					void from_protobuf(const odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord& message) override;
+					std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord> to_protobuf() const override;
+					void from_protobuf(const Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord& message) override;
 				};
 
 				typedef std::vector<std::shared_ptr<SubnetRecord>> Vector;
@@ -117,8 +117,8 @@ namespace Odb::Lib::FileModel::Design
 				inline static const std::string RECORD_TYPE_PLANE_TOKEN = "PLN";				
 
 				// Inherited via IProtoBuffable
-				std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord> to_protobuf() const override;
-				void from_protobuf(const odbdesign::proto::EdaDataFile::NetRecord::SubnetRecord& message) override;
+				std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord> to_protobuf() const override;
+				void from_protobuf(const Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord& message) override;
 
 			}; // SubnetRecord	
 
@@ -136,14 +136,14 @@ namespace Odb::Lib::FileModel::Design
 			PropertyRecord::Vector m_propertyRecords;
 
 			// Inherited via IProtoBuffable
-			std::unique_ptr<odbdesign::proto::EdaDataFile::NetRecord> to_protobuf() const override;
-			void from_protobuf(const odbdesign::proto::EdaDataFile::NetRecord& message) override;
+			std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::NetRecord> to_protobuf() const override;
+			void from_protobuf(const Odb::Lib::Protobuf::EdaDataFile::NetRecord& message) override;
 
 		}; // NetRecord
 
-		struct ODBDESIGN_EXPORT PackageRecord : public IProtoBuffable<odbdesign::proto::EdaDataFile::PackageRecord>
+		struct ODBDESIGN_EXPORT PackageRecord : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::PackageRecord>
 		{
-			struct ODBDESIGN_EXPORT PinRecord : public IProtoBuffable<odbdesign::proto::EdaDataFile::PackageRecord::PinRecord>
+			struct ODBDESIGN_EXPORT PinRecord : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::PackageRecord::PinRecord>
 			{
 				enum class Type
 				{
@@ -185,8 +185,8 @@ namespace Odb::Lib::FileModel::Design
 				unsigned int index;
 
 				// Inherited via IProtoBuffable
-				std::unique_ptr<odbdesign::proto::EdaDataFile::PackageRecord::PinRecord> to_protobuf() const override;
-				void from_protobuf(const odbdesign::proto::EdaDataFile::PackageRecord::PinRecord& message) override;
+				std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::PackageRecord::PinRecord> to_protobuf() const override;
+				void from_protobuf(const Odb::Lib::Protobuf::EdaDataFile::PackageRecord::PinRecord& message) override;
 
 			}; // PinRecord
 
@@ -205,8 +205,8 @@ namespace Odb::Lib::FileModel::Design
 			PropertyRecord::Vector m_propertyRecords;
 
 			// Inherited via IProtoBuffable
-			std::unique_ptr<odbdesign::proto::EdaDataFile::PackageRecord> to_protobuf() const override;
-			void from_protobuf(const odbdesign::proto::EdaDataFile::PackageRecord& message) override;
+			std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::PackageRecord> to_protobuf() const override;
+			void from_protobuf(const Odb::Lib::Protobuf::EdaDataFile::PackageRecord& message) override;
 
 		}; // PackageRecord
 
@@ -220,8 +220,8 @@ namespace Odb::Lib::FileModel::Design
 		const PackageRecord::StringMap& GetPackageRecordsByName() const;
 
 		// Inherited via IProtoBuffable
-		std::unique_ptr<odbdesign::proto::EdaDataFile> to_protobuf() const override;
-		void from_protobuf(const odbdesign::proto::EdaDataFile& message) override;		
+		std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile> to_protobuf() const override;
+		void from_protobuf(const Odb::Lib::Protobuf::EdaDataFile& message) override;		
 
 	private:
 		std::filesystem::path m_path;
