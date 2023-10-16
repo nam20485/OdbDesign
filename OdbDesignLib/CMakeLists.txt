@@ -10,7 +10,7 @@ add_library(OdbDesign SHARED "odbdesign_export.h" "ComponentLayerDirectory.cpp" 
         AttrListFile.cpp
         AttrListFile.h
         SysAttrFile.cpp
-        SysAttrFile.h "RgbColor.h" "RgbColor.cpp")
+        SysAttrFile.h "RgbColor.h" "RgbColor.cpp" "StandardFontsFile.h" "StandardFontsFile.cpp")
 
 target_compile_options(OdbDesign PRIVATE
     $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>:
