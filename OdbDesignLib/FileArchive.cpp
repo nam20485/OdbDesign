@@ -1,4 +1,5 @@
 #include "FileArchive.h"
+#include "FileArchive.h"
 #include <filesystem>
 #include "ArchiveExtractor.h"
 #include "MiscInfoFile.h"
@@ -119,6 +120,7 @@ namespace Odb::Lib::FileModel::Design
 
         if (! ParseMiscInfoFile(path)) return false;
 		if (! ParseMatrixFile(path)) return false;
+		if (! ParseStandardFontsFile(path)) return false;
 
 		return true;
 	}
@@ -143,7 +145,17 @@ namespace Odb::Lib::FileModel::Design
 		if (!m_matrixFile.Parse(matrixDir)) return false;
 
 		return true;
-	}	
+	}
+	bool FileArchive::ParseStandardFontsFile(const std::filesystem::path& path)
+	{
+		auto fontsDir = path / "fonts";
+		if (!std::filesystem::exists(fontsDir)) return false;
+		if (!std::filesystem::is_directory(fontsDir)) return false;
+
+		if (!m_standardFontsFile.Parse(fontsDir)) return false;
+
+		return true;
+	}
 
     const MiscInfoFile &FileArchive::GetMiscInfoFile() const
     {
