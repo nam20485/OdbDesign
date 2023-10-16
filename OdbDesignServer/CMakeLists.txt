@@ -14,7 +14,7 @@ find_package(ZLIB REQUIRED)
 target_link_libraries(OdbDesignServer PRIVATE ZLIB::ZLIB)
 
 # link to Crow
-add_compile_definitions(CROW_ENABLE_COMPRESSION)
+target_compile_definitions(OdbDesignServer PRIVATE CROW_ENABLE_COMPRESSION)
 find_package(Crow CONFIG REQUIRED)
 target_link_libraries(OdbDesignServer PRIVATE Crow::Crow)
 
