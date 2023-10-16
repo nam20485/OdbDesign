@@ -2,7 +2,6 @@
 
 #include "IOdbServerApp.h"
 #include "DesignCache.h"
-#include "Logger.h"
 #include "CommandLineArgs.h"
 #include "odbdesign_export.h"
 
@@ -16,8 +15,6 @@ namespace Odb::Lib
 		OdbAppBase(int argc, char* argv[]);
 		virtual ~OdbAppBase();
 
-		static Logger m_logger;
-		
 		const CommandLineArgs& arguments() const override;
 		DesignCache& design_cache() override;
 
