@@ -64,11 +64,11 @@ namespace Odb::Lib::FileModel::Design
 		}		
 		catch (std::filesystem::filesystem_error& fe)
 		{
-			Logger::instance()->exception(fe);
+			logexception(fe);
 		}
 		catch (std::exception& e)
 		{
-			Logger::instance()->exception(e);
+			logexception(e);
 		}
 
 		return false;
