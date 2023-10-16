@@ -22,21 +22,22 @@ namespace Utils
         explicit WorkQueueLoopThread(processWorkItemFunc processWorkItemProc);
 
         void addWorkItem(TWorkItem&& workItem);
+        //void addWorkItem(TWorkItem& workItem);
         void startProcessing();
         void stopProcessing();
 
-    protected:
+    protected:       
+        void processWorkItemsLoop();
+        virtual bool processWorkItem(TWorkItem& workItem);
+
+    private:
         ThreadSafeQueue<TWorkItem> _workItemQueue;
         std::unique_ptr<std::thread> _processWorkItemsLoopThread;
         std::atomic_bool _stopProcessingWorkItemsFlag;
         processWorkItemFunc _processWorkItemProc;
 
-        void processWorkItemsLoop();
-
-        virtual bool processWorkItem(TWorkItem& workItem);
-
-    private:
-        const bool _stopProcessingOnWorkItemFail{ true };
+        const bool _StopProcessingOnWorkItemFail{ true };
+        const bool _EnableInternalLogging{ false };
 
     };
     
@@ -56,9 +57,16 @@ namespace Utils
 
     template<typename TWorkItem>
     WorkQueueLoopThread<TWorkItem>::WorkQueueLoopThread(WorkQueueLoopThread::processWorkItemFunc processWorkItemProc)
-        : _stopProcessingWorkItemsFlag(false),
-        _processWorkItemProc(processWorkItemProc)
+        : _stopProcessingWorkItemsFlag(false)
+        , _processWorkItemProc(processWorkItemProc)
     {
+        if (_EnableInternalLogging)
+        {
+            _workItemQueue.registerInternalLogHandler([&](const std::string& m)
+                {
+                    std::cout << m << std::endl;
+                });
+        }
     }
 
     template<typename TWorkItem>
@@ -66,6 +74,12 @@ namespace Utils
     {
         _workItemQueue.push(std::move(workItem));
     }
+
+  //  template<typename TWorkItem>
+  //  inline void WorkQueueLoopThread<TWorkItem>::addWorkItem(TWorkItem& workItem)
+  //  {
+		//_workItemQueue.push(workItem);
+  //  }
 
     template<typename TWorkItem>
     void WorkQueueLoopThread<TWorkItem>::processWorkItemsLoop()
@@ -90,7 +104,7 @@ namespace Utils
                 auto workItem = _workItemQueue.front(false);
                 if (!processWorkItem(workItem))
                 {
-                    if (_stopProcessingOnWorkItemFail)
+                    if (_StopProcessingOnWorkItemFail)
                     {
                         _stopProcessingWorkItemsFlag.store(true);
                         break;

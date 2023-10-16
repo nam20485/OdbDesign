@@ -1,9 +1,9 @@
-FROM debian:bookworm-20230522-slim AS build
+FROM debian:bookworm-20231009 AS build
 
 # install dependencies
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        gpg \
+    apt-get install -y -q --no-install-recommends \
+        #gpg \
         curl \
         apt-transport-https \
         build-essential \
@@ -11,21 +11,19 @@ RUN apt-get update && \
         cmake \            
         g++ \
         ninja-build \
-        python3-dev \     
-        # mingw-w64 \        
-        swig \
-        build-essential \
-        git \
-        cmake \
+        # python3-dev \     
+        #build-essential \
+        git \        
         zip \
         unzip \
         tar  \
-        pkg-config && \
+        pkg-config \
+         && \
     rm -rf /var/lib/apt/lists/* 
 
 # install vcpkg
 WORKDIR /root/src/github/microsoft
-RUN git clone https://github.com/Microsoft/vcpkg.git
+RUN git clone --depth 1 https://github.com/Microsoft/vcpkg.git
 WORKDIR /root/src/github/microsoft/vcpkg
 RUN ./bootstrap-vcpkg.sh
 
@@ -40,14 +38,14 @@ COPY . .
 
 # configure & build using presets
 # linux-release
-RUN cmake --preset linux-release
-RUN cmake --build --preset linux-release
+RUN cmake --preset linux-release -G Ninja
+RUN cmake --build --preset linux-release --target OdbDesignServer
 # # linux-debug
 # RUN cmake --preset linux-debug
 # RUN cmake --build --preset linux-debug
 
 # much smaller runtime image
-FROM debian:bookworm-20230522-slim AS run
+FROM debian:bookworm-20231009 AS run
 
 RUN mkdir --parents /OdbDesign/bin
 WORKDIR /OdbDesign/bin
@@ -58,8 +56,8 @@ COPY --from=build /src/OdbDesign/out/build/linux-release/Utils/libUtils.so .
 COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignServer/OdbDesignServer .
 COPY --from=build /src/OdbDesign/out/build/linux-release/*.so .
 # copy designs and templates directories
-COPY --from=build /src/OdbDesign/designs ./designs
-COPY --from=build /src/OdbDesign/templates ./templates
+COPY --from=build /src/OdbDesign/OdbDesignServer/designs ./designs
+COPY --from=build /src/OdbDesign/OdbDesignServer/templates ./templates
 
 # run
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/OdbDesign/bin

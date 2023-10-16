@@ -1,7 +1,9 @@
 #include "DesignCache.h"
 #include <filesystem>
 #include <utility>
+#include "Logger.h"
 
+using namespace Utils;
 
 namespace Odb::Lib
 {
@@ -35,15 +37,21 @@ namespace Odb::Lib
     std::shared_ptr<FileModel::Design::FileArchive> DesignCache::GetFileArchive(const std::string& designName)
     {
         std::stringstream ss;
-        ss << "Retrieving \"" << designName << "\" from cache... " << std::endl;
-        std::cout << ss.str();        
+        ss << "Retrieving \"" << designName << "\" from cache... ";
+        //loginfo(ss.str());
+        
+        loginfo(ss.str());
 
         auto findIt = m_fileArchivesByName.find(designName);
         if (findIt == m_fileArchivesByName.end())
         {
+            loginfo("Not found. Loading from file... ");
+
             auto pFileArchive = LoadFileArchive(designName);
             return pFileArchive;
         }
+
+        loginfo("Found. Returning from cache.");
 
         return m_fileArchivesByName[designName];        
     }
