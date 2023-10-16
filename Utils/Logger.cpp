@@ -1,6 +1,9 @@
 #include "Logger.h"
 #include <iostream>
 #include "timestamp.h"
+#include <filesystem>
+
+using namespace std::filesystem;
 
 
 namespace Utils
@@ -96,19 +99,23 @@ namespace Utils
 		ss << "["
 			//<< std::format("", logMessage.timeStamp)
 			//<< logMessage.timeStamp.
-			<< make_timestamp(logMessage.timeStamp)
-			<< " "
-			<< logLevelToString(logMessage.level)			
-			<< "]";
+			<< make_timestamp(logMessage.timeStamp);
 
 		if (logMessage.file != "" &&
 			logMessage.line != -1)
 		{			
-			ss << " "
-				<< logMessage.file
+			ss << " " 
+				<< std::setw(18)
+				<< path{ logMessage.file }.filename().string()
 				<< ":"
+				<< std::setw(4)
 				<< logMessage.line;
 		}
+
+		ss << " "
+			<< std::setw(5)
+			<< logLevelToString(logMessage.level)
+			<< "]";
 		
 		ss << " "
 			<< logMessage.message

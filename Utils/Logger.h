@@ -9,6 +9,11 @@ using namespace std::chrono;
 
 namespace Utils
 {	
+
+#ifndef loginfo
+#	define loginfo(s) Utils::Logger::instance()->info(s, __FILE__, __LINE__)
+#endif // loginfo
+
 	class UTILS_EXPORT Logger// : public WorkQueueLoopThread<struct LogMessage>
 	{
 	public:
@@ -72,7 +77,7 @@ namespace Utils
 
 		std::string logLevelToString(Level level) const;
 
-		const std::string LogLevelStrings[5] = { "None", "Debug", "Info", "WARNING", "ERROR" };
+		const std::string LogLevelStrings[5] = { "NONE", "DEBUG", "INFO", "WARN", "ERROR" };
 
 		static Logger* _instance;
 	};	
