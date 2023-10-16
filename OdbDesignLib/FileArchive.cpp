@@ -48,16 +48,16 @@ namespace Odb::Lib::FileModel::Design
 		
 			if (std::filesystem::is_directory(path))
 			{
-				Logger::instance()->info("Parsing... ");
+				loginfo("Parsing... ");
 
 				if (ParseDesignDirectory(path))
 				{
-					Logger::instance()->info("Successfully parsed.");
+					loginfo("Successfully parsed.");
 					return true;
 				}
 				else
 				{
-					Logger::instance()->info("Parsing failed.");
+					loginfo("Parsing failed.");
 				}
 			}		
 		}		
@@ -75,7 +75,7 @@ namespace Odb::Lib::FileModel::Design
 
 	bool FileArchive::ExtractDesignArchive(const std::filesystem::path& path, std::filesystem::path& extractedPath)
 	{
-		Logger::instance()->info("Extracting... ");
+		loginfo("Extracting... ");
 
 		if (!Utils::ArchiveExtractor::IsArchiveTypeSupported(path)) return false;
 
@@ -87,7 +87,7 @@ namespace Odb::Lib::FileModel::Design
 		
 		extractedPath = extracted;
 
-		Logger::instance()->info("Successfully extracted.");
+		loginfo("Successfully extracted.");
 
 		return true;
 				

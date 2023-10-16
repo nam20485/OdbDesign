@@ -86,7 +86,7 @@ namespace Odb::Lib::FileModel::Design
                         auto createdDate = Utils::make_timestamp(m_creationDateDate);
                         std::stringstream ss;
                         ss << "value: " << value << ", parsed createdDate: " << createdDate;
-                        Utils::Logger::instance()->info(ss.str());
+                        loginfo(ss.str());
 #endif // _DEBUG
                     }
                     else if (attribute == "save_date" ||
@@ -100,7 +100,7 @@ namespace Odb::Lib::FileModel::Design
 
                         std::stringstream ss;
                         ss << "value: " << value << ", parsed saveDate: " << saveDate;
-                        Utils::Logger::instance()->info(ss.str());
+                        loginfo(ss.str());
 #endif // _DEBUG                                                
                     }
                     else if (attribute == "save_app" ||
