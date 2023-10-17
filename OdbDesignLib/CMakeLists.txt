@@ -12,11 +12,13 @@ add_library(OdbDesign SHARED "odbdesign_export.h" "ComponentLayerDirectory.cpp" 
         SysAttrFile.cpp
         SysAttrFile.h "RgbColor.h" "RgbColor.cpp" "StandardFontsFile.h" "StandardFontsFile.cpp" "enums.h")
 
-target_compile_options(OdbDesign PRIVATE
-    $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>:
-        -Wall>
-    $<$<CXX_COMPILER_ID:MSVC>:
-        /wd4250>)
+# disable warning C4250: inheritance by dominance
+target_compile_options(OdbDesign PUBLIC
+#    $<$<OR:
+#        $<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>:
+#            >
+        $<$<CXX_COMPILER_ID:MSVC>:
+            /wd4250>)
 
 ## required for SWIG
 #set_property(TARGET OdbDesign PROPERTY POSITION_INDEPENDENT_CODE ON)
@@ -33,7 +35,12 @@ target_include_directories(OdbDesign
 # link to zlib (required for Crow HTTP compression)
 find_package(ZLIB REQUIRED)
 target_link_libraries(OdbDesign PRIVATE ZLIB::ZLIB)
-add_compile_definitions(CROW_ENABLE_COMPRESSION)
+
+find_package(OpenSSL)
+target_link_libraries(OdbDesign PUBLIC OpenSSL::SSL OpenSSL::Crypto)
+
+target_compile_definitions(OdbDesign PUBLIC CROW_ENABLE_COMPRESSION)
+target_compile_definitions(OdbDesign PUBLIC CROW_ENABLE_SSL)
 
 # Link to Protobuf
 find_package(Protobuf CONFIG REQUIRED)
