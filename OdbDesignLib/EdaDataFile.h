@@ -5,7 +5,7 @@
 #include <vector>
 #include <map>
 #include "odbdesign_export.h"
-#include "BoardSide.h"
+#include "enums.h"
 #include "proto/edadatafile.pb.h"
 #include <google/protobuf/message.h>
 #include "IProtoBuffable.h"

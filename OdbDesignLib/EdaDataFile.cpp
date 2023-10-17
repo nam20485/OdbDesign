@@ -3,7 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include "str_trim.h"
-#include "BoardSide.h"
+#include "enums.h"
 #include "proto/edadatafile.pb.h"
 #include <google/protobuf/message.h>
 
