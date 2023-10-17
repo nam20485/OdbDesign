@@ -72,7 +72,12 @@ jobs:
       if: matrix.os == 'windows-2022'
       
     - name: Patch vcpkg
-      run: scripts/patch-vcpkg-install.ps1
+      run: | 
+        dir ${{env.VCPKG_ROOT}}
+        dir ${{env.VCPKG_ROOT}}\scripts
+        dir ${{env.VCPKG_ROOT}}\scripts\msys
+        mkdir ${{env.VCPKG_ROOT}}\scripts\msys
+        scripts/patch-vcpkg-install.ps1
       if: matrix.os == 'windows-2022'
     
     #
