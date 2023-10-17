@@ -9,7 +9,7 @@ on:
     branches: [ "development" ]
 
 env:
-  VCPKG_ROOT: /home/runner/vcpkg
+  VCPKG_ROOT: ${{ github.workspace }}/vcpkg
 
 jobs:
   build:
@@ -51,11 +51,11 @@ jobs:
       run: |
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
-    # does not run vcpkg or install vcpkg dependencies
-    - name: Setup vcpkg
-      uses: lukka/run-vcpkg@v11
-      # with:
-      #   vcpkgDirectory: ${{env.VCPKG_ROOT}}
+    # Install vcpkg
+    - name: Install vcpkg
+      run: |
+        git clone https://github.com/Microsoft/vcpkg.git ${{env.VCPKG_ROOT}}}
+        ${{env.VCPKG_ROOT}}/vcpkg/bootstrap-vcpkg.sh    
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
