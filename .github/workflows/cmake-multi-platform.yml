@@ -27,27 +27,14 @@ jobs:
             preset: linux-release              
 
     steps:      
-    - uses: actions/checkout@v3    
-    # add Visual C++ tools to path
-    #- uses: ilammy/msvc-dev-cmd@v1
-
-    # - name: Add cl To Path
-    #   run: |
-    #     dir ${{env.CL_PATH}}
-    #     C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Tools\\MSVC\\14.37.32822\\bin\\Hostx64\\x64\\cl.exe
-    #     Add-Content $env:GITHUB_PATH ${{env.CL_PATH}}
-    #     ${{env.CL_PATH}}\cl.exe
-    #     ${{env.CL_PATH}}\cl
-    #     echo %VCToolsInstallDir%
-    #     cl.exe
-    #     cl        
+    - uses: actions/checkout@v3            
     
     - name: Install vcpkg
       run: |               
         git clone --depth 1 https://github.com/Microsoft/vcpkg.git ${{env.VCPKG_ROOT}}
         "${{env.VCPKG_ROOT}}/bootstrap-vcpkg.sh"
       # only on linux (Windows comes w/ vcpkg installed as part of VS)   
-      #if: matrix.os == 'ubuntu-22.04'
+      if: matrix.os == 'ubuntu-22.04'
 
     # install Ninja 
     - name: Install Ninja    
@@ -57,12 +44,16 @@ jobs:
     - name: Setup VC Tools
       uses: ilammy/msvc-dev-cmd@v1
       if: matrix.os == 'windows-2022'
+      
+    - name: Patch vcpkg
+      run: scripts/patch-vcpkg-install.ps1
+      if: matrix.os == 'windows-2022'
         
     - name: CMake Configure      
       run: cmake --preset ${{matrix.preset}}    
 
     - name: CMake Build          
-      run: cmake --build --preset ${{matrix.preset}}  
+      run: cmake --build --preset ${{matrix.preset}} 
 
     # - name: Test
     #   working-directory: ${{ steps.strings.outputs.build-output-dir }}
