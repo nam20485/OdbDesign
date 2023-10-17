@@ -3,6 +3,7 @@
 #include "OdbFile.h"
 #include "odbdesign_export.h"
 #include "enums.h"
+#include <vector>
 
 namespace Odb::Lib::FileModel::Design
 {
