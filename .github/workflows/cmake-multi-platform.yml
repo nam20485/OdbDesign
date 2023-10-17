@@ -38,7 +38,7 @@ jobs:
       run: |
         dir ${{env.CL_PATH}}
         echo ${{env.CL_PATH}} >> $GITHUB_PATH               
-        cl
+        cl.exe
         echo %VCToolsInstallDir%
     
     - name: Install vcpkg
