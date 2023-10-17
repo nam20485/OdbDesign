@@ -9,6 +9,7 @@ on:
 
 env:
   VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+  CL_PATH: "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Tools\\MSVC\\14.37.32822\\bin\\Hostx64\\x64"
 
 jobs:
   build:
@@ -32,12 +33,14 @@ jobs:
     steps:      
     - uses: actions/checkout@v3      
     - uses: seanmiddleditch/gha-setup-ninja@master
+
+    - name: Add cl To Path
+      run: |
+        echo ${{env.CL_PATH}} >> $GITHUB_PATH
+        cl
     
     - name: Install vcpkg
-      run: |
-        dir "C:\Program Files\Microsoft Visual Studio\"
-        dir "C:\Program Files\Microsoft Visual Studio\2022\"
-        dir "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\"
+      run: |       
         dir "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\"
         git clone https://github.com/Microsoft/vcpkg.git ${{env.VCPKG_ROOT}}
         ${{env.VCPKG_ROOT}}/bootstrap-vcpkg.sh
@@ -45,7 +48,7 @@ jobs:
     - name: Configure
       run: cmake --preset ${{matrix.preset}}            
 
-    - name: Build
+    - name: Build          
       run: cmake --build --preset ${{matrix.preset}}  
 
     # - name: Test
