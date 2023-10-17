@@ -91,7 +91,9 @@
         "CMAKE_TOOLCHAIN_FILE": {
           "value": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
           "type": "FILEPATH"
-        }
+        },
+        "CMAKE_C_COMPILER": "cc",
+        "CMAKE_CXX_COMPILER": "c++"
       },
       "condition": {
         "type": "equals",
@@ -161,7 +163,15 @@
       "hidden": true,
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/out/build/${presetName}",
-      "installDir": "${sourceDir}/out/install/${presetName}",     
+      "installDir": "${sourceDir}/out/install/${presetName}",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": {
+          "value": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+          "type": "FILEPATH"
+        },
+        "CMAKE_C_COMPILER": "cc",
+        "CMAKE_CXX_COMPILER": "c++"
+      },
       "condition": {
         "type": "equals",
         "lhs": "${hostSystemName}",
@@ -323,25 +333,25 @@
       }     
     },
     {
-      "name": "x64-Debug",
+      "name": "x64-debug",
       "displayName": "Test x64-Debug",
       "inherits": "windows-base",
       "configurePreset": "x64-debug"
     },
     {
-      "name": "x64-Release",
+      "name": "x64-release",
       "displayName": "Test x64-Release",
       "inherits": "windows-base",
       "configurePreset": "x64-release"
     },
     {
-      "name": "x86-Debug",
+      "name": "x86-debug",
       "displayName": "Test x86-Debug",
       "inherits": "windows-base",
       "configurePreset": "x86-debug"
     },
     {
-      "name": "x86-Release",
+      "name": "x86-release",
       "displayName": "Test x86-Release",
       "inherits": "windows-base",
       "configurePreset": "x86-release"
