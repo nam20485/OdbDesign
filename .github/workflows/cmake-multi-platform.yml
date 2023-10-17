@@ -53,15 +53,15 @@ jobs:
     - name: Install Ninja    
       uses: seanmiddleditch/gha-setup-ninja@master
       #if: matrix.os == 'ubuntu-22.04'
-        
-    - name: Configure      
-      run: cmake --preset ${{matrix.preset}}
-      
+
     - name: Setup VC Tools
       uses: ilammy/msvc-dev-cmd@v1
       if: matrix.os == 'windows-2022'
+        
+    - name: CMake Configure      
+      run: cmake --preset ${{matrix.preset}}    
 
-    - name: Build          
+    - name: CMake Build          
       run: cmake --build --preset ${{matrix.preset}}  
 
     # - name: Test
