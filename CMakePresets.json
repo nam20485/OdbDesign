@@ -157,7 +157,7 @@
         "CMAKE_CXX_COMPILER": "x86_64-w64-mingw32-g++",
         "CMAKE_CXX_FLAGS": "-static-libgcc -static-libstdc++",
         "CMAKE_TOOLCHAIN_FILE": {
-          "value": "$env{HOME}/src/github/microsoft/vcpkg/scripts/buildsystems/vcpkg.cmake",
+          "value": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
           "type": "FILEPATH"
         }
       },
@@ -184,7 +184,7 @@
         "CMAKE_CXX_COMPILER": "x86_64-w64-mingw32-g++",
         "CMAKE_CXX_FLAGS": "-static-libgcc -static-libstdc++",
         "CMAKE_TOOLCHAIN_FILE": {
-          "value": "$env{HOME}/src/github/microsoft/vcpkg/scripts/buildsystems/vcpkg.cmake",
+          "value": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
           "type": "FILEPATH"
         }
       },
@@ -228,8 +228,7 @@
         "type": "equals",
         "lhs": "${hostSystemName}",
         "rhs": "Windows"
-      },
-      "cleanFirst": false
+      }
     },
     {
       "name": "x64-debug",
@@ -274,8 +273,7 @@
         "type": "equals",
         "lhs": "${hostSystemName}",
         "rhs": "Linux"
-      },
-      "cleanFirst": false
+      }
     },
     {
       "name": "linux-debug",
@@ -308,8 +306,7 @@
         "type": "equals",
         "lhs": "${hostSystemName}",
         "rhs": "Linux"
-      },
-      "cleanFirst": false
+      }
     },
     {
       "name": "linux-mingw-w64-debug",
@@ -326,20 +323,103 @@
   ],
   "testPresets": [
     {
+      "name": "windows-base",
+      "hidden": true,
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }     
+    },
+    {
       "name": "x64-Debug",
+      "displayName": "Test x64-Debug",
+      "inherits": "windows-base",
       "configurePreset": "x64-debug"
     },
     {
       "name": "x64-Release",
+      "displayName": "Test x64-Release",
+      "inherits": "windows-base",
       "configurePreset": "x64-release"
     },
     {
       "name": "x86-Debug",
+      "displayName": "Test x86-Debug",
+      "inherits": "windows-base",
       "configurePreset": "x86-debug"
     },
     {
       "name": "x86-Release",
+      "displayName": "Test x86-Release",
+      "inherits": "windows-base",
       "configurePreset": "x86-release"
+    },
+    {
+      "name": "python-x64-debug",
+      "displayName": "Test Python x64 Debug",  
+      "inherits": "windows-base",    
+      "configurePreset": "python-x64-debug"
+    },
+    {
+      "name": "python-x64-release",
+      "displayName": "Test Python x64 Release",
+      "inherits": "windows-base",
+      "configurePreset": "python-x64-release"
+    },
+    {
+      "name": "linux-base",
+      "hidden": true,
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }      
+    },
+    {
+      "name": "linux-debug",
+      "displayName": "Test Linux Debug",
+      "configurePreset": "linux-debug",
+      "inherits": "linux-base"
+    },
+    {
+      "name": "linux-release",
+      "displayName": "Test Linux Release",
+      "configurePreset": "linux-release",
+      "inherits": "linux-base"
+    },
+    {
+      "name": "python-linux-debug",
+      "displayName": "Test Python Linux Debug",
+      "configurePreset": "python-linux-debug",
+      "inherits": "linux-base"
+    },
+    {
+      "name": "python-linux-release",
+      "displayName": "Test Python Linux Release",
+      "configurePreset": "python-linux-release",
+      "inherits": "linux-base"
+    },
+    {
+      "name": "linux-mingw-w64-base",
+      "hidden": true,
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "linux-mingw-w64-debug",
+      "displayName": "Test Linux MinGW-w64 Debug",
+      "configurePreset": "linux-mingw-w64-debug",
+      "inherits": "linux-mingw-w64-base"
+    },
+    {
+      "name": "linux-mingw-w64-release",
+      "displayName": "Test Linux MinGW-w64 Release",
+      "configurePreset": "linux-mingw-w64-release",
+      "inherits": "linux-mingw-w64-base"
     }
   ]
 }
