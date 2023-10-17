@@ -8,4 +8,4 @@
 # see vcpkg GitHub issue #33506 and comment with workaround:
 # https://github.com/microsoft/vcpkg/issues/33506#issuecomment-1704949644
 
-Copy-Item -Force -Verbose scripts/patch/compile_wrapper_consider_clang-cl.patch "$env:VCPKG_ROOT/scripts/msys"
+Copy-Item -Force -Verbose scripts\patch\compile_wrapper_consider_clang-cl.patch "$env:VCPKG_ROOT\scripts\msys\compile_wrapper_consider_clang-cl.patch"
