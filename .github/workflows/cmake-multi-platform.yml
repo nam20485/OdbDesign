@@ -1,6 +1,5 @@
-# This starter workflow is for a CMake project running on multiple platforms. There is a different starter workflow if you just want a single platform.
-# See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-single-platform.yml
-name: CMake on multiple platforms
+# run CMake build on Windows and Linux
+name: CMake Build Multi-Platform
 
 on:
   push:
@@ -21,20 +20,19 @@ jobs:
 
       matrix:
         include:
-          - os: windows-latest
+          - os: windows-2022
             c_compiler: cl
             cpp_compiler: cl
             preset: x64-release          
-          - os: ubuntu-latest
+          - os: ubuntu-22.04
             c_compiler: gcc
             cpp_compiler: g++
             preset: linux-release              
 
-    steps:
-    - uses: actions/checkout@v3
+    steps:      
+    - uses: actions/checkout@v3      
     - uses: seanmiddleditch/gha-setup-ninja@master
-
-    # Install vcpkg
+    
     - name: Install vcpkg
       run: |
         git clone https://github.com/Microsoft/vcpkg.git ${{env.VCPKG_ROOT}}
@@ -44,7 +42,7 @@ jobs:
       run: cmake --preset ${{matrix.preset}}            
 
     - name: Build
-      run: cmake --preset ${{matrix.preset}} --build  
+      run: cmake --build --preset ${{matrix.preset}}  
 
     # - name: Test
     #   working-directory: ${{ steps.strings.outputs.build-output-dir }}
