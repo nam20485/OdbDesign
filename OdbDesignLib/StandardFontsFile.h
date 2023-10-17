@@ -29,11 +29,11 @@ namespace Odb::Lib::FileModel::Design
 
 				typedef std::vector<std::shared_ptr<LineRecord>> Vector;
 
-				inline static constexpr char* LINE_RECORD_TOKEN = "LINE";
+				inline static constexpr const char* LINE_RECORD_TOKEN = "LINE";
 			};
 
-			inline static constexpr char* BEGIN_TOKEN = "CHAR";
-			inline static constexpr char* END_TOKEN = "ECHAR";
+			inline static constexpr const char* BEGIN_TOKEN = "CHAR";
+			inline static constexpr const char* END_TOKEN = "ECHAR";
 
 			char character;
 			LineRecord::Vector m_lineRecords;
