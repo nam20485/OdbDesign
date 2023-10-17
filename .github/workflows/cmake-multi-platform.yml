@@ -21,10 +21,21 @@ jobs:
 
       matrix:
         include:
+          # Windows x64 Release
           - os: windows-2022
-            preset: x64-release          
+            preset: x64-release
+          # Linux x64 Release          
           - os: ubuntu-22.04
-            preset: linux-release              
+            preset: linux-release
+          # MacOS x64 Release
+          - os: macos-11.0
+            preset: macos-release
+          # Linux mingw x64 Release
+          - os: ubuntu-22.04
+            preset: linux-mingw-w64-release
+          # Windows Python x64 Release
+          - os: windows-2022
+            preset: python-x64-release
 
     steps:      
     - uses: actions/checkout@v3            
