@@ -37,8 +37,7 @@ jobs:
     - name: Add cl To Path
       run: |
         dir ${{env.CL_PATH}}
-        echo ${{env.CL_PATH}} >> $GITHUB_PATH
-        set | findstr "MSVC"        
+        echo ${{env.CL_PATH}} >> $GITHUB_PATH               
         cl
         echo %VCToolsInstallDir%
     
