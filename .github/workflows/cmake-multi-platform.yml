@@ -9,7 +9,7 @@ on:
 
 env:
   VCPKG_ROOT: ${{ github.workspace }}/vcpkg
-  CL_PATH: "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Tools\\MSVC\\14.37.32822\\bin\\Hostx64\\x64"
+  CL_PATH: "\":C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Tools\\MSVC\\14.37.32822\\bin\\Hostx64\\x64\""
 
 jobs:
   build:
@@ -36,12 +36,14 @@ jobs:
 
     - name: Add cl To Path
       run: |
+        dir ${{env.CL_PATH}}}
         echo ${{env.CL_PATH}} >> $GITHUB_PATH
+        set | findstr "MSVC"        
         cl
+        echo %VCToolsInstallDir%
     
     - name: Install vcpkg
-      run: |       
-        dir "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\"
+      run: |               
         git clone https://github.com/Microsoft/vcpkg.git ${{env.VCPKG_ROOT}}
         ${{env.VCPKG_ROOT}}/bootstrap-vcpkg.sh
         
