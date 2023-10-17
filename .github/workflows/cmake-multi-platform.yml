@@ -27,11 +27,9 @@ jobs:
             preset: linux-release              
 
     steps:      
-    - uses: actions/checkout@v3
-    # install Ninja 
-    - uses: seanmiddleditch/gha-setup-ninja@master
+    - uses: actions/checkout@v3    
     # add Visual C++ tools to path
-    - uses: ilammy/msvc-dev-cmd@v1
+    #- uses: ilammy/msvc-dev-cmd@v1
 
     # - name: Add cl To Path
     #   run: |
@@ -49,10 +47,19 @@ jobs:
         git clone --depth 1 https://github.com/Microsoft/vcpkg.git ${{env.VCPKG_ROOT}}
         "${{env.VCPKG_ROOT}}/bootstrap-vcpkg.sh"
       # only on linux (Windows comes w/ vcpkg installed as part of VS)   
-      if: matrix.os == 'ubuntu-22.04'
+      #if: matrix.os == 'ubuntu-22.04'
+
+    # install Ninja 
+    - name: Install Ninja    
+      uses: seanmiddleditch/gha-setup-ninja@master
+      #if: matrix.os == 'ubuntu-22.04'
         
-    - name: Configure
-      run: cmake --preset ${{matrix.preset}}            
+    - name: Configure      
+      run: cmake --preset ${{matrix.preset}}
+      
+    - name: Setup VC Tools
+      uses: ilammy/msvc-dev-cmd@v1
+      if: matrix.os == 'windows-2022'
 
     - name: Build          
       run: cmake --build --preset ${{matrix.preset}}  
