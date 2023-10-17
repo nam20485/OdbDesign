@@ -38,8 +38,9 @@ jobs:
       run: |
         dir ${{env.CL_PATH}}
         Add-Content $env:GITHUB_PATH ${{env.CL_PATH}}
-        cl.exe
+        ${{env.CL_PATH}}\cl.exe /help        
         echo %VCToolsInstallDir%
+        cl.exe /help
     
     - name: Install vcpkg
       run: |               
