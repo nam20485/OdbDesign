@@ -218,6 +218,26 @@
           "sourceDir": "$env{HOME}/.vs/$ms{projectDirName}"
         }
       }
+    },
+    {
+      "name": "macos-release",
+      "displayName": "macOS Release",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/out/build/${presetName}",
+      "installDir": "${sourceDir}/out/install/${presetName}",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Darwin"
+      },
+      "vendor": {
+        "microsoft.com/VisualStudioRemoteSettings/CMake/1.0": {
+          "sourceDir": "$env{HOME}/.vs/$ms{projectDirName}"
+        }
+      }
     }
   ],
   "buildPresets": [
@@ -319,6 +339,27 @@
       "displayName": "Linux MinGW-w64 Release",
       "configurePreset": "linux-mingw-w64-release",
       "inherits": "linux-mingw-w64-base"
+    },
+    {
+      "name": "macos-base",
+      "hidden": true,
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Darwin"
+      }
+    },
+    {
+      "name": "macos-debug",
+      "displayName": "MacOS Debug",
+      "configurePreset": "macos-debug",
+      "inherits": "macos-base"
+    },
+    {
+      "name": "macos-release",
+      "displayName": "MacOS Release",
+      "configurePreset": "macos-release",
+      "inherits": "macos-base"
     }
   ],
   "testPresets": [
@@ -420,6 +461,27 @@
       "displayName": "Test Linux MinGW-w64 Release",
       "configurePreset": "linux-mingw-w64-release",
       "inherits": "linux-mingw-w64-base"
+    },
+    {
+      "name": "macos-base",
+      "hidden": true,
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Darwin"
+      }
+    },
+    {
+      "name": "macos-debug",
+      "displayName": "Test MacOS Debug",
+      "configurePreset": "macos-debug",
+      "inherits": "macos-base"
+    },
+    {
+      "name": "macos-release",
+      "displayName": "Test MacOS Release",
+      "configurePreset": "macos-release",
+      "inherits": "macos-base"
     }
   ]
 }
