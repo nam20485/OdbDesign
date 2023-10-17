@@ -24,6 +24,9 @@ namespace Odb::Lib
 		// enable HTTP compression
 		m_crowApp.use_compression(crow::compression::algorithm::GZIP);
 
+		// enable SSL/HTTPS
+		m_crowApp.ssl_file("ssl/localhost.crt", "ssl/localhost.key");
+
 		// let subclasses add controller types
 		add_controllers();
 
