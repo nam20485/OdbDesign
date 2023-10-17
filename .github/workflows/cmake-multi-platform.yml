@@ -91,4 +91,4 @@ jobs:
       run: cmake --build --preset ${{matrix.preset}} 
 
     - name: CMake Test
-      run: ctest --preset ${{matrix.preset}}}
+      run: ctest --preset ${{matrix.preset}} -V
