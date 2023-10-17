@@ -38,14 +38,14 @@ using StepDirectory = Odb::Lib::FileModel::Design::StepDirectory;
 
 // to handle declspec(dllexport) on Windows
 %include <windows.i>
-%include "export.h"
+%include "odbdesign_export.h"
 
 // code definitions
 %include "Net.h"
 %include "Component.h"
 %include "Design.h"
 %include "EdaDataFile.h"
-%include "BoardSide.h"
+%include "enums.h"
 %include "FileArchive.h"
 %include "LayerDirectory.h"
 %include "ComponentLayerDirectory.h"
