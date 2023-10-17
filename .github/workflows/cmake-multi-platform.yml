@@ -9,7 +9,7 @@ on:
 
 env:
   VCPKG_ROOT: ${{ github.workspace }}/vcpkg
-  CL_PATH: "\"C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Tools\\MSVC\\14.37.32822\\bin\\Hostx64\\x64\""
+  CL_PATH: 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Tools\\MSVC\\14.37.32822\\bin\\Hostx64\\x64'
 
 jobs:
   build:
@@ -22,12 +22,8 @@ jobs:
       matrix:
         include:
           - os: windows-2022
-            c_compiler: cl
-            cpp_compiler: cl
             preset: x64-release          
           - os: ubuntu-22.04
-            c_compiler: gcc
-            cpp_compiler: g++
             preset: linux-release              
 
     steps:      
@@ -37,10 +33,13 @@ jobs:
     - name: Add cl To Path
       run: |
         dir ${{env.CL_PATH}}
+        C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Tools\\MSVC\\14.37.32822\\bin\\Hostx64\\x64\\cl.exe
         Add-Content $env:GITHUB_PATH ${{env.CL_PATH}}
-        ${{env.CL_PATH}}\cl.exe /help        
+        ${{env.CL_PATH}}\cl.exe
+        ${{env.CL_PATH}}\cl
         echo %VCToolsInstallDir%
-        cl.exe /help
+        cl.exe
+        cl        
     
     - name: Install vcpkg
       run: |               
