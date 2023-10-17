@@ -35,6 +35,10 @@ jobs:
     
     - name: Install vcpkg
       run: |
+        dir "/Program Files/Microsoft Visual Studio/"
+        dir "/Program Files/Microsoft Visual Studio/2022/"
+        dir "/Program Files/Microsoft Visual Studio/2022/Enterprise/"
+        dir "/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/"
         git clone https://github.com/Microsoft/vcpkg.git ${{env.VCPKG_ROOT}}
         ${{env.VCPKG_ROOT}}/bootstrap-vcpkg.sh
         
