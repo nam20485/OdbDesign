@@ -80,6 +80,6 @@ if (PYTHON_MODULE_BUILD)
 
     # include and link to Python3                           
     find_package(Python3 COMPONENTS Development REQUIRED)
-    target_include_directories(OdbDesign PRIVATE ${Python3_INCLUDE_DIRS})    
-    target_link_libraries(OdbDesign ${Python3_LIBRARIES})
+    #target_include_directories(OdbDesign PRIVATE ${Python3_INCLUDE_DIRS})    
+    target_link_libraries(OdbDesign PRIVATE Python3::Python)
 endif()
