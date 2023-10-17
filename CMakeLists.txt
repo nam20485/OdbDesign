@@ -67,12 +67,3 @@ add_subdirectory("OdbDesignServer")
 add_subdirectory("Utils")
 add_subdirectory("OdbDesignTests")
 
-# link to OdbDesign library in both executable targets (linking inside the targets now)
-#target_link_libraries(OdbDesignApp PUBLIC OdbDesign)
-#target_link_libraries(OdbDesignServer PUBLIC OdbDesign)
-#target_link_libraries(OdbDesignTests PUBLIC OdbDesign)
-
-# link to Utils lib in all targets (linking inside OdbDesignLib target only now)
-#target_link_libraries(OdbDesignApp PUBLIC Utils)
-#target_link_libraries(OdbDesignServer PUBLIC Utils)
-#target_link_libraries(OdbDesign PUBLIC Utils)
