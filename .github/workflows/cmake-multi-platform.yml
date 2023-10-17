@@ -9,7 +9,7 @@ on:
 
 env:
   VCPKG_ROOT: ${{ github.workspace }}/vcpkg
-  CL_PATH: 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Tools\\MSVC\\14.37.32822\\bin\\Hostx64\\x64'
+  CL_PATH: "\"C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Tools\\MSVC\\14.37.32822\\bin\\Hostx64\\x64\""
 
 jobs:
   build:
@@ -27,19 +27,22 @@ jobs:
             preset: linux-release              
 
     steps:      
-    - uses: actions/checkout@v3      
+    - uses: actions/checkout@v3
+    # install Ninja 
     - uses: seanmiddleditch/gha-setup-ninja@master
+    # add Visual C++ tools to path
+    - uses: ilammy/msvc-dev-cmd@v1
 
-    - name: Add cl To Path
-      run: |
-        dir ${{env.CL_PATH}}
-        C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Tools\\MSVC\\14.37.32822\\bin\\Hostx64\\x64\\cl.exe
-        Add-Content $env:GITHUB_PATH ${{env.CL_PATH}}
-        ${{env.CL_PATH}}\cl.exe
-        ${{env.CL_PATH}}\cl
-        echo %VCToolsInstallDir%
-        cl.exe
-        cl        
+    # - name: Add cl To Path
+    #   run: |
+    #     dir ${{env.CL_PATH}}
+    #     C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Tools\\MSVC\\14.37.32822\\bin\\Hostx64\\x64\\cl.exe
+    #     Add-Content $env:GITHUB_PATH ${{env.CL_PATH}}
+    #     ${{env.CL_PATH}}\cl.exe
+    #     ${{env.CL_PATH}}\cl
+    #     echo %VCToolsInstallDir%
+    #     cl.exe
+    #     cl        
     
     - name: Install vcpkg
       run: |               
