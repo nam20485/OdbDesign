@@ -73,10 +73,11 @@ jobs:
       
     - name: Patch vcpkg
       run: | 
-        dir ${{env.VCPKG_ROOT}}
-        dir ${{env.VCPKG_ROOT}}\scripts
-        dir ${{env.VCPKG_ROOT}}\scripts\msys
-        mkdir ${{env.VCPKG_ROOT}}\scripts\msys
+        dir "${{env.VCPKG_ROOT}}"
+        dir "${{env.VCPKG_ROOT}}\scripts"
+        dir "${{env.VCPKG_ROOT}}\scripts\msys"
+        mkdir "${{env.VCPKG_ROOT}}\scripts\msys"
+        copy OdbDesign\scripts\patch\compile_wrapper_consider_clang-cl.patch "${{env.VCPKG_ROOT}}\scripts\msys\compile_wrapper_consider_clang-cl.patch"
         scripts/patch-vcpkg-install.ps1
       if: matrix.os == 'windows-2022'
     
