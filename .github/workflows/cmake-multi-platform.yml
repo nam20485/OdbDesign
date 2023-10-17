@@ -28,7 +28,7 @@ jobs:
           - os: ubuntu-22.04
             preset: linux-release
           # MacOS x64 Release
-          - os: macos-11.0
+          - os: macos-12
             preset: macos-release
           # Linux mingw x64 Release
           - os: ubuntu-22.04
