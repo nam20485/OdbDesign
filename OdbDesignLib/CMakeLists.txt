@@ -25,7 +25,6 @@ target_compile_options(OdbDesign PUBLIC
 
 target_link_libraries(OdbDesign PUBLIC Utils)
 
-
 # state that anybody linking to us needs to include the current source dir, while we don't.
 target_include_directories(OdbDesign
                            INTERFACE
@@ -36,7 +35,7 @@ target_include_directories(OdbDesign
 find_package(ZLIB REQUIRED)
 target_link_libraries(OdbDesign PRIVATE ZLIB::ZLIB)
 
-find_package(OpenSSL)
+find_package(OpenSSL REQUIRED)
 target_link_libraries(OdbDesign PUBLIC OpenSSL::SSL OpenSSL::Crypto)
 
 target_compile_definitions(OdbDesign PUBLIC CROW_ENABLE_COMPRESSION)
