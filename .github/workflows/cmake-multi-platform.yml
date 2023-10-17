@@ -37,21 +37,27 @@ jobs:
           - os: windows-2022
             preset: python-x64-release
 
-    steps:      
+    steps:   
+
     - uses: actions/checkout@v3            
     
+    #
+    #   != windows-2022 (i.e. Linux, MacOS)
+    #
     - name: Install vcpkg
       run: |               
         git clone --depth 1 https://github.com/Microsoft/vcpkg.git ${{env.VCPKG_ROOT}}
         "${{env.VCPKG_ROOT}}/bootstrap-vcpkg.sh"
-      # only on linux (Windows comes w/ vcpkg installed as part of VS)   
-      if: matrix.os == 'ubuntu-22.04'
-
-    # install Ninja 
+      # on all non-Windows os's (Windows comes w/ vcpkg installed as part of VS)   
+      if: matrix.os != 'windows-2022'
+    
     - name: Install Ninja    
       uses: seanmiddleditch/gha-setup-ninja@master
-      #if: matrix.os == 'ubuntu-22.04'
+      if: matrix.os != 'windows-2022'
 
+    #
+    #   == windows-2022
+    #
     - name: Setup VC Tools
       uses: ilammy/msvc-dev-cmd@v1
       if: matrix.os == 'windows-2022'
@@ -59,7 +65,10 @@ jobs:
     - name: Patch vcpkg
       run: scripts/patch-vcpkg-install.ps1
       if: matrix.os == 'windows-2022'
-        
+    
+    #
+    #   All platforms
+    #
     - name: CMake Configure      
       run: cmake --preset ${{matrix.preset}}    
 
