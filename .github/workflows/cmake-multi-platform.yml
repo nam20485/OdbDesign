@@ -58,11 +58,10 @@ jobs:
     #
     #   preset == linux-mingw-w64-release
     #   
-    - name: Install APT Packages
+    - name: Install mingw-w64
       run: |
         sudo apt-get update
         sudo apt-get install -y --no-install-recommends mingw-w64
-
       if: matrix.preset == 'linux-mingw-w64-release'
   
     #
