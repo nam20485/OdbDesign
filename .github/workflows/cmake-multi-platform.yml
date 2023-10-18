@@ -90,7 +90,7 @@ jobs:
       if: matrix.preset != 'linux-mingw-w64-release' && matrix.os != 'windows-2022'
 
     - name: Manual vcpkg Install (Windows)
-      run: "& \"${{env.VCPKG_ROOT}}/vcpkg\" install"
+      run: "& \"${{env.VCPKG_ROOT}}/vcpkg\" install --triplet x64-windows"
       if: matrix.os == 'windows-2022'
 
     - name: Manual vcpkg Install (mingw-w64)
