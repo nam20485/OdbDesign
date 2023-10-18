@@ -94,7 +94,7 @@ jobs:
       if: matrix.os == 'windows-2022'
 
     - name: Manual vcpkg Install (mingw-w64)
-      run: "\"${{env.VCPKG_ROOT}}/vcpkg\" install --triplet x64-mingw-dynamic"
+      run: "\"${{env.VCPKG_ROOT}}/vcpkg\" install --triplet x64-mingw-static"
       if: matrix.preset == 'linux-mingw-w64-release'
     
     #
