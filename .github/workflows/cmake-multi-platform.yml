@@ -33,9 +33,9 @@ jobs:
           # Linux mingw x64 Release
           - os: ubuntu-22.04
             preset: linux-mingw-w64-release
-          # Windows Python x64 Release
-          - os: windows-2022
-            preset: python-x64-release
+          # Linux Python Release
+          - os: ubuntu-22.04
+            preset: python-linux-release
 
     steps:   
 
@@ -74,6 +74,15 @@ jobs:
     - name: Patch vcpkg
       run: scripts/patch-vcpkg-install.ps1
       if: matrix.os == 'windows-2022'
+
+    #
+    #  preset == python-x64-release
+    #
+    - name: Generate SWIG Bindings
+      run: | 
+        sudo apt get update
+        sudo apt-get install -y --no-install-recommends swig
+        scripts/generate-python-module.sh
     
     #
     #   All platforms
