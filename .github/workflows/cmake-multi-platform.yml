@@ -59,9 +59,10 @@ jobs:
     #   preset == linux-mingw-w64-release
     #   
     - name: Install APT Packages
-      uses: awalsh128/cache-apt-pkgs-action@v1.3.0
-      with:
-        packages: mingw-w64
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y --no-install-recommends mingw-w64
+
       if: matrix.preset == 'linux-mingw-w64-release'
   
     #
