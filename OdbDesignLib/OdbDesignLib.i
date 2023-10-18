@@ -5,6 +5,7 @@
 #include "Component.h"
 #include "Design.h"
 #include "EdaDataFile.h"
+#include "MiscInfoFile.h"
 #include "enums.h"
 #include "FileArchive.h"
 #include "LayerDirectory.h"
@@ -16,7 +17,7 @@
 #include "Pin.h"
 #include "PinConnection.h"
 #include "StepDirectory.h"
-#include "string_trim.h"
+#include "str_trim.h"
 #include "Via.h"
 
 /* some objects' namespaces aren't included correctly */
@@ -39,12 +40,15 @@ using StepDirectory = Odb::Lib::FileModel::Design::StepDirectory;
 // to handle declspec(dllexport) on Windows
 %include <windows.i>
 %include "odbdesign_export.h"
+%include "../Utils/utils_export.h"
 
 // code definitions
+//%include "IProtoBuffable.h"
 %include "Net.h"
 %include "Component.h"
 %include "Design.h"
 %include "EdaDataFile.h"
+%include "MiscInfoFile.h"
 %include "enums.h"
 %include "FileArchive.h"
 %include "LayerDirectory.h"
@@ -56,5 +60,8 @@ using StepDirectory = Odb::Lib::FileModel::Design::StepDirectory;
 %include "Pin.h"
 %include "PinConnection.h"
 %include "StepDirectory.h"
-%include "str_trim.h"
+%include "../Utils/str_trim.h"
 %include "Via.h"
+
+// %template IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile>
+//%template(EdaDataFileIProtoBuffable) IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile>;
