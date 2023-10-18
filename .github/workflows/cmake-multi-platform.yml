@@ -87,11 +87,11 @@ jobs:
     
     - name: Manual vcpkg Install (Non-Windows)
       run: "\"${{env.VCPKG_ROOT}}/vcpkg\" install"
-      if: matrix.preset != 'linux-mingw-w64-release' && matrix.preset != 'windows-2022'
+      if: matrix.preset != 'linux-mingw-w64-release' && matrix.os != 'windows-2022'
 
     - name: Manual vcpkg Install (Windows)
       run: "& \"${{env.VCPKG_ROOT}}/vcpkg\" install"
-      if: matrix.preset == 'windows-2022'
+      if: matrix.os == 'windows-2022'
 
     - name: Manual vcpkg Install (mingw-w64)
       run: "\"${{env.VCPKG_ROOT}}/vcpkg\" install --triplet x64-mingw-dynamic"
