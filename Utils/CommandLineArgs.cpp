@@ -63,7 +63,7 @@ namespace Utils
 
 	void Utils::CommandLineArgs::parse()
 	{
-		for (int i = 1; i < m_vecArguments.size(); i++)
+		for (int i = 0; i < m_vecArguments.size(); i++)
 		{
 			auto& arg = m_vecArguments[i];
 			if (arg.length() > 0)
