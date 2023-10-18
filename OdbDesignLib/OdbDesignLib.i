@@ -4,7 +4,9 @@
 %header %{
 #include "Component.h"
 #include "Design.h"
+//#include "IProtoBuffable.h"
 #include "EdaDataFile.h"
+#include "OdbFile.h"
 #include "MiscInfoFile.h"
 #include "enums.h"
 #include "FileArchive.h"
@@ -19,6 +21,7 @@
 #include "StepDirectory.h"
 #include "str_trim.h"
 #include "Via.h"
+//#include "edadatafile.pb.h"
 
 /* some objects' namespaces aren't included correctly */
 using PinConnection = Odb::Lib::ProductModel::PinConnection;
@@ -43,11 +46,13 @@ using StepDirectory = Odb::Lib::FileModel::Design::StepDirectory;
 %include "../Utils/utils_export.h"
 
 // code definitions
+//%include "proto/edadatafile.pb.h"
 //%include "IProtoBuffable.h"
 %include "Net.h"
 %include "Component.h"
 %include "Design.h"
 %include "EdaDataFile.h"
+%include "OdbFile.h"
 %include "MiscInfoFile.h"
 %include "enums.h"
 %include "FileArchive.h"
@@ -63,5 +68,4 @@ using StepDirectory = Odb::Lib::FileModel::Design::StepDirectory;
 %include "../Utils/str_trim.h"
 %include "Via.h"
 
-// %template IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile>
-//%template(EdaDataFileIProtoBuffable) IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile>;
+//%template(EdaDataFileIProtoBuffable) Odb::Lib::IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile>;

@@ -8,7 +8,7 @@
 #ifndef ODBDESIGN_MISCINFOFILE_H
 #define ODBDESIGN_MISCINFOFILE_H
 
-using namespace std::chrono;
+//using namespace std::chrono;
 
 namespace Odb::Lib::FileModel::Design
 {
@@ -23,9 +23,9 @@ namespace Odb::Lib::FileModel::Design
         std::string GetJobName() const;
         std::string GetOdbVersionMajor() const;
         std::string GetOdbVersionMinor() const;
-        std::string GetOdbSource() const;
-        system_clock::time_point GetCreationDate() const;
-        system_clock::time_point GetSaveDate() const;
+        std::string GetOdbSource() const;        
+        std::chrono::system_clock::time_point GetCreationDate() const;
+        std::chrono::system_clock::time_point GetSaveDate() const;
         std::string GetSaveApp() const;
         std::string GetSaveUser() const;
         std::string GetUnits() const;
@@ -39,8 +39,8 @@ namespace Odb::Lib::FileModel::Design
         std::string m_odbVersionMajor;
         std::string m_odbVersionMinor;
         std::string m_odbSource;
-        system_clock::time_point m_creationDateDate;   // "20161024.101454"
-        system_clock::time_point m_saveDate;           // "20170810.132829"
+        std::chrono::system_clock::time_point m_creationDateDate;   // "20161024.101454"
+        std::chrono::system_clock::time_point m_saveDate;           // "20170810.132829"
         std::string m_saveApp;
         std::string m_saveUser;
         std::string m_units;
