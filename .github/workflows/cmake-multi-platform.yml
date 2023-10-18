@@ -89,11 +89,11 @@ jobs:
     #
     - name: Manual vcpkg Install (not mingw-w64)
       run: "${{env.VCPKG_ROOT}}/vcpkg install"
-      if: matrix.preset != 'python-linux-release'
+      if: matrix.preset != 'linux-mingw-w64-release'
 
     - name: Manual vcpkg Install (mingw-w64)
       run: "${{env.VCPKG_ROOT}}/vcpkg install --triplet x64-mingw-static"
-      if: matrix.preset == 'python-linux-release'
+      if: matrix.preset == 'linux-mingw-w64-release'
 
     - name: CMake Configure      
       run: cmake --preset ${{matrix.preset}}    
