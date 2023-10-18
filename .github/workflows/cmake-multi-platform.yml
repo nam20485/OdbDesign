@@ -81,18 +81,19 @@ jobs:
       run: | 
         sudo apt-get update
         sudo apt-get install -y --no-install-recommends swig
-        scripts/generate-python-module.sh
+        chmod +x ./scripts/generate-python-module.sh
+        ./scripts/generate-python-module.sh
       if: matrix.preset == 'python-linux-release'
     
     #
     #   All platforms
     #
     - name: Manual vcpkg Install (not mingw-w64)
-      run: "${{env.VCPKG_ROOT}}/vcpkg install"
+      run: "\"${{env.VCPKG_ROOT}}/vcpkg\" install"
       if: matrix.preset != 'linux-mingw-w64-release'
 
     - name: Manual vcpkg Install (mingw-w64)
-      run: "${{env.VCPKG_ROOT}}/vcpkg install --triplet x64-mingw-static"
+      run: "\"${{env.VCPKG_ROOT}}/vcpkg\" install --triplet x64-mingw-static"
       if: matrix.preset == 'linux-mingw-w64-release'
 
     - name: CMake Configure      
