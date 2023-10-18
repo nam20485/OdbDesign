@@ -9,6 +9,8 @@ on:
 
 env:
   VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+  #VCPKG_BINARY_SOURCES: 'clear;nuget,GitHub,readwrite'
+  VCPKG_BINARY_SOURCES: 'clear;x-gha,readwrite'
   
 jobs:
   build:
@@ -53,6 +55,13 @@ jobs:
     - name: Install Ninja    
       uses: seanmiddleditch/gha-setup-ninja@master
       if: matrix.os != 'windows-2022'
+
+    # Export vcpkg Cache Variables
+    - uses: actions/github-script@v6
+      with:
+        script: |
+          core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+          core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
 
     #
     #   preset == linux-mingw-w64-release
