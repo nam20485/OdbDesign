@@ -10,7 +10,7 @@ add_library(OdbDesign SHARED "odbdesign_export.h" "ComponentLayerDirectory.cpp" 
         AttrListFile.cpp
         AttrListFile.h
         SysAttrFile.cpp
-        SysAttrFile.h "RgbColor.h" "RgbColor.cpp" "StandardFontsFile.h" "StandardFontsFile.cpp" "enums.h")
+        SysAttrFile.h "RgbColor.h" "RgbColor.cpp" "StandardFontsFile.h" "StandardFontsFile.cpp" "enums.h" "OdbDesignArgs.h" "OdbDesignArgs.cpp")
 
 # disable warning C4250: inheritance by dominance
 target_compile_options(OdbDesign PUBLIC
