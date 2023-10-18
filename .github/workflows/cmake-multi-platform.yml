@@ -9,8 +9,7 @@ on:
 
 env:
   VCPKG_ROOT: ${{ github.workspace }}/vcpkg
-  #CL_PATH: "\"C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Tools\\MSVC\\14.37.32822\\bin\\Hostx64\\x64\""
-
+  
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -61,7 +60,7 @@ jobs:
     - name: Install mingw-w64
       run: |
         sudo apt-get update
-        sudo apt-get install -y --no-install-recommends mingw-w64
+        sudo apt-get install -y --no-install-recommends mingw-w64        
       if: matrix.preset == 'linux-mingw-w64-release'
   
     #
@@ -88,6 +87,14 @@ jobs:
     #
     #   All platforms
     #
+    - name: Manual vcpkg Install (not mingw-w64)
+      run: "${{env.VCPKG_ROOT}}/vcpkg install"
+      if: matrix.preset != 'python-linux-release'
+
+    - name: Manual vcpkg Install (mingw-w64)
+      run: "${{env.VCPKG_ROOT}}/vcpkg install --triplet x64-mingw-static"
+      if: matrix.preset == 'python-linux-release'
+
     - name: CMake Configure      
       run: cmake --preset ${{matrix.preset}}    
 
