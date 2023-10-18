@@ -85,17 +85,21 @@ jobs:
         ./scripts/generate-python-module.sh
       if: matrix.preset == 'python-linux-release'
     
-    #
-    #   All platforms
-    #
-    - name: Manual vcpkg Install (not mingw-w64)
+    - name: Manual vcpkg Install (Non-Windows)
       run: "\"${{env.VCPKG_ROOT}}/vcpkg\" install"
-      if: matrix.preset != 'linux-mingw-w64-release'
+      if: matrix.preset != 'linux-mingw-w64-release' && matrix.preset != 'windows-2022'
+
+    - name: Manual vcpkg Install (Windows)
+      run: "& \"${{env.VCPKG_ROOT}}/vcpkg\" install"
+      if: matrix.preset == 'windows-2022'
 
     - name: Manual vcpkg Install (mingw-w64)
       run: "\"${{env.VCPKG_ROOT}}/vcpkg\" install --triplet x64-mingw-static"
       if: matrix.preset == 'linux-mingw-w64-release'
-
+    
+    #
+    #   All platforms
+    #   
     - name: CMake Configure      
       run: cmake --preset ${{matrix.preset}}    
 
