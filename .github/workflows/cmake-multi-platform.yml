@@ -57,7 +57,8 @@ jobs:
       if: matrix.os != 'windows-2022'
 
     # Export vcpkg Cache Variables
-    - uses: actions/github-script@v6
+    - name : Export vcpkg Cache Variables
+      uses: actions/github-script@v6
       with:
         script: |
           core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
