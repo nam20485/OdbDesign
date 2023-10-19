@@ -19,7 +19,6 @@ on:
 env:
   # Path to the CMake build directory.
   build: '${{ github.workspace }}/build'  
-  VCPKG_ROOT: ${{ github.workspace }}/vcpkg
   VCPKG_BINARY_SOURCES: 'clear;x-gha,readwrite'
 
 permissions:
@@ -45,6 +44,9 @@ jobs:
           script: |
             core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
             core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+      
+      - name: Setup VC Tools
+        uses: ilammy/msvc-dev-cmd@v1
 
       - name: Patch vcpkg
         run: scripts/patch-vcpkg-install.ps1
