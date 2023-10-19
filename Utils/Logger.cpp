@@ -74,7 +74,13 @@ namespace Utils
 
 	void Logger::exception(const std::exception& e, const std::string& file, int line)
 	{
-		error(e.what(), file, line);
+		exception(e.what(), file, line);
+	}
+
+	void Logger::exception(const std::string& message, const std::string& file, int line)
+	{
+		std::string s = "EXCEPTION!: " + message;
+		error(s, file, line);
 	}
 
 	void Logger::start()
