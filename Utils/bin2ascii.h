@@ -2,7 +2,7 @@
 
 #include <string>
 #include <stdexcept>
-#include "export.h"
+#include "utils_export.h"
 
 
 // adapted from https://github.com/yinqiwen/pbjson/blob/5cb78413cb4d223e26a8c89d424b8c0623b79832/src/bin2ascii.h

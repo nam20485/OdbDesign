@@ -17,7 +17,7 @@ namespace Utils
 	{
 	}
 
-	inline Logger* Logger::instance()
+	/*static*/ Logger* Logger::instance()
 	{
 		if (_instance == nullptr)
 		{
@@ -28,8 +28,8 @@ namespace Utils
 
 	/*static*/ Logger* Logger::_instance = nullptr;
 
-	inline Logger::Level Logger::logLevel() const { return m_level; }
-	inline void Logger::logLevel(Logger::Level level) { m_level = level; }
+	Logger::Level Logger::logLevel() const { return m_level; }
+	void Logger::logLevel(Logger::Level level) { m_level = level; }
 
 	void Logger::log(Level level, const std::string& message, const std::string& file, int line)
 	{

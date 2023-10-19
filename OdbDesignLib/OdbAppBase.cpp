@@ -18,7 +18,7 @@ namespace Odb::Lib
         google::protobuf::ShutdownProtobufLibrary();
     }
 
-    const CommandLineArgs& OdbAppBase::arguments() const
+    const OdbDesignArgs& OdbAppBase::args() const
     {
         return m_commandLineArgs;
     }

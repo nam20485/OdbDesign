@@ -23,4 +23,5 @@ build/
 /OdbDesignServer/designs/
 /cmake-build-debug-visual-studio
 /.idea/workspace.xml
-/.vs - Copy
+ssl/
+Testing/Temporary/

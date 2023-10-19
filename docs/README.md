@@ -34,6 +34,26 @@ The diagram describes the current state of parser implementation and data availa
 
 ![image](https://github.com/nam20485/OdbDesign/assets/1829396/d92b77f1-7edc-4c90-b6df-21cea3ee92fe)
 
+### CI/CD Build Statuses
+
+#### Branches
+
+##### `development`
+
+| | | |
+|-|-|-|
+| Build          |       | [![CMake Build Multi-Platform](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml) |
+| Code Scan      |       | [![CodeQL](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml) |
+| Docker         |       | [![Docker Publish](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml) |
+
+##### `main`
+
+| | | |
+|-|-|-|
+| Build          |       | [![CMake Build Multi-Platform](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml) |
+| Code Scan      |       | [![CodeQL](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml) |
+| Docker         |       | [![Docker Publish](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml) |
+
 ### Architecture
 
 ## Building from Source
@@ -56,7 +76,9 @@ The diagram describes the current state of parser implementation and data availa
 
 Get the source code by cloning the GitHub repository:
 
-```$ git clone git@github.com:nam20485/OdbDesign.git```
+```Bash
+$ git clone git@github.com:nam20485/OdbDesign.git
+```
 
 ### Build
 

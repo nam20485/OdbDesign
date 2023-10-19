@@ -11,6 +11,8 @@
 #include "timestamp.h"
 #include "Logger.h"
 
+using namespace std::chrono;
+
 namespace Odb::Lib::FileModel::Design
 {
     bool MiscInfoFile::Parse(std::filesystem::path path)

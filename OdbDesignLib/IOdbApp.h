@@ -1,11 +1,9 @@
 #pragma once
 
-#include "CommandLineArgs.h"
+#include "OdbDesignArgs.h"
 #include "DesignCache.h"
 #include "ExitCode.h"
 #include "odbdesign_export.h"
-
-using namespace Utils;
 
 namespace Odb::Lib
 {
@@ -14,10 +12,10 @@ namespace Odb::Lib
 	public:
 		virtual ~IOdbApp() {}
 
-		virtual const CommandLineArgs& arguments() const = 0;		
+		virtual const OdbDesignArgs& args() const = 0;
 		virtual DesignCache& design_cache() = 0;
 
-		virtual ExitCode Run() = 0;
+		virtual Utils::ExitCode Run() = 0;
 
 	protected:
 		// abstract class/interface

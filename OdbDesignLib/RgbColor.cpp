@@ -3,10 +3,10 @@
 namespace Odb::Lib::FileModel::Design
 {
     RgbColor::RgbColor()
-        : noPreference(false)
-        , red(0)
+        : red(0)
         , green(0)
         , blue(0)
+        , noPreference(false)
     {
     }
 

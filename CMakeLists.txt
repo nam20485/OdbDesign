@@ -12,7 +12,7 @@ set(CMAKE_CXX_STANDARD ${MY_CXX_STANDARD})
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # required for SWIG python wrapper
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+#set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # GoogleTest support
 include(FetchContent)
@@ -66,13 +66,3 @@ add_subdirectory("OdbDesignLib")
 add_subdirectory("OdbDesignServer")
 add_subdirectory("Utils")
 add_subdirectory("OdbDesignTests")
-
-# link to OdbDesign library in both executable targets (linking inside the targets now)
-#target_link_libraries(OdbDesignApp PUBLIC OdbDesign)
-#target_link_libraries(OdbDesignServer PUBLIC OdbDesign)
-#target_link_libraries(OdbDesignTests PUBLIC OdbDesign)
-
-# link to Utils lib in all targets (linking inside OdbDesignLib target only now)
-#target_link_libraries(OdbDesignApp PUBLIC Utils)
-#target_link_libraries(OdbDesignServer PUBLIC Utils)
-#target_link_libraries(OdbDesign PUBLIC Utils)

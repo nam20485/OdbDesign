@@ -9,6 +9,7 @@
 #include <vector>
 #include <memory>
 #include "RgbColor.h"
+#include "enums.h"
 
 
 namespace Odb::Lib::FileModel::Design
@@ -53,13 +54,7 @@ namespace Odb::Lib::FileModel::Design
             {
                 Board,
                 Misc
-            };
-
-            enum class Polarity
-			{
-				Positive,
-				Negative
-			};
+            };           
 
             enum class DielectricType
             {

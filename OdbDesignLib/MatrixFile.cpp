@@ -244,11 +244,11 @@ namespace Odb::Lib::FileModel::Design
                             {
                                 if (value == "POSITIVE")
                                 {
-                                    pCurrentLayerRecord->polarity = LayerRecord::Polarity::Positive;
+                                    pCurrentLayerRecord->polarity = Polarity::Positive;
                                 }
                                 else if (value == "NEGATIVE")
                                 {
-                                    pCurrentLayerRecord->polarity = LayerRecord::Polarity::Negative;
+                                    pCurrentLayerRecord->polarity = Polarity::Negative;
                                 }
                                 else
                                 {
