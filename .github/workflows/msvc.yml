@@ -18,7 +18,9 @@ on:
 
 env:
   # Path to the CMake build directory.
-  build: '${{ github.workspace }}/build'
+  build: '${{ github.workspace }}/build'  
+  VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+  VCPKG_BINARY_SOURCES: 'clear;x-gha,readwrite'
 
 permissions:
   contents: read
@@ -30,14 +32,31 @@ jobs:
       security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
       actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
     name: Analyze
-    runs-on: windows-latest
+    runs-on: windows-2022
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Configure CMake
-        run: cmake -B ${{ env.build }}
+       # Export vcpkg Cache Variables
+      - name : Export vcpkg Cache Variables
+        uses: actions/github-script@v6
+        with:
+          script: |
+            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+
+      - name: Patch vcpkg
+        run: scripts/patch-vcpkg-install.ps1
+      
+      - name: Manual vcpkg Install (Windows)
+        run: "& \"${{env.VCPKG_ROOT}}/vcpkg\" install --triplet x64-windows"
+        
+      - name: CMake Configure      
+        run: cmake --preset x64-release -B ${{ env.build }}
+
+      # - name: Configure CMake
+      #   run: cmake -B ${{ env.build }}
 
       # Build is not required unless generated source files are used
       # - name: Build CMake
@@ -59,8 +78,8 @@ jobs:
           sarif_file: ${{ steps.run-analysis.outputs.sarif }}
 
       # Upload SARIF file as an Artifact to download and view
-      # - name: Upload SARIF as an Artifact
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: sarif-file
-      #     path: ${{ steps.run-analysis.outputs.sarif }}
+      - name: Upload SARIF as an Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: sarif-file
+          path: ${{ steps.run-analysis.outputs.sarif }}
