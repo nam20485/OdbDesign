@@ -2,12 +2,13 @@
   "dependencies": [
     "libarchive",
     "zlib",
-    "crow",    
+    "crow",
     {
       "name": "protobuf",
       "features": [
-        "zlib"        
+        "zlib"
       ]
-    }
+    },
+    "openssl"
   ]
 }
