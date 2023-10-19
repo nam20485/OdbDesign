@@ -1,5 +1,6 @@
 #include "OdbServerAppBase.h"
 
+using namespace Utils;
 
 namespace Odb::Lib
 {
@@ -15,10 +16,17 @@ namespace Odb::Lib
 
 	ExitCode Odb::Lib::OdbServerAppBase::Run()
 	{
-		auto result = OdbAppBase::Run();
-		if (result != ExitCode::Success) return result;
+		// call base class
+		if (ExitCode::Success != OdbAppBase::Run()) return ExitCode::FailedInit;
 
+		// set Crow's log level
+		m_crowApp.loglevel(crow::LogLevel::Info);
+
+		// enable HTTP compression
 		m_crowApp.use_compression(crow::compression::algorithm::GZIP);
+
+		// enable SSL/HTTPS
+		m_crowApp.ssl_file("ssl/localhost.crt", "ssl/localhost.key");
 
 		// let subclasses add controller types
 		add_controllers();
@@ -26,9 +34,10 @@ namespace Odb::Lib
 		// register all added controllers' routes
 		register_routes();
 
-		// run the server
+		// run the Crow server
 		m_crowApp.port(18080).multithreaded().run();
 
+		// success!
 		return ExitCode::Success;
 	}
 

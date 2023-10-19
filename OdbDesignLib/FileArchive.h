@@ -6,6 +6,9 @@
 #include "EdaDataFile.h"
 #include <map>
 #include <vector>
+#include "MiscInfoFile.h"
+#include "MatrixFile.h"
+#include "StandardFontsFile.h"
 
 
 namespace Odb::Lib::FileModel::Design
@@ -19,7 +22,10 @@ namespace Odb::Lib::FileModel::Design
 		std::string GetPath() const;
 		std::string GetProductName() const;
 
-		const StepDirectory::StringMap& GetStepsByName() const;		
+		const StepDirectory::StringMap& GetStepsByName() const;
+        const MiscInfoFile& GetMiscInfoFile() const;
+		const MatrixFile& GetMatrixFile() const;
+		const StandardFontsFile& GetStandardFontsFile() const;
 
 		// TODO: fix these to use pointer return types
 		//const EdaDataFile& GetStepEdaDataFile(std::string stepName) const;
@@ -35,9 +41,16 @@ namespace Odb::Lib::FileModel::Design
 		std::string m_productName;
 
 		StepDirectory::StringMap m_stepsByName;
+        MiscInfoFile m_miscInfoFile;
+		MatrixFile m_matrixFile;
+		StandardFontsFile m_standardFontsFile;
 
-		bool ParseDesignDirectory(std::filesystem::path path);
-		bool ExtractDesignArchive(const std::filesystem::path& path, std::filesystem::path& extractedPath) const;
+		bool ParseDesignDirectory(const std::filesystem::path& path);
+        bool ParseMiscInfoFile(const std::filesystem::path& path);
+		bool ParseMatrixFile(const std::filesystem::path& path);
+		bool ParseStandardFontsFile(const std::filesystem::path& path);
 
-	};
+		static bool ExtractDesignArchive(const std::filesystem::path& path, std::filesystem::path& extractedPath);
+
+    };
 }

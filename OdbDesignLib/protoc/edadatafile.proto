@@ -1,6 +1,9 @@
 syntax = "proto3";
 
-package odbdesign.proto;
+//// https://protobuf.dev/reference/cpp/cpp-generated/#message
+//option optimize_for = CODE_SIZE;
+
+package Odb.Lib.Protobuf;
 
 //
 //  EdaDataFile.h

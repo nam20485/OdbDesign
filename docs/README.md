@@ -32,7 +32,27 @@ The maintainer has well over a decade of experience in the PCB Manufacturing and
 
 The diagram describes the current state of parser implementation and data availability. Green color describes areas of the ODB++ archive file that are implemented and have their data available for use. Red color describes areas that are not parsed so their data is not yet available.
 
-![image](https://github.com/nam20485/OdbDesign/assets/1829396/2b902d94-c9ba-40cb-9b79-e0e6c4ba775a)
+![image](https://github.com/nam20485/OdbDesign/assets/1829396/d92b77f1-7edc-4c90-b6df-21cea3ee92fe)
+
+### CI/CD Build Statuses
+
+#### Branches
+
+##### `development`
+
+| | | |
+|-|-|-|
+| Build          |       | [![CMake Build Multi-Platform](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml) |
+| Code Scan      |       | [![CodeQL](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml) |
+| Docker         |       | [![Docker Publish](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml) |
+
+##### `main`
+
+| | | |
+|-|-|-|
+| Build          |       | [![CMake Build Multi-Platform](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml) |
+| Code Scan      |       | [![CodeQL](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml) |
+| Docker         |       | [![Docker Publish](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml) |
 
 ### Architecture
 
@@ -56,7 +76,9 @@ The diagram describes the current state of parser implementation and data availa
 
 Get the source code by cloning the GitHub repository:
 
-```$ git clone git@github.com:nam20485/OdbDesign.git```
+```Bash
+$ git clone git@github.com:nam20485/OdbDesign.git
+```
 
 ### Build
 
@@ -131,7 +153,7 @@ This project is free and open source under the MIT [license](https://github.com/
 
 If you are interested in using the parser in your application or code, or have any questions about it please do not hesitate to contact me.
 
->If you need support for integration of the parser into your own product and/or need its feature set extended, I am available for consulting at very reasonable fees.
+>If you need support for integration of the parser into your own product and/or need its feature set extended, I am available for consulting.
 
 * [Email me (maintainer)](mailto:nmiller217@gmail.com?subject=OdbDesign)
 * [GitHub](https://github.com/nam20485/odbdesign)

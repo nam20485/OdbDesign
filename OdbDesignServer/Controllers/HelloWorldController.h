@@ -3,14 +3,13 @@
 #include "RouteController.h"
 #include "IOdbServerApp.h"
 
-using namespace Odb::Lib;
 
 namespace Odb::App::Server
 {
-	class HelloWorldController : public RouteController
+	class HelloWorldController : public Odb::Lib::RouteController
 	{
 	public:
-		HelloWorldController(IOdbServerApp& serverApp);
+		HelloWorldController(Odb::Lib::IOdbServerApp& serverApp);
 
 		void register_routes() override;
 

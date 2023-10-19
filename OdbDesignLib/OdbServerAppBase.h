@@ -16,7 +16,7 @@ namespace Odb::Lib
 
 		crow::SimpleApp& crow_app() override;
 
-		ExitCode Run() override;		
+		Utils::ExitCode Run() override;		
 
 	protected:
 		crow::SimpleApp m_crowApp;

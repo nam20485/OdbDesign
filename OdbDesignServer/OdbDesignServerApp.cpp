@@ -15,18 +15,18 @@ namespace Odb::App::Server
 	{					
 	}
 
-	Utils::ExitCode OdbDesignServerApp::Run()
-	{
-		//
-		// do any initialization here
-		//
+	//Utils::ExitCode OdbDesignServerApp::Run()
+	//{
+	//	//
+	//	// do any initialization here
+	//	//
 
-		return OdbServerAppBase::Run();
+	//	return OdbServerAppBase::Run();
 
-		//
-		// do any cleanup here
-		//
-	}
+	//	//
+	//	// do any cleanup here
+	//	//
+	//}
 
 	void OdbDesignServerApp::add_controllers()
 	{

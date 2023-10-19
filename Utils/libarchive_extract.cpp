@@ -34,6 +34,8 @@ namespace Utils
             flags |= ARCHIVE_EXTRACT_SECURE_NOABSOLUTEPATHS;
         }
 
+        const size_t READ_OPEN_BLOCK_SIZE = 1024 * 10;
+
         a = archive_read_new();
         archive_read_support_format_all(a);
         archive_read_support_filter_all(a);
@@ -42,7 +44,7 @@ namespace Utils
         ext = archive_write_disk_new();
         archive_write_disk_set_options(ext, flags);
         archive_write_disk_set_standard_lookup(ext);
-        r = archive_read_open_filename(a, filename, 1024 * 10);
+        r = archive_read_open_filename(a, filename, READ_OPEN_BLOCK_SIZE);
         if (r)
         {
             return false;

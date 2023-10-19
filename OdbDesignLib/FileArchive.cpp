@@ -1,8 +1,12 @@
 #include "FileArchive.h"
+#include "FileArchive.h"
 #include <filesystem>
 #include "ArchiveExtractor.h"
+#include "MiscInfoFile.h"
 #include <iostream>
+#include "Logger.h"
 
+using namespace Utils;
 
 namespace Odb::Lib::FileModel::Design
 {
@@ -45,30 +49,34 @@ namespace Odb::Lib::FileModel::Design
 		
 			if (std::filesystem::is_directory(path))
 			{
-				std::cout << " - Parsing... ";
+				loginfo("Parsing... ");
 
 				if (ParseDesignDirectory(path))
 				{
-					std::cout << "success." << std::endl << std::endl;
+					loginfo("Successfully parsed.");
 					return true;
+				}
+				else
+				{
+					loginfo("Parsing failed.");
 				}
 			}		
 		}		
 		catch (std::filesystem::filesystem_error& fe)
 		{
-			std::cout << fe.what() << std::endl;
+			logexception(fe);
 		}
 		catch (std::exception& e)
 		{
-			std::cout << e.what() << std::endl;
+			logexception(e);
 		}
 
 		return false;
 	}
 
-	bool FileArchive::ExtractDesignArchive(const std::filesystem::path& path, std::filesystem::path& extractedPath) const
+	bool FileArchive::ExtractDesignArchive(const std::filesystem::path& path, std::filesystem::path& extractedPath)
 	{
-		std::cout << " - Extracting... ";
+		loginfo("Extracting... ");
 
 		if (!Utils::ArchiveExtractor::IsArchiveTypeSupported(path)) return false;
 
@@ -80,22 +88,20 @@ namespace Odb::Lib::FileModel::Design
 		
 		extractedPath = extracted;
 
-		std::cout << "success." << std::endl;
+		loginfo("Successfully extracted.");
 
 		return true;
 				
 	}
 
-	bool FileArchive::ParseDesignDirectory(std::filesystem::path path)
+	bool FileArchive::ParseDesignDirectory(const std::filesystem::path& path)
 	{
-		std::filesystem::path designPath(path);
+		if (!std::filesystem::exists(path)) return false;
+		else if (!std::filesystem::is_directory(path)) return false;
 
-		if (!std::filesystem::exists(designPath)) return false;
-		else if (!std::filesystem::is_directory(designPath)) return false;
+		m_productName = path.filename().string();
 
-		m_productName = designPath.filename().string();
-
-		auto stepsPath = designPath / "steps";
+		auto stepsPath = path / "steps";
 		for (auto& d : std::filesystem::directory_iterator(stepsPath))
 		{
 			if (std::filesystem::is_directory(d))
@@ -112,10 +118,56 @@ namespace Odb::Lib::FileModel::Design
 			}
 		}
 
+        if (! ParseMiscInfoFile(path)) return false;
+		if (! ParseMatrixFile(path)) return false;
+		if (! ParseStandardFontsFile(path)) return false;
+
 		return true;
 	}
 
-	//const EdaDataFile& FileModel::GetStepEdaDataFile(std::string stepName) const
+    bool FileArchive::ParseMiscInfoFile(const std::filesystem::path& path)
+    {
+        auto miscDirectory = path / "misc";
+        if (!std::filesystem::exists(miscDirectory)) return false;
+        if (!std::filesystem::is_directory(miscDirectory)) return false;
+
+        if (!m_miscInfoFile.Parse(miscDirectory)) return false;
+
+        return true;
+    }
+
+	bool FileArchive::ParseMatrixFile(const std::filesystem::path& path)
+	{
+		auto matrixDir = path / "matrix";
+		if (!std::filesystem::exists(matrixDir)) return false;
+		if (!std::filesystem::is_directory(matrixDir)) return false;
+
+		if (!m_matrixFile.Parse(matrixDir)) return false;
+
+		return true;
+	}
+	bool FileArchive::ParseStandardFontsFile(const std::filesystem::path& path)
+	{
+		auto fontsDir = path / "fonts";
+		if (!std::filesystem::exists(fontsDir)) return false;
+		if (!std::filesystem::is_directory(fontsDir)) return false;
+
+		if (!m_standardFontsFile.Parse(fontsDir)) return false;
+
+		return true;
+	}
+
+    const MiscInfoFile &FileArchive::GetMiscInfoFile() const
+    {
+        return m_miscInfoFile;
+    }
+
+	const MatrixFile& FileArchive::GetMatrixFile() const
+	{
+		return m_matrixFile;
+	}
+
+    //const EdaDataFile& FileModel::GetStepEdaDataFile(std::string stepName) const
 	//{		
 	//	auto findIt = m_stepsByName.find(stepName);
 	//	if (findIt != m_stepsByName.end())

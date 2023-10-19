@@ -1,0 +1,126 @@
+# run CMake build on Windows and Linux
+name: CMake Build Multi-Platform
+
+on:
+  push:
+    branches: [ "development", "main" ]
+  pull_request:
+    branches: [ "development" ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+  VCPKG_BINARY_SOURCES: 'clear;x-gha,readwrite'
+  # support for GH dependency graph vcpkg integration
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  VCPKG_FEATURE_FLAGS: dependencygraph
+  
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      # Set fail-fast to false to ensure that feedback is delivered for all matrix combinations. Consider changing this to true when your workflow is stable.
+      fail-fast: false
+
+      matrix:
+        include:
+          # Windows x64 Release
+          - os: windows-2022
+            preset: x64-release
+          # Linux x64 Release          
+          - os: ubuntu-22.04
+            preset: linux-release
+          # MacOS x64 Release
+          - os: macos-12
+            preset: macos-release
+          # Linux mingw x64 Release
+          # - os: ubuntu-22.04
+          #   preset: linux-mingw-w64-release
+          # # Linux Python Release
+          # - os: ubuntu-22.04
+          #   preset: python-linux-release
+
+    steps:   
+
+    - uses: actions/checkout@v3            
+    
+    #
+    #   os != windows-2022 (i.e. Linux, MacOS)
+    #
+    - name: Install vcpkg
+      run: |               
+        git clone --depth 1 https://github.com/Microsoft/vcpkg.git ${{env.VCPKG_ROOT}}
+        "${{env.VCPKG_ROOT}}/bootstrap-vcpkg.sh"
+      # (Windows comes w/ vcpkg installed as part of VS)   
+      if: matrix.os != 'windows-2022'
+    
+    - name: Install Ninja    
+      uses: seanmiddleditch/gha-setup-ninja@master
+      if: matrix.os != 'windows-2022'
+
+    # Export vcpkg Cache Variables
+    - name : Export vcpkg Cache Variables
+      uses: actions/github-script@v6
+      with:
+        script: |
+          core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+          core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+
+    # #
+    # #   preset == linux-mingw-w64-release
+    # #   
+    # - name: Install mingw-w64
+    #   run: |
+    #     sudo apt-get update
+    #     sudo apt-get install -y --no-install-recommends mingw-w64        
+    #   if: matrix.preset == 'linux-mingw-w64-release'
+  
+    #
+    #   os == windows-2022
+    #
+    - name: Setup VC Tools
+      uses: ilammy/msvc-dev-cmd@v1
+      if: matrix.os == 'windows-2022'
+      
+    - name: Patch vcpkg
+      run: scripts/patch-vcpkg-install.ps1
+      if: matrix.os == 'windows-2022'
+
+    # #
+    # #  preset == python-x64-release
+    # #
+    # - name: Generate SWIG Bindings
+    #   run: | 
+    #     sudo apt-get update
+    #     sudo apt-get install -y --no-install-recommends swig
+    #     chmod +x ./scripts/generate-python-module.sh
+    #     ./scripts/generate-python-module.sh
+    #   if: matrix.preset == 'python-linux-release'
+    
+    - name: Manual vcpkg Install (Non-Windows)
+      run: "\"${{env.VCPKG_ROOT}}/vcpkg\" install"
+      if: matrix.preset != 'linux-mingw-w64-release' && matrix.os != 'windows-2022'
+
+    - name: Manual vcpkg Install (Windows)
+      run: "& \"${{env.VCPKG_ROOT}}/vcpkg\" install --triplet x64-windows"
+      if: matrix.os == 'windows-2022'
+
+    # - name: Manual vcpkg Install (mingw-w64)
+    #   run: "\"${{env.VCPKG_ROOT}}/vcpkg\" install --triplet x64-mingw-static"
+    #   if: matrix.preset == 'linux-mingw-w64-release'
+    
+    #
+    #   All platforms
+    #   
+    - name: CMake Configure      
+      run: cmake --preset ${{matrix.preset}}    
+
+    - name: CMake Build          
+      run: cmake --build --preset ${{matrix.preset}} 
+
+    - name: CMake Test
+      run: ctest --preset ${{matrix.preset}} -V

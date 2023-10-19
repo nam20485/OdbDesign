@@ -1,9 +1,9 @@
-FROM debian:bookworm-20230522-slim AS build
+FROM debian:bookworm-20231009 AS build
 
 # install dependencies
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        gpg \
+    apt-get install -y -q --no-install-recommends \
+        #gpg \
         curl \
         apt-transport-https \
         build-essential \
@@ -11,29 +11,29 @@ RUN apt-get update && \
         cmake \            
         g++ \
         ninja-build \
-        python3-dev \     
-        # mingw-w64 \        
-        swig \
-        build-essential \
-        git \
-        cmake \
+        # python3-dev \     
+        #build-essential \
+        git \        
         zip \
         unzip \
         tar  \
-        pkg-config && \
-    rm -rf /var/lib/apt/lists/* 
+        pkg-config \
+         && \
+    rm -rf /var/lib/apt/lists/*
+
+ENV VCPKG_ROOT=/root/src/github/microsoft/vcpkg
 
 # install vcpkg
 WORKDIR /root/src/github/microsoft
-RUN git clone https://github.com/Microsoft/vcpkg.git
-WORKDIR /root/src/github/microsoft/vcpkg
+RUN git clone https://github.com/Microsoft/vcpkg.git ${VCPKG_ROOT}
+WORKDIR ${VCPKG_ROOT}
 RUN ./bootstrap-vcpkg.sh
 
 # pre-install vcpgk packages BEFORE cmake configure
 RUN mkdir -p /src/OdbDesign
 WORKDIR /src/OdbDesign
 COPY ./vcpkg.json .
-RUN /root/src/github/microsoft/vcpkg/vcpkg install
+RUN ${VCPKG_ROOT}/vcpkg install
 
 # copy source
 COPY . .
@@ -47,19 +47,20 @@ RUN cmake --build --preset linux-release
 # RUN cmake --build --preset linux-debug
 
 # much smaller runtime image
-FROM debian:bookworm-20230522-slim AS run
+FROM debian:bookworm-20231009 AS run
 
 RUN mkdir --parents /OdbDesign/bin
 WORKDIR /OdbDesign/bin
 
 # copy binaries
-COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignLib/libOdbDesign.so .
-COPY --from=build /src/OdbDesign/out/build/linux-release/Utils/libUtils.so .
+COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignLib/*.so .
+COPY --from=build /src/OdbDesign/out/build/linux-release/Utils/*.so .
 COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignServer/OdbDesignServer .
+COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignServer/*.so .
 COPY --from=build /src/OdbDesign/out/build/linux-release/*.so .
 # copy designs and templates directories
-COPY --from=build /src/OdbDesign/designs ./designs
-COPY --from=build /src/OdbDesign/templates ./templates
+#COPY --from=build /src/OdbDesign/OdbDesignServer/designs ./designs
+#COPY --from=build /src/OdbDesign/OdbDesignServer/templates ./templates
 
 # run
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/OdbDesign/bin
