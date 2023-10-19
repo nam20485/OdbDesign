@@ -9,7 +9,8 @@ on:
 
 env:
   VCPKG_ROOT: ${{ github.workspace }}/vcpkg
-  #VCPKG_BINARY_SOURCES: 'clear;nuget,GitHub,readwrite'
+  # # GitHub Packages cache backend
+  # VCPKG_BINARY_SOURCES: 'clear;nuget,GitHub,readwrite'
   VCPKG_BINARY_SOURCES: 'clear;x-gha,readwrite'
   
 jobs:
@@ -32,11 +33,11 @@ jobs:
           - os: macos-12
             preset: macos-release
           # Linux mingw x64 Release
-          - os: ubuntu-22.04
-            preset: linux-mingw-w64-release
-          # Linux Python Release
-          - os: ubuntu-22.04
-            preset: python-linux-release
+          # - os: ubuntu-22.04
+          #   preset: linux-mingw-w64-release
+          # # Linux Python Release
+          # - os: ubuntu-22.04
+          #   preset: python-linux-release
 
     steps:   
 
@@ -64,14 +65,14 @@ jobs:
           core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
           core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
 
-    #
-    #   preset == linux-mingw-w64-release
-    #   
-    - name: Install mingw-w64
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y --no-install-recommends mingw-w64        
-      if: matrix.preset == 'linux-mingw-w64-release'
+    # #
+    # #   preset == linux-mingw-w64-release
+    # #   
+    # - name: Install mingw-w64
+    #   run: |
+    #     sudo apt-get update
+    #     sudo apt-get install -y --no-install-recommends mingw-w64        
+    #   if: matrix.preset == 'linux-mingw-w64-release'
   
     #
     #   os == windows-2022
@@ -84,16 +85,16 @@ jobs:
       run: scripts/patch-vcpkg-install.ps1
       if: matrix.os == 'windows-2022'
 
-    #
-    #  preset == python-x64-release
-    #
-    - name: Generate SWIG Bindings
-      run: | 
-        sudo apt-get update
-        sudo apt-get install -y --no-install-recommends swig
-        chmod +x ./scripts/generate-python-module.sh
-        ./scripts/generate-python-module.sh
-      if: matrix.preset == 'python-linux-release'
+    # #
+    # #  preset == python-x64-release
+    # #
+    # - name: Generate SWIG Bindings
+    #   run: | 
+    #     sudo apt-get update
+    #     sudo apt-get install -y --no-install-recommends swig
+    #     chmod +x ./scripts/generate-python-module.sh
+    #     ./scripts/generate-python-module.sh
+    #   if: matrix.preset == 'python-linux-release'
     
     - name: Manual vcpkg Install (Non-Windows)
       run: "\"${{env.VCPKG_ROOT}}/vcpkg\" install"
@@ -103,9 +104,9 @@ jobs:
       run: "& \"${{env.VCPKG_ROOT}}/vcpkg\" install --triplet x64-windows"
       if: matrix.os == 'windows-2022'
 
-    - name: Manual vcpkg Install (mingw-w64)
-      run: "\"${{env.VCPKG_ROOT}}/vcpkg\" install --triplet x64-mingw-static"
-      if: matrix.preset == 'linux-mingw-w64-release'
+    # - name: Manual vcpkg Install (mingw-w64)
+    #   run: "\"${{env.VCPKG_ROOT}}/vcpkg\" install --triplet x64-mingw-static"
+    #   if: matrix.preset == 'linux-mingw-w64-release'
     
     #
     #   All platforms
