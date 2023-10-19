@@ -1,6 +1,7 @@
 #include "HelloWorldController.h"
 #include "../OdbDesignServerApp.h"
 
+using namespace Odb::Lib;
 
 namespace Odb::App::Server
 {

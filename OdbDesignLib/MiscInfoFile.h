@@ -5,10 +5,7 @@
 #include "OdbFile.h"
 #include <chrono>
 
-#ifndef ODBDESIGN_MISCINFOFILE_H
-#define ODBDESIGN_MISCINFOFILE_H
-
-//using namespace std::chrono;
+#pragma once
 
 namespace Odb::Lib::FileModel::Design
 {
@@ -47,8 +44,4 @@ namespace Odb::Lib::FileModel::Design
         unsigned int m_maxUniqueId;
 
     };
-
 }
-
-
-#endif //ODBDESIGN_MISCINFOFILE_H

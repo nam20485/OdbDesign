@@ -6,9 +6,6 @@
 #include "IJsonable.h"
 #include "odbdesign_export.h"
 
-using namespace google::protobuf;
-using namespace google::protobuf::util;
-
 
 namespace Odb::Lib
 {
@@ -29,7 +26,7 @@ namespace Odb::Lib
 		{}
 
 		// TMessage MUST derive from Message (must use this until template type contraints support is added)
-		static_assert(std::is_base_of<Message, TPbMessage>::value, "template parameter type TPbMessage must derive from Protobuf Message class");
+		static_assert(std::is_base_of<google::protobuf::Message, TPbMessage>::value, "template parameter type TPbMessage must derive from Protobuf Message class");
 		
 	};
 
@@ -37,10 +34,10 @@ namespace Odb::Lib
 	std::string IProtoBuffable<TPbMessage>::to_json() const
 	{	
 		// use default options
-		JsonOptions jsonOptions;	
+		google::protobuf::util::JsonOptions jsonOptions;
 
 		std::string json;
-		auto status = MessageToJsonString(*to_protobuf(), &json, jsonOptions);
+		auto status = google::protobuf::util::MessageToJsonString(*to_protobuf(), &json, jsonOptions);
 		if (!status.ok()) json.clear();
 		return json;
 	}
@@ -48,12 +45,12 @@ namespace Odb::Lib
 	template<typename TPbMessage>
 	inline void IProtoBuffable<TPbMessage>::from_json(const std::string& json)
 	{			
-		StringPiece sp_json(json);
+		google::protobuf::StringPiece sp_json(json);
 		// use default options
-		JsonOptions jsonOptions;
+		google::protobuf::util::JsonOptions jsonOptions;
 
 		auto pMessage = std::unique_ptr<TPbMessage>();
-		auto status = JsonStringToMessage(sp_json, pMessage.get());
+		auto status = google::protobuf::util::JsonStringToMessage(sp_json, pMessage.get());
 		if (!status.ok()) return;		
 		from_protobuf(*pMessage);		
 	}	

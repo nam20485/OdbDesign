@@ -3,11 +3,9 @@
 #include "CommandLineArgs.h"
 #include "odbdesign_export.h"
 
-using namespace Utils;
-
 namespace Odb::Lib
 {
-	class ODBDESIGN_EXPORT OdbDesignArgs : public CommandLineArgs
+	class ODBDESIGN_EXPORT OdbDesignArgs : public Utils::CommandLineArgs
 	{
 	public:
 		OdbDesignArgs(int argc, char* argv[]);

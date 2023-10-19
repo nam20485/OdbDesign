@@ -5,8 +5,6 @@
 #include "OdbDesignArgs.h"
 #include "odbdesign_export.h"
 
-using namespace Utils;
-
 namespace Odb::Lib
 {
 	class ODBDESIGN_EXPORT OdbAppBase : public virtual IOdbApp

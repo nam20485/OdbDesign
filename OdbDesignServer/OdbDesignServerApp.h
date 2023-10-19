@@ -3,11 +3,10 @@
 #include "OdbDesignServer.h"
 #include "OdbServerAppBase.h"
 
-using namespace Odb::Lib;
 
 namespace Odb::App::Server
 {
-	class OdbDesignServerApp : public OdbServerAppBase
+	class OdbDesignServerApp : public Odb::Lib::OdbServerAppBase
 	{
 	public:
 		OdbDesignServerApp(int argc, char* argv[]);

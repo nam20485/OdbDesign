@@ -1,5 +1,6 @@
 #include "OdbServerAppBase.h"
 
+using namespace Utils;
 
 namespace Odb::Lib
 {
