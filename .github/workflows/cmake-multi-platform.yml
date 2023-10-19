@@ -5,8 +5,7 @@ on:
   push:
     branches: [ "development", "main", "release" ]
   pull_request:
-    branches: [ "development", "main", "release" ]
-  #workflow_dispatch:
+    branches: [ "development", "main", "release" ]  
 
 permissions:
   contents: write
@@ -48,6 +47,12 @@ jobs:
 
     - uses: actions/checkout@v3            
     
+    - name: Install vcpkg Dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y -q --no-install-recommends build-essential tar curl zip unzip
+      if: matrix.os == 'ubuntu-22.04'
+
     #
     #   os != windows-2022 (i.e. Linux, MacOS)
     #
