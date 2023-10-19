@@ -34,27 +34,31 @@ The diagram describes the current state of parser implementation and data availa
 
 ![image](https://github.com/nam20485/OdbDesign/assets/1829396/d55d0ea8-6ad9-446a-8659-9157636e1c9f)
 
-### CI/CD Build Statuses
+### CI/CD Build
 
 #### Branches
 
 ##### `development`
 
-| | | |
-|-|-|-|
-| Build          |       | [![CMake Build Multi-Platform](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml) |
-| Security Scan      |       | [![CodeQL](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml) |
-| Docker         |       | [![Docker Publish](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml) |
+| Step               | Status  |
+|--------------------|---------|
+| Build              | [![CMake Build Multi-Platform](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml) |
+| Security Code Scan | [![CodeQL](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml) |
+| Docker Image       | [![Docker Publish](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml) |
 
 ##### `main`
 
-| | | |
-|-|-|-|
-| Build          |       | [![CMake Build Multi-Platform](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml) |
-| Security Scan      |       | [![CodeQL](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml) |
-| Docker         |       | [![Docker Publish](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml) |
+| Step               | Status   |
+|--------------------|----------|
+| Build              | [![CMake Build Multi-Platform](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml) |
+| Security Code Scan | [![CodeQL](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml) |
+| Docker Image       | [![Docker Publish](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml) |
 
 ### Architecture
+
+The OdbDesign parser is built as a C++ shared library on all three platforms. An executable running the server links to the library and provides the REST API for accessing the data the library parses. The REST API server can be run by invoking the executable directly or by running the Docker image. The server executable and library can be run on Windows, Linux, or MacOS and the Docker image can be run on any platform that supports Docker.
+
+[Insert Diagram Image]
 
 ## Building from Source
 
@@ -125,7 +129,9 @@ $ cmake --build --preset linux-release
 $ docker build -f Dockerfile_OdbDesignServer . -t odbdesign-server
 ```
 
-## Integration
+## Running the REST API Server
+
+## Integration into Other Applications
 
 There are four interfaces that allow use of the library in other applications.
 
