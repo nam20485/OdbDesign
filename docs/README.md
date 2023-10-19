@@ -43,7 +43,7 @@ The diagram describes the current state of parser implementation and data availa
 | | | |
 |-|-|-|
 | Build          |       | [![CMake Build Multi-Platform](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml) |
-| Code Scan      |       | [![CodeQL](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml) |
+| Security Scan      |       | [![CodeQL](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml) |
 | Docker         |       | [![Docker Publish](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml) |
 
 ##### `main`
@@ -51,7 +51,7 @@ The diagram describes the current state of parser implementation and data availa
 | | | |
 |-|-|-|
 | Build          |       | [![CMake Build Multi-Platform](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml) |
-| Code Scan      |       | [![CodeQL](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml) |
+| Security Scan      |       | [![CodeQL](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml) |
 | Docker         |       | [![Docker Publish](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml) |
 
 ### Architecture
