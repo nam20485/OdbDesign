@@ -1,10 +1,10 @@
 name: Docker Build
 
 on:
-  # push:
-  #   branches: [ "main" ]
+  #push:
+  #  branches: [ "development", "main", "release" ]
   pull_request:
-    branches: [ "*" ]
+    branches: [ "development", "main", "release" ]
 
 jobs:
 

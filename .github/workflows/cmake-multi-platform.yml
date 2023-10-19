@@ -3,10 +3,10 @@ name: CMake Build Multi-Platform
 
 on:
   push:
-    branches: [ "development", "main" ]
+    branches: [ "development", "main", "release" ]
   pull_request:
-    branches: [ "development" ]
-  workflow_dispatch:
+    branches: [ "development", "main", "release" ]
+  #workflow_dispatch:
 
 permissions:
   contents: write
