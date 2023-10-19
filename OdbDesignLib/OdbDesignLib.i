@@ -4,10 +4,12 @@
 %header %{
 #include "Component.h"
 #include "Design.h"
-//#include "IProtoBuffable.h"
+#include "IProtoBuffable.h"
 #include "EdaDataFile.h"
 #include "OdbFile.h"
 #include "MiscInfoFile.h"
+#include "MatrixFile.h"
+#include "StandardFontsFile.h"
 #include "enums.h"
 #include "FileArchive.h"
 #include "LayerDirectory.h"
@@ -32,6 +34,9 @@ using Component = Odb::Lib::ProductModel::Component;
 using namespace Odb::Lib;
 //using BoardSide = Odb::Lib::BoardSide;
 using StepDirectory = Odb::Lib::FileModel::Design::StepDirectory;
+using MatrixFile = Odb::Lib::FileModel::Design::MatrixFile;
+using StandardFontsFile = Odb::Lib::FileModel::Design::StandardFontsFile;
+
 %}
 
 // support for STL types
@@ -47,7 +52,7 @@ using StepDirectory = Odb::Lib::FileModel::Design::StepDirectory;
 
 // code definitions
 //%include "proto/edadatafile.pb.h"
-//%include "IProtoBuffable.h"
+%include "IProtoBuffable.h"
 %include "Net.h"
 %include "Component.h"
 %include "Design.h"
@@ -67,5 +72,7 @@ using StepDirectory = Odb::Lib::FileModel::Design::StepDirectory;
 %include "StepDirectory.h"
 %include "../Utils/str_trim.h"
 %include "Via.h"
+%include "StandardFontsFile.h"
+%include "MatrixFile.h"
 
 //%template(EdaDataFileIProtoBuffable) Odb::Lib::IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile>;
