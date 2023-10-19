@@ -6,12 +6,17 @@ on:
     branches: [ "development", "main" ]
   pull_request:
     branches: [ "development" ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 env:
   VCPKG_ROOT: ${{ github.workspace }}/vcpkg
   VCPKG_BINARY_SOURCES: 'clear;x-gha,readwrite'
-  # # GitHub Packages cache backend
-  # VCPKG_BINARY_SOURCES: 'clear;nuget,GitHub,readwrite'
+  # support for GH dependency graph vcpkg integration
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  VCPKG_FEATURE_FLAGS: dependencygraph
   
 jobs:
   build:
