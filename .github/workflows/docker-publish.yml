@@ -89,7 +89,7 @@ jobs:
           build-args: |
             OWNER=nam20485
             GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
-            VCPKG_BINARY_SOURCES="clear;nuget,GitHub,readwrite"
+            VCPKG_BINARY_SOURCES=clear;nuget,GitHub,readwrite
 
       # Sign the resulting Docker image digest except on PRs.
       # This will only write to the public Rekor transparency log when the Docker
