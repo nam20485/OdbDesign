@@ -60,6 +60,10 @@ The OdbDesign parser is built as a C++ shared library on all three platforms. An
 
 [Insert Diagram Image]
 
+#### Library
+
+FileModel vs. ProductModel...
+
 ## Building from Source
 
 ### Build Dependencies
