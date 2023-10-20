@@ -91,8 +91,10 @@ namespace Odb::Lib
         try
         {
             std::filesystem::path dir(m_directory);
+            // skip inaccessible files and do not follow symlinks
+            const auto options = std::filesystem::directory_options::skip_permission_denied;
 
-            for (const auto& entry : std::filesystem::directory_iterator(dir))
+            for (const auto& entry : std::filesystem::directory_iterator(dir, options))
             {
                 if (entry.is_regular_file())
                 {
