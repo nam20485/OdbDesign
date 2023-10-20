@@ -86,7 +86,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           file: Dockerfile_OdbDesignServer
-          build-args: 
+          build-args: |
             OWNER=nam20485
             GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
             VCPKG_BINARY_SOURCES="clear;nuget,GitHub,readwrite"
