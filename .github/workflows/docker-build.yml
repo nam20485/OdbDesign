@@ -1,18 +1,24 @@
 name: Docker Build
 
 on:
-  # push:
-  #   branches: [ "main" ]
+  #push:
+  #  branches: [ "development", "main", "release" ]
   pull_request:
-    branches: [ "*" ]
+    branches: [ "development", "main", "release" ]
 
 jobs:
 
   build:
+    name: Docker-Build
 
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v3
+    
+    # add problem matchers
+    - name: Add Problem Matchers
+      uses: ammaraskar/gcc-problem-matcher@master
+
     - name: Build the Docker image
       run: docker build . --file Dockerfile_OdbDesignServer --tag odbdesign:${{github.ref_name}}-${{github.run_number}}

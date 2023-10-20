@@ -13,10 +13,9 @@ name: "CodeQL"
 
 on:
   push:
-    branches: [ "development", main, release ]
+    branches: [ "development", "main", "release" ]
   pull_request:
-    # The branches below must be a subset of the branches above
-    branches: [ "development" ]
+    branches: [ "development", "main", "release" ]
 
 env:
   VCPKG_ROOT: ${{ github.workspace }}/vcpkg
@@ -24,7 +23,7 @@ env:
     
 jobs:
   analyze:
-    name: Analyze
+    name: CodeQL-Security-Scan
     runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-latest' }}
     timeout-minutes: ${{ (matrix.language == 'swift' && 120) || 360 }}
     permissions:
