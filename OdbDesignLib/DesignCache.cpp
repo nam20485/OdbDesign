@@ -2,6 +2,7 @@
 #include <filesystem>
 #include <utility>
 #include "Logger.h"
+#include <exception>
 
 using namespace Utils;
 
@@ -87,22 +88,31 @@ namespace Odb::Lib
 
     std::shared_ptr<FileModel::Design::FileArchive> DesignCache::LoadFileArchive(const std::string& designName)
     {
-        std::filesystem::path dir(m_directory);
-
-        for (const auto& entry : std::filesystem::directory_iterator(dir))
+        try
         {
-            if (entry.is_regular_file())
+            std::filesystem::path dir(m_directory);
+
+            for (const auto& entry : std::filesystem::directory_iterator(dir))
             {
-                if (entry.path().stem() == designName)
+                if (entry.is_regular_file())
                 {
-                    auto pFileArchive = std::make_shared<FileModel::Design::FileArchive>(entry.path().string());
-                    if (pFileArchive->ParseFileModel())
+                    if (entry.path().stem() == designName)
                     {
-                        m_fileArchivesByName.emplace(designName, pFileArchive);
-                        return pFileArchive;
-                    }                    
+                        auto pFileArchive = std::make_shared<FileModel::Design::FileArchive>(entry.path().string());
+                        if (pFileArchive->ParseFileModel())
+                        {
+                            m_fileArchivesByName.emplace(designName, pFileArchive);
+                            return pFileArchive;
+                        }
+                    }
                 }
             }
+        }
+        catch (std::filesystem::filesystem_error& fe)
+        {
+            logexception(fe);
+            // re-throw it so we get a HTTP 500 response to the client
+            throw fe;
         }
 
         return nullptr;
