@@ -15,9 +15,10 @@ namespace Odb::Lib
 		std::string designsDir() const;
 		std::string templatesDir() const;		
 
-		// port
-		// use HTTPS
-		// designs dir
-		// templates dir
+		const int DEFAULT_PORT = 8888;
+		const bool DEFAULT_USE_HTTPS = false;
+		const std::string DEFAULT_DESIGNS_DIR = "designs";
+		const std::string DEFAULT_TEMPLATES_DIR = "templates";
+
 	};
 }
