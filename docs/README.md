@@ -168,6 +168,8 @@ Thanks to the following open source projects that are used to create OdbDesign:
 * [zlib](https://www.zlib.net/)
 * [Python 3](https://www.python.org/)
 
+OdbDesign would not be possible without the hard work of their developers, staff, and supporters.
+
 ## Contact
 
 If you are interested in using the parser in your application or code, or have any questions about it please do not hesitate to contact me.
