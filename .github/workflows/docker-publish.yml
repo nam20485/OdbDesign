@@ -20,6 +20,7 @@ env:
 
 jobs:
   build:
+    name: Docker-Build-and-Publish
 
     runs-on: ubuntu-latest
     permissions:
