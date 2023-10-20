@@ -1,5 +1,9 @@
 FROM debian:bookworm-20231009 AS build
 
+ARG OWNER=nam20485
+ARG GITHUB_TOKEN="PASSWORD"
+ARG VCPKG_BINARY_SOURCES=""
+
 # install dependencies
 RUN apt-get update && \
     apt-get install -y -q --no-install-recommends \
@@ -12,28 +16,49 @@ RUN apt-get update && \
         g++ \
         ninja-build \
         # python3-dev \     
-        #build-essential \
+        build-essential \
         git \        
         zip \
         unzip \
         tar  \
         pkg-config \
+        mono-complete \      
          && \
     rm -rf /var/lib/apt/lists/*
 
-ENV VCPKG_ROOT=/root/src/github/microsoft/vcpkg
-
 # install vcpkg
-WORKDIR /root/src/github/microsoft
+ENV VCPKG_ROOT=/root/src/github/microsoft/vcpkg
+#WORKDIR /root/src/github/microsoft
 RUN git clone https://github.com/Microsoft/vcpkg.git ${VCPKG_ROOT}
 WORKDIR ${VCPKG_ROOT}
 RUN ./bootstrap-vcpkg.sh
+
+# set vcpkg to use NuGet for binary caching
+ENV VCPKG_BINARY_SOURCES=${VCPKG_BINARY_SOURCES}
+
+#RUN ./vcpkg --help
+#RUN ./vcpkg fetch nuget
+
+# setup NuGet to use GitHub Packages as a source so vcpkg binary cache can use it
+RUN mono `./vcpkg fetch nuget | tail -n 1` \
+        sources add \
+        -source "https://nuget.pkg.github.com/${OWNER}/index.json" \
+        -storepasswordincleartext \
+        -name "GitHub" \
+        -username ${OWNER} \
+        -password "${GITHUB_TOKEN}"
+
+RUN mono `./vcpkg fetch nuget | tail -n 1` \
+        setapikey "${GITHUB_TOKEN}" \
+        -source "https://nuget.pkg.github.com/${OWNER}/index.json"
 
 # pre-install vcpgk packages BEFORE cmake configure
 RUN mkdir -p /src/OdbDesign
 WORKDIR /src/OdbDesign
 COPY ./vcpkg.json .
-RUN ${VCPKG_ROOT}/vcpkg install
+RUN ${VCPKG_ROOT}/vcpkg install --debug
+# RUN --mount=type=cache,target=/root/.cache \
+#     ${VCPKG_ROOT}/vcpkg install
 
 # copy source
 COPY . .
