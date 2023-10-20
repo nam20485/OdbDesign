@@ -6,7 +6,8 @@ namespace Utils
 	enum class ExitCode
 	{
 		Success = 0,
-		FailedInit,
+		FailedInit = 1,
+		FailedInitSsl = 2,
 		UnknownError
 	};
 }
