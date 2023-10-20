@@ -45,7 +45,15 @@ jobs:
 
     steps:   
 
-    - uses: actions/checkout@v3            
+    - uses: actions/checkout@v3 
+    
+    # add problem matchers by compiler
+    - name: Add Problem Matchers
+      uses: ammaraskar/msvc-problem-matcher@master
+      if: matrix.os == 'windows-2022'
+    - name: Add Problem Matchers
+      uses: ammaraskar/gcc-problem-matcher@master
+      if: matrix.os != 'windows-2022'
     
     - name: Install vcpkg Dependencies
       run: |
