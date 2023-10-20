@@ -36,9 +36,6 @@ RUN ./bootstrap-vcpkg.sh
 # set vcpkg to use NuGet for binary caching
 ENV VCPKG_BINARY_SOURCES=${VCPKG_BINARY_SOURCES}
 
-#RUN ./vcpkg --help
-#RUN ./vcpkg fetch nuget
-
 # setup NuGet to use GitHub Packages as a source so vcpkg binary cache can use it
 RUN mono `./vcpkg fetch nuget | tail -n 1` \
         sources add \
@@ -56,7 +53,7 @@ RUN mono `./vcpkg fetch nuget | tail -n 1` \
 RUN mkdir -p /src/OdbDesign
 WORKDIR /src/OdbDesign
 COPY ./vcpkg.json .
-RUN ${VCPKG_ROOT}/vcpkg install --debug
+RUN ${VCPKG_ROOT}/vcpkg install
 # RUN --mount=type=cache,target=/root/.cache \
 #     ${VCPKG_ROOT}/vcpkg install
 
@@ -72,7 +69,7 @@ RUN cmake --build --preset linux-release
 # RUN cmake --build --preset linux-debug
 
 # much smaller runtime image
-FROM debian:bookworm-20231009 AS run
+FROM debian:bookworm-20231009-slim AS run
 
 RUN mkdir --parents /OdbDesign/bin
 WORKDIR /OdbDesign/bin
@@ -86,6 +83,8 @@ COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignTests/OdbDesig
 # copy designs and templates directories
 #COPY --from=build /src/OdbDesign/OdbDesignServer/designs ./designs
 #COPY --from=build /src/OdbDesign/OdbDesignServer/templates ./templates
+
+# copy SSL keys in (use --mount=type=secret)
 
 # run
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/OdbDesign/bin
