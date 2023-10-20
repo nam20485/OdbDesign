@@ -30,7 +30,7 @@ namespace Utils
 		parse();
 	}
 
-	bool CommandLineArgs::boolArg(const std::string& name, bool default) const
+	bool CommandLineArgs::boolArg(const std::string& name, bool defaultValue) const
 	{
 		auto strB = getArgValue(name);
 		if (strB.length() > 0)
@@ -40,37 +40,37 @@ namespace Utils
 			return b;
 		}
 
-		return default;
+		return defaultValue;
 	}
 
-	std::string CommandLineArgs::stringArg(const std::string& name, const std::string& default) const
+	std::string CommandLineArgs::stringArg(const std::string& name, const std::string& defaultValue) const
 	{
 		auto str = getArgValue(name);
 		if (str.length() > 0)
 		{
 			return str;
 		}
-		return default;
+		return defaultValue;
 	}
 
-	int CommandLineArgs::intArg(const std::string& name, int default) const
+	int CommandLineArgs::intArg(const std::string& name, int defaultValue) const
 	{
 		auto strI = getArgValue(name);
 		if (strI.length() > 0)
 		{
 			return std::stoi(strI);
 		}
-		return default;
+		return defaultValue;
 	}
 
-	double CommandLineArgs::doubleArg(const std::string& name, double default) const
+	double CommandLineArgs::doubleArg(const std::string& name, double defaultValue) const
 	{
 		auto strD = getArgValue(name);
 		if (strD.length() > 0)
 		{
 			return std::stod(strD);
 		}
-		return default;
+		return defaultValue;
 	}
 
 	std::string CommandLineArgs::executable() const

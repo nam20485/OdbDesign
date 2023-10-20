@@ -16,10 +16,10 @@ namespace Utils
 		CommandLineArgs(int argc, char* argv[]);
 		CommandLineArgs(const std::vector<std::string>& vecArgv);
 
-		bool boolArg(const std::string& name, bool default) const;
-		std::string stringArg(const std::string& name, const std::string& default) const;
-		int intArg(const std::string& name, int default) const;
-		double doubleArg(const std::string& name, double default) const;
+		bool boolArg(const std::string& name, bool defaultValue) const;
+		std::string stringArg(const std::string& name, const std::string& defaultValue) const;
+		int intArg(const std::string& name, int defaultValue) const;
+		double doubleArg(const std::string& name, double defaultValue) const;
 
 		std::string executable() const;
 		std::filesystem::path executableDirectory() const;
