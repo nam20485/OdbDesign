@@ -155,6 +155,19 @@ Data objects returned from the parser library support serialization to and from 
 
 This project is free and open source under the MIT [license](https://github.com/nam20485/OdbDesign/blob/c0c8b6e4b93e1c7d4d5e65c7ad25157c883f8bfb/LICENSE).
 
+## Credit
+
+Thanks to the following open source projects that are used to create OdbDesign:
+
+* [Crow](https://crowcpp.org/master/)
+* [Google Protobuf](https://protobuf.dev/)
+* [CMake](https://cmake.org/)
+* [vcpkg](https://vcpkg.io/en/)
+* [libarchive](https://www.libarchive.org/)
+* [OpenSSL](https://www.openssl.org/)
+* [zlib](https://www.zlib.net/)
+* [Python 3](https://www.python.org/)
+
 ## Contact
 
 If you are interested in using the parser in your application or code, or have any questions about it please do not hesitate to contact me.
