@@ -20,6 +20,7 @@ env:
   #VCPKG_BINARY_SOURCES: 'clear;nuget,GitHub,readwrite'
   # Use `latest` as the tag to compare to if empty, assuming that it's already pushed
   COMPARE_TAG: latest
+  DOCKERFILE: Dockerfile_OdbDesignServer
 
 jobs:
   build:
@@ -91,16 +92,19 @@ jobs:
         with:
           context: .          
           push: false
-          # push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          file: Dockerfile_OdbDesignServer
+          file: ${{ env.DOCKERFILE }}
+          load: true          
           build-args: |
             OWNER=nam20485
             GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
             VCPKG_BINARY_SOURCES=clear;nuget,GitHub,readwrite
+
+      - name: List Local Images
+        run: docker image ls
 
     #   # Sign the resulting Docker image digest except on PRs.
     #   # This will only write to the public Rekor transparency log when the Docker
@@ -121,7 +125,7 @@ jobs:
         uses: docker/scout-action@v1
         with:
           command: cves
-          image: local://${{ steps.meta.outputs.tags }}
+          image: ${{ steps.meta.outputs.tags }}
           sarif-file: sarif.output.json
           summary: true
         
