@@ -37,9 +37,8 @@ jobs:
       security-events: write
 
     steps:
-      # Docker Build and Push action will automatically clone the repository w/ correct ref
-      # - name: Checkout repository
-      #   uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
       # add problem matchers
       - name: Add Problem Matchers
