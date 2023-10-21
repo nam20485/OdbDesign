@@ -7,7 +7,6 @@ ARG VCPKG_BINARY_SOURCES=""
 # install dependencies
 RUN apt-get update && \
     apt-get install -y -q --no-install-recommends \
-        #gpg \
         curl \
         apt-transport-https \
         build-essential \
@@ -15,7 +14,6 @@ RUN apt-get update && \
         cmake \            
         g++ \
         ninja-build \
-        # python3-dev \     
         build-essential \
         git \        
         zip \
@@ -28,7 +26,6 @@ RUN apt-get update && \
 
 # install vcpkg
 ENV VCPKG_ROOT=/root/src/github/microsoft/vcpkg
-#WORKDIR /root/src/github/microsoft
 RUN git clone https://github.com/Microsoft/vcpkg.git ${VCPKG_ROOT}
 WORKDIR ${VCPKG_ROOT}
 RUN ./bootstrap-vcpkg.sh
