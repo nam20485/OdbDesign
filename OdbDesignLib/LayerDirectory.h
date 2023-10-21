@@ -13,7 +13,7 @@ namespace Odb::Lib::FileModel::Design
 	{
 	public:
 		LayerDirectory(std::filesystem::path path);
-		~LayerDirectory();
+		virtual ~LayerDirectory();
 
 		inline static const std::string TOP_COMPONENTS_LAYER_NAME = "comp_+_top";
 		inline static const std::string BOTTOM_COMPONENTS_LAYER_NAME = "comp_+_bot";
