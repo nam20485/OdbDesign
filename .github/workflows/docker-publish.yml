@@ -7,17 +7,20 @@ name: Docker Publish
 
 on:
   push:
-    branches: [ "*" ]
+    branches: [ "development", "main", "release" ]
+  pull_request:
+    branches: [ "development", "main", "release" ]
    
 env:
   # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
-
+  #VCPKG_BINARY_SOURCES: 'clear;nuget,GitHub,readwrite'
 
 jobs:
   build:
+    name: Docker-Build-and-Publish
 
     runs-on: ubuntu-latest
     permissions:
@@ -31,6 +34,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # add problem matchers
+      - name: Add Problem Matchers
+        uses: ammaraskar/gcc-problem-matcher@master
+
       # Install the cosign tool except on PR
       # https://github.com/sigstore/cosign-installer
       - name: Install cosign
@@ -38,7 +45,6 @@ jobs:
         uses: sigstore/cosign-installer@f3c664df7af409cb4873aa5068053ba9d61a57b6 #v2.6.0
         with:
           cosign-release: 'v1.13.1'
-
 
       # Workaround: https://github.com/docker/build-push-action/issues/461
       - name: Setup Docker buildx
@@ -62,8 +68,9 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            ${{ github.ref_name }}-${{ github.run_number }} 
-            ${{ github.ref_name }}-latest
+            type=ref,event=pr
+            type=ref,event=branch,suffix=-${{github.run_number}}
+            type=ref,event=branch,suffix=-latest            
 
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
@@ -78,7 +85,10 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           file: Dockerfile_OdbDesignServer
-
+          build-args: |
+            OWNER=nam20485
+            GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+            VCPKG_BINARY_SOURCES=clear;nuget,GitHub,readwrite
 
       # Sign the resulting Docker image digest except on PRs.
       # This will only write to the public Rekor transparency log when the Docker

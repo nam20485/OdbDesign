@@ -2,6 +2,10 @@
 #include "CommandLineArgs.h"
 #include "CommandLineArgs.h"
 #include "CommandLineArgs.h"
+#include "CommandLineArgs.h"
+#include "CommandLineArgs.h"
+#include "CommandLineArgs.h"
+#include "CommandLineArgs.h"
 #include <exception>
 #include <stdexcept>
 #include "str_trim.h"
@@ -26,32 +30,62 @@ namespace Utils
 		parse();
 	}
 
-	bool CommandLineArgs::boolArg(const std::string& name) const
+	bool CommandLineArgs::boolArg(const std::string& name, bool defaultValue) const
 	{
 		auto strB = getArgValue(name);
-		if (strB.length() == 0) throw std::invalid_argument("Argument not found: " + name);
-		bool b;
-		std::istringstream(strB) >> std::boolalpha >> b;
-		return b;
+		if (strB.length() > 0)
+		{
+			bool b;
+			std::istringstream(strB) >> std::boolalpha >> b;
+			return b;
+		}
+
+		return defaultValue;
 	}
 
-	std::string CommandLineArgs::stringArg(const std::string& name) const
+	std::string CommandLineArgs::stringArg(const std::string& name, const std::string& defaultValue) const
 	{
-		return getArgValue(name);
+		auto str = getArgValue(name);
+		if (str.length() > 0)
+		{
+			return str;
+		}
+		return defaultValue;
 	}
 
-	int CommandLineArgs::intArg(const std::string& name) const
+	int CommandLineArgs::intArg(const std::string& name, int defaultValue) const
 	{
 		auto strI = getArgValue(name);
-		if (strI.length() == 0) throw std::invalid_argument("Argument not found: " + name);
-		return std::stoi(strI);
+		if (strI.length() > 0)
+		{
+			return std::stoi(strI);
+		}
+		return defaultValue;
 	}
 
-	double CommandLineArgs::doubleArg(const std::string& name) const
+	double CommandLineArgs::doubleArg(const std::string& name, double defaultValue) const
 	{
 		auto strD = getArgValue(name);
-		if (strD.length() == 0) throw std::invalid_argument("Argument not found: " + name);
-		return std::stod(strD);
+		if (strD.length() > 0)
+		{
+			return std::stod(strD);
+		}
+		return defaultValue;
+	}
+
+	std::string CommandLineArgs::executable() const
+	{
+		return getArgValue(EXECUTABLE_ARG_NAME);
+	}
+
+	std::filesystem::path CommandLineArgs::executableDirectory() const
+	{
+		return std::filesystem::path(executable()).parent_path().string();
+	}
+
+	std::filesystem::path CommandLineArgs::executableName() const
+	{
+		return std::filesystem::path(executable()).filename().string();
 	}
 
 	std::string CommandLineArgs::getArgValue(const std::string& name) const
@@ -68,7 +102,11 @@ namespace Utils
 			auto& arg = m_vecArguments[i];
 			if (arg.length() > 0)
 			{
-				if (arg[0] == '-' || arg[0] == '/')
+				if (i == 0)
+				{
+					m_mapArguments["executable"] = arg;
+				}
+				else if (arg[0] == '-' || arg[0] == '/')
 				{
 					Utils::str_ltrim(arg, '-');
 					Utils::str_ltrim(arg, '/');
@@ -102,7 +140,7 @@ namespace Utils
 					//{						
 					//	m_mapArguments[arg] = "true";
 					//}						
-				}
+				}				
 			}
 		}
 	}

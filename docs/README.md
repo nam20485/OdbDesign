@@ -34,27 +34,35 @@ The diagram describes the current state of parser implementation and data availa
 
 ![image](https://github.com/nam20485/OdbDesign/assets/1829396/d55d0ea8-6ad9-446a-8659-9157636e1c9f)
 
-### CI/CD Build Statuses
+### CI/CD Build
 
 #### Branches
 
 ##### `development`
 
-| | | |
-|-|-|-|
-| Build          |       | [![CMake Build Multi-Platform](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml) |
-| Code Scan      |       | [![CodeQL](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml) |
-| Docker         |       | [![Docker Publish](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml) |
+| Step               | Status  |
+|--------------------|---------|
+| Build              | [![CMake Build Multi-Platform](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml) |
+| Security Code Scan | [![CodeQL](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml) |
+| Docker Image       | [![Docker Publish](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml) |
 
 ##### `main`
 
-| | | |
-|-|-|-|
-| Build          |       | [![CMake Build Multi-Platform](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml) |
-| Code Scan      |       | [![CodeQL](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml) |
-| Docker         |       | [![Docker Publish](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml) |
+| Step               | Status   |
+|--------------------|----------|
+| Build              | [![CMake Build Multi-Platform](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml) |
+| Security Code Scan | [![CodeQL](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml) |
+| Docker Image       | [![Docker Publish](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml) |
 
 ### Architecture
+
+The OdbDesign parser is built as a C++ shared library on all three platforms. An executable running the server links to the library and provides the REST API for accessing the data the library parses. The REST API server can be run by invoking the executable directly or by running the Docker image. The server executable and library can be run on Windows, Linux, or MacOS and the Docker image can be run on any platform that supports Docker.
+
+[Insert Diagram Image]
+
+#### Library
+
+FileModel vs. ProductModel...
 
 ## Building from Source
 
@@ -125,7 +133,9 @@ $ cmake --build --preset linux-release
 $ docker build -f Dockerfile_OdbDesignServer . -t odbdesign-server
 ```
 
-## Integration
+## Running the REST API Server
+
+## Integration into Other Applications
 
 There are four interfaces that allow use of the library in other applications.
 
@@ -149,11 +159,26 @@ Data objects returned from the parser library support serialization to and from 
 
 This project is free and open source under the MIT [license](https://github.com/nam20485/OdbDesign/blob/c0c8b6e4b93e1c7d4d5e65c7ad25157c883f8bfb/LICENSE).
 
+## Credit
+
+Thanks to the following open source projects that are used to create OdbDesign:
+
+* [Crow](https://crowcpp.org/master/)
+* [Google Protobuf](https://protobuf.dev/)
+* [CMake](https://cmake.org/)
+* [vcpkg](https://vcpkg.io/en/)
+* [libarchive](https://www.libarchive.org/)
+* [OpenSSL](https://www.openssl.org/)
+* [zlib](https://www.zlib.net/)
+* [Python 3](https://www.python.org/)
+
+OdbDesign would not be possible without the hard work of their developers, staff, and supporters.
+
 ## Contact
 
 If you are interested in using the parser in your application or code, or have any questions about it please do not hesitate to contact me.
 
->If you need support for integration of the parser into your own product and/or need its feature set extended, I am available for consulting.
+>If you need support for integration of the parser into your own product and/or need its feature set extended, I am currently available for consulting.
 
 * [Email me (maintainer)](mailto:nmiller217@gmail.com?subject=OdbDesign)
 * [GitHub](https://github.com/nam20485/odbdesign)

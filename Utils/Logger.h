@@ -71,6 +71,7 @@ namespace Utils
 		void info(const std::stringstream& message, const std::string& file = "", int line = -1);
 		void debug(const std::string& message, const std::string& file = "", int line = -1);
 		void exception(const std::exception& e, const std::string& file = "", int line = -1);
+		void exception(const std::string& message, const std::string& file = "", int line = -1);
 
 		template<class T>
 		Logger& operator<<(const T& output);
@@ -92,7 +93,7 @@ namespace Utils
 	};	
 
 	template<class T>
-	inline Logger& Logger::operator<<(const T& output)
+	Logger& Logger::operator<<(const T& output)
 	{
 		log(Level::Info, output);
 		return *this;

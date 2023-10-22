@@ -1,9 +1,12 @@
 FROM debian:bookworm-20231009 AS build
 
+ARG OWNER=nam20485
+ARG GITHUB_TOKEN="PASSWORD"
+ARG VCPKG_BINARY_SOURCES=""
+
 # install dependencies
 RUN apt-get update && \
     apt-get install -y -q --no-install-recommends \
-        #gpg \
         curl \
         apt-transport-https \
         build-essential \
@@ -11,29 +14,45 @@ RUN apt-get update && \
         cmake \            
         g++ \
         ninja-build \
-        # python3-dev \     
-        #build-essential \
+        build-essential \
         git \        
         zip \
         unzip \
         tar  \
         pkg-config \
+        mono-complete \      
          && \
     rm -rf /var/lib/apt/lists/*
 
-ENV VCPKG_ROOT=/root/src/github/microsoft/vcpkg
-
 # install vcpkg
-WORKDIR /root/src/github/microsoft
+ENV VCPKG_ROOT=/root/src/github/microsoft/vcpkg
 RUN git clone https://github.com/Microsoft/vcpkg.git ${VCPKG_ROOT}
 WORKDIR ${VCPKG_ROOT}
 RUN ./bootstrap-vcpkg.sh
+
+# set vcpkg to use NuGet for binary caching
+ENV VCPKG_BINARY_SOURCES=${VCPKG_BINARY_SOURCES}
+
+# setup NuGet to use GitHub Packages as a source so vcpkg binary cache can use it
+RUN mono `./vcpkg fetch nuget | tail -n 1` \
+        sources add \
+        -source "https://nuget.pkg.github.com/${OWNER}/index.json" \
+        -storepasswordincleartext \
+        -name "GitHub" \
+        -username ${OWNER} \
+        -password "${GITHUB_TOKEN}"
+
+RUN mono `./vcpkg fetch nuget | tail -n 1` \
+        setapikey "${GITHUB_TOKEN}" \
+        -source "https://nuget.pkg.github.com/${OWNER}/index.json"
 
 # pre-install vcpgk packages BEFORE cmake configure
 RUN mkdir -p /src/OdbDesign
 WORKDIR /src/OdbDesign
 COPY ./vcpkg.json .
 RUN ${VCPKG_ROOT}/vcpkg install
+# RUN --mount=type=cache,target=/root/.cache \
+#     ${VCPKG_ROOT}/vcpkg install
 
 # copy source
 COPY . .
@@ -47,7 +66,7 @@ RUN cmake --build --preset linux-release
 # RUN cmake --build --preset linux-debug
 
 # much smaller runtime image
-FROM debian:bookworm-20231009 AS run
+FROM debian:bookworm-20231009-slim AS run
 
 RUN mkdir --parents /OdbDesign/bin
 WORKDIR /OdbDesign/bin
@@ -57,10 +76,12 @@ COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignLib/*.so .
 COPY --from=build /src/OdbDesign/out/build/linux-release/Utils/*.so .
 COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignServer/OdbDesignServer .
 COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignServer/*.so .
-COPY --from=build /src/OdbDesign/out/build/linux-release/*.so .
+COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignTests/OdbDesignTests .
 # copy designs and templates directories
 #COPY --from=build /src/OdbDesign/OdbDesignServer/designs ./designs
 #COPY --from=build /src/OdbDesign/OdbDesignServer/templates ./templates
+
+# copy SSL keys in (use --mount=type=secret)
 
 # run
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/OdbDesign/bin
