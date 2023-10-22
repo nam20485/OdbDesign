@@ -25,3 +25,4 @@ build/
 /.idea/workspace.xml
 ssl/
 Testing/Temporary/
+artifacts/
