@@ -122,13 +122,14 @@ jobs:
 
       - name: Analyze for critical and high CVEs
         id: docker-scout-cves       
-        if: ${{ github.event_name != 'pull_request_target' }} 
+        # if: ${{ github.event_name != 'pull_request_target' }} 
         uses: docker/scout-action@v1
         with:
-          command: cves
+          command: cves,recommendations
           image: ${{ steps.meta.outputs.tags }}
           sarif-file: sarif.output.json
           summary: true
+          keep-previous-comments: true
         
       - name: Upload SARIF result
         id: upload-sarif
