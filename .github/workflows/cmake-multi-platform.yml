@@ -16,6 +16,7 @@ env:
   # support for GH dependency graph vcpkg integration
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   VCPKG_FEATURE_FLAGS: dependencygraph
+  ARTIFACTS_DIR: ${{ github.workspace }}/artifacts
   
 jobs:
   build:
@@ -128,7 +129,7 @@ jobs:
     #   if: matrix.preset == 'linux-mingw-w64-release'
     
     #
-    #   All platforms
+    #   CMake Build - All platforms
     #   
     - name: CMake Configure      
       run: cmake --preset ${{matrix.preset}}    
@@ -138,3 +139,75 @@ jobs:
 
     - name: CMake Test
       run: ctest --preset ${{matrix.preset}} -V
+
+    #
+    #   Artifacts
+    #
+    - name: Compress Artifacts (Non-Windows)
+      if: matrix.os != 'windows-2022'
+      run: |
+        mkdir ${{env.ARTIFACTS_DIR}}
+        cp ./out/build/${{matrix.preset}}/OdbDesignLib/*.so ${{env.ARTIFACTS_DIR}}
+        cp ./out/build/${{matrix.preset}}/Utils/*.so ${{env.ARTIFACTS_DIR}}
+        cp ./out/build/${{matrix.preset}}/OdbDesignServer/OdbDesignServer ${{env.ARTIFACTS_DIR}}       
+        cd ${{env.ARTIFACTS_DIR}}
+        zip -r ./artifacts-${{matrix.os}}.zip ./*.so ./OdbDesignServer
+
+    - name: Compress Artifacts (Windows)
+      if: matrix.os == 'windows-2022'
+      run: |
+        New-Item -ItemType Directory -Force -Path  ${{env.ARTIFACTS_DIR}} -V
+        Copy-Item -Path ".\out\build\${{matrix.preset}}\*.dll" -Destination  ${{env.ARTIFACTS_DIR}} -Force -V
+        Copy-Item -Path ".\out\build\${{matrix.preset}}\OdbDesignServer.exe" -Destination  ${{env.ARTIFACTS_DIR}} -Force -V    
+        Compress-Archive -Path " ${{env.ARTIFACTS_DIR}}\*.dll"," ${{env.ARTIFACTS_DIR}}\*.exe"  -DestinationPath "${{env.ARTIFACTS_DIR}}\artifacts-${{matrix.os}}.zip" -V -Force
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ matrix.os }}-artifacts
+        path: ${{ env.ARTIFACTS_DIR }}/artifacts-${{matrix.os}}.zip
+        retention-days: 1
+
+  # release:
+  #   name: Create Release
+  #   if: github.ref_name == 'release'
+  #   runs-on: ubuntu-22.04
+
+  #   # download all three artifacts
+  #   steps:
+
+  #     # download the artifacts
+  #     - name: "Download artifacts"
+  #       uses: "actions/download-artifact@v2"
+  #       with:          
+  #         path: ${{ github.workspace }}/artifacts
+
+  #     # zip the artifacts
+  #     - name: "Zip artifacts"
+  #       run: |
+  #         cd ${{ github.workspace }}/artifacts
+  #         zip -r ${{ github.workspace }}/artifacts.zip .
+
+  #     # create a release
+  #     - name: "Create release"
+  #       uses: "actions/github-script@v6"
+  #       with:
+  #         github-token: "${{ secrets.GITHUB_TOKEN }}"
+  #         script: |
+  #           try {             
+  #             const response = await github.rest.repos.createRelease({
+  #               draft: false,
+  #               generate_release_notes: true,
+  #               name: process.env.RELEASE_TAG,
+  #               owner: context.repo.owner,
+  #               prerelease: false,
+  #               repo: context.repo.repo,
+  #               tag_name: process.env.RELEASE_TAG,
+  #             });
+
+  #             core.exportVariable('RELEASE_ID', response.data.id);
+  #             core.exportVariable('RELEASE_UPLOAD_URL', response.data.upload_url);
+  #           } catch (error) {
+  #             core.setFailed(error.message);
+  #           }
+  #         # upload the zipped artifacts
