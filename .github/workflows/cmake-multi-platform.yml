@@ -143,8 +143,8 @@ jobs:
     #
     #   Artifacts
     #
-    - name: Compress Artifacts (Non-Windows)
-      if: matrix.os != 'windows-2022'
+    - name: Compress Artifacts (Linux)
+      if: matrix.os == 'ubuntu-22.04'
       run: |
         mkdir ${{env.ARTIFACTS_DIR}}
         ls -al ./out/build
@@ -158,13 +158,28 @@ jobs:
         cd ${{env.ARTIFACTS_DIR}}
         zip -r ./artifacts-${{matrix.os}}.zip ./*.so ./OdbDesignServer
 
+    - name: Compress Artifacts (MacOS)
+      if: matrix.os == 'macos-12'
+      run: |
+        mkdir ${{env.ARTIFACTS_DIR}}
+        ls -al ./out/build
+        ls -al ./out/build/${{matrix.preset}}
+        ls -al ./out/build/${{matrix.preset}}/OdbDesignLib
+        ls -al ./out/build/${{matrix.preset}}/Utils
+        ls -al ./out/build/${{matrix.preset}}/OdbDesignServer
+        cp ./out/build/${{matrix.preset}}/OdbDesignLib/*.dylib ${{env.ARTIFACTS_DIR}}
+        cp ./out/build/${{matrix.preset}}/Utils/*.dylib ${{env.ARTIFACTS_DIR}}
+        cp ./out/build/${{matrix.preset}}/OdbDesignServer/OdbDesignServer ${{env.ARTIFACTS_DIR}}       
+        cd ${{env.ARTIFACTS_DIR}}
+        zip -r ./artifacts-${{matrix.os}}.zip ./*.dylib ./OdbDesignServer
+
     - name: Compress Artifacts (Windows)
       if: matrix.os == 'windows-2022'
       run: |
         New-Item -ItemType Directory -Force -Path  ${{env.ARTIFACTS_DIR}} -Verbose
-        Copy-Item -Path ".\out\build\${{matrix.preset}}\*.dll" -Destination  ${{env.ARTIFACTS_DIR}} -Force -Verbose
-        Copy-Item -Path ".\out\build\${{matrix.preset}}\OdbDesignServer.exe" -Destination  ${{env.ARTIFACTS_DIR}} -Force -Verbose    
-        Compress-Archive -Path " ${{env.ARTIFACTS_DIR}}\*.dll"," ${{env.ARTIFACTS_DIR}}\*.exe"  -DestinationPath "${{env.ARTIFACTS_DIR}}\artifacts-${{matrix.os}}.zip" -Verbose -Force
+        Copy-Item -Path "./out/build/${{matrix.preset}}/*.dll" -Destination  ${{env.ARTIFACTS_DIR}} -Force -Verbose
+        Copy-Item -Path "./out/build/${{matrix.preset}}/OdbDesignServer.exe" -Destination  ${{env.ARTIFACTS_DIR}} -Force -Verbose    
+        Compress-Archive -Path " ${{env.ARTIFACTS_DIR}}/*.dll"," ${{env.ARTIFACTS_DIR}}/*.exe"  -DestinationPath "${{env.ARTIFACTS_DIR}}/artifacts-${{matrix.os}}.zip" -Verbose -Force
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v2
