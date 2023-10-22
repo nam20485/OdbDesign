@@ -67,7 +67,7 @@ jobs:
     #
     - name: Install vcpkg
       run: |               
-        git clone --depth 1 https://github.com/Microsoft/vcpkg.git ${{env.VCPKG_ROOT}}
+        git clone https://github.com/Microsoft/vcpkg.git ${{env.VCPKG_ROOT}}
         "${{env.VCPKG_ROOT}}/bootstrap-vcpkg.sh"
       # (Windows comes w/ vcpkg installed as part of VS)   
       if: matrix.os != 'windows-2022'
