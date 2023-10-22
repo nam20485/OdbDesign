@@ -223,7 +223,7 @@ jobs:
                 tag_name: process.env.RELEASE_TAG,
               });
           
-              const oses = ["ubuntu-22.04, windows-2022, macos-12"];    
+              const oses = ["ubuntu-22.04", "windows-2022", "macos-12"];    
               for (const os of oses) {
                   const filename = 'artifacts-' + os + '.zip';
                   const artifactPath = "artifacts/artifacts-" + os;
