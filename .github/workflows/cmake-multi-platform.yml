@@ -224,9 +224,9 @@ jobs:
               });
           
               const oses = ["ubuntu-22.04", "windows-2022", "macos-12"];    
-              for (const os of oses) {
+              for (const os of oses) {                  
+                  const artifactPath = "artifacts/" + os + "-artifacts"";
                   const filename = 'artifacts-' + os + '.zip';
-                  const artifactPath = "artifacts/artifacts-" + os;
                   const filePath = artifactPath +'/' + filename;
                   const uploadResponse = await github.rest.repos.uploadReleaseAsset({
                       owner: context.repo.owner,
