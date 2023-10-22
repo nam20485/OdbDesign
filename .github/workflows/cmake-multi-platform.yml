@@ -192,6 +192,7 @@ jobs:
   release:
     # only on pushes to the release branch
     name: Create Release
+    needs: build
     if: github.ref_name == 'release' && github.event_name == 'push'
     runs-on: ubuntu-22.04
     permissions: 
