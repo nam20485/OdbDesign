@@ -10,6 +10,7 @@ namespace Odb::Lib
 	{
 	public:		
 		RouteController(IOdbServerApp& serverApp);
+		virtual ~RouteController() = default;
 
 		virtual void register_routes() = 0;
 
