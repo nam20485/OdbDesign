@@ -227,4 +227,4 @@ jobs:
             } catch (error) {
               core.setFailed(error.message);
             }
-            # upload the zipped artifacts
+            // upload the zipped artifacts
