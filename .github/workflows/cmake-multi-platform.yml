@@ -8,7 +8,7 @@ on:
     branches: [ "development", "main", "release" ]  
 
 permissions:
-  contents: write
+  contents: write  
 
 env:
   VCPKG_ROOT: ${{ github.workspace }}/vcpkg
@@ -189,46 +189,51 @@ jobs:
         path: ${{ env.ARTIFACTS_DIR }}/artifacts-${{matrix.os}}.zip
         retention-days: 1
 
-  # release:
-  #   name: Create Release
-  #   if: github.ref_name == 'release'
-  #   runs-on: ubuntu-22.04
+  release:
+    # only on pushes to the release branch
+    name: Create Release
+    if: github.ref_name == 'release' && github.event_name == 'push'
+    runs-on: ubuntu-22.04
+    permissions: 
+      contents: write
 
-  #   # download all three artifacts
-  #   steps:
+    steps:
 
-  #     # download the artifacts
-  #     - name: "Download artifacts"
-  #       uses: "actions/download-artifact@v2"
-  #       with:          
-  #         path: ${{ github.workspace }}/artifacts
+      # download the artifacts
+      - name: "Download artifacts"
+        uses: "actions/download-artifact@v2"
+        with:
+          path: ${{ github.workspace }}/artifacts
 
-  #     # zip the artifacts
-  #     - name: "Zip artifacts"
-  #       run: |
-  #         cd ${{ github.workspace }}/artifacts
-  #         zip -r ${{ github.workspace }}/artifacts.zip .
+      - name: Create Release Variables
+        run: |
+          export RELEASE_VERSION="${{vars.RELEASE_VERSION_PREFIX}}.${{github.run_number}}"
+          echo $RELEASE_VERSION >> $GITHUB_ENV                    
+          export RELEASE_TAG="v${RELEASE_VERSION}"
+          echo $RELEASE_TAG >> $GITHUB_ENV
+          export RELEASE_NAME="OdbDesign ${RELEASE_TAG}"
+          echo $RELEASE_NAME >> $GITHUB_ENV
 
-  #     # create a release
-  #     - name: "Create release"
-  #       uses: "actions/github-script@v6"
-  #       with:
-  #         github-token: "${{ secrets.GITHUB_TOKEN }}"
-  #         script: |
-  #           try {             
-  #             const response = await github.rest.repos.createRelease({
-  #               draft: false,
-  #               generate_release_notes: true,
-  #               name: process.env.RELEASE_TAG,
-  #               owner: context.repo.owner,
-  #               prerelease: false,
-  #               repo: context.repo.repo,
-  #               tag_name: process.env.RELEASE_TAG,
-  #             });
+      # create a release
+      - name: "Create GH Release"
+        uses: "actions/github-script@v6"
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          script: |
+            try {             
+              const response = await github.rest.repos.createRelease({
+                draft: false,
+                generate_release_notes: true,
+                name: process.env.RELEASE_NAME,
+                owner: context.repo.owner,
+                prerelease: false,
+                repo: context.repo.repo,
+                tag_name: process.env.RELEASE_TAG,
+              });
 
-  #             core.exportVariable('RELEASE_ID', response.data.id);
-  #             core.exportVariable('RELEASE_UPLOAD_URL', response.data.upload_url);
-  #           } catch (error) {
-  #             core.setFailed(error.message);
-  #           }
-  #         # upload the zipped artifacts
+              core.exportVariable('RELEASE_ID', response.data.id);
+              core.exportVariable('RELEASE_UPLOAD_URL', response.data.upload_url);
+            } catch (error) {
+              core.setFailed(error.message);
+            }
+            # upload the zipped artifacts
