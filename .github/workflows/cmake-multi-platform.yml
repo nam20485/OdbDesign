@@ -148,11 +148,6 @@ jobs:
       if: matrix.os == 'ubuntu-22.04'
       run: |
         mkdir ${{env.ARTIFACTS_DIR}}
-        ls -al ./out/build
-        ls -al ./out/build/${{matrix.preset}}
-        ls -al ./out/build/${{matrix.preset}}/OdbDesignLib
-        ls -al ./out/build/${{matrix.preset}}/Utils
-        ls -al ./out/build/${{matrix.preset}}/OdbDesignServer
         cp ./out/build/${{matrix.preset}}/OdbDesignLib/*.so ${{env.ARTIFACTS_DIR}}
         cp ./out/build/${{matrix.preset}}/Utils/*.so ${{env.ARTIFACTS_DIR}}
         cp ./out/build/${{matrix.preset}}/OdbDesignServer/OdbDesignServer ${{env.ARTIFACTS_DIR}}       
@@ -163,11 +158,6 @@ jobs:
       if: matrix.os == 'macos-12'
       run: |
         mkdir ${{env.ARTIFACTS_DIR}}
-        ls -al ./out/build
-        ls -al ./out/build/${{matrix.preset}}
-        ls -al ./out/build/${{matrix.preset}}/OdbDesignLib
-        ls -al ./out/build/${{matrix.preset}}/Utils
-        ls -al ./out/build/${{matrix.preset}}/OdbDesignServer
         cp ./out/build/${{matrix.preset}}/OdbDesignLib/*.dylib ${{env.ARTIFACTS_DIR}}
         cp ./out/build/${{matrix.preset}}/Utils/*.dylib ${{env.ARTIFACTS_DIR}}
         cp ./out/build/${{matrix.preset}}/OdbDesignServer/OdbDesignServer ${{env.ARTIFACTS_DIR}}       
@@ -209,11 +199,11 @@ jobs:
       - name: Create Release Variables
         run: |
           export RELEASE_VERSION="${{vars.RELEASE_VERSION_PREFIX}}.${{github.run_number}}"
-          echo $RELEASE_VERSION >> $GITHUB_ENV                    
+          echo "RELEASE_VERSION=$RELEASE_VERSION" >> $GITHUB_ENV                    
           export RELEASE_TAG="v${RELEASE_VERSION}"
-          echo $RELEASE_TAG >> $GITHUB_ENV
+          echo "RELEASE_TAG=$RELEASE_TAG" >> $GITHUB_ENV
           export RELEASE_NAME="OdbDesign ${RELEASE_TAG}"
-          echo $RELEASE_NAME >> $GITHUB_ENV
+          echo "RELEASE_NAME=$RELEASE_NAME" >> $GITHUB_ENV
 
       # create a release
       - name: "Create GH Release"
