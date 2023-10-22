@@ -147,6 +147,11 @@ jobs:
       if: matrix.os != 'windows-2022'
       run: |
         mkdir ${{env.ARTIFACTS_DIR}}
+        ls -al ./out/build
+        ls -al ./out/build/${{matrix.preset}}
+        ls -al ./out/build/${{matrix.preset}}/OdbDesignLib
+        ls -al ./out/build/${{matrix.preset}}/Utils
+        ls -al ./out/build/${{matrix.preset}}/OdbDesignServer
         cp ./out/build/${{matrix.preset}}/OdbDesignLib/*.so ${{env.ARTIFACTS_DIR}}
         cp ./out/build/${{matrix.preset}}/Utils/*.so ${{env.ARTIFACTS_DIR}}
         cp ./out/build/${{matrix.preset}}/OdbDesignServer/OdbDesignServer ${{env.ARTIFACTS_DIR}}       
@@ -156,10 +161,10 @@ jobs:
     - name: Compress Artifacts (Windows)
       if: matrix.os == 'windows-2022'
       run: |
-        New-Item -ItemType Directory -Force -Path  ${{env.ARTIFACTS_DIR}} -V
-        Copy-Item -Path ".\out\build\${{matrix.preset}}\*.dll" -Destination  ${{env.ARTIFACTS_DIR}} -Force -V
-        Copy-Item -Path ".\out\build\${{matrix.preset}}\OdbDesignServer.exe" -Destination  ${{env.ARTIFACTS_DIR}} -Force -V    
-        Compress-Archive -Path " ${{env.ARTIFACTS_DIR}}\*.dll"," ${{env.ARTIFACTS_DIR}}\*.exe"  -DestinationPath "${{env.ARTIFACTS_DIR}}\artifacts-${{matrix.os}}.zip" -V -Force
+        New-Item -ItemType Directory -Force -Path  ${{env.ARTIFACTS_DIR}} -Verbose
+        Copy-Item -Path ".\out\build\${{matrix.preset}}\*.dll" -Destination  ${{env.ARTIFACTS_DIR}} -Force -Verbose
+        Copy-Item -Path ".\out\build\${{matrix.preset}}\OdbDesignServer.exe" -Destination  ${{env.ARTIFACTS_DIR}} -Force -Verbose    
+        Compress-Archive -Path " ${{env.ARTIFACTS_DIR}}\*.dll"," ${{env.ARTIFACTS_DIR}}\*.exe"  -DestinationPath "${{env.ARTIFACTS_DIR}}\artifacts-${{matrix.os}}.zip" -Verbose -Force
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v2
