@@ -17,6 +17,7 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   VCPKG_FEATURE_FLAGS: dependencygraph
   ARTIFACTS_DIR: ${{ github.workspace }}/artifacts
+  ARTIFACTS_DIR_WIN: ${{ github.workspace }}\artifacts
   
 jobs:
   build:
@@ -176,10 +177,10 @@ jobs:
     - name: Compress Artifacts (Windows)
       if: matrix.os == 'windows-2022'
       run: |
-        New-Item -ItemType Directory -Force -Path  ${{env.ARTIFACTS_DIR}} -Verbose
-        Copy-Item -Path "./out/build/${{matrix.preset}}/*.dll" -Destination  ${{env.ARTIFACTS_DIR}} -Force -Verbose
-        Copy-Item -Path "./out/build/${{matrix.preset}}/OdbDesignServer.exe" -Destination  ${{env.ARTIFACTS_DIR}} -Force -Verbose    
-        Compress-Archive -Path " ${{env.ARTIFACTS_DIR}}/*.dll"," ${{env.ARTIFACTS_DIR}}/*.exe"  -DestinationPath "${{env.ARTIFACTS_DIR}}/artifacts-${{matrix.os}}.zip" -Verbose -Force
+        New-Item -ItemType Directory -Force -Path  ${{env.ARTIFACTS_DIR_WIN}} -Verbose
+        Copy-Item -Path ".\out\build\${{matrix.preset}}\*.dll" -Destination  ${{env.ARTIFACTS_DIR_WIN}} -Force -Verbose
+        Copy-Item -Path ".\out\build\${{matrix.preset}}\OdbDesignServer.exe" -Destination  ${{env.ARTIFACTS_DIR_WIN}} -Force -Verbose    
+        Compress-Archive -Path " ${{env.ARTIFACTS_DIR_WIN}}\*.dll"," ${{env.ARTIFACTS_DIR_WIN}}\*.exe"  -DestinationPath "${{env.ARTIFACTS_DIR_WIN}}\artifacts-${{matrix.os}}.zip" -Verbose -Force
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v2
