@@ -5,6 +5,7 @@
 #include <exception>
 
 using namespace Utils;
+using namespace std::filesystem;
 
 namespace Odb::Lib
 {
@@ -55,6 +56,47 @@ namespace Odb::Lib
         loginfo("Found. Returning from cache.");
 
         return m_fileArchivesByName[designName];        
+    }
+
+    std::vector<std::string> DesignCache::getLoadedDesignNames(const std::string& filter) const
+    {
+        std::vector<std::string> loadedDesigns;
+        for (const auto& kv : m_designsByName)
+        {
+            loadedDesigns.push_back(kv.second->GetFileModel()->GetFilename());
+        }
+        return loadedDesigns;
+    }
+
+    std::vector<std::string> DesignCache::getLoadedFileArchiveNames(const std::string& filter) const
+    {
+        std::vector<std::string> loadedFileArchives;
+        for (const auto& kv : m_fileArchivesByName)
+		{
+			loadedFileArchives.push_back(kv.second->GetFilename());
+		}
+        return loadedFileArchives;
+    }
+
+    std::vector<std::string> DesignCache::getUnloadedNames(const std::string& filter) const
+    {
+        std::vector<std::string> unloadedNames;
+
+        path dir(m_directory);
+        for (const auto& entry : directory_iterator(dir))
+        {
+            if (entry.is_regular_file())
+            {
+                unloadedNames.push_back(entry.path().filename().string());
+            }
+        }
+
+        return unloadedNames;
+    }
+
+    bool DesignCache::isQueryValid(const std::string& query) const
+    {
+        return false;
     }
 
     void DesignCache::Clear()
