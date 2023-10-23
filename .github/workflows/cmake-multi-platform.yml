@@ -228,7 +228,12 @@ jobs:
                 target_commitish: ${{ github.ref_name }}
               });
           
-              const filenames = ["OdbDesign-Linux-x64.zip", "OdbDesign-Windows-x64.zip", "OdbDesign-MacOS-x64.zip"];    
+              const filenames = [ 
+                  "OdbDesign-Linux-x64.zip",
+                  "OdbDesign-Windows-x64.zip",
+                  "OdbDesign-MacOS-x64.zip"
+              ];
+              
               for (const filename of filenames) {                  
                   const artifactsPath = "artifacts";
                   const filePath = artifactsPath +'/' + filename;
