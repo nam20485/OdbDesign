@@ -206,6 +206,12 @@ jobs:
           export RELEASE_NAME="OdbDesign ${RELEASE_TAG}"
           echo "RELEASE_NAME=$RELEASE_NAME" >> $GITHUB_ENV
 
+      - name: Rename Artifacts
+        run: |
+          mv ${{ github.workspace }}/artifacts/ubuntu-22.04-artifacts/artifacts-ubuntu-22.04.zip ${{ github.workspace }}/artifacts/OdbDesign-Linux-x64.zip
+          mv ${{ github.workspace }}/artifacts/windows-2022-artifacts/artifacts-windows-2022.zip ${{ github.workspace }}/artifacts/OdbDesign-Windows-x64.zip
+          mv ${{ github.workspace }}/artifacts/macos-12-artifacts/artifacts-macos-12.zip ${{ github.workspace }}/artifacts/OdbDesign-MacOS-x64.zip
+
       # create a release
       - name: "Create GH Release"
         uses: "actions/github-script@v6"
@@ -223,11 +229,10 @@ jobs:
                 tag_name: process.env.RELEASE_TAG,
               });
           
-              const oses = ["ubuntu-22.04", "windows-2022", "macos-12"];    
-              for (const os of oses) {                  
-                  const artifactPath = "artifacts/" + os + "-artifacts";
-                  const filename = 'artifacts-' + os + '.zip';
-                  const filePath = artifactPath +'/' + filename;
+              const filenames = ["OdbDesign-Linux-x64.zip", "OdbDesign-Windows-x64.zip", "OdbDesign-MacOS-x64.zip"];    
+              for (const filename of filenames) {                  
+                  const artifactsPath = "artifacts";
+                  const filePath = artifactsPath +'/' + filename;
                   const uploadResponse = await github.rest.repos.uploadReleaseAsset({
                       owner: context.repo.owner,
                       repo: context.repo.repo,
