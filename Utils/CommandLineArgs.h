@@ -25,13 +25,17 @@ namespace Utils
 		std::filesystem::path executableDirectory() const;
 		std::filesystem::path executableName() const;
 
+		void printUsage() const;
+
 	protected:
 		std::vector<std::string> m_vecArguments;
 		std::map<std::string, std::string> m_mapArguments;
 
 		std::string getArgValue(const std::string& name) const;
 
-		void parse();
+		void parse();		
+
+		virtual std::string getUsageString() const = 0;		
 
 		const char* EXECUTABLE_ARG_NAME = "executable";
 				

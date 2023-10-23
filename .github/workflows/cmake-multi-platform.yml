@@ -8,7 +8,7 @@ on:
     branches: [ "development", "main", "release" ]  
 
 permissions:
-  contents: write
+  contents: write  
 
 env:
   VCPKG_ROOT: ${{ github.workspace }}/vcpkg
@@ -16,6 +16,8 @@ env:
   # support for GH dependency graph vcpkg integration
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   VCPKG_FEATURE_FLAGS: dependencygraph
+  ARTIFACTS_DIR: ${{ github.workspace }}/artifacts
+  ARTIFACTS_DIR_WIN: ${{ github.workspace }}\artifacts
   
 jobs:
   build:
@@ -128,7 +130,7 @@ jobs:
     #   if: matrix.preset == 'linux-mingw-w64-release'
     
     #
-    #   All platforms
+    #   CMake Build - All platforms
     #   
     - name: CMake Configure      
       run: cmake --preset ${{matrix.preset}}    
@@ -138,3 +140,115 @@ jobs:
 
     - name: CMake Test
       run: ctest --preset ${{matrix.preset}} -V
+
+    #
+    #   Artifacts
+    #
+    - name: Compress Artifacts (Linux)
+      if: matrix.os == 'ubuntu-22.04'
+      run: |
+        mkdir ${{env.ARTIFACTS_DIR}}
+        cp ./out/build/${{matrix.preset}}/OdbDesignLib/*.so ${{env.ARTIFACTS_DIR}}
+        cp ./out/build/${{matrix.preset}}/Utils/*.so ${{env.ARTIFACTS_DIR}}
+        cp ./out/build/${{matrix.preset}}/OdbDesignServer/OdbDesignServer ${{env.ARTIFACTS_DIR}}       
+        cd ${{env.ARTIFACTS_DIR}}
+        zip -r ./artifacts-${{matrix.os}}.zip ./*.so ./OdbDesignServer
+
+    - name: Compress Artifacts (MacOS)
+      if: matrix.os == 'macos-12'
+      run: |
+        mkdir ${{env.ARTIFACTS_DIR}}
+        cp ./out/build/${{matrix.preset}}/OdbDesignLib/*.dylib ${{env.ARTIFACTS_DIR}}
+        cp ./out/build/${{matrix.preset}}/Utils/*.dylib ${{env.ARTIFACTS_DIR}}
+        cp ./out/build/${{matrix.preset}}/OdbDesignServer/OdbDesignServer ${{env.ARTIFACTS_DIR}}       
+        cd ${{env.ARTIFACTS_DIR}}
+        zip -r ./artifacts-${{matrix.os}}.zip ./*.dylib ./OdbDesignServer
+
+    - name: Compress Artifacts (Windows)
+      if: matrix.os == 'windows-2022'
+      run: |
+        New-Item -ItemType Directory -Force -Path  ${{env.ARTIFACTS_DIR_WIN}} -Verbose
+        Copy-Item -Path ".\out\build\${{matrix.preset}}\*.dll" -Destination  ${{env.ARTIFACTS_DIR_WIN}} -Force -Verbose
+        Copy-Item -Path ".\out\build\${{matrix.preset}}\OdbDesignServer.exe" -Destination  ${{env.ARTIFACTS_DIR_WIN}} -Force -Verbose    
+        Compress-Archive -Path "${{env.ARTIFACTS_DIR_WIN}}\*.dll","${{env.ARTIFACTS_DIR_WIN}}\*.exe"  -DestinationPath "${{env.ARTIFACTS_DIR_WIN}}\artifacts-${{matrix.os}}.zip" -Verbose -Force
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ matrix.os }}-artifacts
+        path: ${{ env.ARTIFACTS_DIR }}/artifacts-${{matrix.os}}.zip
+        retention-days: 1
+
+  release:
+    # only on pushes to the release branch
+    name: Create Release
+    needs: build
+    if: ${{ (github.ref_name == 'release') && github.event_name == 'push' }}       
+    runs-on: ubuntu-22.04
+    permissions: 
+      contents: write
+
+    steps:
+
+      # download the artifacts
+      - name: "Download artifacts"
+        uses: "actions/download-artifact@v2"
+        with:
+          path: ${{ github.workspace }}/artifacts
+
+      - name: Create Release Variables
+        run: |
+          ls -al ${{ github.workspace }}/artifacts
+          export RELEASE_VERSION="${{vars.RELEASE_VERSION_PREFIX}}.${{github.run_number}}"
+          echo "RELEASE_VERSION=$RELEASE_VERSION" >> $GITHUB_ENV                    
+          export RELEASE_TAG="v${RELEASE_VERSION}"
+          echo "RELEASE_TAG=$RELEASE_TAG" >> $GITHUB_ENV
+          export RELEASE_NAME="OdbDesign ${RELEASE_TAG}"
+          echo "RELEASE_NAME=$RELEASE_NAME" >> $GITHUB_ENV
+
+      - name: Rename Artifacts
+        run: |
+          mv ${{ github.workspace }}/artifacts/ubuntu-22.04-artifacts/artifacts-ubuntu-22.04.zip ${{ github.workspace }}/artifacts/OdbDesign-Linux-x64.zip
+          mv ${{ github.workspace }}/artifacts/windows-2022-artifacts/artifacts-windows-2022.zip ${{ github.workspace }}/artifacts/OdbDesign-Windows-x64.zip
+          mv ${{ github.workspace }}/artifacts/macos-12-artifacts/artifacts-macos-12.zip ${{ github.workspace }}/artifacts/OdbDesign-MacOS-x64.zip
+
+      # create a release
+      - name: "Create GH Release"
+        uses: "actions/github-script@v6"
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          script: |
+            try {             
+              const createResponse = await github.rest.repos.createRelease({
+                generate_release_notes: true,
+                name: process.env.RELEASE_NAME,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                tag_name: process.env.RELEASE_TAG,
+                target_commitish: '${{ github.ref_name }}'
+              });
+          
+              const filenames = [ 
+                  'OdbDesign-Linux-x64.zip',
+                  'OdbDesign-Windows-x64.zip',
+                  'OdbDesign-MacOS-x64.zip'
+              ];
+              
+              for (const filename of filenames) {                  
+                  const artifactsPath = 'artifacts';
+                  const filePath = artifactsPath +'/' + filename;
+                  const uploadResponse = await github.rest.repos.uploadReleaseAsset({
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      release_id: createResponse.data.id,        
+                      name: filename,            
+                      data: require('fs').readFileSync(filePath),
+                      headers: {
+                      'content-type': 'application/zip',
+                      'content-length': require('fs').statSync(filePath).size
+                      }    
+                  });
+              }
+            } catch (error) {
+                core.setFailed(error.message);
+            }               

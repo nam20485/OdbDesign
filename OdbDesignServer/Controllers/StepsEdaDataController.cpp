@@ -25,10 +25,12 @@ namespace Odb::App::Server
 		//app.route_dynamic(url)
 
 		// TODO: figure out why capture here is weird (i.e. how to capture pServerApp so it can be used in the member fxn handler)
-		CROW_ROUTE(m_serverApp.crow_app(), "/steps/eda_data")
-			([&](const crow::request& req)
+		CROW_ROUTE(m_serverApp.crow_app(), "/designs/<string>/steps/<string>/eda_data")
+			([&](const crow::request& req, std::string designName, std::string stepName)
 				{
-					return this->steps_edadata_route_handler(req);
+					//<string>/steps/<string>/eda_data
+					//, std::string designName, std::string stepName
+					return this->steps_edadata_route_handler(designName, stepName, req);
 				});
 
 		//register_route_handler("/steps/edadata/package_records", std::bind(&StepsEdaDataController::steps_edadata_route_handler, this, std::placeholders::_1));			
@@ -38,16 +40,20 @@ namespace Odb::App::Server
 		});*/
 	}	
 
-	crow::response StepsEdaDataController::steps_edadata_route_handler(const crow::request& req)
+	crow::response StepsEdaDataController::steps_edadata_route_handler(const std::string& designName, 
+																	   const std::string& stepName,
+																	   const crow::request& req)
 	{
-		auto designName = req.url_params.get("design");
-		if (designName == nullptr || strlen(designName) == 0)
+		//auto designName = req.url_params.get("design");
+		//if (designName == nullptr || strlen(designName) == 0)
+		if (designName.empty())
 		{
 			return crow::response(crow::status::BAD_REQUEST, "design name not specified");
 		}
 
-		auto stepName = req.url_params.get("step");
-		if (stepName == nullptr || strlen(stepName) == 0)
+		//auto stepName = req.url_params.get("step");
+		//if (stepName == nullptr || strlen(stepName) == 0)
+		if (stepName.empty())
 		{
 			return crow::response(crow::status::BAD_REQUEST, "step name not specified");
 		}

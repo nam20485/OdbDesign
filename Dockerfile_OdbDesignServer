@@ -77,10 +77,13 @@ COPY --from=build /src/OdbDesign/out/build/linux-release/Utils/*.so .
 COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignServer/OdbDesignServer .
 COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignServer/*.so .
 COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignTests/OdbDesignTests .
-# copy designs and templates directories
-#COPY --from=build /src/OdbDesign/OdbDesignServer/designs ./designs
-#COPY --from=build /src/OdbDesign/OdbDesignServer/templates ./templates
 
+# copy templates directory
+RUN mkdir ./templates
+COPY --from=build /src/OdbDesign/OdbDesignServer/templates/* ./templates
+
+# copy designs directory
+#COPY --from=build /src/OdbDesign/OdbDesignServer/designs ./designs
 # copy SSL keys in (use --mount=type=secret)
 
 # run

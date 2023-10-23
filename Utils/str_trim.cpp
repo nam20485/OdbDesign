@@ -49,7 +49,7 @@ namespace Utils
     {
         auto it = std::find_if(s.rbegin(), s.rend(),
             [toRemove](char c) {
-                return !std::isspace(c);
+                return c != toRemove;
             });
         s.erase(it.base(), s.end());
         return s;

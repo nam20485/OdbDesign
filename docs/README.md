@@ -4,11 +4,12 @@ A free open source cross-platform C++ library for parsing ODB++ Design archives,
 
 ## Key Features
 
-OdbDesign ODB++ parser is differentiated from other offerings by three key features:
+OdbDesign ODB++ parser is differentiated from other offerings by these key features:
 
 1. Performance
-1. Cross Platform Flexibility
+1. Cross-Platform Flexibility
 1. Expertise
+1. Security
 
 ### Performance
 
@@ -25,6 +26,14 @@ The library itself can run directly on all major platforms (i.e. Windows, Linux,
 ### Expertise
 
 The maintainer has well over a decade of experience in the PCB Manufacturing and hardware industry. Specifically he has worked on the development of ODB++ parsing and viewer applications for some of the established key players in the industry. Time spent working under the designer of the ODB++ specification has given him a unique perspective on the ODB++ format and how it is used in the industry. This experience is also leveraged to make the parser as fast and efficient as possible.
+
+### Security
+
+All code, dependency packages, and Docker images are scanned for security vulnerabilities, using extended security scanning rule profiles (these are more secure than the default base scanning rule profiles).
+
+It is built using the latest available version of the C++ standard and is compiled with the latest available compiler versions. The parser is also built using the latest available versions of all of its dependencies and is regularly updated to use the latest versions of those dependencies as they are released.
+
+>These checks are run against all branches starting with development, so there is no chance of a security vulnerability being introduced into the main and release branches. Docker's Scout Suite is used to scan the Docker image for security vulnerabilities, and GitHub's CodeQL is used to scan the code for security vulnerabilities.
 
 ## Overview
 
@@ -43,16 +52,27 @@ The diagram describes the current state of parser implementation and data availa
 | Step               | Status  |
 |--------------------|---------|
 | Build              | [![CMake Build Multi-Platform](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml) |
-| Security Code Scan | [![CodeQL](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml) |
+| Security Code Scan | [![CodeQL Security Scan](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml) |
 | Docker Image       | [![Docker Publish](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml) |
+| Docker Security Scan        | [![Docker Scout Scan](https://github.com/nam20485/OdbDesign/actions/workflows/docker-scout-scan.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-scout-scan.yml) |
 
 ##### `main`
 
 | Step               | Status   |
 |--------------------|----------|
 | Build              | [![CMake Build Multi-Platform](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml) |
-| Security Code Scan | [![CodeQL](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml) |
+| Security Code Scan | [![CodeQL Security Scan](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml) |
 | Docker Image       | [![Docker Publish](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml) |
+| Docker Security Scan        | [![Docker Scout Scan](https://github.com/nam20485/OdbDesign/actions/workflows/docker-scout-scan.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-scout-scan.yml) |
+
+##### `release`
+
+| Step               | Status   |
+|--------------------|----------|
+| Build              | [![CMake Build Multi-Platform](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml/badge.svg?branch=release)](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml) |
+| Security Code Scan | [![CodeQL Security Scan](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml) |
+| Docker Image       | [![Docker Publish](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml/badge.svg?branch=release)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml) |
+| Docker Security Scan        | [![Docker Scout Scan](https://github.com/nam20485/OdbDesign/actions/workflows/docker-scout-scan.yml/badge.svg?branch=release)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-scout-scan.yml) |
 
 ### Architecture
 
