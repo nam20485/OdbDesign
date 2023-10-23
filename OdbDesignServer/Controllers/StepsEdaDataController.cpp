@@ -58,7 +58,7 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "step name not specified");
 		}
 
-		auto pFileArchive = m_serverApp.design_cache().GetFileArchive(designName);
+		auto pFileArchive = m_serverApp.designs().GetFileArchive(designName);
 		if (pFileArchive == nullptr)
 		{
 			std::stringstream ss;
