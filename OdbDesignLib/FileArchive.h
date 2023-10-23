@@ -21,6 +21,7 @@ namespace Odb::Lib::FileModel::Design
 
 		std::string GetPath() const;
 		std::string GetProductName() const;
+		std::string GetFilename() const;
 
 		const StepDirectory::StringMap& GetStepsByName() const;
         const MiscInfoFile& GetMiscInfoFile() const;
