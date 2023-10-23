@@ -4,6 +4,14 @@ out/
 .git/
 .gitignore
 .gitattributes
-Dockerfile
+Dockerfile*
 docker-compose.yml
+*.code-workspace
+vcpkg_installed/
+ssl/
+out/
+cmake-build-*/
+build/
+.idea/
+Testing/
 *.code-workspace
