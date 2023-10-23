@@ -13,7 +13,7 @@ namespace Utils
 			: Utils::CrowReturnable<TJsonable>(odbObject, CONTENT_TYPE)
 		{}
 
-		inline static const std::string CONTENT_TYPE = "application/json";
+		inline constexpr static const char* CONTENT_TYPE = "application/json";
 
 	protected:
 		std::string to_string() const override;
