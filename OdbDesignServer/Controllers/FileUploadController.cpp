@@ -1,5 +1,7 @@
 #include "FileUploadController.h"
 
+using namespace std::filesystem;
+
 namespace Odb::App::Server
 {
 	FileUploadController::FileUploadController(Odb::Lib::IOdbServerApp& serverApp)
@@ -8,7 +10,7 @@ namespace Odb::App::Server
 	}
 	void FileUploadController::register_routes()
 	{
-		CROW_ROUTE(m_serverApp.crow_app(), "/files/upload/<string>").methods(crow::HTTPMethod::POST)
+		CROW_ROUTE(m_serverApp.crow_app(), "/designs/upload/<string>").methods(crow::HTTPMethod::POST)
 			([&](const crow::request& req, std::string filename)
 				{
 					const auto& contentType = req.get_header_value("Content-Type");
@@ -25,22 +27,68 @@ namespace Odb::App::Server
 						return crow::response(crow::status::BAD_REQUEST, "incorrect content type");
 					}				
 				});
-	}
 
+        CROW_ROUTE(m_serverApp.crow_app(), "/designs/list").methods(crow::HTTPMethod::GET)
+            ([&](const crow::request& req)
+                {              
+                    auto designNames = m_serverApp.designs().getUnloadedNames();
+                    if (designNames.empty())
+                    {  
+                        return crow::response(crow::status::NOT_FOUND, "no designs found");                       
+                    }
+
+                    crow::json::wvalue jsonResponse;
+                    jsonResponse["names"] = designNames;
+
+#if defined(_DEBUG)
+                    auto j = jsonResponse.dump();
+#endif
+                                      
+                    return crow::response(jsonResponse);
+                });
+
+        CROW_ROUTE(m_serverApp.crow_app(), "/designs/list/<string>").methods(crow::HTTPMethod::GET)
+            ([&](const crow::request& req, std::string query)
+                {
+                    if (! m_serverApp.designs().isQueryValid(query))                    
+                    {
+                        return crow::response(crow::status::BAD_REQUEST, "invalid query");
+                    }
+
+                    auto designNames = m_serverApp.designs().getUnloadedNames(query);
+                    if (designNames.empty())
+                    {
+                        return crow::response(crow::status::NOT_FOUND, "no matching design names found");                        
+                    }
+
+                    crow::json::wvalue jsonResponse;
+                    jsonResponse["names"] = designNames;
+
+#if defined(_DEBUG)
+                    auto j = jsonResponse.dump();
+#endif
+
+                    return crow::response(jsonResponse);
+                });
+	}
+    
     crow::response FileUploadController::handleOctetStreamUpload(const std::string& filename, const crow::request& req)
     {
-        // TODO: generate random temp filename
-        const auto tempFilename = "temp.upload";
-        std::ofstream outfile(tempFilename, std::ofstream::binary);
+        const auto tempPath = temp_directory_path() / std::tmpnam(nullptr);
+        std::ofstream outfile(tempPath, std::ofstream::binary);
         outfile << req.body;
         outfile.close();
 
-        // TODO: sanitize filename
-        std::filesystem::path finalPath(m_serverApp.args().designsDir());
-        finalPath /= filename;
-        std::filesystem::rename(tempFilename, finalPath);
+        // TODO: sanitize provided filename
+        auto safeName = sanitizeFilename(filename);
 
-        return crow::response(crow::status::OK);
+        path finalPath(m_serverApp.args().designsDir());
+        finalPath /= safeName;
+        rename(tempPath, finalPath);
+
+        std::string responseBody = "{ \"filename\": \"" + safeName + "\" }";
+
+        return crow::response(crow::status::OK, responseBody);
     }
 
     crow::response FileUploadController::handleMultipartFormUpload(const std::string& filename, const crow::request& req)
