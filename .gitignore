@@ -26,3 +26,6 @@ build/
 ssl/
 Testing/Temporary/
 artifacts/
+/.github/workflows/create-release.js
+/scripts/compress-artifacts.ps1
+/scripts/compress-artifacts.sh
