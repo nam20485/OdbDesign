@@ -99,4 +99,9 @@ namespace Odb::App::Server
         }
         return crow::response(200);
     }
+
+    std::string FileUploadController::sanitizeFilename(const std::string& filename) const
+    {
+        return filename;
+    }
 }
