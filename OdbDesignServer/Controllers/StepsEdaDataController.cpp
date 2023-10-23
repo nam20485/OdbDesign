@@ -66,7 +66,7 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, ss.str());
 		}
 
-		auto stepsByName = pFileArchive->GetStepsByName();
+		auto& stepsByName = pFileArchive->GetStepsByName();
 		auto findIt = stepsByName.find(stepName);
 		if (findIt == stepsByName.end())
 		{
@@ -75,8 +75,8 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, ss.str());
 		}
 
-		auto step = findIt->second;
-		auto edaDataFile = step->GetEdaDataFile();
+		auto& step = findIt->second;
+		auto& edaDataFile = step->GetEdaDataFile();
 		return crow::response(JsonCrowReturnable(edaDataFile));
 	}
 }
