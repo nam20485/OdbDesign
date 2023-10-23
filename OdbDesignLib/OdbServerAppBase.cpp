@@ -2,6 +2,7 @@
 #include <Logger.h>
 
 using namespace Utils;
+using namespace std::filesystem;
 
 namespace Odb::Lib
 {
@@ -17,6 +18,13 @@ namespace Odb::Lib
 
 	ExitCode Odb::Lib::OdbServerAppBase::Run()
 	{
+		// print usage and exit w/ success
+		if (args().help())
+		{
+			args().printUsage();
+			return ExitCode::Success;
+		}
+
 		// call base class
 		if (ExitCode::Success != OdbAppBase::Run()) return ExitCode::FailedInit;
 
@@ -30,8 +38,16 @@ namespace Odb::Lib
 		{
 			if (args().useHttps())
 			{
+				path sslDirPath(args().sslDir());
+				if (!exists(sslDirPath) || !is_directory(sslDirPath))
+				{
+					logerror("SSL was specified but the directory does not exist, exiting...");
+					return ExitCode::FailedInitSslDirDoesNotExist;
+				}				
+
 				// enable SSL/HTTPS
-				m_crowApp.ssl_file("ssl/localhost.crt", "ssl/localhost.key");
+				m_crowApp.ssl_file((sslDirPath / SSL_CERT_FILE).string(),
+								   (sslDirPath / SSL_KEY_FILE).string());
 			}
 		}
 		catch (boost::wrapexcept<boost::system::system_error>& e)

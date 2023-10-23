@@ -27,5 +27,8 @@ namespace Odb::Lib
 
 	private:
 		void register_routes();
+
+		static constexpr const char* SSL_CERT_FILE = "ssl.crt";
+		static constexpr const char* SSL_KEY_FILE = "ssl.key";
 	};
 }
