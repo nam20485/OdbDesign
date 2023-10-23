@@ -106,7 +106,8 @@ namespace Odb::Lib
     }
 
     std::shared_ptr<ProductModel::Design> DesignCache::LoadDesign(const std::string& designName)
-    {
+    {        
+        // no FileArchive with the same name is loaded, so load the Design from file
         std::filesystem::path dir(m_directory);
 
         for (const auto& entry : std::filesystem::directory_iterator(dir))
@@ -115,11 +116,15 @@ namespace Odb::Lib
             {
                 if (entry.path().stem() == designName)
                 {
-                    auto pDesign = std::make_shared<ProductModel::Design>();
-                    if (pDesign->Build(entry.path().string()))
+                    auto pFileModel = GetFileArchive(designName);
+                    if (pFileModel != nullptr)
                     {
-                        m_designsByName.emplace(designName, pDesign);
-                        return pDesign;
+                        auto pDesign = std::make_shared<ProductModel::Design>();
+                        if (pDesign->Build(pFileModel))
+                        {
+                            m_designsByName.emplace(designName, pDesign);
+                            return pDesign;
+                        }
                     }
                 }
             }
