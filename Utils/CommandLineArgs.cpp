@@ -6,10 +6,12 @@
 #include "CommandLineArgs.h"
 #include "CommandLineArgs.h"
 #include "CommandLineArgs.h"
+#include "CommandLineArgs.h"
 #include <exception>
 #include <stdexcept>
 #include "str_trim.h"
 #include <sstream>
+#include <iostream>
 
 
 namespace Utils
@@ -143,5 +145,9 @@ namespace Utils
 				}				
 			}
 		}
+	}
+	void Utils::CommandLineArgs::printUsage() const
+	{
+		std::cout << getUsageString();
 	}
 }

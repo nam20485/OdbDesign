@@ -8,6 +8,7 @@ namespace Utils
 		Success = 0,
 		FailedInit = 1,
 		FailedInitSsl = 2,
+		FailedInitSslDirDoesNotExist = 3,
 		UnknownError
 	};
 }
