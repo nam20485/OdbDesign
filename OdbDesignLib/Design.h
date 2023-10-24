@@ -31,7 +31,6 @@ namespace Odb::Lib::ProductModel
 		std::string m_productModel;
 		std::string m_name;
 
-		std::string m_path;		
 		std::shared_ptr<FileModel::Design::FileArchive> m_pFileModel;
 
 		Net::Vector m_nets;
@@ -49,8 +48,8 @@ namespace Odb::Lib::ProductModel
 		bool BuildPackages();
 		bool BuildParts();
 		bool BuildComponents();
-		bool BuildLayerComponents(std::shared_ptr<Odb::Lib::FileModel::Design::ComponentLayerDirectory>& pTopComponentsLayerDir);
-		bool BuildLayerParts(std::shared_ptr<Odb::Lib::FileModel::Design::ComponentLayerDirectory>& pTopComponentsLayerDir);
+		bool BuildLayerComponents(std::shared_ptr<Odb::Lib::FileModel::Design::ComponentLayerDirectory>& pComponentsLayerDir);
+		bool BuildLayerParts(std::shared_ptr<Odb::Lib::FileModel::Design::ComponentLayerDirectory>& pComponentsLayerDir);
 		bool BuildPlacements();
 		bool BuildLayerPlacements(std::shared_ptr<Odb::Lib::FileModel::Design::ComponentLayerDirectory>& pTopComponentsLayerDir);
 
