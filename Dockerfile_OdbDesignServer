@@ -67,6 +67,9 @@ RUN cmake --build --preset linux-release
 
 # much smaller runtime image
 FROM debian:bookworm-20231009-slim AS run
+LABEL org.opencontainers.image.description = "The OdbDesign Docker image runs the OdbDesignServer REST API server executable, listening on port 8888."
+
+EXPOSE 8888
 
 RUN mkdir --parents /OdbDesign/bin
 WORKDIR /OdbDesign/bin
