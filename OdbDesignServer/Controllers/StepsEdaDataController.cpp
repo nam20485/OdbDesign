@@ -63,7 +63,7 @@ namespace Odb::App::Server
 		{
 			std::stringstream ss;
 			ss << "design: \"" << designName << "\" not found";			
-			return crow::response(crow::status::BAD_REQUEST, ss.str());
+			return crow::response(crow::status::NOT_FOUND, ss.str());
 		}
 
 		auto& stepsByName = pFileArchive->GetStepsByName();
@@ -72,7 +72,7 @@ namespace Odb::App::Server
 		{
 			std::stringstream ss;
 			ss << "step: \"" << stepName << "\" not found";
-			return crow::response(crow::status::BAD_REQUEST, ss.str());
+			return crow::response(crow::status::NOT_FOUND, ss.str());
 		}
 
 		auto& step = findIt->second;
