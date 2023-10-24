@@ -31,46 +31,63 @@ namespace Odb::App::Server
         CROW_ROUTE(m_serverApp.crow_app(), "/designs/list").methods(crow::HTTPMethod::GET)
             ([&](const crow::request& req)
                 {              
-                    auto designNames = m_serverApp.designs().getUnloadedNames();
-                    if (designNames.empty())
-                    {  
-                        return crow::response(crow::status::NOT_FOUND, "no designs found");                       
-                    }
-
-                    crow::json::wvalue jsonResponse;
-                    jsonResponse["names"] = designNames;
-
-#if defined(_DEBUG)
-                    auto j = jsonResponse.dump();
-#endif
-                                      
-                    return crow::response(jsonResponse);
+                    return makeLoadedDesignsResponse();
                 });
 
-        CROW_ROUTE(m_serverApp.crow_app(), "/designs/list/<string>").methods(crow::HTTPMethod::GET)
-            ([&](const crow::request& req, std::string query)
-                {
-                    if (! m_serverApp.designs().isQueryValid(query))                    
-                    {
-                        return crow::response(crow::status::BAD_REQUEST, "invalid query");
-                    }
-
-                    auto designNames = m_serverApp.designs().getUnloadedNames(query);
-                    if (designNames.empty())
-                    {
-                        return crow::response(crow::status::NOT_FOUND, "no matching design names found");                        
-                    }
-
-                    crow::json::wvalue jsonResponse;
-                    jsonResponse["names"] = designNames;
-
-#if defined(_DEBUG)
-                    auto j = jsonResponse.dump();
-#endif
-
-                    return crow::response(jsonResponse);
-                });
+//        CROW_ROUTE(m_serverApp.crow_app(), "/designs/list/<string>").methods(crow::HTTPMethod::GET)
+//            ([&](const crow::request& req, std::string query)
+//                {
+//                    if (! m_serverApp.designs().isQueryValid(query))                    
+//                    {
+//                        return crow::response(crow::status::BAD_REQUEST, "invalid query");
+//                    }
+//
+//                    auto designNames = m_serverApp.designs().getUnloadedNames(query);
+//                    if (designNames.empty())
+//                    {
+//                        return crow::response(crow::status::NOT_FOUND, "no matching design names found");                        
+//                    }
+//
+//                    crow::json::wvalue jsonResponse;
+//                    jsonResponse["names"] = designNames;
+//
+//#if defined(_DEBUG)
+//                    auto j = jsonResponse.dump();
+//#endif
+//
+//                    return crow::response(jsonResponse);
+//                });
 	}
+
+    crow::response FileUploadController::makeLoadedDesignsResponse() const
+    {
+        auto unloadedDesignNames = m_serverApp.designs().getUnloadedDesignNames();
+        auto loadedFileArchiveNames = m_serverApp.designs().getLoadedFileArchiveNames();
+        auto loadedDesignNames = m_serverApp.designs().getLoadedDesignNames();
+
+        crow::json::wvalue::list designs;
+        for (const auto& designName : unloadedDesignNames)
+        {
+            auto loaded = false;
+            if (std::find(loadedFileArchiveNames.begin(), loadedFileArchiveNames.end(), designName) != loadedFileArchiveNames.end() ||
+                std::find(loadedDesignNames.begin(), loadedDesignNames.end(), designName) != loadedDesignNames.end())
+            {
+                loaded = true;
+            }
+            crow::json::wvalue design;
+            design["name"] = designName;
+            design["loaded"] = loaded;
+            designs.push_back(design);
+        }
+        crow::json::wvalue jsonResponse;
+        jsonResponse["designs"] = std::move(designs);
+
+#if defined(_DEBUG)
+        auto j = jsonResponse.dump();
+#endif
+
+        return crow::response(jsonResponse);
+    }
     
     crow::response FileUploadController::handleOctetStreamUpload(const std::string& filename, const crow::request& req)
     {
@@ -88,7 +105,7 @@ namespace Odb::App::Server
 
         std::string responseBody = "{ \"filename\": \"" + safeName + "\" }";
 
-        return crow::response(crow::status::OK, responseBody);
+        return makeLoadedDesignsResponse();
     }
 
     crow::response FileUploadController::handleMultipartFormUpload(const std::string& filename, const crow::request& req)
@@ -145,7 +162,7 @@ namespace Odb::App::Server
                 CROW_LOG_DEBUG << " Value: " << part_value.body << '\n';
             }
         }
-        return crow::response(200);
+        return makeLoadedDesignsResponse();
     }
 
     std::string FileUploadController::sanitizeFilename(const std::string& filename) const
