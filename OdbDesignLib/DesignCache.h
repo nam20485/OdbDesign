@@ -19,7 +19,7 @@ namespace Odb::Lib
 
 		std::vector<std::string> getLoadedDesignNames(const std::string& filter = "") const;
 		std::vector<std::string> getLoadedFileArchiveNames(const std::string& filter = "") const;
-		std::vector<std::string> getUnloadedNames(const std::string& filter = "") const;
+		std::vector<std::string> getUnloadedDesignNames(const std::string& filter = "") const;
 
 		bool isQueryValid(const std::string& query) const;
 
