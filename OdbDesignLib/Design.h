@@ -22,6 +22,8 @@ namespace Odb::Lib::ProductModel
 		bool Build(std::string path);
 		bool Build(std::shared_ptr<FileModel::Design::FileArchive> pFileModel);	
 
+		std::shared_ptr<FileModel::Design::FileArchive> GetFileModel() const;
+
 		typedef std::vector<std::shared_ptr<Design>> Vector;
 		typedef std::map<std::string, std::shared_ptr<Design>> StringMap;
 

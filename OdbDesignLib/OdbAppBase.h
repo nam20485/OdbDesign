@@ -14,7 +14,7 @@ namespace Odb::Lib
 		virtual ~OdbAppBase();
 
 		const OdbDesignArgs& args() const override;
-		DesignCache& design_cache() override;
+		DesignCache& designs() override;
 
 		virtual Utils::ExitCode Run() override;
 
