@@ -218,12 +218,13 @@ jobs:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
           script: |
             try {             
-              const createResponse = await github.rest.repos.createRelease({
+                const createResponse = await github.rest.repos.createRelease({
                 generate_release_notes: true,
                 name: process.env.RELEASE_NAME,
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 tag_name: process.env.RELEASE_TAG,
+                body: require('fs').readFileSync('${{ github.workspace }}/release/release-body.md', 'utf8'),
                 target_commitish: '${{ github.ref_name }}'
               });
           
@@ -234,7 +235,7 @@ jobs:
               ];
               
               for (const filename of filenames) {                  
-                  const artifactsPath = 'artifacts';
+                  const artifactsPath = '${{ github.workspace }}/artifacts';
                   const filePath = artifactsPath +'/' + filename;
                   const uploadResponse = await github.rest.repos.uploadReleaseAsset({
                       owner: context.repo.owner,
