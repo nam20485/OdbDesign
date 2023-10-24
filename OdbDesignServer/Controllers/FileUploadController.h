@@ -14,7 +14,7 @@ namespace Odb::App::Server
 
 	private:
 		crow::response handleOctetStreamUpload(const std::string& filename, const crow::request& req);
-		crow::response handleMultipartFormUpload(const std::string& filename, const crow::request& req);
+		crow::response handleMultipartFormUpload(const crow::request& req);
 
 		crow::response makeLoadedDesignsResponse() const;
 
