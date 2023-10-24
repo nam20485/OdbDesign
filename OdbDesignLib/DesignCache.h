@@ -17,6 +17,12 @@ namespace Odb::Lib
 		std::shared_ptr<ProductModel::Design> GetDesign(const std::string& designName);
 		std::shared_ptr<FileModel::Design::FileArchive> GetFileArchive(const std::string& designName);
 
+		std::vector<std::string> getLoadedDesignNames(const std::string& filter = "") const;
+		std::vector<std::string> getLoadedFileArchiveNames(const std::string& filter = "") const;
+		std::vector<std::string> getUnloadedNames(const std::string& filter = "") const;
+
+		bool isQueryValid(const std::string& query) const;
+
 		void Clear();
 		
 	private:

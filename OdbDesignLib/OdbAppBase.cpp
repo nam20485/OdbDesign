@@ -23,7 +23,7 @@ namespace Odb::Lib
         return m_commandLineArgs;
     }
 
-    DesignCache& OdbAppBase::design_cache()
+    DesignCache& OdbAppBase::designs()
     {
         return m_designCache;
     }

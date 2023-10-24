@@ -13,7 +13,7 @@ namespace Odb::Lib
 		virtual ~IOdbApp() {}
 
 		virtual const OdbDesignArgs& args() const = 0;
-		virtual DesignCache& design_cache() = 0;
+		virtual DesignCache& designs() = 0;
 
 		virtual Utils::ExitCode Run() = 0;
 

@@ -36,6 +36,11 @@ namespace Odb::Lib::ProductModel
 		return true;
 	}
 
+	std::shared_ptr<FileModel::Design::FileArchive> Design::GetFileModel() const
+	{
+		return m_pFileModel;
+	}
+
 	bool Design::BuildComponents()
 	{
 		if (m_pFileModel == nullptr) return false;

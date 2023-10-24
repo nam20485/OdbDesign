@@ -1,5 +1,4 @@
 #include "FileArchive.h"
-#include "FileArchive.h"
 #include <filesystem>
 #include "ArchiveExtractor.h"
 #include "MiscInfoFile.h"
@@ -7,6 +6,7 @@
 #include "Logger.h"
 
 using namespace Utils;
+using namespace std::filesystem;
 
 namespace Odb::Lib::FileModel::Design
 {
@@ -30,7 +30,15 @@ namespace Odb::Lib::FileModel::Design
 		return m_productName;
 	}
 
-	const StepDirectory::StringMap& FileArchive::GetStepsByName() const { return m_stepsByName; }
+	std::string FileArchive::GetFilename() const
+	{
+		return path(m_path).filename().string();
+	}
+
+	const StepDirectory::StringMap& FileArchive::GetStepsByName() const
+	{ 
+		return m_stepsByName;
+	}
 
 	bool FileArchive::ParseFileModel()
 	{
@@ -99,6 +107,7 @@ namespace Odb::Lib::FileModel::Design
 		if (!std::filesystem::exists(path)) return false;
 		else if (!std::filesystem::is_directory(path)) return false;
 
+		// TODO: this should use path.stem() instead of path.filename()
 		m_productName = path.filename().string();
 
 		auto stepsPath = path / "steps";
@@ -165,6 +174,11 @@ namespace Odb::Lib::FileModel::Design
 	const MatrixFile& FileArchive::GetMatrixFile() const
 	{
 		return m_matrixFile;
+	}
+
+	const StandardFontsFile& FileArchive::GetStandardFontsFile() const
+	{
+		return m_standardFontsFile;
 	}
 
     //const EdaDataFile& FileModel::GetStepEdaDataFile(std::string stepName) const
