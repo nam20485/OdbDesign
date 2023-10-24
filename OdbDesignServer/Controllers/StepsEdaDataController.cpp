@@ -71,7 +71,7 @@ namespace Odb::App::Server
 		if (findIt == stepsByName.end())
 		{
 			std::stringstream ss;
-			ss << "step: \"" << stepName << "\" not found";
+			ss << "(design: \"" << designName << "\")" << " step: \"" << stepName << "\" not found";
 			return crow::response(crow::status::NOT_FOUND, ss.str());
 		}
 
