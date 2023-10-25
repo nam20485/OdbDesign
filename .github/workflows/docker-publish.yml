@@ -18,6 +18,9 @@ env:
   IMAGE_NAME: ${{ github.repository }}
   #VCPKG_BINARY_SOURCES: 'clear;nuget,GitHub,readwrite'
 
+permissions:
+  contents: read
+
 jobs:
   build:
     name: Docker-Build-and-Publish
@@ -32,11 +35,11 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
 
       # add problem matchers
       - name: Add Problem Matchers
-        uses: ammaraskar/gcc-problem-matcher@master
+        uses: ammaraskar/gcc-problem-matcher@d1fed1fac9e94d30e23b5a82dba4e2963e71d2e7 # master
 
       # Install the cosign tool except on PR
       # https://github.com/sigstore/cosign-installer
