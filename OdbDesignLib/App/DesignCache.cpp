@@ -7,7 +7,7 @@
 using namespace Utils;
 using namespace std::filesystem;
 
-namespace Odb::Lib
+namespace Odb::Lib::App
 {
     DesignCache::DesignCache()
         : DesignCache(".")

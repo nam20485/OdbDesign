@@ -1,7 +1,7 @@
 #pragma once
 
 #include "OdbDesignArgs.h"
-#include "../DesignCache.h"
+#include "DesignCache.h"
 #include "ExitCode.h"
 #include "../odbdesign_export.h"
 

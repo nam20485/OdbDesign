@@ -1,11 +1,11 @@
 #pragma once
 
-#include "FileModel/Design/FileArchive.h"
-#include "ProductModel/Design.h"
-#include "odbdesign_export.h"
+#include "../FileModel/Design/FileArchive.h"
+#include "../ProductModel/Design.h"
+#include "../odbdesign_export.h"
 
 
-namespace Odb::Lib
+namespace Odb::Lib::App
 {
 	class ODBDESIGN_EXPORT DesignCache
 	{
