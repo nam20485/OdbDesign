@@ -4,19 +4,19 @@
 using namespace Utils;
 using namespace std::filesystem;
 
-namespace Odb::Lib
+namespace Odb::Lib::App
 {
-	Odb::Lib::OdbServerAppBase::OdbServerAppBase(int argc, char* argv[])
+	OdbServerAppBase::OdbServerAppBase(int argc, char* argv[])
 		: OdbAppBase(argc, argv)
 	{
 	}
 
-	Odb::Lib::OdbServerAppBase::~OdbServerAppBase()
+	OdbServerAppBase::~OdbServerAppBase()
 	{
 		m_vecControllers.clear();
 	}
 
-	ExitCode Odb::Lib::OdbServerAppBase::Run()
+	ExitCode OdbServerAppBase::Run()
 	{
 		// print usage and exit w/ success
 		if (args().help())
@@ -77,7 +77,7 @@ namespace Odb::Lib
 		return ExitCode::Success;
 	}
 
-	crow::SimpleApp& Odb::Lib::OdbServerAppBase::crow_app()
+	crow::SimpleApp& OdbServerAppBase::crow_app()
 	{
 		return m_crowApp;
 	}

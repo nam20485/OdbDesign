@@ -5,10 +5,10 @@
 
 namespace Odb::App::Server
 {
-	class FileUploadController : public Odb::Lib::RouteController
+	class FileUploadController : public Odb::Lib::App::RouteController
 	{
 	public:
-		FileUploadController(Odb::Lib::IOdbServerApp& serverApp);
+		FileUploadController(Odb::Lib::App::IOdbServerApp& serverApp);
 
 		void register_routes() override;		
 

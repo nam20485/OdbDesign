@@ -3,7 +3,7 @@
 #include "OdbDesignArgs.h"
 #include "OdbDesignArgs.h"
 
-namespace Odb::Lib
+namespace Odb::Lib::App
 {
 	OdbDesignArgs::OdbDesignArgs(int argc, char* argv[])
 		: CommandLineArgs(argc, argv)
@@ -40,7 +40,7 @@ namespace Odb::Lib
 		return boolArg("help", DEFAULT_HELP);
 	}
 
-	std::string Odb::Lib::OdbDesignArgs::getUsageString() const
+	std::string OdbDesignArgs::getUsageString() const
 	{
 		return "OdbDesignServer usage:\n"
 			"\n"

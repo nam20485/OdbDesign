@@ -3,7 +3,7 @@
 
 using namespace Utils;
 
-namespace Odb::Lib
+namespace Odb::Lib::App
 {
     OdbAppBase::OdbAppBase(int argc, char* argv[])
         : m_designCache("designs")

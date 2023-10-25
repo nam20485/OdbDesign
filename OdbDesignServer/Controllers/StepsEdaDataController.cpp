@@ -4,7 +4,7 @@
 #include "JsonCrowReturnable.h"
 #include <sstream>
 
-using namespace Odb::Lib;
+using namespace Odb::Lib::App;
 using namespace Odb::Lib::FileModel::Design;
 using namespace Utils;
 

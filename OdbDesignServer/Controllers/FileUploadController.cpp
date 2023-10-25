@@ -1,10 +1,11 @@
 #include "FileUploadController.h"
 
 using namespace std::filesystem;
+using namespace Odb::Lib::App;
 
 namespace Odb::App::Server
 {
-	FileUploadController::FileUploadController(Odb::Lib::IOdbServerApp& serverApp)
+	FileUploadController::FileUploadController(IOdbServerApp& serverApp)
 		: RouteController(serverApp)
 	{
 	}

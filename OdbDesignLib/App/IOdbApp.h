@@ -5,7 +5,7 @@
 #include "ExitCode.h"
 #include "../odbdesign_export.h"
 
-namespace Odb::Lib
+namespace Odb::Lib::App
 {
 	class ODBDESIGN_EXPORT IOdbApp
 	{

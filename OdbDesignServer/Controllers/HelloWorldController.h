@@ -6,10 +6,10 @@
 
 namespace Odb::App::Server
 {
-	class HelloWorldController : public Odb::Lib::RouteController
+	class HelloWorldController : public Odb::Lib::App::RouteController
 	{
 	public:
-		HelloWorldController(Odb::Lib::IOdbServerApp& serverApp);
+		HelloWorldController(Odb::Lib::App::IOdbServerApp& serverApp);
 
 		void register_routes() override;
 

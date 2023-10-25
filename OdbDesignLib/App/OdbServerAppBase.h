@@ -6,7 +6,7 @@
 #include "../crow_win.h"
 #include "../odbdesign_export.h"
 
-namespace Odb::Lib
+namespace Odb::Lib::App
 {
 	class ODBDESIGN_EXPORT OdbServerAppBase : public OdbAppBase, public IOdbServerApp
 	{
