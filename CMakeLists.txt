@@ -81,7 +81,7 @@ if (DOXYGEN_FOUND)
 
     # request to configure the file
     configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
-    message("Doxygen build started")
+    message("Configuring Doxygen")
 
     # Note: do not put "ALL" - this builds docs together with application EVERY TIME!
     add_custom_target( docs
