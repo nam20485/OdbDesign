@@ -47,8 +47,9 @@ jobs:
           #   preset: python-linux-release
 
     steps:   
-
-    - uses: actions/checkout@v3 
+    
+    - name: Checkout Repository
+      uses: actions/checkout@v3 
     
     # add problem matchers by compiler
     - name: Add Problem Matchers
@@ -190,6 +191,9 @@ jobs:
 
     steps:
 
+      - name: Checkout Repository
+        uses: actions/checkout@v3 
+
       # download the artifacts
       - name: "Download artifacts"
         uses: "actions/download-artifact@v2"
@@ -212,7 +216,7 @@ jobs:
           mv ${{ github.workspace }}/artifacts/macos-12-artifacts/artifacts-macos-12.zip ${{ github.workspace }}/artifacts/OdbDesign-MacOS-x64.zip
 
       # create a release
-      - name: "Create GH Release"
+      - name: "Create GitHub Release"
         uses: "actions/github-script@v6"
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"

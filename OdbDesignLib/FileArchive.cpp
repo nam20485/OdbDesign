@@ -108,7 +108,7 @@ namespace Odb::Lib::FileModel::Design
 		else if (!std::filesystem::is_directory(path)) return false;
 
 		// TODO: this should use path.stem() instead of path.filename()
-		m_productName = path.filename().string();
+		m_productName = path.stem().string();
 
 		auto stepsPath = path / "steps";
 		for (auto& d : std::filesystem::directory_iterator(stepsPath))
