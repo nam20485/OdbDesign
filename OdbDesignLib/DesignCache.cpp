@@ -79,16 +79,25 @@ namespace Odb::Lib
     }
 
     std::vector<std::string> DesignCache::getUnloadedDesignNames(const std::string& filter) const
-    {
+    {        
         std::vector<std::string> unloadedNames;
 
-        path dir(m_directory);
-        for (const auto& entry : directory_iterator(dir))
+        try
         {
-            if (entry.is_regular_file())
+            path dir(m_directory);
+            for (const auto& entry : directory_iterator(dir))
             {
-                unloadedNames.push_back(entry.path().stem().string());
+                if (entry.is_regular_file())
+                {
+                    unloadedNames.push_back(entry.path().stem().string());
+                }
             }
+        }
+        catch (std::filesystem::filesystem_error& fe)
+        {
+            logexception(fe);
+            // re-throw it so we get a HTTP 500 response to the client
+            throw fe;
         }
 
         return unloadedNames;
