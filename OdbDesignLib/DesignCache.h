@@ -1,7 +1,7 @@
 #pragma once
 
-#include "FileArchive.h"
-#include "Design.h"
+#include "FileModel/Design/FileArchive.h"
+#include "ProductModel/Design.h"
 #include "odbdesign_export.h"
 
 

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "RouteController.h"
-#include "IOdbServerApp.h"
+#include "App/RouteController.h"
+#include "App/IOdbServerApp.h"
 
 namespace Odb::App::Server
 {
