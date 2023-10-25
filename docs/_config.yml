@@ -4,4 +4,4 @@ plugins:
 
 title: OdbDesign ODB++ Parser
 description: REST API and C++ library for parsing ODB++ Design archives
-show_downloads: true
+show_downloads: false
