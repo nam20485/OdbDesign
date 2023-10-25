@@ -1,0 +1,10 @@
+name: Custom CodeQL Config
+
+paths:
+  - /home/runner/work/OdbDesign/OdbDesign/**/*
+#paths-ignore:
+#  - /home/runner/work/OdbDesign/OdbDesign/vcpkg/**/*
+#  - /home/runner/work/OdbDesign/OdbDesign/out/build/linux-release/vcpkg_installed/**/*
+
+queries:
+  - uses: security-and-quality
