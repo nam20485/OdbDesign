@@ -4,7 +4,7 @@
 #include <sstream>
 #include "str_trim.h"
 #include "enums.h"
-#include "proto/edadatafile.pb.h"
+#include "ProtoBuf/edadatafile.pb.h"
 #include <google/protobuf/message.h>
 
 

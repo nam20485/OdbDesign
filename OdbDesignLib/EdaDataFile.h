@@ -6,7 +6,7 @@
 #include <map>
 #include "odbdesign_export.h"
 #include "enums.h"
-#include "proto/edadatafile.pb.h"
+#include "ProtoBuf/edadatafile.pb.h"
 #include <google/protobuf/message.h>
 #include "IProtoBuffable.h"
 
@@ -252,7 +252,7 @@ namespace Odb::Lib::FileModel::Design
 		inline static const std::string PIN_RECORD_TOKEN = "PIN";
 		inline static const std::string FEATURE_GROUP_RECORD_TOKEN = "FGR";
 		// TODO: Outline records:
-		// RC, CR, SQ, CT, OB, OS, OC, OE, CE — Outline Records
+		// RC, CR, SQ, CT, OB, OS, OC, OE, CE ï¿½ Outline Records
 	
 	}; // EdaDataFile
 
