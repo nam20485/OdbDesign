@@ -49,14 +49,14 @@ jobs:
     steps:   
     
     - name: Checkout Repository
-      uses: actions/checkout@v3 
+      uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0 
     
     # add problem matchers by compiler
     - name: Add Problem Matchers
-      uses: ammaraskar/msvc-problem-matcher@master
+      uses: ammaraskar/msvc-problem-matcher@13149ebc00eaa00eadcd81b204d7159cca5de4fd # master
       if: matrix.os == 'windows-2022'
     - name: Add Problem Matchers
-      uses: ammaraskar/gcc-problem-matcher@master
+      uses: ammaraskar/gcc-problem-matcher@d1fed1fac9e94d30e23b5a82dba4e2963e71d2e7 # master
       if: matrix.os != 'windows-2022'
     
     - name: Install vcpkg Dependencies
@@ -76,12 +76,12 @@ jobs:
       if: matrix.os != 'windows-2022'
     
     - name: Install Ninja    
-      uses: seanmiddleditch/gha-setup-ninja@master
+      uses: seanmiddleditch/gha-setup-ninja@8b297075da4cd2a5f1fd21fe011b499edf06e9d2 # master
       if: matrix.os != 'windows-2022'
 
     # Export vcpkg Cache Variables
     - name : Export vcpkg Cache Variables
-      uses: actions/github-script@v6
+      uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410 # v6.4.1
       with:
         script: |
           core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
@@ -100,7 +100,7 @@ jobs:
     #   os == windows-2022
     #
     - name: Setup VC Tools
-      uses: ilammy/msvc-dev-cmd@v1
+      uses: ilammy/msvc-dev-cmd@7315a94840631165970262a99c72cfb48a65d25d # v1.12.0
       if: matrix.os == 'windows-2022'
       
     - name: Patch vcpkg
@@ -174,7 +174,7 @@ jobs:
         Compress-Archive -Path "${{env.ARTIFACTS_DIR_WIN}}\*.dll","${{env.ARTIFACTS_DIR_WIN}}\*.exe"  -DestinationPath "${{env.ARTIFACTS_DIR_WIN}}\artifacts-${{matrix.os}}.zip" -Verbose -Force
 
     - name: Upload Artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@82c141cc518b40d92cc801eee768e7aafc9c2fa2 # v2.3.1
       with:
         name: ${{ matrix.os }}-artifacts
         path: ${{ env.ARTIFACTS_DIR }}/artifacts-${{matrix.os}}.zip
@@ -192,11 +192,11 @@ jobs:
     steps:
 
       - name: Checkout Repository
-        uses: actions/checkout@v3 
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0 
 
       # download the artifacts
       - name: "Download artifacts"
-        uses: "actions/download-artifact@v2"
+        uses: "actions/download-artifact@cbed621e49e4c01b044d60f6c80ea4ed6328b281 # v2.1.1"
         with:
           path: ${{ github.workspace }}/artifacts
 
@@ -217,7 +217,7 @@ jobs:
 
       # create a release
       - name: "Create GitHub Release"
-        uses: "actions/github-script@v6"
+        uses: "actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410 # v6.4.1"
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
           script: |
