@@ -112,8 +112,8 @@ $ git clone git@github.com:nam20485/OdbDesign.git
 
 Open your favorite terminal and change to the directory where you cloned the source code. This should be something similar to one of the below depending on your platform and where you cloned the source code:
 
-* `~/OdbDesign`
-* `C:\Users\YourName\OdbDesign`
+* `~/src/OdbDesign`                         *(Linux/MacOS)*
+* `C:\Users\<YourName>\Source\OdbDesign`    *(Windows)*
 
 Then run the commands from one or more of the sections below, based on what you would like to build...
 

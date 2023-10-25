@@ -63,7 +63,7 @@ namespace Odb::Lib
         std::vector<std::string> loadedDesigns;
         for (const auto& kv : m_designsByName)
         {
-            loadedDesigns.push_back(kv.second->GetFileModel()->GetFilename());
+            loadedDesigns.push_back(kv.second->GetFileModel()->GetProductName());
         }
         return loadedDesigns;
     }
@@ -73,12 +73,12 @@ namespace Odb::Lib
         std::vector<std::string> loadedFileArchives;
         for (const auto& kv : m_fileArchivesByName)
 		{
-			loadedFileArchives.push_back(kv.second->GetFilename());
+			loadedFileArchives.push_back(kv.second->GetProductName());
 		}
         return loadedFileArchives;
     }
 
-    std::vector<std::string> DesignCache::getUnloadedNames(const std::string& filter) const
+    std::vector<std::string> DesignCache::getUnloadedDesignNames(const std::string& filter) const
     {
         std::vector<std::string> unloadedNames;
 
@@ -87,7 +87,7 @@ namespace Odb::Lib
         {
             if (entry.is_regular_file())
             {
-                unloadedNames.push_back(entry.path().filename().string());
+                unloadedNames.push_back(entry.path().stem().string());
             }
         }
 
@@ -107,27 +107,37 @@ namespace Odb::Lib
 
     std::shared_ptr<ProductModel::Design> DesignCache::LoadDesign(const std::string& designName)
     {        
-        // no FileArchive with the same name is loaded, so load the Design from file
-        std::filesystem::path dir(m_directory);
-
-        for (const auto& entry : std::filesystem::directory_iterator(dir))
+        try
         {
-            if (entry.is_regular_file())
+            // no FileArchive with the same name is loaded, so load the Design from file
+            std::filesystem::path dir(m_directory);
+
+            for (const auto& entry : std::filesystem::directory_iterator(dir))
             {
-                if (entry.path().stem() == designName)
+                if (entry.is_regular_file())
                 {
-                    auto pFileModel = GetFileArchive(designName);
-                    if (pFileModel != nullptr)
+                    if (entry.path().stem() == designName)
                     {
-                        auto pDesign = std::make_shared<ProductModel::Design>();
-                        if (pDesign->Build(pFileModel))
+                        auto pFileModel = GetFileArchive(designName);
+                        if (pFileModel != nullptr)
                         {
-                            m_designsByName.emplace(designName, pDesign);
-                            return pDesign;
+                            auto pDesign = std::make_shared<ProductModel::Design>();
+                            if (pDesign->Build(pFileModel))
+                            {
+                                // overwrite any existing design with the same name
+                                m_designsByName[pFileModel->GetProductName()] =  pDesign;
+                                return pDesign;
+                            }
                         }
                     }
                 }
             }
+        }
+        catch (std::filesystem::filesystem_error& fe)
+        {
+            logexception(fe);
+            // re-throw it so we get a HTTP 500 response to the client
+            throw fe;
         }
 
         return nullptr;
@@ -150,7 +160,8 @@ namespace Odb::Lib
                         auto pFileArchive = std::make_shared<FileModel::Design::FileArchive>(entry.path().string());
                         if (pFileArchive->ParseFileModel())
                         {
-                            m_fileArchivesByName.emplace(designName, pFileArchive);
+                            // overwrite any existing file archive with the same name
+                            m_fileArchivesByName[pFileArchive->GetProductName()] = pFileArchive;
                             return pFileArchive;
                         }
                     }
