@@ -196,7 +196,7 @@ jobs:
 
       # download the artifacts
       - name: "Download artifacts"
-        uses: "actions/download-artifact@cbed621e49e4c01b044d60f6c80ea4ed6328b281 # v2.1.1"
+        uses: "actions/download-artifact@cbed621e49e4c01b044d60f6c80ea4ed6328b281" # v2.1.1
         with:
           path: ${{ github.workspace }}/artifacts
 
@@ -217,7 +217,7 @@ jobs:
 
       # create a release
       - name: "Create GitHub Release"
-        uses: "actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410 # v6.4.1"
+        uses: "actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410" # v6.4.1
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
           script: |
