@@ -87,9 +87,8 @@ COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignTests/OdbDesig
 RUN mkdir ./templates
 COPY --from=build /src/OdbDesign/OdbDesignServer/templates/* ./templates
 
-# copy designs directory
-#COPY --from=build /src/OdbDesign/OdbDesignServer/designs ./designs
-# copy SSL keys in (use --mount=type=secret)
+# create designs directory
+RUN mkdir ./designs
 
 # run
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/OdbDesign/bin
