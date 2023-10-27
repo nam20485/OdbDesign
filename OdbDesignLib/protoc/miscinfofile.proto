@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package Odb.Lib.Protobuf;
+
+//
+//  MiscInfoFile.h
+//
+
+message MiscInfoFile {
+    
+}
+

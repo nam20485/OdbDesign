@@ -5,10 +5,15 @@ syntax = "proto3";
 
 package Odb.Lib.Protobuf;
 
+
+import "filearchive.proto";
+
 //
-//  LayerDirectory.h
+//  Design.h
 //
 
-message LayerDirectory  {
+message Design {
 
-} 
+    optional FileArchive fileArchive = 1;
+
+}

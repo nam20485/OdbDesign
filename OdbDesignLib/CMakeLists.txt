@@ -1,7 +1,8 @@
 ﻿# CMakeList.txt : CMake project for OdbDesignLib
 #
 
-add_library(OdbDesign SHARED "odbdesign_export.h" "FileModel/Design/ComponentLayerDirectory.cpp" "FileModel/Design/ComponentLayerDirectory.h" "FileModel/Design/EdaDataFile.cpp" "FileModel/Design/EdaDataFile.h" "FileModel/Design/LayerDirectory.cpp" "FileModel/Design/LayerDirectory.h" "FileModel/Design/NetlistFile.cpp" "FileModel/Design/NetlistFile.h" "FileModel/Design/FileArchive.cpp" "FileModel/Design/FileArchive.h" "FileModel/Design/StepDirectory.cpp" "FileModel/Design/StepDirectory.h" "ProductModel/Net.h" "ProductModel/Net.cpp" "ProductModel/Component.h" "ProductModel/Component.cpp" "ProductModel/Pin.h" "ProductModel/Pin.cpp" "ProductModel/PinConnection.h" "ProductModel/PinConnection.cpp" "ProductModel/Package.h" "ProductModel/Package.cpp" "ProductModel/Part.h" "ProductModel/Part.cpp" "ProductModel/Via.h" "ProductModel/Via.cpp" "ProductModel/Design.h" "ProductModel/Design.cpp"  "OdbDesign.h" "App/DesignCache.h" "App/DesignCache.cpp"   "win.h"   "ProtoBuf/edadatafile.pb.h" "ProtoBuf/edadatafile.pb.cc" "IProtoBuffable.h" "crow_win.h" "FileModel/OdbFile.h" "FileModel/OdbFile.cpp"  "FileModel/OdbFileRecord.h" "FileModel/OdbFileRecord.cpp"   "App/IOdbApp.h" "App/IOdbApp.cpp" "App/OdbAppBase.h" "App/OdbAppBase.cpp" "App/RouteController.h" "App/RouteController.cpp" "App/IOdbServerApp.h" "App/OdbServerAppBase.h" "App/OdbServerAppBase.cpp" "App/IOdbServerApp.cpp"
+add_library(OdbDesign SHARED 
+        "odbdesign_export.h" "FileModel/Design/ComponentLayerDirectory.cpp" "FileModel/Design/ComponentLayerDirectory.h" "FileModel/Design/EdaDataFile.cpp" "FileModel/Design/EdaDataFile.h" "FileModel/Design/LayerDirectory.cpp" "FileModel/Design/LayerDirectory.h" "FileModel/Design/NetlistFile.cpp" "FileModel/Design/NetlistFile.h" "FileModel/Design/FileArchive.cpp" "FileModel/Design/FileArchive.h" "FileModel/Design/StepDirectory.cpp" "FileModel/Design/StepDirectory.h" "ProductModel/Net.h" "ProductModel/Net.cpp" "ProductModel/Component.h" "ProductModel/Component.cpp" "ProductModel/Pin.h" "ProductModel/Pin.cpp" "ProductModel/PinConnection.h" "ProductModel/PinConnection.cpp" "ProductModel/Package.h" "ProductModel/Package.cpp" "ProductModel/Part.h" "ProductModel/Part.cpp" "ProductModel/Via.h" "ProductModel/Via.cpp" "ProductModel/Design.h" "ProductModel/Design.cpp"  "OdbDesign.h" "App/DesignCache.h" "App/DesignCache.cpp"   "win.h" "IProtoBuffable.h" "crow_win.h" "FileModel/OdbFile.h" "FileModel/OdbFile.cpp"  "FileModel/OdbFileRecord.h" "FileModel/OdbFileRecord.cpp"   "App/IOdbApp.h" "App/IOdbApp.cpp" "App/OdbAppBase.h" "App/OdbAppBase.cpp" "App/RouteController.h" "App/RouteController.cpp" "App/IOdbServerApp.h" "App/OdbServerAppBase.h" "App/OdbServerAppBase.cpp" "App/IOdbServerApp.cpp"
         FileModel/Design/MatrixFile.cpp
         FileModel/Design/MatrixFile.h
         FileModel/Design/MiscInfoFile.cpp
@@ -10,7 +11,17 @@ add_library(OdbDesign SHARED "odbdesign_export.h" "FileModel/Design/ComponentLay
         FileModel/Design/AttrListFile.cpp
         FileModel/Design/AttrListFile.h
         FileModel/Design/SysAttrFile.cpp
-        FileModel/Design/SysAttrFile.h "FileModel/Design/RgbColor.h" "FileModel/Design/RgbColor.cpp" "FileModel/Design/StandardFontsFile.h" "FileModel/Design/StandardFontsFile.cpp" "enums.h" "App/OdbDesignArgs.h" "App/OdbDesignArgs.cpp")
+        FileModel/Design/SysAttrFile.h "FileModel/Design/RgbColor.h" "FileModel/Design/RgbColor.cpp" "FileModel/Design/StandardFontsFile.h" "FileModel/Design/StandardFontsFile.cpp" "enums.h" "App/OdbDesignArgs.h" "App/OdbDesignArgs.cpp"
+        "ProtoBuf/edadatafile.pb.h" "ProtoBuf/edadatafile.pb.cc" 
+        "ProtoBuf/filearchive.pb.h" "ProtoBuf/filearchive.pb.cc" 
+        "ProtoBuf/netlistfile.pb.h" "ProtoBuf/netlistfile.pb.cc" 
+        "ProtoBuf/layerdirectory.pb.h" "ProtoBuf/layerdirectory.pb.cc" 
+        "ProtoBuf/design.pb.h" "ProtoBuf/design.pb.cc"
+        "ProtoBuf/matrixfile.pb.h" "ProtoBuf/matrixfile.pb.cc"
+        "ProtoBuf/miscinfofile.pb.h" "ProtoBuf/miscinfofile.pb.cc"
+        "ProtoBuf/standardfontsfile.pb.h" "ProtoBuf/standardfontsfile.pb.cc"
+        "ProtoBuf/stepdirectory.pb.h" "ProtoBuf/stepdirectory.pb.cc"
+)
 
 # disable warning C4250: inheritance by dominance
 target_compile_options(OdbDesign PUBLIC

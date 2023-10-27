@@ -6,9 +6,10 @@ syntax = "proto3";
 package Odb.Lib.Protobuf;
 
 //
-//  LayerDirectory.h
+//  StandardFontsFile.h
 //
 
-message LayerDirectory  {
+message StandardFontsFile {
 
-} 
+    
+}
