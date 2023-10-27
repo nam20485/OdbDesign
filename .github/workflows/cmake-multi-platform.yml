@@ -102,7 +102,7 @@ jobs:
     #   os == windows-2022
     #
     - name: Setup VC Tools
-      uses: ilammy/msvc-dev-cmd@7315a94840631165970262a99c72cfb48a65d25d # v1.12.0
+      uses: ilammy/msvc-dev-cmd@cec98b9d092141f74527d0afa6feb2af698cfe89 # v1.12.1
       if: matrix.os == 'windows-2022'
       
     - name: Patch vcpkg
@@ -202,7 +202,7 @@ jobs:
 
       # download the artifacts
       - name: "Download artifacts"
-        uses: "actions/download-artifact@cbed621e49e4c01b044d60f6c80ea4ed6328b281" # v2.1.1
+        uses: "actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a" # v3.0.2
         with:
           path: ${{ github.workspace }}/artifacts
 
