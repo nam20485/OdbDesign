@@ -12,7 +12,8 @@ paths:
 #  - /home/runner/work/OdbDesign/OdbDesign/vcpkg/**/*
 #  - /home/runner/work/OdbDesign/OdbDesign/out/build/linux-release/vcpkg_installed/**/*
 
-queries:
-  - uses: security
+#queries:
+#  - uses: security
   #- uses: security-and-quality
   #- security-experimental
+  #- security-extended
