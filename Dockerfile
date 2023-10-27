@@ -17,8 +17,8 @@ RUN apt-get update && \
         git \        
         zip \
         unzip \
-        #tar  \
-        #pkg-config \
+        tar  \
+        pkg-config \
         mono-complete \
         linux-libc-dev \   
         && \
