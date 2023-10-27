@@ -9,7 +9,6 @@ RUN apt-get update && \
     apt-get install -y -q --no-install-recommends \
         curl \
         apt-transport-https \
-        build-essential \
         ca-certificates \
         cmake \            
         g++ \
@@ -18,9 +17,10 @@ RUN apt-get update && \
         git \        
         zip \
         unzip \
-        tar  \
-        pkg-config \
-        mono-complete \      
+        #tar  \
+        #pkg-config \
+        mono-complete \
+        linux-libc-dev \   
         && \
     rm -rf /var/lib/apt/lists/*
 

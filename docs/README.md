@@ -150,7 +150,7 @@ $ cmake --build --preset linux-release
 #### Docker Image for REST API Server
 
 ```Bash
-$ docker build -f Dockerfile_OdbDesignServer . -t odbdesign-server
+$ docker build . -t odbdesign-server
 ```
 
 ## Running the REST API Server

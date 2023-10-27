@@ -87,7 +87,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          file: Dockerfile_OdbDesignServer
+          file: Dockerfile
           build-args: |
             OWNER=nam20485
             GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
