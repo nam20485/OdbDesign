@@ -13,10 +13,13 @@ try {
     [ 
         { name: 'OdbDesign-Linux-x64.zip',  contentType: 'application/zip' },
         { name: 'OdbDesign-Linux-x64.zip.sha256sum', contentType: 'text/plain' },
+        { name: 'OdbDesign-Linux-x64.zip.asc', contentType: 'text/plain' },
         { name: 'OdbDesign-Windows-x64.zip', contentType: 'application/zip' },
         { name: 'OdbDesign-Windows-x64.zip.sha256sum', contentType: 'text/plain' },
+        { name: 'OdbDesign-Windows-x64.zip.asc', contentType: 'text/plain' },
         { name: 'OdbDesign-MacOS-x64.zip', contentType: 'application/zip' },
-        { name: 'OdbDesign-MacOS-x64.zip.sha256sum', contentType: 'text/plain' }      
+        { name: 'OdbDesign-MacOS-x64.zip.sha256sum', contentType: 'text/plain' },
+        { name: 'OdbDesign-MacOS-x64.zip.asc', contentType: 'text/plain' }       
     ];
 
     const artifactsPath = '${{ github.workspace }}/artifacts';
