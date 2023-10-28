@@ -10,6 +10,7 @@
 #include "MiscInfoFile.h"
 #include "MatrixFile.h"
 #include "StandardFontsFile.h"
+#include <filesystem>
 
 
 namespace Odb::Lib::FileModel::Design
@@ -20,9 +21,10 @@ namespace Odb::Lib::FileModel::Design
 		FileArchive(std::string path);
 		~FileArchive();
 
-		std::string GetPath() const;
+		std::string GetRootDir() const;
 		std::string GetProductName() const;
 		std::string GetFilename() const;
+		std::string GetFilePath() const;
 
 		const StepDirectory::StringMap& GetStepsByName() const;
         const MiscInfoFile& GetMiscInfoFile() const;
@@ -39,8 +41,10 @@ namespace Odb::Lib::FileModel::Design
 		typedef std::map<std::string, std::shared_ptr<FileArchive>> StringMap;
 
 	private:
-		std::string m_path;
+		std::string m_rootDir;
 		std::string m_productName;
+		std::string m_filename;
+		std::string m_filePath;
 
 		StepDirectory::StringMap m_stepsByName;
         MiscInfoFile m_miscInfoFile;
@@ -52,7 +56,12 @@ namespace Odb::Lib::FileModel::Design
 		bool ParseMatrixFile(const std::filesystem::path& path);
 		bool ParseStandardFontsFile(const std::filesystem::path& path);
 
-		static bool ExtractDesignArchive(const std::filesystem::path& path, std::filesystem::path& extractedPath);
+		bool ExtractDesignArchive(const std::filesystem::path& path, std::filesystem::path& extractedPath);
+
+		static std::string findRootDir(const std::filesystem::path& extractedPath);
+		static bool pathContainsTopLevelDesignDirs(const std::filesystem::path& path);
+
+		static inline constexpr const char* TOPLEVEL_DESIGN_DIR_NAMES[5] = { "fonts", "symbols", "misc", "matrix", "steps" };
 
     };
 }

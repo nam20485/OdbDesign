@@ -44,17 +44,17 @@ namespace Utils
 	{
 		auto path = std::filesystem::path(m_path);
 		//auto extractionPath = path.replace_extension().string();
-		auto extractionPath = path.parent_path().string();
-		return Extract(extractionPath);
+		auto extractionPath = path.parent_path() / path.stem();
+		return Extract(extractionPath.string());
 	}
 
 	bool ArchiveExtractor::Extract(const std::string& destinationPath)
 	{
 		if (extract(m_path.c_str(), destinationPath.c_str()))
 		{
-			std::filesystem::path p(destinationPath);
-			p /= std::filesystem::path(m_path).stem();
-			m_extractedPath = p.string();
+			//std::filesystem::path p(destinationPath);
+			//p /= std::filesystem::path(m_path).stem();
+			m_extractedPath = destinationPath;
 
 			return true;
 		}
