@@ -1,12 +1,12 @@
 #pragma once
 
 #include "OdbDesignServer.h"
-#include "OdbServerAppBase.h"
+#include "App/OdbServerAppBase.h"
 
 
 namespace Odb::App::Server
 {
-	class OdbDesignServerApp : public Odb::Lib::OdbServerAppBase
+	class OdbDesignServerApp : public Odb::Lib::App::OdbServerAppBase
 	{
 	public:
 		OdbDesignServerApp(int argc, char* argv[]);

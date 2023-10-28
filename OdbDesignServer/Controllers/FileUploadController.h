@@ -1,14 +1,14 @@
 #pragma once
 
-#include "RouteController.h"
-#include "IOdbServerApp.h"
+#include "App/RouteController.h"
+#include "App/IOdbServerApp.h"
 
 namespace Odb::App::Server
 {
-	class FileUploadController : public Odb::Lib::RouteController
+	class FileUploadController : public Odb::Lib::App::RouteController
 	{
 	public:
-		FileUploadController(Odb::Lib::IOdbServerApp& serverApp);
+		FileUploadController(Odb::Lib::App::IOdbServerApp& serverApp);
 
 		void register_routes() override;		
 

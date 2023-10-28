@@ -1,0 +1,6 @@
+#Django==4.2.6
+#gunicorn==21.2.0
+#DjangoRestFramework==3.14.0
+Django
+gunicorn
+DjangoRestFramework

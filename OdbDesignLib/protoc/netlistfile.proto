@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package Odb.Lib.Protobuf;
+
+//
+//  NetlistFile.h
+//
+
+message NetlistFile {
+
+    // enum class Staggered
+    // {
+    //     Yes,
+    //     No,
+    //     Unknown
+    // };
+
+    // std::filesystem::path m_path;
+    // std::string m_name;
+    // std::string m_units;
+    // bool m_optimized;
+    // Staggered m_staggered;
+
+    // std::vector<std::string> m_netNames;
+
+    enum Staggered {
+        Yes = 0;
+        No = 1;
+        Unknown = 2;
+    }
+
+    optional string path = 1;
+    optional string name = 2;
+    optional string units = 3;
+    optional bool optimized = 4;
+    optional Staggered staggered = 5;
+
+    repeated string netNames = 6;
+}
