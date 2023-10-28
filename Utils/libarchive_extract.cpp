@@ -45,8 +45,10 @@ namespace Utils
         archive_write_disk_set_options(ext, flags);
         archive_write_disk_set_standard_lookup(ext);
         r = archive_read_open_filename(a, filename, READ_OPEN_BLOCK_SIZE);
-        if (r)
+        if (r != ARCHIVE_OK)
         {
+            auto errNo = archive_errno(a);
+            fprintf(stderr, "%s (%d)\n", archive_error_string(a), errNo);
             return false;
         }
 
