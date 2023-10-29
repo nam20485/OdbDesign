@@ -75,14 +75,11 @@ namespace Odb::Lib::FileModel::Design
 					loginfo("Parsing failed.");
 				}
 			}		
-		}		
-		catch (std::filesystem::filesystem_error& fe)
-		{
-			logexception(fe);
 		}
 		catch (std::exception& e)
 		{
 			logexception(e);
+			throw e;
 		}
 
 		return false;
