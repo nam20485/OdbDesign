@@ -222,7 +222,7 @@ namespace Odb::Lib::FileModel::Design
                 std::stringstream lineStream(line);
 
                 if (line.find(ATTRIBUTE_NAME_TOKEN) == 0 ||
-                    line.find(COMMENT_TOKEN + ATTRIBUTE_NAME_TOKEN) == 0)  // backward compatibility dictates allowing comment character in front of attribute value token
+                    line.find(std::string(COMMENT_TOKEN) + ATTRIBUTE_NAME_TOKEN) == 0)  // backward compatibility dictates allowing comment character in front of attribute value token
                 {
                     // component attribute name line	
                     std::string token;
@@ -232,7 +232,7 @@ namespace Odb::Lib::FileModel::Design
                     m_attributeNames.push_back(token);
                 }
                 else if (line.find(ATTRIBUTE_VALUE_TOKEN) == 0 ||
-                    line.find(COMMENT_TOKEN + ATTRIBUTE_VALUE_TOKEN) == 0) // backward compatibility dictates allowing comment character in front of attribute value token
+                    line.find(std::string(COMMENT_TOKEN) + ATTRIBUTE_VALUE_TOKEN) == 0) // backward compatibility dictates allowing comment character in front of attribute value token
                 {
                     // component attribute text string values	
                     std::string token;
