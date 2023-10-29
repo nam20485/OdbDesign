@@ -1,10 +1,10 @@
 #include "StepsEdaDataController.h"
-#include "FileArchive.h"
-#include "EdaDataFile.h"
+#include "FileModel/Design/FileArchive.h"
+#include "FileModel/Design/EdaDataFile.h"
 #include "JsonCrowReturnable.h"
 #include <sstream>
 
-using namespace Odb::Lib;
+using namespace Odb::Lib::App;
 using namespace Odb::Lib::FileModel::Design;
 using namespace Utils;
 

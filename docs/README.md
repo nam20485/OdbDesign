@@ -47,7 +47,7 @@ The diagram describes the current state of parser implementation and data availa
 
 #### Branches
 
-##### `development`
+#### `development`
 
 | Step               | Status  |
 |--------------------|---------|
@@ -56,7 +56,7 @@ The diagram describes the current state of parser implementation and data availa
 | Docker Image       | [![Docker Publish](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml) |
 | Docker Security Scan        | [![Docker Scout Scan](https://github.com/nam20485/OdbDesign/actions/workflows/docker-scout-scan.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-scout-scan.yml) |
 
-##### `main`
+#### `main`
 
 | Step               | Status   |
 |--------------------|----------|
@@ -65,7 +65,7 @@ The diagram describes the current state of parser implementation and data availa
 | Docker Image       | [![Docker Publish](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml) |
 | Docker Security Scan        | [![Docker Scout Scan](https://github.com/nam20485/OdbDesign/actions/workflows/docker-scout-scan.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-scout-scan.yml) |
 
-##### `release`
+#### `release`
 
 | Step               | Status   |
 |--------------------|----------|
@@ -150,7 +150,7 @@ $ cmake --build --preset linux-release
 #### Docker Image for REST API Server
 
 ```Bash
-$ docker build -f Dockerfile_OdbDesignServer . -t odbdesign-server
+$ docker build . -t odbdesign-server
 ```
 
 ## Running the REST API Server

@@ -2,7 +2,7 @@
 
 // include headers for linking to library
 
-#include "FileArchive.h"
-#include "Design.h"
+#include "FileModel/Design/FileArchive.h"
+#include "ProductModel/Design.h"
 
 

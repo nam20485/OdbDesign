@@ -1,16 +1,16 @@
 #pragma once
 
-#include "RouteController.h"
+#include "App/RouteController.h"
 #include "crow_win.h"
-#include "IOdbServerApp.h"
+#include "App/IOdbServerApp.h"
 
 
 namespace Odb::App::Server
 {
-	class StepsEdaDataController : public Odb::Lib::RouteController
+class StepsEdaDataController : public Odb::Lib::App::RouteController
 	{
 	public:
-		StepsEdaDataController(Odb::Lib::IOdbServerApp& serverApp);
+		StepsEdaDataController(Odb::Lib::App::IOdbServerApp& serverApp);
 
 		void register_routes() override;		
 

@@ -1,5 +1,4 @@
-#FROM debian:bookworm-20230522-slim AS build
-FROM debian:bookworm-20230522-slim AS build
+FROM debian:bookworm-20231009-slim@sha256:b55e2651b71408015f8068dd74e1d04404a8fa607dd2cfe284b4824c11f4d9bd AS build
 
 # install dependencies
 RUN apt-get update && \
@@ -45,9 +44,9 @@ RUN cmake --build --preset python-linux-release
 
 # much smaller runtime image
 #FROM python:3.11.4-bullseye AS run
-FROM debian:bookworm-20230522-slim as run
+FROM debian:bookworm-20231009-slim@sha256:b55e2651b71408015f8068dd74e1d04404a8fa607dd2cfe284b4824c11f4d9bd as run
 
-# copy PyPyPyOdbDesignServer files
+# copy PyOdbDesignServer files
 COPY --from=build /src/OdbDesign/PyOdbDesignServer PyOdbDesignServer
 
 # copy PyOdbDesignLib files
@@ -60,7 +59,8 @@ RUN apt-get update && \
         python3-dev \
         python3-pip
 
-RUN python3 -m pip install -r /PyOdbDesignServer/requirements.txt --break-system-packages
+WORKDIR /PyOdbDesignServer
+RUN python3 -m pip install -r requirements.txt --break-system-packages
 
 # run
 WORKDIR /PyOdbDesignServer
