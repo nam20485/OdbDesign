@@ -240,9 +240,7 @@ namespace Odb::Lib::FileModel::Design
 
 		PackageRecord::Vector m_packageRecords;
 		PackageRecord::StringMap m_packageRecordsByName;
-
-		static std::filesystem::path getUncompressedFilePath(const std::filesystem::path& directory, const std::string& filename);
-
+		
 		inline static const char* EDADATA_FILENAME = "data";
 		
 		inline static const char* COMMENT_TOKEN = "#";

@@ -22,6 +22,8 @@ namespace Utils
 		bool Extract();
 		bool Extract(const std::string& destinationPath);
 
+		static std::filesystem::path getUncompressedFilePath(const std::filesystem::path& directory, const std::string& filename);
+
 		//static inline const std::string SupportedExtensions[] = { "tgz", "tar.gz", "gz", "zip", "Z" };
 
 	private:
