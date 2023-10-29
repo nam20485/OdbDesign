@@ -20,6 +20,7 @@ namespace Odb::Lib::FileModel::Design
 		~EdaDataFile();
 
 		const std::filesystem::path& GetPath() const;
+		const std::filesystem::path& GetDirectory() const;
 		const std::string& GetUnits() const;
 		const std::string& GetSource() const;
 
@@ -224,6 +225,7 @@ namespace Odb::Lib::FileModel::Design
 		void from_protobuf(const Odb::Lib::Protobuf::EdaDataFile& message) override;		
 
 	private:
+		std::filesystem::path m_directory;
 		std::filesystem::path m_path;
 		std::string m_units;
 

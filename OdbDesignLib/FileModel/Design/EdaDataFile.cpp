@@ -23,6 +23,11 @@ namespace Odb::Lib::FileModel::Design
         return m_path;
     }
 
+    const std::filesystem::path& EdaDataFile::GetDirectory() const
+    {
+        return m_directory;
+    }
+
     const std::string& EdaDataFile::GetUnits() const
     {
         return m_units;
