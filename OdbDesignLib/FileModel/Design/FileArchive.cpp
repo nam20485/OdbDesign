@@ -129,8 +129,6 @@ namespace Odb::Lib::FileModel::Design
 
 			return "";
 		}
-
-		return "";
 	}
 
 	/*static*/ bool FileArchive::pathContainsTopLevelDesignDirs(const std::filesystem::path& path)
