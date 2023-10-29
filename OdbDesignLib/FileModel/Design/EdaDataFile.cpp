@@ -6,6 +6,10 @@
 #include "../../enums.h"
 #include "../../ProtoBuf/edadatafile.pb.h"
 #include "google/protobuf/message.h"
+#include "ArchiveExtractor.h"
+
+using namespace std::filesystem;
+using namespace Utils;
 
 
 namespace Odb::Lib::FileModel::Design
@@ -198,17 +202,54 @@ namespace Odb::Lib::FileModel::Design
        
     }    
 
+    /*static*/ path EdaDataFile::getUncompressedFilePath(const path& directory, const std::string& filename)
+    {
+        path uncompressedPath;
+
+        auto isCompressedZ = false;
+        path possibleCompressedFilePath = directory / filename;        
+        possibleCompressedFilePath.replace_extension("Z");
+        if (exists(possibleCompressedFilePath) && is_regular_file(possibleCompressedFilePath))
+        {
+            isCompressedZ = true;
+        }
+        else
+        {
+            possibleCompressedFilePath.replace_extension("z");
+            if (exists(possibleCompressedFilePath) && is_regular_file(possibleCompressedFilePath))
+            {
+                isCompressedZ = true;
+            }
+        }
+
+        if (isCompressedZ)
+        {
+            // extract and set edaDataFilePath to file
+            ArchiveExtractor extractor(possibleCompressedFilePath.string());
+            if (extractor.Extract())
+            {
+                uncompressedPath = extractor.GetExtractedPath();
+                uncompressedPath /= filename;
+            }
+        }
+        else
+        {
+            uncompressedPath = directory / filename;
+        }
+
+        return uncompressedPath;
+    }
+
     bool EdaDataFile::Parse(std::filesystem::path path)
     {
-        m_path = path;
+        m_directory = path;                
+        m_path = getUncompressedFilePath(m_directory.string(), "data");              
 
-        auto edaDataFilePath = m_path / "data";
-
-        if (!std::filesystem::exists(edaDataFilePath)) return false;
-        else if (!std::filesystem::is_regular_file(edaDataFilePath)) return false;
+        if (!std::filesystem::exists(m_path)) return false;
+        else if (!std::filesystem::is_regular_file(m_path)) return false;
 
         std::ifstream edaDataFile;
-        edaDataFile.open(edaDataFilePath.string(), std::ios::in);
+        edaDataFile.open(m_path.string(), std::ios::in);
         if (!edaDataFile.is_open()) return false;
 
         std::shared_ptr<NetRecord> pCurrentNetRecord;
