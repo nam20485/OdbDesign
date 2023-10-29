@@ -97,7 +97,7 @@ namespace Odb::Lib::FileModel::Design
 		Utils::ArchiveExtractor extractor(path.string());
 		if (!extractor.Extract()) return false;
 
-		auto extracted = std::filesystem::path(extractor.GetExtractedPath());
+		auto extracted = std::filesystem::path(extractor.GetExtractionDirectory());
 		if (!exists(extracted)) return false;
 
 		extractedPath = extracted;

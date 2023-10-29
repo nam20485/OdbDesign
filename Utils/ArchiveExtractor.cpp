@@ -16,9 +16,9 @@ namespace Utils
 		return m_path;
 	}
 
-	std::string ArchiveExtractor::GetExtractedPath() const
+	std::string ArchiveExtractor::GetExtractionDirectory() const
 	{
-		return m_extractedPath;
+		return m_extractionDirectory;
 	}
 
 	bool ArchiveExtractor::IsArchiveTypeSupported(const std::filesystem::path& file)
@@ -57,14 +57,14 @@ namespace Utils
 			auto command = "7z x " + m_path + " -o" + destinationPath + " -y";			
 			auto exitCode = std::system(command.c_str());
 			if (exitCode != 0) return false;
-			m_extractedPath = destinationPath;
+			m_extractionDirectory = destinationPath;
 			return true;
 		}
 		else if (extract(m_path.c_str(), destinationPath.c_str()))
 		{
 			//std::filesystem::path p(destinationPath);
 			//p /= std::filesystem::path(m_path).stem();
-			m_extractedPath = destinationPath;
+			m_extractionDirectory = destinationPath;
 			return true;
 		}
 
@@ -97,7 +97,7 @@ namespace Utils
 			ArchiveExtractor extractor(possibleCompressedFilePath.string());
 			if (extractor.Extract())
 			{
-				uncompressedPath = extractor.GetExtractedPath();
+				uncompressedPath = extractor.GetExtractionDirectory();
 				uncompressedPath /= filename;
 			}
 		}
