@@ -2,6 +2,7 @@
 #include <filesystem>
 #include "libarchive_extract.h"
 
+using namespace std::filesystem;
 
 namespace Utils
 {
@@ -50,12 +51,20 @@ namespace Utils
 
 	bool ArchiveExtractor::Extract(const std::string& destinationPath)
 	{
-		if (extract(m_path.c_str(), destinationPath.c_str()))
+		path p(m_path);
+		if (p.extension() == ".Z" || p.extension() == ".z")
+		{			
+			auto command = "7z x " + m_path + " -o" + destinationPath + " -y";			
+			auto exitCode = std::system(command.c_str());
+			if (exitCode != 0) return false;
+			m_extractedPath = destinationPath;
+			return true;
+		}
+		else if (extract(m_path.c_str(), destinationPath.c_str()))
 		{
 			//std::filesystem::path p(destinationPath);
 			//p /= std::filesystem::path(m_path).stem();
 			m_extractedPath = destinationPath;
-
 			return true;
 		}
 

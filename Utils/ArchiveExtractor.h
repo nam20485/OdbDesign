@@ -22,7 +22,7 @@ namespace Utils
 		bool Extract();
 		bool Extract(const std::string& destinationPath);
 
-		//static inline const std::string SupportedExtensions[] = { "tgz", "tar.gz", "gz", "zip" };
+		//static inline const std::string SupportedExtensions[] = { "tgz", "tar.gz", "gz", "zip", "Z" };
 
 	private:
 		std::string m_path;
