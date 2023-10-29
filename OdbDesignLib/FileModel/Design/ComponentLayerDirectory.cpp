@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <filesystem>
+#include "ArchiveExtractor.h"
 
 
 namespace Odb::Lib::FileModel::Design
@@ -60,7 +61,7 @@ namespace Odb::Lib::FileModel::Design
 	{
 		if (!LayerDirectory::Parse()) return false;
 
-		auto componentsFilePath = m_path / "components";
+		auto componentsFilePath = Utils::ArchiveExtractor::getUncompressedFilePath(m_path, COMPONENTS_FILENAME);
 
 		if (!std::filesystem::exists(componentsFilePath)) return false;
 		else if (!std::filesystem::is_regular_file(componentsFilePath)) return false;

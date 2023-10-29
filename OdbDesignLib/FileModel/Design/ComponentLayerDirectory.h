@@ -99,6 +99,8 @@ namespace Odb::Lib::FileModel::Design
 		// TODO: add records to maps by name while adding to their vectors
 		ComponentRecord::StringMap m_componentRecordsByName;
 
+		inline static const char* COMPONENTS_FILENAME = "components";
+
 		inline static const std::string UNITS_TOKEN = "UNITS";
 		inline static const std::string ID_TOKEN = "ID";
 		inline static const std::string ATTRIBUTE_NAME_TOKEN = "@";
