@@ -177,12 +177,12 @@ namespace Odb::Lib::App
                 }
             }
         }
-        catch (std::filesystem::filesystem_error& fe)
+        catch (std::exception& e)
         {
-            logexception(fe);
+            logexception(e);
             // re-throw it so we get a HTTP 500 response to the client
-            throw fe;
-        }
+            throw e;
+        }        
 
         return nullptr;
     }
