@@ -16,7 +16,8 @@ namespace Odb::Lib::FileModel::Design
 	class ODBDESIGN_EXPORT EdaDataFile : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile>
 	{
 	public:
-		EdaDataFile();		
+		EdaDataFile();
+		EdaDataFile(bool logAllLineParsing);
 		~EdaDataFile();
 
 		const std::filesystem::path& GetPath() const;
@@ -240,6 +241,8 @@ namespace Odb::Lib::FileModel::Design
 
 		PackageRecord::Vector m_packageRecords;
 		PackageRecord::StringMap m_packageRecordsByName;
+
+		bool m_logAllLineParsing;
 		
 		inline static const char* EDADATA_FILENAME = "data";
 		

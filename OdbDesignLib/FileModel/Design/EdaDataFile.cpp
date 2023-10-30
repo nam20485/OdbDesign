@@ -17,12 +17,25 @@ using namespace Utils;
 
 namespace Odb::Lib::FileModel::Design
 {
-    EdaDataFile::EdaDataFile()    
+    EdaDataFile::EdaDataFile()   
+        : EdaDataFile(false)
+    {
+    }
+
+    EdaDataFile::EdaDataFile(bool logAllLineParsing)
+        : m_logAllLineParsing(logAllLineParsing)
     {
     }
    
     EdaDataFile::~EdaDataFile()
     {
+        m_layerNames.clear();
+        m_attributeNames.clear();
+        m_attributeTextValues.clear();
+        m_netRecords.clear();
+        m_netRecordsByName.clear();
+        m_packageRecords.clear();
+        m_packageRecordsByName.clear();
     }
 
     const std::filesystem::path& EdaDataFile::GetPath() const
@@ -203,11 +216,7 @@ namespace Odb::Lib::FileModel::Design
     void EdaDataFile::from_protobuf(const Odb::Lib::Protobuf::EdaDataFile& message)
     {
        
-    }        
-    
-#ifndef throw_parse_error
-#   define throw_parse_error(dataFile, dataLine, dataToken, dataLineNumber) throw parse_error(dataFile, dataLine, dataToken, dataLineNumber, __LINE__, __FILE__)
-#endif     
+    }              
 
     bool EdaDataFile::Parse(std::filesystem::path path)
     {
@@ -246,8 +255,14 @@ namespace Odb::Lib::FileModel::Design
                 Utils::str_trim(line);
                 if (!line.empty())
                 {
-                    std::stringstream lineStream(line);
+                    if (m_logAllLineParsing)
+                    {
+                        parse_error pe(m_path, line, "", lineNumber, __LINE__, __FILE__);
+                        logdebug(pe.buildMessage("Parsing line:"));
+                    }
 
+                    std::stringstream lineStream(line);
+                   
                     if (line.find(ATTRIBUTE_NAME_TOKEN) == 0 ||
                         line.find(std::string(COMMENT_TOKEN) + ATTRIBUTE_NAME_TOKEN) == 0)  // backward compatibility dictates allowing comment character in front of attribute value token
                     {
@@ -778,18 +793,21 @@ namespace Odb::Lib::FileModel::Design
                         }
 
                         // ID=<id>
-                        if (!(lineStream >> token))
+                        // PIN record, ID field is optional: spec pg.31
+                        if (lineStream >> token)
                         {
-                            throw_parse_error(m_path, line, token, lineNumber);
-                        }
+                            std::stringstream idStream(token);
+                            if (!std::getline(idStream, token, '=') || token != "ID")
+                            {
+                                throw_parse_error(m_path, line, token, lineNumber);
+                            }
 
-                        std::stringstream idStream(token);
-                        if (!std::getline(idStream, token, '=') || token != "ID")
+                            idStream >> pPinRecord->id;
+                        }
+                        else
                         {
-                            throw_parse_error(m_path, line, token, lineNumber);
+                            pPinRecord->id = UINT_MAX;
                         }
-
-                        idStream >> pPinRecord->id;
 
                         if (pCurrentPackageRecord != nullptr)
                         {
@@ -814,6 +832,12 @@ namespace Odb::Lib::FileModel::Design
 
                         // TODO: parse FGR records
                     }
+                    else
+                    {
+                        parse_error pe(m_path, line, "", lineNumber, __LINE__, __FILE__);
+                        logwarn(pe.buildMessage("unrecognized line in EDADATA file:"));
+                        //throw_parse_error(m_path, line, "", lineNumber);
+                    }
                 }
                 else
                 {
@@ -821,6 +845,8 @@ namespace Odb::Lib::FileModel::Design
                     continue;                    
                 }
             }
+
+            edaDataFile.close();
 
             // finish current (previous) net record
             // this is the case where the last line of the file is not a net record (and there are no PKG records)
@@ -852,11 +878,11 @@ namespace Odb::Lib::FileModel::Design
                 // finish up any current (previous) package records
                 m_packageRecords.push_back(pCurrentPackageRecord);
                 pCurrentPackageRecord.reset();
-            }            
+            }        
         }
         catch (parse_error& pe)
         {            
-            auto m = pe.buildMessage();
+            auto m = pe.buildMessage("Parse Error:");
             logerror(m);
             //return false;
             throw pe;
