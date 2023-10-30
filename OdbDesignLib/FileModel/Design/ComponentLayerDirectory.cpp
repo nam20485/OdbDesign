@@ -61,6 +61,8 @@ namespace Odb::Lib::FileModel::Design
 
 	bool ComponentLayerDirectory::Parse()
 	{
+		std::ifstream componentsFile;
+
 		try
 		{
 			if (!LayerDirectory::Parse()) return false;
@@ -75,8 +77,7 @@ namespace Odb::Lib::FileModel::Design
 			{
 				throw_parse_error(m_path, "", "", -1);
 			}
-
-			std::ifstream componentsFile;
+			
 			componentsFile.open(componentsFilePath.string(), std::ios::in);
 			if (!componentsFile.is_open())
 			{
@@ -270,6 +271,9 @@ namespace Odb::Lib::FileModel::Design
 		{
 			auto m = pe.toString("Parse Error:");
 			logerror(m);
+
+			componentsFile.close();
+
 			//return false;
 			throw pe;
 		}

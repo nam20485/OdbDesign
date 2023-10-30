@@ -340,6 +340,8 @@ namespace Odb::Lib::FileModel::Design
             }
         }
 
+        matrixFile.close();
+
         return true;
 	}
 }

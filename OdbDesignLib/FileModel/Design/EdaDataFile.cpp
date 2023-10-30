@@ -221,6 +221,8 @@ namespace Odb::Lib::FileModel::Design
 
     bool EdaDataFile::Parse(std::filesystem::path path)
     {
+        std::ifstream edaDataFile;
+
         try
         {
             m_directory = path;
@@ -234,8 +236,7 @@ namespace Odb::Lib::FileModel::Design
             {
                 throw_parse_error(m_path, "", "", -1);
             }
-
-            std::ifstream edaDataFile;
+            
             edaDataFile.open(m_path.string(), std::ios::in);
             if (!edaDataFile.is_open()) throw_parse_error(m_path, "", "", -1);
 
@@ -807,6 +808,12 @@ namespace Odb::Lib::FileModel::Design
                         }
                         else
                         {
+
+#define SIMULATE_PARSE_ERROR
+#ifdef SIMULATE_PARSE_ERROR
+                            throw_parse_error(m_path, line, token, lineNumber);
+#endif
+
                             pPinRecord->id = UINT_MAX;
                         }
 
@@ -886,6 +893,10 @@ namespace Odb::Lib::FileModel::Design
             auto m = pe.getParseInfo().toString("Parse Error:");
             logerror(m);
             //return false;
+
+            // cleanup file
+            edaDataFile.close();
+
             throw pe;
         }
 

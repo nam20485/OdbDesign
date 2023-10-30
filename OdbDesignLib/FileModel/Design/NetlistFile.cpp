@@ -145,6 +145,8 @@ namespace Odb::Lib::FileModel::Design
 
 		loginfo("Parsing netlist: " + m_name + " complete");
 
+		netlistFile.close();
+
 		return true;
 	}
 } // namespace Odb::Lib::FileModel::Design
