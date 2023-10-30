@@ -52,6 +52,8 @@ namespace Odb::Lib::FileModel::Design
 		try
 		{
 			if (!exists(m_filePath)) return false;
+
+			auto started = std::chrono::system_clock::now();
 		
 			if (is_regular_file(m_filePath))
 			{
@@ -67,7 +69,12 @@ namespace Odb::Lib::FileModel::Design
 
 				if (ParseDesignDirectory(m_rootDir))
 				{
-					loginfo("Successfully parsed.");
+					auto finished = std::chrono::system_clock::now();
+					auto elapsed = finished - started;
+					auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count();
+					double s = ms / 1000.0;
+					loginfo("Successfully parsed. (" + std::to_string(s) + " ms)");
+
 					return true;
 				}
 				else
@@ -145,6 +152,8 @@ namespace Odb::Lib::FileModel::Design
 
 		m_productName = path.stem().string();
 
+		loginfo("Parsing steps...");
+
 		auto stepsPath = path / "steps";
 		for (auto& d : directory_iterator(stepsPath))
 		{
@@ -162,41 +171,55 @@ namespace Odb::Lib::FileModel::Design
 			}
 		}
 
+		loginfo("Parsing steps complete");		
+
         if (! ParseMiscInfoFile(path)) return false;
 		if (! ParseMatrixFile(path)) return false;
-		if (! ParseStandardFontsFile(path)) return false;
+		if (! ParseStandardFontsFile(path)) return false;		
 
 		return true;
 	}
 
     bool FileArchive::ParseMiscInfoFile(const path& path)
     {
+		loginfo("Parsing misc/info file...");
+
         auto miscDirectory = path / "misc";
         if (!exists(miscDirectory)) return false;
         if (!is_directory(miscDirectory)) return false;
 
         if (!m_miscInfoFile.Parse(miscDirectory)) return false;
 
+		loginfo("Parsing misc/info file complete");
+
         return true;
     }
 
 	bool FileArchive::ParseMatrixFile(const std::filesystem::path& path)
 	{
+		loginfo("Parsing matrix/matrix file...");
+
 		auto matrixDir = path / "matrix";
 		if (!exists(matrixDir)) return false;
 		if (!is_directory(matrixDir)) return false;
 
 		if (!m_matrixFile.Parse(matrixDir)) return false;
 
+		loginfo("Parsing matrix/matrix file complete");
+
 		return true;
 	}
 	bool FileArchive::ParseStandardFontsFile(const std::filesystem::path& path)
 	{
+		loginfo("Parsing fonts/standard file...");
+
 		auto fontsDir = path / "fonts";
 		if (!exists(fontsDir)) return false;
 		if (!is_directory(fontsDir)) return false;
 
 		if (!m_standardFontsFile.Parse(fontsDir)) return false;
+
+		loginfo("Parsing fonts/standard file complete");
 
 		return true;
 	}
