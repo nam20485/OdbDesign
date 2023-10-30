@@ -225,6 +225,8 @@ namespace Odb::Lib::FileModel::Design
 
         try
         {
+            loginfo("checking for extraction...");
+
             m_directory = path;
             m_path = ArchiveExtractor::getUncompressedFilePath(m_directory.string(), EDADATA_FILENAME);
 
@@ -236,6 +238,8 @@ namespace Odb::Lib::FileModel::Design
             {
                 throw_parse_error(m_path, "", "", -1);
             }
+
+            loginfo("any extraction complete, parsing data...");
             
             edaDataFile.open(m_path.string(), std::ios::in);
             if (!edaDataFile.is_open()) throw_parse_error(m_path, "", "", -1);
@@ -809,8 +813,8 @@ namespace Odb::Lib::FileModel::Design
                         else
                         {
 
-#define SIMULATE_PARSE_ERROR
-#ifdef SIMULATE_PARSE_ERROR
+#define SIMULATE_PARSE_ERROR 0
+#if SIMULATE_PARSE_ERROR
                             throw_parse_error(m_path, line, token, lineNumber);
 #endif
 

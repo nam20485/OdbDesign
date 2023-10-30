@@ -67,7 +67,11 @@ namespace Odb::Lib::FileModel::Design
 		{
 			if (!LayerDirectory::Parse()) return false;
 
+			loginfo("checking for extraction...");
+
 			auto componentsFilePath = Utils::ArchiveExtractor::getUncompressedFilePath(m_path, COMPONENTS_FILENAME);
+
+			loginfo("any extraction complete, parsing data...");
 
 			if (!std::filesystem::exists(componentsFilePath))
 			{

@@ -49,7 +49,7 @@ namespace Odb::Lib::FileModel::Design
 
 	bool FileArchive::ParseFileModel()
 	{
-		try
+		//try
 		{
 			if (!exists(m_filePath)) return false;
 
@@ -83,11 +83,11 @@ namespace Odb::Lib::FileModel::Design
 				}
 			}		
 		}
-		catch (std::exception& e)
-		{
-			logexception(e);
-			throw e;
-		}
+		//catch (std::exception& e)
+		//{
+		//	logexception(e);
+		//	throw e;
+		//}
 
 		return false;
 	}
