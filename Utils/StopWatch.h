@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include "utils_export.h"
+#include <string>
 
 namespace Utils
 {
@@ -13,10 +14,13 @@ public:
 		void start();
 		void stop();
 
-		long long getElapsedMilliseconds() const;
-		double getElapsedSeconds() const;		
-		std::string getElapsedSecondsString(const std::string& suffix) const;
 		std::chrono::system_clock::duration getElapsedDuration() const;
+
+		long long getElapsedMilliseconds() const;
+		double getElapsedSeconds() const;			
+
+		std::string getElapsedSecondsString(const std::string& suffix) const;
+		
 
 		//template<class D>
 		//std::chrono::system_clock::duration getElapsedDuration() const;	
