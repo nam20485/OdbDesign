@@ -8,6 +8,7 @@
 #include "google/protobuf/message.h"
 #include "ArchiveExtractor.h"
 #include "Logger.h"
+#include "../parse_info.h"
 #include "../parse_error.h"
 #include <sstream>
 
@@ -257,8 +258,8 @@ namespace Odb::Lib::FileModel::Design
                 {
                     if (m_logAllLineParsing)
                     {
-                        parse_error pe(m_path, line, "", lineNumber, __LINE__, __FILE__);
-                        logdebug(pe.buildMessage("Parsing line:"));
+                        parse_info pi(m_path, line, lineNumber, __LINE__, __FILE__);
+                        logdebug(pi.toString("Parsing line..."));
                     }
 
                     std::stringstream lineStream(line);
@@ -834,9 +835,9 @@ namespace Odb::Lib::FileModel::Design
                     }
                     else
                     {
-                        parse_error pe(m_path, line, "", lineNumber, __LINE__, __FILE__);
-                        logwarn(pe.buildMessage("unrecognized line in EDADATA file:"));
-                        //throw_parse_error(m_path, line, "", lineNumber);
+                        // unrecognized record line
+                        parse_info pi(m_path, line, lineNumber, __LINE__, __FILE__);
+                        logwarn(pi.toString("unrecognized record line in EDADATA file:"));                        
                     }
                 }
                 else
@@ -882,7 +883,7 @@ namespace Odb::Lib::FileModel::Design
         }
         catch (parse_error& pe)
         {            
-            auto m = pe.buildMessage("Parse Error:");
+            auto m = pe.getParseInfo().toString("Parse Error:");
             logerror(m);
             //return false;
             throw pe;

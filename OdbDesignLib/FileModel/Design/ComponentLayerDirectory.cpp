@@ -268,7 +268,7 @@ namespace Odb::Lib::FileModel::Design
 		}
 		catch (parse_error& pe)
 		{
-			auto m = pe.buildMessage("Parse Error:");
+			auto m = pe.toString("Parse Error:");
 			logerror(m);
 			//return false;
 			throw pe;
