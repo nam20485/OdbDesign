@@ -4,6 +4,7 @@
 #include "ComponentLayerDirectory.h"
 #include <fstream>
 #include <sstream>
+#include "Logger.h"
 
 
 namespace Odb::Lib::FileModel::Design
@@ -53,6 +54,8 @@ namespace Odb::Lib::FileModel::Design
 
     bool StepDirectory::ParseLayerFiles(std::filesystem::path layersPath)
     {
+        loginfo("Parsing layer directories...");
+
         if (!std::filesystem::exists(layersPath)) return false;
         else if (!std::filesystem::is_directory(layersPath)) return false;
 
@@ -78,6 +81,8 @@ namespace Odb::Lib::FileModel::Design
 
                 if (pLayer->Parse())
                 {
+                    loginfo("Parsing layer: " + pLayer->GetName() + " complete");
+
                     m_layersByName[pLayer->GetName()] = pLayer;
                 }
                 else
@@ -87,20 +92,30 @@ namespace Odb::Lib::FileModel::Design
             }
         }
 
+        loginfo("Parsing layer directories complete");
+
         return true;
     }
 
     bool StepDirectory::ParseEdaDataFiles(std::filesystem::path edaPath)
     {
+        loginfo("Parsing eda/data file...");
+
         if (!std::filesystem::exists(edaPath)) return false;
         else if (!std::filesystem::is_directory(edaPath)) return false;
 
         // parse nets and packages definitions      
-        return m_edaData.Parse(edaPath);
+        auto success =  m_edaData.Parse(edaPath);
+
+        loginfo("Parsing eda/data file complete");
+
+        return success;
     }
 
     bool StepDirectory::ParseNetlistFiles(std::filesystem::path netlistsPath)
     {
+        loginfo("Parsing netlist files...");
+
         if (!std::filesystem::exists(netlistsPath)) return false;
         else if (!std::filesystem::is_directory(netlistsPath)) return false;
 
@@ -116,6 +131,8 @@ namespace Odb::Lib::FileModel::Design
                 }
             }
         }
+
+        loginfo("Parsing netlist files complete");
 
         return true;
     }

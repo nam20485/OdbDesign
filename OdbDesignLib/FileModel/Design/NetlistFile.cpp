@@ -1,6 +1,7 @@
 #include "NetlistFile.h"
 #include <fstream>
 #include <sstream>
+#include <Logger.h>
 
 namespace Odb::Lib::FileModel::Design
 {
@@ -46,6 +47,8 @@ namespace Odb::Lib::FileModel::Design
 	bool NetlistFile::Parse()
 	{
 		m_name = std::filesystem::path(m_path).filename().string();
+
+		loginfo("Parsing netlist: " + m_name + "...");
 
 		auto netlistFilePath = m_path / "netlist";
 
@@ -139,6 +142,8 @@ namespace Odb::Lib::FileModel::Design
 				}
 			}
 		}
+
+		loginfo("Parsing netlist: " + m_name + " complete");
 
 		return true;
 	}

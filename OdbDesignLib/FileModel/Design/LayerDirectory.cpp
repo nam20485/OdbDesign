@@ -1,4 +1,5 @@
 #include "LayerDirectory.h"
+#include "Logger.h"
 
 namespace Odb::Lib::FileModel::Design
 {
@@ -22,8 +23,11 @@ namespace Odb::Lib::FileModel::Design
 	}
 
 	bool LayerDirectory::Parse()
-	{
+	{		
 		m_name = std::filesystem::path(m_path).filename().string();
+
+		loginfo("Parsing layer: " + m_name + "...");
+
 		return true;
 	}
 }
