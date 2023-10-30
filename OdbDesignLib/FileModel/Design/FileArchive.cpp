@@ -5,6 +5,7 @@
 #include "MiscInfoFile.h"
 #include <iostream>
 #include "Logger.h"
+#include "StopWatch.h"
 
 using namespace Utils;
 using namespace std::filesystem;
@@ -51,9 +52,9 @@ namespace Odb::Lib::FileModel::Design
 	{
 		//try
 		{
-			if (!exists(m_filePath)) return false;
+			StopWatch timer(true);
 
-			auto started = std::chrono::system_clock::now();
+			if (!exists(m_filePath)) return false;		
 		
 			if (is_regular_file(m_filePath))
 			{
@@ -69,11 +70,9 @@ namespace Odb::Lib::FileModel::Design
 
 				if (ParseDesignDirectory(m_rootDir))
 				{
-					auto finished = std::chrono::system_clock::now();
-					auto elapsed = finished - started;
-					auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count();
-					double s = ms / 1000.0;
-					loginfo("Successfully parsed. (" + std::to_string(s) + " ms)");
+					timer.stop();					
+					auto s = timer.getElapsedSecondsString(" s");
+					loginfo("Successfully parsed. (" + s + ")");
 
 					return true;
 				}
