@@ -149,6 +149,8 @@ namespace Odb::Lib::FileModel::Design
             }
         }
 
+        standardFile.close();
+
 		return true;
 	}
 }

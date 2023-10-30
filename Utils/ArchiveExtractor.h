@@ -14,7 +14,7 @@ namespace Utils
 		//~ArchiveExtractor();	
 
 		std::string GetPath() const;
-		std::string GetExtractedPath() const;
+		std::string GetExtractionDirectory() const;
 
 		static bool IsArchiveTypeSupported(const std::filesystem::path& file);
 		static bool IsArchiveTypeSupported(const std::string& file);
@@ -22,11 +22,13 @@ namespace Utils
 		bool Extract();
 		bool Extract(const std::string& destinationPath);
 
-		//static inline const std::string SupportedExtensions[] = { "tgz", "tar.gz", "gz", "zip" };
+		static std::filesystem::path getUncompressedFilePath(const std::filesystem::path& directory, const std::string& filename);
+
+		//static inline const std::string SupportedExtensions[] = { "tgz", "tar.gz", "gz", "zip", "Z" };
 
 	private:
 		std::string m_path;
-		std::string m_extractedPath;
+		std::string m_extractionDirectory;
 
 	};
 }

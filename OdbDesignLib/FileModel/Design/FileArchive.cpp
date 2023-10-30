@@ -1,9 +1,11 @@
 #include "FileArchive.h"
+#include "FileArchive.h"
 #include <filesystem>
 #include "ArchiveExtractor.h"
 #include "MiscInfoFile.h"
 #include <iostream>
 #include "Logger.h"
+#include "StopWatch.h"
 
 using namespace Utils;
 using namespace std::filesystem;
@@ -12,7 +14,7 @@ namespace Odb::Lib::FileModel::Design
 {
 
 	FileArchive::FileArchive(std::string path)
-		: m_path(path)
+		: m_filePath(path)
 	{
 	}
 
@@ -20,9 +22,9 @@ namespace Odb::Lib::FileModel::Design
 	{
 	}
 
-	std::string FileArchive::GetPath() const
+	std::string FileArchive::GetRootDir() const
 	{
-		return m_path;
+		return m_rootDir;
 	}
 
 	std::string FileArchive::GetProductName() const
@@ -30,9 +32,15 @@ namespace Odb::Lib::FileModel::Design
 		return m_productName;
 	}
 
+	std::string FileArchive::GetFilePath() const
+	{
+		return m_filePath;
+	}
+
 	std::string FileArchive::GetFilename() const
 	{
-		return path(m_path).filename().string();
+		//return m_filename;
+		return path(m_filePath).filename().string();
 	}
 
 	const StepDirectory::StringMap& FileArchive::GetStepsByName() const
@@ -42,26 +50,30 @@ namespace Odb::Lib::FileModel::Design
 
 	bool FileArchive::ParseFileModel()
 	{
-		try
+		//try
 		{
-			std::filesystem::path path(m_path);
+			StopWatch timer(true);
 
-			if (!std::filesystem::exists(path)) return false;
+			if (!exists(m_filePath)) return false;		
 		
-			if (std::filesystem::is_regular_file(path))
+			if (is_regular_file(m_filePath))
 			{
 				std::filesystem::path extractedPath;
-				if (! ExtractDesignArchive(path, extractedPath)) return false;
-				path = extractedPath;
+				if (! ExtractDesignArchive(m_filePath, extractedPath)) return false;
+
+				m_rootDir = findRootDir(extractedPath);
 			}			
 		
-			if (std::filesystem::is_directory(path))
+			if (is_directory(m_rootDir))
 			{
 				loginfo("Parsing... ");
 
-				if (ParseDesignDirectory(path))
+				if (ParseDesignDirectory(m_rootDir))
 				{
-					loginfo("Successfully parsed.");
+					timer.stop();					
+					auto s = timer.getElapsedSecondsString(" s");
+					loginfo("Successfully parsed. (" + s + ")");
+
 					return true;
 				}
 				else
@@ -69,15 +81,12 @@ namespace Odb::Lib::FileModel::Design
 					loginfo("Parsing failed.");
 				}
 			}		
-		}		
-		catch (std::filesystem::filesystem_error& fe)
-		{
-			logexception(fe);
 		}
-		catch (std::exception& e)
-		{
-			logexception(e);
-		}
+		//catch (std::exception& e)
+		//{
+		//	logexception(e);
+		//	throw e;
+		//}
 
 		return false;
 	}
@@ -91,9 +100,9 @@ namespace Odb::Lib::FileModel::Design
 		Utils::ArchiveExtractor extractor(path.string());
 		if (!extractor.Extract()) return false;
 
-		auto extracted = std::filesystem::path(extractor.GetExtractedPath());
-		if (!std::filesystem::exists(extracted)) return false;
-		
+		auto extracted = std::filesystem::path(extractor.GetExtractionDirectory());
+		if (!exists(extracted)) return false;
+
 		extractedPath = extracted;
 
 		loginfo("Successfully extracted.");
@@ -102,18 +111,52 @@ namespace Odb::Lib::FileModel::Design
 				
 	}
 
+	/*static*/ std::string FileArchive::findRootDir(const path& extractedPath)
+	{
+		if (pathContainsTopLevelDesignDirs(extractedPath))
+		{
+			return extractedPath.string();
+		}
+		else
+		{
+			for (const auto& p : directory_iterator(extractedPath))
+			{
+				if (is_directory(p))
+				{
+					if (pathContainsTopLevelDesignDirs(p.path()))
+					{
+						return p.path().string();
+					}
+				}
+			}
+
+			return "";
+		}
+	}
+
+	/*static*/ bool FileArchive::pathContainsTopLevelDesignDirs(const std::filesystem::path& path)
+	{
+		for (const auto& topLevelRootDirName : TOPLEVEL_DESIGN_DIR_NAMES)
+		{
+			auto rootLevelDirPath = path / topLevelRootDirName;
+			if (!exists(rootLevelDirPath)) return false;
+		}
+		return true;
+	}
+
 	bool FileArchive::ParseDesignDirectory(const std::filesystem::path& path)
 	{
-		if (!std::filesystem::exists(path)) return false;
-		else if (!std::filesystem::is_directory(path)) return false;
+		if (!exists(path)) return false;
+		else if (!is_directory(path)) return false;
 
-		// TODO: this should use path.stem() instead of path.filename()
 		m_productName = path.stem().string();
 
+		loginfo("Parsing steps...");
+
 		auto stepsPath = path / "steps";
-		for (auto& d : std::filesystem::directory_iterator(stepsPath))
+		for (auto& d : directory_iterator(stepsPath))
 		{
-			if (std::filesystem::is_directory(d))
+			if (is_directory(d))
 			{
 				auto pStep = std::make_shared<StepDirectory>(d.path());
 				if (pStep->Parse())
@@ -127,41 +170,55 @@ namespace Odb::Lib::FileModel::Design
 			}
 		}
 
+		loginfo("Parsing steps complete");		
+
         if (! ParseMiscInfoFile(path)) return false;
 		if (! ParseMatrixFile(path)) return false;
-		if (! ParseStandardFontsFile(path)) return false;
+		if (! ParseStandardFontsFile(path)) return false;		
 
 		return true;
 	}
 
-    bool FileArchive::ParseMiscInfoFile(const std::filesystem::path& path)
+    bool FileArchive::ParseMiscInfoFile(const path& path)
     {
+		loginfo("Parsing misc/info file...");
+
         auto miscDirectory = path / "misc";
-        if (!std::filesystem::exists(miscDirectory)) return false;
-        if (!std::filesystem::is_directory(miscDirectory)) return false;
+        if (!exists(miscDirectory)) return false;
+        if (!is_directory(miscDirectory)) return false;
 
         if (!m_miscInfoFile.Parse(miscDirectory)) return false;
+
+		loginfo("Parsing misc/info file complete");
 
         return true;
     }
 
 	bool FileArchive::ParseMatrixFile(const std::filesystem::path& path)
 	{
+		loginfo("Parsing matrix/matrix file...");
+
 		auto matrixDir = path / "matrix";
-		if (!std::filesystem::exists(matrixDir)) return false;
-		if (!std::filesystem::is_directory(matrixDir)) return false;
+		if (!exists(matrixDir)) return false;
+		if (!is_directory(matrixDir)) return false;
 
 		if (!m_matrixFile.Parse(matrixDir)) return false;
+
+		loginfo("Parsing matrix/matrix file complete");
 
 		return true;
 	}
 	bool FileArchive::ParseStandardFontsFile(const std::filesystem::path& path)
 	{
+		loginfo("Parsing fonts/standard file...");
+
 		auto fontsDir = path / "fonts";
-		if (!std::filesystem::exists(fontsDir)) return false;
-		if (!std::filesystem::is_directory(fontsDir)) return false;
+		if (!exists(fontsDir)) return false;
+		if (!is_directory(fontsDir)) return false;
 
 		if (!m_standardFontsFile.Parse(fontsDir)) return false;
+
+		loginfo("Parsing fonts/standard file complete");
 
 		return true;
 	}

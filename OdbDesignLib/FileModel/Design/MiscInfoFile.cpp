@@ -10,6 +10,7 @@
 #include "../../Constants.h"
 #include "timestamp.h"
 #include "Logger.h"
+#include "../parse_error.h"
 
 using namespace std::chrono;
 
@@ -26,9 +27,12 @@ namespace Odb::Lib::FileModel::Design
         infoFile.open(infoFilePath, std::ios::in);
         if (!infoFile.is_open()) return false;
 
+        int lineNumber = 0;
         std::string line;
         while (std::getline(infoFile, line))
         {
+            lineNumber++;
+
             // trim whitespace from beginning and end of line
             Utils::str_trim(line);
             if (!line.empty())
@@ -44,8 +48,13 @@ namespace Odb::Lib::FileModel::Design
                     std::string attribute;
                     std::string value;
 
-                    if (! std::getline(lineStream, attribute, '=')) return false;
-                    if (! std::getline(lineStream, value)) return false;
+                    if (!std::getline(lineStream, attribute, '=')) return false;
+                    // attribute value may be blank?
+
+                    if (!std::getline(lineStream, value))
+                    {
+                        logwarn("misc/info file: no value for attribute: " + attribute);
+                    }
 
                     Utils::str_trim(attribute);
                     Utils::str_trim(value);
@@ -56,27 +65,27 @@ namespace Odb::Lib::FileModel::Design
                         m_productModelName = value;
                     }
                     else if (attribute == "JOB_NAME" ||
-                             attribute == "job_name")
+                        attribute == "job_name")
                     {
                         m_jobName = value;
                     }
                     else if (attribute == "odb_version_major" ||
-                             attribute == "ODB_VERSION_MAJOR")
+                        attribute == "ODB_VERSION_MAJOR")
                     {
                         m_odbVersionMajor = value;
                     }
                     else if (attribute == "odb_version_minor" ||
-                             attribute == "ODB_VERSION_MINOR")
+                        attribute == "ODB_VERSION_MINOR")
                     {
                         m_odbVersionMinor = value;
                     }
                     else if (attribute == "odb_source" ||
-                             attribute == "ODB_SOURCE")
+                        attribute == "ODB_SOURCE")
                     {
                         m_odbSource = value;
                     }
                     else if (attribute == "creation_date" ||
-                             attribute == "CREATION_DATE")
+                        attribute == "CREATION_DATE")
                     {
                         //std::istringstream iss(value);
                         //// yyyymmdd.hhmmss
@@ -92,7 +101,7 @@ namespace Odb::Lib::FileModel::Design
 #endif // _DEBUG
                     }
                     else if (attribute == "save_date" ||
-                             attribute == "SAVE_DATE")
+                        attribute == "SAVE_DATE")
                     {
                         //// yyyymmdd.hhmmss                        
                         //std::istringstream(value) >> std::chrono::parse("%Y%m%d.%H%M%S", m_saveDate);
@@ -106,32 +115,40 @@ namespace Odb::Lib::FileModel::Design
 #endif // _DEBUG                                                
                     }
                     else if (attribute == "save_app" ||
-                             attribute == "SAVE_APP")
+                        attribute == "SAVE_APP")
                     {
                         m_saveApp = value;
                     }
                     else if (attribute == "save_user" ||
-                             attribute == "SAVE_USER")
+                        attribute == "SAVE_USER")
                     {
                         m_saveUser = value;
                     }
                     else if (attribute == "units" ||
-                             attribute == "UNITS")
+                        attribute == "UNITS")
                     {
                         m_units = value;
                     }
                     else if (attribute == "max_uid" ||
-                             attribute == "MAX_UID")
+                        attribute == "MAX_UID")
                     {
                         m_maxUniqueId = std::stoi(value);
                     }
                     else
                     {
-                        return false;
+                        // unknown attribute
+
+                        // DO NOT fail parsing on unknown attributes- log instead 
+                        //return false;
+
+                        parse_info pi(m_path, line, attribute, lineNumber, __LINE__, __FILE__);
+                        logwarn(pi.toString("unrecognized line in misc/info file:"));
                     }
                 }
             }
         }
+
+        infoFile.close();
 
         return true;
     }

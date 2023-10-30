@@ -82,7 +82,7 @@ namespace Odb::Lib::App
     {        
         std::vector<std::string> unloadedNames;
 
-        try
+        //try
         {
             path dir(m_directory);
             for (const auto& entry : directory_iterator(dir))
@@ -93,12 +93,12 @@ namespace Odb::Lib::App
                 }
             }
         }
-        catch (std::filesystem::filesystem_error& fe)
-        {
-            logexception(fe);
-            // re-throw it so we get a HTTP 500 response to the client
-            throw fe;
-        }
+        //catch (std::filesystem::filesystem_error& fe)
+        //{
+        //    logexception(fe);
+        //    // re-throw it so we get a HTTP 500 response to the client
+        //    throw fe;
+        //}
 
         return unloadedNames;
     }
@@ -116,7 +116,7 @@ namespace Odb::Lib::App
 
     std::shared_ptr<ProductModel::Design> DesignCache::LoadDesign(const std::string& designName)
     {        
-        try
+        //try
         {
             // no FileArchive with the same name is loaded, so load the Design from file
             std::filesystem::path dir(m_directory);
@@ -142,19 +142,19 @@ namespace Odb::Lib::App
                 }
             }
         }
-        catch (std::filesystem::filesystem_error& fe)
-        {
-            logexception(fe);
-            // re-throw it so we get a HTTP 500 response to the client
-            throw fe;
-        }
+        //catch (std::filesystem::filesystem_error& fe)
+        //{
+        //    logexception(fe);
+        //    // re-throw it so we get a HTTP 500 response to the client
+        //    throw fe;
+        //}
 
         return nullptr;
     }
 
     std::shared_ptr<FileModel::Design::FileArchive> DesignCache::LoadFileArchive(const std::string& designName)
     {
-        try
+        //try
         {
             std::filesystem::path dir(m_directory);
             // skip inaccessible files and do not follow symlinks
@@ -177,12 +177,12 @@ namespace Odb::Lib::App
                 }
             }
         }
-        catch (std::filesystem::filesystem_error& fe)
-        {
-            logexception(fe);
-            // re-throw it so we get a HTTP 500 response to the client
-            throw fe;
-        }
+        //catch (std::exception& e)
+        //{
+        //    logexception(e);
+        //    // re-throw it so we get a HTTP 500 response to the client
+        //    throw e;
+        //}        
 
         return nullptr;
     }

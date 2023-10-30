@@ -16,10 +16,12 @@ namespace Odb::Lib::FileModel::Design
 	class ODBDESIGN_EXPORT EdaDataFile : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile>
 	{
 	public:
-		EdaDataFile();		
+		EdaDataFile();
+		EdaDataFile(bool logAllLineParsing);
 		~EdaDataFile();
 
 		const std::filesystem::path& GetPath() const;
+		const std::filesystem::path& GetDirectory() const;
 		const std::string& GetUnits() const;
 		const std::string& GetSource() const;
 
@@ -224,6 +226,7 @@ namespace Odb::Lib::FileModel::Design
 		void from_protobuf(const Odb::Lib::Protobuf::EdaDataFile& message) override;		
 
 	private:
+		std::filesystem::path m_directory;
 		std::filesystem::path m_path;
 		std::string m_units;
 
@@ -239,18 +242,22 @@ namespace Odb::Lib::FileModel::Design
 		PackageRecord::Vector m_packageRecords;
 		PackageRecord::StringMap m_packageRecordsByName;
 
-		inline static const std::string COMMENT_TOKEN = "#";
-		inline static const std::string UNITS_TOKEN = "UNITS";
-		inline static const std::string HEADER_RECORD_TOKEN = "HDR";
-		inline static const std::string LAYER_NAMES_RECORD_TOKEN = "LYR";
-		inline static const std::string PROPERTY_RECORD_TOKEN = "PRP";
-		inline static const std::string ATTRIBUTE_NAME_TOKEN = "@";
-		inline static const std::string ATTRIBUTE_VALUE_TOKEN = "&";
-		inline static const std::string NET_RECORD_TOKEN = "NET";
-		inline static const std::string FEATURE_ID_RECORD_TOKEN = "FID";
-		inline static const std::string PACKAGE_RECORD_TOKEN = "PKG";
-		inline static const std::string PIN_RECORD_TOKEN = "PIN";
-		inline static const std::string FEATURE_GROUP_RECORD_TOKEN = "FGR";
+		bool m_logAllLineParsing;
+		
+		inline static const char* EDADATA_FILENAME = "data";
+		
+		inline static const char* COMMENT_TOKEN = "#";
+		inline static const char* UNITS_TOKEN = "UNITS";
+		inline static const char* HEADER_RECORD_TOKEN = "HDR";
+		inline static const char* LAYER_NAMES_RECORD_TOKEN = "LYR";
+		inline static const char* PROPERTY_RECORD_TOKEN = "PRP";
+		inline static const char* ATTRIBUTE_NAME_TOKEN = "@";
+		inline static const char* ATTRIBUTE_VALUE_TOKEN = "&";
+		inline static const char* NET_RECORD_TOKEN = "NET";
+		inline static const char* FEATURE_ID_RECORD_TOKEN = "FID";
+		inline static const char* PACKAGE_RECORD_TOKEN = "PKG";
+		inline static const char* PIN_RECORD_TOKEN = "PIN";
+		inline static const char* FEATURE_GROUP_RECORD_TOKEN = "FGR";
 		// TODO: Outline records:
 		// RC, CR, SQ, CT, OB, OS, OC, OE, CE � Outline Records
 	

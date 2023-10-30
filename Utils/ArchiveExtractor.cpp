@@ -2,6 +2,7 @@
 #include <filesystem>
 #include "libarchive_extract.h"
 
+using namespace std::filesystem;
 
 namespace Utils
 {
@@ -15,9 +16,9 @@ namespace Utils
 		return m_path;
 	}
 
-	std::string ArchiveExtractor::GetExtractedPath() const
+	std::string ArchiveExtractor::GetExtractionDirectory() const
 	{
-		return m_extractedPath;
+		return m_extractionDirectory;
 	}
 
 	bool ArchiveExtractor::IsArchiveTypeSupported(const std::filesystem::path& file)
@@ -44,21 +45,67 @@ namespace Utils
 	{
 		auto path = std::filesystem::path(m_path);
 		//auto extractionPath = path.replace_extension().string();
-		auto extractionPath = path.parent_path().string();
-		return Extract(extractionPath);
+		auto extractionPath = path.parent_path() / path.stem();
+		return Extract(extractionPath.string());
 	}
 
 	bool ArchiveExtractor::Extract(const std::string& destinationPath)
 	{
-		if (extract(m_path.c_str(), destinationPath.c_str()))
+		path p(m_path);
+		if (p.extension() == ".Z" || p.extension() == ".z")
+		{			
+			auto command = "7z x " + m_path + " -o" + destinationPath + " -y";			
+			auto exitCode = std::system(command.c_str());
+			if (exitCode != 0) return false;
+			m_extractionDirectory = destinationPath;
+			return true;
+		}
+		else if (extract(m_path.c_str(), destinationPath.c_str()))
 		{
-			std::filesystem::path p(destinationPath);
-			p /= std::filesystem::path(m_path).stem();
-			m_extractedPath = p.string();
-
+			//std::filesystem::path p(destinationPath);
+			//p /= std::filesystem::path(m_path).stem();
+			m_extractionDirectory = destinationPath;
 			return true;
 		}
 
 		return false;
+	}
+
+	/*static*/ path ArchiveExtractor::getUncompressedFilePath(const path& directory, const std::string& filename)
+	{
+		path uncompressedPath;
+
+		auto isCompressedZ = false;
+		path possibleCompressedFilePath = directory / filename;
+		possibleCompressedFilePath.replace_extension("Z");
+		if (exists(possibleCompressedFilePath) && is_regular_file(possibleCompressedFilePath))
+		{
+			isCompressedZ = true;
+		}
+		else
+		{
+			possibleCompressedFilePath.replace_extension("z");
+			if (exists(possibleCompressedFilePath) && is_regular_file(possibleCompressedFilePath))
+			{
+				isCompressedZ = true;
+			}
+		}
+
+		if (isCompressedZ)
+		{
+			// extract and set edaDataFilePath to file
+			ArchiveExtractor extractor(possibleCompressedFilePath.string());
+			if (extractor.Extract())
+			{
+				uncompressedPath = extractor.GetExtractionDirectory();
+				uncompressedPath /= filename;
+			}
+		}
+		else
+		{
+			uncompressedPath = directory / filename;
+		}
+
+		return uncompressedPath;
 	}
 }
