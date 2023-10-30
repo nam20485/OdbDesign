@@ -3,6 +3,7 @@
 #include <exception>
 #include <string>
 #include <filesystem>
+#include "parse_info.h"
 
 namespace Odb::Lib::FileModel
 {
@@ -13,15 +14,14 @@ namespace Odb::Lib::FileModel
 
 	class parse_error : public std::exception
 	{
-	public:			
+	public:	
 
-		parse_error(const char* szDataFile, const char* szDataLine, const char* szDataToken, int dataLineNumber, int sourceLine, const char* szSourceFile)
-			: dataFile(szDataFile), dataLine(szDataLine), dataToken(szDataToken), dataLineNumber(dataLineNumber), sourceLine(sourceLine), sourceFile(szSourceFile)
-		{				
-		}	
+		// source file
+		//int sourceLine;
+		//std::filesystem::path sourceFile;
 
 		parse_error(std::filesystem::path dataFile, const std::string& szDataLine, const std::string& szDataToken, int dataLineNumber, int sourceLine, const char* szSourceFile)
-			: parse_error(dataFile.string().c_str(), szDataLine.c_str(), szDataToken.c_str(), dataLineNumber, sourceLine, szSourceFile)
+			: m_parseInfo(dataFile, szDataLine, szDataToken, dataLineNumber, sourceLine, szSourceFile)			
 		{
 		}
 
@@ -38,24 +38,14 @@ namespace Odb::Lib::FileModel
 		parse_error(const char* szDataFile, int sourceLine, const char* szSourceFile)
 			: parse_error(szDataFile, "", "", -1, sourceLine, szSourceFile)
 		{
-		}
+		}	
 
-		~parse_error()
-		{
-		}
+		std::string toString(const std::string& message = "") const;
 
-		std::string buildMessage(const std::string& header) const;
+		const parse_info& getParseInfo() const;
 
-	private:	
-		// data file
-		std::filesystem::path dataFile;
-		int dataLineNumber;
-		std::string dataLine;
-		std::string dataToken;
-
-		// source file
-		int sourceLine;
-		std::filesystem::path sourceFile;
+	private:
+		const parse_info m_parseInfo;
 
 	};
 }
