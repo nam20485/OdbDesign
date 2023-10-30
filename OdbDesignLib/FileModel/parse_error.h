@@ -6,6 +6,11 @@
 
 namespace Odb::Lib::FileModel
 {
+
+#ifndef throw_parse_error
+#   define throw_parse_error(dataFile, dataLine, dataToken, dataLineNumber) throw parse_error(dataFile, dataLine, dataToken, dataLineNumber, __LINE__, __FILE__)
+#endif 
+
 	class parse_error : public std::exception
 	{
 	public:			
@@ -39,7 +44,7 @@ namespace Odb::Lib::FileModel
 		{
 		}
 
-		std::string buildMessage() const;
+		std::string buildMessage(const std::string& header) const;
 
 	private:	
 		// data file
