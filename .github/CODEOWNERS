@@ -1,1 +1,6 @@
-*   @nam20485
+#
+#   CODEOWNERS
+#
+
+# Everything in this repo is owned by @nam20485
+*       @nam20485
