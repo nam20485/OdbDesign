@@ -10,6 +10,7 @@
 #include "../../Constants.h"
 #include "timestamp.h"
 #include "Logger.h"
+#include "../parse_error.h"
 
 using namespace std::chrono;
 
@@ -26,9 +27,12 @@ namespace Odb::Lib::FileModel::Design
         infoFile.open(infoFilePath, std::ios::in);
         if (!infoFile.is_open()) return false;
 
+        int lineNumber = 0;
         std::string line;
         while (std::getline(infoFile, line))
         {
+            lineNumber++;
+
             // trim whitespace from beginning and end of line
             Utils::str_trim(line);
             if (!line.empty())
@@ -45,7 +49,12 @@ namespace Odb::Lib::FileModel::Design
                     std::string value;
 
                     if (! std::getline(lineStream, attribute, '=')) return false;
-                    if (! std::getline(lineStream, value)) return false;
+                    // attribute value may be blank?
+                    
+                    if (!std::getline(lineStream, value))
+                    {
+                        logwarn("misc/info file: no value for attribute: " + attribute);
+                    }
 
                     Utils::str_trim(attribute);
                     Utils::str_trim(value);
@@ -127,7 +136,11 @@ namespace Odb::Lib::FileModel::Design
                     }
                     else
                     {
-                        return false;
+                        // unknown attribute
+                        parse_error pe(m_path, line, attribute, lineNumber, __LINE__, __FILE__);
+                        logwarn(pe.buildMessage("unrecognized line in misc/info file:"));
+                        
+                        //return false;
                     }
                 }
             }
