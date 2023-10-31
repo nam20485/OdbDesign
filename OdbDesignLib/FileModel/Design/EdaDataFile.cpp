@@ -705,10 +705,10 @@ namespace Odb::Lib::FileModel::Design
                             }
                         }
 
-                        auto pPinRecord = std::make_shared<PackageRecord::PinRecord>();
+                        pCurrentPinRecord = std::make_shared<PackageRecord::PinRecord>();
 
                         // name
-                        lineStream >> pPinRecord->name;
+                        lineStream >> pCurrentPinRecord->name;
 
                         // type
                         if (!(lineStream >> token))
@@ -718,15 +718,15 @@ namespace Odb::Lib::FileModel::Design
 
                         if (token == "T")
                         {
-                            pPinRecord->type = PackageRecord::PinRecord::Type::ThroughHole;
+                            pCurrentPinRecord->type = PackageRecord::PinRecord::Type::ThroughHole;
                         }
                         else if (token == "B")
                         {
-                            pPinRecord->type = PackageRecord::PinRecord::Type::Blind;
+                            pCurrentPinRecord->type = PackageRecord::PinRecord::Type::Blind;
                         }
                         else if (token == "S")
                         {
-                            pPinRecord->type = PackageRecord::PinRecord::Type::Surface;
+                            pCurrentPinRecord->type = PackageRecord::PinRecord::Type::Surface;
                         }
                         else
                         {
@@ -734,13 +734,13 @@ namespace Odb::Lib::FileModel::Design
                         }
 
                         // xc, xy
-                        if (!(lineStream >> pPinRecord->xCenter >> pPinRecord->yCenter))
+                        if (!(lineStream >> pCurrentPinRecord->xCenter >> pCurrentPinRecord->yCenter))
                         {
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
 
                         // finished hole size (fhs)
-                        if (!(lineStream >> pPinRecord->finishedHoleSize))
+                        if (!(lineStream >> pCurrentPinRecord->finishedHoleSize))
                         {
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
@@ -753,15 +753,15 @@ namespace Odb::Lib::FileModel::Design
 
                         if (token == "E")
                         {
-                            pPinRecord->electricalType = PackageRecord::PinRecord::ElectricalType::Electrical;
+                            pCurrentPinRecord->electricalType = PackageRecord::PinRecord::ElectricalType::Electrical;
                         }
                         else if (token == "M")
                         {
-                            pPinRecord->electricalType = PackageRecord::PinRecord::ElectricalType::NonElectrical;
+                            pCurrentPinRecord->electricalType = PackageRecord::PinRecord::ElectricalType::NonElectrical;
                         }
                         else if (token == "U")
                         {
-                            pPinRecord->electricalType = PackageRecord::PinRecord::ElectricalType::Undefined;
+                            pCurrentPinRecord->electricalType = PackageRecord::PinRecord::ElectricalType::Undefined;
                         }
                         else
                         {
@@ -776,35 +776,35 @@ namespace Odb::Lib::FileModel::Design
 
                         if (token == "S")
                         {
-                            pPinRecord->mountType = PackageRecord::PinRecord::MountType::Smt;
+                            pCurrentPinRecord->mountType = PackageRecord::PinRecord::MountType::Smt;
                         }
                         else if (token == "D")
                         {
-                            pPinRecord->mountType = PackageRecord::PinRecord::MountType::RecommendedSmtPad;
+                            pCurrentPinRecord->mountType = PackageRecord::PinRecord::MountType::RecommendedSmtPad;
                         }
                         else if (token == "T")
                         {
-                            pPinRecord->mountType = PackageRecord::PinRecord::MountType::MT_ThroughHole;
+                            pCurrentPinRecord->mountType = PackageRecord::PinRecord::MountType::MT_ThroughHole;
                         }
                         else if (token == "R")
                         {
-                            pPinRecord->mountType = PackageRecord::PinRecord::MountType::RecommendedThroughHole;
+                            pCurrentPinRecord->mountType = PackageRecord::PinRecord::MountType::RecommendedThroughHole;
                         }
                         else if (token == "P")
                         {
-                            pPinRecord->mountType = PackageRecord::PinRecord::MountType::Pressfit;
+                            pCurrentPinRecord->mountType = PackageRecord::PinRecord::MountType::Pressfit;
                         }
                         else if (token == "N")
                         {
-                            pPinRecord->mountType = PackageRecord::PinRecord::MountType::NonBoard;
+                            pCurrentPinRecord->mountType = PackageRecord::PinRecord::MountType::NonBoard;
                         }
                         else if (token == "H")
                         {
-                            pPinRecord->mountType = PackageRecord::PinRecord::MountType::Hole;
+                            pCurrentPinRecord->mountType = PackageRecord::PinRecord::MountType::Hole;
                         }
                         else if (token == "U")
                         {
-                            pPinRecord->mountType = PackageRecord::PinRecord::MountType::MT_Undefined;
+                            pCurrentPinRecord->mountType = PackageRecord::PinRecord::MountType::MT_Undefined;
                         }
                         else
                         {
@@ -821,7 +821,7 @@ namespace Odb::Lib::FileModel::Design
                                 throw_parse_error(m_path, line, token, lineNumber);
                             }
 
-                            idStream >> pPinRecord->id;
+                            idStream >> pCurrentPinRecord->id;
                         }
                         else
                         {
@@ -831,7 +831,7 @@ namespace Odb::Lib::FileModel::Design
                             throw_parse_error(m_path, line, token, lineNumber);
 #endif
 
-                            pPinRecord->id = UINT_MAX;
+                            pCurrentPinRecord->id = UINT_MAX;
                         }
 
                         if (pCurrentPackageRecord != nullptr)
