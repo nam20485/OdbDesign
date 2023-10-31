@@ -21,10 +21,8 @@ public:
 
 		std::string getElapsedSecondsString(const std::string& suffix) const;
 		
-
 		//template<class D>
-		//std::chrono::system_clock::duration getElapsedDuration() const;	
-		// 
+		//std::chrono::system_clock::duration getElapsedDuration() const;			
 		
 		constexpr inline static const double MS_PER_SECOND = 1000.0;
 

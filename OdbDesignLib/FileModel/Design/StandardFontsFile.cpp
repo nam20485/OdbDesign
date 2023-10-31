@@ -90,11 +90,11 @@ namespace Odb::Lib::FileModel::Design
                         return false;
                     }
                 }
-                else if (line.find(CharacterBlock::LineRecord::LINE_RECORD_TOKEN) == 0)
+                else if (line.find(CharacterBlock::LineRecord::RECORD_TOKEN) == 0)
                 {
                     std::string token;
                     if (!(lineStream >> token)) return false;
-                    if (token != CharacterBlock::LineRecord::LINE_RECORD_TOKEN) return false;
+                    if (token != CharacterBlock::LineRecord::RECORD_TOKEN) return false;
 
                     if (pCurrentCharacterBlock == nullptr || !beginTokenFound) return false;
 
