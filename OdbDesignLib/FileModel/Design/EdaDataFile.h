@@ -143,6 +143,91 @@ namespace Odb::Lib::FileModel::Design
 
 		}; // NetRecord
 
+		struct ODBDESIGN_EXPORT OutlineRecord
+		{
+			struct ODBDESIGN_EXPORT ContourPolygon
+			{
+				struct ODBDESIGN_EXPORT PolygonPart
+				{
+					enum class Type
+					{
+						Segment,
+						Arc
+					};
+
+					Type type;
+
+					// Segment/Arc
+					float endX, endY;
+
+					// Arc
+					float xCenter, yCenter;
+					bool isClockwise;
+
+					typedef std::vector<std::shared_ptr<PolygonPart>> Vector;
+
+					inline static const char* SEGMENT_RECORD_TOKEN = "OS";
+					inline static const char* ARC_RECORD_TOKEN = "OC";
+
+				}; // struct PolygonPart
+
+				enum class Type
+				{
+					Island,
+					Hole
+				};
+
+				Type type;
+				float xStart, yStart;
+
+				PolygonPart::Vector m_polygonParts;
+
+				typedef std::vector<std::shared_ptr<ContourPolygon>> Vector;
+
+				inline static const char* BEGIN_RECORD_TOKEN = "OB";
+				inline static const char* END_RECORD_TOKEN = "OE";
+				inline static const char* ISLAND_TYPE_TOKEN = "I";
+				inline static const char* HOLE_TYPE_TOKEN = "H";
+
+			}; // struct ContourPolygon
+
+			enum class Type
+			{
+				Rectangle,
+				Circle,
+				Square,
+				Contour
+			};
+
+			typedef std::vector<std::shared_ptr<OutlineRecord>> Vector;
+
+			Type type;
+
+			// Rectangle
+			float lowerLeftX;
+			float lowerLeftY;
+			float width;
+			float height;
+
+			// Square/Circle
+			float xCenter;
+			float yCenter;
+
+			// Square
+			float halfSide;
+			// Circle
+			float radius;
+
+			ContourPolygon::Vector m_contourPolygons;
+
+			inline static const char* RECTANGLE_RECORD_TOKEN = "RC";
+			inline static const char* CIRCLE_RECORD_TOKEN = "CR";
+			inline static const char* SQUARE_RECORD_TOKEN = "SQ";
+			inline static const char* CONTOUR_BEGIN_RECORD_TOKEN = "CT";
+			inline static const char* CONTOUR_END_RECORD_TOKEN = "CE";
+
+		}; // struct OutlineRecord
+
 		struct ODBDESIGN_EXPORT PackageRecord : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::PackageRecord>
 		{
 			struct ODBDESIGN_EXPORT PinRecord : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::PackageRecord::PinRecord>
@@ -186,6 +271,8 @@ namespace Odb::Lib::FileModel::Design
 				unsigned int id;
 				unsigned int index;
 
+				OutlineRecord::Vector m_outlineRecords;
+
 				// Inherited via IProtoBuffable
 				std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::PackageRecord::PinRecord> to_protobuf() const override;
 				void from_protobuf(const Odb::Lib::Protobuf::EdaDataFile::PackageRecord::PinRecord& message) override;
@@ -201,9 +288,9 @@ namespace Odb::Lib::FileModel::Design
 			float xMax, yMax;
 			std::string attributesIdString;
 
+			OutlineRecord::Vector m_outlineRecords;
 			PinRecord::Vector m_pinRecords;
 			PinRecord::StringMap m_pinRecordsByName;
-
 			PropertyRecord::Vector m_propertyRecords;
 
 			// Inherited via IProtoBuffable
@@ -257,9 +344,8 @@ namespace Odb::Lib::FileModel::Design
 		inline static const char* FEATURE_ID_RECORD_TOKEN = "FID";
 		inline static const char* PACKAGE_RECORD_TOKEN = "PKG";
 		inline static const char* PIN_RECORD_TOKEN = "PIN";
+		
 		inline static const char* FEATURE_GROUP_RECORD_TOKEN = "FGR";
-		// TODO: Outline records:
-		// RC, CR, SQ, CT, OB, OS, OC, OE, CE � Outline Records
 	
 	}; // EdaDataFile
 

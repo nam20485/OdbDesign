@@ -250,6 +250,9 @@ namespace Odb::Lib::FileModel::Design
             std::shared_ptr<PackageRecord> pCurrentPackageRecord;
             std::shared_ptr<PackageRecord::PinRecord> pCurrentPinRecord;
 
+            std::shared_ptr<OutlineRecord> pCurrentContourOutlineRecord;
+            std::shared_ptr<OutlineRecord::ContourPolygon> pCurrentContourPolygon;
+
             int lineNumber = 0;
             std::string line;            
             while (std::getline(edaDataFile, line))
@@ -834,28 +837,385 @@ namespace Odb::Lib::FileModel::Design
                             pCurrentPinRecord->id = UINT_MAX;
                         }
 
+                        //if (pCurrentPackageRecord != nullptr)
+                        //{
+                        //    pCurrentPinRecord->index = pCurrentPackageRecord->m_pinRecords.size();
+                        //    pCurrentPackageRecord->m_pinRecords.push_back(pCurrentPinRecord);
+                        //}
+                        //else
+                        //{
+                        //    throw_parse_error(m_path, line, token, lineNumber);
+                        //}
+                    }
+                    //else if (line.find(FEATURE_GROUP_RECORD_TOKEN) == 0)
+                    //{
+                    //    // feature group record line
+                    //    std::string token;
+
+                    //    lineStream >> token;
+                    //    if (token != FEATURE_GROUP_RECORD_TOKEN)
+                    //    {
+                    //        throw_parse_error(m_path, line, token, lineNumber);
+                    //    }
+
+                    //    // TODO: parse FGR records
+                    //}
+                    else if (line.find(OutlineRecord::RECTANGLE_RECORD_TOKEN) == 0)
+                    {                        
+                        std::string token;                        
+                        if (!(lineStream >> token))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (token != OutlineRecord::RECTANGLE_RECORD_TOKEN)
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        auto pOutlineRecord = std::make_shared<OutlineRecord>();
+                        pOutlineRecord->type = OutlineRecord::Type::Rectangle;
+
+                        if (!(lineStream >> pOutlineRecord->lowerLeftX))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (!(lineStream >> pOutlineRecord->lowerLeftY))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (!(lineStream >> pOutlineRecord->width))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (!(lineStream >> pOutlineRecord->height))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
                         if (pCurrentPackageRecord != nullptr)
                         {
-                            pPinRecord->index = pCurrentPackageRecord->m_pinRecords.size();
-                            pCurrentPackageRecord->m_pinRecords.push_back(pPinRecord);
+                            if (pCurrentPinRecord != nullptr)
+                            {
+                                pCurrentPinRecord->m_outlineRecords.push_back(pOutlineRecord);
+                            }
+                            else
+                            {
+                                pCurrentPackageRecord->m_outlineRecords.push_back(pOutlineRecord);
+                            }
                         }
                         else
                         {
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
                     }
-                    else if (line.find(FEATURE_GROUP_RECORD_TOKEN) == 0)
+                    else if (line.find(OutlineRecord::CIRCLE_RECORD_TOKEN) == 0)
                     {
-                        // feature group record line
                         std::string token;
-
-                        lineStream >> token;
-                        if (token != FEATURE_GROUP_RECORD_TOKEN)
+                        if (!(lineStream >> token))
                         {
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
 
-                        // TODO: parse FGR records
+                        if (token != OutlineRecord::CIRCLE_RECORD_TOKEN)
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        auto pOutlineRecord = std::make_shared<OutlineRecord>();
+                        pOutlineRecord->type = OutlineRecord::Type::Circle;
+
+                        if (!(lineStream >> pOutlineRecord->xCenter))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (!(lineStream >> pOutlineRecord->yCenter))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (!(lineStream >> pOutlineRecord->radius))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }                        
+
+                        if (pCurrentPackageRecord != nullptr)
+                        {
+                            if (pCurrentPinRecord != nullptr)
+                            {
+                                pCurrentPinRecord->m_outlineRecords.push_back(pOutlineRecord);
+                            }
+                            else
+                            {
+                                pCurrentPackageRecord->m_outlineRecords.push_back(pOutlineRecord);
+                            }
+                        }
+                        else
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+                    }
+                    else if (line.find(OutlineRecord::SQUARE_RECORD_TOKEN) == 0)
+                    {
+                        std::string token;
+                        if (!(lineStream >> token))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (token != OutlineRecord::SQUARE_RECORD_TOKEN)
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        auto pOutlineRecord = std::make_shared<OutlineRecord>();
+                        pOutlineRecord->type = OutlineRecord::Type::Square;
+
+                        if (!(lineStream >> pOutlineRecord->xCenter))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (!(lineStream >> pOutlineRecord->yCenter))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (!(lineStream >> pOutlineRecord->halfSide))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (pCurrentPackageRecord != nullptr)
+                        {
+                            if (pCurrentPinRecord != nullptr)
+                            {
+                                pCurrentPinRecord->m_outlineRecords.push_back(pOutlineRecord);
+                            }
+                            else
+                            {
+                                pCurrentPackageRecord->m_outlineRecords.push_back(pOutlineRecord);
+                            }
+                        }
+                        else
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+                    }
+                    else if (line.find(OutlineRecord::CONTOUR_BEGIN_RECORD_TOKEN) == 0)
+                    {
+                        std::string token;
+                        if (!(lineStream >> token))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (token != OutlineRecord::CONTOUR_BEGIN_RECORD_TOKEN)
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        pCurrentContourOutlineRecord = std::make_shared<OutlineRecord>();
+                        pCurrentContourOutlineRecord->type = OutlineRecord::Type::Contour;
+                    }
+					else if (line.find(OutlineRecord::CONTOUR_END_RECORD_TOKEN) == 0)
+					{
+						std::string token;
+						if (!(lineStream >> token))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (token != OutlineRecord::CONTOUR_END_RECORD_TOKEN)
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}                        
+
+						if (pCurrentPackageRecord != nullptr)
+						{
+							if (pCurrentPinRecord != nullptr)
+							{
+								pCurrentPinRecord->m_outlineRecords.push_back(pCurrentContourOutlineRecord);
+							}
+							else
+							{
+								pCurrentPackageRecord->m_outlineRecords.push_back(pCurrentContourOutlineRecord);
+							}
+						}
+						else
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						pCurrentContourOutlineRecord.reset();
+					}
+                    else if (line.find(OutlineRecord::ContourPolygon::BEGIN_RECORD_TOKEN) == 0)
+                    {
+                        std::string token;
+                        if (!(lineStream >> token))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (token != OutlineRecord::ContourPolygon::BEGIN_RECORD_TOKEN)
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        pCurrentContourPolygon = std::make_shared<OutlineRecord::ContourPolygon>();
+
+                        if (!(lineStream >> pCurrentContourPolygon->xStart))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (!(lineStream >> pCurrentContourPolygon->yStart))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (!(lineStream >> token))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (token == OutlineRecord::ContourPolygon::ISLAND_TYPE_TOKEN)
+                        {
+                            pCurrentContourPolygon->type = OutlineRecord::ContourPolygon::Type::Island;
+                        }
+                        else if (token == OutlineRecord::ContourPolygon::HOLE_TYPE_TOKEN)
+                        {
+                            pCurrentContourPolygon->type = OutlineRecord::ContourPolygon::Type::Hole;
+                        }
+                        else
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+                    }
+                    else if (line.find(OutlineRecord::ContourPolygon::END_RECORD_TOKEN) == 0)
+                    {
+                        std::string token;
+                        if (!(lineStream >> token))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (token != OutlineRecord::ContourPolygon::END_RECORD_TOKEN)
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (pCurrentContourOutlineRecord != nullptr)
+                        {
+                            pCurrentContourOutlineRecord->m_contourPolygons.push_back(pCurrentContourPolygon);
+                            pCurrentContourPolygon.reset();
+                        }
+						else
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+                    }
+                    else if (line.find(OutlineRecord::ContourPolygon::PolygonPart::ARC_RECORD_TOKEN) == 0)
+                    {
+                        std::string token;
+                        if (!(lineStream >> token))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (token != OutlineRecord::ContourPolygon::PolygonPart::ARC_RECORD_TOKEN)
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        auto pPolygonPart = std::make_shared<OutlineRecord::ContourPolygon::PolygonPart>();
+                        pPolygonPart->type = OutlineRecord::ContourPolygon::PolygonPart::Type::Arc;
+
+                        if (!(lineStream >> pPolygonPart->endX))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }                        
+
+                        if (!(lineStream >> pPolygonPart->endY))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (!(lineStream >> pPolygonPart->xCenter))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (!(lineStream >> pPolygonPart->yCenter))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (!(lineStream >> token))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (token == "y" || token == "Y")
+                        {
+                            pPolygonPart->isClockwise = true;
+                        }
+                        else if (token == "n" || token == "N")
+                        {
+                            pPolygonPart->isClockwise = false;
+                        }
+                        else
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (pCurrentContourPolygon != nullptr)
+                        {
+                            pCurrentContourPolygon->m_polygonParts.push_back(pPolygonPart);
+                        }
+                        else
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+                    }
+                    else if (line.find(OutlineRecord::ContourPolygon::PolygonPart::SEGMENT_RECORD_TOKEN) == 0)
+                    {
+                        std::string token;
+                        if (!(lineStream >> token))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (token != OutlineRecord::ContourPolygon::PolygonPart::SEGMENT_RECORD_TOKEN)
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        auto pPolygonPart = std::make_shared<OutlineRecord::ContourPolygon::PolygonPart>();
+                        pPolygonPart->type = OutlineRecord::ContourPolygon::PolygonPart::Type::Segment;
+
+                        if (!(lineStream >> pPolygonPart->endX))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (!(lineStream >> pPolygonPart->endY))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }                        
+
+                        if (pCurrentContourPolygon != nullptr)
+                        {
+                            pCurrentContourPolygon->m_polygonParts.push_back(pPolygonPart);
+                        }
+                        else
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
                     }
                     else
                     {
