@@ -30,6 +30,7 @@ namespace Odb::Lib::App
 
     Utils::ExitCode OdbAppBase::Run()
     {                
+        //Logger::instance()->logLevel(Logger::Level::Debug);
         Logger::instance()->logLevel(Logger::Level::Info);
         Logger::instance()->start();
 
