@@ -626,6 +626,13 @@ namespace Odb::Lib::FileModel::Design
                             // finish up any current (previous) pin records
                             if (pCurrentPinRecord != nullptr)
                             {
+                                // check for overflow
+                                if (pCurrentPackageRecord->m_pinRecords.size() > UINT_MAX)
+								{
+									throw_parse_error(m_path, line, token, lineNumber);
+								}
+                                pCurrentPinRecord->index = static_cast<unsigned>(pCurrentPackageRecord->m_pinRecords.size());
+
                                 pCurrentPackageRecord->m_pinRecords.push_back(pCurrentPinRecord);
                                 pCurrentPinRecord.reset();
                             }
@@ -687,6 +694,12 @@ namespace Odb::Lib::FileModel::Design
                             // finish up any current (previous) pin records
                             if (pCurrentPinRecord != nullptr)
                             {
+                                // check for overflow
+                                if (pCurrentPackageRecord->m_pinRecords.size() > UINT_MAX)
+                                {
+                                    throw_parse_error(m_path, line, token, lineNumber);
+                                }
+                                pCurrentPinRecord->index = static_cast<unsigned>(pCurrentPackageRecord->m_pinRecords.size());
                                 pCurrentPackageRecord->m_pinRecords.push_back(pCurrentPinRecord);
                                 pCurrentPinRecord.reset();
                             }
@@ -883,6 +896,12 @@ namespace Odb::Lib::FileModel::Design
                 // finish up any current (previous) pin records
                 if (pCurrentPinRecord != nullptr)
                 {
+                    // check for overflow
+                    if (pCurrentPackageRecord->m_pinRecords.size() > UINT_MAX)
+                    {
+                        throw_parse_error(m_path, line, "", lineNumber);
+                    }
+                    pCurrentPinRecord->index = static_cast<unsigned>(pCurrentPackageRecord->m_pinRecords.size());
                     pCurrentPackageRecord->m_pinRecords.push_back(pCurrentPinRecord);
                     pCurrentPinRecord.reset();
                 }
