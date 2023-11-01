@@ -154,7 +154,7 @@ namespace Odb::Lib::FileModel::Design
         }
         else if (netListDirectoriesFound == m_netlistsByName.size())
         {
-			logwarn("netlist directories parsed successfully");
+			loginfo("netlist directories parsed successfully");
 		}
 
         return true;
