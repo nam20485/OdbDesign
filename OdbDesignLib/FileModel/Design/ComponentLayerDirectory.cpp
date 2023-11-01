@@ -72,13 +72,18 @@ namespace Odb::Lib::FileModel::Design
 
 			loginfo("checking for extraction...");
 
-			// try components2 or components2.Z first...
-			auto componentsFilePath = Utils::ArchiveExtractor::getUncompressedFilePath(m_path, COMPONENTS2_FILENAME);
-			if (!(exists(componentsFilePath) && is_regular_file(componentsFilePath)))
+			std::filesystem::path componentsFilePath;
+			for (const std::string componentsFilename : COMPONENTS_FILENAMES)
 			{
-				// and then components or components.Z next
-				componentsFilePath = Utils::ArchiveExtractor::getUncompressedFilePath(m_path, COMPONENTS_FILENAME);
-			}
+				loginfo("trying components file: [" + componentsFilename + "]...");
+
+				componentsFilePath = Utils::ArchiveExtractor::getUncompressedFilePath(m_path, componentsFilename);
+				if (exists(componentsFilePath) && is_regular_file(componentsFilePath))
+				{			
+					loginfo("found components file: [" + componentsFilePath.string() + "]");
+					break;
+				}
+			}			
 
 			loginfo("any extraction complete, parsing data...");
 
