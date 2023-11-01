@@ -1,6 +1,7 @@
 #include "ArchiveExtractor.h"
 #include <filesystem>
 #include "libarchive_extract.h"
+#include "Logger.h"
 
 using namespace std::filesystem;
 
@@ -54,9 +55,28 @@ namespace Utils
 		path p(m_path);
 		if (p.extension() == ".Z" || p.extension() == ".z")
 		{			
-			auto command = "7z x " + m_path + " -o" + destinationPath + " -y";			
+			// https://documentation.help/7-Zip/extract_full.htm
+			auto command =
+				"7z x " +					// extract w/ full paths
+				m_path +					// archive path
+				" -o" + destinationPath +	// output path
+				" -y" +						// yes to all prompts
+				" -aoa";					// overwrite w/o prompting
+
+			auto silent = false;
+			if (silent)
+			{
+				//command += " > nul";
+			}
+
 			auto exitCode = std::system(command.c_str());
-			if (exitCode != 0) return false;
+			if (exitCode != (int) e7zExitCode::Success &&
+				exitCode != (int) e7zExitCode::Warning)
+			{
+				logerror("7z system command failed: [exit code = " + std::to_string(exitCode)+ "]");
+				return false;
+			}		
+
 			m_extractionDirectory = destinationPath;
 			return true;
 		}
