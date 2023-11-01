@@ -553,7 +553,6 @@ namespace Odb::Lib::FileModel::Design
                         // component record line
                         std::string token;
 
-                        // TODO: second clause of if statement is redudant and should be removed
                         if (!(lineStream >> token) || token != FEATURE_ID_RECORD_TOKEN)
                         {
                             throw_parse_error(m_path, line, token, lineNumber);
