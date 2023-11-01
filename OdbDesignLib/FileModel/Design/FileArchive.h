@@ -52,6 +52,7 @@ namespace Odb::Lib::FileModel::Design
 		StandardFontsFile m_standardFontsFile;
 
 		bool ParseDesignDirectory(const std::filesystem::path& path);
+		bool ParseStepDirectories(const std::filesystem::path& path);
         bool ParseMiscInfoFile(const std::filesystem::path& path);
 		bool ParseMatrixFile(const std::filesystem::path& path);
 		bool ParseStandardFontsFile(const std::filesystem::path& path);
