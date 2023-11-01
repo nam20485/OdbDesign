@@ -73,7 +73,7 @@ namespace Utils
 			if (exitCode != (int) e7zExitCode::Success &&
 				exitCode != (int) e7zExitCode::Warning)
 			{
-				logerror("7z system command failed: [exit code = " + std::to_string(exitCode)+ "]");
+				logerror("7z system command failed: (exit code = " + std::to_string(exitCode)+ ")");
 				return false;
 			}		
 
