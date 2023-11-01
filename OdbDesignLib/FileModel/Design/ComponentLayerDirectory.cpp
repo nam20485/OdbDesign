@@ -279,15 +279,13 @@ namespace Odb::Lib::FileModel::Design
 		{
 			auto m = pe.toString("Parse Error:");
 			logerror(m);
-
-			componentsFile.close();
-
-			//return false;
+			componentsFile.close();			
 			throw pe;
 		}
 		catch (std::exception& e)
 		{
 			logexception(e);
+			componentsFile.close();
 			throw e;
 		}
 

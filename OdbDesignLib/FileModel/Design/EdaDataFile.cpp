@@ -1281,16 +1281,15 @@ namespace Odb::Lib::FileModel::Design
         {            
             auto m = pe.getParseInfo().toString("Parse Error:");
             logerror(m);
-            //return false;
-
             // cleanup file
             edaDataFile.close();
-
             throw pe;
         }
         catch (std::exception& e)
         {
             logexception(e);
+            // cleanup file
+            edaDataFile.close();
             throw e;
         }
 
