@@ -78,7 +78,8 @@ namespace Odb::Lib::FileModel::Design
 				}
 				else
 				{
-					loginfo("Parsing failed.");
+					logerror("Parsing failed.");
+					throw std::exception("Parsing failed.");
 				}
 			}		
 		}
