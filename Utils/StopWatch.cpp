@@ -37,7 +37,7 @@ namespace Utils
 		return getElapsedMilliseconds() / MS_PER_SECOND;
 	}
 
-	std::string StopWatch::getElapsedSecondsString(const std::string& suffix) const
+	std::string StopWatch::getElapsedSecondsString(const std::string& suffix /*= ""*/) const
 	{
 		std::stringstream ss;
 		ss  << std::fixed << std::setprecision(3) << getElapsedSeconds() << suffix;

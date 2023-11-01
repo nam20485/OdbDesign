@@ -72,8 +72,8 @@ namespace Odb::Lib::FileModel::Design
 				if (ParseDesignDirectory(m_rootDir))
 				{
 					timer.stop();					
-					auto s = timer.getElapsedSecondsString(" s");
-					loginfo("Successfully parsed. (" + s + ")");
+					auto s = timer.getElapsedSecondsString();
+					loginfo("Successfully parsed. (" + s + " s)");
 
 					return true;
 				}
