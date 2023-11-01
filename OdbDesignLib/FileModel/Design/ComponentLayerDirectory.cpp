@@ -7,6 +7,8 @@
 #include <Logger.h>
 #include <exception>
 
+using namespace std::filesystem;
+
 
 namespace Odb::Lib::FileModel::Design
 {
@@ -70,7 +72,13 @@ namespace Odb::Lib::FileModel::Design
 
 			loginfo("checking for extraction...");
 
-			auto componentsFilePath = Utils::ArchiveExtractor::getUncompressedFilePath(m_path, COMPONENTS_FILENAME);
+			// try components2 or components2.Z first...
+			auto componentsFilePath = Utils::ArchiveExtractor::getUncompressedFilePath(m_path, COMPONENTS2_FILENAME);
+			if (!(exists(componentsFilePath) && is_regular_file(componentsFilePath)))
+			{
+				// and then components or components.Z next
+				componentsFilePath = Utils::ArchiveExtractor::getUncompressedFilePath(m_path, COMPONENTS_FILENAME);
+			}
 
 			loginfo("any extraction complete, parsing data...");
 

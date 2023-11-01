@@ -95,23 +95,30 @@ namespace Utils
 	{
 		path uncompressedPath;
 
-		auto isCompressedZ = false;
+		path possibleUncompressedFilePath = directory / filename;
+		auto uncompressedFileExists = exists(possibleUncompressedFilePath) && is_regular_file(possibleUncompressedFilePath);
+
+		auto compressedFileExists = false;
 		path possibleCompressedFilePath = directory / filename;
 		possibleCompressedFilePath.replace_extension("Z");
 		if (exists(possibleCompressedFilePath) && is_regular_file(possibleCompressedFilePath))
 		{
-			isCompressedZ = true;
+			compressedFileExists = true;
 		}
 		else
 		{
 			possibleCompressedFilePath.replace_extension("z");
 			if (exists(possibleCompressedFilePath) && is_regular_file(possibleCompressedFilePath))
 			{
-				isCompressedZ = true;
+				compressedFileExists = true;
 			}
 		}
 
-		if (isCompressedZ)
+		if (uncompressedFileExists)
+		{
+			uncompressedPath = directory / filename;
+		}
+		else if (compressedFileExists)
 		{
 			// extract and set edaDataFilePath to file
 			ArchiveExtractor extractor(possibleCompressedFilePath.string());
@@ -120,10 +127,6 @@ namespace Utils
 				uncompressedPath = extractor.GetExtractionDirectory();
 				uncompressedPath /= filename;
 			}
-		}
-		else
-		{
-			uncompressedPath = directory / filename;
 		}
 
 		return uncompressedPath;

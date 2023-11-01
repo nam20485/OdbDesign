@@ -100,6 +100,7 @@ namespace Odb::Lib::FileModel::Design
 		ComponentRecord::StringMap m_componentRecordsByName;
 
 		inline static const char* COMPONENTS_FILENAME = "components";
+		inline static const char* COMPONENTS2_FILENAME = "components2";
 
 		inline static const std::string UNITS_TOKEN = "UNITS";
 		inline static const std::string ID_TOKEN = "ID";
