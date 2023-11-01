@@ -10,6 +10,17 @@ namespace Utils
 	class UTILS_EXPORT ArchiveExtractor
 	{
 	public:
+
+		enum class e7zExitCode
+		{
+			Success = 0,
+			Warning = 1,
+			FatalError = 2,
+			CommandLineError = 7,
+			NotEnoughMemory = 8,
+			UserStopped = 255
+		};
+
 		ArchiveExtractor(const std::string& path);
 		//~ArchiveExtractor();	
 
