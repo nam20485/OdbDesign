@@ -39,22 +39,29 @@ namespace Odb::Lib::App
     std::shared_ptr<FileModel::Design::FileArchive> DesignCache::GetFileArchive(const std::string& designName)
     {
         std::stringstream ss;
-        ss << "Retrieving \"" << designName << "\" from cache... ";
-        //loginfo(ss.str());
-        
+        ss << "Retrieving design \"" << designName << "\" from cache... ";
         loginfo(ss.str());
 
         auto findIt = m_fileArchivesByName.find(designName);
         if (findIt == m_fileArchivesByName.end())
         {
-            loginfo("Not found. Loading from file... ");
+            loginfo("Not found in cache, attempting to load from file...");
 
             auto pFileArchive = LoadFileArchive(designName);
-
+            if (pFileArchive == nullptr)
+            {
+                logwarn("Failed loading from file");
+            }
+            else
+            {
+				loginfo("Loaded from file");
+			}
             return pFileArchive;
         }
-
-        loginfo("Found. Returning from cache.");
+        else
+        {
+            loginfo("Found. Returning from cache.");
+        }
 
         return m_fileArchivesByName[designName];        
     }
@@ -146,16 +153,20 @@ namespace Odb::Lib::App
 
     std::shared_ptr<FileModel::Design::FileArchive> DesignCache::LoadFileArchive(const std::string& designName)
     {
-        std::filesystem::path dir(m_directory);
+        auto fileFound = false;
+
         // skip inaccessible files and do not follow symlinks
         const auto options = std::filesystem::directory_options::skip_permission_denied;
-
-        for (const auto& entry : std::filesystem::directory_iterator(dir, options))
+        for (const auto& entry : std::filesystem::directory_iterator(m_directory, options))
         {
             if (entry.is_regular_file())
             {
                 if (entry.path().stem() == designName)
-                {
+                {                    
+                    fileFound = true;
+
+                    loginfo("file found: [" + entry.path().string() + "], attempting to parse...");
+
                     auto pFileArchive = std::make_shared<FileModel::Design::FileArchive>(entry.path().string());
                     if (pFileArchive->ParseFileModel())
                     {
@@ -166,6 +177,11 @@ namespace Odb::Lib::App
                 }
             }
         }       
+
+        if (!fileFound)
+        {
+            logwarn("Failed to find file for design \"" + designName + "\"");
+        }
 
         return nullptr;
     }
