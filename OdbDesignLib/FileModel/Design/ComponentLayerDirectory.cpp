@@ -5,6 +5,7 @@
 #include "ArchiveExtractor.h"
 #include "../parse_error.h"
 #include <Logger.h>
+#include <exception>
 
 
 namespace Odb::Lib::FileModel::Design
@@ -75,17 +76,20 @@ namespace Odb::Lib::FileModel::Design
 
 			if (!std::filesystem::exists(componentsFilePath))
 			{
-				throw_parse_error(m_path, "", "", -1);
+				auto message = "components file does not exist: [" + m_path.string() + "]";				
+				throw std::exception(message.c_str());
 			}
 			else if (!std::filesystem::is_regular_file(componentsFilePath))
 			{
-				throw_parse_error(m_path, "", "", -1);
+				auto message = "components is not a file: [" + m_path.string() + "]";
+				throw std::exception(message.c_str());
 			}
 			
 			componentsFile.open(componentsFilePath.string(), std::ios::in);
 			if (!componentsFile.is_open())
 			{
-				throw_parse_error(m_path, "", "", -1);
+				auto message = "unable to open components file: [" + m_path.string() + "]";
+				throw std::exception(message.c_str());
 			}
 
 			std::shared_ptr<ComponentRecord> pCurrentComponentRecord;
@@ -280,6 +284,11 @@ namespace Odb::Lib::FileModel::Design
 
 			//return false;
 			throw pe;
+		}
+		catch (std::exception& e)
+		{
+			logexception(e);
+			throw e;
 		}
 
 		return true;

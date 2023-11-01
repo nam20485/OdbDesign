@@ -232,17 +232,23 @@ namespace Odb::Lib::FileModel::Design
 
             if (!std::filesystem::exists(m_path))
             {
-                throw_parse_error(m_path, "", "", -1);
+                auto message = "eda/data file does not exist: [" + m_path.string() + "]";
+                throw std::exception(message.c_str());
             }
             else if (!std::filesystem::is_regular_file(m_path))
             {
-                throw_parse_error(m_path, "", "", -1);
+                auto message = "eda/data is not a file: [" + m_path.string() + "]";
+                throw std::exception(message.c_str());
             }
 
             loginfo("any extraction complete, parsing data...");
             
             edaDataFile.open(m_path.string(), std::ios::in);
-            if (!edaDataFile.is_open()) throw_parse_error(m_path, "", "", -1);
+            if (!edaDataFile.is_open())
+            {
+                auto message = "unable to open eda/data file: [" + m_path.string() + "]";
+                throw std::exception(message.c_str());
+            }
 
             std::shared_ptr<NetRecord> pCurrentNetRecord;
             std::shared_ptr<NetRecord::SubnetRecord> pCurrentSubnetRecord;
@@ -1281,6 +1287,11 @@ namespace Odb::Lib::FileModel::Design
             edaDataFile.close();
 
             throw pe;
+        }
+        catch (std::exception& e)
+        {
+            logexception(e);
+            throw e;
         }
 
         return true;
