@@ -85,13 +85,13 @@ namespace Utils
 
 	void Logger::start()
 	{
-		info("logger started");
+		loginfo("logger started");
 		m_logMessageLoop.startProcessing();
 	}
 
 	void Logger::stop()
 	{
-		info("logger stopping");
+		loginfo("logger stopping");
 		m_logMessageLoop.stopProcessing();
 	}
 
