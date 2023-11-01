@@ -4,5 +4,6 @@
 
 #include "FileModel/Design/FileArchive.h"
 #include "ProductModel/Design.h"
+#include "App/DesignCache.h"
 
 
