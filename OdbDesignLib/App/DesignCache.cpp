@@ -50,6 +50,7 @@ namespace Odb::Lib::App
             loginfo("Not found. Loading from file... ");
 
             auto pFileArchive = LoadFileArchive(designName);
+
             return pFileArchive;
         }
 
@@ -116,73 +117,55 @@ namespace Odb::Lib::App
 
     std::shared_ptr<ProductModel::Design> DesignCache::LoadDesign(const std::string& designName)
     {        
-        //try
-        {
-            // no FileArchive with the same name is loaded, so load the Design from file
-            std::filesystem::path dir(m_directory);
+        // no FileArchive with the same name is loaded, so load the Design from file
+        std::filesystem::path dir(m_directory);
 
-            for (const auto& entry : std::filesystem::directory_iterator(dir))
+        for (const auto& entry : std::filesystem::directory_iterator(dir))
+        {
+            if (entry.is_regular_file())
             {
-                if (entry.is_regular_file())
+                if (entry.path().stem() == designName)
                 {
-                    if (entry.path().stem() == designName)
+                    auto pFileModel = GetFileArchive(designName);
+                    if (pFileModel != nullptr)
                     {
-                        auto pFileModel = GetFileArchive(designName);
-                        if (pFileModel != nullptr)
+                        auto pDesign = std::make_shared<ProductModel::Design>();
+                        if (pDesign->Build(pFileModel))
                         {
-                            auto pDesign = std::make_shared<ProductModel::Design>();
-                            if (pDesign->Build(pFileModel))
-                            {
-                                // overwrite any existing design with the same name
-                                m_designsByName[pFileModel->GetProductName()] =  pDesign;
-                                return pDesign;
-                            }
+                            // overwrite any existing design with the same name
+                            m_designsByName[pFileModel->GetProductName()] =  pDesign;
+                            return pDesign;
                         }
                     }
                 }
             }
-        }
-        //catch (std::filesystem::filesystem_error& fe)
-        //{
-        //    logexception(fe);
-        //    // re-throw it so we get a HTTP 500 response to the client
-        //    throw fe;
-        //}
+        }    
 
         return nullptr;
     }
 
     std::shared_ptr<FileModel::Design::FileArchive> DesignCache::LoadFileArchive(const std::string& designName)
     {
-        //try
-        {
-            std::filesystem::path dir(m_directory);
-            // skip inaccessible files and do not follow symlinks
-            const auto options = std::filesystem::directory_options::skip_permission_denied;
+        std::filesystem::path dir(m_directory);
+        // skip inaccessible files and do not follow symlinks
+        const auto options = std::filesystem::directory_options::skip_permission_denied;
 
-            for (const auto& entry : std::filesystem::directory_iterator(dir, options))
+        for (const auto& entry : std::filesystem::directory_iterator(dir, options))
+        {
+            if (entry.is_regular_file())
             {
-                if (entry.is_regular_file())
+                if (entry.path().stem() == designName)
                 {
-                    if (entry.path().stem() == designName)
+                    auto pFileArchive = std::make_shared<FileModel::Design::FileArchive>(entry.path().string());
+                    if (pFileArchive->ParseFileModel())
                     {
-                        auto pFileArchive = std::make_shared<FileModel::Design::FileArchive>(entry.path().string());
-                        if (pFileArchive->ParseFileModel())
-                        {
-                            // overwrite any existing file archive with the same name
-                            m_fileArchivesByName[pFileArchive->GetProductName()] = pFileArchive;
-                            return pFileArchive;
-                        }
+                        // overwrite any existing file archive with the same name
+                        m_fileArchivesByName[pFileArchive->GetProductName()] = pFileArchive;
+                        return pFileArchive;
                     }
                 }
             }
-        }
-        //catch (std::exception& e)
-        //{
-        //    logexception(e);
-        //    // re-throw it so we get a HTTP 500 response to the client
-        //    throw e;
-        //}        
+        }       
 
         return nullptr;
     }
