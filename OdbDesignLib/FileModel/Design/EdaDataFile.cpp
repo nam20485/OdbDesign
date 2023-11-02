@@ -1236,8 +1236,6 @@ namespace Odb::Lib::FileModel::Design
                 }
             }
 
-            edaDataFile.close();
-
             // finish current (previous) net record
             // this is the case where the last line of the file is not a net record (and there are no PKG records)
             if (pCurrentNetRecord != nullptr)
@@ -1275,6 +1273,8 @@ namespace Odb::Lib::FileModel::Design
                 m_packageRecords.push_back(pCurrentPackageRecord);
                 pCurrentPackageRecord.reset();
             }        
+
+            edaDataFile.close();
         }
         catch (parse_error& pe)
         {            
