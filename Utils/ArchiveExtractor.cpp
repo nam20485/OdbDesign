@@ -104,43 +104,43 @@ namespace Utils
 	/*static*/ path ArchiveExtractor::getUncompressedFilePath(const path& directory, const std::string& filename)
 	{
 		path uncompressedPath;		
-	
-		path possibleCompressedFilePath = directory / filename;
-		possibleCompressedFilePath.replace_extension("Z");
 
-		auto compressedFileExists = false;
-		if (exists(possibleCompressedFilePath) && is_regular_file(possibleCompressedFilePath))
+		path possibleUncompressedFilePath = directory / filename;
+		auto uncompressedFileExists = exists(possibleUncompressedFilePath) && is_regular_file(possibleUncompressedFilePath);
+		if (uncompressedFileExists)
 		{
-			compressedFileExists = true;
+			uncompressedPath = possibleUncompressedFilePath;
 		}
 		else
 		{
-			possibleCompressedFilePath.replace_extension("z");
+			path possibleCompressedFilePath = directory / filename;
+			possibleCompressedFilePath.replace_extension("Z");
+
+			auto compressedFileExists = false;
 			if (exists(possibleCompressedFilePath) && is_regular_file(possibleCompressedFilePath))
 			{
 				compressedFileExists = true;
 			}
-		}
+			else
+			{
+				possibleCompressedFilePath.replace_extension("z");
+				if (exists(possibleCompressedFilePath) && is_regular_file(possibleCompressedFilePath))
+				{
+					compressedFileExists = true;
+				}
+			}
 
-		if (compressedFileExists)
-		{
-			// extract and set edaDataFilePath to file
-			ArchiveExtractor extractor(possibleCompressedFilePath.string());
-			if (extractor.Extract())
+			if (compressedFileExists)
 			{
-				uncompressedPath = extractor.GetExtractionDirectory();
-				uncompressedPath /= filename;
+				// extract and set edaDataFilePath to file
+				ArchiveExtractor extractor(possibleCompressedFilePath.string());
+				if (extractor.Extract())
+				{
+					uncompressedPath = extractor.GetExtractionDirectory();
+					uncompressedPath /= filename;
+				}
 			}
-		}
-		else
-		{
-			path possibleUncompressedFilePath = directory / filename;
-			auto uncompressedFileExists = exists(possibleUncompressedFilePath) && is_regular_file(possibleUncompressedFilePath);
-			if (uncompressedFileExists)
-			{
-				uncompressedPath = possibleUncompressedFilePath;
-			}
-		}
+		}		
 
 		return uncompressedPath;
 	}
