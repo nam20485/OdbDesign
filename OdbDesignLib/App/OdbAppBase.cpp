@@ -34,13 +34,14 @@ namespace Odb::Lib::App
         Logger::instance()->logLevel(Logger::Level::Info);
         Logger::instance()->start();
 
+        // load a design if specified via command line args
         if (!args().loadDesign().empty())
         {
             auto pFileArchive = designs().GetFileArchive(args().loadDesign());
             if (pFileArchive == nullptr)
             {
-				logerror("Failed to load design \"" + args().loadDesign() + "\"");
-				return Utils::ExitCode::FailedInit;
+				logerror("Failed to load design specified in arguments\"" + args().loadDesign() + "\"");
+				return Utils::ExitCode::FailedInitLoadDesign;
 			}
         }
 
