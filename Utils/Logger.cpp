@@ -35,15 +35,7 @@ namespace Utils
 	{
 		if (level >= m_level)
 		{
-			Message logMessage
-			{
-				message,
-				level,
-				file,
-				line
-			};
-
-			m_logMessageLoop.addWorkItem(std::move(logMessage));
+			m_logMessageLoop.addWorkItem(Message { message, level, file, line });
 		}				
 	}
 
