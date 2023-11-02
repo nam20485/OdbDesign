@@ -3,6 +3,7 @@
 #include "../FileModel/Design/FileArchive.h"
 #include "../ProductModel/Design.h"
 #include "../odbdesign_export.h"
+#include "StringVector.h"
 
 
 namespace Odb::Lib::App
@@ -23,6 +24,8 @@ namespace Odb::Lib::App
 
 		int loadAllFileArchives(bool stopOnError);
 		int loadAllDesigns(bool stopOnError);
+		int loadFileArchives(const Utils::StringVector& names);
+		int loadDesigns(const Utils::StringVector& names);
 
 		//bool isQueryValid(const std::string& query) const;
 

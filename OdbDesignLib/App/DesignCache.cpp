@@ -1,4 +1,6 @@
 #include "DesignCache.h"
+#include "DesignCache.h"
+#include "DesignCache.h"
 #include <filesystem>
 #include <utility>
 #include "Logger.h"
@@ -177,6 +179,54 @@ namespace Odb::Lib::App
                         break;
                     }
                 }
+            }
+        }
+
+        return loaded;
+    }
+
+    int DesignCache::loadFileArchives(const StringVector& names)
+    {
+        int loaded = 0;
+
+        for (const auto& name : names)
+        {
+            try
+            {
+                auto pFileArchive = LoadFileArchive(name);
+                if (pFileArchive != nullptr)
+                {
+                    loaded++;
+                }
+            }
+            catch (std::exception& e)
+            {
+                // continue on error
+                logexception(e);
+            }
+        }
+
+        return loaded;
+    }
+
+    int DesignCache::loadDesigns(const StringVector& names)
+    {
+        int loaded = 0;
+
+        for (const auto& name : names)
+        {
+            try
+            {
+                auto pDesign = LoadDesign(name);
+                if (pDesign != nullptr)
+                {
+                    loaded++;
+                }
+            }
+            catch (std::exception& e)
+            {
+                // continue on error
+                logexception(e);
             }
         }
 
