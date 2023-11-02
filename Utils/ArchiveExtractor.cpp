@@ -60,7 +60,7 @@ namespace Utils
 
 			std::stringstream ss;
 			ss << "7z"
-				<< " x " << '"' << m_path << '"'				// extract w/ full paths and archive path
+				<< " x " << '"' << m_path << '"'			// extract w/ full paths and archive path
 				<< " -o" << '"' << destinationPath << '"'	// output path
 				<< " -y" 									// yes to all prompts
 				<< " -aoa";									// overwrite all
@@ -128,9 +128,8 @@ namespace Utils
 			ArchiveExtractor extractor(possibleCompressedFilePath.string());
 			if (extractor.Extract())
 			{
-				uncompressedPath = possibleCompressedFilePath;
-				//uncompressedPath = extractor.GetExtractionDirectory();
-				//uncompressedPath /= filename;
+				uncompressedPath = extractor.GetExtractionDirectory();
+				uncompressedPath /= filename;
 			}
 		}
 		else
