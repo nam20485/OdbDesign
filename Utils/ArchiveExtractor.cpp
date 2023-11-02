@@ -2,6 +2,7 @@
 #include <filesystem>
 #include "libarchive_extract.h"
 #include "Logger.h"
+#include <exception>
 
 using namespace std::filesystem;
 
@@ -56,26 +57,35 @@ namespace Utils
 		if (p.extension() == ".Z" || p.extension() == ".z")
 		{			
 			// https://documentation.help/7-Zip/extract_full.htm
-			auto command =
-				"7z x " +					// extract w/ full paths
-				m_path +					// archive path
-				" -o" + destinationPath +	// output path
-				" -y" +						// yes to all prompts
-				" -aoa";					// overwrite w/o prompting
 
-			auto silent = false;
+			std::stringstream ss;
+			ss << "7z"
+				<< " x " << '"' << m_path << '"'				// extract w/ full paths and archive path
+				<< " -o" << '"' << destinationPath << '"'	// output path
+				<< " -y" 									// yes to all prompts
+				<< " -aoa";									// overwrite all
+
+			const auto silent = false;
 			if (silent)
 			{
-				//command += " > nul";
+				ss << " > nul";
 			}
+
+			auto command = ss.str();
+
+			loginfo("running 7z command: [" + command + "]...");
 
 			auto exitCode = std::system(command.c_str());
 			if (exitCode != (int) e7zExitCode::Success &&
 				exitCode != (int) e7zExitCode::Warning)
 			{
-				logerror("7z system command failed: (exit code = " + std::to_string(exitCode)+ ")");
-				return false;
-			}		
+				auto message = "7z command failed (exit code = " + std::to_string(exitCode) + ")";
+				logerror(message);
+				throw std::exception(message.c_str());
+				//return false;
+			}
+
+			loginfo("7z command succeeded");
 
 			m_extractionDirectory = destinationPath;
 			return true;
@@ -93,14 +103,12 @@ namespace Utils
 
 	/*static*/ path ArchiveExtractor::getUncompressedFilePath(const path& directory, const std::string& filename)
 	{
-		path uncompressedPath;
-
-		path possibleUncompressedFilePath = directory / filename;
-		auto uncompressedFileExists = exists(possibleUncompressedFilePath) && is_regular_file(possibleUncompressedFilePath);
-
-		auto compressedFileExists = false;
+		path uncompressedPath;		
+	
 		path possibleCompressedFilePath = directory / filename;
 		possibleCompressedFilePath.replace_extension("Z");
+
+		auto compressedFileExists = false;
 		if (exists(possibleCompressedFilePath) && is_regular_file(possibleCompressedFilePath))
 		{
 			compressedFileExists = true;
@@ -114,18 +122,24 @@ namespace Utils
 			}
 		}
 
-		if (uncompressedFileExists)
-		{
-			uncompressedPath = directory / filename;
-		}
-		else if (compressedFileExists)
+		if (compressedFileExists)
 		{
 			// extract and set edaDataFilePath to file
 			ArchiveExtractor extractor(possibleCompressedFilePath.string());
 			if (extractor.Extract())
 			{
-				uncompressedPath = extractor.GetExtractionDirectory();
-				uncompressedPath /= filename;
+				uncompressedPath = possibleCompressedFilePath;
+				//uncompressedPath = extractor.GetExtractionDirectory();
+				//uncompressedPath /= filename;
+			}
+		}
+		else
+		{
+			path possibleUncompressedFilePath = directory / filename;
+			auto uncompressedFileExists = exists(possibleUncompressedFilePath) && is_regular_file(possibleUncompressedFilePath);
+			if (uncompressedFileExists)
+			{
+				uncompressedPath = possibleUncompressedFilePath;
 			}
 		}
 
