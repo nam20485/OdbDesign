@@ -18,137 +18,164 @@ namespace Odb::Lib::FileModel::Design
 {
     bool MiscInfoFile::Parse(std::filesystem::path path)
     {
-        if (!OdbFile::Parse(path)) return false;
-
-        auto infoFilePath = path / "info";
-        if (!std::filesystem::exists(infoFilePath)) return false;
-
         std::ifstream infoFile;
-        infoFile.open(infoFilePath, std::ios::in);
-        if (!infoFile.is_open()) return false;
 
-        int lineNumber = 0;
-        std::string line;
-        while (std::getline(infoFile, line))
+        try
         {
-            lineNumber++;
+            if (!OdbFile::Parse(path)) return false;
 
-            // trim whitespace from beginning and end of line
-            Utils::str_trim(line);
-            if (!line.empty())
+            auto infoFilePath = path / "info";
+            if (!std::filesystem::exists(infoFilePath))
             {
-                std::stringstream lineStream(line);
-                if (line.find(Constants::COMMENT_TOKEN) == 0)
+                auto message = "misc/info file does not exist: [" + infoFilePath.string() + "]";
+                throw std::exception(message.c_str());
+            }
+
+            infoFile.open(infoFilePath, std::ios::in);
+            if (!infoFile.is_open())
+            {
+                auto message = "unable to open misc/info file: [" + infoFilePath.string() + "]";
+                throw std::exception(message.c_str());
+            }
+
+            int lineNumber = 0;
+            std::string line;
+            while (std::getline(infoFile, line))
+            {
+                lineNumber++;
+
+                // trim whitespace from beginning and end of line
+                Utils::str_trim(line);
+                if (!line.empty())
                 {
-                    // comment line
-                }
-                else
-                {
-                    // attribute line
-                    std::string attribute;
-                    std::string value;
-
-                    if (!std::getline(lineStream, attribute, '=')) return false;
-                    // attribute value may be blank?
-
-                    if (!std::getline(lineStream, value))
+                    std::stringstream lineStream(line);
+                    if (line.find(Constants::COMMENT_TOKEN) == 0)
                     {
-                        logwarn("misc/info file: no value for attribute: " + attribute);
-                    }
-
-                    Utils::str_trim(attribute);
-                    Utils::str_trim(value);
-
-                    if (attribute == "PRODUCT_MODEL_NAME" ||
-                        attribute == "product_model_name")
-                    {
-                        m_productModelName = value;
-                    }
-                    else if (attribute == "JOB_NAME" ||
-                        attribute == "job_name")
-                    {
-                        m_jobName = value;
-                    }
-                    else if (attribute == "odb_version_major" ||
-                        attribute == "ODB_VERSION_MAJOR")
-                    {
-                        m_odbVersionMajor = value;
-                    }
-                    else if (attribute == "odb_version_minor" ||
-                        attribute == "ODB_VERSION_MINOR")
-                    {
-                        m_odbVersionMinor = value;
-                    }
-                    else if (attribute == "odb_source" ||
-                        attribute == "ODB_SOURCE")
-                    {
-                        m_odbSource = value;
-                    }
-                    else if (attribute == "creation_date" ||
-                        attribute == "CREATION_DATE")
-                    {
-                        //std::istringstream iss(value);
-                        //// yyyymmdd.hhmmss
-                        //iss >> std::chrono::parse("%Y%m%d.%H%M%S", m_creationDateDate);
-                        m_creationDateDate = Utils::parse_timestamp(value, "%Y%m%d.%H%M%S");
-
-#if defined(_DEBUG)
-
-                        auto createdDate = Utils::make_timestamp(m_creationDateDate);
-                        std::stringstream ss;
-                        ss << "value: " << value << ", parsed createdDate: " << createdDate;
-                        loginfo(ss.str());
-#endif // _DEBUG
-                    }
-                    else if (attribute == "save_date" ||
-                        attribute == "SAVE_DATE")
-                    {
-                        //// yyyymmdd.hhmmss                        
-                        //std::istringstream(value) >> std::chrono::parse("%Y%m%d.%H%M%S", m_saveDate);
-                        m_saveDate = Utils::parse_timestamp(value, "%Y%m%d.%H%M%S");
-#if defined(_DEBUG)
-                        auto saveDate = Utils::make_timestamp(m_saveDate);
-
-                        std::stringstream ss;
-                        ss << "value: " << value << ", parsed saveDate: " << saveDate;
-                        loginfo(ss.str());
-#endif // _DEBUG                                                
-                    }
-                    else if (attribute == "save_app" ||
-                        attribute == "SAVE_APP")
-                    {
-                        m_saveApp = value;
-                    }
-                    else if (attribute == "save_user" ||
-                        attribute == "SAVE_USER")
-                    {
-                        m_saveUser = value;
-                    }
-                    else if (attribute == "units" ||
-                        attribute == "UNITS")
-                    {
-                        m_units = value;
-                    }
-                    else if (attribute == "max_uid" ||
-                        attribute == "MAX_UID")
-                    {
-                        m_maxUniqueId = std::stoi(value);
+                        // comment line
                     }
                     else
                     {
-                        // unknown attribute
+                        // attribute line
+                        std::string attribute;
+                        std::string value;
 
-                        // DO NOT fail parsing on unknown attributes- log instead 
-                        //return false;
+                        if (!std::getline(lineStream, attribute, '=')) return false;
+                        // attribute value may be blank?
 
-                        parse_info pi(m_path, line, attribute, lineNumber);
-                        logwarn(pi.toString("unrecognized line in misc/info file:"));
+                        if (!std::getline(lineStream, value))
+                        {
+                            logwarn("misc/info file: no value for attribute: " + attribute);
+                        }
+
+                        Utils::str_trim(attribute);
+                        Utils::str_trim(value);
+
+                        if (attribute == "PRODUCT_MODEL_NAME" ||
+                            attribute == "product_model_name")
+                        {
+                            m_productModelName = value;
+                        }
+                        else if (attribute == "JOB_NAME" ||
+                            attribute == "job_name")
+                        {
+                            m_jobName = value;
+                        }
+                        else if (attribute == "odb_version_major" ||
+                            attribute == "ODB_VERSION_MAJOR")
+                        {
+                            m_odbVersionMajor = value;
+                        }
+                        else if (attribute == "odb_version_minor" ||
+                            attribute == "ODB_VERSION_MINOR")
+                        {
+                            m_odbVersionMinor = value;
+                        }
+                        else if (attribute == "odb_source" ||
+                            attribute == "ODB_SOURCE")
+                        {
+                            m_odbSource = value;
+                        }
+                        else if (attribute == "creation_date" ||
+                            attribute == "CREATION_DATE")
+                        {
+                            //std::istringstream iss(value);
+                            //// yyyymmdd.hhmmss
+                            //iss >> std::chrono::parse("%Y%m%d.%H%M%S", m_creationDateDate);
+                            m_creationDateDate = Utils::parse_timestamp(value, "%Y%m%d.%H%M%S");
+
+#if defined(_DEBUG)
+
+                            auto createdDate = Utils::make_timestamp(m_creationDateDate);
+                            std::stringstream ss;
+                            ss << "value: " << value << ", parsed createdDate: " << createdDate;
+                            loginfo(ss.str());
+#endif // _DEBUG
+                        }
+                        else if (attribute == "save_date" ||
+                            attribute == "SAVE_DATE")
+                        {
+                            //// yyyymmdd.hhmmss                        
+                            //std::istringstream(value) >> std::chrono::parse("%Y%m%d.%H%M%S", m_saveDate);
+                            m_saveDate = Utils::parse_timestamp(value, "%Y%m%d.%H%M%S");
+#if defined(_DEBUG)
+                            auto saveDate = Utils::make_timestamp(m_saveDate);
+
+                            std::stringstream ss;
+                            ss << "value: " << value << ", parsed saveDate: " << saveDate;
+                            loginfo(ss.str());
+#endif // _DEBUG                                                
+                        }
+                        else if (attribute == "save_app" ||
+                            attribute == "SAVE_APP")
+                        {
+                            m_saveApp = value;
+                        }
+                        else if (attribute == "save_user" ||
+                            attribute == "SAVE_USER")
+                        {
+                            m_saveUser = value;
+                        }
+                        else if (attribute == "units" ||
+                            attribute == "UNITS")
+                        {
+                            m_units = value;
+                        }
+                        else if (attribute == "max_uid" ||
+                            attribute == "MAX_UID")
+                        {
+                            m_maxUniqueId = std::stoi(value);
+                        }
+                        else
+                        {
+                            // unknown attribute
+
+                            // DO NOT fail parsing on unknown attributes- log instead 
+                            //return false;
+
+                            parse_info pi(m_path, line, attribute, lineNumber);
+                            logwarn(pi.toString("unrecognized line in misc/info file:"));
+                        }
                     }
                 }
             }
-        }
 
-        infoFile.close();
+            infoFile.close();
+        }
+        //catch (parse_error& pe)
+        //{
+        //    auto m = pe.toString("Parse Error:");
+        //    logerror(m);
+        //    // cleanup file
+        //    infoFile.close();
+        //    throw pe;
+        //}
+        catch (std::exception& e)
+        {
+            logexception(e);
+            // cleanup file
+            infoFile.close();
+            throw e;
+        }
 
         return true;
     }
