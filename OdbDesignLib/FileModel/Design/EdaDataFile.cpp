@@ -256,8 +256,8 @@ namespace Odb::Lib::FileModel::Design
             std::shared_ptr<PackageRecord> pCurrentPackageRecord;
             std::shared_ptr<PackageRecord::PinRecord> pCurrentPinRecord;
 
-            std::shared_ptr<OutlineRecord> pCurrentContourOutlineRecord;
-            std::shared_ptr<OutlineRecord::ContourPolygon> pCurrentContourPolygon;
+            std::shared_ptr<PackageRecord::OutlineRecord> pCurrentContourOutlineRecord;
+            std::shared_ptr<PackageRecord::OutlineRecord::ContourPolygon> pCurrentContourPolygon;
 
             int lineNumber = 0;
             std::string line;            
@@ -865,7 +865,7 @@ namespace Odb::Lib::FileModel::Design
 
                     //    // TODO: parse FGR records
                     //}
-                    else if (line.find(OutlineRecord::RECTANGLE_RECORD_TOKEN) == 0)
+                    else if (line.find(PackageRecord::OutlineRecord::RECTANGLE_RECORD_TOKEN) == 0)
                     {                        
                         std::string token;                        
                         if (!(lineStream >> token))
@@ -873,13 +873,13 @@ namespace Odb::Lib::FileModel::Design
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
 
-                        if (token != OutlineRecord::RECTANGLE_RECORD_TOKEN)
+                        if (token != PackageRecord::OutlineRecord::RECTANGLE_RECORD_TOKEN)
                         {
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
 
-                        auto pOutlineRecord = std::make_shared<OutlineRecord>();
-                        pOutlineRecord->type = OutlineRecord::Type::Rectangle;
+                        auto pOutlineRecord = std::make_shared<PackageRecord::OutlineRecord>();
+                        pOutlineRecord->type = PackageRecord::OutlineRecord::Type::Rectangle;
 
                         if (!(lineStream >> pOutlineRecord->lowerLeftX))
                         {
@@ -917,7 +917,7 @@ namespace Odb::Lib::FileModel::Design
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
                     }
-                    else if (line.find(OutlineRecord::CIRCLE_RECORD_TOKEN) == 0)
+                    else if (line.find(PackageRecord::OutlineRecord::CIRCLE_RECORD_TOKEN) == 0)
                     {
                         std::string token;
                         if (!(lineStream >> token))
@@ -925,13 +925,13 @@ namespace Odb::Lib::FileModel::Design
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
 
-                        if (token != OutlineRecord::CIRCLE_RECORD_TOKEN)
+                        if (token != PackageRecord::OutlineRecord::CIRCLE_RECORD_TOKEN)
                         {
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
 
-                        auto pOutlineRecord = std::make_shared<OutlineRecord>();
-                        pOutlineRecord->type = OutlineRecord::Type::Circle;
+                        auto pOutlineRecord = std::make_shared<PackageRecord::OutlineRecord>();
+                        pOutlineRecord->type = PackageRecord::OutlineRecord::Type::Circle;
 
                         if (!(lineStream >> pOutlineRecord->xCenter))
                         {
@@ -964,7 +964,7 @@ namespace Odb::Lib::FileModel::Design
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
                     }
-                    else if (line.find(OutlineRecord::SQUARE_RECORD_TOKEN) == 0)
+                    else if (line.find(PackageRecord::OutlineRecord::SQUARE_RECORD_TOKEN) == 0)
                     {
                         std::string token;
                         if (!(lineStream >> token))
@@ -972,13 +972,13 @@ namespace Odb::Lib::FileModel::Design
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
 
-                        if (token != OutlineRecord::SQUARE_RECORD_TOKEN)
+                        if (token != PackageRecord::OutlineRecord::SQUARE_RECORD_TOKEN)
                         {
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
 
-                        auto pOutlineRecord = std::make_shared<OutlineRecord>();
-                        pOutlineRecord->type = OutlineRecord::Type::Square;
+                        auto pOutlineRecord = std::make_shared<PackageRecord::OutlineRecord>();
+                        pOutlineRecord->type = PackageRecord::OutlineRecord::Type::Square;
 
                         if (!(lineStream >> pOutlineRecord->xCenter))
                         {
@@ -1011,7 +1011,7 @@ namespace Odb::Lib::FileModel::Design
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
                     }
-                    else if (line.find(OutlineRecord::CONTOUR_BEGIN_RECORD_TOKEN) == 0)
+                    else if (line.find(PackageRecord::OutlineRecord::CONTOUR_BEGIN_RECORD_TOKEN) == 0)
                     {
                         std::string token;
                         if (!(lineStream >> token))
@@ -1019,15 +1019,15 @@ namespace Odb::Lib::FileModel::Design
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
 
-                        if (token != OutlineRecord::CONTOUR_BEGIN_RECORD_TOKEN)
+                        if (token != PackageRecord::OutlineRecord::CONTOUR_BEGIN_RECORD_TOKEN)
                         {
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
 
-                        pCurrentContourOutlineRecord = std::make_shared<OutlineRecord>();
-                        pCurrentContourOutlineRecord->type = OutlineRecord::Type::Contour;
+                        pCurrentContourOutlineRecord = std::make_shared<PackageRecord::OutlineRecord>();
+                        pCurrentContourOutlineRecord->type = PackageRecord::OutlineRecord::Type::Contour;
                     }
-					else if (line.find(OutlineRecord::CONTOUR_END_RECORD_TOKEN) == 0)
+					else if (line.find(PackageRecord::OutlineRecord::CONTOUR_END_RECORD_TOKEN) == 0)
 					{
 						std::string token;
 						if (!(lineStream >> token))
@@ -1035,7 +1035,7 @@ namespace Odb::Lib::FileModel::Design
 							throw_parse_error(m_path, line, token, lineNumber);
 						}
 
-						if (token != OutlineRecord::CONTOUR_END_RECORD_TOKEN)
+						if (token != PackageRecord::OutlineRecord::CONTOUR_END_RECORD_TOKEN)
 						{
 							throw_parse_error(m_path, line, token, lineNumber);
 						}                        
@@ -1058,7 +1058,7 @@ namespace Odb::Lib::FileModel::Design
 
 						pCurrentContourOutlineRecord.reset();
 					}
-                    else if (line.find(OutlineRecord::ContourPolygon::BEGIN_RECORD_TOKEN) == 0)
+                    else if (line.find(PackageRecord::OutlineRecord::ContourPolygon::BEGIN_RECORD_TOKEN) == 0)
                     {
                         std::string token;
                         if (!(lineStream >> token))
@@ -1066,12 +1066,12 @@ namespace Odb::Lib::FileModel::Design
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
 
-                        if (token != OutlineRecord::ContourPolygon::BEGIN_RECORD_TOKEN)
+                        if (token != PackageRecord::OutlineRecord::ContourPolygon::BEGIN_RECORD_TOKEN)
                         {
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
 
-                        pCurrentContourPolygon = std::make_shared<OutlineRecord::ContourPolygon>();
+                        pCurrentContourPolygon = std::make_shared<PackageRecord::OutlineRecord::ContourPolygon>();
 
                         if (!(lineStream >> pCurrentContourPolygon->xStart))
                         {
@@ -1088,20 +1088,20 @@ namespace Odb::Lib::FileModel::Design
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
 
-                        if (token == OutlineRecord::ContourPolygon::ISLAND_TYPE_TOKEN)
+                        if (token == PackageRecord::OutlineRecord::ContourPolygon::ISLAND_TYPE_TOKEN)
                         {
-                            pCurrentContourPolygon->type = OutlineRecord::ContourPolygon::Type::Island;
+                            pCurrentContourPolygon->type = PackageRecord::OutlineRecord::ContourPolygon::Type::Island;
                         }
-                        else if (token == OutlineRecord::ContourPolygon::HOLE_TYPE_TOKEN)
+                        else if (token == PackageRecord::OutlineRecord::ContourPolygon::HOLE_TYPE_TOKEN)
                         {
-                            pCurrentContourPolygon->type = OutlineRecord::ContourPolygon::Type::Hole;
+                            pCurrentContourPolygon->type = PackageRecord::OutlineRecord::ContourPolygon::Type::Hole;
                         }
                         else
                         {
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
                     }
-                    else if (line.find(OutlineRecord::ContourPolygon::END_RECORD_TOKEN) == 0)
+                    else if (line.find(PackageRecord::OutlineRecord::ContourPolygon::END_RECORD_TOKEN) == 0)
                     {
                         std::string token;
                         if (!(lineStream >> token))
@@ -1109,7 +1109,7 @@ namespace Odb::Lib::FileModel::Design
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
 
-                        if (token != OutlineRecord::ContourPolygon::END_RECORD_TOKEN)
+                        if (token != PackageRecord::OutlineRecord::ContourPolygon::END_RECORD_TOKEN)
                         {
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
@@ -1124,7 +1124,7 @@ namespace Odb::Lib::FileModel::Design
 							throw_parse_error(m_path, line, token, lineNumber);
 						}
                     }
-                    else if (line.find(OutlineRecord::ContourPolygon::PolygonPart::ARC_RECORD_TOKEN) == 0)
+                    else if (line.find(PackageRecord::OutlineRecord::ContourPolygon::PolygonPart::ARC_RECORD_TOKEN) == 0)
                     {
                         std::string token;
                         if (!(lineStream >> token))
@@ -1132,13 +1132,13 @@ namespace Odb::Lib::FileModel::Design
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
 
-                        if (token != OutlineRecord::ContourPolygon::PolygonPart::ARC_RECORD_TOKEN)
+                        if (token != PackageRecord::OutlineRecord::ContourPolygon::PolygonPart::ARC_RECORD_TOKEN)
                         {
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
 
-                        auto pPolygonPart = std::make_shared<OutlineRecord::ContourPolygon::PolygonPart>();
-                        pPolygonPart->type = OutlineRecord::ContourPolygon::PolygonPart::Type::Arc;
+                        auto pPolygonPart = std::make_shared<PackageRecord::OutlineRecord::ContourPolygon::PolygonPart>();
+                        pPolygonPart->type = PackageRecord::OutlineRecord::ContourPolygon::PolygonPart::Type::Arc;
 
                         if (!(lineStream >> pPolygonPart->endX))
                         {
@@ -1187,7 +1187,7 @@ namespace Odb::Lib::FileModel::Design
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
                     }
-                    else if (line.find(OutlineRecord::ContourPolygon::PolygonPart::SEGMENT_RECORD_TOKEN) == 0)
+                    else if (line.find(PackageRecord::OutlineRecord::ContourPolygon::PolygonPart::SEGMENT_RECORD_TOKEN) == 0)
                     {
                         std::string token;
                         if (!(lineStream >> token))
@@ -1195,13 +1195,13 @@ namespace Odb::Lib::FileModel::Design
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
 
-                        if (token != OutlineRecord::ContourPolygon::PolygonPart::SEGMENT_RECORD_TOKEN)
+                        if (token != PackageRecord::OutlineRecord::ContourPolygon::PolygonPart::SEGMENT_RECORD_TOKEN)
                         {
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
 
-                        auto pPolygonPart = std::make_shared<OutlineRecord::ContourPolygon::PolygonPart>();
-                        pPolygonPart->type = OutlineRecord::ContourPolygon::PolygonPart::Type::Segment;
+                        auto pPolygonPart = std::make_shared<PackageRecord::OutlineRecord::ContourPolygon::PolygonPart>();
+                        pPolygonPart->type = PackageRecord::OutlineRecord::ContourPolygon::PolygonPart::Type::Segment;
 
                         if (!(lineStream >> pPolygonPart->endX))
                         {
