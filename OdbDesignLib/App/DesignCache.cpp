@@ -111,10 +111,82 @@ namespace Odb::Lib::App
         return unloadedNames;
     }
 
-    bool DesignCache::isQueryValid(const std::string& query) const
+    int DesignCache::loadAllFileArchives(bool stopOnError)
     {
-        return false;
+        int loaded = 0;
+
+        for (const auto& entry : directory_iterator(m_directory))
+        {
+            if (entry.is_regular_file())
+            {                
+                for (const auto& designExt : DESIGN_EXTENSIONS)
+                {
+                    if (entry.path().extension() == designExt)
+                    {
+                        try
+                        {
+                            auto pFileArchive = LoadFileArchive(entry.path().stem().string());
+                            if (pFileArchive != nullptr)
+                            {
+                                loaded++;
+                            }
+                        }
+                        catch (std::exception& e)
+                        {
+                            // continue if we encounter an error loading one
+                            logexception(e);
+                            if (stopOnError) throw e;
+                        }
+                        break;                        
+                    }
+                }
+            }
+        }
+
+        return loaded;
     }
+
+    int DesignCache::loadAllDesigns(bool stopOnError)
+    {
+        int loaded = 0;
+
+        for (const auto& entry : directory_iterator(m_directory))
+        {
+            if (entry.is_regular_file())
+            {
+                for (const auto& designExt : DESIGN_EXTENSIONS)
+                {
+                    if (entry.path().extension() == designExt)
+                    {
+                        try
+                        {
+                            auto pDesign = LoadDesign(entry.path().stem().string());
+                            if (pDesign != nullptr)
+                            {
+                                loaded++;
+                            }
+                        }
+                        catch (std::exception& e)
+                        {
+                            logexception(e);
+                            if (stopOnError)
+                            {
+                                throw e;
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
+        return loaded;
+    }
+
+    //bool DesignCache::isQueryValid(const std::string& query) const
+    //{
+    //    return false;
+    //}
 
     void DesignCache::Clear()
     {
@@ -123,11 +195,8 @@ namespace Odb::Lib::App
     }
 
     std::shared_ptr<ProductModel::Design> DesignCache::LoadDesign(const std::string& designName)
-    {        
-        // no FileArchive with the same name is loaded, so load the Design from file
-        std::filesystem::path dir(m_directory);
-
-        for (const auto& entry : std::filesystem::directory_iterator(dir))
+    { 
+        for (const auto& entry : std::filesystem::directory_iterator(m_directory))
         {
             if (entry.is_regular_file())
             {
