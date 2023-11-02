@@ -34,6 +34,16 @@ namespace Odb::Lib::App
         Logger::instance()->logLevel(Logger::Level::Info);
         Logger::instance()->start();
 
+        if (!args().loadDesign().empty())
+        {
+            auto pFileArchive = designs().GetFileArchive(args().loadDesign());
+            if (pFileArchive == nullptr)
+            {
+				logerror("Failed to load design \"" + args().loadDesign() + "\"");
+				return Utils::ExitCode::FailedInit;
+			}
+        }
+
         return Utils::ExitCode::Success;
     }   
 }
