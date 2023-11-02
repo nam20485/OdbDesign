@@ -82,7 +82,11 @@ namespace Odb::Lib::FileModel::Design
 					logerror("Parsing failed.");
 					throw std::exception("Parsing failed.");
 				}
-			}		
+			}
+			else
+			{
+				logerror("Failed to find root directory");
+			}
 		}
 		//catch (std::exception& e)
 		//{

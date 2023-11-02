@@ -62,7 +62,34 @@ namespace Odb::Lib::FileModel::Design
 		static std::string findRootDir(const std::filesystem::path& extractedPath);
 		static bool pathContainsTopLevelDesignDirs(const std::filesystem::path& path);
 
-		static inline constexpr const char* TOPLEVEL_DESIGN_DIR_NAMES[5] = { "fonts", "symbols", "misc", "matrix", "steps" };
+		static inline constexpr const char* TOPLEVEL_DESIGN_DIR_NAMES[] =
+		{ 
+			"fonts", 
+			"misc", 
+			"matrix",
+			"steps"
+		};
+
+		// REQUIRED:
+		//• <product_model_name> / matrix / matrix
+		//• <product_model_name> / misc	  / info
+		//• <product_model_name> / fonts  / standard
+		//• <product_model_name> / steps  / <step_name> / stephdr
+		//• <product_model_name> / steps  / <step_name> / layers / <layer_name> / features(or features.Z)
+
+		//• The length of an entity name must not exceed 64 characters.
+		//• An entity name may contain only these characters :
+		//	o Lower case letters(a through z).
+		//	o Digits(0 through 9).
+		//	o Punctuation—dash(-), underscore(_), dot(.) and plus(+).
+		//• Entity names must not start with a dot(.), hyphen(-), or plus(+).
+		//	The exception is system attribute names, which start with a dot.Names of user - defined
+		//	attributes must not start with a dot.
+		//• Entity names must not end with a dot(.).
+
+		//The default units of measurement for the product model are as defined in the UNITS directive in
+		//the file misc / info of the product model.If the default is not defined for the product model, the
+		//default is imperial.
 
     };
 }
