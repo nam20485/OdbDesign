@@ -37,12 +37,20 @@ namespace Odb::Lib::App
         // load a design if specified via command line args
         if (!args().loadDesign().empty())
         {
-            auto pFileArchive = designs().GetFileArchive(args().loadDesign());
-            if (pFileArchive == nullptr)
+            try
             {
-				logerror("Failed to load design specified in arguments \"" + args().loadDesign() + "\"");
-				return Utils::ExitCode::FailedInitLoadDesign;
-			}
+                auto pFileArchive = designs().GetFileArchive(args().loadDesign());
+                if (pFileArchive == nullptr)
+                {
+                    logerror("Failed to load design specified in arguments \"" + args().loadDesign() + "\"");
+                    return Utils::ExitCode::FailedInitLoadDesign;
+                }
+            }
+            catch (std::exception& e)
+            {
+                logerror("Failed to load design specified in arguments \"" + args().loadDesign() + "\"");
+                return Utils::ExitCode::FailedInitLoadDesign;
+            }
         }
 
         return Utils::ExitCode::Success;
