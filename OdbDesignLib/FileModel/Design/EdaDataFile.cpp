@@ -272,7 +272,7 @@ namespace Odb::Lib::FileModel::Design
                 {
                     if (m_logAllLineParsing)
                     {
-                        parse_info pi(m_path, line, lineNumber, __LINE__, __FILE__);
+                        parse_info pi(m_path, line, lineNumber);
                         logdebug(pi.toString("Parsing line..."));
                     }
 
@@ -1225,7 +1225,7 @@ namespace Odb::Lib::FileModel::Design
                     else
                     {
                         // unrecognized record line
-                        parse_info pi(m_path, line, lineNumber, __LINE__, __FILE__);
+                        parse_info pi(m_path, line, lineNumber);
                         logwarn(pi.toString("unrecognized record line in EDADATA file:"));                        
                     }
                 }
@@ -1278,7 +1278,7 @@ namespace Odb::Lib::FileModel::Design
         }
         catch (parse_error& pe)
         {            
-            auto m = pe.getParseInfo().toString("Parse Error:");
+            auto m = pe.toString("Parse Error:");
             logerror(m);
             // cleanup file
             edaDataFile.close();

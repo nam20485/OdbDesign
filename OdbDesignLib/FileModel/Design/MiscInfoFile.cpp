@@ -141,7 +141,7 @@ namespace Odb::Lib::FileModel::Design
                         // DO NOT fail parsing on unknown attributes- log instead 
                         //return false;
 
-                        parse_info pi(m_path, line, attribute, lineNumber, __LINE__, __FILE__);
+                        parse_info pi(m_path, line, attribute, lineNumber);
                         logwarn(pi.toString("unrecognized line in misc/info file:"));
                     }
                 }

@@ -261,7 +261,7 @@ namespace Odb::Lib::FileModel::Design
 		}
 		catch (parse_error& pe)
 		{
-			auto m = pe.getParseInfo().toString("Parse Error:");
+			auto m = pe.toString("Parse Error:");
 			logerror(m);
 			// cleanup file
 			netlistFile.close();

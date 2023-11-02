@@ -12,8 +12,7 @@ namespace Odb::Lib::FileModel
             ss << message << std::endl;
         }
         
-        ss  << "location: " << sourceFile.filename().string() << ":" << sourceLine << std::endl
-            << "current file:  [" << dataFile.filename().string() << ":" << dataLineNumber << "]" << std::endl
+        ss  << "current file:  [" << dataFile.filename().string() << ":" << dataLineNumber << "]" << std::endl
             << "current line:  [" << dataLine << "]" << std::endl
             << "current token: [" << dataToken << "]" << std::endl;
 
