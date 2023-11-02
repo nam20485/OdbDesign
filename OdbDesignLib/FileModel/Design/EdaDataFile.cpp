@@ -126,7 +126,7 @@ namespace Odb::Lib::FileModel::Design
     }
 
     std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord>
-    EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord::to_protobuf() const
+    EdaDataFile::FeatureIdRecord::to_protobuf() const
     {
         std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord> pFeatureIdRecordMessage(new Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord);        
         pFeatureIdRecordMessage->set_type((Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord::Type) type);
@@ -135,7 +135,7 @@ namespace Odb::Lib::FileModel::Design
         return pFeatureIdRecordMessage;
     }
 
-    void EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord::from_protobuf(const Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord& message)
+    void EdaDataFile::FeatureIdRecord::from_protobuf(const Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord& message)
     {
 
     }    
@@ -558,7 +558,7 @@ namespace Odb::Lib::FileModel::Design
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
 
-                        auto pFeatureIdRecord = std::make_shared<NetRecord::SubnetRecord::FeatureIdRecord>();
+                        auto pFeatureIdRecord = std::make_shared<FeatureIdRecord>();
 
                         // type
                         if (!(lineStream >> token))
@@ -568,15 +568,15 @@ namespace Odb::Lib::FileModel::Design
 
                         if (token == "C")
                         {
-                            pFeatureIdRecord->type = NetRecord::SubnetRecord::FeatureIdRecord::Type::Copper;
+                            pFeatureIdRecord->type = FeatureIdRecord::Type::Copper;
                         }
                         else if (token == "L")
                         {
-                            pFeatureIdRecord->type = NetRecord::SubnetRecord::FeatureIdRecord::Type::Laminate;
+                            pFeatureIdRecord->type = FeatureIdRecord::Type::Laminate;
                         }
                         else if (token == "H")
                         {
-                            pFeatureIdRecord->type = NetRecord::SubnetRecord::FeatureIdRecord::Type::Hole;
+                            pFeatureIdRecord->type = FeatureIdRecord::Type::Hole;
                         }
                         else
                         {

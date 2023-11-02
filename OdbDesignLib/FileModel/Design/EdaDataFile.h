@@ -46,6 +46,26 @@ namespace Odb::Lib::FileModel::Design
 			void from_protobuf(const Odb::Lib::Protobuf::EdaDataFile::PropertyRecord& message) override;
 		};
 
+		struct ODBDESIGN_EXPORT FeatureIdRecord : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord>
+		{
+			enum class Type
+			{
+				Copper,
+				Laminate,
+				Hole
+			};
+
+			typedef std::vector<std::shared_ptr<FeatureIdRecord>> Vector;
+
+			Type type;
+			unsigned int layerNumber;
+			unsigned int featureNumber;
+
+			// Inherited via IProtoBuffable
+			std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord> to_protobuf() const override;
+			void from_protobuf(const Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord& message) override;
+		};
+
 		struct ODBDESIGN_EXPORT NetRecord : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::NetRecord>
 		{
 			struct ODBDESIGN_EXPORT SubnetRecord : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord>
@@ -72,27 +92,7 @@ namespace Odb::Lib::FileModel::Design
 					Rectangle,
 					Octagon,
 					Exact
-				};				
-
-				struct ODBDESIGN_EXPORT FeatureIdRecord : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord>
-				{
-					enum class Type
-					{
-						Copper,
-						Laminate,
-						Hole
-					};
-
-					typedef std::vector<std::shared_ptr<FeatureIdRecord>> Vector;
-
-					Type type;
-					unsigned int layerNumber;
-					unsigned int featureNumber;
-
-					// Inherited via IProtoBuffable
-					std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord> to_protobuf() const override;
-					void from_protobuf(const Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord& message) override;
-				};
+				};								
 
 				typedef std::vector<std::shared_ptr<SubnetRecord>> Vector;
 
