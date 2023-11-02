@@ -10,11 +10,9 @@
 #include "Logger.h"
 #include "../parse_info.h"
 #include "../parse_error.h"
-#include <sstream>
 
 using namespace std::filesystem;
 using namespace Utils;
-
 
 namespace Odb::Lib::FileModel::Design
 {
@@ -37,6 +35,7 @@ namespace Odb::Lib::FileModel::Design
         m_netRecordsByName.clear();
         m_packageRecords.clear();
         m_packageRecordsByName.clear();
+        m_featureGroupRecords.clear();
     }
 
     const std::filesystem::path& EdaDataFile::GetPath() const
@@ -175,6 +174,11 @@ namespace Odb::Lib::FileModel::Design
         return m_packageRecordsByName;
     }
 
+    const EdaDataFile::FeatureGroupRecord::Vector& EdaDataFile::GetFeatureGroupRecords() const
+    {
+        return m_featureGroupRecords;
+    }
+
     std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile> EdaDataFile::to_protobuf() const
     {
         std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile> pEdaDataFileMessage(new Odb::Lib::Protobuf::EdaDataFile);                
@@ -258,6 +262,8 @@ namespace Odb::Lib::FileModel::Design
 
             std::shared_ptr<PackageRecord::OutlineRecord> pCurrentContourOutlineRecord;
             std::shared_ptr<PackageRecord::OutlineRecord::ContourPolygon> pCurrentContourPolygon;
+
+            FeatureGroupRecord::shared_ptr pCurrentFeatureGroupRecord;
 
             int lineNumber = 0;
             std::string line;            
@@ -388,7 +394,6 @@ namespace Odb::Lib::FileModel::Design
                             pPropertyRecord->floatValues.push_back(f);
                         }
 
-                        // TODO: add to current net OR package record
                         if (pCurrentNetRecord != nullptr)
                         {
                             pCurrentNetRecord->m_propertyRecords.push_back(pPropertyRecord);
@@ -396,6 +401,10 @@ namespace Odb::Lib::FileModel::Design
                         else if (pCurrentPackageRecord != nullptr)
                         {
                             pCurrentPackageRecord->m_propertyRecords.push_back(pPropertyRecord);
+                        }
+                        else if (pCurrentFeatureGroupRecord != nullptr)
+                        {
+                            pCurrentFeatureGroupRecord->m_propertyRecords.push_back(pPropertyRecord);
                         }
                         else
                         {
@@ -600,6 +609,10 @@ namespace Odb::Lib::FileModel::Design
                         {
                             pCurrentSubnetRecord->m_featureIdRecords.push_back(pFeatureIdRecord);
                         }
+                        else if (pCurrentFeatureGroupRecord != nullptr)
+                        {
+                            pCurrentFeatureGroupRecord->m_featureIdRecords.push_back(pFeatureIdRecord);
+                        }
                         else
                         {
                             throw_parse_error(m_path, line, token, lineNumber);
@@ -628,8 +641,7 @@ namespace Odb::Lib::FileModel::Design
                             m_netRecords.push_back(pCurrentNetRecord);
                             pCurrentNetRecord.reset();
                         }
-
-                        if (pCurrentPackageRecord != nullptr)
+                        else if (pCurrentPackageRecord != nullptr)
                         {
                             // finish up any current (previous) pin records
                             if (pCurrentPinRecord != nullptr)
@@ -640,7 +652,6 @@ namespace Odb::Lib::FileModel::Design
 									throw_parse_error(m_path, line, token, lineNumber);
 								}
                                 pCurrentPinRecord->index = static_cast<unsigned>(pCurrentPackageRecord->m_pinRecords.size());
-
                                 pCurrentPackageRecord->m_pinRecords.push_back(pCurrentPinRecord);
                                 pCurrentPinRecord.reset();
                             }
@@ -710,7 +721,7 @@ namespace Odb::Lib::FileModel::Design
                                 pCurrentPinRecord->index = static_cast<unsigned>(pCurrentPackageRecord->m_pinRecords.size());
                                 pCurrentPackageRecord->m_pinRecords.push_back(pCurrentPinRecord);
                                 pCurrentPinRecord.reset();
-                            }
+                            }                            
                         }
 
                         pCurrentPinRecord = std::make_shared<PackageRecord::PinRecord>();
@@ -840,31 +851,68 @@ namespace Odb::Lib::FileModel::Design
 #endif
 
                             pCurrentPinRecord->id = UINT_MAX;
+                        }                        
+                    }
+                    else if (line.find(FEATURE_GROUP_RECORD_TOKEN) == 0)
+                    {
+                        // feature group record line
+                        std::string token;
+
+                        if (!(lineStream >> token))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+                        
+                        if (token != FEATURE_GROUP_RECORD_TOKEN)
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
                         }
 
-                        //if (pCurrentPackageRecord != nullptr)
-                        //{
-                        //    pCurrentPinRecord->index = pCurrentPackageRecord->m_pinRecords.size();
-                        //    pCurrentPackageRecord->m_pinRecords.push_back(pCurrentPinRecord);
-                        //}
-                        //else
-                        //{
-                        //    throw_parse_error(m_path, line, token, lineNumber);
-                        //}
+                        // finish current (previous) net record
+                        if (pCurrentNetRecord != nullptr)
+                        {
+                            // finish up (any) current subnet record
+                            if (pCurrentSubnetRecord != nullptr)
+                            {
+                                pCurrentNetRecord->m_subnetRecords.push_back(pCurrentSubnetRecord);
+                                pCurrentSubnetRecord.reset();
+                            }
+
+                            m_netRecords.push_back(pCurrentNetRecord);
+                            pCurrentNetRecord.reset();
+                        }
+                        else if (pCurrentPackageRecord != nullptr)
+                        {
+                            // finish up any current (previous) pin records
+                            if (pCurrentPinRecord != nullptr)
+                            {
+                                // check for overflow
+                                if (pCurrentPackageRecord->m_pinRecords.size() > UINT_MAX)
+                                {
+                                    throw_parse_error(m_path, line, token, lineNumber);
+                                }
+                                pCurrentPinRecord->index = static_cast<unsigned>(pCurrentPackageRecord->m_pinRecords.size());
+                                pCurrentPackageRecord->m_pinRecords.push_back(pCurrentPinRecord);
+                                pCurrentPinRecord.reset();
+                            }
+
+                            // finish up any current (previous) package records
+                            m_packageRecords.push_back(pCurrentPackageRecord);
+                            pCurrentPackageRecord.reset();
+                        }                        
+                        else if (pCurrentFeatureGroupRecord != nullptr)
+                        {
+                            m_featureGroupRecords.push_back(pCurrentFeatureGroupRecord);
+                            pCurrentFeatureGroupRecord.reset();
+                        }
+
+                        pCurrentFeatureGroupRecord = std::make_shared<FeatureGroupRecord>();
+
+                        if (!(lineStream >> pCurrentFeatureGroupRecord->type))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }                                                
                     }
-                    //else if (line.find(FEATURE_GROUP_RECORD_TOKEN) == 0)
-                    //{
-                    //    // feature group record line
-                    //    std::string token;
-
-                    //    lineStream >> token;
-                    //    if (token != FEATURE_GROUP_RECORD_TOKEN)
-                    //    {
-                    //        throw_parse_error(m_path, line, token, lineNumber);
-                    //    }
-
-                    //    // TODO: parse FGR records
-                    //}
                     else if (line.find(PackageRecord::OutlineRecord::RECTANGLE_RECORD_TOKEN) == 0)
                     {                        
                         std::string token;                        
@@ -1251,10 +1299,7 @@ namespace Odb::Lib::FileModel::Design
                 m_netRecords.push_back(pCurrentNetRecord);
                 pCurrentNetRecord.reset();
             }
-
-            // TODO: ^^^ should be else if, i.e. there should only be one of either a
-            // current net OR package record to close up when we reach the EOF, but not both
-            if (pCurrentPackageRecord != nullptr)
+            else if (pCurrentPackageRecord != nullptr)
             {
                 // finish up any current (previous) pin records
                 if (pCurrentPinRecord != nullptr)
@@ -1272,7 +1317,12 @@ namespace Odb::Lib::FileModel::Design
                 // finish up any current (previous) package records
                 m_packageRecords.push_back(pCurrentPackageRecord);
                 pCurrentPackageRecord.reset();
-            }        
+            }
+            else if (pCurrentFeatureGroupRecord != nullptr)
+            {
+                m_featureGroupRecords.push_back(pCurrentFeatureGroupRecord);
+                pCurrentFeatureGroupRecord.reset();
+            }
 
             edaDataFile.close();
         }

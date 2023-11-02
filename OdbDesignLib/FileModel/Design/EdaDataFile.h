@@ -301,6 +301,13 @@ namespace Odb::Lib::FileModel::Design
 
 		struct FeatureGroupRecord
 		{
+			std::string type;	// always "TEXT" per spec
+			
+			PropertyRecord::Vector m_propertyRecords;
+			FeatureIdRecord::Vector m_featureIdRecords;
+
+			typedef std::shared_ptr<FeatureGroupRecord> shared_ptr;
+			typedef std::vector<FeatureGroupRecord::shared_ptr> Vector;			
 
 		}; // FeatureGroupRecord
 
@@ -312,6 +319,7 @@ namespace Odb::Lib::FileModel::Design
 		const NetRecord::StringMap& GetNetRecordsByName() const;
 		const PackageRecord::Vector& GetPackageRecords() const;
 		const PackageRecord::StringMap& GetPackageRecordsByName() const;
+		const FeatureGroupRecord::Vector& GetFeatureGroupRecords() const;
 
 		// Inherited via IProtoBuffable
 		std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile> to_protobuf() const override;
@@ -333,6 +341,8 @@ namespace Odb::Lib::FileModel::Design
 
 		PackageRecord::Vector m_packageRecords;
 		PackageRecord::StringMap m_packageRecordsByName;
+
+		FeatureGroupRecord::Vector m_featureGroupRecords;
 
 		bool m_logAllLineParsing;
 		
