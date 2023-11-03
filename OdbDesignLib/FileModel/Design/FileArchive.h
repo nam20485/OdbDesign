@@ -70,7 +70,7 @@ namespace Odb::Lib::FileModel::Design
 			"steps"
 		};
 
-		// REQUIRED:
+		// REQUIRED (spec pg. 23):
 		//• <product_model_name> / matrix / matrix
 		//• <product_model_name> / misc	  / info
 		//• <product_model_name> / fonts  / standard
