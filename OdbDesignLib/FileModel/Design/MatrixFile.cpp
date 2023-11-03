@@ -1,3 +1,8 @@
+#include "MatrixFile.h"
+#include "MatrixFile.h"
+#include "MatrixFile.h"
+#include "MatrixFile.h"
+#include "MatrixFile.h"
 //
 // Created by nmill on 10/13/2023.
 //
@@ -13,7 +18,17 @@
 
 namespace Odb::Lib::FileModel::Design
 {
-	bool MatrixFile::Parse(std::filesystem::path path)
+    inline const MatrixFile::LayerRecord::Vector& MatrixFile::GetLayerRecords() const
+    { 
+        return m_layerRecords;
+    }
+
+    inline const MatrixFile::StepRecord::Vector& MatrixFile::GetStepRecords() const
+    { 
+        return m_stepRecords;
+    }
+
+    bool MatrixFile::Parse(std::filesystem::path path)
 	{
         std::ifstream matrixFile;
 
@@ -377,10 +392,10 @@ namespace Odb::Lib::FileModel::Design
                                 throw_parse_error(m_path, line, attribute, lineNumber);                                
                             }
                         }
-                        else
+                        else if (!attributeValueIsOptional(attribute))
                         {
-                            logwarn("matrix/matrix file: no value for attribute: " + attribute);                            
-                        }
+                            logwarn("matrix/matrix file: no value for attribute: " + attribute);
+                        }                        
                     }
                 }
             }
@@ -406,4 +421,17 @@ namespace Odb::Lib::FileModel::Design
 
         return true;
 	}
+
+    /*static*/ bool MatrixFile::attributeValueIsOptional(const std::string& attribute)
+    {
+        auto attributeIsOptional = false;
+        for (const auto& optionalAttribute : OPTIONAL_ATTRIBUTES)
+        {
+            if (attribute == optionalAttribute)
+            {
+                attributeIsOptional = true;
+            }
+        }
+        return attributeIsOptional;
+    }
 }

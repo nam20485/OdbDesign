@@ -95,15 +95,26 @@ namespace Odb::Lib::FileModel::Design
 
         };
 
-        const LayerRecord::Vector& GetLayerRecords() const { return m_layerRecords; }
-        const StepRecord::Vector& GetStepRecords() const { return m_stepRecords; }
+        const inline LayerRecord::Vector& GetLayerRecords() const;
+        const inline StepRecord::Vector& GetStepRecords() const;
 
         // Inherited via OdbFile
         bool Parse(std::filesystem::path path) override;
+
+        static inline bool attributeValueIsOptional(const std::string& attribute);
 
     private:
         LayerRecord::Vector m_layerRecords;
         StepRecord::Vector m_stepRecords;
 
+        constexpr inline static const char* OPTIONAL_ATTRIBUTES[] =
+        {
+            "OLD_NAME",
+            "old_name",
+            "START_NAME",
+            "start_name",
+            "END_NAME",
+            "end_name",
+        };
     };
 }
