@@ -394,7 +394,7 @@ namespace Odb::Lib::FileModel::Design
                         }
                         else if (!attributeValueIsOptional(attribute))
                         {
-                            logwarn("matrix/matrix file: no value for attribute: " + attribute);
+                            logwarn("matrix/matrix file: no value for non-optional attribute: " + attribute);
                         }                        
                     }
                 }
@@ -424,14 +424,13 @@ namespace Odb::Lib::FileModel::Design
 
     /*static*/ bool MatrixFile::attributeValueIsOptional(const std::string& attribute)
     {
-        auto attributeIsOptional = false;
         for (const auto& optionalAttribute : OPTIONAL_ATTRIBUTES)
         {
             if (attribute == optionalAttribute)
             {
-                attributeIsOptional = true;
+                return true;
             }
         }
-        return attributeIsOptional;
+        return false;
     }
 }

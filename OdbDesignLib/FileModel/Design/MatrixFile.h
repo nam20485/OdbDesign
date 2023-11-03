@@ -115,6 +115,7 @@ namespace Odb::Lib::FileModel::Design
             "start_name",
             "END_NAME",
             "end_name",
+            "ADD_TYPE"
         };
     };
 }
