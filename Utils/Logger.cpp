@@ -1,4 +1,8 @@
 #include "Logger.h"
+#include "Logger.h"
+#include "Logger.h"
+#include "Logger.h"
+#include "Logger.h"
 #include <iostream>
 #include "timestamp.h"
 #include <filesystem>
@@ -14,7 +18,15 @@ namespace Utils
 			{
 				return logMessage(message);
 			})
+		, m_outputTypes(OutputTypes::StdOut|OutputTypes::File)
+		, m_logFilename(DEFAULT_LOG_FILENAME)
+		, m_logFileStream(m_logFilename, std::ios::out | std::ios::app)
+	{		
+	}
+
+	Logger::~Logger()
 	{
+		if (m_logFileStream) m_logFileStream.close();
 	}
 
 	/*static*/ Logger* Logger::instance()
@@ -30,6 +42,21 @@ namespace Utils
 
 	Logger::Level Logger::logLevel() const { return m_level; }
 	void Logger::logLevel(Logger::Level level) { m_level = level; }
+
+	void Logger::outputTypes(int outputTypes)
+	{
+		m_outputTypes = outputTypes;				
+	}
+
+	int Logger::outputTypes() const
+	{
+		return m_outputTypes;
+	}
+
+	std::string Logger::filename() const
+	{
+		return m_logFilename;
+	}
 
 	void Logger::log(Level level, const std::string& message, const std::string& file, int line)
 	{
@@ -77,13 +104,13 @@ namespace Utils
 
 	void Logger::start()
 	{
-		loginfo("logger started");
+		loginfo("**************** logger started ****************");
 		m_logMessageLoop.startProcessing();
 	}
 
 	void Logger::stop()
 	{
-		loginfo("logger stopping");
+		loginfo("**************** logger stopped ****************");
 		m_logMessageLoop.stopProcessing();
 	}
 
@@ -128,12 +155,11 @@ namespace Utils
 	{
 		auto message = formatLogMessage(logMessage);
 
-		std::cout << message;
-		//if (logMessage.level >= LogLevel::Warning)
-		//{
-		//	std::cerr << message;
-		//}
-
+		if (m_outputTypes & OutputTypes::StdOut) std::cout << message;		
+		if (m_outputTypes & OutputTypes::StdErr) std::cerr << message;
+		if (m_outputTypes & OutputTypes::File) m_logFileStream << message << std::flush;
+		// TODO: open log file and close on each write?
+		
 		return true;
 	}
 

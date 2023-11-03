@@ -3,6 +3,8 @@
 #include "WorkQueueLoopThread.h"
 #include <chrono>
 #include "utils_export.h"
+#include <fstream>
+#include <string>
 
 namespace Utils
 {	
@@ -20,10 +22,10 @@ namespace Utils
 #	define logdebug(s) Utils::Logger::instance()->debug(s, __FILE__, __LINE__)
 #endif // logdebug
 #ifndef logexception
-#	define logexception(s) Utils::Logger::instance()->exception(s, __FILE__, __LINE__)
+#	define logexception(e) Utils::Logger::instance()->exception(e, __FILE__, __LINE__)
 #endif // logexception
 
-	class UTILS_EXPORT Logger// : public WorkQueueLoopThread<struct LogMessage>
+	class UTILS_EXPORT Logger final// : public WorkQueueLoopThread<struct LogMessage>
 	{
 	public:
 		enum class Level
@@ -54,12 +56,25 @@ namespace Utils
 			}
 		};
 
+		enum OutputTypes
+		{
+			StdOut = 1,
+			StdErr = 2,
+			File = 4
+		};
+
 		Logger();
+		~Logger();
 
 		static Logger* instance();
 
 		Level logLevel() const;
 		void logLevel(Level level);
+
+		void outputTypes(int outputTypes);
+		int outputTypes() const;
+
+		std::string filename() const;
 
 		void start();
 		void stop();
@@ -78,6 +93,10 @@ namespace Utils
 
 	private:
 		Level m_level;
+		int m_outputTypes;
+
+		std::string m_logFilename;
+		std::ofstream m_logFileStream;
 
 		//bool processWorkItem(struct LogMessage& logMessage) override;
 		std::string formatLogMessage(const struct Message& logMessage);
@@ -86,10 +105,12 @@ namespace Utils
 		WorkQueueLoopThread<struct Message> m_logMessageLoop;
 
 		std::string logLevelToString(Level level) const;
+		
+		inline static constexpr const char DEFAULT_LOG_FILENAME[] = "log.txt";
 
-		const std::string LogLevelStrings[5] = { "NONE", "DEBUG", "INFO", "WARN", "ERROR" };
+		static Logger* _instance;	
 
-		static Logger* _instance;
+		inline static constexpr const char* LogLevelStrings[] = { "NONE", "DEBUG", "INFO", "WARN", "ERROR" };
 	};	
 
 	template<class T>
