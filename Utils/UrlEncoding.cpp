@@ -3,12 +3,12 @@
 
 namespace Utils
 {
-    inline unsigned char to_hex(unsigned char x)
+    static inline unsigned char to_hex(unsigned char x)
     {
         return x + (x > 9 ? ('A' - 10) : '0');
     }
 
-    inline unsigned char from_hex(unsigned char ch)
+    static inline unsigned char from_hex(unsigned char ch)
     {
         if (ch <= '9' && ch >= '0')
             ch -= '0';
@@ -26,7 +26,6 @@ namespace Utils
         std::ostringstream os;
 
         for (const auto& c : unencoded)
-        //for (std::string::const_iterator ci = unencoded.begin(); ci != unencoded.end(); ++ci)
         {
             if ((c >= 'a' && c <= 'z') ||
                 (c >= 'A' && c <= 'Z') ||
