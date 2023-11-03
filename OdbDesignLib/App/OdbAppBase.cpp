@@ -48,7 +48,7 @@ namespace Odb::Lib::App
             }
             catch (std::exception& e)
             {
-                logexception(e);
+                //logexception(e);
                 logerror("Failed to load design specified in arguments \"" + args().loadDesign() + "\"");
                 return Utils::ExitCode::FailedInitLoadDesign;
             }
