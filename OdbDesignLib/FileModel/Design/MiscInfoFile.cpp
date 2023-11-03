@@ -1,3 +1,4 @@
+#include "MiscInfoFile.h"
 //
 // Created by nmill on 10/13/2023.
 //
@@ -64,7 +65,10 @@ namespace Odb::Lib::FileModel::Design
 
                         if (!std::getline(lineStream, value))
                         {
-                            logwarn("misc/info file: no value for attribute: " + attribute);
+                            if (!attributeValueIsOptional(attribute))
+                            {
+                                logwarn("misc/info file: no value for non-optional attribute: " + attribute);
+                            }
                         }
 
                         Utils::str_trim(attribute);
@@ -178,6 +182,18 @@ namespace Odb::Lib::FileModel::Design
         }
 
         return true;
+    }
+
+    /*static*/ inline bool MiscInfoFile::attributeValueIsOptional(const std::string& attribute)
+    {
+        for (const auto& optionalAttribute : OPTIONAL_ATTRIBUTES)
+        {
+            if (attribute == optionalAttribute)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     std::string MiscInfoFile::GetProductModelName() const

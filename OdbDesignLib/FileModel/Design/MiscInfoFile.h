@@ -43,5 +43,13 @@ namespace Odb::Lib::FileModel::Design
         std::string m_units;
         unsigned int m_maxUniqueId;
 
+        static inline bool attributeValueIsOptional(const std::string& attribute);
+
+        constexpr inline static const char* OPTIONAL_ATTRIBUTES[] =
+        {
+           "ODB_SOURCE",
+           "MAX_UID",
+        };
+
     };
 }
