@@ -8,7 +8,7 @@ namespace Odb::Lib::FileModel
     {
         std::stringstream ss;
         ss << m_parseInfo.toString(message);
-        ss << "location: " << sourceFile.filename().string() << ":" << sourceLine << std::endl;
+        ss << "location: " << sourceFile.filename().string() << ":" << sourceLine/* << std::endl*/;
         return ss.str();
     }
 
