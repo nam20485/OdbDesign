@@ -115,7 +115,15 @@ namespace Odb::Lib::FileModel::Design
             "start_name",
             "END_NAME",
             "end_name",
-            "ADD_TYPE"
+            "ADD_TYPE",
+            "ID",
+            "DIELECTRIC_TYPE",
+            "DIELECTRIC_NAME"
+            "FORM",
+            "CU_TOP",
+            "CU_BOTTOM",
+            "REF",
+            "COLOR",
         };
     };
 }
