@@ -47,9 +47,8 @@ namespace Odb::Lib::FileModel::Design
 
         constexpr inline static const char* OPTIONAL_ATTRIBUTES[] =
         {
-           "ODB_SOURCE",
+           //"ODB_SOURCE",  // not optional per spec pg. 80
            "MAX_UID",
         };
-
     };
 }
