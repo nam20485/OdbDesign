@@ -1,3 +1,4 @@
+#include "EdaDataFile.h"
 #include "../../crow_win.h"
 #include "EdaDataFile.h"
 #include <fstream>
@@ -16,11 +17,6 @@ using namespace Utils;
 
 namespace Odb::Lib::FileModel::Design
 {
-    EdaDataFile::EdaDataFile()   
-        : EdaDataFile(false)
-    {
-    }
-
     EdaDataFile::EdaDataFile(bool logAllLineParsing)
         : m_logAllLineParsing(logAllLineParsing)
     {
@@ -36,6 +32,7 @@ namespace Odb::Lib::FileModel::Design
         m_packageRecords.clear();
         m_packageRecordsByName.clear();
         m_featureGroupRecords.clear();
+        m_propertyRecords.clear();
     }
 
     const std::filesystem::path& EdaDataFile::GetPath() const
@@ -177,6 +174,11 @@ namespace Odb::Lib::FileModel::Design
     const EdaDataFile::FeatureGroupRecord::Vector& EdaDataFile::GetFeatureGroupRecords() const
     {
         return m_featureGroupRecords;
+    }
+
+    const EdaDataFile::PropertyRecord::Vector& EdaDataFile::GetPropertyRecords() const
+    {
+        return m_propertyRecords;
     }
 
     std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile> EdaDataFile::to_protobuf() const
@@ -408,9 +410,9 @@ namespace Odb::Lib::FileModel::Design
                         }
                         else
                         {
-                            // no current net or package record to put the property record in
-                            throw_parse_error(m_path, line, token, lineNumber);
-                        }
+                            // top-level PRP record
+                            m_propertyRecords.push_back(pPropertyRecord);
+                        }                        
                     }
                     else if (line.find(NET_RECORD_TOKEN) == 0)
                     {

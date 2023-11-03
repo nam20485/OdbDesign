@@ -16,8 +16,7 @@ namespace Odb::Lib::FileModel::Design
 	class ODBDESIGN_EXPORT EdaDataFile : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile>
 	{
 	public:
-		EdaDataFile();
-		EdaDataFile(bool logAllLineParsing);
+		EdaDataFile(bool logAllLineParsing = false);
 		~EdaDataFile();
 
 		const std::filesystem::path& GetPath() const;
@@ -68,7 +67,7 @@ namespace Odb::Lib::FileModel::Design
 
 		struct ODBDESIGN_EXPORT NetRecord : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::NetRecord>
 		{
-			struct ODBDESIGN_EXPORT SubnetRecord : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord>
+			struct ODBDESIGN_EXPORT SubnetRecord final : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord>
 			{
 				// common subnet enums
 				enum class Type
@@ -96,7 +95,7 @@ namespace Odb::Lib::FileModel::Design
 
 				typedef std::vector<std::shared_ptr<SubnetRecord>> Vector;
 
-				virtual ~SubnetRecord();
+				~SubnetRecord();
 
 				// common subnet fields
 				Type type;
@@ -179,6 +178,11 @@ namespace Odb::Lib::FileModel::Design
 						Hole
 					};
 
+					~ContourPolygon()
+					{
+						m_polygonParts.clear();
+					}
+
 					Type type;
 					float xStart, yStart;
 
@@ -202,6 +206,11 @@ namespace Odb::Lib::FileModel::Design
 				};
 
 				typedef std::vector<std::shared_ptr<OutlineRecord>> Vector;
+
+				~OutlineRecord()
+				{
+					m_contourPolygons.clear();
+				}
 
 				Type type;
 
@@ -261,6 +270,11 @@ namespace Odb::Lib::FileModel::Design
 				typedef std::vector<std::shared_ptr<PinRecord>> Vector;
 				typedef std::map<std::string, std::shared_ptr<PinRecord>> StringMap;
 
+				~PinRecord()
+				{
+					m_outlineRecords.clear();
+				}
+
 				std::string name;
 				Type type;
 				float xCenter;
@@ -282,6 +296,14 @@ namespace Odb::Lib::FileModel::Design
 			typedef std::vector<std::shared_ptr<PackageRecord>> Vector;
 			typedef std::map<std::string, std::shared_ptr<PackageRecord>> StringMap;
 
+			~PackageRecord()
+			{
+				m_outlineRecords.clear();
+				m_pinRecords.clear();
+				m_pinRecordsByName.clear();
+				m_propertyRecords.clear();
+			}
+
 			std::string name;
 			float pitch;
 			float xMin, yMin;
@@ -301,6 +323,12 @@ namespace Odb::Lib::FileModel::Design
 
 		struct FeatureGroupRecord
 		{
+			~FeatureGroupRecord()
+			{
+				m_propertyRecords.clear();
+				m_featureIdRecords.clear();
+			}
+
 			std::string type;	// always "TEXT" per spec
 			
 			PropertyRecord::Vector m_propertyRecords;
@@ -320,6 +348,7 @@ namespace Odb::Lib::FileModel::Design
 		const PackageRecord::Vector& GetPackageRecords() const;
 		const PackageRecord::StringMap& GetPackageRecordsByName() const;
 		const FeatureGroupRecord::Vector& GetFeatureGroupRecords() const;
+		const PropertyRecord::Vector& GetPropertyRecords() const;
 
 		// Inherited via IProtoBuffable
 		std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile> to_protobuf() const override;
@@ -343,6 +372,8 @@ namespace Odb::Lib::FileModel::Design
 		PackageRecord::StringMap m_packageRecordsByName;
 
 		FeatureGroupRecord::Vector m_featureGroupRecords;
+
+		PropertyRecord::Vector m_propertyRecords;
 
 		bool m_logAllLineParsing;
 		
