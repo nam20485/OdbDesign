@@ -81,7 +81,7 @@ namespace Utils
 			{
 				auto message = "7z command failed (exit code = " + std::to_string(exitCode) + ")";
 				logerror(message);
-				throw std::exception(message.c_str());
+				throw std::runtime_error(message.c_str());
 				//return false;
 			}
 
