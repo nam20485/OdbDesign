@@ -15,6 +15,7 @@
 #include <sstream>
 #include "../parse_error.h"
 #include <Logger.h>
+#include "../invalid_odb_error.h"
 
 namespace Odb::Lib::FileModel::Design
 {
@@ -42,14 +43,14 @@ namespace Odb::Lib::FileModel::Design
             if (!std::filesystem::exists(matrixFilePath))
             {
                 auto message = "matrix/matrix file does not exist: [" + matrixFilePath.string() + "]";
-                throw std::exception(message.c_str());
+                throw invalid_odb_error(message.c_str());
             }
 
             matrixFile.open(matrixFilePath, std::ios::in);
             if (!matrixFile.is_open())
             {
                 auto message = "unable to open matrix/matrix file: [" + matrixFilePath.string() + "]";
-                throw std::exception(message.c_str());
+                throw invalid_odb_error(message.c_str());
             }
 
             std::shared_ptr<StepRecord> pCurrentStepRecord;
@@ -410,16 +411,15 @@ namespace Odb::Lib::FileModel::Design
             matrixFile.close();
             throw pe;
         }
-        catch (std::exception& e)
+        catch (invalid_odb_error& ioe)
         {
             parse_info pi(m_path, line, lineNumber);
             const auto m = pi.toString();
-            logexception_msg(e, m);
+            logexception_msg(ioe, m);
             // cleanup file
             matrixFile.close();
-            throw e;
+            throw ioe;
         }
-
 
         return true;
 	}

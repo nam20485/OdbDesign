@@ -78,19 +78,20 @@ namespace Odb::Lib::FileModel::Design
 			if (!std::filesystem::exists(netlistFilePath))
 			{
 				auto message = "netlist file does not exist: [" + m_path.string() + "]";
-				throw std::exception(message.c_str());
+				throw invalid_odb_error(message.c_str());
 			}
+
 			else if (!std::filesystem::is_regular_file(netlistFilePath))
 			{
 				auto message = "netlist file is not a file: [" + m_path.string() + "]";
-				throw std::exception(message.c_str());
+				throw invalid_odb_error(message.c_str());
 			}
 			
 			netlistFile.open(netlistFilePath.string(), std::ios::in);
 			if (!netlistFile.is_open())
 			{
 				auto message = "unable to open netlist file: [" + m_path.string() + "]";
-				throw std::exception(message.c_str());
+				throw invalid_odb_error(message.c_str());
 			}
 
 			while (std::getline(netlistFile, line))

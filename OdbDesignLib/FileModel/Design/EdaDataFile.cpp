@@ -10,6 +10,7 @@
 #include "Logger.h"
 #include "../parse_info.h"
 #include "../parse_error.h"
+#include "../invalid_odb_error.h"
 
 using namespace std::filesystem;
 using namespace Utils;
@@ -240,12 +241,12 @@ namespace Odb::Lib::FileModel::Design
             if (!std::filesystem::exists(m_path))
             {
                 auto message = "eda/data file does not exist: [" + m_path.string() + "]";
-                throw std::exception(message.c_str());
+                throw invalid_odb_error(message.c_str());
             }
             else if (!std::filesystem::is_regular_file(m_path))
             {
                 auto message = "eda/data is not a file: [" + m_path.string() + "]";
-                throw std::exception(message.c_str());
+                throw invalid_odb_error(message.c_str());
             }
 
             loginfo("any extraction complete, parsing data...");
@@ -254,7 +255,7 @@ namespace Odb::Lib::FileModel::Design
             if (!edaDataFile.is_open())
             {
                 auto message = "unable to open eda/data file: [" + m_path.string() + "]";
-                throw std::exception(message.c_str());
+                throw invalid_odb_error(message.c_str());
             }
 
             std::shared_ptr<NetRecord> pCurrentNetRecord;

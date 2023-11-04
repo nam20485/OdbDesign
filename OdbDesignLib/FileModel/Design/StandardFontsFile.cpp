@@ -5,6 +5,7 @@
 #include "str_trim.h"
 #include "../../Constants.h"
 #include "../parse_error.h"
+#include "../invalid_odb_error.h"
 
 namespace Odb::Lib::FileModel::Design
 {
@@ -22,14 +23,14 @@ namespace Odb::Lib::FileModel::Design
             if (!std::filesystem::exists(fontsStandardFile))
             {
                 auto message = "fonts/standard file does not exist: [" + fontsStandardFile.string() + "]";
-                throw std::exception(message.c_str());
+                throw invalid_odb_error(message.c_str());
             }
 
             standardFile.open(fontsStandardFile, std::ios::in);
             if (!standardFile.is_open())
             {
                 auto message = "unable to open fonts/standard file: [" + fontsStandardFile.string() + "]";
-                throw std::exception(message.c_str());
+                throw invalid_odb_error(message.c_str());
             }
 
             std::shared_ptr<CharacterBlock> pCurrentCharacterBlock;
@@ -260,14 +261,14 @@ namespace Odb::Lib::FileModel::Design
             standardFile.close();
             throw pe;
         }
-        catch (std::exception& e)
+        catch (invalid_odb_error& ioe)
         {
             parse_info pi(m_path, line, lineNumber);
             const auto m = pi.toString();
-            logexception_msg(e, m);
+            logexception_msg(ioe, m);
             // cleanup file
             standardFile.close();
-            throw e;
+            throw ioe;
         }
 
 		return true;

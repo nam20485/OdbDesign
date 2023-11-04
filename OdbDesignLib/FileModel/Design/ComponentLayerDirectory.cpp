@@ -7,6 +7,7 @@
 #include <Logger.h>
 #include <exception>
 #include <str_trim.h>
+#include "../invalid_odb_error.h"
 
 using namespace std::filesystem;
 
@@ -93,19 +94,19 @@ namespace Odb::Lib::FileModel::Design
 			if (!std::filesystem::exists(componentsFilePath))
 			{
 				auto message = "components file does not exist: [" + m_path.string() + "]";				
-				throw std::exception(message.c_str());
+				throw invalid_odb_error(message.c_str());
 			}
 			else if (!std::filesystem::is_regular_file(componentsFilePath))
 			{
 				auto message = "components is not a file: [" + m_path.string() + "]";
-				throw std::exception(message.c_str());
+				throw invalid_odb_error(message.c_str());
 			}
 			
 			componentsFile.open(componentsFilePath.string(), std::ios::in);
 			if (!componentsFile.is_open())
 			{
 				auto message = "unable to open components file: [" + m_path.string() + "]";
-				throw std::exception(message.c_str());
+				throw invalid_odb_error(message.c_str());
 			}
 
 			std::shared_ptr<ComponentRecord> pCurrentComponentRecord;
