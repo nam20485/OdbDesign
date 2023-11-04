@@ -11,13 +11,13 @@ namespace Utils
 {
 	Logger::Logger()
 		: m_level(Level::Info)
+		, m_logFilename(DEFAULT_LOG_FILENAME)
+		, m_outputTypes(OutputTypes::StdOut | OutputTypes::File)
+		, m_logFileStream(m_logFilename, std::ios::out | std::ios::app)
 		, m_logMessageLoop([&](Message& message)
 			{
-				return logMessage(message);
+				return this->logMessage(message);
 			})
-		, m_outputTypes(OutputTypes::StdOut|OutputTypes::File)
-		, m_logFilename(DEFAULT_LOG_FILENAME)
-		, m_logFileStream(m_logFilename, std::ios::out | std::ios::app)
 	{		
 	}
 
@@ -135,7 +135,7 @@ namespace Utils
 	//	return this->logMessage(logMessage);
 	//}
 
-	std::string Logger::formatLogMessage(const Message& logMessage)
+	/*static*/ std::string Logger::formatLogMessage(const Message& logMessage)
 	{
 		std::stringstream ss;
 
@@ -179,7 +179,7 @@ namespace Utils
 		return true;
 	}
 
-	std::string Logger::logLevelToString(Level level) const
+	/*static*/ std::string Logger::logLevelToString(Level level)
 	{		
 		return LogLevelStrings[static_cast<int>(level)];
 	}

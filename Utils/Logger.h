@@ -98,23 +98,22 @@ namespace Utils
 
 	private:
 		Level m_level;
-		int m_outputTypes;
-
 		std::string m_logFilename;
-		std::ofstream m_logFileStream;
 
-		//bool processWorkItem(struct LogMessage& logMessage) override;
-		std::string formatLogMessage(const struct Message& logMessage);
-		bool logMessage(const struct Message& logMessage);
+		int m_outputTypes;
+		std::ofstream m_logFileStream;
 
 		WorkQueueLoopThread<struct Message> m_logMessageLoop;
 
-		std::string logLevelToString(Level level) const;
-		
-		inline static constexpr const char DEFAULT_LOG_FILENAME[] = "log.txt";
+		//bool processWorkItem(struct LogMessage& logMessage) override;		
+		bool logMessage(const struct Message& logMessage);
 
+		static std::string formatLogMessage(const struct Message& logMessage);
+		static std::string logLevelToString(Level level);
+			
 		static Logger* _instance;	
 
+		inline static constexpr const char DEFAULT_LOG_FILENAME[] = "log.txt";
 		inline static constexpr const char* LogLevelStrings[] = { "NONE", "DEBUG", "INFO", "WARN", "ERROR" };
 	};	
 
