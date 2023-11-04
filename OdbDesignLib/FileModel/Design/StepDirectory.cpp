@@ -120,7 +120,7 @@ namespace Odb::Lib::FileModel::Design
     {
         loginfo("Parsing netlist files...");
 
-        auto netListDirectoriesFound = 0;
+        std::size_t netListDirectoriesFound = 0;
 
         if (std::filesystem::exists(netlistsPath))
         {
