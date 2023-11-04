@@ -98,8 +98,12 @@ namespace Utils
 		const auto& tid = typeid(e);
 
 		std::stringstream ss;
-		ss << "EXCEPTION: ";
-		ss << tid.name() << ": \"" << e.what() << "\"";
+		ss << "EXCEPTION: "
+			<< tid.name() 
+			<< ": \""
+			<< e.what()
+			<< "\"";
+
 		if (!message.empty())
 		{
 			ss << std::endl << message;
