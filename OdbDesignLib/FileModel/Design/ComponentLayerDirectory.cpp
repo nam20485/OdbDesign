@@ -6,6 +6,7 @@
 #include "../parse_error.h"
 #include <Logger.h>
 #include <exception>
+#include <str_trim.h>
 
 using namespace std::filesystem;
 
@@ -229,20 +230,56 @@ namespace Odb::Lib::FileModel::Design
 					{
 						// component property record line
 						std::string token;
-						lineStream >> token;
+						if (!(lineStream >> token))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
 						if (token != ComponentRecord::PropertyRecord::RECORD_TOKEN)
 						{
 							throw_parse_error(m_path, line, token, lineNumber);
 						}
 
 						auto pPropertyRecord = std::make_shared<ComponentRecord::PropertyRecord>();
-						lineStream >> pPropertyRecord->name;
 
-						lineStream >> pPropertyRecord->value;
-						// remove leading quote
-						pPropertyRecord->value.erase(0, 1);
-						// remove trailing quote
-						pPropertyRecord->value.erase(pPropertyRecord->value.size() - 1);
+						if (!(lineStream >> pPropertyRecord->name))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (!(lineStream >> token))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (!token.empty())
+						{
+							// handle case where the beginning of the value, after the opening single-quote, is whitespace...
+							if (token == "'")
+							{
+								// eat the single-quote and get the next token, i.e. the actual value (w/ space in front)
+								if (!(lineStream >> token))
+								{
+									throw_parse_error(m_path, line, token, lineNumber);
+								}
+							}
+
+							if (token.size() > 0 && token[0] == '\'')
+							{
+								// remove leading quote							
+								token.erase(0, 1);
+							}
+
+							if (token.size() > 0 && token[token.size() - 1] == '\'')
+							{
+								// remove trailing quote
+								token.erase(token.size() - 1);
+							}
+							
+							Utils::str_trim(token);
+						}	
+
+						pPropertyRecord->value = token;
 
 						float f;
 						while (lineStream >> f)
