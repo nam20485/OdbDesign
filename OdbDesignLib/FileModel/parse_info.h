@@ -14,7 +14,7 @@ namespace Odb::Lib::FileModel
 		std::string dataToken;		
 
 		parse_info(std::filesystem::path dataFile, const std::string& szDataLine, const std::string& szDataToken, int dataLineNumber)
-			: dataFile(dataFile), dataLine(szDataLine), dataToken(szDataToken), dataLineNumber(dataLineNumber)			
+			: dataFile(dataFile), dataLineNumber(dataLineNumber), dataLine(szDataLine), dataToken(szDataToken)
 		{
 		}
 
