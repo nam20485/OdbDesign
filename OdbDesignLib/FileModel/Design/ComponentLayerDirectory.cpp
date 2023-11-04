@@ -112,6 +112,9 @@ namespace Odb::Lib::FileModel::Design
 			while (std::getline(componentsFile, line))
 			{
 				lineNumber++;
+
+				// trim whitespace from beginning and end of line
+				Utils::str_trim(line);
 				if (!line.empty())
 				{
 					std::stringstream lineStream(line);
