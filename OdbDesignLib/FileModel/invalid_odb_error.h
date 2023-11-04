@@ -5,11 +5,11 @@
 
 namespace Odb::Lib::FileModel
 {
-	class invalid_odb_error : public std::exception
+	class invalid_odb_error : public std::runtime_error
 	{
 	public:
-		invalid_odb_error(char const* const message)
-			: exception(message)
+		invalid_odb_error(const char* message)
+			: runtime_error(message)
 		{
 		}
 
