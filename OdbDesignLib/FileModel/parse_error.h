@@ -40,7 +40,7 @@ namespace Odb::Lib::FileModel
 
 		const parse_info& getParseInfo() const;
 
-		[[nodiscard]] virtual char const* what() const;
+		[[nodiscard]] char const* what() const noexcept;
 
 	private:
 		// data file

@@ -17,7 +17,7 @@ namespace Odb::Lib::FileModel
         return m_parseInfo;
     }
 
-    char const* parse_error::what() const
+    char const* parse_error::what() const noexcept
     {
         return WHAT_STR;
     }
