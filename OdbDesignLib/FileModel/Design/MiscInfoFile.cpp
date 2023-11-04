@@ -12,6 +12,7 @@
 #include "timestamp.h"
 #include "Logger.h"
 #include "../parse_error.h"
+#include "../invalid_odb_error.h"
 
 using namespace std::chrono;
 
@@ -25,20 +26,24 @@ namespace Odb::Lib::FileModel::Design
 
         try
         {
-            if (!OdbFile::Parse(path)) return false;
+            if (!OdbFile::Parse(path))
+            {
+                auto message = "\"misc\" directory does not exist: [" + path.string() + "]";
+                throw invalid_odb_error(message);
+            }
 
             auto infoFilePath = path / "info";
             if (!std::filesystem::exists(infoFilePath))
             {
                 auto message = "misc/info file does not exist: [" + infoFilePath.string() + "]";
-                throw std::exception(message.c_str());
+                throw invalid_odb_error(message);
             }
 
             infoFile.open(infoFilePath, std::ios::in);
             if (!infoFile.is_open())
             {
                 auto message = "unable to open misc/info file: [" + infoFilePath.string() + "]";
-                throw std::exception(message.c_str());
+                throw invalid_odb_error(message);
             }
 
             while (std::getline(infoFile, line))
@@ -164,6 +169,15 @@ namespace Odb::Lib::FileModel::Design
             }
 
             infoFile.close();
+        }
+        catch (invalid_odb_error& ioe)
+        {
+            parse_info pi(m_path, line, lineNumber);
+            const auto m = pi.toString();
+            logexception_msg(ioe, m);
+            // cleanup file
+            infoFile.close();
+            throw ioe;
         }
         catch (std::exception& e)
         {
