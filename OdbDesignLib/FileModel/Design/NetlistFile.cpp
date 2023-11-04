@@ -6,6 +6,8 @@
 #include <sstream>
 #include <Logger.h>
 #include "../parse_error.h"
+#include "../invalid_odb_error.h"
+#include <climits>
 
 namespace Odb::Lib::FileModel::Design
 {
