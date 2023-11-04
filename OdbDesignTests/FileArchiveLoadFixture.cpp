@@ -36,22 +36,29 @@ namespace Odb::Test
 	void FileArchiveLoadFixture::TearDown()
 	{		
 		if (m_removeDecompressedDirectories)
-		{
-			for (const auto& loadedName : m_pDesignCache->getLoadedFileArchiveNames())
+		{		
+			//if (!m_pDesignCache->getLoadedDesignNames().empty())
+			//{
+			//	for (const auto& loadedName : m_pDesignCache->getLoadedFileArchiveNames())
+			//	{
+			//		if (is_directory(getDesignPath(loadedName)))
+			//		{
+			//			remove_all(getDesignPath(loadedName));
+			//		}
+			//	}
+			//}
+			//else
+			//{
+			
+			// delete uncompressed directories
+			for (const auto& entry : directory_iterator(m_testDataDir))
 			{
-				if (is_directory(getDesignPath(loadedName)))
+				if (is_directory(entry))
 				{
-					remove_all(getDesignPath(loadedName));
+					remove_all(entry.path());
 				}
 			}
 
-			// delete uncompressed directories
-			//for (const auto& entry : directory_iterator(m_testDataDir))
-			//{
-			//	if (is_directory(entry))
-			//	{
-			//		remove_all(entry.path());
-			//	}
 			//}
 		}
 	}
