@@ -1,11 +1,8 @@
 #include "Logger.h"
-#include "Logger.h"
-#include "Logger.h"
-#include "Logger.h"
-#include "Logger.h"
 #include <iostream>
 #include "timestamp.h"
 #include <filesystem>
+#include <typeinfo>
 
 using namespace std::filesystem;
 
@@ -93,14 +90,29 @@ namespace Utils
 
 	void Logger::exception(const std::exception& e, const std::string& file, int line)
 	{
-		exception(e.what(), file, line);
+		exception(e, "", file, line);
 	}
 
-	void Logger::exception(const std::string& message, const std::string& file, int line)
+	void Logger::exception(const std::exception& e, const std::string& message, const std::string& file, int line)
 	{
-		std::string s = "EXCEPTION!: " + message;
-		error(s, file, line);
+		const auto& tid = typeid(e);
+
+		std::stringstream ss;
+		ss << "EXCEPTION: ";
+		ss << tid.name() << ": \"" << e.what() << "\"";
+		if (!message.empty())
+		{
+			ss << std::endl << message;
+		}
+
+		error(ss.str(), file, line);
 	}
+
+	//void Logger::exception(const std::string& message, const std::string& file, int line)
+	//{
+	//	std::string s = "EXCEPTION!: " + message;
+	//	error(s, file, line);
+	//}
 
 	void Logger::start()
 	{
@@ -155,8 +167,8 @@ namespace Utils
 	{
 		auto message = formatLogMessage(logMessage);
 
-		if (m_outputTypes & OutputTypes::StdOut) std::cout << message;		
-		if (m_outputTypes & OutputTypes::StdErr) std::cerr << message;
+		if (m_outputTypes & OutputTypes::StdOut) std::cout << message << std::flush;		
+		if (m_outputTypes & OutputTypes::StdErr) std::cerr << message << std::flush;
 		if (m_outputTypes & OutputTypes::File) m_logFileStream << message << std::flush;
 		// TODO: open log file and close on each write?
 		

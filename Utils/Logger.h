@@ -24,6 +24,9 @@ namespace Utils
 #ifndef logexception
 #	define logexception(e) Utils::Logger::instance()->exception(e, __FILE__, __LINE__)
 #endif // logexception
+#ifndef logexception_msg
+#	define logexception_msg(e, m) Utils::Logger::instance()->exception(e, m, __FILE__, __LINE__)
+#endif // logexception_msg
 
 	class UTILS_EXPORT Logger final// : public WorkQueueLoopThread<struct LogMessage>
 	{
@@ -85,8 +88,10 @@ namespace Utils
 		void info(const std::string& message, const std::string& file = "", int line = -1);
 		void info(const std::stringstream& message, const std::string& file = "", int line = -1);
 		void debug(const std::string& message, const std::string& file = "", int line = -1);
+		
 		void exception(const std::exception& e, const std::string& file = "", int line = -1);
-		void exception(const std::string& message, const std::string& file = "", int line = -1);
+		void exception(const std::exception& e, const std::string& message, const std::string& file = "", int line = -1);
+		//void exception(const std::string& message, const std::string& file = "", int line = -1);
 
 		template<class T>
 		Logger& operator<<(const T& output);
