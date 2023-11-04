@@ -9,13 +9,13 @@ namespace Odb::Test
 {	
 
 #ifndef RUN_ALL_TESTS
-#	define RUN_ALL_TESTS 1
+#	define RUN_ALL_TESTS 0
 #endif
 #ifndef RUN_SUCCEEDING_TESTS
-#	define RUN_SUCCEEDING_TESTS 0
+#	define RUN_SUCCEEDING_TESTS 1
 #endif
 #ifndef RUN_FAILING_TESTS
-#	define RUN_FAILING_TESTS 0
+#	define RUN_FAILING_TESTS 1
 #endif
 
 #if (RUN_SUCCEEDING_TESTS || RUN_ALL_TESTS)
