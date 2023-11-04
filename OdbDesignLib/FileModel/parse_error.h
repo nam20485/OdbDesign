@@ -44,7 +44,7 @@ namespace Odb::Lib::FileModel
 
 		const parse_info& getParseInfo() const;
 
-		_NODISCARD virtual char const* what() const;
+		[[nodiscard]] virtual char const* what() const;
 
 	private:
 		const parse_info m_parseInfo;
