@@ -3,6 +3,7 @@
 #include "../FileModel/Design/FileArchive.h"
 #include "../ProductModel/Design.h"
 #include "../odbdesign_export.h"
+#include "StringVector.h"
 
 
 namespace Odb::Lib::App
@@ -21,7 +22,12 @@ namespace Odb::Lib::App
 		std::vector<std::string> getLoadedFileArchiveNames(const std::string& filter = "") const;
 		std::vector<std::string> getUnloadedDesignNames(const std::string& filter = "") const;
 
-		bool isQueryValid(const std::string& query) const;
+		int loadAllFileArchives(bool stopOnError);
+		int loadAllDesigns(bool stopOnError);
+		int loadFileArchives(const Utils::StringVector& names);
+		int loadDesigns(const Utils::StringVector& names);
+
+		//bool isQueryValid(const std::string& query) const;
 
 		void Clear();
 		
@@ -33,6 +39,8 @@ namespace Odb::Lib::App
 
 		std::shared_ptr<ProductModel::Design> LoadDesign(const std::string& designName);
 		std::shared_ptr<FileModel::Design::FileArchive> LoadFileArchive(const std::string& designName);
+
+		constexpr inline static const char* DESIGN_EXTENSIONS[] = { "zip", "tgz", "tar.gz", "tar" };
 
 	};
 }

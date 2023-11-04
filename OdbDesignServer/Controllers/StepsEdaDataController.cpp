@@ -3,6 +3,8 @@
 #include "FileModel/Design/EdaDataFile.h"
 #include "JsonCrowReturnable.h"
 #include <sstream>
+#include "UrlEncoding.h"
+
 
 using namespace Odb::Lib::App;
 using namespace Odb::Lib::FileModel::Design;
@@ -40,30 +42,32 @@ namespace Odb::App::Server
 																	   const std::string& stepName,
 																	   const crow::request& req)
 	{
-		if (designName.empty())
+		auto designNameDecoded = UrlEncoding::decode(designName);
+		if (designNameDecoded.empty())
 		{
 			return crow::response(crow::status::BAD_REQUEST, "design name not specified");
 		}
 
-		if (stepName.empty())
+		auto stepNameDecoded = UrlEncoding::decode(stepName);
+		if (stepNameDecoded.empty())
 		{
 			return crow::response(crow::status::BAD_REQUEST, "step name not specified");
 		}
-
-		auto pFileArchive = m_serverApp.designs().GetFileArchive(designName);
+	
+		auto pFileArchive = m_serverApp.designs().GetFileArchive(designNameDecoded);
 		if (pFileArchive == nullptr)
 		{
 			std::stringstream ss;
-			ss << "design: \"" << designName << "\" not found";			
+			ss << "design: \"" << designNameDecoded << "\" not found";
 			return crow::response(crow::status::NOT_FOUND, ss.str());
 		}
 
 		auto& stepsByName = pFileArchive->GetStepsByName();
-		auto findIt = stepsByName.find(stepName);
+		auto findIt = stepsByName.find(stepNameDecoded);
 		if (findIt == stepsByName.end())
 		{
 			std::stringstream ss;
-			ss << "(design: \"" << designName << "\")" << " step: \"" << stepName << "\" not found";
+			ss << "(design: \"" << designNameDecoded << "\")" << " step: \"" << stepNameDecoded << "\" not found";
 			return crow::response(crow::status::NOT_FOUND, ss.str());
 		}
 

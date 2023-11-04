@@ -5,6 +5,11 @@
 #include "ArchiveExtractor.h"
 #include "../parse_error.h"
 #include <Logger.h>
+#include <exception>
+#include <str_trim.h>
+#include "../invalid_odb_error.h"
+
+using namespace std::filesystem;
 
 
 namespace Odb::Lib::FileModel::Design
@@ -62,6 +67,8 @@ namespace Odb::Lib::FileModel::Design
 	bool ComponentLayerDirectory::Parse()
 	{
 		std::ifstream componentsFile;
+		int lineNumber = 0;
+		std::string line;
 
 		try
 		{
@@ -69,32 +76,47 @@ namespace Odb::Lib::FileModel::Design
 
 			loginfo("checking for extraction...");
 
-			auto componentsFilePath = Utils::ArchiveExtractor::getUncompressedFilePath(m_path, COMPONENTS_FILENAME);
+			std::filesystem::path componentsFilePath;
+			for (const std::string componentsFilename : COMPONENTS_FILENAMES)
+			{
+				loginfo("trying components file: [" + componentsFilename + "]...");
+
+				componentsFilePath = Utils::ArchiveExtractor::getUncompressedFilePath(m_path, componentsFilename);
+				if (exists(componentsFilePath) && is_regular_file(componentsFilePath))
+				{			
+					loginfo("found components file: [" + componentsFilePath.string() + "]");
+					break;
+				}
+			}			
 
 			loginfo("any extraction complete, parsing data...");
 
 			if (!std::filesystem::exists(componentsFilePath))
 			{
-				throw_parse_error(m_path, "", "", -1);
+				auto message = "components file does not exist: [" + m_path.string() + "]";				
+				throw invalid_odb_error(message.c_str());
 			}
 			else if (!std::filesystem::is_regular_file(componentsFilePath))
 			{
-				throw_parse_error(m_path, "", "", -1);
+				auto message = "components is not a file: [" + m_path.string() + "]";
+				throw invalid_odb_error(message.c_str());
 			}
 			
 			componentsFile.open(componentsFilePath.string(), std::ios::in);
 			if (!componentsFile.is_open())
 			{
-				throw_parse_error(m_path, "", "", -1);
+				auto message = "unable to open components file: [" + m_path.string() + "]";
+				throw invalid_odb_error(message.c_str());
 			}
 
 			std::shared_ptr<ComponentRecord> pCurrentComponentRecord;
-
-			int lineNumber = 0;
-			std::string line;
+			
 			while (std::getline(componentsFile, line))
 			{
 				lineNumber++;
+
+				// trim whitespace from beginning and end of line
+				Utils::str_trim(line);
 				if (!line.empty())
 				{
 					std::stringstream lineStream(line);
@@ -209,20 +231,56 @@ namespace Odb::Lib::FileModel::Design
 					{
 						// component property record line
 						std::string token;
-						lineStream >> token;
+						if (!(lineStream >> token))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
 						if (token != ComponentRecord::PropertyRecord::RECORD_TOKEN)
 						{
 							throw_parse_error(m_path, line, token, lineNumber);
 						}
 
 						auto pPropertyRecord = std::make_shared<ComponentRecord::PropertyRecord>();
-						lineStream >> pPropertyRecord->name;
 
-						lineStream >> pPropertyRecord->value;
-						// remove leading quote
-						pPropertyRecord->value.erase(0, 1);
-						// remove trailing quote
-						pPropertyRecord->value.erase(pPropertyRecord->value.size() - 1);
+						if (!(lineStream >> pPropertyRecord->name))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (!(lineStream >> token))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (!token.empty())
+						{
+							// handle case where the beginning of the value, after the opening single-quote, is whitespace...
+							if (token == "'")
+							{
+								// eat the single-quote and get the next token, i.e. the actual value (w/ space in front)
+								if (!(lineStream >> token))
+								{
+									throw_parse_error(m_path, line, token, lineNumber);
+								}
+							}
+
+							if (token.size() > 0 && token[0] == '\'')
+							{
+								// remove leading quote							
+								token.erase(0, 1);
+							}
+
+							if (token.size() > 0 && token[token.size() - 1] == '\'')
+							{
+								// remove trailing quote
+								token.erase(token.size() - 1);
+							}
+							
+							Utils::str_trim(token);
+						}	
+
+						pPropertyRecord->value = token;
 
 						float f;
 						while (lineStream >> f)
@@ -275,11 +333,16 @@ namespace Odb::Lib::FileModel::Design
 		{
 			auto m = pe.toString("Parse Error:");
 			logerror(m);
-
-			componentsFile.close();
-
-			//return false;
+			componentsFile.close();			
 			throw pe;
+		}
+		catch (std::exception& e)
+		{
+			parse_info pi(m_path, line, lineNumber);
+			const auto m = pi.toString();
+			logexception_msg(e, m);			
+			componentsFile.close();
+			throw e;
 		}
 
 		return true;

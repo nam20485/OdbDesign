@@ -19,7 +19,7 @@ public:
 		long long getElapsedMilliseconds() const;
 		double getElapsedSeconds() const;			
 
-		std::string getElapsedSecondsString(const std::string& suffix) const;
+		std::string getElapsedSecondsString(const std::string& suffix = "") const;
 		
 		//template<class D>
 		//std::chrono::system_clock::duration getElapsedDuration() const;			

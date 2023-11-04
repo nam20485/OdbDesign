@@ -14,15 +14,11 @@ namespace Odb::Lib::FileModel
 
 	class parse_error : public std::exception
 	{
-	public:	
-
-		// source file
-		//int sourceLine;
-		//std::filesystem::path sourceFile;
+	public:		
 
 		parse_error(std::filesystem::path dataFile, const std::string& szDataLine, const std::string& szDataToken, int dataLineNumber, int sourceLine, const char* szSourceFile)
-			: m_parseInfo(dataFile, szDataLine, szDataToken, dataLineNumber, sourceLine, szSourceFile)			
-		{
+			: m_parseInfo(dataFile, szDataLine, szDataToken, dataLineNumber), sourceLine(sourceLine), sourceFile(szSourceFile)
+		{			
 		}
 
 		parse_error(const char* szDataFile, const char* szDataLine, const char* szDataToken, int sourceLine, const char* szSourceFile)
@@ -44,8 +40,17 @@ namespace Odb::Lib::FileModel
 
 		const parse_info& getParseInfo() const;
 
+		[[nodiscard]] char const* what() const noexcept;
+
 	private:
+		// data file
 		const parse_info m_parseInfo;
+
+		// source file
+		int sourceLine;
+		std::filesystem::path sourceFile;
+
+		constexpr inline static const char WHAT_STR[] = "Parse error";
 
 	};
 }

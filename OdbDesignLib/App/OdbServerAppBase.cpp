@@ -53,7 +53,7 @@ namespace Odb::Lib::App
 		catch (boost::wrapexcept<boost::system::system_error>& e)
 		{
 			// log the error
-			logexception(e.what());	
+			logexception(e);
 			logerror("SSL was specified but it failed to initialize, exiting...");			
 			return ExitCode::FailedInitSsl;
 		}

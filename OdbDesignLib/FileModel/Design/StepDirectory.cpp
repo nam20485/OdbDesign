@@ -40,6 +40,8 @@ namespace Odb::Lib::FileModel::Design
 
         m_name = std::filesystem::path(m_path).filename().string();
 
+        loginfo("Parsing step directory: " + m_name + "...");
+
         auto layersPath = m_path / "layers";
         if (!ParseLayerFiles(layersPath)) return false;
 
@@ -48,6 +50,8 @@ namespace Odb::Lib::FileModel::Design
 
         auto edaPath = m_path / "eda";
         if (!ParseEdaDataFiles(edaPath)) return false;
+
+        loginfo("Parsing step directory: " + m_name + " complete");
 
         return true;
     }
@@ -116,23 +120,42 @@ namespace Odb::Lib::FileModel::Design
     {
         loginfo("Parsing netlist files...");
 
-        if (!std::filesystem::exists(netlistsPath)) return false;
-        else if (!std::filesystem::is_directory(netlistsPath)) return false;
+        std::size_t netListDirectoriesFound = 0;
 
-        // parse net name records
-        for (auto& d : std::filesystem::directory_iterator(netlistsPath))
+        if (std::filesystem::exists(netlistsPath))
         {
-            if (std::filesystem::is_directory(d))
-            {
-                auto pNetlist = std::make_shared<NetlistFile>(d.path());
-                if (pNetlist->Parse())
+            if (std::filesystem::is_directory(netlistsPath))
+            {                
+                // parse net name records
+                for (auto& d : std::filesystem::directory_iterator(netlistsPath))
                 {
-                    m_netlistsByName[pNetlist->GetName()] = pNetlist;
+                    if (std::filesystem::is_directory(d))
+                    {
+                        netListDirectoriesFound++;
+
+                        auto pNetlist = std::make_shared<NetlistFile>(d.path());
+                        if (pNetlist->Parse())
+                        {
+                            m_netlistsByName[pNetlist->GetName()] = pNetlist;
+                        }
+                        else
+                        {
+                            // pNetList will be freed when exiting the above scope
+                            logerror("Failed to parse netlist directory: " + pNetlist->GetName());
+                        }
+                    }
                 }
             }
         }
-
-        loginfo("Parsing netlist files complete");
+       
+        if (netListDirectoriesFound == 0)   // netlist dirs found, but none parsed successfully
+        {      
+            logwarn("No netlist directories found");
+        }
+        else if (netListDirectoriesFound == m_netlistsByName.size())
+        {
+			loginfo("netlist directories parsed successfully");
+		}
 
         return true;
     }
