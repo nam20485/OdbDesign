@@ -11,6 +11,8 @@ namespace Odb::Lib::FileModel::Design
     bool StandardFontsFile::Parse(std::filesystem::path path)
     {
         std::ifstream standardFile;
+        int lineNumber = 0;
+        std::string line;
 
         try
         {
@@ -34,8 +36,6 @@ namespace Odb::Lib::FileModel::Design
             std::shared_ptr<CharacterBlock::LineRecord> pCurrentLineRecord;
             bool beginTokenFound = false;
 
-            int lineNumber = 0;
-            std::string line;
             while (std::getline(standardFile, line))
             {
                 lineNumber++;
@@ -262,7 +262,9 @@ namespace Odb::Lib::FileModel::Design
         }
         catch (std::exception& e)
         {
-            logexception(e);
+            parse_info pi(m_path, line, lineNumber);
+            const auto m = pi.toString();
+            logexception_msg(e, m);
             // cleanup file
             standardFile.close();
             throw e;

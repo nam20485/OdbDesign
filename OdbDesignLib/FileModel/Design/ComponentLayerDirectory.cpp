@@ -65,6 +65,8 @@ namespace Odb::Lib::FileModel::Design
 	bool ComponentLayerDirectory::Parse()
 	{
 		std::ifstream componentsFile;
+		int lineNumber = 0;
+		std::string line;
 
 		try
 		{
@@ -106,9 +108,7 @@ namespace Odb::Lib::FileModel::Design
 			}
 
 			std::shared_ptr<ComponentRecord> pCurrentComponentRecord;
-
-			int lineNumber = 0;
-			std::string line;
+			
 			while (std::getline(componentsFile, line))
 			{
 				lineNumber++;
@@ -297,7 +297,9 @@ namespace Odb::Lib::FileModel::Design
 		}
 		catch (std::exception& e)
 		{
-			logexception(e);
+			parse_info pi(m_path, line, lineNumber);
+			const auto m = pi.toString();
+			logexception_msg(e, m);			
 			componentsFile.close();
 			throw e;
 		}

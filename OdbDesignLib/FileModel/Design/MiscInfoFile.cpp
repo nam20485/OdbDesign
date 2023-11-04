@@ -20,6 +20,8 @@ namespace Odb::Lib::FileModel::Design
     bool MiscInfoFile::Parse(std::filesystem::path path)
     {
         std::ifstream infoFile;
+        int lineNumber = 0;
+        std::string line;
 
         try
         {
@@ -39,8 +41,6 @@ namespace Odb::Lib::FileModel::Design
                 throw std::exception(message.c_str());
             }
 
-            int lineNumber = 0;
-            std::string line;
             while (std::getline(infoFile, line))
             {
                 lineNumber++;
@@ -165,17 +165,11 @@ namespace Odb::Lib::FileModel::Design
 
             infoFile.close();
         }
-        //catch (parse_error& pe)
-        //{
-        //    auto m = pe.toString("Parse Error:");
-        //    logerror(m);
-        //    // cleanup file
-        //    infoFile.close();
-        //    throw pe;
-        //}
         catch (std::exception& e)
         {
-            logexception(e);
+            parse_info pi(m_path, line, lineNumber);
+            const auto m = pi.toString();
+            logexception_msg(e, m);
             // cleanup file
             infoFile.close();
             throw e;

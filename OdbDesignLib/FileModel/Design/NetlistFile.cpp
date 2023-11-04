@@ -64,6 +64,8 @@ namespace Odb::Lib::FileModel::Design
 	bool NetlistFile::Parse()
 	{
 		std::ifstream netlistFile;
+		int lineNumber = 0;
+		std::string line;
 
 		try
 		{
@@ -91,8 +93,6 @@ namespace Odb::Lib::FileModel::Design
 				throw std::exception(message.c_str());
 			}
 
-			int lineNumber = 0;
-			std::string line;
 			while (std::getline(netlistFile, line))
 			{
 				lineNumber++;
@@ -270,7 +270,9 @@ namespace Odb::Lib::FileModel::Design
 		}
 		catch (std::exception& e)
 		{
-			logexception(e);
+			parse_info pi(m_path, line, lineNumber);
+			const auto m = pi.toString();
+			logexception_msg(e, m);
 			netlistFile.close();
 			throw e;
 		}

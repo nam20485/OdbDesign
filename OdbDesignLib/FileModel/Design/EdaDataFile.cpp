@@ -228,6 +228,8 @@ namespace Odb::Lib::FileModel::Design
     bool EdaDataFile::Parse(std::filesystem::path path)
     {
         std::ifstream edaDataFile;
+        int lineNumber = 0;
+        std::string line;
 
         try
         {
@@ -267,8 +269,6 @@ namespace Odb::Lib::FileModel::Design
 
             FeatureGroupRecord::shared_ptr pCurrentFeatureGroupRecord;
 
-            int lineNumber = 0;
-            std::string line;            
             while (std::getline(edaDataFile, line))
             {
                 // keep track of line number
@@ -1338,7 +1338,9 @@ namespace Odb::Lib::FileModel::Design
         }
         catch (std::exception& e)
         {
-            logexception(e);
+            parse_info pi(m_path, line, lineNumber);
+            const auto m = pi.toString();
+            logexception_msg(e, m);
             // cleanup file
             edaDataFile.close();
             throw e;
