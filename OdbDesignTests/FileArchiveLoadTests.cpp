@@ -110,21 +110,25 @@ namespace Odb::Test
 		ASSERT_NE(pFileArchive, nullptr);
 	}
 
-#endif // (RUN_SUCCEEDING_TESTS || RUN_ALL_TESTS)
+	TEST_F(FileArchiveLoadFixture, Load_FileArchive_Succeeds_Panel__Mss_Demo_Project_tgz)
+	{
+		auto pFileArchive = m_pDesignCache->GetFileArchive("Panel - Mss_Demo_Project");
+		ASSERT_NE(pFileArchive, nullptr);
+	}
 
-	//TEST_F(FileArchiveLoadFixture, Load_FileArchive_Succeeds_Panel__Demo1230_tgz)
-	//{
-	//	auto pFileArchive = m_pDesignCache->GetFileArchive("Panel - Demo1230");
-	//	ASSERT_NE(pFileArchive, nullptr);
-	//}
+	TEST_F(FileArchiveLoadFixture, Load_FileArchive_Succeeds_roundboard_tgz)
+	{
+		auto pFileArchive = m_pDesignCache->GetFileArchive("roundboard");
+		ASSERT_NE(pFileArchive, nullptr);
+	}	
 
-	//TEST_F(FileArchiveLoadFixture, Load_FileArchive_Succeeds_designodb_zip)
-	//{
-	//	auto pFileArchive = m_pDesignCache->GetFileArchive("designodb");
-	//	ASSERT_NE(pFileArchive, nullptr);
-	//}
+	TEST_F(FileArchiveLoadFixture, Load_FileArchive_Succeeds_Panel__vplanproject_1230_tgz)
+	{
+		auto pFileArchive = m_pDesignCache->GetFileArchive("Panel - vplanproject_1230");
+		ASSERT_NE(pFileArchive, nullptr);
+	}	
 
-	
+#endif // (RUN_SUCCEEDING_TESTS || RUN_ALL_TESTS)	
 
 	//
 	// Fails
@@ -178,7 +182,8 @@ namespace Odb::Test
 		// 
 		//Parse Error:
 		//current file : [data:73383]
-		//current line : [PIN PIN_61 T - 14.1 0 0 N R ID = 3996]
+		//current line : [PIN PIN_61 T -14.1 0 0 N R ID=3996]
+		//										~^~
 		//current token : [N]
 		//location : EdaDataFile.cpp : 824
 
@@ -197,6 +202,24 @@ namespace Odb::Test
 				auto pFileArchive = m_pDesignCache->GetFileArchive("Turbot_odb_panel");
 			},
 			parse_error);
+	}
+
+	TEST_F(FileArchiveLoadFixture, Load_FileArchive_Fails_Panel__Rotation_Test_Board_tgz)
+	{
+		// throws parse_error because:
+		// 
+		//Parse Error :
+		//current file : [designs\Panel - Rotation Test Board\Panel - Rotation Test Board\steps\rotation - test - board\eda\data\data:180]
+		//current line : [PIN 1 U -0.3984522 -0.0977426 0 U U ID=30]
+		//					   ~^~
+		//current token : [U]
+		//location : EdaDataFile.cpp : 790
+
+		EXPECT_THROW(
+			{
+				auto pFileArchive = m_pDesignCache->GetFileArchive("Panel - Rotation Test Board");
+			},
+			parse_error);		
 	}
 
 #endif // (RUN_FAILING_TESTS || RUN_ALL_TESTS)
