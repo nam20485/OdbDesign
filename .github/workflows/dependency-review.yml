@@ -9,8 +9,7 @@
 name: 'Dependency Review'
 on: 
   pull_request:
-    branches:
-      [ "main", "release", "development" ]
+    branches: [ "main", "release", "development" ]
 
 permissions:
   contents: read
