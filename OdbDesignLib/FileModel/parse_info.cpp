@@ -11,10 +11,13 @@ namespace Odb::Lib::FileModel
         {
             ss << message << std::endl;
         }
-        
-        ss  << "current file:  [" << dataFile.filename().string() << ":" << dataLineNumber << "]" << std::endl
-            << "current line:  [" << dataLine << "]" << std::endl
-            << "current token: [" << dataToken << "]" << std::endl;
+
+        if (!dataFile.empty() || !dataLine.empty() || !dataToken.empty())
+        {
+            ss << "current file:  [" << dataFile.filename().string() << ":" << dataLineNumber << "]" << std::endl
+                << "current line:  [" << dataLine << "]" << std::endl
+                << "current token: [" << dataToken << "]";
+        }
 
         return ss.str();
 	}

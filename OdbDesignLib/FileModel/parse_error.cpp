@@ -7,8 +7,8 @@ namespace Odb::Lib::FileModel
     std::string parse_error::toString(const std::string& message) const
     {
         std::stringstream ss;
-        ss << m_parseInfo.toString(message);
-        ss << "location: " << sourceFile.filename().string() << ":" << sourceLine/* << std::endl*/;
+        ss << m_parseInfo.toString(message) << std::endl;
+        ss << "location: " << sourceFile.filename().string() << ":" << sourceLine;
         return ss.str();
     }
 
