@@ -29,3 +29,6 @@ doxygen/docs/
 /TEST_DATA
 OdbDesignTests/Testing/
 Testing/
+testlog.txt
+testlog.txt.tmp28357
+testlog.xml
