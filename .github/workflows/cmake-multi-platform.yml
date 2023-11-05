@@ -142,7 +142,22 @@ jobs:
       run: cmake --build --preset ${{matrix.preset}} 
 
     - name: CMake Test
-      run: ctest --preset ${{matrix.preset}} -V
+      id: cmake-test      
+      run: | 
+        cd ./out/build/${{matrix.preset}}/OdbDesignTests
+        ctest -V -O testlog.txt --output-junit testlog.xml
+      # let the report step fail the job if it finds failed tests
+      continue-on-error: true
+
+    # report test results
+    - name: Report Test Results
+      uses: dorny/test-reporter@v1.7.0
+      if: ${{steps.cmake-test.outcome}} == 'success' || ${{steps.cmake-test.outcome}} == 'failure'      
+      with:
+        name: ${{ matrix.os }}_test-results
+        path: ./out/build/${{matrix.preset}}/OdbDesignTests/testlog.xml
+        reporter: junit-xml
+        fail-on-error: true
 
     #
     #   Artifacts
