@@ -156,7 +156,7 @@ jobs:
       with:
         name: ${{ matrix.os }}_test-results
         path: ./out/build/${{matrix.preset}}/OdbDesignTests/testlog.xml
-        reporter: junit-xml
+        reporter: java-junit
         fail-on-error: true
 
     #
