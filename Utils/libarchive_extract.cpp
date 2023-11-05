@@ -103,6 +103,7 @@ namespace Utils
         const void* buff;
         size_t size;
         la_int64_t offset;
+        la_ssize_t written;
 
         for (;;) {
             r = archive_read_data_block(ar, &buff, &size, &offset);
@@ -110,8 +111,8 @@ namespace Utils
                 return (ARCHIVE_OK);
             if (r < ARCHIVE_OK)
                 return (r);
-            r = archive_write_data_block(aw, buff, size, offset);
-            if (r < ARCHIVE_OK) {
+            written = archive_write_data_block(aw, buff, size, offset);
+            if (written < ARCHIVE_OK) {
                 fprintf(stderr, "%s\n", archive_error_string(aw));
                 return (r);
             }

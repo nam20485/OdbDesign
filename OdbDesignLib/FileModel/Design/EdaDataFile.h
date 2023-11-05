@@ -16,8 +16,7 @@ namespace Odb::Lib::FileModel::Design
 	class ODBDESIGN_EXPORT EdaDataFile : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile>
 	{
 	public:
-		EdaDataFile();
-		EdaDataFile(bool logAllLineParsing);
+		EdaDataFile(bool logAllLineParsing = false);
 		~EdaDataFile();
 
 		const std::filesystem::path& GetPath() const;
@@ -46,9 +45,29 @@ namespace Odb::Lib::FileModel::Design
 			void from_protobuf(const Odb::Lib::Protobuf::EdaDataFile::PropertyRecord& message) override;
 		};
 
+		struct ODBDESIGN_EXPORT FeatureIdRecord : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord>
+		{
+			enum class Type
+			{
+				Copper,
+				Laminate,
+				Hole
+			};
+
+			typedef std::vector<std::shared_ptr<FeatureIdRecord>> Vector;
+
+			Type type;
+			unsigned int layerNumber;
+			unsigned int featureNumber;
+
+			// Inherited via IProtoBuffable
+			std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord> to_protobuf() const override;
+			void from_protobuf(const Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord& message) override;
+		};
+
 		struct ODBDESIGN_EXPORT NetRecord : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::NetRecord>
 		{
-			struct ODBDESIGN_EXPORT SubnetRecord : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord>
+			struct ODBDESIGN_EXPORT SubnetRecord final : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord>
 			{
 				// common subnet enums
 				enum class Type
@@ -72,31 +91,11 @@ namespace Odb::Lib::FileModel::Design
 					Rectangle,
 					Octagon,
 					Exact
-				};				
-
-				struct ODBDESIGN_EXPORT FeatureIdRecord : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord>
-				{
-					enum class Type
-					{
-						Copper,
-						Laminate,
-						Hole
-					};
-
-					typedef std::vector<std::shared_ptr<FeatureIdRecord>> Vector;
-
-					Type type;
-					unsigned int layerNumber;
-					unsigned int featureNumber;
-
-					// Inherited via IProtoBuffable
-					std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord> to_protobuf() const override;
-					void from_protobuf(const Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord& message) override;
-				};
+				};								
 
 				typedef std::vector<std::shared_ptr<SubnetRecord>> Vector;
 
-				virtual ~SubnetRecord();
+				~SubnetRecord();
 
 				// common subnet fields
 				Type type;
@@ -145,6 +144,101 @@ namespace Odb::Lib::FileModel::Design
 
 		struct ODBDESIGN_EXPORT PackageRecord : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::PackageRecord>
 		{
+			struct ODBDESIGN_EXPORT OutlineRecord
+			{
+				struct ODBDESIGN_EXPORT ContourPolygon
+				{
+					struct ODBDESIGN_EXPORT PolygonPart
+					{
+						enum class Type
+						{
+							Segment,
+							Arc
+						};
+
+						Type type;
+
+						// Segment/Arc
+						float endX, endY;
+
+						// Arc
+						float xCenter, yCenter;
+						bool isClockwise;
+
+						typedef std::vector<std::shared_ptr<PolygonPart>> Vector;
+
+						inline static const char* SEGMENT_RECORD_TOKEN = "OS";
+						inline static const char* ARC_RECORD_TOKEN = "OC";
+
+					}; // struct PolygonPart
+
+					enum class Type
+					{
+						Island,
+						Hole
+					};
+
+					~ContourPolygon()
+					{
+						m_polygonParts.clear();
+					}
+
+					Type type;
+					float xStart, yStart;
+
+					PolygonPart::Vector m_polygonParts;
+
+					typedef std::vector<std::shared_ptr<ContourPolygon>> Vector;
+
+					inline static const char* BEGIN_RECORD_TOKEN = "OB";
+					inline static const char* END_RECORD_TOKEN = "OE";
+					inline static const char* ISLAND_TYPE_TOKEN = "I";
+					inline static const char* HOLE_TYPE_TOKEN = "H";
+
+				}; // struct ContourPolygon
+
+				enum class Type
+				{
+					Rectangle,
+					Circle,
+					Square,
+					Contour
+				};
+
+				typedef std::vector<std::shared_ptr<OutlineRecord>> Vector;
+
+				~OutlineRecord()
+				{
+					m_contourPolygons.clear();
+				}
+
+				Type type;
+
+				// Rectangle
+				float lowerLeftX;
+				float lowerLeftY;
+				float width;
+				float height;
+
+				// Square/Circle
+				float xCenter;
+				float yCenter;
+
+				// Square
+				float halfSide;
+				// Circle
+				float radius;
+
+				ContourPolygon::Vector m_contourPolygons;
+
+				inline static const char* RECTANGLE_RECORD_TOKEN = "RC";
+				inline static const char* CIRCLE_RECORD_TOKEN = "CR";
+				inline static const char* SQUARE_RECORD_TOKEN = "SQ";
+				inline static const char* CONTOUR_BEGIN_RECORD_TOKEN = "CT";
+				inline static const char* CONTOUR_END_RECORD_TOKEN = "CE";
+
+			}; // struct OutlineRecord
+
 			struct ODBDESIGN_EXPORT PinRecord : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::PackageRecord::PinRecord>
 			{
 				enum class Type
@@ -176,6 +270,11 @@ namespace Odb::Lib::FileModel::Design
 				typedef std::vector<std::shared_ptr<PinRecord>> Vector;
 				typedef std::map<std::string, std::shared_ptr<PinRecord>> StringMap;
 
+				~PinRecord()
+				{
+					m_outlineRecords.clear();
+				}
+
 				std::string name;
 				Type type;
 				float xCenter;
@@ -186,6 +285,8 @@ namespace Odb::Lib::FileModel::Design
 				unsigned int id;
 				unsigned int index;
 
+				OutlineRecord::Vector m_outlineRecords;
+
 				// Inherited via IProtoBuffable
 				std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::PackageRecord::PinRecord> to_protobuf() const override;
 				void from_protobuf(const Odb::Lib::Protobuf::EdaDataFile::PackageRecord::PinRecord& message) override;
@@ -195,15 +296,23 @@ namespace Odb::Lib::FileModel::Design
 			typedef std::vector<std::shared_ptr<PackageRecord>> Vector;
 			typedef std::map<std::string, std::shared_ptr<PackageRecord>> StringMap;
 
+			~PackageRecord()
+			{
+				m_outlineRecords.clear();
+				m_pinRecords.clear();
+				m_pinRecordsByName.clear();
+				m_propertyRecords.clear();
+			}
+
 			std::string name;
 			float pitch;
 			float xMin, yMin;
 			float xMax, yMax;
 			std::string attributesIdString;
 
+			OutlineRecord::Vector m_outlineRecords;
 			PinRecord::Vector m_pinRecords;
 			PinRecord::StringMap m_pinRecordsByName;
-
 			PropertyRecord::Vector m_propertyRecords;
 
 			// Inherited via IProtoBuffable
@@ -211,6 +320,24 @@ namespace Odb::Lib::FileModel::Design
 			void from_protobuf(const Odb::Lib::Protobuf::EdaDataFile::PackageRecord& message) override;
 
 		}; // PackageRecord
+
+		struct FeatureGroupRecord
+		{
+			~FeatureGroupRecord()
+			{
+				m_propertyRecords.clear();
+				m_featureIdRecords.clear();
+			}
+
+			std::string type;	// always "TEXT" per spec
+			
+			PropertyRecord::Vector m_propertyRecords;
+			FeatureIdRecord::Vector m_featureIdRecords;
+
+			typedef std::shared_ptr<FeatureGroupRecord> shared_ptr;
+			typedef std::vector<FeatureGroupRecord::shared_ptr> Vector;			
+
+		}; // FeatureGroupRecord
 
 		const std::vector<std::string>& GetLayerNames() const;
 		const std::vector<std::string>& GetAttributeNames() const;
@@ -220,6 +347,8 @@ namespace Odb::Lib::FileModel::Design
 		const NetRecord::StringMap& GetNetRecordsByName() const;
 		const PackageRecord::Vector& GetPackageRecords() const;
 		const PackageRecord::StringMap& GetPackageRecordsByName() const;
+		const FeatureGroupRecord::Vector& GetFeatureGroupRecords() const;
+		const PropertyRecord::Vector& GetPropertyRecords() const;
 
 		// Inherited via IProtoBuffable
 		std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile> to_protobuf() const override;
@@ -242,6 +371,10 @@ namespace Odb::Lib::FileModel::Design
 		PackageRecord::Vector m_packageRecords;
 		PackageRecord::StringMap m_packageRecordsByName;
 
+		FeatureGroupRecord::Vector m_featureGroupRecords;
+
+		PropertyRecord::Vector m_propertyRecords;
+
 		bool m_logAllLineParsing;
 		
 		inline static const char* EDADATA_FILENAME = "data";
@@ -257,9 +390,8 @@ namespace Odb::Lib::FileModel::Design
 		inline static const char* FEATURE_ID_RECORD_TOKEN = "FID";
 		inline static const char* PACKAGE_RECORD_TOKEN = "PKG";
 		inline static const char* PIN_RECORD_TOKEN = "PIN";
+		
 		inline static const char* FEATURE_GROUP_RECORD_TOKEN = "FGR";
-		// TODO: Outline records:
-		// RC, CR, SQ, CT, OB, OS, OC, OE, CE � Outline Records
 	
 	}; // EdaDataFile
 

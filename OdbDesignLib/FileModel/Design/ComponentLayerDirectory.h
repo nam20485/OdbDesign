@@ -99,22 +99,27 @@ namespace Odb::Lib::FileModel::Design
 		// TODO: add records to maps by name while adding to their vectors
 		ComponentRecord::StringMap m_componentRecordsByName;
 
-		inline static const char* COMPONENTS_FILENAME = "components";
+		inline static const char* COMPONENTS_FILENAMES[] =
+		{ 
+			"components3", 
+			"components2", 
+			"components"
+		};
 
-		inline static const std::string UNITS_TOKEN = "UNITS";
-		inline static const std::string ID_TOKEN = "ID";
-		inline static const std::string ATTRIBUTE_NAME_TOKEN = "@";
-		inline static const std::string ATTRIBUTE_VALUE_TOKEN = "&";
-		inline static const std::string COMMENT_TOKEN = "#";
+		inline static const char* UNITS_TOKEN = "UNITS";
+		inline static const char* ID_TOKEN = "ID";
+		inline static const char* ATTRIBUTE_NAME_TOKEN = "@";
+		inline static const char* ATTRIBUTE_VALUE_TOKEN = "&";
+		inline static const char* COMMENT_TOKEN = "#";
 
 		// TODO: deal with BOM DATA section lines later
-		inline static const std::string BOM_DESCR_RECORD_TOKEN_CPN = "CPN";
-		inline static const std::string BOM_DESCR_RECORD_TOKEN_PKG = "PKG";
-		inline static const std::string BOM_DESCR_RECORD_TOKEN_IPN = "IPN";
-		inline static const std::string BOM_DESCR_RECORD_TOKEN_DSC = "DSC";
-		inline static const std::string BOM_DESCR_RECORD_TOKEN_VPL_VND = "VPL_VND";
-		inline static const std::string BOM_DESCR_RECORD_TOKEN_VPL_MPN = "VPL_MPN";
-		inline static const std::string BOM_DESCR_RECORD_TOKEN_VND = "VND";
-		inline static const std::string BOM_DESCR_RECORD_TOKEN_MPN = "MPN";
+		inline static const char* BOM_DESCR_RECORD_TOKEN_CPN = "CPN";
+		inline static const char* BOM_DESCR_RECORD_TOKEN_PKG = "PKG";
+		inline static const char* BOM_DESCR_RECORD_TOKEN_IPN = "IPN";
+		inline static const char* BOM_DESCR_RECORD_TOKEN_DSC = "DSC";
+		inline static const char* BOM_DESCR_RECORD_TOKEN_VPL_VND = "VPL_VND";
+		inline static const char* BOM_DESCR_RECORD_TOKEN_VPL_MPN = "VPL_MPN";
+		inline static const char* BOM_DESCR_RECORD_TOKEN_VND = "VND";
+		inline static const char* BOM_DESCR_RECORD_TOKEN_MPN = "MPN";
 	};
 }

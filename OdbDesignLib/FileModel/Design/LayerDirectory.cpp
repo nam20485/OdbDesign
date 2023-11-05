@@ -24,7 +24,7 @@ namespace Odb::Lib::FileModel::Design
 
 	bool LayerDirectory::Parse()
 	{		
-		m_name = std::filesystem::path(m_path).filename().string();
+		m_name = m_path.filename().string();
 
 		loginfo("Parsing layer: " + m_name + "...");
 

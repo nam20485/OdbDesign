@@ -27,3 +27,4 @@ ssl/
 Testing/Temporary/
 artifacts/
 doxygen/docs/
+/TEST_DATA

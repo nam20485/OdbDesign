@@ -1,5 +1,6 @@
 #include "FileArchive.h"
 #include "FileArchive.h"
+#include "FileArchive.h"
 #include <filesystem>
 #include "ArchiveExtractor.h"
 #include "MiscInfoFile.h"
@@ -71,16 +72,21 @@ namespace Odb::Lib::FileModel::Design
 				if (ParseDesignDirectory(m_rootDir))
 				{
 					timer.stop();					
-					auto s = timer.getElapsedSecondsString(" s");
-					loginfo("Successfully parsed. (" + s + ")");
+					auto s = timer.getElapsedSecondsString();
+					loginfo("Successfully parsed. (" + s + " s)");
 
 					return true;
 				}
 				else
 				{
-					loginfo("Parsing failed.");
+					logerror("Parsing failed.");
+					throw std::runtime_error("Parsing failed.");
 				}
-			}		
+			}
+			else
+			{
+				logerror("Failed to find root directory");
+			}
 		}
 		//catch (std::exception& e)
 		//{
@@ -151,6 +157,16 @@ namespace Odb::Lib::FileModel::Design
 
 		m_productName = path.stem().string();
 
+		if (! ParseStepDirectories(path)) return false;
+        if (! ParseMiscInfoFile(path)) return false;
+		if (! ParseMatrixFile(path)) return false;
+		if (! ParseStandardFontsFile(path)) return false;		
+
+		return true;
+	}
+
+	bool FileArchive::ParseStepDirectories(const std::filesystem::path& path)
+	{
 		loginfo("Parsing steps...");
 
 		auto stepsPath = path / "steps";
@@ -165,16 +181,13 @@ namespace Odb::Lib::FileModel::Design
 				}
 				else
 				{
-					return false;
+					logwarn("Failed to parse step: " + pStep->GetName());
+					//return false;
 				}
 			}
 		}
 
-		loginfo("Parsing steps complete");		
-
-        if (! ParseMiscInfoFile(path)) return false;
-		if (! ParseMatrixFile(path)) return false;
-		if (! ParseStandardFontsFile(path)) return false;		
+		loginfo("Parsing steps complete");
 
 		return true;
 	}

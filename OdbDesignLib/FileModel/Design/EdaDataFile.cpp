@@ -10,19 +10,13 @@
 #include "Logger.h"
 #include "../parse_info.h"
 #include "../parse_error.h"
-#include <sstream>
+#include "../invalid_odb_error.h"
 
 using namespace std::filesystem;
 using namespace Utils;
 
-
 namespace Odb::Lib::FileModel::Design
 {
-    EdaDataFile::EdaDataFile()   
-        : EdaDataFile(false)
-    {
-    }
-
     EdaDataFile::EdaDataFile(bool logAllLineParsing)
         : m_logAllLineParsing(logAllLineParsing)
     {
@@ -37,6 +31,8 @@ namespace Odb::Lib::FileModel::Design
         m_netRecordsByName.clear();
         m_packageRecords.clear();
         m_packageRecordsByName.clear();
+        m_featureGroupRecords.clear();
+        m_propertyRecords.clear();
     }
 
     const std::filesystem::path& EdaDataFile::GetPath() const
@@ -126,7 +122,7 @@ namespace Odb::Lib::FileModel::Design
     }
 
     std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord>
-    EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord::to_protobuf() const
+    EdaDataFile::FeatureIdRecord::to_protobuf() const
     {
         std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord> pFeatureIdRecordMessage(new Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord);        
         pFeatureIdRecordMessage->set_type((Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord::Type) type);
@@ -135,7 +131,7 @@ namespace Odb::Lib::FileModel::Design
         return pFeatureIdRecordMessage;
     }
 
-    void EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord::from_protobuf(const Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord& message)
+    void EdaDataFile::FeatureIdRecord::from_protobuf(const Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord& message)
     {
 
     }    
@@ -173,6 +169,16 @@ namespace Odb::Lib::FileModel::Design
     const EdaDataFile::PackageRecord::StringMap& EdaDataFile::GetPackageRecordsByName() const
     {
         return m_packageRecordsByName;
+    }
+
+    const EdaDataFile::FeatureGroupRecord::Vector& EdaDataFile::GetFeatureGroupRecords() const
+    {
+        return m_featureGroupRecords;
+    }
+
+    const EdaDataFile::PropertyRecord::Vector& EdaDataFile::GetPropertyRecords() const
+    {
+        return m_propertyRecords;
     }
 
     std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile> EdaDataFile::to_protobuf() const
@@ -222,6 +228,8 @@ namespace Odb::Lib::FileModel::Design
     bool EdaDataFile::Parse(std::filesystem::path path)
     {
         std::ifstream edaDataFile;
+        int lineNumber = 0;
+        std::string line;
 
         try
         {
@@ -232,17 +240,23 @@ namespace Odb::Lib::FileModel::Design
 
             if (!std::filesystem::exists(m_path))
             {
-                throw_parse_error(m_path, "", "", -1);
+                auto message = "eda/data file does not exist: [" + m_path.string() + "]";
+                throw invalid_odb_error(message.c_str());
             }
             else if (!std::filesystem::is_regular_file(m_path))
             {
-                throw_parse_error(m_path, "", "", -1);
+                auto message = "eda/data is not a file: [" + m_path.string() + "]";
+                throw invalid_odb_error(message.c_str());
             }
 
             loginfo("any extraction complete, parsing data...");
             
             edaDataFile.open(m_path.string(), std::ios::in);
-            if (!edaDataFile.is_open()) throw_parse_error(m_path, "", "", -1);
+            if (!edaDataFile.is_open())
+            {
+                auto message = "unable to open eda/data file: [" + m_path.string() + "]";
+                throw invalid_odb_error(message.c_str());
+            }
 
             std::shared_ptr<NetRecord> pCurrentNetRecord;
             std::shared_ptr<NetRecord::SubnetRecord> pCurrentSubnetRecord;
@@ -250,8 +264,11 @@ namespace Odb::Lib::FileModel::Design
             std::shared_ptr<PackageRecord> pCurrentPackageRecord;
             std::shared_ptr<PackageRecord::PinRecord> pCurrentPinRecord;
 
-            int lineNumber = 0;
-            std::string line;            
+            std::shared_ptr<PackageRecord::OutlineRecord> pCurrentContourOutlineRecord;
+            std::shared_ptr<PackageRecord::OutlineRecord::ContourPolygon> pCurrentContourPolygon;
+
+            FeatureGroupRecord::shared_ptr pCurrentFeatureGroupRecord;
+
             while (std::getline(edaDataFile, line))
             {
                 // keep track of line number
@@ -263,7 +280,7 @@ namespace Odb::Lib::FileModel::Design
                 {
                     if (m_logAllLineParsing)
                     {
-                        parse_info pi(m_path, line, lineNumber, __LINE__, __FILE__);
+                        parse_info pi(m_path, line, lineNumber);
                         logdebug(pi.toString("Parsing line..."));
                     }
 
@@ -358,20 +375,56 @@ namespace Odb::Lib::FileModel::Design
                     {
                         // component property record line
                         std::string token;
-                        lineStream >> token;
+                        if (!(lineStream >> token))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
                         if (token != PropertyRecord::RECORD_TOKEN)
                         {
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
 
                         auto pPropertyRecord = std::make_shared<PropertyRecord>();
-                        lineStream >> pPropertyRecord->name;
 
-                        lineStream >> pPropertyRecord->value;
-                        // remove leading quote
-                        pPropertyRecord->value.erase(0, 1);
-                        // remove trailing quote
-                        pPropertyRecord->value.erase(pPropertyRecord->value.size() - 1);
+                        if (!(lineStream >> pPropertyRecord->name))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (!(lineStream >> token))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (!token.empty())
+                        {
+                            // handle case where the beginning of the value, after the opening single-quote, is whitespace...
+                            if (token == "'")
+                            {
+                                // eat the single-quote and get the next token, i.e. the actual value (w/ space in front)
+                                if (!(lineStream >> token))
+                                {
+                                    throw_parse_error(m_path, line, token, lineNumber);
+                                }
+                            }
+
+                            if (token.size() > 0 && token[0] == '\'')
+                            {
+                                // remove leading quote							
+                                token.erase(0, 1);
+                            }
+
+                            if (token.size() > 0 && token[token.size() - 1] == '\'')
+                            {
+                                // remove trailing quote
+                                token.erase(token.size() - 1);
+                            }
+
+                            Utils::str_trim(token);
+                        }
+
+                        pPropertyRecord->value = token;
 
                         float f;
                         while (lineStream >> f)
@@ -379,7 +432,6 @@ namespace Odb::Lib::FileModel::Design
                             pPropertyRecord->floatValues.push_back(f);
                         }
 
-                        // TODO: add to current net OR package record
                         if (pCurrentNetRecord != nullptr)
                         {
                             pCurrentNetRecord->m_propertyRecords.push_back(pPropertyRecord);
@@ -388,11 +440,15 @@ namespace Odb::Lib::FileModel::Design
                         {
                             pCurrentPackageRecord->m_propertyRecords.push_back(pPropertyRecord);
                         }
+                        else if (pCurrentFeatureGroupRecord != nullptr)
+                        {
+                            pCurrentFeatureGroupRecord->m_propertyRecords.push_back(pPropertyRecord);
+                        }
                         else
                         {
-                            // no current net or package record to put the property record in
-                            throw_parse_error(m_path, line, token, lineNumber);
-                        }
+                            // top-level PRP record
+                            m_propertyRecords.push_back(pPropertyRecord);
+                        }                        
                     }
                     else if (line.find(NET_RECORD_TOKEN) == 0)
                     {
@@ -544,13 +600,12 @@ namespace Odb::Lib::FileModel::Design
                         // component record line
                         std::string token;
 
-                        // TODO: second clause of if statement is redudant and should be removed
                         if (!(lineStream >> token) || token != FEATURE_ID_RECORD_TOKEN)
                         {
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
 
-                        auto pFeatureIdRecord = std::make_shared<NetRecord::SubnetRecord::FeatureIdRecord>();
+                        auto pFeatureIdRecord = std::make_shared<FeatureIdRecord>();
 
                         // type
                         if (!(lineStream >> token))
@@ -560,15 +615,15 @@ namespace Odb::Lib::FileModel::Design
 
                         if (token == "C")
                         {
-                            pFeatureIdRecord->type = NetRecord::SubnetRecord::FeatureIdRecord::Type::Copper;
+                            pFeatureIdRecord->type = FeatureIdRecord::Type::Copper;
                         }
                         else if (token == "L")
                         {
-                            pFeatureIdRecord->type = NetRecord::SubnetRecord::FeatureIdRecord::Type::Laminate;
+                            pFeatureIdRecord->type = FeatureIdRecord::Type::Laminate;
                         }
                         else if (token == "H")
                         {
-                            pFeatureIdRecord->type = NetRecord::SubnetRecord::FeatureIdRecord::Type::Hole;
+                            pFeatureIdRecord->type = FeatureIdRecord::Type::Hole;
                         }
                         else
                         {
@@ -591,6 +646,10 @@ namespace Odb::Lib::FileModel::Design
                             pCurrentSubnetRecord != nullptr)
                         {
                             pCurrentSubnetRecord->m_featureIdRecords.push_back(pFeatureIdRecord);
+                        }
+                        else if (pCurrentFeatureGroupRecord != nullptr)
+                        {
+                            pCurrentFeatureGroupRecord->m_featureIdRecords.push_back(pFeatureIdRecord);
                         }
                         else
                         {
@@ -620,12 +679,17 @@ namespace Odb::Lib::FileModel::Design
                             m_netRecords.push_back(pCurrentNetRecord);
                             pCurrentNetRecord.reset();
                         }
-
-                        if (pCurrentPackageRecord != nullptr)
+                        else if (pCurrentPackageRecord != nullptr)
                         {
                             // finish up any current (previous) pin records
                             if (pCurrentPinRecord != nullptr)
                             {
+                                // check for overflow
+                                if (pCurrentPackageRecord->m_pinRecords.size() > UINT_MAX)
+								{
+									throw_parse_error(m_path, line, token, lineNumber);
+								}
+                                pCurrentPinRecord->index = static_cast<unsigned>(pCurrentPackageRecord->m_pinRecords.size());
                                 pCurrentPackageRecord->m_pinRecords.push_back(pCurrentPinRecord);
                                 pCurrentPinRecord.reset();
                             }
@@ -687,15 +751,21 @@ namespace Odb::Lib::FileModel::Design
                             // finish up any current (previous) pin records
                             if (pCurrentPinRecord != nullptr)
                             {
+                                // check for overflow
+                                if (pCurrentPackageRecord->m_pinRecords.size() > UINT_MAX)
+                                {
+                                    throw_parse_error(m_path, line, token, lineNumber);
+                                }
+                                pCurrentPinRecord->index = static_cast<unsigned>(pCurrentPackageRecord->m_pinRecords.size());
                                 pCurrentPackageRecord->m_pinRecords.push_back(pCurrentPinRecord);
                                 pCurrentPinRecord.reset();
-                            }
+                            }                            
                         }
 
-                        auto pPinRecord = std::make_shared<PackageRecord::PinRecord>();
+                        pCurrentPinRecord = std::make_shared<PackageRecord::PinRecord>();
 
                         // name
-                        lineStream >> pPinRecord->name;
+                        lineStream >> pCurrentPinRecord->name;
 
                         // type
                         if (!(lineStream >> token))
@@ -705,15 +775,15 @@ namespace Odb::Lib::FileModel::Design
 
                         if (token == "T")
                         {
-                            pPinRecord->type = PackageRecord::PinRecord::Type::ThroughHole;
+                            pCurrentPinRecord->type = PackageRecord::PinRecord::Type::ThroughHole;
                         }
                         else if (token == "B")
                         {
-                            pPinRecord->type = PackageRecord::PinRecord::Type::Blind;
+                            pCurrentPinRecord->type = PackageRecord::PinRecord::Type::Blind;
                         }
                         else if (token == "S")
                         {
-                            pPinRecord->type = PackageRecord::PinRecord::Type::Surface;
+                            pCurrentPinRecord->type = PackageRecord::PinRecord::Type::Surface;
                         }
                         else
                         {
@@ -721,13 +791,13 @@ namespace Odb::Lib::FileModel::Design
                         }
 
                         // xc, xy
-                        if (!(lineStream >> pPinRecord->xCenter >> pPinRecord->yCenter))
+                        if (!(lineStream >> pCurrentPinRecord->xCenter >> pCurrentPinRecord->yCenter))
                         {
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
 
                         // finished hole size (fhs)
-                        if (!(lineStream >> pPinRecord->finishedHoleSize))
+                        if (!(lineStream >> pCurrentPinRecord->finishedHoleSize))
                         {
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
@@ -740,15 +810,15 @@ namespace Odb::Lib::FileModel::Design
 
                         if (token == "E")
                         {
-                            pPinRecord->electricalType = PackageRecord::PinRecord::ElectricalType::Electrical;
+                            pCurrentPinRecord->electricalType = PackageRecord::PinRecord::ElectricalType::Electrical;
                         }
                         else if (token == "M")
                         {
-                            pPinRecord->electricalType = PackageRecord::PinRecord::ElectricalType::NonElectrical;
+                            pCurrentPinRecord->electricalType = PackageRecord::PinRecord::ElectricalType::NonElectrical;
                         }
                         else if (token == "U")
                         {
-                            pPinRecord->electricalType = PackageRecord::PinRecord::ElectricalType::Undefined;
+                            pCurrentPinRecord->electricalType = PackageRecord::PinRecord::ElectricalType::Undefined;
                         }
                         else
                         {
@@ -763,35 +833,35 @@ namespace Odb::Lib::FileModel::Design
 
                         if (token == "S")
                         {
-                            pPinRecord->mountType = PackageRecord::PinRecord::MountType::Smt;
+                            pCurrentPinRecord->mountType = PackageRecord::PinRecord::MountType::Smt;
                         }
                         else if (token == "D")
                         {
-                            pPinRecord->mountType = PackageRecord::PinRecord::MountType::RecommendedSmtPad;
+                            pCurrentPinRecord->mountType = PackageRecord::PinRecord::MountType::RecommendedSmtPad;
                         }
                         else if (token == "T")
                         {
-                            pPinRecord->mountType = PackageRecord::PinRecord::MountType::MT_ThroughHole;
+                            pCurrentPinRecord->mountType = PackageRecord::PinRecord::MountType::MT_ThroughHole;
                         }
                         else if (token == "R")
                         {
-                            pPinRecord->mountType = PackageRecord::PinRecord::MountType::RecommendedThroughHole;
+                            pCurrentPinRecord->mountType = PackageRecord::PinRecord::MountType::RecommendedThroughHole;
                         }
                         else if (token == "P")
                         {
-                            pPinRecord->mountType = PackageRecord::PinRecord::MountType::Pressfit;
+                            pCurrentPinRecord->mountType = PackageRecord::PinRecord::MountType::Pressfit;
                         }
                         else if (token == "N")
                         {
-                            pPinRecord->mountType = PackageRecord::PinRecord::MountType::NonBoard;
+                            pCurrentPinRecord->mountType = PackageRecord::PinRecord::MountType::NonBoard;
                         }
                         else if (token == "H")
                         {
-                            pPinRecord->mountType = PackageRecord::PinRecord::MountType::Hole;
+                            pCurrentPinRecord->mountType = PackageRecord::PinRecord::MountType::Hole;
                         }
                         else if (token == "U")
                         {
-                            pPinRecord->mountType = PackageRecord::PinRecord::MountType::MT_Undefined;
+                            pCurrentPinRecord->mountType = PackageRecord::PinRecord::MountType::MT_Undefined;
                         }
                         else
                         {
@@ -808,7 +878,7 @@ namespace Odb::Lib::FileModel::Design
                                 throw_parse_error(m_path, line, token, lineNumber);
                             }
 
-                            idStream >> pPinRecord->id;
+                            idStream >> pCurrentPinRecord->id;
                         }
                         else
                         {
@@ -818,36 +888,430 @@ namespace Odb::Lib::FileModel::Design
                             throw_parse_error(m_path, line, token, lineNumber);
 #endif
 
-                            pPinRecord->id = UINT_MAX;
-                        }
-
-                        if (pCurrentPackageRecord != nullptr)
-                        {
-                            pPinRecord->index = pCurrentPackageRecord->m_pinRecords.size();
-                            pCurrentPackageRecord->m_pinRecords.push_back(pPinRecord);
-                        }
-                        else
-                        {
-                            throw_parse_error(m_path, line, token, lineNumber);
-                        }
+                            pCurrentPinRecord->id = UINT_MAX;
+                        }                        
                     }
                     else if (line.find(FEATURE_GROUP_RECORD_TOKEN) == 0)
                     {
                         // feature group record line
                         std::string token;
 
-                        lineStream >> token;
+                        if (!(lineStream >> token))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+                        
                         if (token != FEATURE_GROUP_RECORD_TOKEN)
                         {
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
 
-                        // TODO: parse FGR records
+                        // finish current (previous) net record
+                        if (pCurrentNetRecord != nullptr)
+                        {
+                            // finish up (any) current subnet record
+                            if (pCurrentSubnetRecord != nullptr)
+                            {
+                                pCurrentNetRecord->m_subnetRecords.push_back(pCurrentSubnetRecord);
+                                pCurrentSubnetRecord.reset();
+                            }
+
+                            m_netRecords.push_back(pCurrentNetRecord);
+                            pCurrentNetRecord.reset();
+                        }
+                        else if (pCurrentPackageRecord != nullptr)
+                        {
+                            // finish up any current (previous) pin records
+                            if (pCurrentPinRecord != nullptr)
+                            {
+                                // check for overflow
+                                if (pCurrentPackageRecord->m_pinRecords.size() > UINT_MAX)
+                                {
+                                    throw_parse_error(m_path, line, token, lineNumber);
+                                }
+                                pCurrentPinRecord->index = static_cast<unsigned>(pCurrentPackageRecord->m_pinRecords.size());
+                                pCurrentPackageRecord->m_pinRecords.push_back(pCurrentPinRecord);
+                                pCurrentPinRecord.reset();
+                            }
+
+                            // finish up any current (previous) package records
+                            m_packageRecords.push_back(pCurrentPackageRecord);
+                            pCurrentPackageRecord.reset();
+                        }                        
+                        else if (pCurrentFeatureGroupRecord != nullptr)
+                        {
+                            m_featureGroupRecords.push_back(pCurrentFeatureGroupRecord);
+                            pCurrentFeatureGroupRecord.reset();
+                        }
+
+                        pCurrentFeatureGroupRecord = std::make_shared<FeatureGroupRecord>();
+
+                        if (!(lineStream >> pCurrentFeatureGroupRecord->type))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }                                                
+                    }
+                    else if (line.find(PackageRecord::OutlineRecord::RECTANGLE_RECORD_TOKEN) == 0)
+                    {                        
+                        std::string token;                        
+                        if (!(lineStream >> token))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (token != PackageRecord::OutlineRecord::RECTANGLE_RECORD_TOKEN)
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        auto pOutlineRecord = std::make_shared<PackageRecord::OutlineRecord>();
+                        pOutlineRecord->type = PackageRecord::OutlineRecord::Type::Rectangle;
+
+                        if (!(lineStream >> pOutlineRecord->lowerLeftX))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (!(lineStream >> pOutlineRecord->lowerLeftY))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (!(lineStream >> pOutlineRecord->width))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (!(lineStream >> pOutlineRecord->height))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (pCurrentPackageRecord != nullptr)
+                        {
+                            if (pCurrentPinRecord != nullptr)
+                            {
+                                pCurrentPinRecord->m_outlineRecords.push_back(pOutlineRecord);
+                            }
+                            else
+                            {
+                                pCurrentPackageRecord->m_outlineRecords.push_back(pOutlineRecord);
+                            }
+                        }
+                        else
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+                    }
+                    else if (line.find(PackageRecord::OutlineRecord::CIRCLE_RECORD_TOKEN) == 0)
+                    {
+                        std::string token;
+                        if (!(lineStream >> token))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (token != PackageRecord::OutlineRecord::CIRCLE_RECORD_TOKEN)
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        auto pOutlineRecord = std::make_shared<PackageRecord::OutlineRecord>();
+                        pOutlineRecord->type = PackageRecord::OutlineRecord::Type::Circle;
+
+                        if (!(lineStream >> pOutlineRecord->xCenter))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (!(lineStream >> pOutlineRecord->yCenter))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (!(lineStream >> pOutlineRecord->radius))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }                        
+
+                        if (pCurrentPackageRecord != nullptr)
+                        {
+                            if (pCurrentPinRecord != nullptr)
+                            {
+                                pCurrentPinRecord->m_outlineRecords.push_back(pOutlineRecord);
+                            }
+                            else
+                            {
+                                pCurrentPackageRecord->m_outlineRecords.push_back(pOutlineRecord);
+                            }
+                        }
+                        else
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+                    }
+                    else if (line.find(PackageRecord::OutlineRecord::SQUARE_RECORD_TOKEN) == 0)
+                    {
+                        std::string token;
+                        if (!(lineStream >> token))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (token != PackageRecord::OutlineRecord::SQUARE_RECORD_TOKEN)
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        auto pOutlineRecord = std::make_shared<PackageRecord::OutlineRecord>();
+                        pOutlineRecord->type = PackageRecord::OutlineRecord::Type::Square;
+
+                        if (!(lineStream >> pOutlineRecord->xCenter))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (!(lineStream >> pOutlineRecord->yCenter))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (!(lineStream >> pOutlineRecord->halfSide))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (pCurrentPackageRecord != nullptr)
+                        {
+                            if (pCurrentPinRecord != nullptr)
+                            {
+                                pCurrentPinRecord->m_outlineRecords.push_back(pOutlineRecord);
+                            }
+                            else
+                            {
+                                pCurrentPackageRecord->m_outlineRecords.push_back(pOutlineRecord);
+                            }
+                        }
+                        else
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+                    }
+                    else if (line.find(PackageRecord::OutlineRecord::CONTOUR_BEGIN_RECORD_TOKEN) == 0)
+                    {
+                        std::string token;
+                        if (!(lineStream >> token))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (token != PackageRecord::OutlineRecord::CONTOUR_BEGIN_RECORD_TOKEN)
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        pCurrentContourOutlineRecord = std::make_shared<PackageRecord::OutlineRecord>();
+                        pCurrentContourOutlineRecord->type = PackageRecord::OutlineRecord::Type::Contour;
+                    }
+					else if (line.find(PackageRecord::OutlineRecord::CONTOUR_END_RECORD_TOKEN) == 0)
+					{
+						std::string token;
+						if (!(lineStream >> token))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (token != PackageRecord::OutlineRecord::CONTOUR_END_RECORD_TOKEN)
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}                        
+
+						if (pCurrentPackageRecord != nullptr)
+						{
+							if (pCurrentPinRecord != nullptr)
+							{
+								pCurrentPinRecord->m_outlineRecords.push_back(pCurrentContourOutlineRecord);
+							}
+							else
+							{
+								pCurrentPackageRecord->m_outlineRecords.push_back(pCurrentContourOutlineRecord);
+							}
+						}
+						else
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						pCurrentContourOutlineRecord.reset();
+					}
+                    else if (line.find(PackageRecord::OutlineRecord::ContourPolygon::BEGIN_RECORD_TOKEN) == 0)
+                    {
+                        std::string token;
+                        if (!(lineStream >> token))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (token != PackageRecord::OutlineRecord::ContourPolygon::BEGIN_RECORD_TOKEN)
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        pCurrentContourPolygon = std::make_shared<PackageRecord::OutlineRecord::ContourPolygon>();
+
+                        if (!(lineStream >> pCurrentContourPolygon->xStart))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (!(lineStream >> pCurrentContourPolygon->yStart))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (!(lineStream >> token))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (token == PackageRecord::OutlineRecord::ContourPolygon::ISLAND_TYPE_TOKEN)
+                        {
+                            pCurrentContourPolygon->type = PackageRecord::OutlineRecord::ContourPolygon::Type::Island;
+                        }
+                        else if (token == PackageRecord::OutlineRecord::ContourPolygon::HOLE_TYPE_TOKEN)
+                        {
+                            pCurrentContourPolygon->type = PackageRecord::OutlineRecord::ContourPolygon::Type::Hole;
+                        }
+                        else
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+                    }
+                    else if (line.find(PackageRecord::OutlineRecord::ContourPolygon::END_RECORD_TOKEN) == 0)
+                    {
+                        std::string token;
+                        if (!(lineStream >> token))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (token != PackageRecord::OutlineRecord::ContourPolygon::END_RECORD_TOKEN)
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (pCurrentContourOutlineRecord != nullptr)
+                        {
+                            pCurrentContourOutlineRecord->m_contourPolygons.push_back(pCurrentContourPolygon);
+                            pCurrentContourPolygon.reset();
+                        }
+						else
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+                    }
+                    else if (line.find(PackageRecord::OutlineRecord::ContourPolygon::PolygonPart::ARC_RECORD_TOKEN) == 0)
+                    {
+                        std::string token;
+                        if (!(lineStream >> token))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (token != PackageRecord::OutlineRecord::ContourPolygon::PolygonPart::ARC_RECORD_TOKEN)
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        auto pPolygonPart = std::make_shared<PackageRecord::OutlineRecord::ContourPolygon::PolygonPart>();
+                        pPolygonPart->type = PackageRecord::OutlineRecord::ContourPolygon::PolygonPart::Type::Arc;
+
+                        if (!(lineStream >> pPolygonPart->endX))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }                        
+
+                        if (!(lineStream >> pPolygonPart->endY))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (!(lineStream >> pPolygonPart->xCenter))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (!(lineStream >> pPolygonPart->yCenter))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (!(lineStream >> token))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (token == "y" || token == "Y")
+                        {
+                            pPolygonPart->isClockwise = true;
+                        }
+                        else if (token == "n" || token == "N")
+                        {
+                            pPolygonPart->isClockwise = false;
+                        }
+                        else
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (pCurrentContourPolygon != nullptr)
+                        {
+                            pCurrentContourPolygon->m_polygonParts.push_back(pPolygonPart);
+                        }
+                        else
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+                    }
+                    else if (line.find(PackageRecord::OutlineRecord::ContourPolygon::PolygonPart::SEGMENT_RECORD_TOKEN) == 0)
+                    {
+                        std::string token;
+                        if (!(lineStream >> token))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (token != PackageRecord::OutlineRecord::ContourPolygon::PolygonPart::SEGMENT_RECORD_TOKEN)
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        auto pPolygonPart = std::make_shared<PackageRecord::OutlineRecord::ContourPolygon::PolygonPart>();
+                        pPolygonPart->type = PackageRecord::OutlineRecord::ContourPolygon::PolygonPart::Type::Segment;
+
+                        if (!(lineStream >> pPolygonPart->endX))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (!(lineStream >> pPolygonPart->endY))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }                        
+
+                        if (pCurrentContourPolygon != nullptr)
+                        {
+                            pCurrentContourPolygon->m_polygonParts.push_back(pPolygonPart);
+                        }
+                        else
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
                     }
                     else
                     {
                         // unrecognized record line
-                        parse_info pi(m_path, line, lineNumber, __LINE__, __FILE__);
+                        parse_info pi(m_path, line, lineNumber);
                         logwarn(pi.toString("unrecognized record line in EDADATA file:"));                        
                     }
                 }
@@ -857,8 +1321,6 @@ namespace Odb::Lib::FileModel::Design
                     continue;                    
                 }
             }
-
-            edaDataFile.close();
 
             // finish current (previous) net record
             // this is the case where the last line of the file is not a net record (and there are no PKG records)
@@ -875,14 +1337,17 @@ namespace Odb::Lib::FileModel::Design
                 m_netRecords.push_back(pCurrentNetRecord);
                 pCurrentNetRecord.reset();
             }
-
-            // TODO: ^^^ should be else if, i.e. there should only be one of either a
-            // current net OR package record to close up when we reach the EOF, but not both
-            if (pCurrentPackageRecord != nullptr)
+            else if (pCurrentPackageRecord != nullptr)
             {
                 // finish up any current (previous) pin records
                 if (pCurrentPinRecord != nullptr)
                 {
+                    // check for overflow
+                    if (pCurrentPackageRecord->m_pinRecords.size() > UINT_MAX)
+                    {
+                        throw_parse_error(m_path, line, "", lineNumber);
+                    }
+                    pCurrentPinRecord->index = static_cast<unsigned>(pCurrentPackageRecord->m_pinRecords.size());
                     pCurrentPackageRecord->m_pinRecords.push_back(pCurrentPinRecord);
                     pCurrentPinRecord.reset();
                 }
@@ -890,18 +1355,31 @@ namespace Odb::Lib::FileModel::Design
                 // finish up any current (previous) package records
                 m_packageRecords.push_back(pCurrentPackageRecord);
                 pCurrentPackageRecord.reset();
-            }        
+            }
+            else if (pCurrentFeatureGroupRecord != nullptr)
+            {
+                m_featureGroupRecords.push_back(pCurrentFeatureGroupRecord);
+                pCurrentFeatureGroupRecord.reset();
+            }
+
+            edaDataFile.close();
         }
         catch (parse_error& pe)
         {            
-            auto m = pe.getParseInfo().toString("Parse Error:");
+            auto m = pe.toString("Parse Error:");
             logerror(m);
-            //return false;
-
             // cleanup file
             edaDataFile.close();
-
             throw pe;
+        }
+        catch (std::exception& e)
+        {
+            parse_info pi(m_path, line, lineNumber);
+            const auto m = pi.toString();
+            logexception_msg(e, m);
+            // cleanup file
+            edaDataFile.close();
+            throw e;
         }
 
         return true;
