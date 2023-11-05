@@ -30,5 +30,5 @@ doxygen/docs/
 OdbDesignTests/Testing/
 Testing/
 testlog.txt
-testlog.txt.tmp28357
+testlog.txt.tmp*
 testlog.xml
