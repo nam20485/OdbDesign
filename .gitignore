@@ -24,7 +24,8 @@ build/
 /cmake-build-debug-visual-studio
 /.idea/workspace.xml
 ssl/
-Testing/Temporary/
 artifacts/
 doxygen/docs/
 /TEST_DATA
+OdbDesignTests/Testing/
+Testing/
