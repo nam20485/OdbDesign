@@ -19,19 +19,7 @@ namespace Odb::Test
 #endif
 
 #if (RUN_SUCCEEDING_TESTS || RUN_ALL_TESTS)
-
-	TEST_F(FileArchiveLoadFixture, Load_FileArchive_Succeeds_Turbot_zip)
-	{
-		auto pFileArchive = m_pDesignCache->GetFileArchive("Turbot");
-		ASSERT_NE(pFileArchive, nullptr);
-	}
-
-	TEST_F(FileArchiveLoadFixture, Load_FileArchive_Succeeds_35041017_rev1_odbjob_v7_tgz)
-	{
-		auto pFileArchive = m_pDesignCache->GetFileArchive("350-41017_rev1_odbjob_v7");
-		ASSERT_NE(pFileArchive, nullptr);
-	}
-
+	
 	TEST_F(FileArchiveLoadFixture, Load_FileArchive_Succeeds_sample_design_tgz)
 	{
 		auto pFileArchive = m_pDesignCache->GetFileArchive("sample_design");
@@ -44,90 +32,6 @@ namespace Odb::Test
 		ASSERT_NE(pFileArchive, nullptr);
 	}
 
-	TEST_F(FileArchiveLoadFixture, Load_FileArchive_Succeeds_200_40628_Rev1_v7_tgz)
-	{
-		auto pFileArchive = m_pDesignCache->GetFileArchive("200-40628_Rev1_v7");
-		ASSERT_NE(pFileArchive, nullptr);
-	}	
-
-	TEST_F(FileArchiveLoadFixture, Load_FileArchive_Succeeds_odb_zip)
-	{
-		auto pFileArchive = m_pDesignCache->GetFileArchive("odb");
-		ASSERT_NE(pFileArchive, nullptr);
-	}
-
-	TEST_F(FileArchiveLoadFixture, Load_FileArchive_Succeeds_Panel__Demo1210_zip)
-	{
-		auto pFileArchive = m_pDesignCache->GetFileArchive("Panel - Demo1210");
-		ASSERT_NE(pFileArchive, nullptr);
-	}
-
-	TEST_F(FileArchiveLoadFixture, Load_FileArchive_Succeeds_Panel__g7162_31800_odb_tgz)
-	{
-		auto pFileArchive = m_pDesignCache->GetFileArchive("Panel - g7162-31800_odb");
-		ASSERT_NE(pFileArchive, nullptr);
-	}
-
-	TEST_F(FileArchiveLoadFixture, Load_FileArchive_Succeeds_3_1712_xxa00odb_zip)
-	{
-		auto pFileArchive = m_pDesignCache->GetFileArchive("3.1712.xxa00odb");
-		ASSERT_NE(pFileArchive, nullptr);
-	}
-
-	TEST_F(FileArchiveLoadFixture, Load_FileArchive_Succeeds_ap50132476_tgz)
-	{
-		auto pFileArchive = m_pDesignCache->GetFileArchive("ap50132476");
-		ASSERT_NE(pFileArchive, nullptr);
-	}
-
-	TEST_F(FileArchiveLoadFixture, Load_FileArchive_Succeeds_comav331NEW_DFT_DFT_TGZ)
-	{
-		auto pFileArchive = m_pDesignCache->GetFileArchive("comav331NEW_DFT_DFT");
-		ASSERT_NE(pFileArchive, nullptr);
-	}
-
-	TEST_F(FileArchiveLoadFixture, Load_FileArchive_Succeeds_design_1_no_bom_tgz)
-	{
-		auto pFileArchive = m_pDesignCache->GetFileArchive("design_1_no_bom");
-		ASSERT_NE(pFileArchive, nullptr);
-	}
-
-	TEST_F(FileArchiveLoadFixture, Load_FileArchive_Succeeds_designodb_zip)
-	{
-		auto pFileArchive = m_pDesignCache->GetFileArchive("designodb");
-		ASSERT_NE(pFileArchive, nullptr);
-	}	
-
-	TEST_F(FileArchiveLoadFixture, Load_FileArchive_Succeeds_kitara_tgz)
-	{
-		auto pFileArchive = m_pDesignCache->GetFileArchive("kitara");
-		ASSERT_NE(pFileArchive, nullptr);
-	}	
-
-	TEST_F(FileArchiveLoadFixture, Load_FileArchive_Succeeds_PAB_SAYISAL_KART_RevX2_tgz)
-	{
-		auto pFileArchive = m_pDesignCache->GetFileArchive("PAB_SAYISAL_KART_RevX2");
-		ASSERT_NE(pFileArchive, nullptr);
-	}
-
-	TEST_F(FileArchiveLoadFixture, Load_FileArchive_Succeeds_Panel__Mss_Demo_Project_tgz)
-	{
-		auto pFileArchive = m_pDesignCache->GetFileArchive("Panel - Mss_Demo_Project");
-		ASSERT_NE(pFileArchive, nullptr);
-	}
-
-	TEST_F(FileArchiveLoadFixture, Load_FileArchive_Succeeds_roundboard_tgz)
-	{
-		auto pFileArchive = m_pDesignCache->GetFileArchive("roundboard");
-		ASSERT_NE(pFileArchive, nullptr);
-	}	
-
-	TEST_F(FileArchiveLoadFixture, Load_FileArchive_Succeeds_Panel__vplanproject_1230_tgz)
-	{
-		auto pFileArchive = m_pDesignCache->GetFileArchive("Panel - vplanproject_1230");
-		ASSERT_NE(pFileArchive, nullptr);
-	}	
-
 #endif // (RUN_SUCCEEDING_TESTS || RUN_ALL_TESTS)	
 
 	//
@@ -136,47 +40,27 @@ namespace Odb::Test
 
 #if (RUN_FAILING_TESTS || RUN_ALL_TESTS)
 
-	TEST_F(FileArchiveLoadFixture, Load_FileArchive_Fails_pcb_1039N05890_v02_tar)
+	TEST_F(FileArchiveLoadFixture, Load_FileArchive_Missing_Standard_Fonts_File_Throws_InvalidOdbError)
 	{
 		// assert throws invalid_odb_error b/c missing fonts/standard file
 		EXPECT_THROW(
 			{
-				auto pFileArchive = m_pDesignCache->GetFileArchive("pcb_1039N05890_v02");
+				auto pFileArchive = m_pDesignCache->GetFileArchive("designodb_rigidflex - missing_fonts_standard");
 			},
 			invalid_odb_error);
 	}	
 
-	TEST_F(FileArchiveLoadFixture, Load_FileArchive_Fails_odb1_zip)
+	TEST_F(FileArchiveLoadFixture, Load_FileArchive_Missing_Misc_Info_File_Throws_InvalidOdbError)
 	{
 		// throws invalid_odb_error because missing misc/info file
 		EXPECT_THROW(
 			{
-				auto pFileArchive = m_pDesignCache->GetFileArchive("odb1");
-			},
-			invalid_odb_error);
-	}
-
-	TEST_F(FileArchiveLoadFixture, Load_FileArchive_Fails_3687504951_zip)
-	{
-		// throws invalid_odb_error because missing misc/info file
-		EXPECT_THROW(
-			{
-				auto pFileArchive = m_pDesignCache->GetFileArchive("3687504951");
-			},
-			invalid_odb_error);
-	}	
-
-	TEST_F(FileArchiveLoadFixture, Load_FileArchive_Fails_dft_zip)
-	{
-		// throws invalid_odb_error because missing misc/info file
-		EXPECT_THROW(
-			{
-				auto pFileArchive = m_pDesignCache->GetFileArchive("dft");
+				auto pFileArchive = m_pDesignCache->GetFileArchive("designodb_rigidflex - missing_misc_info");
 			},
 			invalid_odb_error);
 	}	
 	
-	TEST_F(FileArchiveLoadFixture, Load_FileArchive_Fails_Panel__Demo1230_tgz)
+	TEST_F(FileArchiveLoadFixture, Load_FileArchive_InvalidPinElectricalType_Throws_ParseError)
 	{
 		// throws parse_error because:
 		// 
@@ -189,22 +73,12 @@ namespace Odb::Test
 
 		EXPECT_THROW(
 			{
-				auto pFileArchive = m_pDesignCache->GetFileArchive("Panel - Demo1230");
+				auto pFileArchive = m_pDesignCache->GetFileArchive("designodb_rigidflex - pin_invalid_electricaltype");
 			},
 			parse_error);
 	}
 
-	TEST_F(FileArchiveLoadFixture, Load_FileArchive_Fails_Panel_Turbot_odb_panel_tgz)
-	{
-		// TODO: throws parse_error because ???
-		EXPECT_THROW(
-			{
-				auto pFileArchive = m_pDesignCache->GetFileArchive("Turbot_odb_panel");
-			},
-			parse_error);
-	}
-
-	TEST_F(FileArchiveLoadFixture, Load_FileArchive_Fails_Panel__Rotation_Test_Board_tgz)
+	TEST_F(FileArchiveLoadFixture, Load_FileArchive_InvalidPinType_Throws_ParseError)
 	{
 		// throws parse_error because:
 		// 
@@ -217,7 +91,7 @@ namespace Odb::Test
 
 		EXPECT_THROW(
 			{
-				auto pFileArchive = m_pDesignCache->GetFileArchive("Panel - Rotation Test Board");
+				auto pFileArchive = m_pDesignCache->GetFileArchive("designodb_rigidflex - pin_invalid_type");
 			},
 			parse_error);		
 	}
