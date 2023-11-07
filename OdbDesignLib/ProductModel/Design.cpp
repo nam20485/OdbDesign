@@ -1,5 +1,6 @@
 #include "Design.h"
 #include "Package.h"
+#include "Logger.h"
 
 namespace Odb::Lib::ProductModel
 {	
@@ -192,21 +193,29 @@ namespace Odb::Lib::ProductModel
 			const auto& toeprintRecords = pComponentRecord->m_toeprintRecords;
 			for (const auto& pToeprintRecord : toeprintRecords)
 			{
-				auto& toeprintName = pToeprintRecord->name;;
+				auto& toeprintName = pToeprintRecord->name;
 				auto pinNumber = pToeprintRecord->pinNumber;
 				auto netNumber = pToeprintRecord->netNumber;
 				//auto subnetNumber = pToeprintRecord->subnetNumber;
 
-				auto& pComponent = m_componentsByName[pComponentRecord->compName];
-				if (pComponent == nullptr) return false;
+				if (netNumber < m_nets.size())
+				{
+					auto& pComponent = m_componentsByName[pComponentRecord->compName];
+					if (pComponent == nullptr) return false;
 
-				auto pPin = pComponent->GetPackage()->GetPin(pinNumber);
-				if (pPin == nullptr) return false;
+					auto pPin = pComponent->GetPackage()->GetPin(pinNumber);
+					if (pPin == nullptr) return false;
 
-				auto& pNet = m_nets[netNumber];
-				if (pNet == nullptr) return false;
 
-				if (! pNet->AddPinConnection(pComponent, pPin, toeprintName)) return false;
+					auto& pNet = m_nets[netNumber];
+					if (pNet == nullptr) return false;
+
+					if (!pNet->AddPinConnection(pComponent, pPin, toeprintName)) return false;
+				}
+				else
+				{
+					logerror("netNumber out of range: " + std::to_string(netNumber) + ", size = " + std::to_string(m_nets.size()));
+				}
 			}
 		}
 
