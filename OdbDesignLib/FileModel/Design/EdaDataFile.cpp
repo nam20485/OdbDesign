@@ -484,6 +484,7 @@ namespace Odb::Lib::FileModel::Design
                         // create new net record
                         pCurrentNetRecord = std::make_shared<NetRecord>();
                         pCurrentNetRecord->name = token;
+                        pCurrentNetRecord->index = static_cast<unsigned>(m_netRecords.size());
 
                         lineStream >> pCurrentNetRecord->attributesIdString;
                     }
@@ -509,6 +510,7 @@ namespace Odb::Lib::FileModel::Design
                         }
 
                         pCurrentSubnetRecord = std::make_shared<NetRecord::SubnetRecord>();
+                        pCurrentSubnetRecord->index = static_cast<unsigned>(pCurrentNetRecord->m_subnetRecords.size());
 
                         // subnet type
                         lineStream >> token;
@@ -700,6 +702,7 @@ namespace Odb::Lib::FileModel::Design
                         }
 
                         pCurrentPackageRecord = std::make_shared<PackageRecord>();
+                        pCurrentPackageRecord->index = static_cast<unsigned int>(m_packageRecords.size());
 
                         // name
                         if (!(lineStream >> pCurrentPackageRecord->name))
@@ -763,6 +766,7 @@ namespace Odb::Lib::FileModel::Design
                         }
 
                         pCurrentPinRecord = std::make_shared<PackageRecord::PinRecord>();
+                        //pCurrentPinRecord->index = static_cast<unsigned>(pCurrentPackageRecord->m_pinRecords.size());
 
                         // name
                         lineStream >> pCurrentPinRecord->name;
