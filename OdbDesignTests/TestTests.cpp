@@ -1,8 +1,9 @@
 #include <gtest/gtest.h>
-#include "FileArchiveLoadFixture.h"
+#include "Fixtures/FileArchiveLoadFixture.h"
 #include <filesystem>
 
 using namespace std::filesystem;
+using namespace Odb::Test::Fixtures;
 
 namespace Odb::Test
 {

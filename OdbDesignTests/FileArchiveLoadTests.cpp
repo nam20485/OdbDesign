@@ -1,9 +1,10 @@
 #include <gtest/gtest.h>
-#include "FileArchiveLoadFixture.h"
+#include "Fixtures/FileArchiveLoadFixture.h"
 #include "OdbDesign.h"
 
 //using namespace Odb::Lib::App;
 using namespace Odb::Lib::FileModel;
+using namespace Odb::Test::Fixtures;
 
 namespace Odb::Test
 {	

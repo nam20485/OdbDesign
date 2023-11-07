@@ -2,10 +2,10 @@
 #include <string>
 
 using namespace std::filesystem;
-using namespace Odb::Lib;
+//using namespace Odb::Lib;
 using namespace Odb::Lib::App;
 
-namespace Odb::Test
+namespace Odb::Test::Fixtures
 {
 	FileArchiveLoadFixture::FileArchiveLoadFixture()
 		: m_testDataDir()
