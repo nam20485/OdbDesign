@@ -14,6 +14,7 @@
 #include "str_trim.h"
 #include <sstream>
 #include <iostream>
+#include <cstring>
 
 
 namespace Utils
