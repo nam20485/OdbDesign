@@ -67,7 +67,7 @@ namespace Odb::Lib::ProductModel
 		for (const auto& pComponentRecord : componentRecords)
 		{
 			auto& pPackage = m_packages[pComponentRecord->pkgRef];
-			auto index = static_cast<unsigned int>(m_components.size());
+			auto index = pComponentRecord->index;
 			auto pComponent = std::make_shared<Component>(pComponentRecord->compName, pComponentRecord->partName, pPackage, index, pComponentsLayerDir->GetSide());
 
 			m_components.push_back(pComponent);
@@ -90,7 +90,7 @@ namespace Odb::Lib::ProductModel
 
 		for (const auto& pNetRecord : netRecords)
 		{
-			auto pNet = std::make_shared<Net>(pNetRecord->name, static_cast<unsigned int>(m_nets.size()));
+			auto pNet = std::make_shared<Net>(pNetRecord->name, pNetRecord->index);
 			m_nets.push_back(pNet);
 			m_netsByName[pNet->GetName()] = pNet;
 		}	
@@ -111,7 +111,8 @@ namespace Odb::Lib::ProductModel
 
 		for (const auto& pPackageRecord : packageRecords)
 		{
-			auto pPackage = std::make_shared<Package>(pPackageRecord->name, static_cast<unsigned int>(m_packages.size()));
+			auto index = pPackageRecord->index;
+			auto pPackage = std::make_shared<Package>(pPackageRecord->name, index);
 
 			for (const auto& pPinRecord : pPackageRecord->m_pinRecords)
 			{				
