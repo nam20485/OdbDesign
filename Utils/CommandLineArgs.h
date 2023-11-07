@@ -25,6 +25,9 @@ namespace Utils
 		std::filesystem::path executableDirectory() const;
 		std::string executableName() const;
 
+		bool isWindows() const;
+		bool isLinux() const;
+
 		void printUsage() const;
 
 	protected:
@@ -38,6 +41,7 @@ namespace Utils
 		virtual std::string getUsageString() const = 0;		
 
 		const char* EXECUTABLE_ARG_NAME = "executable";
+		const char* EXE_EXTENSION = ".exe";
 				
 	};	
 }
