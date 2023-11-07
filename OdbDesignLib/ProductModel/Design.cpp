@@ -50,7 +50,7 @@ namespace Odb::Lib::ProductModel
 
 		// top components layer
 		auto pTopComponentsLayerDir = pStepDirectory->GetTopComponentLayerDir();
-		if (pTopComponentsLayerDir != nullptr) return false;
+		if (pTopComponentsLayerDir == nullptr) return false;
 		if (! BuildLayerComponents(pTopComponentsLayerDir)) return false;
 
 		// bottom layer components
