@@ -71,7 +71,7 @@ jobs:
       # Login against Docker Hub to allow running Docker Scout
       # https://github.com/docker/login-action
       - name: Log into Docker Hub registry
-        # if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' || github.base_ref != 'development' || github.head_ref == 'nam20485'
         uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d
         with:          
           username: ${{ secrets.DOCKERHUB_USERNAME }}
