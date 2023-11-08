@@ -218,7 +218,12 @@ namespace Odb::Lib::FileModel::Design
 						lineStream >> pCurrentComponentRecord->partName;
 						lineStream >> pCurrentComponentRecord->attributes;
 
-						pCurrentComponentRecord->index = m_componentRecords.size();
+						if (m_componentRecords.size() > UINT_MAX)
+						{
+							throw_parse_error(m_path, line, token, lineNumber);							
+						}
+						
+						pCurrentComponentRecord->index = static_cast<unsigned int>(m_componentRecords.size());
 
 						// TODO: parse attributes and id string
 						//std::string strId;
