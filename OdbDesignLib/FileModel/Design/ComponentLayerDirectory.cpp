@@ -218,6 +218,8 @@ namespace Odb::Lib::FileModel::Design
 						lineStream >> pCurrentComponentRecord->partName;
 						lineStream >> pCurrentComponentRecord->attributes;
 
+						pCurrentComponentRecord->index = m_componentRecords.size();
+
 						// TODO: parse attributes and id string
 						//std::string strId;
 						//lineStream >> strId;
@@ -308,10 +310,34 @@ namespace Odb::Lib::FileModel::Design
 
 						char mirror;
 						lineStream >> mirror;
-						pToeprintRecord->mirror = (mirror == 'M');
+						pToeprintRecord->mirror = (mirror == 'M' || mirror == 'm');
 
 						lineStream >> pToeprintRecord->netNumber;
+						if (pToeprintRecord->netNumber == (unsigned int)-1)
+						{
+							// netNumber == -1
+							parse_info pi(m_path, line, lineNumber);
+							logwarn(pi.toString("Component Toeprint record with netNumber = -1"));
+
+							if (!m_allowToepintNetNumbersOfNegative1)
+							{
+								throw_parse_error(m_path, line, token, lineNumber);
+							}							
+						}
+
 						lineStream >> pToeprintRecord->subnetNumber;
+						if (pToeprintRecord->subnetNumber == (unsigned int)-1)
+						{
+							// subnetNumber == -1
+							parse_info pi(m_path, line, lineNumber);
+							logwarn(pi.toString("Component Toeprint record with subnetNumber = -1"));
+
+							if (!m_allowToepintNetNumbersOfNegative1)
+							{
+								throw_parse_error(m_path, line, token, lineNumber);
+							}
+						}
+
 						lineStream >> pToeprintRecord->name;
 
 						pCurrentComponentRecord->m_toeprintRecords.push_back(pToeprintRecord);

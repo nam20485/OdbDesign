@@ -1,5 +1,6 @@
 #include "Design.h"
 #include "Package.h"
+#include "Logger.h"
 
 namespace Odb::Lib::ProductModel
 {	
@@ -50,7 +51,7 @@ namespace Odb::Lib::ProductModel
 
 		// top components layer
 		auto pTopComponentsLayerDir = pStepDirectory->GetTopComponentLayerDir();
-		if (pTopComponentsLayerDir != nullptr) return false;
+		if (pTopComponentsLayerDir == nullptr) return false;
 		if (! BuildLayerComponents(pTopComponentsLayerDir)) return false;
 
 		// bottom layer components
@@ -67,7 +68,7 @@ namespace Odb::Lib::ProductModel
 		for (const auto& pComponentRecord : componentRecords)
 		{
 			auto& pPackage = m_packages[pComponentRecord->pkgRef];
-			auto index = static_cast<unsigned int>(m_components.size());
+			auto index = pComponentRecord->index;
 			auto pComponent = std::make_shared<Component>(pComponentRecord->compName, pComponentRecord->partName, pPackage, index, pComponentsLayerDir->GetSide());
 
 			m_components.push_back(pComponent);
@@ -90,7 +91,7 @@ namespace Odb::Lib::ProductModel
 
 		for (const auto& pNetRecord : netRecords)
 		{
-			auto pNet = std::make_shared<Net>(pNetRecord->name, static_cast<unsigned int>(m_nets.size()));
+			auto pNet = std::make_shared<Net>(pNetRecord->name, pNetRecord->index);
 			m_nets.push_back(pNet);
 			m_netsByName[pNet->GetName()] = pNet;
 		}	
@@ -111,7 +112,8 @@ namespace Odb::Lib::ProductModel
 
 		for (const auto& pPackageRecord : packageRecords)
 		{
-			auto pPackage = std::make_shared<Package>(pPackageRecord->name, static_cast<unsigned int>(m_packages.size()));
+			auto index = pPackageRecord->index;
+			auto pPackage = std::make_shared<Package>(pPackageRecord->name, index);
 
 			for (const auto& pPinRecord : pPackageRecord->m_pinRecords)
 			{				
@@ -191,21 +193,29 @@ namespace Odb::Lib::ProductModel
 			const auto& toeprintRecords = pComponentRecord->m_toeprintRecords;
 			for (const auto& pToeprintRecord : toeprintRecords)
 			{
-				auto& toeprintName = pToeprintRecord->name;;
+				auto& toeprintName = pToeprintRecord->name;
 				auto pinNumber = pToeprintRecord->pinNumber;
 				auto netNumber = pToeprintRecord->netNumber;
 				//auto subnetNumber = pToeprintRecord->subnetNumber;
 
-				auto& pComponent = m_componentsByName[pComponentRecord->compName];
-				if (pComponent == nullptr) return false;
+				if (netNumber < m_nets.size())
+				{
+					auto& pComponent = m_componentsByName[pComponentRecord->compName];
+					if (pComponent == nullptr) return false;
 
-				auto pPin = pComponent->GetPackage()->GetPin(pinNumber);
-				if (pPin == nullptr) return false;
+					auto pPin = pComponent->GetPackage()->GetPin(pinNumber);
+					if (pPin == nullptr) return false;
 
-				auto& pNet = m_nets[netNumber];
-				if (pNet == nullptr) return false;
 
-				if (! pNet->AddPinConnection(pComponent, pPin, toeprintName)) return false;
+					auto& pNet = m_nets[netNumber];
+					if (pNet == nullptr) return false;
+
+					if (!pNet->AddPinConnection(pComponent, pPin, toeprintName)) return false;
+				}
+				else
+				{
+					logerror("netNumber out of range: " + std::to_string(netNumber) + ", size = " + std::to_string(m_nets.size()));
+				}
 			}
 		}
 

@@ -2,10 +2,10 @@
 #include <string>
 
 using namespace std::filesystem;
-using namespace Odb::Lib;
+//using namespace Odb::Lib;
 using namespace Odb::Lib::App;
 
-namespace Odb::Test
+namespace Odb::Test::Fixtures
 {
 	FileArchiveLoadFixture::FileArchiveLoadFixture()
 		: m_testDataDir()
@@ -28,8 +28,8 @@ namespace Odb::Test
 	std::string FileArchiveLoadFixture::getTestDataDir()
 	{
 		auto szTestDataDir = std::getenv("ODB_TEST_DATA_DIR");
-		if (szTestDataDir == nullptr) throw std::runtime_error("ODB_TEST_DATA_DIR environment variable is not set");				
-		if (!exists(szTestDataDir)) throw std::runtime_error("ODB_TEST_DATA_DIR environment variable is set to a non-existent directory");
+		//if (szTestDataDir == nullptr) throw std::runtime_error("ODB_TEST_DATA_DIR environment variable is not set");				
+		//if (!exists(szTestDataDir)) throw std::runtime_error("ODB_TEST_DATA_DIR environment variable is set to a non-existent directory");
 		return szTestDataDir;
 	}
 
@@ -37,29 +37,17 @@ namespace Odb::Test
 	{		
 		if (m_removeDecompressedDirectories)
 		{		
-			//if (!m_pDesignCache->getLoadedDesignNames().empty())
-			//{
-			//	for (const auto& loadedName : m_pDesignCache->getLoadedFileArchiveNames())
-			//	{
-			//		if (is_directory(getDesignPath(loadedName)))
-			//		{
-			//			remove_all(getDesignPath(loadedName));
-			//		}
-			//	}
-			//}
-			//else
-			//{
-			
-			// delete uncompressed directories
-			for (const auto& entry : directory_iterator(m_testDataDir))
+			if (exists(m_testDataDir))
 			{
-				if (is_directory(entry))
+				// delete uncompressed directories
+				for (const auto& entry : directory_iterator(m_testDataDir))
 				{
-					remove_all(entry.path());
+					if (is_directory(entry))
+					{
+						remove_all(entry.path());
+					}
 				}
 			}
-
-			//}
 		}
 	}
 

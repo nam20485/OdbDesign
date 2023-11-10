@@ -118,7 +118,7 @@ namespace Odb::Lib::FileModel::Design
             "ADD_TYPE",
             "ID",
             "DIELECTRIC_TYPE",
-            "DIELECTRIC_NAME"
+            "DIELECTRIC_NAME",
             "FORM",
             "CU_TOP",
             "CU_BOTTOM",

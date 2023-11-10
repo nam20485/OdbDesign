@@ -110,6 +110,7 @@ namespace Odb::Lib::FileModel::Design
 				FillType fillType;
 				CutoutType cutoutType;
 				float fillSize;
+				unsigned int index;
 
 				inline static const std::string RECORD_TOKEN = "SNT";
 				inline static const std::string RECORD_TYPE_TRACE_TOKEN = "TRC";
@@ -131,7 +132,7 @@ namespace Odb::Lib::FileModel::Design
 			std::string name;
 			std::string attributesIdString;
 			// TODO: store index of records
-			unsigned long index;
+			unsigned int index;
 
 			SubnetRecord::Vector m_subnetRecords;
 			PropertyRecord::Vector m_propertyRecords;
@@ -309,6 +310,7 @@ namespace Odb::Lib::FileModel::Design
 			float xMin, yMin;
 			float xMax, yMax;
 			std::string attributesIdString;
+			unsigned int index;
 
 			OutlineRecord::Vector m_outlineRecords;
 			PinRecord::Vector m_pinRecords;

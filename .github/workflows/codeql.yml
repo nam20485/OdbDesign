@@ -13,9 +13,9 @@ name: "CodeQL Security Scan"
 
 on:
   push:
-    branches: [ "development", "main", "release" ]
+    branches: [ "development", "main", "release", "nam20485" ]
   pull_request:
-    branches: [ "development", "main", "release" ]
+    branches: [ "development", "main", "release", "nam20485" ]
 
 env:
   VCPKG_ROOT: ${{ github.workspace }}/vcpkg
