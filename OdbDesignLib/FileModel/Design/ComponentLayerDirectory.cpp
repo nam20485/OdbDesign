@@ -8,6 +8,7 @@
 #include <exception>
 #include <str_trim.h>
 #include "../invalid_odb_error.h"
+#include <climits>
 
 using namespace std::filesystem;
 
