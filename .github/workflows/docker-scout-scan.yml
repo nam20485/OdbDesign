@@ -38,6 +38,9 @@ jobs:
       pull-requests: write
       security-events: write
 
+    # don't run on PRs into development from branches that aren't nam20485 (i.e. dependabot PRs)
+    if: github.event_name != 'pull_request' || github.base_ref != 'development' || github.head_ref == 'nam20485'
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
@@ -70,8 +73,7 @@ jobs:
 
       # Login against Docker Hub to allow running Docker Scout
       # https://github.com/docker/login-action
-      - name: Log into Docker Hub registry
-        if: github.event_name != 'pull_request' || github.base_ref != 'development' || github.head_ref == 'nam20485'
+      - name: Log into Docker Hub registry        
         uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d
         with:          
           username: ${{ secrets.DOCKERHUB_USERNAME }}
