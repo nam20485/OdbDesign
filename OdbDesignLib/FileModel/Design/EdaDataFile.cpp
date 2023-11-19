@@ -121,17 +121,40 @@ namespace Odb::Lib::FileModel::Design
       
     }
 
-    std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord>
+    std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::FeatureIdRecord>
     EdaDataFile::FeatureIdRecord::to_protobuf() const
     {
-        std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord> pFeatureIdRecordMessage(new Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord);        
-        pFeatureIdRecordMessage->set_type((Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord::Type) type);
+        std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::FeatureIdRecord> pFeatureIdRecordMessage(new Odb::Lib::Protobuf::EdaDataFile::FeatureIdRecord);        
+        pFeatureIdRecordMessage->set_type((Odb::Lib::Protobuf::EdaDataFile::FeatureIdRecord::Type) type);
         pFeatureIdRecordMessage->set_layernumber(layerNumber);
         pFeatureIdRecordMessage->set_featurenumber(featureNumber);
         return pFeatureIdRecordMessage;
     }
 
-    void EdaDataFile::FeatureIdRecord::from_protobuf(const Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord& message)
+    void EdaDataFile::FeatureIdRecord::from_protobuf(const Odb::Lib::Protobuf::EdaDataFile::FeatureIdRecord& message)
+    {
+
+    }   
+
+    std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::FeatureGroupRecord>
+    EdaDataFile::FeatureGroupRecord::to_protobuf() const
+    {
+        std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::FeatureGroupRecord> pFeatureGroupRecordMessage(new Odb::Lib::Protobuf::EdaDataFile::FeatureGroupRecord);
+        pFeatureGroupRecordMessage->set_type(type);
+        for (const auto& featureIdRecord : m_featureIdRecords)
+        {
+            auto pFeatureIdRecordMessage = pFeatureGroupRecordMessage->add_featureidrecords();
+            pFeatureIdRecordMessage->CopyFrom(*featureIdRecord->to_protobuf());
+        }
+        for (const auto& propertyRecord : m_propertyRecords)
+        {
+            auto pPropertyRecordMessage = pFeatureGroupRecordMessage->add_featureidrecords();
+            pPropertyRecordMessage->CopyFrom(*propertyRecord->to_protobuf());
+        }
+        return pFeatureGroupRecordMessage;
+    }
+
+    void EdaDataFile::FeatureGroupRecord::from_protobuf(const Odb::Lib::Protobuf::EdaDataFile::FeatureGroupRecord& message)
     {
 
     }    
@@ -216,7 +239,18 @@ namespace Odb::Lib::FileModel::Design
         for (const auto& kvPackageRecord : m_packageRecordsByName)
         {
             (*pEdaDataFileMessage->mutable_packagerecordsbyname())[kvPackageRecord.first] = *kvPackageRecord.second->to_protobuf();
-        }                
+        }   
+        for (const auto& pPropertyRecord : m_propertyRecords)
+        {
+            auto pPropertyRecordMessage = pEdaDataFileMessage->add_propertyrecords();
+            pPropertyRecordMessage->CopyFrom(*pPropertyRecord->to_protobuf());
+        }
+        for (const auto& pFeatureGroupRecord : m_featureGroupRecords)
+        {
+            auto pFeatureGroupRecordMessage = pEdaDataFileMessage->add_featuregrouprecords();
+            pFeatureGroupRecordMessage->CopyFrom(*pFeatureGroupRecord->to_protobuf());
+        }
+       
         return pEdaDataFileMessage;
     }
 

@@ -21,7 +21,20 @@ message EdaDataFile {
         optional string name = 1;
         optional string value = 2;
         repeated float floatValues = 3;
-    }    
+    } 
+
+    message FeatureIdRecord {
+                
+        enum Type {
+            COPPER = 0;
+            LAMINATE = 1;
+            HOLE = 2;
+        };
+        
+        optional Type type = 1;
+        optional uint32 layerNumber = 2;
+        optional uint32 featureNumber = 3;
+    };   
 
     message NetRecord {
 
@@ -46,20 +59,7 @@ message EdaDataFile {
                 RECTANGLE = 1;
                 OCTAGON = 2;
                 EXACT = 3;
-            };           
-
-            message FeatureIdRecord {
-                
-                enum Type {
-                    COPPER = 0;
-                    LAMINATE = 1;
-                    HOLE = 2;
-                };
-                
-                optional Type type = 1;
-                optional uint32 layerNumber = 2;
-                optional uint32 featureNumber = 3;
-            };
+            };                    
 
             // common subnet fields
             optional Type type = 1;
@@ -135,6 +135,14 @@ message EdaDataFile {
         }
     }   
 
+    message FeatureGroupRecord  {
+            
+        optional string type = 1;
+
+        repeated PropertyRecord propertyRecords = 2;        
+        repeated FeatureIdRecord featureIdRecords = 3;
+    }
+
     optional string path = 1;
     optional string units = 2;
     optional string source = 3;
@@ -145,4 +153,6 @@ message EdaDataFile {
     map<string, NetRecord> netRecordsByName = 8;
     repeated PackageRecord packageRecords = 9;
     map<string, PackageRecord> packageRecordsByName = 10;
+    repeated PropertyRecord propertyRecords = 11;
+    repeated FeatureGroupRecord featureGroupRecords = 12;
 }
