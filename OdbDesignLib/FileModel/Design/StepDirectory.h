@@ -11,11 +11,13 @@
 #include "LayerDirectory.h"
 #include "EdaDataFile.h"
 #include "NetlistFile.h"
+#include "../../IProtoBuffable.h"
+#include "../../ProtoBuf/stepdirectory.pb.h"
 
 
 namespace Odb::Lib::FileModel::Design
 {
-	class ODBDESIGN_EXPORT StepDirectory
+	class ODBDESIGN_EXPORT StepDirectory : public IProtoBuffable<Odb::Lib::Protobuf::StepDirectory>
 	{
 	public:
 		StepDirectory(std::filesystem::path path);
@@ -35,6 +37,10 @@ namespace Odb::Lib::FileModel::Design
 
 		typedef std::map<std::string, std::shared_ptr<StepDirectory>> StringMap;
 
+		// Inherited via IProtoBuffable
+		std::unique_ptr<Odb::Lib::Protobuf::StepDirectory> to_protobuf() const override;
+		void from_protobuf(const Odb::Lib::Protobuf::StepDirectory& message) override;
+
 	private:
 		std::string m_name;
 		std::filesystem::path m_path;
@@ -46,7 +52,7 @@ namespace Odb::Lib::FileModel::Design
 		bool ParseLayerFiles(std::filesystem::path layersPath);
 		bool ParseNetlistFiles(std::filesystem::path netlistsPath);
 		bool ParseEdaDataFiles(std::filesystem::path edaPath);
-
+		
 	};
 }
 

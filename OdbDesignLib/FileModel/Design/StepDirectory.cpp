@@ -1,4 +1,6 @@
 #include "StepDirectory.h"
+#include "StepDirectory.h"
+#include "StepDirectory.h"
 #include <filesystem>
 #include "LayerDirectory.h"
 #include "ComponentLayerDirectory.h"
@@ -114,6 +116,26 @@ namespace Odb::Lib::FileModel::Design
         loginfo("Parsing eda/data file complete");
 
         return success;
+    }
+
+    std::unique_ptr<Odb::Lib::Protobuf::StepDirectory> StepDirectory::to_protobuf() const
+    {
+        std::unique_ptr<Odb::Lib::Protobuf::StepDirectory> pStepDirectoryMessage(new Odb::Lib::Protobuf::StepDirectory);
+        pStepDirectoryMessage->set_name(m_name);
+        pStepDirectoryMessage->set_path(m_path.string());
+        pStepDirectoryMessage->mutable_edadatafile()->CopyFrom(*m_edaData.to_protobuf());
+
+        // TODO: netlistfiles
+        //m_netlistsByName
+
+        // TODO: layer directories
+        //m_layersByName
+        
+        return pStepDirectoryMessage;
+    }
+
+    void StepDirectory::from_protobuf(const Odb::Lib::Protobuf::StepDirectory& message)
+    {
     }
 
     bool StepDirectory::ParseNetlistFiles(std::filesystem::path netlistsPath)

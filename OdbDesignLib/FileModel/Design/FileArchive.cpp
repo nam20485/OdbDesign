@@ -1,6 +1,8 @@
 #include "FileArchive.h"
 #include "FileArchive.h"
 #include "FileArchive.h"
+#include "FileArchive.h"
+#include "FileArchive.h"
 #include <filesystem>
 #include "ArchiveExtractor.h"
 #include "MiscInfoFile.h"
@@ -148,6 +150,21 @@ namespace Odb::Lib::FileModel::Design
 			if (!exists(rootLevelDirPath)) return false;
 		}
 		return true;
+	}
+
+	std::unique_ptr<Odb::Lib::Protobuf::FileArchive> FileArchive::to_protobuf() const
+	{
+		std::unique_ptr<Odb::Lib::Protobuf::FileArchive> pFileArchiveMessage(new Odb::Lib::Protobuf::FileArchive);
+		for (const auto& kvStepDirectoryRecord : m_stepsByName)
+		{
+			(*pFileArchiveMessage->mutable_stepsbyname())[kvStepDirectoryRecord.first] = *kvStepDirectoryRecord.second->to_protobuf();
+		}
+
+		return pFileArchiveMessage;
+	}
+
+	void FileArchive::from_protobuf(const Odb::Lib::Protobuf::FileArchive& message)
+	{
 	}
 
 	bool FileArchive::ParseDesignDirectory(const std::filesystem::path& path)
