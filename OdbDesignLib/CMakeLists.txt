@@ -21,6 +21,7 @@ add_library(OdbDesign SHARED
         "ProtoBuf/miscinfofile.pb.h" "ProtoBuf/miscinfofile.pb.cc"
         "ProtoBuf/standardfontsfile.pb.h" "ProtoBuf/standardfontsfile.pb.cc"
         "ProtoBuf/stepdirectory.pb.h" "ProtoBuf/stepdirectory.pb.cc"
+        "ProtoBuf/enums.pb.h" "ProtoBuf/enums.pb.cc"
    "FileModel/parse_error.h"    "FileModel/parse_info.h" "FileModel/parse_info.cpp" "FileModel/parse_error.cpp" "FileModel/invalid_odb_error.h" "FileModel/invalid_odb_error.cpp")
 
 # disable warning C4250: inheritance by dominance

@@ -155,6 +155,9 @@ namespace Odb::Lib::FileModel::Design
 	std::unique_ptr<Odb::Lib::Protobuf::FileArchive> FileArchive::to_protobuf() const
 	{
 		std::unique_ptr<Odb::Lib::Protobuf::FileArchive> pFileArchiveMessage(new Odb::Lib::Protobuf::FileArchive);
+		pFileArchiveMessage->mutable_matrixfile()->CopyFrom(*m_matrixFile.to_protobuf());
+		pFileArchiveMessage->mutable_miscinfofile()->CopyFrom(*m_miscInfoFile.to_protobuf());
+		
 		for (const auto& kvStepDirectoryRecord : m_stepsByName)
 		{
 			(*pFileArchiveMessage->mutable_stepsbyname())[kvStepDirectoryRecord.first] = *kvStepDirectoryRecord.second->to_protobuf();
