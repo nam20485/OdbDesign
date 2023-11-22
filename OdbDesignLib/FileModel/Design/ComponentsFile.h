@@ -1,23 +1,27 @@
 #pragma once
 
-#include "LayerDirectory.h"
-#include <vector>
 #include <string>
+#include <map>
+#include <memory>
+#include <filesystem>
+#include "../../odbdesign_export.h"
 #include "../../enums.h"
 
 
 namespace Odb::Lib::FileModel::Design
 {
-	class ODBDESIGN_EXPORT ComponentLayerDirectory : public LayerDirectory
+	class ODBDESIGN_EXPORT ComponentsFile
 	{
 	public:
-		ComponentLayerDirectory(std::filesystem::path path, BoardSide side);
-		~ComponentLayerDirectory();
+		ComponentsFile();
+		~ComponentsFile();
 
-		bool Parse() override;
+		bool Parse(std::filesystem::path directory);
 
 		std::string GetUnits() const;
 		BoardSide GetSide() const;
+		std::filesystem::path GetPath();
+		std::filesystem::path GetDirectory();		
 
 		struct ComponentRecord
 		{
@@ -87,10 +91,16 @@ namespace Odb::Lib::FileModel::Design
 		const std::vector<std::string>& GetAttributeNames() const;
 		const std::vector<std::string>& GetAttributeTextValues() const;
 
+		inline static const std::string TOP_COMPONENTS_LAYER_NAME = "comp_+_top";
+		inline static const std::string BOTTOM_COMPONENTS_LAYER_NAME = "comp_+_bot";
+
 	private:
 		std::string m_units;
 		unsigned int m_id;
 		BoardSide m_side;
+		std::string m_name;
+		std::filesystem::path m_path;
+		std::filesystem::path m_directory;
 
 		std::vector<std::string> m_attributeNames;
 		std::vector<std::string> m_attributeTextValues;
@@ -122,6 +132,6 @@ namespace Odb::Lib::FileModel::Design
 		inline static const char* BOM_DESCR_RECORD_TOKEN_VPL_VND = "VPL_VND";
 		inline static const char* BOM_DESCR_RECORD_TOKEN_VPL_MPN = "VPL_MPN";
 		inline static const char* BOM_DESCR_RECORD_TOKEN_VND = "VND";
-		inline static const char* BOM_DESCR_RECORD_TOKEN_MPN = "MPN";
+		inline static const char* BOM_DESCR_RECORD_TOKEN_MPN = "MPN";		
 	};
 }

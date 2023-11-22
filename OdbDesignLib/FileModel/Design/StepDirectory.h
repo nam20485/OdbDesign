@@ -7,12 +7,12 @@
 
 #include "../../odbdesign_export.h"
 #include "../../win.h"
-#include "ComponentLayerDirectory.h"
 #include "LayerDirectory.h"
 #include "EdaDataFile.h"
 #include "NetlistFile.h"
 #include "../../IProtoBuffable.h"
 #include "../../ProtoBuf/stepdirectory.pb.h"
+#include "ComponentsFile.h"
 
 
 namespace Odb::Lib::FileModel::Design
@@ -30,8 +30,8 @@ namespace Odb::Lib::FileModel::Design
 		const LayerDirectory::StringMap& GetLayersByName() const;
 		const NetlistFile::StringMap& GetNetlistsByName() const;
 
-		std::shared_ptr<ComponentLayerDirectory> GetTopComponentLayerDir() const;
-		std::shared_ptr<ComponentLayerDirectory> GetBottomComponentLayerDir() const;
+		const ComponentsFile* GetTopComponentsFile() const;
+		const ComponentsFile* GetBottomComponentsFile() const;
 
 		bool Parse();
 

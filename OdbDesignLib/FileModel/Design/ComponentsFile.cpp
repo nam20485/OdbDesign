@@ -1,4 +1,4 @@
-#include "ComponentLayerDirectory.h"
+#include "ComponentsFile.h"
 #include <fstream>
 #include <sstream>
 #include <filesystem>
@@ -15,13 +15,13 @@ using namespace std::filesystem;
 
 namespace Odb::Lib::FileModel::Design
 {
-	ComponentLayerDirectory::ComponentLayerDirectory(std::filesystem::path path, BoardSide side)
-		: LayerDirectory(path), m_id(0)
-		, m_side(side)
+	ComponentsFile::ComponentsFile()
+		: m_id(-1)
+		, m_side(BoardSide::Neither)
 	{
 	}
 
-	ComponentLayerDirectory::~ComponentLayerDirectory()
+	ComponentsFile::~ComponentsFile()
 	{
 		m_attributeNames.clear();
 		m_attributeTextValues.clear();
@@ -29,43 +29,53 @@ namespace Odb::Lib::FileModel::Design
 		m_componentRecordsByName.clear();
 	}
 
-	std::string ComponentLayerDirectory::GetUnits() const
+	std::string ComponentsFile::GetUnits() const
 	{
 		return m_units;
 	}
 
-	BoardSide ComponentLayerDirectory::GetSide() const
+	BoardSide ComponentsFile::GetSide() const
 	{
 		return m_side;
 	}
 
-	const ComponentLayerDirectory::ComponentRecord::Vector& ComponentLayerDirectory::GetComponentRecords() const
+	std::filesystem::path ComponentsFile::GetPath()
+	{
+		return m_path;
+	}
+
+	std::filesystem::path ComponentsFile::GetDirectory()
+	{
+		return m_directory;
+	}
+
+	const ComponentsFile::ComponentRecord::Vector& ComponentsFile::GetComponentRecords() const
 	{
 		return m_componentRecords;
 	}
 
-	const ComponentLayerDirectory::ComponentRecord::StringMap& ComponentLayerDirectory::GetComponentRecordsByName() const
+	const ComponentsFile::ComponentRecord::StringMap& ComponentsFile::GetComponentRecordsByName() const
 	{
 		return m_componentRecordsByName;
 	}
 
-	const std::vector<std::string>& ComponentLayerDirectory::GetAttributeNames() const
+	const std::vector<std::string>& ComponentsFile::GetAttributeNames() const
 	{
 		return m_attributeNames;
 	}
 
-	const std::vector<std::string>& ComponentLayerDirectory::GetAttributeTextValues() const
+	const std::vector<std::string>& ComponentsFile::GetAttributeTextValues() const
 	{
 		return m_attributeTextValues;
 	}
 
-	ComponentLayerDirectory::ComponentRecord::~ComponentRecord()
+	ComponentsFile::ComponentRecord::~ComponentRecord()
 	{
 		m_toeprintRecords.clear();
 		m_propertyRecords.clear();
 	}
 
-	bool ComponentLayerDirectory::Parse()
+	bool ComponentsFile::Parse(std::filesystem::path directory)
 	{
 		std::ifstream componentsFile;
 		int lineNumber = 0;
@@ -73,7 +83,22 @@ namespace Odb::Lib::FileModel::Design
 
 		try
 		{
-			if (!LayerDirectory::Parse()) return false;
+			m_directory = directory;
+
+			auto layerName = m_directory.filename().string();
+			if (layerName == TOP_COMPONENTS_LAYER_NAME ||
+				layerName == BOTTOM_COMPONENTS_LAYER_NAME)
+			{
+				m_side = layerName == TOP_COMPONENTS_LAYER_NAME ?
+					BoardSide::Top :
+					BoardSide::Bottom;
+			}
+
+			if (m_side == BoardSide::Neither)
+			{
+				// not a components layer
+				return true;
+			}
 
 			loginfo("checking for extraction...");
 
@@ -82,28 +107,30 @@ namespace Odb::Lib::FileModel::Design
 			{
 				loginfo("trying components file: [" + componentsFilename + "]...");
 
-				componentsFilePath = Utils::ArchiveExtractor::getUncompressedFilePath(m_path, componentsFilename);
+				componentsFilePath = Utils::ArchiveExtractor::getUncompressedFilePath(m_directory, componentsFilename);
 				if (exists(componentsFilePath) && is_regular_file(componentsFilePath))
 				{			
 					loginfo("found components file: [" + componentsFilePath.string() + "]");
 					break;
 				}
-			}			
+			}	
+
+			m_path = componentsFilePath;			
 
 			loginfo("any extraction complete, parsing data...");
 
-			if (!std::filesystem::exists(componentsFilePath))
+			if (!std::filesystem::exists(m_path))
 			{
 				auto message = "components file does not exist: [" + m_path.string() + "]";				
 				throw invalid_odb_error(message.c_str());
 			}
-			else if (!std::filesystem::is_regular_file(componentsFilePath))
+			else if (!std::filesystem::is_regular_file(m_path))
 			{
 				auto message = "components is not a file: [" + m_path.string() + "]";
 				throw invalid_odb_error(message.c_str());
 			}
 			
-			componentsFile.open(componentsFilePath.string(), std::ios::in);
+			componentsFile.open(m_path.string(), std::ios::in);
 			if (!componentsFile.is_open())
 			{
 				auto message = "unable to open components file: [" + m_path.string() + "]";
