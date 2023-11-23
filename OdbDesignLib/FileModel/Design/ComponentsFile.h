@@ -4,6 +4,7 @@
 #include <map>
 #include <memory>
 #include <filesystem>
+#include <vector>
 #include "../../odbdesign_export.h"
 #include "../../enums.h"
 #include "../../IProtoBuffable.h"
