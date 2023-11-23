@@ -16,7 +16,7 @@ using namespace std::filesystem;
 namespace Odb::Lib::FileModel::Design
 {
 	ComponentsFile::ComponentsFile()
-		: m_id(-1)
+		: m_id((unsigned int)-1)
 		, m_side(BoardSide::Neither)
 	{
 	}
@@ -262,7 +262,7 @@ namespace Odb::Lib::FileModel::Design
 						//pCurrentComponentRecord->id = std::stoul(token);
 
 					}
-					else if (line.find(ComponentRecord::PropertyRecord::RECORD_TOKEN) == 0)
+					else if (line.find(PropertyRecord::RECORD_TOKEN) == 0)
 					{
 						// component property record line
 						std::string token;
@@ -271,12 +271,12 @@ namespace Odb::Lib::FileModel::Design
 							throw_parse_error(m_path, line, token, lineNumber);
 						}
 
-						if (token != ComponentRecord::PropertyRecord::RECORD_TOKEN)
+						if (token != PropertyRecord::RECORD_TOKEN)
 						{
 							throw_parse_error(m_path, line, token, lineNumber);
 						}
 
-						auto pPropertyRecord = std::make_shared<ComponentRecord::PropertyRecord>();
+						auto pPropertyRecord = std::make_shared<PropertyRecord>();
 
 						if (!(lineStream >> pPropertyRecord->name))
 						{

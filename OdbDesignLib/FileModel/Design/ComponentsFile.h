@@ -6,6 +6,8 @@
 #include <filesystem>
 #include "../../odbdesign_export.h"
 #include "../../enums.h"
+#include "../../IProtoBuffable.h"
+#include "PropertyRecord.h"
 
 
 namespace Odb::Lib::FileModel::Design
@@ -41,26 +43,11 @@ namespace Odb::Lib::FileModel::Design
 			unsigned int index;
 
 			// constants
-			inline static const std::string RECORD_TOKEN = "CMP";
+			constexpr inline static const char* RECORD_TOKEN = "CMP";
 
 			// typedefs
 			typedef std::map<std::string, std::shared_ptr<ComponentRecord>> StringMap;
-			typedef std::vector<std::shared_ptr<ComponentRecord>> Vector;
-
-			struct PropertyRecord
-			{
-				// data members
-				std::string name;
-				std::string value;
-				std::vector<float> floatValues;
-
-				// constants
-				inline static const std::string RECORD_TOKEN = "PRP";
-
-				// typedefs
-				typedef std::map<std::string, std::shared_ptr<PropertyRecord>> StringMap;
-				typedef std::vector<std::shared_ptr<PropertyRecord>> Vector;
-			};
+			typedef std::vector<std::shared_ptr<ComponentRecord>> Vector;			
 
 			struct ToeprintRecord
 			{
@@ -75,7 +62,7 @@ namespace Odb::Lib::FileModel::Design
 				std::string name;			// pin name
 
 				// constants
-				inline static const std::string RECORD_TOKEN = "TOP";
+				constexpr inline static const char* RECORD_TOKEN = "TOP";
 
 				// typedefs
 				typedef std::map<std::string, std::shared_ptr<ToeprintRecord>> StringMap;
@@ -84,15 +71,15 @@ namespace Odb::Lib::FileModel::Design
 
 			PropertyRecord::Vector m_propertyRecords;
 			ToeprintRecord::Vector m_toeprintRecords;
-		};
+		};	// ComponentRecord
 
 		const ComponentRecord::Vector& GetComponentRecords() const;
 		const ComponentRecord::StringMap& GetComponentRecordsByName() const;
 		const std::vector<std::string>& GetAttributeNames() const;
 		const std::vector<std::string>& GetAttributeTextValues() const;
 
-		inline static const std::string TOP_COMPONENTS_LAYER_NAME = "comp_+_top";
-		inline static const std::string BOTTOM_COMPONENTS_LAYER_NAME = "comp_+_bot";
+		constexpr inline static const char* TOP_COMPONENTS_LAYER_NAME = "comp_+_top";
+		constexpr inline static const char* BOTTOM_COMPONENTS_LAYER_NAME = "comp_+_bot";
 
 	private:
 		std::string m_units;
@@ -118,20 +105,20 @@ namespace Odb::Lib::FileModel::Design
 			"components3"
 		};
 
-		inline static const char* UNITS_TOKEN = "UNITS";
-		inline static const char* ID_TOKEN = "ID";
-		inline static const char* ATTRIBUTE_NAME_TOKEN = "@";
-		inline static const char* ATTRIBUTE_VALUE_TOKEN = "&";
-		inline static const char* COMMENT_TOKEN = "#";
+		constexpr inline static const char* UNITS_TOKEN = "UNITS";
+		constexpr inline static const char* ID_TOKEN = "ID";
+		constexpr inline static const char* ATTRIBUTE_NAME_TOKEN = "@";
+		constexpr inline static const char* ATTRIBUTE_VALUE_TOKEN = "&";
+		constexpr inline static const char* COMMENT_TOKEN = "#";
 
 		// TODO: deal with BOM DATA section lines later
-		inline static const char* BOM_DESCR_RECORD_TOKEN_CPN = "CPN";
-		inline static const char* BOM_DESCR_RECORD_TOKEN_PKG = "PKG";
-		inline static const char* BOM_DESCR_RECORD_TOKEN_IPN = "IPN";
-		inline static const char* BOM_DESCR_RECORD_TOKEN_DSC = "DSC";
-		inline static const char* BOM_DESCR_RECORD_TOKEN_VPL_VND = "VPL_VND";
-		inline static const char* BOM_DESCR_RECORD_TOKEN_VPL_MPN = "VPL_MPN";
-		inline static const char* BOM_DESCR_RECORD_TOKEN_VND = "VND";
-		inline static const char* BOM_DESCR_RECORD_TOKEN_MPN = "MPN";		
+		constexpr inline static const char* BOM_DESCR_RECORD_TOKEN_CPN = "CPN";
+		constexpr inline static const char* BOM_DESCR_RECORD_TOKEN_PKG = "PKG";
+		constexpr inline static const char* BOM_DESCR_RECORD_TOKEN_IPN = "IPN";
+		constexpr inline static const char* BOM_DESCR_RECORD_TOKEN_DSC = "DSC";
+		constexpr inline static const char* BOM_DESCR_RECORD_TOKEN_VPL_VND = "VPL_VND";
+		constexpr inline static const char* BOM_DESCR_RECORD_TOKEN_VPL_MPN = "VPL_MPN";
+		constexpr inline static const char* BOM_DESCR_RECORD_TOKEN_VND = "VND";
+		constexpr inline static const char* BOM_DESCR_RECORD_TOKEN_MPN = "MPN";		
 	};
 }

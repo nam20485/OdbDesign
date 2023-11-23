@@ -3,6 +3,9 @@ syntax = "proto3";
 //// https://protobuf.dev/reference/cpp/cpp-generated/#message
 //option optimize_for = CODE_SIZE;
 
+import "common.proto";
+import "enums.proto";
+
 package Odb.Lib.Protobuf;
 
 //
@@ -10,18 +13,6 @@ package Odb.Lib.Protobuf;
 //
 
 message EdaDataFile {
-
-    enum BoardSide {
-        TOP = 0;
-        BOTTOM = 1;
-    };
-
-    message PropertyRecord {   
-
-        optional string name = 1;
-        optional string value = 2;
-        repeated float floatValues = 3;
-    } 
 
     message FeatureIdRecord {
                 

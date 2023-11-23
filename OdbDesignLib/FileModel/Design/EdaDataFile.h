@@ -7,8 +7,10 @@
 #include "../../odbdesign_export.h"
 #include "../../enums.h"
 #include "../../ProtoBuf/edadatafile.pb.h"
+#include "../../ProtoBuf/common.pb.h"
 #include "google/protobuf/message.h"
 #include "../../IProtoBuffable.h"
+#include "PropertyRecord.h"
 
 
 namespace Odb::Lib::FileModel::Design
@@ -25,26 +27,7 @@ namespace Odb::Lib::FileModel::Design
 		const std::string& GetSource() const;
 
 		bool Parse(std::filesystem::path path);		
-
-		struct ODBDESIGN_EXPORT PropertyRecord : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::PropertyRecord>
-		{
-			// data members
-			std::string name;
-			std::string value;
-			std::vector<float> floatValues;
-
-			// constants
-			inline static const std::string RECORD_TOKEN = "PRP";			
-
-			// typedefs
-			typedef std::map<std::string, std::shared_ptr<PropertyRecord>> StringMap;
-			typedef std::vector<std::shared_ptr<PropertyRecord>> Vector;
-
-			// Inherited via IProtoBuffable
-			std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::PropertyRecord> to_protobuf() const override;
-			void from_protobuf(const Odb::Lib::Protobuf::EdaDataFile::PropertyRecord& message) override;
-		};
-
+		
 		struct ODBDESIGN_EXPORT FeatureIdRecord : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::FeatureIdRecord>
 		{
 			enum class Type

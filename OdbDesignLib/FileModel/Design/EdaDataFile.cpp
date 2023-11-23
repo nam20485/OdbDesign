@@ -68,7 +68,7 @@ namespace Odb::Lib::FileModel::Design
         {
             pSubnetRecordMessage->set_componentnumber(componentNumber);
             pSubnetRecordMessage->set_toeprintnumber(toeprintNumber);
-            pSubnetRecordMessage->set_side((Odb::Lib::Protobuf::EdaDataFile_BoardSide)side);
+            pSubnetRecordMessage->set_side((Odb::Lib::Protobuf::BoardSide)side);
         }
         else if (type == Type::Plane)
         {
@@ -199,7 +199,7 @@ namespace Odb::Lib::FileModel::Design
         return m_featureGroupRecords;
     }
 
-    const EdaDataFile::PropertyRecord::Vector& EdaDataFile::GetPropertyRecords() const
+    const PropertyRecord::Vector& EdaDataFile::GetPropertyRecords() const
     {
         return m_propertyRecords;
     }
@@ -1421,25 +1421,7 @@ namespace Odb::Lib::FileModel::Design
         }
 
         return true;
-    }   
-
-    // Inherited via IProtoBuffable
-    std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::PropertyRecord>
-    EdaDataFile::PropertyRecord::to_protobuf() const
-    {     
-        std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::PropertyRecord> pPropertyRecordMessage(new Odb::Lib::Protobuf::EdaDataFile::PropertyRecord);
-        pPropertyRecordMessage->set_name(name);
-        pPropertyRecordMessage->set_value(value);
-        for (const auto& f : floatValues)
-        {
-			pPropertyRecordMessage->add_floatvalues(f);
-		}
-        return pPropertyRecordMessage;
-    }
-
-    void EdaDataFile::PropertyRecord::from_protobuf(const Odb::Lib::Protobuf::EdaDataFile::PropertyRecord& message)
-    {
-    }
+    }       
 
     // Inherited via IProtoBuffable
     std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::PackageRecord>

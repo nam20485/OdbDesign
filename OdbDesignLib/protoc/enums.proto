@@ -9,6 +9,7 @@ enum BoardSide
 {
     Top = 0;
     Bottom = 1;
+    Neither = 2;
 };
 
 enum LineShape
