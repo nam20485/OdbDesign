@@ -3,6 +3,7 @@
 #include "libarchive_extract.h"
 #include "Logger.h"
 #include <exception>
+#include "macros.h"
 
 using namespace std::filesystem;
 
@@ -25,22 +26,20 @@ namespace Utils
 
 	bool ArchiveExtractor::IsArchiveTypeSupported(const std::filesystem::path& file)
 	{
-		return true;
+		for (const auto& ext : SupportedExtensions)
+		{
+			if (file.extension() == "." + std::string(ext))
+			{
+				return true;
+			}
+		}		
 
-		//for (const auto& ext : SupportedExtensions)
-		//{
-		//	if (file.extension() == "."+ext)
-		//	{
-		//		return true;
-		//	}
-		//}
-
-		//return false;
+		return false;
 	}
 
 	bool ArchiveExtractor::IsArchiveTypeSupported(const std::string& file)
 	{
-		return IsArchiveTypeSupported(std::filesystem::path(file));
+		return ALLOW_ALL_ARCHIVE_EXTENSION_TYPES || IsArchiveTypeSupported(std::filesystem::path(file));
 	}
 
 	bool ArchiveExtractor::Extract()
@@ -65,10 +64,18 @@ namespace Utils
 				<< " -y" 									// yes to all prompts
 				<< " -aoa";									// overwrite all
 
-			const auto silent = false;
+			const auto silent = true;
 			if (silent)
 			{
-				ss << " > nul";
+				bool isWindows = true;
+				if (isWindows)
+				{
+					ss << " >$null 2>&1";
+				}
+				else
+				{
+					ss << " >nul 2>nul";
+				}
 			}
 
 			auto command = ss.str();
