@@ -9,11 +9,12 @@
 #include "../../enums.h"
 #include "../../IProtoBuffable.h"
 #include "PropertyRecord.h"
+#include "../../ProtoBuf/componentsfile.pb.h"
 
 
 namespace Odb::Lib::FileModel::Design
 {
-	class ODBDESIGN_EXPORT ComponentsFile
+	class ODBDESIGN_EXPORT ComponentsFile : public IProtoBuffable<Odb::Lib::Protobuf::ComponentsFile>
 	{
 	public:
 		ComponentsFile();
@@ -26,7 +27,7 @@ namespace Odb::Lib::FileModel::Design
 		std::filesystem::path GetPath();
 		std::filesystem::path GetDirectory();		
 
-		struct ComponentRecord
+		struct ComponentRecord : public IProtoBuffable<Odb::Lib::Protobuf::ComponentsFile::ComponentRecord>
 		{
 			~ComponentRecord();
 
@@ -50,7 +51,7 @@ namespace Odb::Lib::FileModel::Design
 			typedef std::map<std::string, std::shared_ptr<ComponentRecord>> StringMap;
 			typedef std::vector<std::shared_ptr<ComponentRecord>> Vector;			
 
-			struct ToeprintRecord
+			struct ToeprintRecord : public IProtoBuffable<Odb::Lib::Protobuf::ComponentsFile::ComponentRecord::ToeprintRecord>
 			{
 				// TODO: use pinNumber
 				unsigned int pinNumber;		// what does this refer to? own pin # or packages pin #?
@@ -68,10 +69,19 @@ namespace Odb::Lib::FileModel::Design
 				// typedefs
 				typedef std::map<std::string, std::shared_ptr<ToeprintRecord>> StringMap;
 				typedef std::vector<std::shared_ptr<ToeprintRecord>> Vector;
+
+				// Inherited via IProtoBuffable
+				std::unique_ptr<Odb::Lib::Protobuf::ComponentsFile::ComponentRecord::ToeprintRecord> to_protobuf() const override;
+				void from_protobuf(const Odb::Lib::Protobuf::ComponentsFile::ComponentRecord::ToeprintRecord& message) override;
 			};
 
 			PropertyRecord::Vector m_propertyRecords;
 			ToeprintRecord::Vector m_toeprintRecords;
+
+			// Inherited via IProtoBuffable
+			std::unique_ptr<Odb::Lib::Protobuf::ComponentsFile::ComponentRecord> to_protobuf() const override;
+			void from_protobuf(const Odb::Lib::Protobuf::ComponentsFile::ComponentRecord& message) override;
+
 		};	// ComponentRecord
 
 		const ComponentRecord::Vector& GetComponentRecords() const;
@@ -81,6 +91,10 @@ namespace Odb::Lib::FileModel::Design
 
 		constexpr inline static const char* TOP_COMPONENTS_LAYER_NAME = "comp_+_top";
 		constexpr inline static const char* BOTTOM_COMPONENTS_LAYER_NAME = "comp_+_bot";
+		
+		// Inherited via IProtoBuffable
+		std::unique_ptr<Odb::Lib::Protobuf::ComponentsFile> to_protobuf() const override;
+		void from_protobuf(const Odb::Lib::Protobuf::ComponentsFile& message) override;
 
 	private:
 		std::string m_units;
@@ -120,6 +134,6 @@ namespace Odb::Lib::FileModel::Design
 		constexpr inline static const char* BOM_DESCR_RECORD_TOKEN_VPL_VND = "VPL_VND";
 		constexpr inline static const char* BOM_DESCR_RECORD_TOKEN_VPL_MPN = "VPL_MPN";
 		constexpr inline static const char* BOM_DESCR_RECORD_TOKEN_VND = "VND";
-		constexpr inline static const char* BOM_DESCR_RECORD_TOKEN_MPN = "MPN";		
-	};
+		constexpr inline static const char* BOM_DESCR_RECORD_TOKEN_MPN = "MPN";				
+};
 }

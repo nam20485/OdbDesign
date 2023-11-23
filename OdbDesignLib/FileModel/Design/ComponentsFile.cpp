@@ -1,4 +1,8 @@
 #include "ComponentsFile.h"
+#include "ComponentsFile.h"
+#include "ComponentsFile.h"
+#include "ComponentsFile.h"
+#include "ComponentsFile.h"
 #include <fstream>
 #include <sstream>
 #include <filesystem>
@@ -69,10 +73,94 @@ namespace Odb::Lib::FileModel::Design
 		return m_attributeTextValues;
 	}
 
+	std::unique_ptr<Odb::Lib::Protobuf::ComponentsFile> ComponentsFile::to_protobuf() const
+	{
+		std::unique_ptr<Odb::Lib::Protobuf::ComponentsFile> pComponentsFileMessage(new Odb::Lib::Protobuf::ComponentsFile);
+		pComponentsFileMessage->set_units(m_units);
+		pComponentsFileMessage->set_id(m_id);
+		pComponentsFileMessage->set_side(static_cast<Odb::Lib::Protobuf::BoardSide>(m_side));
+		pComponentsFileMessage->set_name(m_name);
+		pComponentsFileMessage->set_path(m_path.string());
+		pComponentsFileMessage->set_directory(m_directory.string());
+
+		for (const auto& attributeName : m_attributeNames)
+		{
+			pComponentsFileMessage->add_attributenames(attributeName);
+		}
+
+		for (const auto& attributeTextValue : m_attributeTextValues)
+		{
+			pComponentsFileMessage->add_attributetextvalues(attributeTextValue);
+		}
+
+		for (const auto& pComponentRecord : m_componentRecords)
+		{
+			auto pComponentRecordMessage = pComponentRecord->to_protobuf();
+			pComponentsFileMessage->add_componentrecords()->CopyFrom(*pComponentRecordMessage);
+		}
+
+		return pComponentsFileMessage;		
+	}
+
+	void ComponentsFile::from_protobuf(const Odb::Lib::Protobuf::ComponentsFile& message)
+	{
+	}
+
 	ComponentsFile::ComponentRecord::~ComponentRecord()
 	{
 		m_toeprintRecords.clear();
 		m_propertyRecords.clear();
+	}
+
+	std::unique_ptr<Odb::Lib::Protobuf::ComponentsFile::ComponentRecord> ComponentsFile::ComponentRecord::to_protobuf() const
+	{
+		std::unique_ptr<Odb::Lib::Protobuf::ComponentsFile::ComponentRecord> pComponentRecordMessage(new Odb::Lib::Protobuf::ComponentsFile::ComponentRecord);
+		pComponentRecordMessage->set_pkgref(pkgRef);
+		pComponentRecordMessage->set_locationx(locationX);
+		pComponentRecordMessage->set_locationy(locationY);
+		pComponentRecordMessage->set_rotation(rotation);
+		pComponentRecordMessage->set_mirror(mirror);
+		pComponentRecordMessage->set_compname(compName);
+		pComponentRecordMessage->set_partname(partName);
+		pComponentRecordMessage->set_attributes(attributes);
+		pComponentRecordMessage->set_index(index);
+
+		for (const auto& pPropertyRecord : m_propertyRecords)
+		{
+			auto pPropertyRecordMessage = pPropertyRecord->to_protobuf();
+			pComponentRecordMessage->add_propertyrecords()->CopyFrom(*pPropertyRecordMessage);
+		}
+
+		for (const auto& pToeprintRecord : m_toeprintRecords)
+		{
+			auto pToeprintRecordMessage = pToeprintRecord->to_protobuf();
+			pComponentRecordMessage->add_toeprintrecords()->CopyFrom(*pToeprintRecordMessage);
+		}
+
+		return pComponentRecordMessage;
+	}
+
+	void ComponentsFile::ComponentRecord::from_protobuf(const Odb::Lib::Protobuf::ComponentsFile::ComponentRecord& message)
+	{
+	}
+
+	std::unique_ptr<Odb::Lib::Protobuf::ComponentsFile::ComponentRecord::ToeprintRecord> ComponentsFile::ComponentRecord::ToeprintRecord::to_protobuf() const
+	{
+		std::unique_ptr<Odb::Lib::Protobuf::ComponentsFile::ComponentRecord::ToeprintRecord> pToeprintRecordMessage(new Odb::Lib::Protobuf::ComponentsFile::ComponentRecord::ToeprintRecord);
+		pToeprintRecordMessage->set_pinnumber(pinNumber);
+		pToeprintRecordMessage->set_locationx(locationX);
+		pToeprintRecordMessage->set_locationy(locationY);
+		pToeprintRecordMessage->set_rotation(rotation);
+		pToeprintRecordMessage->set_mirror(mirror);
+		pToeprintRecordMessage->set_netnumber(netNumber);
+		pToeprintRecordMessage->set_subnetnumber(subnetNumber);
+		pToeprintRecordMessage->set_name(name);
+		return pToeprintRecordMessage;		
+	}
+
+	void ComponentsFile::ComponentRecord::ToeprintRecord::from_protobuf(const Odb::Lib::Protobuf::ComponentsFile::ComponentRecord::ToeprintRecord& message)
+	{
+
 	}
 
 	bool ComponentsFile::Parse(std::filesystem::path directory)

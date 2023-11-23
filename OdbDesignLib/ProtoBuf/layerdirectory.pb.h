@@ -23,7 +23,6 @@
 #include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/arena.h>
 #include <google/protobuf/arenastring.h>
-#include <google/protobuf/generated_message_bases.h>
 #include <google/protobuf/generated_message_util.h>
 #include <google/protobuf/metadata_lite.h>
 #include <google/protobuf/generated_message_reflection.h>
@@ -31,6 +30,7 @@
 #include <google/protobuf/repeated_field.h>  // IWYU pragma: export
 #include <google/protobuf/extension_set.h>  // IWYU pragma: export
 #include <google/protobuf/unknown_field_set.h>
+#include "componentsfile.pb.h"
 // @@protoc_insertion_point(includes)
 #include <google/protobuf/port_def.inc>
 #define PROTOBUF_INTERNAL_EXPORT_layerdirectory_2eproto
@@ -64,9 +64,10 @@ namespace Protobuf {
 // ===================================================================
 
 class LayerDirectory final :
-    public ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.LayerDirectory) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.LayerDirectory) */ {
  public:
   inline LayerDirectory() : LayerDirectory(nullptr) {}
+  ~LayerDirectory() override;
   explicit PROTOBUF_CONSTEXPR LayerDirectory(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
 
   LayerDirectory(const LayerDirectory& from);
@@ -139,15 +140,29 @@ class LayerDirectory final :
   LayerDirectory* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
     return CreateMaybeMessage<LayerDirectory>(arena);
   }
-  using ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase::CopyFrom;
-  inline void CopyFrom(const LayerDirectory& from) {
-    ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase::CopyImpl(*this, from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const LayerDirectory& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const LayerDirectory& from) {
+    LayerDirectory::MergeImpl(*this, from);
   }
-  using ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase::MergeFrom;
-  void MergeFrom(const LayerDirectory& from) {
-    ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase::MergeImpl(*this, from);
-  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
   public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(LayerDirectory* other);
 
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
@@ -168,6 +183,65 @@ class LayerDirectory final :
 
   // accessors -------------------------------------------------------
 
+  enum : int {
+    kNameFieldNumber = 1,
+    kPathFieldNumber = 2,
+    kComponentsFieldNumber = 3,
+  };
+  // optional string name = 1;
+  bool has_name() const;
+  private:
+  bool _internal_has_name() const;
+  public:
+  void clear_name();
+  const std::string& name() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_name(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_name();
+  PROTOBUF_NODISCARD std::string* release_name();
+  void set_allocated_name(std::string* name);
+  private:
+  const std::string& _internal_name() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_name(const std::string& value);
+  std::string* _internal_mutable_name();
+  public:
+
+  // optional string path = 2;
+  bool has_path() const;
+  private:
+  bool _internal_has_path() const;
+  public:
+  void clear_path();
+  const std::string& path() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_path(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_path();
+  PROTOBUF_NODISCARD std::string* release_path();
+  void set_allocated_path(std::string* path);
+  private:
+  const std::string& _internal_path() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_path(const std::string& value);
+  std::string* _internal_mutable_path();
+  public:
+
+  // optional .Odb.Lib.Protobuf.ComponentsFile components = 3;
+  bool has_components() const;
+  private:
+  bool _internal_has_components() const;
+  public:
+  void clear_components();
+  const ::Odb::Lib::Protobuf::ComponentsFile& components() const;
+  PROTOBUF_NODISCARD ::Odb::Lib::Protobuf::ComponentsFile* release_components();
+  ::Odb::Lib::Protobuf::ComponentsFile* mutable_components();
+  void set_allocated_components(::Odb::Lib::Protobuf::ComponentsFile* components);
+  private:
+  const ::Odb::Lib::Protobuf::ComponentsFile& _internal_components() const;
+  ::Odb::Lib::Protobuf::ComponentsFile* _internal_mutable_components();
+  public:
+  void unsafe_arena_set_allocated_components(
+      ::Odb::Lib::Protobuf::ComponentsFile* components);
+  ::Odb::Lib::Protobuf::ComponentsFile* unsafe_arena_release_components();
+
   // @@protoc_insertion_point(class_scope:Odb.Lib.Protobuf.LayerDirectory)
  private:
   class _Internal;
@@ -176,7 +250,13 @@ class LayerDirectory final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr name_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr path_;
+    ::Odb::Lib::Protobuf::ComponentsFile* components_;
   };
+  union { Impl_ _impl_; };
   friend struct ::TableStruct_layerdirectory_2eproto;
 };
 // ===================================================================
@@ -189,6 +269,229 @@ class LayerDirectory final :
   #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif  // __GNUC__
 // LayerDirectory
+
+// optional string name = 1;
+inline bool LayerDirectory::_internal_has_name() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
+  return value;
+}
+inline bool LayerDirectory::has_name() const {
+  return _internal_has_name();
+}
+inline void LayerDirectory::clear_name() {
+  _impl_.name_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000001u;
+}
+inline const std::string& LayerDirectory::name() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.LayerDirectory.name)
+  return _internal_name();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void LayerDirectory::set_name(ArgT0&& arg0, ArgT... args) {
+ _impl_._has_bits_[0] |= 0x00000001u;
+ _impl_.name_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.LayerDirectory.name)
+}
+inline std::string* LayerDirectory::mutable_name() {
+  std::string* _s = _internal_mutable_name();
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.LayerDirectory.name)
+  return _s;
+}
+inline const std::string& LayerDirectory::_internal_name() const {
+  return _impl_.name_.Get();
+}
+inline void LayerDirectory::_internal_set_name(const std::string& value) {
+  _impl_._has_bits_[0] |= 0x00000001u;
+  _impl_.name_.Set(value, GetArenaForAllocation());
+}
+inline std::string* LayerDirectory::_internal_mutable_name() {
+  _impl_._has_bits_[0] |= 0x00000001u;
+  return _impl_.name_.Mutable(GetArenaForAllocation());
+}
+inline std::string* LayerDirectory::release_name() {
+  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.LayerDirectory.name)
+  if (!_internal_has_name()) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000001u;
+  auto* p = _impl_.name_.Release();
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.name_.IsDefault()) {
+    _impl_.name_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
+}
+inline void LayerDirectory::set_allocated_name(std::string* name) {
+  if (name != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000001u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000001u;
+  }
+  _impl_.name_.SetAllocated(name, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.name_.IsDefault()) {
+    _impl_.name_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.LayerDirectory.name)
+}
+
+// optional string path = 2;
+inline bool LayerDirectory::_internal_has_path() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
+  return value;
+}
+inline bool LayerDirectory::has_path() const {
+  return _internal_has_path();
+}
+inline void LayerDirectory::clear_path() {
+  _impl_.path_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000002u;
+}
+inline const std::string& LayerDirectory::path() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.LayerDirectory.path)
+  return _internal_path();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void LayerDirectory::set_path(ArgT0&& arg0, ArgT... args) {
+ _impl_._has_bits_[0] |= 0x00000002u;
+ _impl_.path_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.LayerDirectory.path)
+}
+inline std::string* LayerDirectory::mutable_path() {
+  std::string* _s = _internal_mutable_path();
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.LayerDirectory.path)
+  return _s;
+}
+inline const std::string& LayerDirectory::_internal_path() const {
+  return _impl_.path_.Get();
+}
+inline void LayerDirectory::_internal_set_path(const std::string& value) {
+  _impl_._has_bits_[0] |= 0x00000002u;
+  _impl_.path_.Set(value, GetArenaForAllocation());
+}
+inline std::string* LayerDirectory::_internal_mutable_path() {
+  _impl_._has_bits_[0] |= 0x00000002u;
+  return _impl_.path_.Mutable(GetArenaForAllocation());
+}
+inline std::string* LayerDirectory::release_path() {
+  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.LayerDirectory.path)
+  if (!_internal_has_path()) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000002u;
+  auto* p = _impl_.path_.Release();
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.path_.IsDefault()) {
+    _impl_.path_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
+}
+inline void LayerDirectory::set_allocated_path(std::string* path) {
+  if (path != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000002u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000002u;
+  }
+  _impl_.path_.SetAllocated(path, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.path_.IsDefault()) {
+    _impl_.path_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.LayerDirectory.path)
+}
+
+// optional .Odb.Lib.Protobuf.ComponentsFile components = 3;
+inline bool LayerDirectory::_internal_has_components() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
+  PROTOBUF_ASSUME(!value || _impl_.components_ != nullptr);
+  return value;
+}
+inline bool LayerDirectory::has_components() const {
+  return _internal_has_components();
+}
+inline const ::Odb::Lib::Protobuf::ComponentsFile& LayerDirectory::_internal_components() const {
+  const ::Odb::Lib::Protobuf::ComponentsFile* p = _impl_.components_;
+  return p != nullptr ? *p : reinterpret_cast<const ::Odb::Lib::Protobuf::ComponentsFile&>(
+      ::Odb::Lib::Protobuf::_ComponentsFile_default_instance_);
+}
+inline const ::Odb::Lib::Protobuf::ComponentsFile& LayerDirectory::components() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.LayerDirectory.components)
+  return _internal_components();
+}
+inline void LayerDirectory::unsafe_arena_set_allocated_components(
+    ::Odb::Lib::Protobuf::ComponentsFile* components) {
+  if (GetArenaForAllocation() == nullptr) {
+    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.components_);
+  }
+  _impl_.components_ = components;
+  if (components) {
+    _impl_._has_bits_[0] |= 0x00000004u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000004u;
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:Odb.Lib.Protobuf.LayerDirectory.components)
+}
+inline ::Odb::Lib::Protobuf::ComponentsFile* LayerDirectory::release_components() {
+  _impl_._has_bits_[0] &= ~0x00000004u;
+  ::Odb::Lib::Protobuf::ComponentsFile* temp = _impl_.components_;
+  _impl_.components_ = nullptr;
+#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
+  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
+  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  if (GetArenaForAllocation() == nullptr) { delete old; }
+#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
+  if (GetArenaForAllocation() != nullptr) {
+    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  }
+#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
+  return temp;
+}
+inline ::Odb::Lib::Protobuf::ComponentsFile* LayerDirectory::unsafe_arena_release_components() {
+  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.LayerDirectory.components)
+  _impl_._has_bits_[0] &= ~0x00000004u;
+  ::Odb::Lib::Protobuf::ComponentsFile* temp = _impl_.components_;
+  _impl_.components_ = nullptr;
+  return temp;
+}
+inline ::Odb::Lib::Protobuf::ComponentsFile* LayerDirectory::_internal_mutable_components() {
+  _impl_._has_bits_[0] |= 0x00000004u;
+  if (_impl_.components_ == nullptr) {
+    auto* p = CreateMaybeMessage<::Odb::Lib::Protobuf::ComponentsFile>(GetArenaForAllocation());
+    _impl_.components_ = p;
+  }
+  return _impl_.components_;
+}
+inline ::Odb::Lib::Protobuf::ComponentsFile* LayerDirectory::mutable_components() {
+  ::Odb::Lib::Protobuf::ComponentsFile* _msg = _internal_mutable_components();
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.LayerDirectory.components)
+  return _msg;
+}
+inline void LayerDirectory::set_allocated_components(::Odb::Lib::Protobuf::ComponentsFile* components) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
+  if (message_arena == nullptr) {
+    delete reinterpret_cast< ::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.components_);
+  }
+  if (components) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
+        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(
+                reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(components));
+    if (message_arena != submessage_arena) {
+      components = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, components, submessage_arena);
+    }
+    _impl_._has_bits_[0] |= 0x00000004u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000004u;
+  }
+  _impl_.components_ = components;
+  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.LayerDirectory.components)
+}
 
 #ifdef __GNUC__
   #pragma GCC diagnostic pop

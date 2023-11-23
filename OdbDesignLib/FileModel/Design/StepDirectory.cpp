@@ -113,7 +113,10 @@ namespace Odb::Lib::FileModel::Design
         //m_netlistsByName
 
         // TODO: layer directories
-        //m_layersByName
+        for (const auto& kvLayerDirectoryRecord : m_layersByName)
+        {
+            (*pStepDirectoryMessage->mutable_layersbyname())[kvLayerDirectoryRecord.first] = *kvLayerDirectoryRecord.second->to_protobuf();
+        }
         
         return pStepDirectoryMessage;
     }
