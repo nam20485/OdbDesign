@@ -1,12 +1,8 @@
-#include "MatrixFile.h"
-#include "MatrixFile.h"
-#include "MatrixFile.h"
-#include "MatrixFile.h"
-#include "MatrixFile.h"
 //
 // Created by nmill on 10/13/2023.
 //
 
+#include "../../crow_win.h"
 #include "MatrixFile.h"
 #include <fstream>
 #include "str_trim.h"
@@ -16,6 +12,7 @@
 #include "../parse_error.h"
 #include <Logger.h>
 #include "../invalid_odb_error.h"
+#include "../../ProtoBuf/enums.pb.h"
 
 namespace Odb::Lib::FileModel::Design
 {
@@ -434,5 +431,70 @@ namespace Odb::Lib::FileModel::Design
             }
         }
         return false;
+    }
+
+    std::unique_ptr<Odb::Lib::Protobuf::MatrixFile> Odb::Lib::FileModel::Design::MatrixFile::to_protobuf() const
+    {
+        std::unique_ptr<Odb::Lib::Protobuf::MatrixFile> pMatrixFileMessage(new Odb::Lib::Protobuf::MatrixFile);
+        for (const auto& stepRecord : m_stepRecords)
+        {
+            auto pStepRecordMessage = pMatrixFileMessage->add_steps();
+            pStepRecordMessage->CopyFrom(*stepRecord->to_protobuf());
+        }
+        for (const auto& layerRecord : m_layerRecords)
+        {
+            auto pLayerRecordMessage = pMatrixFileMessage->add_layers();
+            pLayerRecordMessage->CopyFrom(*layerRecord->to_protobuf());
+        }
+		return pMatrixFileMessage;
+	
+    }
+
+    void Odb::Lib::FileModel::Design::MatrixFile::from_protobuf(const Odb::Lib::Protobuf::MatrixFile& message)
+    {
+    }
+    
+    std::unique_ptr<Odb::Lib::Protobuf::MatrixFile::StepRecord> Odb::Lib::FileModel::Design::MatrixFile::StepRecord::to_protobuf() const
+    {
+		std::unique_ptr<Odb::Lib::Protobuf::MatrixFile::StepRecord> pStepRecordMessage(new Odb::Lib::Protobuf::MatrixFile::StepRecord);
+		pStepRecordMessage->set_column(column);
+		pStepRecordMessage->set_name(name);
+		pStepRecordMessage->set_id(id);
+		return pStepRecordMessage;
+	}
+
+    void Odb::Lib::FileModel::Design::MatrixFile::StepRecord::from_protobuf(const Odb::Lib::Protobuf::MatrixFile::StepRecord& message)
+    {
+    }
+
+    std::unique_ptr<Odb::Lib::Protobuf::MatrixFile::LayerRecord> Odb::Lib::FileModel::Design::MatrixFile::LayerRecord::to_protobuf() const
+    {
+        std::unique_ptr<Odb::Lib::Protobuf::MatrixFile::LayerRecord> pLayerRecordMessage(new Odb::Lib::Protobuf::MatrixFile::LayerRecord);
+        pLayerRecordMessage->set_addtype(addType);
+        pLayerRecordMessage->set_context(static_cast<Odb::Lib::Protobuf::MatrixFile::LayerRecord::Context>(context));
+        pLayerRecordMessage->set_cubottom(cuBottom);
+        pLayerRecordMessage->set_cutop(cuTop);
+        pLayerRecordMessage->set_dielectricname(dielectricName);
+        pLayerRecordMessage->set_dielectrictype(static_cast<Odb::Lib::Protobuf::MatrixFile::LayerRecord::DielectricType>(dielectricType));
+        pLayerRecordMessage->set_endname(endName);
+        pLayerRecordMessage->set_form(static_cast<Odb::Lib::Protobuf::MatrixFile::LayerRecord::Form>(form));
+        pLayerRecordMessage->set_id(id);
+        pLayerRecordMessage->set_name(name);
+        pLayerRecordMessage->set_oldname(oldName);
+        pLayerRecordMessage->set_polarity(static_cast<Odb::Lib::Protobuf::Polarity>(polarity));
+        pLayerRecordMessage->set_ref(ref);
+        pLayerRecordMessage->set_row(row);
+        pLayerRecordMessage->set_startname(startName);
+        pLayerRecordMessage->set_type(static_cast<Odb::Lib::Protobuf::MatrixFile::LayerRecord::Type>(type));
+        //pLayerRecordMessage->mutable_color()->set_r(color.r);
+        //pLayerRecordMessage->mutable_color()->set_g(color.g);
+        //pLayerRecordMessage->mutable_color()->set_b(color.b);
+
+
+        return pLayerRecordMessage;
+    }       
+
+    void Odb::Lib::FileModel::Design::MatrixFile::LayerRecord::from_protobuf(const Odb::Lib::Protobuf::MatrixFile::LayerRecord& message)
+    {
     }
 }

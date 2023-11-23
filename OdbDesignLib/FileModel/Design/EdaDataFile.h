@@ -7,8 +7,10 @@
 #include "../../odbdesign_export.h"
 #include "../../enums.h"
 #include "../../ProtoBuf/edadatafile.pb.h"
+#include "../../ProtoBuf/common.pb.h"
 #include "google/protobuf/message.h"
 #include "../../IProtoBuffable.h"
+#include "PropertyRecord.h"
 
 
 namespace Odb::Lib::FileModel::Design
@@ -25,27 +27,8 @@ namespace Odb::Lib::FileModel::Design
 		const std::string& GetSource() const;
 
 		bool Parse(std::filesystem::path path);		
-
-		struct ODBDESIGN_EXPORT PropertyRecord : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::PropertyRecord>
-		{
-			// data members
-			std::string name;
-			std::string value;
-			std::vector<float> floatValues;
-
-			// constants
-			inline static const std::string RECORD_TOKEN = "PRP";			
-
-			// typedefs
-			typedef std::map<std::string, std::shared_ptr<PropertyRecord>> StringMap;
-			typedef std::vector<std::shared_ptr<PropertyRecord>> Vector;
-
-			// Inherited via IProtoBuffable
-			std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::PropertyRecord> to_protobuf() const override;
-			void from_protobuf(const Odb::Lib::Protobuf::EdaDataFile::PropertyRecord& message) override;
-		};
-
-		struct ODBDESIGN_EXPORT FeatureIdRecord : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord>
+		
+		struct ODBDESIGN_EXPORT FeatureIdRecord : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::FeatureIdRecord>
 		{
 			enum class Type
 			{
@@ -61,8 +44,8 @@ namespace Odb::Lib::FileModel::Design
 			unsigned int featureNumber;
 
 			// Inherited via IProtoBuffable
-			std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord> to_protobuf() const override;
-			void from_protobuf(const Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord& message) override;
+			std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::FeatureIdRecord> to_protobuf() const override;
+			void from_protobuf(const Odb::Lib::Protobuf::EdaDataFile::FeatureIdRecord& message) override;
 		};
 
 		struct ODBDESIGN_EXPORT NetRecord : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::NetRecord>
@@ -323,7 +306,7 @@ namespace Odb::Lib::FileModel::Design
 
 		}; // PackageRecord
 
-		struct FeatureGroupRecord
+		struct FeatureGroupRecord : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::FeatureGroupRecord>
 		{
 			~FeatureGroupRecord()
 			{
@@ -337,7 +320,11 @@ namespace Odb::Lib::FileModel::Design
 			FeatureIdRecord::Vector m_featureIdRecords;
 
 			typedef std::shared_ptr<FeatureGroupRecord> shared_ptr;
-			typedef std::vector<FeatureGroupRecord::shared_ptr> Vector;			
+			typedef std::vector<FeatureGroupRecord::shared_ptr> Vector;	
+
+			// Inherited via IProtoBuffable
+			std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::FeatureGroupRecord> to_protobuf() const override;
+			void from_protobuf(const Odb::Lib::Protobuf::EdaDataFile::FeatureGroupRecord& message) override;
 
 		}; // FeatureGroupRecord
 

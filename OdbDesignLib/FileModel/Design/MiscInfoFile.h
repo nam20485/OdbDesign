@@ -4,13 +4,15 @@
 
 #include "../OdbFile.h"
 #include <chrono>
+#include "../../IProtoBuffable.h"
+#include "../../ProtoBuf/miscinfofile.pb.h"
 
 #pragma once
 
 namespace Odb::Lib::FileModel::Design
 {
 
-    class MiscInfoFile : public OdbFile
+    class MiscInfoFile : public OdbFile, public IProtoBuffable<Odb::Lib::Protobuf::MiscInfoFile>
     {
     public:
         MiscInfoFile() = default;
@@ -29,6 +31,10 @@ namespace Odb::Lib::FileModel::Design
         unsigned int GetMaxUniqueId() const;
 
         bool Parse(std::filesystem::path path) override;
+
+        // Inherited via IProtoBuffable
+        std::unique_ptr<Odb::Lib::Protobuf::MiscInfoFile> to_protobuf() const override;
+        void from_protobuf(const Odb::Lib::Protobuf::MiscInfoFile& message) override;
 
     private:
         std::string m_productModelName;
@@ -49,6 +55,6 @@ namespace Odb::Lib::FileModel::Design
         {
            //"ODB_SOURCE",  // not optional per spec pg. 80
            "MAX_UID",
-        };
+        };       
     };
 }

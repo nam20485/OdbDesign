@@ -5,7 +5,8 @@ namespace Odb::Lib
 	enum class BoardSide
 	{
 		Top,
-		Bottom
+		Bottom,
+		Neither
 	};
 
 	enum class LineShape

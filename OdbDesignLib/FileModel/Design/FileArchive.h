@@ -11,11 +11,13 @@
 #include "MatrixFile.h"
 #include "StandardFontsFile.h"
 #include <filesystem>
+#include "../../IProtoBuffable.h"
+#include "../../ProtoBuf/filearchive.pb.h"
 
 
 namespace Odb::Lib::FileModel::Design
 {
-	class ODBDESIGN_EXPORT FileArchive
+	class ODBDESIGN_EXPORT FileArchive : public IProtoBuffable<Odb::Lib::Protobuf::FileArchive>
 	{
 	public:
 		FileArchive(std::string path);
@@ -62,6 +64,10 @@ namespace Odb::Lib::FileModel::Design
 		static std::string findRootDir(const std::filesystem::path& extractedPath);
 		static bool pathContainsTopLevelDesignDirs(const std::filesystem::path& path);
 
+		// Inherited via IProtoBuffable
+		std::unique_ptr<Odb::Lib::Protobuf::FileArchive> to_protobuf() const override;
+		void from_protobuf(const Odb::Lib::Protobuf::FileArchive& message) override;
+
 		static inline constexpr const char* TOPLEVEL_DESIGN_DIR_NAMES[] =
 		{ 
 			"fonts", 
@@ -91,5 +97,5 @@ namespace Odb::Lib::FileModel::Design
 		//the file misc / info of the product model.If the default is not defined for the product model, the
 		//default is imperial.
 
-    };
+	};
 }

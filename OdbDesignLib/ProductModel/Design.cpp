@@ -50,26 +50,26 @@ namespace Odb::Lib::ProductModel
 		auto& pStepDirectory = steps.begin()->second;
 
 		// top components layer
-		auto pTopComponentsLayerDir = pStepDirectory->GetTopComponentLayerDir();
-		if (pTopComponentsLayerDir == nullptr) return false;
-		if (! BuildLayerComponents(pTopComponentsLayerDir)) return false;
+		auto pTopComponentsFile = pStepDirectory->GetTopComponentsFile();
+		if (pTopComponentsFile == nullptr) return false;
+		if (! BuildLayerComponents(pTopComponentsFile)) return false;
 
 		// bottom layer components
-		auto pBottomComponentsLayerDir = pStepDirectory->GetBottomComponentLayerDir();
-		if (pBottomComponentsLayerDir == nullptr) return false;
-		if (!BuildLayerComponents(pBottomComponentsLayerDir)) return false;
+		auto pBottomComponentsFile = pStepDirectory->GetBottomComponentsFile();
+		if (pBottomComponentsFile == nullptr) return false;
+		if (!BuildLayerComponents(pBottomComponentsFile)) return false;
 
 		return true;
 	}
 
-	bool Design::BuildLayerComponents(std::shared_ptr<Odb::Lib::FileModel::Design::ComponentLayerDirectory>& pComponentsLayerDir)
+	bool Design::BuildLayerComponents(const Odb::Lib::FileModel::Design::ComponentsFile* pComponentsFile)
 	{
-		const auto& componentRecords = pComponentsLayerDir->GetComponentRecords();
+		const auto& componentRecords = pComponentsFile->GetComponentRecords();
 		for (const auto& pComponentRecord : componentRecords)
 		{
 			auto& pPackage = m_packages[pComponentRecord->pkgRef];
 			auto index = pComponentRecord->index;
-			auto pComponent = std::make_shared<Component>(pComponentRecord->compName, pComponentRecord->partName, pPackage, index, pComponentsLayerDir->GetSide());
+			auto pComponent = std::make_shared<Component>(pComponentRecord->compName, pComponentRecord->partName, pPackage, index, pComponentsFile->GetSide());
 
 			m_components.push_back(pComponent);
 			m_componentsByName[pComponent->GetRefDes()] = pComponent;
@@ -137,20 +137,20 @@ namespace Odb::Lib::ProductModel
 
 		auto& pStepDirectory = steps.begin()->second;
 
-		auto pTopComponentsLayerDir = pStepDirectory->GetTopComponentLayerDir();
-		if (pTopComponentsLayerDir == nullptr) return false;
-		if (! BuildLayerParts(pTopComponentsLayerDir)) return false;
+		auto pTopComponentsFile = pStepDirectory->GetTopComponentsFile();
+		if (pTopComponentsFile == nullptr) return false;
+		if (! BuildLayerParts(pTopComponentsFile)) return false;
 
-		auto pBottomComponentsLayerDir = pStepDirectory->GetBottomComponentLayerDir();
-		if (pBottomComponentsLayerDir == nullptr) return false;
-		if (!BuildLayerParts(pBottomComponentsLayerDir)) return false;
+		auto pBottomComponentsFile = pStepDirectory->GetBottomComponentsFile();
+		if (pBottomComponentsFile == nullptr) return false;
+		if (!BuildLayerParts(pBottomComponentsFile)) return false;
 
 		return true;
 	}
 
-	bool Design::BuildLayerParts(std::shared_ptr<Odb::Lib::FileModel::Design::ComponentLayerDirectory>& pComponentsLayerDir)
+	bool Design::BuildLayerParts(const Odb::Lib::FileModel::Design::ComponentsFile* pComponentsFile)
 	{
-		const auto& componentRecords = pComponentsLayerDir->GetComponentRecords();
+		const auto& componentRecords = pComponentsFile->GetComponentRecords();
 		for (const auto& pComponentRecord : componentRecords)
 		{
 			auto& partName = pComponentRecord->partName;
@@ -174,20 +174,20 @@ namespace Odb::Lib::ProductModel
 
 		auto& pStepDirectory = steps.begin()->second;
 
-		auto pTopComponentsLayerDir = pStepDirectory->GetTopComponentLayerDir();
-		if (pTopComponentsLayerDir == nullptr) return false;
-		if (! BuildLayerPlacements(pTopComponentsLayerDir)) return false;
+		auto pTopComponentsFile = pStepDirectory->GetTopComponentsFile();
+		if (pTopComponentsFile == nullptr) return false;
+		if (! BuildLayerPlacements(pTopComponentsFile)) return false;
 
-		auto pBottomComponentsLayerDir = pStepDirectory->GetBottomComponentLayerDir();
-		if (pBottomComponentsLayerDir == nullptr) return false;
-		if (!BuildLayerPlacements(pBottomComponentsLayerDir)) return false;
+		auto pBottomComponentsFile = pStepDirectory->GetBottomComponentsFile();
+		if (pBottomComponentsFile == nullptr) return false;
+		if (!BuildLayerPlacements(pBottomComponentsFile)) return false;
 
 		return true;
 	}
 
-	bool Design::BuildLayerPlacements(std::shared_ptr<Odb::Lib::FileModel::Design::ComponentLayerDirectory>& pComponentsLayerDir)
+	bool Design::BuildLayerPlacements(const Odb::Lib::FileModel::Design::ComponentsFile* pComponentsFile)
 	{
-		const auto& componentRecords = pComponentsLayerDir->GetComponentRecords();
+		const auto& componentRecords = pComponentsFile->GetComponentRecords();
 		for (const auto& pComponentRecord : componentRecords)
 		{
 			const auto& toeprintRecords = pComponentRecord->m_toeprintRecords;
@@ -205,7 +205,6 @@ namespace Odb::Lib::ProductModel
 
 					auto pPin = pComponent->GetPackage()->GetPin(pinNumber);
 					if (pPin == nullptr) return false;
-
 
 					auto& pNet = m_nets[netNumber];
 					if (pNet == nullptr) return false;

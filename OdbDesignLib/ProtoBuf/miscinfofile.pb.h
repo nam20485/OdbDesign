@@ -23,7 +23,6 @@
 #include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/arena.h>
 #include <google/protobuf/arenastring.h>
-#include <google/protobuf/generated_message_bases.h>
 #include <google/protobuf/generated_message_util.h>
 #include <google/protobuf/metadata_lite.h>
 #include <google/protobuf/generated_message_reflection.h>
@@ -31,6 +30,7 @@
 #include <google/protobuf/repeated_field.h>  // IWYU pragma: export
 #include <google/protobuf/extension_set.h>  // IWYU pragma: export
 #include <google/protobuf/unknown_field_set.h>
+#include <google/protobuf/timestamp.pb.h>
 // @@protoc_insertion_point(includes)
 #include <google/protobuf/port_def.inc>
 #define PROTOBUF_INTERNAL_EXPORT_miscinfofile_2eproto
@@ -64,9 +64,10 @@ namespace Protobuf {
 // ===================================================================
 
 class MiscInfoFile final :
-    public ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.MiscInfoFile) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.MiscInfoFile) */ {
  public:
   inline MiscInfoFile() : MiscInfoFile(nullptr) {}
+  ~MiscInfoFile() override;
   explicit PROTOBUF_CONSTEXPR MiscInfoFile(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
 
   MiscInfoFile(const MiscInfoFile& from);
@@ -139,15 +140,29 @@ class MiscInfoFile final :
   MiscInfoFile* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
     return CreateMaybeMessage<MiscInfoFile>(arena);
   }
-  using ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase::CopyFrom;
-  inline void CopyFrom(const MiscInfoFile& from) {
-    ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase::CopyImpl(*this, from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const MiscInfoFile& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const MiscInfoFile& from) {
+    MiscInfoFile::MergeImpl(*this, from);
   }
-  using ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase::MergeFrom;
-  void MergeFrom(const MiscInfoFile& from) {
-    ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase::MergeImpl(*this, from);
-  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
   public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(MiscInfoFile* other);
 
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
@@ -168,6 +183,212 @@ class MiscInfoFile final :
 
   // accessors -------------------------------------------------------
 
+  enum : int {
+    kProductModelNameFieldNumber = 1,
+    kJobNameFieldNumber = 2,
+    kOdbVersionMajorFieldNumber = 3,
+    kOdbVersionMinorFieldNumber = 4,
+    kOdbSourceFieldNumber = 5,
+    kSaveAppFieldNumber = 8,
+    kSaveUserFieldNumber = 9,
+    kUnitsFieldNumber = 10,
+    kCreationDateDateFieldNumber = 6,
+    kSaveDateFieldNumber = 7,
+    kMaxUniqueIdFieldNumber = 11,
+  };
+  // optional string productModelName = 1;
+  bool has_productmodelname() const;
+  private:
+  bool _internal_has_productmodelname() const;
+  public:
+  void clear_productmodelname();
+  const std::string& productmodelname() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_productmodelname(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_productmodelname();
+  PROTOBUF_NODISCARD std::string* release_productmodelname();
+  void set_allocated_productmodelname(std::string* productmodelname);
+  private:
+  const std::string& _internal_productmodelname() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_productmodelname(const std::string& value);
+  std::string* _internal_mutable_productmodelname();
+  public:
+
+  // optional string jobName = 2;
+  bool has_jobname() const;
+  private:
+  bool _internal_has_jobname() const;
+  public:
+  void clear_jobname();
+  const std::string& jobname() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_jobname(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_jobname();
+  PROTOBUF_NODISCARD std::string* release_jobname();
+  void set_allocated_jobname(std::string* jobname);
+  private:
+  const std::string& _internal_jobname() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_jobname(const std::string& value);
+  std::string* _internal_mutable_jobname();
+  public:
+
+  // optional string odbVersionMajor = 3;
+  bool has_odbversionmajor() const;
+  private:
+  bool _internal_has_odbversionmajor() const;
+  public:
+  void clear_odbversionmajor();
+  const std::string& odbversionmajor() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_odbversionmajor(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_odbversionmajor();
+  PROTOBUF_NODISCARD std::string* release_odbversionmajor();
+  void set_allocated_odbversionmajor(std::string* odbversionmajor);
+  private:
+  const std::string& _internal_odbversionmajor() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_odbversionmajor(const std::string& value);
+  std::string* _internal_mutable_odbversionmajor();
+  public:
+
+  // optional string odbVersionMinor = 4;
+  bool has_odbversionminor() const;
+  private:
+  bool _internal_has_odbversionminor() const;
+  public:
+  void clear_odbversionminor();
+  const std::string& odbversionminor() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_odbversionminor(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_odbversionminor();
+  PROTOBUF_NODISCARD std::string* release_odbversionminor();
+  void set_allocated_odbversionminor(std::string* odbversionminor);
+  private:
+  const std::string& _internal_odbversionminor() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_odbversionminor(const std::string& value);
+  std::string* _internal_mutable_odbversionminor();
+  public:
+
+  // optional string odbSource = 5;
+  bool has_odbsource() const;
+  private:
+  bool _internal_has_odbsource() const;
+  public:
+  void clear_odbsource();
+  const std::string& odbsource() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_odbsource(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_odbsource();
+  PROTOBUF_NODISCARD std::string* release_odbsource();
+  void set_allocated_odbsource(std::string* odbsource);
+  private:
+  const std::string& _internal_odbsource() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_odbsource(const std::string& value);
+  std::string* _internal_mutable_odbsource();
+  public:
+
+  // optional string saveApp = 8;
+  bool has_saveapp() const;
+  private:
+  bool _internal_has_saveapp() const;
+  public:
+  void clear_saveapp();
+  const std::string& saveapp() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_saveapp(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_saveapp();
+  PROTOBUF_NODISCARD std::string* release_saveapp();
+  void set_allocated_saveapp(std::string* saveapp);
+  private:
+  const std::string& _internal_saveapp() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_saveapp(const std::string& value);
+  std::string* _internal_mutable_saveapp();
+  public:
+
+  // optional string saveUser = 9;
+  bool has_saveuser() const;
+  private:
+  bool _internal_has_saveuser() const;
+  public:
+  void clear_saveuser();
+  const std::string& saveuser() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_saveuser(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_saveuser();
+  PROTOBUF_NODISCARD std::string* release_saveuser();
+  void set_allocated_saveuser(std::string* saveuser);
+  private:
+  const std::string& _internal_saveuser() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_saveuser(const std::string& value);
+  std::string* _internal_mutable_saveuser();
+  public:
+
+  // optional string units = 10;
+  bool has_units() const;
+  private:
+  bool _internal_has_units() const;
+  public:
+  void clear_units();
+  const std::string& units() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_units(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_units();
+  PROTOBUF_NODISCARD std::string* release_units();
+  void set_allocated_units(std::string* units);
+  private:
+  const std::string& _internal_units() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_units(const std::string& value);
+  std::string* _internal_mutable_units();
+  public:
+
+  // optional .google.protobuf.Timestamp creationDateDate = 6;
+  bool has_creationdatedate() const;
+  private:
+  bool _internal_has_creationdatedate() const;
+  public:
+  void clear_creationdatedate();
+  const ::PROTOBUF_NAMESPACE_ID::Timestamp& creationdatedate() const;
+  PROTOBUF_NODISCARD ::PROTOBUF_NAMESPACE_ID::Timestamp* release_creationdatedate();
+  ::PROTOBUF_NAMESPACE_ID::Timestamp* mutable_creationdatedate();
+  void set_allocated_creationdatedate(::PROTOBUF_NAMESPACE_ID::Timestamp* creationdatedate);
+  private:
+  const ::PROTOBUF_NAMESPACE_ID::Timestamp& _internal_creationdatedate() const;
+  ::PROTOBUF_NAMESPACE_ID::Timestamp* _internal_mutable_creationdatedate();
+  public:
+  void unsafe_arena_set_allocated_creationdatedate(
+      ::PROTOBUF_NAMESPACE_ID::Timestamp* creationdatedate);
+  ::PROTOBUF_NAMESPACE_ID::Timestamp* unsafe_arena_release_creationdatedate();
+
+  // optional .google.protobuf.Timestamp saveDate = 7;
+  bool has_savedate() const;
+  private:
+  bool _internal_has_savedate() const;
+  public:
+  void clear_savedate();
+  const ::PROTOBUF_NAMESPACE_ID::Timestamp& savedate() const;
+  PROTOBUF_NODISCARD ::PROTOBUF_NAMESPACE_ID::Timestamp* release_savedate();
+  ::PROTOBUF_NAMESPACE_ID::Timestamp* mutable_savedate();
+  void set_allocated_savedate(::PROTOBUF_NAMESPACE_ID::Timestamp* savedate);
+  private:
+  const ::PROTOBUF_NAMESPACE_ID::Timestamp& _internal_savedate() const;
+  ::PROTOBUF_NAMESPACE_ID::Timestamp* _internal_mutable_savedate();
+  public:
+  void unsafe_arena_set_allocated_savedate(
+      ::PROTOBUF_NAMESPACE_ID::Timestamp* savedate);
+  ::PROTOBUF_NAMESPACE_ID::Timestamp* unsafe_arena_release_savedate();
+
+  // optional uint32 maxUniqueId = 11;
+  bool has_maxuniqueid() const;
+  private:
+  bool _internal_has_maxuniqueid() const;
+  public:
+  void clear_maxuniqueid();
+  uint32_t maxuniqueid() const;
+  void set_maxuniqueid(uint32_t value);
+  private:
+  uint32_t _internal_maxuniqueid() const;
+  void _internal_set_maxuniqueid(uint32_t value);
+  public:
+
   // @@protoc_insertion_point(class_scope:Odb.Lib.Protobuf.MiscInfoFile)
  private:
   class _Internal;
@@ -176,7 +397,21 @@ class MiscInfoFile final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr productmodelname_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr jobname_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr odbversionmajor_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr odbversionminor_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr odbsource_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr saveapp_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr saveuser_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr units_;
+    ::PROTOBUF_NAMESPACE_ID::Timestamp* creationdatedate_;
+    ::PROTOBUF_NAMESPACE_ID::Timestamp* savedate_;
+    uint32_t maxuniqueid_;
   };
+  union { Impl_ _impl_; };
   friend struct ::TableStruct_miscinfofile_2eproto;
 };
 // ===================================================================
@@ -189,6 +424,752 @@ class MiscInfoFile final :
   #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif  // __GNUC__
 // MiscInfoFile
+
+// optional string productModelName = 1;
+inline bool MiscInfoFile::_internal_has_productmodelname() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
+  return value;
+}
+inline bool MiscInfoFile::has_productmodelname() const {
+  return _internal_has_productmodelname();
+}
+inline void MiscInfoFile::clear_productmodelname() {
+  _impl_.productmodelname_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000001u;
+}
+inline const std::string& MiscInfoFile::productmodelname() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.MiscInfoFile.productModelName)
+  return _internal_productmodelname();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void MiscInfoFile::set_productmodelname(ArgT0&& arg0, ArgT... args) {
+ _impl_._has_bits_[0] |= 0x00000001u;
+ _impl_.productmodelname_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.MiscInfoFile.productModelName)
+}
+inline std::string* MiscInfoFile::mutable_productmodelname() {
+  std::string* _s = _internal_mutable_productmodelname();
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.MiscInfoFile.productModelName)
+  return _s;
+}
+inline const std::string& MiscInfoFile::_internal_productmodelname() const {
+  return _impl_.productmodelname_.Get();
+}
+inline void MiscInfoFile::_internal_set_productmodelname(const std::string& value) {
+  _impl_._has_bits_[0] |= 0x00000001u;
+  _impl_.productmodelname_.Set(value, GetArenaForAllocation());
+}
+inline std::string* MiscInfoFile::_internal_mutable_productmodelname() {
+  _impl_._has_bits_[0] |= 0x00000001u;
+  return _impl_.productmodelname_.Mutable(GetArenaForAllocation());
+}
+inline std::string* MiscInfoFile::release_productmodelname() {
+  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.MiscInfoFile.productModelName)
+  if (!_internal_has_productmodelname()) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000001u;
+  auto* p = _impl_.productmodelname_.Release();
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.productmodelname_.IsDefault()) {
+    _impl_.productmodelname_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
+}
+inline void MiscInfoFile::set_allocated_productmodelname(std::string* productmodelname) {
+  if (productmodelname != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000001u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000001u;
+  }
+  _impl_.productmodelname_.SetAllocated(productmodelname, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.productmodelname_.IsDefault()) {
+    _impl_.productmodelname_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.MiscInfoFile.productModelName)
+}
+
+// optional string jobName = 2;
+inline bool MiscInfoFile::_internal_has_jobname() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
+  return value;
+}
+inline bool MiscInfoFile::has_jobname() const {
+  return _internal_has_jobname();
+}
+inline void MiscInfoFile::clear_jobname() {
+  _impl_.jobname_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000002u;
+}
+inline const std::string& MiscInfoFile::jobname() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.MiscInfoFile.jobName)
+  return _internal_jobname();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void MiscInfoFile::set_jobname(ArgT0&& arg0, ArgT... args) {
+ _impl_._has_bits_[0] |= 0x00000002u;
+ _impl_.jobname_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.MiscInfoFile.jobName)
+}
+inline std::string* MiscInfoFile::mutable_jobname() {
+  std::string* _s = _internal_mutable_jobname();
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.MiscInfoFile.jobName)
+  return _s;
+}
+inline const std::string& MiscInfoFile::_internal_jobname() const {
+  return _impl_.jobname_.Get();
+}
+inline void MiscInfoFile::_internal_set_jobname(const std::string& value) {
+  _impl_._has_bits_[0] |= 0x00000002u;
+  _impl_.jobname_.Set(value, GetArenaForAllocation());
+}
+inline std::string* MiscInfoFile::_internal_mutable_jobname() {
+  _impl_._has_bits_[0] |= 0x00000002u;
+  return _impl_.jobname_.Mutable(GetArenaForAllocation());
+}
+inline std::string* MiscInfoFile::release_jobname() {
+  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.MiscInfoFile.jobName)
+  if (!_internal_has_jobname()) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000002u;
+  auto* p = _impl_.jobname_.Release();
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.jobname_.IsDefault()) {
+    _impl_.jobname_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
+}
+inline void MiscInfoFile::set_allocated_jobname(std::string* jobname) {
+  if (jobname != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000002u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000002u;
+  }
+  _impl_.jobname_.SetAllocated(jobname, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.jobname_.IsDefault()) {
+    _impl_.jobname_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.MiscInfoFile.jobName)
+}
+
+// optional string odbVersionMajor = 3;
+inline bool MiscInfoFile::_internal_has_odbversionmajor() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
+  return value;
+}
+inline bool MiscInfoFile::has_odbversionmajor() const {
+  return _internal_has_odbversionmajor();
+}
+inline void MiscInfoFile::clear_odbversionmajor() {
+  _impl_.odbversionmajor_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000004u;
+}
+inline const std::string& MiscInfoFile::odbversionmajor() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.MiscInfoFile.odbVersionMajor)
+  return _internal_odbversionmajor();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void MiscInfoFile::set_odbversionmajor(ArgT0&& arg0, ArgT... args) {
+ _impl_._has_bits_[0] |= 0x00000004u;
+ _impl_.odbversionmajor_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.MiscInfoFile.odbVersionMajor)
+}
+inline std::string* MiscInfoFile::mutable_odbversionmajor() {
+  std::string* _s = _internal_mutable_odbversionmajor();
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.MiscInfoFile.odbVersionMajor)
+  return _s;
+}
+inline const std::string& MiscInfoFile::_internal_odbversionmajor() const {
+  return _impl_.odbversionmajor_.Get();
+}
+inline void MiscInfoFile::_internal_set_odbversionmajor(const std::string& value) {
+  _impl_._has_bits_[0] |= 0x00000004u;
+  _impl_.odbversionmajor_.Set(value, GetArenaForAllocation());
+}
+inline std::string* MiscInfoFile::_internal_mutable_odbversionmajor() {
+  _impl_._has_bits_[0] |= 0x00000004u;
+  return _impl_.odbversionmajor_.Mutable(GetArenaForAllocation());
+}
+inline std::string* MiscInfoFile::release_odbversionmajor() {
+  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.MiscInfoFile.odbVersionMajor)
+  if (!_internal_has_odbversionmajor()) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000004u;
+  auto* p = _impl_.odbversionmajor_.Release();
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.odbversionmajor_.IsDefault()) {
+    _impl_.odbversionmajor_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
+}
+inline void MiscInfoFile::set_allocated_odbversionmajor(std::string* odbversionmajor) {
+  if (odbversionmajor != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000004u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000004u;
+  }
+  _impl_.odbversionmajor_.SetAllocated(odbversionmajor, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.odbversionmajor_.IsDefault()) {
+    _impl_.odbversionmajor_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.MiscInfoFile.odbVersionMajor)
+}
+
+// optional string odbVersionMinor = 4;
+inline bool MiscInfoFile::_internal_has_odbversionminor() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000008u) != 0;
+  return value;
+}
+inline bool MiscInfoFile::has_odbversionminor() const {
+  return _internal_has_odbversionminor();
+}
+inline void MiscInfoFile::clear_odbversionminor() {
+  _impl_.odbversionminor_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000008u;
+}
+inline const std::string& MiscInfoFile::odbversionminor() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.MiscInfoFile.odbVersionMinor)
+  return _internal_odbversionminor();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void MiscInfoFile::set_odbversionminor(ArgT0&& arg0, ArgT... args) {
+ _impl_._has_bits_[0] |= 0x00000008u;
+ _impl_.odbversionminor_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.MiscInfoFile.odbVersionMinor)
+}
+inline std::string* MiscInfoFile::mutable_odbversionminor() {
+  std::string* _s = _internal_mutable_odbversionminor();
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.MiscInfoFile.odbVersionMinor)
+  return _s;
+}
+inline const std::string& MiscInfoFile::_internal_odbversionminor() const {
+  return _impl_.odbversionminor_.Get();
+}
+inline void MiscInfoFile::_internal_set_odbversionminor(const std::string& value) {
+  _impl_._has_bits_[0] |= 0x00000008u;
+  _impl_.odbversionminor_.Set(value, GetArenaForAllocation());
+}
+inline std::string* MiscInfoFile::_internal_mutable_odbversionminor() {
+  _impl_._has_bits_[0] |= 0x00000008u;
+  return _impl_.odbversionminor_.Mutable(GetArenaForAllocation());
+}
+inline std::string* MiscInfoFile::release_odbversionminor() {
+  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.MiscInfoFile.odbVersionMinor)
+  if (!_internal_has_odbversionminor()) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000008u;
+  auto* p = _impl_.odbversionminor_.Release();
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.odbversionminor_.IsDefault()) {
+    _impl_.odbversionminor_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
+}
+inline void MiscInfoFile::set_allocated_odbversionminor(std::string* odbversionminor) {
+  if (odbversionminor != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000008u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000008u;
+  }
+  _impl_.odbversionminor_.SetAllocated(odbversionminor, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.odbversionminor_.IsDefault()) {
+    _impl_.odbversionminor_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.MiscInfoFile.odbVersionMinor)
+}
+
+// optional string odbSource = 5;
+inline bool MiscInfoFile::_internal_has_odbsource() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000010u) != 0;
+  return value;
+}
+inline bool MiscInfoFile::has_odbsource() const {
+  return _internal_has_odbsource();
+}
+inline void MiscInfoFile::clear_odbsource() {
+  _impl_.odbsource_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000010u;
+}
+inline const std::string& MiscInfoFile::odbsource() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.MiscInfoFile.odbSource)
+  return _internal_odbsource();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void MiscInfoFile::set_odbsource(ArgT0&& arg0, ArgT... args) {
+ _impl_._has_bits_[0] |= 0x00000010u;
+ _impl_.odbsource_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.MiscInfoFile.odbSource)
+}
+inline std::string* MiscInfoFile::mutable_odbsource() {
+  std::string* _s = _internal_mutable_odbsource();
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.MiscInfoFile.odbSource)
+  return _s;
+}
+inline const std::string& MiscInfoFile::_internal_odbsource() const {
+  return _impl_.odbsource_.Get();
+}
+inline void MiscInfoFile::_internal_set_odbsource(const std::string& value) {
+  _impl_._has_bits_[0] |= 0x00000010u;
+  _impl_.odbsource_.Set(value, GetArenaForAllocation());
+}
+inline std::string* MiscInfoFile::_internal_mutable_odbsource() {
+  _impl_._has_bits_[0] |= 0x00000010u;
+  return _impl_.odbsource_.Mutable(GetArenaForAllocation());
+}
+inline std::string* MiscInfoFile::release_odbsource() {
+  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.MiscInfoFile.odbSource)
+  if (!_internal_has_odbsource()) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000010u;
+  auto* p = _impl_.odbsource_.Release();
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.odbsource_.IsDefault()) {
+    _impl_.odbsource_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
+}
+inline void MiscInfoFile::set_allocated_odbsource(std::string* odbsource) {
+  if (odbsource != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000010u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000010u;
+  }
+  _impl_.odbsource_.SetAllocated(odbsource, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.odbsource_.IsDefault()) {
+    _impl_.odbsource_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.MiscInfoFile.odbSource)
+}
+
+// optional .google.protobuf.Timestamp creationDateDate = 6;
+inline bool MiscInfoFile::_internal_has_creationdatedate() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000100u) != 0;
+  PROTOBUF_ASSUME(!value || _impl_.creationdatedate_ != nullptr);
+  return value;
+}
+inline bool MiscInfoFile::has_creationdatedate() const {
+  return _internal_has_creationdatedate();
+}
+inline const ::PROTOBUF_NAMESPACE_ID::Timestamp& MiscInfoFile::_internal_creationdatedate() const {
+  const ::PROTOBUF_NAMESPACE_ID::Timestamp* p = _impl_.creationdatedate_;
+  return p != nullptr ? *p : reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Timestamp&>(
+      ::PROTOBUF_NAMESPACE_ID::_Timestamp_default_instance_);
+}
+inline const ::PROTOBUF_NAMESPACE_ID::Timestamp& MiscInfoFile::creationdatedate() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.MiscInfoFile.creationDateDate)
+  return _internal_creationdatedate();
+}
+inline void MiscInfoFile::unsafe_arena_set_allocated_creationdatedate(
+    ::PROTOBUF_NAMESPACE_ID::Timestamp* creationdatedate) {
+  if (GetArenaForAllocation() == nullptr) {
+    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.creationdatedate_);
+  }
+  _impl_.creationdatedate_ = creationdatedate;
+  if (creationdatedate) {
+    _impl_._has_bits_[0] |= 0x00000100u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000100u;
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:Odb.Lib.Protobuf.MiscInfoFile.creationDateDate)
+}
+inline ::PROTOBUF_NAMESPACE_ID::Timestamp* MiscInfoFile::release_creationdatedate() {
+  _impl_._has_bits_[0] &= ~0x00000100u;
+  ::PROTOBUF_NAMESPACE_ID::Timestamp* temp = _impl_.creationdatedate_;
+  _impl_.creationdatedate_ = nullptr;
+#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
+  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
+  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  if (GetArenaForAllocation() == nullptr) { delete old; }
+#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
+  if (GetArenaForAllocation() != nullptr) {
+    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  }
+#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
+  return temp;
+}
+inline ::PROTOBUF_NAMESPACE_ID::Timestamp* MiscInfoFile::unsafe_arena_release_creationdatedate() {
+  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.MiscInfoFile.creationDateDate)
+  _impl_._has_bits_[0] &= ~0x00000100u;
+  ::PROTOBUF_NAMESPACE_ID::Timestamp* temp = _impl_.creationdatedate_;
+  _impl_.creationdatedate_ = nullptr;
+  return temp;
+}
+inline ::PROTOBUF_NAMESPACE_ID::Timestamp* MiscInfoFile::_internal_mutable_creationdatedate() {
+  _impl_._has_bits_[0] |= 0x00000100u;
+  if (_impl_.creationdatedate_ == nullptr) {
+    auto* p = CreateMaybeMessage<::PROTOBUF_NAMESPACE_ID::Timestamp>(GetArenaForAllocation());
+    _impl_.creationdatedate_ = p;
+  }
+  return _impl_.creationdatedate_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::Timestamp* MiscInfoFile::mutable_creationdatedate() {
+  ::PROTOBUF_NAMESPACE_ID::Timestamp* _msg = _internal_mutable_creationdatedate();
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.MiscInfoFile.creationDateDate)
+  return _msg;
+}
+inline void MiscInfoFile::set_allocated_creationdatedate(::PROTOBUF_NAMESPACE_ID::Timestamp* creationdatedate) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
+  if (message_arena == nullptr) {
+    delete reinterpret_cast< ::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.creationdatedate_);
+  }
+  if (creationdatedate) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
+        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(
+                reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(creationdatedate));
+    if (message_arena != submessage_arena) {
+      creationdatedate = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, creationdatedate, submessage_arena);
+    }
+    _impl_._has_bits_[0] |= 0x00000100u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000100u;
+  }
+  _impl_.creationdatedate_ = creationdatedate;
+  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.MiscInfoFile.creationDateDate)
+}
+
+// optional .google.protobuf.Timestamp saveDate = 7;
+inline bool MiscInfoFile::_internal_has_savedate() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000200u) != 0;
+  PROTOBUF_ASSUME(!value || _impl_.savedate_ != nullptr);
+  return value;
+}
+inline bool MiscInfoFile::has_savedate() const {
+  return _internal_has_savedate();
+}
+inline const ::PROTOBUF_NAMESPACE_ID::Timestamp& MiscInfoFile::_internal_savedate() const {
+  const ::PROTOBUF_NAMESPACE_ID::Timestamp* p = _impl_.savedate_;
+  return p != nullptr ? *p : reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Timestamp&>(
+      ::PROTOBUF_NAMESPACE_ID::_Timestamp_default_instance_);
+}
+inline const ::PROTOBUF_NAMESPACE_ID::Timestamp& MiscInfoFile::savedate() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.MiscInfoFile.saveDate)
+  return _internal_savedate();
+}
+inline void MiscInfoFile::unsafe_arena_set_allocated_savedate(
+    ::PROTOBUF_NAMESPACE_ID::Timestamp* savedate) {
+  if (GetArenaForAllocation() == nullptr) {
+    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.savedate_);
+  }
+  _impl_.savedate_ = savedate;
+  if (savedate) {
+    _impl_._has_bits_[0] |= 0x00000200u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000200u;
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:Odb.Lib.Protobuf.MiscInfoFile.saveDate)
+}
+inline ::PROTOBUF_NAMESPACE_ID::Timestamp* MiscInfoFile::release_savedate() {
+  _impl_._has_bits_[0] &= ~0x00000200u;
+  ::PROTOBUF_NAMESPACE_ID::Timestamp* temp = _impl_.savedate_;
+  _impl_.savedate_ = nullptr;
+#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
+  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
+  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  if (GetArenaForAllocation() == nullptr) { delete old; }
+#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
+  if (GetArenaForAllocation() != nullptr) {
+    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  }
+#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
+  return temp;
+}
+inline ::PROTOBUF_NAMESPACE_ID::Timestamp* MiscInfoFile::unsafe_arena_release_savedate() {
+  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.MiscInfoFile.saveDate)
+  _impl_._has_bits_[0] &= ~0x00000200u;
+  ::PROTOBUF_NAMESPACE_ID::Timestamp* temp = _impl_.savedate_;
+  _impl_.savedate_ = nullptr;
+  return temp;
+}
+inline ::PROTOBUF_NAMESPACE_ID::Timestamp* MiscInfoFile::_internal_mutable_savedate() {
+  _impl_._has_bits_[0] |= 0x00000200u;
+  if (_impl_.savedate_ == nullptr) {
+    auto* p = CreateMaybeMessage<::PROTOBUF_NAMESPACE_ID::Timestamp>(GetArenaForAllocation());
+    _impl_.savedate_ = p;
+  }
+  return _impl_.savedate_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::Timestamp* MiscInfoFile::mutable_savedate() {
+  ::PROTOBUF_NAMESPACE_ID::Timestamp* _msg = _internal_mutable_savedate();
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.MiscInfoFile.saveDate)
+  return _msg;
+}
+inline void MiscInfoFile::set_allocated_savedate(::PROTOBUF_NAMESPACE_ID::Timestamp* savedate) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
+  if (message_arena == nullptr) {
+    delete reinterpret_cast< ::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.savedate_);
+  }
+  if (savedate) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
+        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(
+                reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(savedate));
+    if (message_arena != submessage_arena) {
+      savedate = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, savedate, submessage_arena);
+    }
+    _impl_._has_bits_[0] |= 0x00000200u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000200u;
+  }
+  _impl_.savedate_ = savedate;
+  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.MiscInfoFile.saveDate)
+}
+
+// optional string saveApp = 8;
+inline bool MiscInfoFile::_internal_has_saveapp() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000020u) != 0;
+  return value;
+}
+inline bool MiscInfoFile::has_saveapp() const {
+  return _internal_has_saveapp();
+}
+inline void MiscInfoFile::clear_saveapp() {
+  _impl_.saveapp_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000020u;
+}
+inline const std::string& MiscInfoFile::saveapp() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.MiscInfoFile.saveApp)
+  return _internal_saveapp();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void MiscInfoFile::set_saveapp(ArgT0&& arg0, ArgT... args) {
+ _impl_._has_bits_[0] |= 0x00000020u;
+ _impl_.saveapp_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.MiscInfoFile.saveApp)
+}
+inline std::string* MiscInfoFile::mutable_saveapp() {
+  std::string* _s = _internal_mutable_saveapp();
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.MiscInfoFile.saveApp)
+  return _s;
+}
+inline const std::string& MiscInfoFile::_internal_saveapp() const {
+  return _impl_.saveapp_.Get();
+}
+inline void MiscInfoFile::_internal_set_saveapp(const std::string& value) {
+  _impl_._has_bits_[0] |= 0x00000020u;
+  _impl_.saveapp_.Set(value, GetArenaForAllocation());
+}
+inline std::string* MiscInfoFile::_internal_mutable_saveapp() {
+  _impl_._has_bits_[0] |= 0x00000020u;
+  return _impl_.saveapp_.Mutable(GetArenaForAllocation());
+}
+inline std::string* MiscInfoFile::release_saveapp() {
+  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.MiscInfoFile.saveApp)
+  if (!_internal_has_saveapp()) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000020u;
+  auto* p = _impl_.saveapp_.Release();
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.saveapp_.IsDefault()) {
+    _impl_.saveapp_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
+}
+inline void MiscInfoFile::set_allocated_saveapp(std::string* saveapp) {
+  if (saveapp != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000020u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000020u;
+  }
+  _impl_.saveapp_.SetAllocated(saveapp, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.saveapp_.IsDefault()) {
+    _impl_.saveapp_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.MiscInfoFile.saveApp)
+}
+
+// optional string saveUser = 9;
+inline bool MiscInfoFile::_internal_has_saveuser() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000040u) != 0;
+  return value;
+}
+inline bool MiscInfoFile::has_saveuser() const {
+  return _internal_has_saveuser();
+}
+inline void MiscInfoFile::clear_saveuser() {
+  _impl_.saveuser_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000040u;
+}
+inline const std::string& MiscInfoFile::saveuser() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.MiscInfoFile.saveUser)
+  return _internal_saveuser();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void MiscInfoFile::set_saveuser(ArgT0&& arg0, ArgT... args) {
+ _impl_._has_bits_[0] |= 0x00000040u;
+ _impl_.saveuser_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.MiscInfoFile.saveUser)
+}
+inline std::string* MiscInfoFile::mutable_saveuser() {
+  std::string* _s = _internal_mutable_saveuser();
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.MiscInfoFile.saveUser)
+  return _s;
+}
+inline const std::string& MiscInfoFile::_internal_saveuser() const {
+  return _impl_.saveuser_.Get();
+}
+inline void MiscInfoFile::_internal_set_saveuser(const std::string& value) {
+  _impl_._has_bits_[0] |= 0x00000040u;
+  _impl_.saveuser_.Set(value, GetArenaForAllocation());
+}
+inline std::string* MiscInfoFile::_internal_mutable_saveuser() {
+  _impl_._has_bits_[0] |= 0x00000040u;
+  return _impl_.saveuser_.Mutable(GetArenaForAllocation());
+}
+inline std::string* MiscInfoFile::release_saveuser() {
+  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.MiscInfoFile.saveUser)
+  if (!_internal_has_saveuser()) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000040u;
+  auto* p = _impl_.saveuser_.Release();
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.saveuser_.IsDefault()) {
+    _impl_.saveuser_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
+}
+inline void MiscInfoFile::set_allocated_saveuser(std::string* saveuser) {
+  if (saveuser != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000040u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000040u;
+  }
+  _impl_.saveuser_.SetAllocated(saveuser, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.saveuser_.IsDefault()) {
+    _impl_.saveuser_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.MiscInfoFile.saveUser)
+}
+
+// optional string units = 10;
+inline bool MiscInfoFile::_internal_has_units() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000080u) != 0;
+  return value;
+}
+inline bool MiscInfoFile::has_units() const {
+  return _internal_has_units();
+}
+inline void MiscInfoFile::clear_units() {
+  _impl_.units_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000080u;
+}
+inline const std::string& MiscInfoFile::units() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.MiscInfoFile.units)
+  return _internal_units();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void MiscInfoFile::set_units(ArgT0&& arg0, ArgT... args) {
+ _impl_._has_bits_[0] |= 0x00000080u;
+ _impl_.units_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.MiscInfoFile.units)
+}
+inline std::string* MiscInfoFile::mutable_units() {
+  std::string* _s = _internal_mutable_units();
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.MiscInfoFile.units)
+  return _s;
+}
+inline const std::string& MiscInfoFile::_internal_units() const {
+  return _impl_.units_.Get();
+}
+inline void MiscInfoFile::_internal_set_units(const std::string& value) {
+  _impl_._has_bits_[0] |= 0x00000080u;
+  _impl_.units_.Set(value, GetArenaForAllocation());
+}
+inline std::string* MiscInfoFile::_internal_mutable_units() {
+  _impl_._has_bits_[0] |= 0x00000080u;
+  return _impl_.units_.Mutable(GetArenaForAllocation());
+}
+inline std::string* MiscInfoFile::release_units() {
+  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.MiscInfoFile.units)
+  if (!_internal_has_units()) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000080u;
+  auto* p = _impl_.units_.Release();
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.units_.IsDefault()) {
+    _impl_.units_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
+}
+inline void MiscInfoFile::set_allocated_units(std::string* units) {
+  if (units != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000080u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000080u;
+  }
+  _impl_.units_.SetAllocated(units, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.units_.IsDefault()) {
+    _impl_.units_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.MiscInfoFile.units)
+}
+
+// optional uint32 maxUniqueId = 11;
+inline bool MiscInfoFile::_internal_has_maxuniqueid() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000400u) != 0;
+  return value;
+}
+inline bool MiscInfoFile::has_maxuniqueid() const {
+  return _internal_has_maxuniqueid();
+}
+inline void MiscInfoFile::clear_maxuniqueid() {
+  _impl_.maxuniqueid_ = 0u;
+  _impl_._has_bits_[0] &= ~0x00000400u;
+}
+inline uint32_t MiscInfoFile::_internal_maxuniqueid() const {
+  return _impl_.maxuniqueid_;
+}
+inline uint32_t MiscInfoFile::maxuniqueid() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.MiscInfoFile.maxUniqueId)
+  return _internal_maxuniqueid();
+}
+inline void MiscInfoFile::_internal_set_maxuniqueid(uint32_t value) {
+  _impl_._has_bits_[0] |= 0x00000400u;
+  _impl_.maxuniqueid_ = value;
+}
+inline void MiscInfoFile::set_maxuniqueid(uint32_t value) {
+  _internal_set_maxuniqueid(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.MiscInfoFile.maxUniqueId)
+}
 
 #ifdef __GNUC__
   #pragma GCC diagnostic pop

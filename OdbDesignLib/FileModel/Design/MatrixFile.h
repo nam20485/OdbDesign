@@ -10,17 +10,19 @@
 #include <memory>
 #include "RgbColor.h"
 #include "../../enums.h"
+#include "../../IProtoBuffable.h"
+#include "../../ProtoBuf/matrixfile.pb.h"
 
 
 namespace Odb::Lib::FileModel::Design
 {
-    class MatrixFile : public OdbFile
+    class MatrixFile : public OdbFile, public IProtoBuffable<Odb::Lib::Protobuf::MatrixFile>
     {
     public:
         MatrixFile() = default;
         ~MatrixFile() = default;      
 
-        struct StepRecord
+        struct StepRecord : public IProtoBuffable<Odb::Lib::Protobuf::MatrixFile::StepRecord>
         {
             unsigned int column;
             unsigned int id = (unsigned int) -1;
@@ -29,9 +31,13 @@ namespace Odb::Lib::FileModel::Design
             typedef std::vector<std::shared_ptr<StepRecord>> Vector;	
 
             inline static const char* RECORD_TOKEN = "STEP";
+
+            // Inherited via IProtoBuffable
+            std::unique_ptr<Odb::Lib::Protobuf::MatrixFile::StepRecord> to_protobuf() const override;
+            void from_protobuf(const Odb::Lib::Protobuf::MatrixFile::StepRecord& message) override;
         };
 
-        struct LayerRecord
+        struct LayerRecord : public IProtoBuffable<Odb::Lib::Protobuf::MatrixFile::LayerRecord>
         {    
             enum class Type
             {
@@ -67,9 +73,7 @@ namespace Odb::Lib::FileModel::Design
             {
                 Rigid,
                 Flex
-            };
-                    
-            
+            };                              
 
             typedef std::vector<std::shared_ptr<LayerRecord>> Vector;
 
@@ -93,6 +97,9 @@ namespace Odb::Lib::FileModel::Design
 
             inline static const char* RECORD_TOKEN = "LAYER";
 
+            // Inherited via IProtoBuffable
+            std::unique_ptr<Odb::Lib::Protobuf::MatrixFile::LayerRecord> to_protobuf() const override;
+            void from_protobuf(const Odb::Lib::Protobuf::MatrixFile::LayerRecord& message) override;
         };
 
         const inline LayerRecord::Vector& GetLayerRecords() const;
@@ -102,6 +109,10 @@ namespace Odb::Lib::FileModel::Design
         bool Parse(std::filesystem::path path) override;
 
         static inline bool attributeValueIsOptional(const std::string& attribute);
+
+        // Inherited via IProtoBuffable
+        std::unique_ptr<Odb::Lib::Protobuf::MatrixFile> to_protobuf() const override;
+        void from_protobuf(const Odb::Lib::Protobuf::MatrixFile& message) override;
 
     private:
         LayerRecord::Vector m_layerRecords;
@@ -124,6 +135,6 @@ namespace Odb::Lib::FileModel::Design
             "CU_BOTTOM",
             "REF",
             "COLOR",
-        };
+        };        
     };
 }

@@ -48,10 +48,10 @@ namespace Odb::Lib::ProductModel
 		bool BuildPackages();
 		bool BuildParts();
 		bool BuildComponents();
-		bool BuildLayerComponents(std::shared_ptr<Odb::Lib::FileModel::Design::ComponentLayerDirectory>& pComponentsLayerDir);
-		bool BuildLayerParts(std::shared_ptr<Odb::Lib::FileModel::Design::ComponentLayerDirectory>& pComponentsLayerDir);
+		bool BuildLayerComponents(const Odb::Lib::FileModel::Design::ComponentsFile* pComponentsFile);
+		bool BuildLayerParts(const Odb::Lib::FileModel::Design::ComponentsFile* pComponentsFile);
 		bool BuildPlacements();
-		bool BuildLayerPlacements(std::shared_ptr<Odb::Lib::FileModel::Design::ComponentLayerDirectory>& pTopComponentsLayerDir);
+		bool BuildLayerPlacements(const Odb::Lib::FileModel::Design::ComponentsFile* pComponentsFile);
 
 	};
 }

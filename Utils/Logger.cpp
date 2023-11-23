@@ -13,7 +13,7 @@ namespace Utils
 		: m_level(Level::Info)
 		, m_logFilename(DEFAULT_LOG_FILENAME)
 		, m_outputTypes(OutputTypes::StdOut | OutputTypes::File)
-		, m_logFileStream(m_logFilename, std::ios::out | std::ios::app)
+		//, m_logFileStream(m_logFilename, std::ios::out | std::ios::app)
 		, m_logMessageLoop([&](Message& message)
 			{
 				return this->logMessage(message);
@@ -173,9 +173,17 @@ namespace Utils
 
 		if (m_outputTypes & OutputTypes::StdOut) std::cout << message << std::flush;		
 		if (m_outputTypes & OutputTypes::StdErr) std::cerr << message << std::flush;
-		if (m_outputTypes & OutputTypes::File) m_logFileStream << message << std::flush;
-		// TODO: open log file and close on each write?
-		
+		if (m_outputTypes & OutputTypes::File)
+		{
+			m_logFileStream.open(m_logFilename, std::ios::out | std::ios::app);
+			if (m_logFileStream)
+			{
+				m_logFileStream << message << std::flush;
+				m_logFileStream.flush();
+				m_logFileStream.close();
+			}
+		}
+
 		return true;
 	}
 
