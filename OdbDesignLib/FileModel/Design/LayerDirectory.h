@@ -8,6 +8,7 @@
 #include "ComponentsFile.h"
 #include "../../IProtoBuffable.h"
 #include "../../ProtoBuf/layerdirectory.pb.h"
+#include "FeaturesFile.h"
 
 
 namespace Odb::Lib::FileModel::Design
@@ -27,6 +28,7 @@ namespace Odb::Lib::FileModel::Design
 		bool ParseFeaturesFile(std::filesystem::path directory);
 
 		const ComponentsFile& GetComponentsFile() const;
+		const FeaturesFile& GetFeaturesFile() const;
 
 		typedef std::map<std::string, std::shared_ptr<LayerDirectory>> StringMap;
 
@@ -34,12 +36,12 @@ namespace Odb::Lib::FileModel::Design
 		std::unique_ptr<Odb::Lib::Protobuf::LayerDirectory> to_protobuf() const override;
 		void from_protobuf(const Odb::Lib::Protobuf::LayerDirectory& message) override;
 
-	protected: // TODO: do subclasses really need access to these (private instead)?
+	private:
 		std::string m_name;
 		std::filesystem::path m_path;
 
-	private:
-		ComponentsFile m_componentsFile;		
+		ComponentsFile m_componentsFile;	
+		FeaturesFile m_featuresFile;
 
 	};
 }

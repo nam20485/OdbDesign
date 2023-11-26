@@ -4,6 +4,7 @@
 #include "LayerDirectory.h"
 #include "LayerDirectory.h"
 #include "LayerDirectory.h"
+#include "LayerDirectory.h"
 #include "Logger.h"
 
 namespace Odb::Lib::FileModel::Design
@@ -51,12 +52,19 @@ namespace Odb::Lib::FileModel::Design
 
 	bool Odb::Lib::FileModel::Design::LayerDirectory::ParseFeaturesFile(std::filesystem::path directory)
 	{
-		return true;
+		return m_featuresFile.Parse(directory);
 	}
+
 	const ComponentsFile& Odb::Lib::FileModel::Design::LayerDirectory::GetComponentsFile() const
 	{
 		return m_componentsFile;
 	}
+
+	const FeaturesFile& LayerDirectory::GetFeaturesFile() const
+	{
+		return m_featuresFile;
+	}
+
 	std::unique_ptr<Odb::Lib::Protobuf::LayerDirectory> Odb::Lib::FileModel::Design::LayerDirectory::to_protobuf() const
 	{		
 		std::unique_ptr<Odb::Lib::Protobuf::LayerDirectory> pLayerDirectoryMessage(new Odb::Lib::Protobuf::LayerDirectory);
