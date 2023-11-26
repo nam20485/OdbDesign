@@ -3,6 +3,7 @@
 #include "ComponentsFile.h"
 #include "ComponentsFile.h"
 #include "ComponentsFile.h"
+#include "ComponentsFile.h"
 #include <fstream>
 #include <sstream>
 #include <filesystem>
@@ -53,6 +54,11 @@ namespace Odb::Lib::FileModel::Design
 		return m_directory;
 	}
 
+	std::string ComponentsFile::GetLayerName() const
+	{
+		return m_layerName;
+	}
+
 	const ComponentsFile::ComponentRecord::Vector& ComponentsFile::GetComponentRecords() const
 	{
 		return m_componentRecords;
@@ -79,7 +85,7 @@ namespace Odb::Lib::FileModel::Design
 		pComponentsFileMessage->set_units(m_units);
 		pComponentsFileMessage->set_id(m_id);
 		pComponentsFileMessage->set_side(static_cast<Odb::Lib::Protobuf::BoardSide>(m_side));
-		pComponentsFileMessage->set_name(m_name);
+		pComponentsFileMessage->set_layername(m_layerName);
 		pComponentsFileMessage->set_path(m_path.string());
 		pComponentsFileMessage->set_directory(m_directory.string());
 
@@ -104,6 +110,29 @@ namespace Odb::Lib::FileModel::Design
 
 	void ComponentsFile::from_protobuf(const Odb::Lib::Protobuf::ComponentsFile& message)
 	{
+		m_units = message.units();
+		m_id = message.id();
+		m_side = static_cast<BoardSide>(message.side());
+		m_layerName = message.layername();
+		m_path = message.path();
+		m_directory = message.directory();
+
+		for (const auto& attributeName : message.attributenames())
+		{
+			m_attributeNames.push_back(attributeName);
+		}
+
+		for (const auto& attributeTextValue : message.attributetextvalues())
+		{
+			m_attributeTextValues.push_back(attributeTextValue);
+		}
+
+		for (const auto& componentRecordMessage : message.componentrecords())
+		{
+			auto pComponentRecord = std::make_shared<ComponentRecord>();
+			pComponentRecord->from_protobuf(componentRecordMessage);
+			m_componentRecords.push_back(pComponentRecord);
+		}
 	}
 
 	ComponentsFile::ComponentRecord::~ComponentRecord()
@@ -142,6 +171,29 @@ namespace Odb::Lib::FileModel::Design
 
 	void ComponentsFile::ComponentRecord::from_protobuf(const Odb::Lib::Protobuf::ComponentsFile::ComponentRecord& message)
 	{
+		pkgRef = message.pkgref();
+		locationX = message.locationx();
+		locationY = message.locationy();
+		rotation = message.rotation();
+		mirror = message.mirror();
+		compName = message.compname();
+		partName = message.partname();
+		attributes = message.attributes();
+		index = message.index();
+
+		for (const auto& propertyRecordMessage : message.propertyrecords())
+		{
+			auto pPropertyRecord = std::make_shared<PropertyRecord>();
+			pPropertyRecord->from_protobuf(propertyRecordMessage);
+			m_propertyRecords.push_back(pPropertyRecord);
+		}
+
+		for (const auto& toeprintRecordMessage : message.toeprintrecords())
+		{
+			auto pToeprintRecord = std::make_shared<ToeprintRecord>();
+			pToeprintRecord->from_protobuf(toeprintRecordMessage);
+			m_toeprintRecords.push_back(pToeprintRecord);
+		}
 	}
 
 	std::unique_ptr<Odb::Lib::Protobuf::ComponentsFile::ComponentRecord::ToeprintRecord> ComponentsFile::ComponentRecord::ToeprintRecord::to_protobuf() const
@@ -160,7 +212,14 @@ namespace Odb::Lib::FileModel::Design
 
 	void ComponentsFile::ComponentRecord::ToeprintRecord::from_protobuf(const Odb::Lib::Protobuf::ComponentsFile::ComponentRecord::ToeprintRecord& message)
 	{
-
+		pinNumber = message.pinnumber();
+		locationX = message.locationx();
+		locationY = message.locationy();
+		rotation = message.rotation();
+		mirror = message.mirror();
+		netNumber = message.netnumber();
+		subnetNumber = message.subnetnumber();
+		name = message.name();
 	}
 
 	bool ComponentsFile::Parse(std::filesystem::path directory)
@@ -173,11 +232,11 @@ namespace Odb::Lib::FileModel::Design
 		{
 			m_directory = directory;
 
-			auto layerName = m_directory.filename().string();
-			if (layerName == TOP_COMPONENTS_LAYER_NAME ||
-				layerName == BOTTOM_COMPONENTS_LAYER_NAME)
+			m_layerName = m_directory.filename().string();
+			if (m_layerName == TOP_COMPONENTS_LAYER_NAME ||
+				m_layerName == BOTTOM_COMPONENTS_LAYER_NAME)
 			{
-				m_side = layerName == TOP_COMPONENTS_LAYER_NAME ?
+				m_side = m_layerName == TOP_COMPONENTS_LAYER_NAME ?
 					BoardSide::Top :
 					BoardSide::Bottom;
 			}
