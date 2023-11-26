@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+//// https://protobuf.dev/reference/cpp/cpp-generated/#message
+//option optimize_for = CODE_SIZE;
+
+import "common.proto";
+//import "enums.proto";
+
+package Odb.Lib.Protobuf;
+
+//
+//  EdaDataFile.h
+//
+
+message FeaturesFile {
+
+    message FeatureRecord
+    {
+        // enum Type
+        // {
+
+        // };
+
+        repeated ContourPolygon contourPolygons = 1;
+    }
+
+    optional string units = 1;
+    optional uint32 id = 2;
+    optional string path = 5;
+    optional string directory = 6;
+    optional int32 numFeatures = 7;
+    
+    repeated FeatureRecord featureRecords = 8;
+
+}
