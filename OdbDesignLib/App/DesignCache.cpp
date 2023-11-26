@@ -262,6 +262,14 @@ namespace Odb::Lib::App
                             m_designsByName[pFileModel->GetProductName()] =  pDesign;
                             return pDesign;
                         }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        break;
                     }
                 }
             }
@@ -292,6 +300,10 @@ namespace Odb::Lib::App
                         // overwrite any existing file archive with the same name
                         m_fileArchivesByName[pFileArchive->GetProductName()] = pFileArchive;
                         return pFileArchive;
+                    }
+                    else
+                    {
+                        break;
                     }
                 }
             }
