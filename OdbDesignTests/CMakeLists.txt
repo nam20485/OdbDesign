@@ -1,9 +1,14 @@
-﻿enable_testing()
+﻿# CMakeList.txt : CMake project for OdbDesignTests
+#
+
+enable_testing()
 
 add_executable(OdbDesignTests
-  OdbDesignTests.h
-  OdbDesignTests.cpp
-)
+    "Fixtures/FileArchiveLoadFixture.h" 
+    "Fixtures/FileArchiveLoadFixture.cpp" 
+    "FileArchiveLoadTests.cpp"
+    "TestTests.cpp" "DesignLoadTests.cpp" "Fixtures/DesignNameValueParamTest.h"  )
+
 target_link_libraries(OdbDesignTests PRIVATE GTest::gtest_main)
 
 # link to OdbDesign library

@@ -1,4 +1,6 @@
 #include "DesignCache.h"
+#include "DesignCache.h"
+#include "DesignCache.h"
 #include <filesystem>
 #include <utility>
 #include "Logger.h"
@@ -39,21 +41,29 @@ namespace Odb::Lib::App
     std::shared_ptr<FileModel::Design::FileArchive> DesignCache::GetFileArchive(const std::string& designName)
     {
         std::stringstream ss;
-        ss << "Retrieving \"" << designName << "\" from cache... ";
-        //loginfo(ss.str());
-        
+        ss << "Retrieving design \"" << designName << "\" from cache... ";
         loginfo(ss.str());
 
         auto findIt = m_fileArchivesByName.find(designName);
         if (findIt == m_fileArchivesByName.end())
         {
-            loginfo("Not found. Loading from file... ");
+            loginfo("Not found in cache, attempting to load from file...");
 
             auto pFileArchive = LoadFileArchive(designName);
+            if (pFileArchive == nullptr)
+            {
+                logwarn("Failed loading from file");
+            }
+            else
+            {
+				loginfo("Loaded from file");
+			}
             return pFileArchive;
         }
-
-        loginfo("Found. Returning from cache.");
+        else
+        {
+            loginfo("Found. Returning from cache.");
+        }
 
         return m_fileArchivesByName[designName];        
     }
@@ -82,7 +92,7 @@ namespace Odb::Lib::App
     {        
         std::vector<std::string> unloadedNames;
 
-        try
+        //try
         {
             path dir(m_directory);
             for (const auto& entry : directory_iterator(dir))
@@ -93,20 +103,140 @@ namespace Odb::Lib::App
                 }
             }
         }
-        catch (std::filesystem::filesystem_error& fe)
-        {
-            logexception(fe);
-            // re-throw it so we get a HTTP 500 response to the client
-            throw fe;
-        }
+        //catch (std::filesystem::filesystem_error& fe)
+        //{
+        //    logexception(fe);
+        //    // re-throw it so we get a HTTP 500 response to the client
+        //    throw fe;
+        //}
 
         return unloadedNames;
     }
 
-    bool DesignCache::isQueryValid(const std::string& query) const
+    int DesignCache::loadAllFileArchives(bool stopOnError)
     {
-        return false;
+        int loaded = 0;
+
+        for (const auto& entry : directory_iterator(m_directory))
+        {
+            if (entry.is_regular_file())
+            {                
+                for (const auto& designExt : DESIGN_EXTENSIONS)
+                {
+                    if (entry.path().extension() == designExt)
+                    {
+                        try
+                        {
+                            auto pFileArchive = LoadFileArchive(entry.path().stem().string());
+                            if (pFileArchive != nullptr)
+                            {
+                                loaded++;
+                            }
+                        }
+                        catch (std::exception& e)
+                        {
+                            // continue if we encounter an error loading one
+                            logexception(e);
+                            if (stopOnError) throw e;
+                        }
+                        break;                        
+                    }
+                }
+            }
+        }
+
+        return loaded;
     }
+
+    int DesignCache::loadAllDesigns(bool stopOnError)
+    {
+        int loaded = 0;
+
+        for (const auto& entry : directory_iterator(m_directory))
+        {
+            if (entry.is_regular_file())
+            {
+                for (const auto& designExt : DESIGN_EXTENSIONS)
+                {
+                    if (entry.path().extension() == designExt)
+                    {
+                        try
+                        {
+                            auto pDesign = LoadDesign(entry.path().stem().string());
+                            if (pDesign != nullptr)
+                            {
+                                loaded++;
+                            }
+                        }
+                        catch (std::exception& e)
+                        {
+                            logexception(e);
+                            if (stopOnError)
+                            {
+                                throw e;
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
+        return loaded;
+    }
+
+    int DesignCache::loadFileArchives(const StringVector& names)
+    {
+        int loaded = 0;
+
+        for (const auto& name : names)
+        {
+            try
+            {
+                auto pFileArchive = LoadFileArchive(name);
+                if (pFileArchive != nullptr)
+                {
+                    loaded++;
+                }
+            }
+            catch (std::exception& e)
+            {
+                // continue on error
+                logexception(e);
+            }
+        }
+
+        return loaded;
+    }
+
+    int DesignCache::loadDesigns(const StringVector& names)
+    {
+        int loaded = 0;
+
+        for (const auto& name : names)
+        {
+            try
+            {
+                auto pDesign = LoadDesign(name);
+                if (pDesign != nullptr)
+                {
+                    loaded++;
+                }
+            }
+            catch (std::exception& e)
+            {
+                // continue on error
+                logexception(e);
+            }
+        }
+
+        return loaded;
+    }
+
+    //bool DesignCache::isQueryValid(const std::string& query) const
+    //{
+    //    return false;
+    //}
 
     void DesignCache::Clear()
     {
@@ -115,73 +245,61 @@ namespace Odb::Lib::App
     }
 
     std::shared_ptr<ProductModel::Design> DesignCache::LoadDesign(const std::string& designName)
-    {        
-        try
+    { 
+        for (const auto& entry : std::filesystem::directory_iterator(m_directory))
         {
-            // no FileArchive with the same name is loaded, so load the Design from file
-            std::filesystem::path dir(m_directory);
-
-            for (const auto& entry : std::filesystem::directory_iterator(dir))
+            if (entry.is_regular_file())
             {
-                if (entry.is_regular_file())
+                if (entry.path().stem() == designName)
                 {
-                    if (entry.path().stem() == designName)
+                    auto pFileModel = GetFileArchive(designName);
+                    if (pFileModel != nullptr)
                     {
-                        auto pFileModel = GetFileArchive(designName);
-                        if (pFileModel != nullptr)
+                        auto pDesign = std::make_shared<ProductModel::Design>();
+                        if (pDesign->Build(pFileModel))
                         {
-                            auto pDesign = std::make_shared<ProductModel::Design>();
-                            if (pDesign->Build(pFileModel))
-                            {
-                                // overwrite any existing design with the same name
-                                m_designsByName[pFileModel->GetProductName()] =  pDesign;
-                                return pDesign;
-                            }
+                            // overwrite any existing design with the same name
+                            m_designsByName[pFileModel->GetProductName()] =  pDesign;
+                            return pDesign;
                         }
                     }
                 }
             }
-        }
-        catch (std::filesystem::filesystem_error& fe)
-        {
-            logexception(fe);
-            // re-throw it so we get a HTTP 500 response to the client
-            throw fe;
-        }
+        }    
 
         return nullptr;
     }
 
     std::shared_ptr<FileModel::Design::FileArchive> DesignCache::LoadFileArchive(const std::string& designName)
     {
-        try
-        {
-            std::filesystem::path dir(m_directory);
-            // skip inaccessible files and do not follow symlinks
-            const auto options = std::filesystem::directory_options::skip_permission_denied;
+        auto fileFound = false;
 
-            for (const auto& entry : std::filesystem::directory_iterator(dir, options))
+        // skip inaccessible files and do not follow symlinks
+        const auto options = std::filesystem::directory_options::skip_permission_denied;
+        for (const auto& entry : std::filesystem::directory_iterator(m_directory, options))
+        {
+            if (entry.is_regular_file())
             {
-                if (entry.is_regular_file())
-                {
-                    if (entry.path().stem() == designName)
+                if (entry.path().stem() == designName)
+                {                    
+                    fileFound = true;
+
+                    loginfo("file found: [" + entry.path().string() + "], attempting to parse...");
+
+                    auto pFileArchive = std::make_shared<FileModel::Design::FileArchive>(entry.path().string());
+                    if (pFileArchive->ParseFileModel())
                     {
-                        auto pFileArchive = std::make_shared<FileModel::Design::FileArchive>(entry.path().string());
-                        if (pFileArchive->ParseFileModel())
-                        {
-                            // overwrite any existing file archive with the same name
-                            m_fileArchivesByName[pFileArchive->GetProductName()] = pFileArchive;
-                            return pFileArchive;
-                        }
+                        // overwrite any existing file archive with the same name
+                        m_fileArchivesByName[pFileArchive->GetProductName()] = pFileArchive;
+                        return pFileArchive;
                     }
                 }
             }
-        }
-        catch (std::filesystem::filesystem_error& fe)
+        }       
+
+        if (!fileFound)
         {
-            logexception(fe);
-            // re-throw it so we get a HTTP 500 response to the client
-            throw fe;
+            logwarn("Failed to find file for design \"" + designName + "\"");
         }
 
         return nullptr;

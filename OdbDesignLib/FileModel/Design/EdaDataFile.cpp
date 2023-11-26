@@ -6,21 +6,43 @@
 #include "../../enums.h"
 #include "../../ProtoBuf/edadatafile.pb.h"
 #include "google/protobuf/message.h"
+#include "ArchiveExtractor.h"
+#include "Logger.h"
+#include "../parse_info.h"
+#include "../parse_error.h"
+#include "../invalid_odb_error.h"
 
+using namespace std::filesystem;
+using namespace Utils;
 
 namespace Odb::Lib::FileModel::Design
 {
-    EdaDataFile::EdaDataFile()    
+    EdaDataFile::EdaDataFile(bool logAllLineParsing)
+        : m_logAllLineParsing(logAllLineParsing)
     {
     }
    
     EdaDataFile::~EdaDataFile()
     {
+        m_layerNames.clear();
+        m_attributeNames.clear();
+        m_attributeTextValues.clear();
+        m_netRecords.clear();
+        m_netRecordsByName.clear();
+        m_packageRecords.clear();
+        m_packageRecordsByName.clear();
+        m_featureGroupRecords.clear();
+        m_propertyRecords.clear();
     }
 
     const std::filesystem::path& EdaDataFile::GetPath() const
     {
         return m_path;
+    }
+
+    const std::filesystem::path& EdaDataFile::GetDirectory() const
+    {
+        return m_directory;
     }
 
     const std::string& EdaDataFile::GetUnits() const
@@ -46,7 +68,7 @@ namespace Odb::Lib::FileModel::Design
         {
             pSubnetRecordMessage->set_componentnumber(componentNumber);
             pSubnetRecordMessage->set_toeprintnumber(toeprintNumber);
-            pSubnetRecordMessage->set_side((Odb::Lib::Protobuf::EdaDataFile_BoardSide)side);
+            pSubnetRecordMessage->set_side((Odb::Lib::Protobuf::BoardSide)side);
         }
         else if (type == Type::Plane)
         {
@@ -99,17 +121,40 @@ namespace Odb::Lib::FileModel::Design
       
     }
 
-    std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord>
-    EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord::to_protobuf() const
+    std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::FeatureIdRecord>
+    EdaDataFile::FeatureIdRecord::to_protobuf() const
     {
-        std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord> pFeatureIdRecordMessage(new Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord);        
-        pFeatureIdRecordMessage->set_type((Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord::Type) type);
+        std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::FeatureIdRecord> pFeatureIdRecordMessage(new Odb::Lib::Protobuf::EdaDataFile::FeatureIdRecord);        
+        pFeatureIdRecordMessage->set_type((Odb::Lib::Protobuf::EdaDataFile::FeatureIdRecord::Type) type);
         pFeatureIdRecordMessage->set_layernumber(layerNumber);
         pFeatureIdRecordMessage->set_featurenumber(featureNumber);
         return pFeatureIdRecordMessage;
     }
 
-    void EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord::from_protobuf(const Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord::FeatureIdRecord& message)
+    void EdaDataFile::FeatureIdRecord::from_protobuf(const Odb::Lib::Protobuf::EdaDataFile::FeatureIdRecord& message)
+    {
+
+    }   
+
+    std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::FeatureGroupRecord>
+    EdaDataFile::FeatureGroupRecord::to_protobuf() const
+    {
+        std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::FeatureGroupRecord> pFeatureGroupRecordMessage(new Odb::Lib::Protobuf::EdaDataFile::FeatureGroupRecord);
+        pFeatureGroupRecordMessage->set_type(type);
+        for (const auto& featureIdRecord : m_featureIdRecords)
+        {
+            auto pFeatureIdRecordMessage = pFeatureGroupRecordMessage->add_featureidrecords();
+            pFeatureIdRecordMessage->CopyFrom(*featureIdRecord->to_protobuf());
+        }
+        for (const auto& propertyRecord : m_propertyRecords)
+        {
+            auto pPropertyRecordMessage = pFeatureGroupRecordMessage->add_featureidrecords();
+            pPropertyRecordMessage->CopyFrom(*propertyRecord->to_protobuf());
+        }
+        return pFeatureGroupRecordMessage;
+    }
+
+    void EdaDataFile::FeatureGroupRecord::from_protobuf(const Odb::Lib::Protobuf::EdaDataFile::FeatureGroupRecord& message)
     {
 
     }    
@@ -149,6 +194,16 @@ namespace Odb::Lib::FileModel::Design
         return m_packageRecordsByName;
     }
 
+    const EdaDataFile::FeatureGroupRecord::Vector& EdaDataFile::GetFeatureGroupRecords() const
+    {
+        return m_featureGroupRecords;
+    }
+
+    const PropertyRecord::Vector& EdaDataFile::GetPropertyRecords() const
+    {
+        return m_propertyRecords;
+    }
+
     std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile> EdaDataFile::to_protobuf() const
     {
         std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile> pEdaDataFileMessage(new Odb::Lib::Protobuf::EdaDataFile);                
@@ -184,566 +239,1189 @@ namespace Odb::Lib::FileModel::Design
         for (const auto& kvPackageRecord : m_packageRecordsByName)
         {
             (*pEdaDataFileMessage->mutable_packagerecordsbyname())[kvPackageRecord.first] = *kvPackageRecord.second->to_protobuf();
-        }                
+        }   
+        for (const auto& pPropertyRecord : m_propertyRecords)
+        {
+            auto pPropertyRecordMessage = pEdaDataFileMessage->add_propertyrecords();
+            pPropertyRecordMessage->CopyFrom(*pPropertyRecord->to_protobuf());
+        }
+        for (const auto& pFeatureGroupRecord : m_featureGroupRecords)
+        {
+            auto pFeatureGroupRecordMessage = pEdaDataFileMessage->add_featuregrouprecords();
+            pFeatureGroupRecordMessage->CopyFrom(*pFeatureGroupRecord->to_protobuf());
+        }
+       
         return pEdaDataFileMessage;
     }
 
     void EdaDataFile::from_protobuf(const Odb::Lib::Protobuf::EdaDataFile& message)
     {
        
-    }    
+    }              
 
     bool EdaDataFile::Parse(std::filesystem::path path)
     {
-        m_path = path;
-
-        auto edaDataFilePath = m_path / "data";
-
-        if (!std::filesystem::exists(edaDataFilePath)) return false;
-        else if (!std::filesystem::is_regular_file(edaDataFilePath)) return false;
-
         std::ifstream edaDataFile;
-        edaDataFile.open(edaDataFilePath.string(), std::ios::in);
-        if (!edaDataFile.is_open()) return false;
-
-        std::shared_ptr<NetRecord> pCurrentNetRecord;
-        std::shared_ptr<NetRecord::SubnetRecord> pCurrentSubnetRecord;
-
-        std::shared_ptr<PackageRecord> pCurrentPackageRecord;
-        std::shared_ptr<PackageRecord::PinRecord> pCurrentPinRecord;
-
+        int lineNumber = 0;
         std::string line;
-        while (std::getline(edaDataFile, line))
+
+        try
         {
-            // trim whitespace from beginning and end of line
-            Utils::str_trim(line);
-            if (!line.empty())
+            loginfo("checking for extraction...");
+
+            m_directory = path;
+            m_path = ArchiveExtractor::getUncompressedFilePath(m_directory.string(), EDADATA_FILENAME);
+
+            if (!std::filesystem::exists(m_path))
             {
-                std::stringstream lineStream(line);
+                auto message = "eda/data file does not exist: [" + m_path.string() + "]";
+                throw invalid_odb_error(message.c_str());
+            }
+            else if (!std::filesystem::is_regular_file(m_path))
+            {
+                auto message = "eda/data is not a file: [" + m_path.string() + "]";
+                throw invalid_odb_error(message.c_str());
+            }
 
-                if (line.find(ATTRIBUTE_NAME_TOKEN) == 0 ||
-                    line.find(COMMENT_TOKEN + ATTRIBUTE_NAME_TOKEN) == 0)  // backward compatibility dictates allowing comment character in front of attribute value token
-                {
-                    // component attribute name line	
-                    std::string token;
-                    // TODO: continue on failing line parse, to make a less strict/more robust parser (make a flag: enum ParseStrictness { strict, lax })
-                    if (!std::getline(lineStream, token, ' ')) return false;
-                    else if (!std::getline(lineStream, token, ' ')) return false;
-                    m_attributeNames.push_back(token);
-                }
-                else if (line.find(ATTRIBUTE_VALUE_TOKEN) == 0 ||
-                    line.find(COMMENT_TOKEN + ATTRIBUTE_VALUE_TOKEN) == 0) // backward compatibility dictates allowing comment character in front of attribute value token
-                {
-                    // component attribute text string values	
-                    std::string token;
-                    if (!std::getline(lineStream, token, ' ')) return false;
-                    else if (!std::getline(lineStream, token, ' ')) return false;
-                    m_attributeTextValues.push_back(token);
-                }
-                else if (line.find(COMMENT_TOKEN) == 0)
-                {
-                    // comment line
-                    // TODO: attribute lines can begin with a comment for backward compatbility
-                }
-                else if (line.find(UNITS_TOKEN) == 0)
-                {
-                    // units line
-                    std::string token;
-                    if (!std::getline(lineStream, token, '=')) return false;
-                    else if (!std::getline(lineStream, token, '=')) return false;
-                    m_units = token;
-                }
-                else if (line.find(HEADER_RECORD_TOKEN) == 0)
-                {
-                    // component record line
-                    std::string token;
+            loginfo("any extraction complete, parsing data...");
+            
+            edaDataFile.open(m_path.string(), std::ios::in);
+            if (!edaDataFile.is_open())
+            {
+                auto message = "unable to open eda/data file: [" + m_path.string() + "]";
+                throw invalid_odb_error(message.c_str());
+            }
 
-                    lineStream >> token;
-                    if (token != HEADER_RECORD_TOKEN) return false;
+            std::shared_ptr<NetRecord> pCurrentNetRecord;
+            std::shared_ptr<NetRecord::SubnetRecord> pCurrentSubnetRecord;
 
-                    // read the rest of the line as the source
-                    if (!std::getline(lineStream, m_source)) return false;
-                    Utils::str_trim(m_source);
-                }
-                else if (line.find(LAYER_NAMES_RECORD_TOKEN) == 0)
+            std::shared_ptr<PackageRecord> pCurrentPackageRecord;
+            std::shared_ptr<PackageRecord::PinRecord> pCurrentPinRecord;
+
+            std::shared_ptr<PackageRecord::OutlineRecord> pCurrentContourOutlineRecord;
+            std::shared_ptr<PackageRecord::OutlineRecord::ContourPolygon> pCurrentContourPolygon;
+
+            FeatureGroupRecord::shared_ptr pCurrentFeatureGroupRecord;
+
+            while (std::getline(edaDataFile, line))
+            {
+                // keep track of line number
+                lineNumber++;
+
+                // trim whitespace from beginning and end of line
+                Utils::str_trim(line);
+                if (!line.empty())
                 {
-                    // component record line
-                    std::string token;
-
-                    lineStream >> token;
-                    if (token != LAYER_NAMES_RECORD_TOKEN) return false;
-
-                    while (lineStream >> token)
+                    if (m_logAllLineParsing)
                     {
-                        m_layerNames.push_back(token);
-                    }
-                }
-                else if (line.find(PropertyRecord::RECORD_TOKEN) == 0)
-                {
-                    // component property record line
-                    std::string token;
-                    lineStream >> token;
-                    if (token != PropertyRecord::RECORD_TOKEN) return false;
-
-                    auto pPropertyRecord = std::make_shared<PropertyRecord>();
-                    lineStream >> pPropertyRecord->name;
-
-                    lineStream >> pPropertyRecord->value;
-                    // remove leading quote
-                    pPropertyRecord->value.erase(0, 1);
-                    // remove trailing quote
-                    pPropertyRecord->value.erase(pPropertyRecord->value.size() - 1);
-
-                    float f;
-                    while (lineStream >> f)
-                    {
-                        pPropertyRecord->floatValues.push_back(f);
+                        parse_info pi(m_path, line, lineNumber);
+                        logdebug(pi.toString("Parsing line..."));
                     }
 
-                    // TODO: add to current net OR package record
-                    if (pCurrentNetRecord != nullptr)
+                    std::stringstream lineStream(line);
+                   
+                    if (line.find(ATTRIBUTE_NAME_TOKEN) == 0 ||
+                        line.find(std::string(COMMENT_TOKEN) + ATTRIBUTE_NAME_TOKEN) == 0)  // backward compatibility dictates allowing comment character in front of attribute value token
                     {
-                        pCurrentNetRecord->m_propertyRecords.push_back(pPropertyRecord);
-                    }
-                    else if (pCurrentPackageRecord != nullptr)
-                    {
-                        pCurrentPackageRecord->m_propertyRecords.push_back(pPropertyRecord);
-                    }
-                    else
-                    {
-                        // no current net or package record to put the property record in
-                        return false;
-                    }
-                }
-                else if (line.find(NET_RECORD_TOKEN) == 0)
-                {
-                    // net record line
-                    std::string token;
-
-                    lineStream >> token;
-                    if (token != NET_RECORD_TOKEN) return false;
-
-                    // finish current (previous) net record
-                    if (pCurrentNetRecord != nullptr)
-                    {
-                        // finish up (any) current subnet record
-                        if (pCurrentSubnetRecord != nullptr)
+                        // component attribute name line	
+                        std::string token;
+                        // TODO: continue on failing line parse, to make a less strict/more robust parser (make a flag: enum ParseStrictness { strict, lax })
+                        if (!std::getline(lineStream, token, ' '))
                         {
-                            pCurrentNetRecord->m_subnetRecords.push_back(pCurrentSubnetRecord);
-                            pCurrentSubnetRecord.reset();
+                            throw_parse_error(m_path, line, token, lineNumber);
                         }
-
-                        m_netRecords.push_back(pCurrentNetRecord);
-                        pCurrentNetRecord.reset();
-                    }
-
-                    // net name
-                    if (!std::getline(lineStream, token, ';')) return false;
-
-                    // create new net record
-                    pCurrentNetRecord = std::make_shared<NetRecord>();
-                    pCurrentNetRecord->name = token;
-
-                    lineStream >> pCurrentNetRecord->attributesIdString;
-                }
-                else if (line.find(NetRecord::SubnetRecord::RECORD_TOKEN) == 0)
-                {
-                    // component record line
-                    std::string token;
-
-                    lineStream >> token;
-                    if (token != NetRecord::SubnetRecord::RECORD_TOKEN) return false;
-
-                    if (pCurrentNetRecord != nullptr)
-                    {
-                        // finish current (previous) subnet record
-                        if (pCurrentSubnetRecord != nullptr)
+                        else if (!std::getline(lineStream, token, ' '))
                         {
-                            pCurrentNetRecord->m_subnetRecords.push_back(pCurrentSubnetRecord);
-                            pCurrentSubnetRecord.reset();
+                            throw_parse_error(m_path, line, token, lineNumber);
                         }
+                        m_attributeNames.push_back(token);
                     }
-
-                    pCurrentSubnetRecord = std::make_shared<NetRecord::SubnetRecord>();
-
-                    // subnet type
-                    lineStream >> token;
-                    if (token == NetRecord::SubnetRecord::RECORD_TYPE_VIA_TOKEN)
-                    {                        
-                        pCurrentSubnetRecord->type = NetRecord::SubnetRecord::Type::Via;
-                    }
-                    else if (token == NetRecord::SubnetRecord::RECORD_TYPE_TRACE_TOKEN)
-                    {                        
-                        pCurrentSubnetRecord->type = NetRecord::SubnetRecord::Type::Trace;
-                    }
-                    else if (token == NetRecord::SubnetRecord::RECORD_TYPE_PLANE_TOKEN)
+                    else if (line.find(ATTRIBUTE_VALUE_TOKEN) == 0 ||
+                        line.find(std::string(COMMENT_TOKEN) + ATTRIBUTE_VALUE_TOKEN) == 0) // backward compatibility dictates allowing comment character in front of attribute value token
                     {
-                        pCurrentSubnetRecord->type = NetRecord::SubnetRecord::Type::Plane;
+                        // component attribute text string values	
+                        std::string token;
+                        if (!std::getline(lineStream, token, ' '))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+                        else if (!std::getline(lineStream, token, ' '))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+                        m_attributeTextValues.push_back(token);
+                    }
+                    else if (line.find(COMMENT_TOKEN) == 0)
+                    {
+                        // comment line
+                        // TODO: attribute lines can begin with a comment for backward compatbility
+                    }
+                    else if (line.find(UNITS_TOKEN) == 0)
+                    {
+                        // units line
+                        std::string token;
+                        if (!std::getline(lineStream, token, '='))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+                        else if (!std::getline(lineStream, token, '='))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+                        m_units = token;
+                    }
+                    else if (line.find(HEADER_RECORD_TOKEN) == 0)
+                    {
+                        // component record line
+                        std::string token;
 
-                        // fill type
                         lineStream >> token;
-                        if (token == "S")
+                        if (token != HEADER_RECORD_TOKEN)
                         {
-                            pCurrentSubnetRecord->fillType = NetRecord::SubnetRecord::FillType::Solid;
+                            throw_parse_error(m_path, line, token, lineNumber);
                         }
-                        else if (token == "O")
+
+                        // read the rest of the line as the source
+                        if (!std::getline(lineStream, m_source))
                         {
-                            pCurrentSubnetRecord->fillType = NetRecord::SubnetRecord::FillType::Outline;
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        Utils::str_trim(m_source);
+                    }
+                    else if (line.find(LAYER_NAMES_RECORD_TOKEN) == 0)
+                    {
+                        // component record line
+                        std::string token;
+
+                        lineStream >> token;
+                        if (token != LAYER_NAMES_RECORD_TOKEN)
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        while (lineStream >> token)
+                        {
+                            m_layerNames.push_back(token);
+                        }
+                    }
+                    else if (line.find(PropertyRecord::RECORD_TOKEN) == 0)
+                    {
+                        // component property record line
+                        std::string token;
+                        if (!(lineStream >> token))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (token != PropertyRecord::RECORD_TOKEN)
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        auto pPropertyRecord = std::make_shared<PropertyRecord>();
+
+                        if (!(lineStream >> pPropertyRecord->name))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (!(lineStream >> token))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (!token.empty())
+                        {
+                            // handle case where the beginning of the value, after the opening single-quote, is whitespace...
+                            if (token == "'")
+                            {
+                                // eat the single-quote and get the next token, i.e. the actual value (w/ space in front)
+                                if (!(lineStream >> token))
+                                {
+                                    throw_parse_error(m_path, line, token, lineNumber);
+                                }
+                            }
+
+                            if (token.size() > 0 && token[0] == '\'')
+                            {
+                                // remove leading quote							
+                                token.erase(0, 1);
+                            }
+
+                            if (token.size() > 0 && token[token.size() - 1] == '\'')
+                            {
+                                // remove trailing quote
+                                token.erase(token.size() - 1);
+                            }
+
+                            Utils::str_trim(token);
+                        }
+
+                        pPropertyRecord->value = token;
+
+                        float f;
+                        while (lineStream >> f)
+                        {
+                            pPropertyRecord->floatValues.push_back(f);
+                        }
+
+                        if (pCurrentNetRecord != nullptr)
+                        {
+                            pCurrentNetRecord->m_propertyRecords.push_back(pPropertyRecord);
+                        }
+                        else if (pCurrentPackageRecord != nullptr)
+                        {
+                            pCurrentPackageRecord->m_propertyRecords.push_back(pPropertyRecord);
+                        }
+                        else if (pCurrentFeatureGroupRecord != nullptr)
+                        {
+                            pCurrentFeatureGroupRecord->m_propertyRecords.push_back(pPropertyRecord);
                         }
                         else
                         {
-                            return false;
+                            // top-level PRP record
+                            m_propertyRecords.push_back(pPropertyRecord);
+                        }                        
+                    }
+                    else if (line.find(NET_RECORD_TOKEN) == 0)
+                    {
+                        // net record line
+                        std::string token;
+
+                        lineStream >> token;
+                        if (token != NET_RECORD_TOKEN)
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
                         }
 
-                        // cutout type
+                        // finish current (previous) net record
+                        if (pCurrentNetRecord != nullptr)
+                        {
+                            // finish up (any) current subnet record
+                            if (pCurrentSubnetRecord != nullptr)
+                            {
+                                pCurrentNetRecord->m_subnetRecords.push_back(pCurrentSubnetRecord);
+                                pCurrentSubnetRecord.reset();
+                            }
+
+                            m_netRecords.push_back(pCurrentNetRecord);
+                            pCurrentNetRecord.reset();
+                        }
+
+                        // net name
+                        if (!std::getline(lineStream, token, ';'))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        // create new net record
+                        pCurrentNetRecord = std::make_shared<NetRecord>();
+                        pCurrentNetRecord->name = token;
+                        pCurrentNetRecord->index = static_cast<unsigned>(m_netRecords.size());
+
+                        lineStream >> pCurrentNetRecord->attributesIdString;
+                    }
+                    else if (line.find(NetRecord::SubnetRecord::RECORD_TOKEN) == 0)
+                    {
+                        // component record line
+                        std::string token;
+
                         lineStream >> token;
+                        if (token != NetRecord::SubnetRecord::RECORD_TOKEN)
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (pCurrentNetRecord != nullptr)
+                        {
+                            // finish current (previous) subnet record
+                            if (pCurrentSubnetRecord != nullptr)
+                            {
+                                pCurrentNetRecord->m_subnetRecords.push_back(pCurrentSubnetRecord);
+                                pCurrentSubnetRecord.reset();
+                            }
+                        }
+
+                        pCurrentSubnetRecord = std::make_shared<NetRecord::SubnetRecord>();
+                        pCurrentSubnetRecord->index = static_cast<unsigned>(pCurrentNetRecord->m_subnetRecords.size());
+
+                        // subnet type
+                        lineStream >> token;
+                        if (token == NetRecord::SubnetRecord::RECORD_TYPE_VIA_TOKEN)
+                        {
+                            pCurrentSubnetRecord->type = NetRecord::SubnetRecord::Type::Via;
+                        }
+                        else if (token == NetRecord::SubnetRecord::RECORD_TYPE_TRACE_TOKEN)
+                        {
+                            pCurrentSubnetRecord->type = NetRecord::SubnetRecord::Type::Trace;
+                        }
+                        else if (token == NetRecord::SubnetRecord::RECORD_TYPE_PLANE_TOKEN)
+                        {
+                            pCurrentSubnetRecord->type = NetRecord::SubnetRecord::Type::Plane;
+
+                            // fill type
+                            lineStream >> token;
+                            if (token == "S")
+                            {
+                                pCurrentSubnetRecord->fillType = NetRecord::SubnetRecord::FillType::Solid;
+                            }
+                            else if (token == "O")
+                            {
+                                pCurrentSubnetRecord->fillType = NetRecord::SubnetRecord::FillType::Outline;
+                            }
+                            else
+                            {
+                                throw_parse_error(m_path, line, token, lineNumber);
+                            }
+
+                            // cutout type
+                            lineStream >> token;
+                            if (token == "C")
+                            {
+                                pCurrentSubnetRecord->cutoutType = NetRecord::SubnetRecord::CutoutType::Circle;
+                            }
+                            else if (token == "R")
+                            {
+                                pCurrentSubnetRecord->cutoutType = NetRecord::SubnetRecord::CutoutType::Rectangle;
+                            }
+                            else if (token == "O")
+                            {
+                                pCurrentSubnetRecord->cutoutType = NetRecord::SubnetRecord::CutoutType::Octagon;
+                            }
+                            else if (token == "E")
+                            {
+                                pCurrentSubnetRecord->cutoutType = NetRecord::SubnetRecord::CutoutType::Exact;
+                            }
+                            else
+                            {
+                                throw_parse_error(m_path, line, token, lineNumber);
+                            }
+
+                            // fill size
+                            lineStream >> pCurrentSubnetRecord->fillSize;
+                        }
+                        else if (token == NetRecord::SubnetRecord::RECORD_TYPE_TOEPRINT_TOKEN)
+                        {
+                            pCurrentSubnetRecord->type = NetRecord::SubnetRecord::Type::Toeprint;
+
+                            // side
+                            lineStream >> token;
+                            if (token == "T")
+                            {
+                                pCurrentSubnetRecord->side = BoardSide::Top;
+                            }
+                            else if (token == "B")
+                            {
+                                pCurrentSubnetRecord->side = BoardSide::Bottom;
+                            }
+                            else
+                            {
+                                throw_parse_error(m_path, line, token, lineNumber);
+                            }
+
+                            // componentNumber
+                            lineStream >> pCurrentSubnetRecord->componentNumber;
+
+                            // toeprintNumber
+                            lineStream >> pCurrentSubnetRecord->toeprintNumber;
+                        }
+                        else
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+                    }
+                    else if (line.find(FEATURE_ID_RECORD_TOKEN) == 0)
+                    {
+                        // component record line
+                        std::string token;
+
+                        if (!(lineStream >> token) || token != FEATURE_ID_RECORD_TOKEN)
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        auto pFeatureIdRecord = std::make_shared<FeatureIdRecord>();
+
+                        // type
+                        if (!(lineStream >> token))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
                         if (token == "C")
                         {
-                            pCurrentSubnetRecord->cutoutType = NetRecord::SubnetRecord::CutoutType::Circle;
+                            pFeatureIdRecord->type = FeatureIdRecord::Type::Copper;
                         }
-                        else if (token == "R")
+                        else if (token == "L")
                         {
-                            pCurrentSubnetRecord->cutoutType = NetRecord::SubnetRecord::CutoutType::Rectangle;
+                            pFeatureIdRecord->type = FeatureIdRecord::Type::Laminate;
                         }
-                        else if (token == "O")
+                        else if (token == "H")
                         {
-                            pCurrentSubnetRecord->cutoutType = NetRecord::SubnetRecord::CutoutType::Octagon;
-                        }
-                        else if (token == "E")
-                        {
-                            pCurrentSubnetRecord->cutoutType = NetRecord::SubnetRecord::CutoutType::Exact;
+                            pFeatureIdRecord->type = FeatureIdRecord::Type::Hole;
                         }
                         else
                         {
-                            return false;
+                            throw_parse_error(m_path, line, token, lineNumber);
                         }
 
-                        // fill size
-                        lineStream >> pCurrentSubnetRecord->fillSize;
-                    }
-                    else if (token == NetRecord::SubnetRecord::RECORD_TYPE_TOEPRINT_TOKEN)
-                    {
-                        pCurrentSubnetRecord->type = NetRecord::SubnetRecord::Type::Toeprint;
+                        // layer number
+                        if (!(lineStream >> pFeatureIdRecord->layerNumber))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
 
-                        // side
-                        lineStream >> token;
+                        // feature number
+                        if (!(lineStream >> pFeatureIdRecord->featureNumber))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (pCurrentNetRecord != nullptr &&
+                            pCurrentSubnetRecord != nullptr)
+                        {
+                            pCurrentSubnetRecord->m_featureIdRecords.push_back(pFeatureIdRecord);
+                        }
+                        else if (pCurrentFeatureGroupRecord != nullptr)
+                        {
+                            pCurrentFeatureGroupRecord->m_featureIdRecords.push_back(pFeatureIdRecord);
+                        }
+                        else
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+                    }
+                    else if (line.find(PACKAGE_RECORD_TOKEN) == 0)
+                    {
+                        // package record line
+                        std::string token;
+
+                        if (!(lineStream >> token) || token != PACKAGE_RECORD_TOKEN)
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        // finish current (previous) net record
+                        if (pCurrentNetRecord != nullptr)
+                        {
+                            // finish up (any) current subnet record
+                            if (pCurrentSubnetRecord != nullptr)
+                            {
+                                pCurrentNetRecord->m_subnetRecords.push_back(pCurrentSubnetRecord);
+                                pCurrentSubnetRecord.reset();
+                            }
+
+                            m_netRecords.push_back(pCurrentNetRecord);
+                            pCurrentNetRecord.reset();
+                        }
+                        else if (pCurrentPackageRecord != nullptr)
+                        {
+                            // finish up any current (previous) pin records
+                            if (pCurrentPinRecord != nullptr)
+                            {
+                                // check for overflow
+                                if (pCurrentPackageRecord->m_pinRecords.size() > UINT_MAX)
+								{
+									throw_parse_error(m_path, line, token, lineNumber);
+								}
+                                pCurrentPinRecord->index = static_cast<unsigned>(pCurrentPackageRecord->m_pinRecords.size());
+                                pCurrentPackageRecord->m_pinRecords.push_back(pCurrentPinRecord);
+                                pCurrentPinRecord.reset();
+                            }
+
+                            // finish up any current (previous) package records
+                            m_packageRecords.push_back(pCurrentPackageRecord);
+                            pCurrentPackageRecord.reset();
+                        }
+
+                        pCurrentPackageRecord = std::make_shared<PackageRecord>();
+                        pCurrentPackageRecord->index = static_cast<unsigned int>(m_packageRecords.size());
+
+                        // name
+                        if (!(lineStream >> pCurrentPackageRecord->name))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        // pitch
+                        if (!(lineStream >> pCurrentPackageRecord->pitch))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        // xmin, ymin
+                        if (!(lineStream >> pCurrentPackageRecord->xMin >> pCurrentPackageRecord->yMin))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        // xmax
+                        if (!(lineStream >> pCurrentPackageRecord->xMax))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        // ymax and attributes/ID string
+                        if (!std::getline(lineStream, token, ';'))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        // ymax
+                        pCurrentPackageRecord->yMax = std::stof(token);
+
+                        lineStream >> pCurrentPackageRecord->attributesIdString;
+                    }
+                    else if (line.find(PIN_RECORD_TOKEN) == 0)
+                    {
+                        // package pin record line
+                        std::string token;
+
+                        if (!(lineStream >> token) || token != PIN_RECORD_TOKEN)
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (pCurrentPackageRecord != nullptr)
+                        {
+                            // finish up any current (previous) pin records
+                            if (pCurrentPinRecord != nullptr)
+                            {
+                                // check for overflow
+                                if (pCurrentPackageRecord->m_pinRecords.size() > UINT_MAX)
+                                {
+                                    throw_parse_error(m_path, line, token, lineNumber);
+                                }
+                                pCurrentPinRecord->index = static_cast<unsigned>(pCurrentPackageRecord->m_pinRecords.size());
+                                pCurrentPackageRecord->m_pinRecords.push_back(pCurrentPinRecord);
+                                pCurrentPinRecord.reset();
+                            }                            
+                        }
+
+                        pCurrentPinRecord = std::make_shared<PackageRecord::PinRecord>();
+                        //pCurrentPinRecord->index = static_cast<unsigned>(pCurrentPackageRecord->m_pinRecords.size());
+
+                        // name
+                        lineStream >> pCurrentPinRecord->name;
+
+                        // type
+                        if (!(lineStream >> token))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
                         if (token == "T")
                         {
-                            pCurrentSubnetRecord->side = BoardSide::Top;
+                            pCurrentPinRecord->type = PackageRecord::PinRecord::Type::ThroughHole;
                         }
                         else if (token == "B")
                         {
-                            pCurrentSubnetRecord->side = BoardSide::Bottom;
+                            pCurrentPinRecord->type = PackageRecord::PinRecord::Type::Blind;
+                        }
+                        else if (token == "S")
+                        {
+                            pCurrentPinRecord->type = PackageRecord::PinRecord::Type::Surface;
                         }
                         else
                         {
-                            return false;
+                            throw_parse_error(m_path, line, token, lineNumber);
                         }
 
-                        // componentNumber
-                        lineStream >> pCurrentSubnetRecord->componentNumber;
-
-                        // toeprintNumber
-                        lineStream >> pCurrentSubnetRecord->toeprintNumber;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-                else if (line.find(FEATURE_ID_RECORD_TOKEN) == 0)
-                {
-                    // component record line
-                    std::string token;
-
-                    // TODO: second clause of if statement is redudant and should be removed
-                    if (!(lineStream >> token) || token != FEATURE_ID_RECORD_TOKEN) return false;
-
-                    auto pFeatureIdRecord = std::make_shared<NetRecord::SubnetRecord::FeatureIdRecord>();
-
-                    // type
-                    if (!(lineStream >> token)) return false;
-                    if (token == "C")
-                    {
-                        pFeatureIdRecord->type = NetRecord::SubnetRecord::FeatureIdRecord::Type::Copper;
-                    }
-                    else if (token == "L")
-                    {
-                        pFeatureIdRecord->type = NetRecord::SubnetRecord::FeatureIdRecord::Type::Laminate;
-                    }
-                    else if (token == "H")
-                    {
-                        pFeatureIdRecord->type = NetRecord::SubnetRecord::FeatureIdRecord::Type::Hole;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-
-                    // layer number
-                    if (!(lineStream >> pFeatureIdRecord->layerNumber)) return false;
-
-                    // feature number
-                    if (!(lineStream >> pFeatureIdRecord->featureNumber)) return false;
-
-                    if (pCurrentNetRecord != nullptr &&
-                        pCurrentSubnetRecord != nullptr)
-                    {
-                        pCurrentSubnetRecord->m_featureIdRecords.push_back(pFeatureIdRecord);
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-                else if (line.find(PACKAGE_RECORD_TOKEN) == 0)
-                {
-                    // package record line
-                    std::string token;
-
-                    if (!(lineStream >> token) || token != PACKAGE_RECORD_TOKEN) return false;
-
-                    // finish current (previous) net record
-                    if (pCurrentNetRecord != nullptr)
-                    {
-                        // finish up (any) current subnet record
-                        if (pCurrentSubnetRecord != nullptr)
+                        // xc, xy
+                        if (!(lineStream >> pCurrentPinRecord->xCenter >> pCurrentPinRecord->yCenter))
                         {
-                            pCurrentNetRecord->m_subnetRecords.push_back(pCurrentSubnetRecord);
-                            pCurrentSubnetRecord.reset();
+                            throw_parse_error(m_path, line, token, lineNumber);
                         }
 
-                        m_netRecords.push_back(pCurrentNetRecord);
-                        pCurrentNetRecord.reset();
-                    }
-
-                    if (pCurrentPackageRecord != nullptr)
-                    {
-                        // finish up any current (previous) pin records
-                        if (pCurrentPinRecord != nullptr)
+                        // finished hole size (fhs)
+                        if (!(lineStream >> pCurrentPinRecord->finishedHoleSize))
                         {
-                            pCurrentPackageRecord->m_pinRecords.push_back(pCurrentPinRecord);
-                            pCurrentPinRecord.reset();
+                            throw_parse_error(m_path, line, token, lineNumber);
                         }
 
-                        // finish up any current (previous) package records
-                        m_packageRecords.push_back(pCurrentPackageRecord);
-                        pCurrentPackageRecord.reset();
-                    }
-
-                    pCurrentPackageRecord = std::make_shared<PackageRecord>();
-
-                    // name
-                    if (!(lineStream >> pCurrentPackageRecord->name)) return false;
-
-                    // pitch
-                    if (!(lineStream >> pCurrentPackageRecord->pitch)) return false;
-
-                    // xmin, ymin
-                    if (!(lineStream >> pCurrentPackageRecord->xMin >> pCurrentPackageRecord->yMin)) return false;
-
-                    // xmax
-                    if (!(lineStream >> pCurrentPackageRecord->xMax)) return false;
-
-                    // ymax and attributes/ID string
-                    if (!std::getline(lineStream, token, ';')) return false;
-
-                    // ymax
-                    pCurrentPackageRecord->yMax = std::stof(token);
-
-                    lineStream >> pCurrentPackageRecord->attributesIdString;
-                }
-                else if (line.find(PIN_RECORD_TOKEN) == 0)
-                {
-                    // package pin record line
-                    std::string token;
-
-                    if (!(lineStream >> token) || token != PIN_RECORD_TOKEN) return false;
-
-                    if (pCurrentPackageRecord != nullptr)
-                    {
-                        // finish up any current (previous) pin records
-                        if (pCurrentPinRecord != nullptr)
+                        // electrical type
+                        if (!(lineStream >> token))
                         {
-                            pCurrentPackageRecord->m_pinRecords.push_back(pCurrentPinRecord);
-                            pCurrentPinRecord.reset();
+                            throw_parse_error(m_path, line, token, lineNumber);
                         }
-                    }
 
-                    auto pPinRecord = std::make_shared<PackageRecord::PinRecord>();
+                        if (token == "E")
+                        {
+                            pCurrentPinRecord->electricalType = PackageRecord::PinRecord::ElectricalType::Electrical;
+                        }
+                        else if (token == "M")
+                        {
+                            pCurrentPinRecord->electricalType = PackageRecord::PinRecord::ElectricalType::NonElectrical;
+                        }
+                        else if (token == "U")
+                        {
+                            pCurrentPinRecord->electricalType = PackageRecord::PinRecord::ElectricalType::Undefined;
+                        }
+                        else
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
 
-                    // name
-                    lineStream >> pPinRecord->name;
+                        // mount type
+                        if (!(lineStream >> token))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
 
-                    // type
-                    if (!(lineStream >> token)) return false;
-                    if (token == "T")
-                    {
-                        pPinRecord->type = PackageRecord::PinRecord::Type::ThroughHole;
-                    }
-                    else if (token == "B")
-                    {
-                        pPinRecord->type = PackageRecord::PinRecord::Type::Blind;
-                    }
-                    else if (token == "S")
-                    {
-                        pPinRecord->type = PackageRecord::PinRecord::Type::Surface;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                        if (token == "S")
+                        {
+                            pCurrentPinRecord->mountType = PackageRecord::PinRecord::MountType::Smt;
+                        }
+                        else if (token == "D")
+                        {
+                            pCurrentPinRecord->mountType = PackageRecord::PinRecord::MountType::RecommendedSmtPad;
+                        }
+                        else if (token == "T")
+                        {
+                            pCurrentPinRecord->mountType = PackageRecord::PinRecord::MountType::MT_ThroughHole;
+                        }
+                        else if (token == "R")
+                        {
+                            pCurrentPinRecord->mountType = PackageRecord::PinRecord::MountType::RecommendedThroughHole;
+                        }
+                        else if (token == "P")
+                        {
+                            pCurrentPinRecord->mountType = PackageRecord::PinRecord::MountType::Pressfit;
+                        }
+                        else if (token == "N")
+                        {
+                            pCurrentPinRecord->mountType = PackageRecord::PinRecord::MountType::NonBoard;
+                        }
+                        else if (token == "H")
+                        {
+                            pCurrentPinRecord->mountType = PackageRecord::PinRecord::MountType::Hole;
+                        }
+                        else if (token == "U")
+                        {
+                            pCurrentPinRecord->mountType = PackageRecord::PinRecord::MountType::MT_Undefined;
+                        }
+                        else
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
 
-                    // xc, xy
-                    if (!(lineStream >> pPinRecord->xCenter >> pPinRecord->yCenter)) return false;
+                        // ID=<id>
+                        // PIN record, ID field is optional: spec pg.31
+                        if (lineStream >> token)
+                        {
+                            std::stringstream idStream(token);
+                            if (!std::getline(idStream, token, '=') || token != "ID")
+                            {
+                                throw_parse_error(m_path, line, token, lineNumber);
+                            }
 
-                    // finished hole size (fhs)
-                    if (!(lineStream >> pPinRecord->finishedHoleSize)) return false;
+                            idStream >> pCurrentPinRecord->id;
+                        }
+                        else
+                        {
 
-                    // electrical type
-                    if (!(lineStream >> token)) return false;
-                    if (token == "E")
-                    {
-                        pPinRecord->electricalType = PackageRecord::PinRecord::ElectricalType::Electrical;
-                    }
-                    else if (token == "M")
-                    {
-                        pPinRecord->electricalType = PackageRecord::PinRecord::ElectricalType::NonElectrical;
-                    }
-                    else if (token == "U")
-                    {
-                        pPinRecord->electricalType = PackageRecord::PinRecord::ElectricalType::Undefined;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+#define SIMULATE_PARSE_ERROR 0
+#if SIMULATE_PARSE_ERROR
+                            throw_parse_error(m_path, line, token, lineNumber);
+#endif
 
-                    // mount type
-                    if (!(lineStream >> token)) return false;
-                    if (token == "S")
-                    {
-                        pPinRecord->mountType = PackageRecord::PinRecord::MountType::Smt;
+                            pCurrentPinRecord->id = UINT_MAX;
+                        }                        
                     }
-                    else if (token == "D")
+                    else if (line.find(FEATURE_GROUP_RECORD_TOKEN) == 0)
                     {
-                        pPinRecord->mountType = PackageRecord::PinRecord::MountType::RecommendedSmtPad;
-                    }
-                    else if (token == "T")
-                    {
-                        pPinRecord->mountType = PackageRecord::PinRecord::MountType::MT_ThroughHole;
-                    }
-                    else if (token == "R")
-                    {
-                        pPinRecord->mountType = PackageRecord::PinRecord::MountType::RecommendedThroughHole;
-                    }
-                    else if (token == "P")
-                    {
-                        pPinRecord->mountType = PackageRecord::PinRecord::MountType::Pressfit;
-                    }
-                    else if (token == "N")
-                    {
-                        pPinRecord->mountType = PackageRecord::PinRecord::MountType::NonBoard;
-                    }
-                    else if (token == "H")
-                    {
-                        pPinRecord->mountType = PackageRecord::PinRecord::MountType::Hole;
-                    }
-                    else if (token == "U")
-                    {
-                        pPinRecord->mountType = PackageRecord::PinRecord::MountType::MT_Undefined;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                        // feature group record line
+                        std::string token;
 
-                    // ID=<id>
-                    if (!(lineStream >> token)) return false;
-                    std::stringstream idStream(token);
-                    if (!std::getline(idStream, token, '=') || token != "ID") return false;
-                    idStream >> pPinRecord->id;
+                        if (!(lineStream >> token))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+                        
+                        if (token != FEATURE_GROUP_RECORD_TOKEN)
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
 
-                    if (pCurrentPackageRecord != nullptr)
+                        // finish current (previous) net record
+                        if (pCurrentNetRecord != nullptr)
+                        {
+                            // finish up (any) current subnet record
+                            if (pCurrentSubnetRecord != nullptr)
+                            {
+                                pCurrentNetRecord->m_subnetRecords.push_back(pCurrentSubnetRecord);
+                                pCurrentSubnetRecord.reset();
+                            }
+
+                            m_netRecords.push_back(pCurrentNetRecord);
+                            pCurrentNetRecord.reset();
+                        }
+                        else if (pCurrentPackageRecord != nullptr)
+                        {
+                            // finish up any current (previous) pin records
+                            if (pCurrentPinRecord != nullptr)
+                            {
+                                // check for overflow
+                                if (pCurrentPackageRecord->m_pinRecords.size() > UINT_MAX)
+                                {
+                                    throw_parse_error(m_path, line, token, lineNumber);
+                                }
+                                pCurrentPinRecord->index = static_cast<unsigned>(pCurrentPackageRecord->m_pinRecords.size());
+                                pCurrentPackageRecord->m_pinRecords.push_back(pCurrentPinRecord);
+                                pCurrentPinRecord.reset();
+                            }
+
+                            // finish up any current (previous) package records
+                            m_packageRecords.push_back(pCurrentPackageRecord);
+                            pCurrentPackageRecord.reset();
+                        }                        
+                        else if (pCurrentFeatureGroupRecord != nullptr)
+                        {
+                            m_featureGroupRecords.push_back(pCurrentFeatureGroupRecord);
+                            pCurrentFeatureGroupRecord.reset();
+                        }
+
+                        pCurrentFeatureGroupRecord = std::make_shared<FeatureGroupRecord>();
+
+                        if (!(lineStream >> pCurrentFeatureGroupRecord->type))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }                                                
+                    }
+                    else if (line.find(PackageRecord::OutlineRecord::RECTANGLE_RECORD_TOKEN) == 0)
                     {                        
-                        pPinRecord->index = pCurrentPackageRecord->m_pinRecords.size();
-                        pCurrentPackageRecord->m_pinRecords.push_back(pPinRecord);
+                        std::string token;                        
+                        if (!(lineStream >> token))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (token != PackageRecord::OutlineRecord::RECTANGLE_RECORD_TOKEN)
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        auto pOutlineRecord = std::make_shared<PackageRecord::OutlineRecord>();
+                        pOutlineRecord->type = PackageRecord::OutlineRecord::Type::Rectangle;
+
+                        if (!(lineStream >> pOutlineRecord->lowerLeftX))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (!(lineStream >> pOutlineRecord->lowerLeftY))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (!(lineStream >> pOutlineRecord->width))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (!(lineStream >> pOutlineRecord->height))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (pCurrentPackageRecord != nullptr)
+                        {
+                            if (pCurrentPinRecord != nullptr)
+                            {
+                                pCurrentPinRecord->m_outlineRecords.push_back(pOutlineRecord);
+                            }
+                            else
+                            {
+                                pCurrentPackageRecord->m_outlineRecords.push_back(pOutlineRecord);
+                            }
+                        }
+                        else
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+                    }
+                    else if (line.find(PackageRecord::OutlineRecord::CIRCLE_RECORD_TOKEN) == 0)
+                    {
+                        std::string token;
+                        if (!(lineStream >> token))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (token != PackageRecord::OutlineRecord::CIRCLE_RECORD_TOKEN)
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        auto pOutlineRecord = std::make_shared<PackageRecord::OutlineRecord>();
+                        pOutlineRecord->type = PackageRecord::OutlineRecord::Type::Circle;
+
+                        if (!(lineStream >> pOutlineRecord->xCenter))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (!(lineStream >> pOutlineRecord->yCenter))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (!(lineStream >> pOutlineRecord->radius))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }                        
+
+                        if (pCurrentPackageRecord != nullptr)
+                        {
+                            if (pCurrentPinRecord != nullptr)
+                            {
+                                pCurrentPinRecord->m_outlineRecords.push_back(pOutlineRecord);
+                            }
+                            else
+                            {
+                                pCurrentPackageRecord->m_outlineRecords.push_back(pOutlineRecord);
+                            }
+                        }
+                        else
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+                    }
+                    else if (line.find(PackageRecord::OutlineRecord::SQUARE_RECORD_TOKEN) == 0)
+                    {
+                        std::string token;
+                        if (!(lineStream >> token))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (token != PackageRecord::OutlineRecord::SQUARE_RECORD_TOKEN)
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        auto pOutlineRecord = std::make_shared<PackageRecord::OutlineRecord>();
+                        pOutlineRecord->type = PackageRecord::OutlineRecord::Type::Square;
+
+                        if (!(lineStream >> pOutlineRecord->xCenter))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (!(lineStream >> pOutlineRecord->yCenter))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (!(lineStream >> pOutlineRecord->halfSide))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (pCurrentPackageRecord != nullptr)
+                        {
+                            if (pCurrentPinRecord != nullptr)
+                            {
+                                pCurrentPinRecord->m_outlineRecords.push_back(pOutlineRecord);
+                            }
+                            else
+                            {
+                                pCurrentPackageRecord->m_outlineRecords.push_back(pOutlineRecord);
+                            }
+                        }
+                        else
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+                    }
+                    else if (line.find(PackageRecord::OutlineRecord::CONTOUR_BEGIN_RECORD_TOKEN) == 0)
+                    {
+                        std::string token;
+                        if (!(lineStream >> token))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (token != PackageRecord::OutlineRecord::CONTOUR_BEGIN_RECORD_TOKEN)
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        pCurrentContourOutlineRecord = std::make_shared<PackageRecord::OutlineRecord>();
+                        pCurrentContourOutlineRecord->type = PackageRecord::OutlineRecord::Type::Contour;
+                    }
+					else if (line.find(PackageRecord::OutlineRecord::CONTOUR_END_RECORD_TOKEN) == 0)
+					{
+						std::string token;
+						if (!(lineStream >> token))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (token != PackageRecord::OutlineRecord::CONTOUR_END_RECORD_TOKEN)
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}                        
+
+						if (pCurrentPackageRecord != nullptr)
+						{
+							if (pCurrentPinRecord != nullptr)
+							{
+								pCurrentPinRecord->m_outlineRecords.push_back(pCurrentContourOutlineRecord);
+							}
+							else
+							{
+								pCurrentPackageRecord->m_outlineRecords.push_back(pCurrentContourOutlineRecord);
+							}
+						}
+						else
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						pCurrentContourOutlineRecord.reset();
+					}
+                    else if (line.find(PackageRecord::OutlineRecord::ContourPolygon::BEGIN_RECORD_TOKEN) == 0)
+                    {
+                        std::string token;
+                        if (!(lineStream >> token))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (token != PackageRecord::OutlineRecord::ContourPolygon::BEGIN_RECORD_TOKEN)
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        pCurrentContourPolygon = std::make_shared<PackageRecord::OutlineRecord::ContourPolygon>();
+
+                        if (!(lineStream >> pCurrentContourPolygon->xStart))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (!(lineStream >> pCurrentContourPolygon->yStart))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (!(lineStream >> token))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (token == PackageRecord::OutlineRecord::ContourPolygon::ISLAND_TYPE_TOKEN)
+                        {
+                            pCurrentContourPolygon->type = PackageRecord::OutlineRecord::ContourPolygon::Type::Island;
+                        }
+                        else if (token == PackageRecord::OutlineRecord::ContourPolygon::HOLE_TYPE_TOKEN)
+                        {
+                            pCurrentContourPolygon->type = PackageRecord::OutlineRecord::ContourPolygon::Type::Hole;
+                        }
+                        else
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+                    }
+                    else if (line.find(PackageRecord::OutlineRecord::ContourPolygon::END_RECORD_TOKEN) == 0)
+                    {
+                        std::string token;
+                        if (!(lineStream >> token))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (token != PackageRecord::OutlineRecord::ContourPolygon::END_RECORD_TOKEN)
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (pCurrentContourOutlineRecord != nullptr)
+                        {
+                            pCurrentContourOutlineRecord->m_contourPolygons.push_back(pCurrentContourPolygon);
+                            pCurrentContourPolygon.reset();
+                        }
+						else
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+                    }
+                    else if (line.find(PackageRecord::OutlineRecord::ContourPolygon::PolygonPart::ARC_RECORD_TOKEN) == 0)
+                    {
+                        std::string token;
+                        if (!(lineStream >> token))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (token != PackageRecord::OutlineRecord::ContourPolygon::PolygonPart::ARC_RECORD_TOKEN)
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        auto pPolygonPart = std::make_shared<PackageRecord::OutlineRecord::ContourPolygon::PolygonPart>();
+                        pPolygonPart->type = PackageRecord::OutlineRecord::ContourPolygon::PolygonPart::Type::Arc;
+
+                        if (!(lineStream >> pPolygonPart->endX))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }                        
+
+                        if (!(lineStream >> pPolygonPart->endY))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (!(lineStream >> pPolygonPart->xCenter))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (!(lineStream >> pPolygonPart->yCenter))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (!(lineStream >> token))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (token == "y" || token == "Y")
+                        {
+                            pPolygonPart->isClockwise = true;
+                        }
+                        else if (token == "n" || token == "N")
+                        {
+                            pPolygonPart->isClockwise = false;
+                        }
+                        else
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (pCurrentContourPolygon != nullptr)
+                        {
+                            pCurrentContourPolygon->m_polygonParts.push_back(pPolygonPart);
+                        }
+                        else
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+                    }
+                    else if (line.find(PackageRecord::OutlineRecord::ContourPolygon::PolygonPart::SEGMENT_RECORD_TOKEN) == 0)
+                    {
+                        std::string token;
+                        if (!(lineStream >> token))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (token != PackageRecord::OutlineRecord::ContourPolygon::PolygonPart::SEGMENT_RECORD_TOKEN)
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        auto pPolygonPart = std::make_shared<PackageRecord::OutlineRecord::ContourPolygon::PolygonPart>();
+                        pPolygonPart->type = PackageRecord::OutlineRecord::ContourPolygon::PolygonPart::Type::Segment;
+
+                        if (!(lineStream >> pPolygonPart->endX))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
+                        if (!(lineStream >> pPolygonPart->endY))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }                        
+
+                        if (pCurrentContourPolygon != nullptr)
+                        {
+                            pCurrentContourPolygon->m_polygonParts.push_back(pPolygonPart);
+                        }
+                        else
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
                     }
                     else
                     {
-                        return false;
+                        // unrecognized record line
+                        parse_info pi(m_path, line, lineNumber);
+                        logwarn(pi.toString("unrecognized record line in EDADATA file:"));                        
                     }
                 }
-                else if (line.find(FEATURE_GROUP_RECORD_TOKEN) == 0)
+                else
                 {
-                    // feature group record line
-                    std::string token;
-
-                    lineStream >> token;
-                    if (token != FEATURE_GROUP_RECORD_TOKEN) return false;
-
-                    // TODO: parse FGR records
+                    // empty line
+                    continue;                    
                 }
             }
-            else
+
+            // finish current (previous) net record
+            // this is the case where the last line of the file is not a net record (and there are no PKG records)
+            if (pCurrentNetRecord != nullptr)
             {
-                continue;
-                //return false;
+                // finish current (previous) subnet record
+                // case where we reach the end of the file before a new net record is encountered (and there are no PKG records)
+                if (pCurrentSubnetRecord != nullptr)
+                {
+                    pCurrentNetRecord->m_subnetRecords.push_back(pCurrentSubnetRecord);
+                    pCurrentSubnetRecord.reset();
+                }
+
+                m_netRecords.push_back(pCurrentNetRecord);
+                pCurrentNetRecord.reset();
             }
+            else if (pCurrentPackageRecord != nullptr)
+            {
+                // finish up any current (previous) pin records
+                if (pCurrentPinRecord != nullptr)
+                {
+                    // check for overflow
+                    if (pCurrentPackageRecord->m_pinRecords.size() > UINT_MAX)
+                    {
+                        throw_parse_error(m_path, line, "", lineNumber);
+                    }
+                    pCurrentPinRecord->index = static_cast<unsigned>(pCurrentPackageRecord->m_pinRecords.size());
+                    pCurrentPackageRecord->m_pinRecords.push_back(pCurrentPinRecord);
+                    pCurrentPinRecord.reset();
+                }
+
+                // finish up any current (previous) package records
+                m_packageRecords.push_back(pCurrentPackageRecord);
+                pCurrentPackageRecord.reset();
+            }
+            else if (pCurrentFeatureGroupRecord != nullptr)
+            {
+                m_featureGroupRecords.push_back(pCurrentFeatureGroupRecord);
+                pCurrentFeatureGroupRecord.reset();
+            }
+
+            edaDataFile.close();
         }
-
-        // finish current (previous) net record
-        // this is the case where the last line of the file is not a net record (and there are no PKG records)
-        if (pCurrentNetRecord != nullptr)
-        {
-            // finish current (previous) subnet record
-            // case where we reach the end of the file before a new net record is encountered (and there are no PKG records)
-            if (pCurrentSubnetRecord != nullptr)
-            {
-                pCurrentNetRecord->m_subnetRecords.push_back(pCurrentSubnetRecord);
-                pCurrentSubnetRecord.reset();
-            }
-
-            m_netRecords.push_back(pCurrentNetRecord);
-            pCurrentNetRecord.reset();
+        catch (parse_error& pe)
+        {            
+            auto m = pe.toString("Parse Error:");
+            logerror(m);
+            // cleanup file
+            edaDataFile.close();
+            throw pe;
         }
-
-        // TODO: ^^^ should be else if, i.e. there should only be one of either a
-        // current net OR package record to close up when we reach the EOF, but not both
-        if (pCurrentPackageRecord != nullptr)
+        catch (std::exception& e)
         {
-            // finish up any current (previous) pin records
-            if (pCurrentPinRecord != nullptr)
-            {
-                pCurrentPackageRecord->m_pinRecords.push_back(pCurrentPinRecord);
-                pCurrentPinRecord.reset();
-            }
-
-            // finish up any current (previous) package records
-            m_packageRecords.push_back(pCurrentPackageRecord);
-            pCurrentPackageRecord.reset();
+            parse_info pi(m_path, line, lineNumber);
+            const auto m = pi.toString();
+            logexception_msg(e, m);
+            // cleanup file
+            edaDataFile.close();
+            throw e;
         }
 
         return true;
-    }
-
-    // Inherited via IProtoBuffable
-    std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::PropertyRecord>
-    EdaDataFile::PropertyRecord::to_protobuf() const
-    {     
-        std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::PropertyRecord> pPropertyRecordMessage(new Odb::Lib::Protobuf::EdaDataFile::PropertyRecord);
-        pPropertyRecordMessage->set_name(name);
-        pPropertyRecordMessage->set_value(value);
-        for (const auto& f : floatValues)
-        {
-			pPropertyRecordMessage->add_floatvalues(f);
-		}
-        return pPropertyRecordMessage;
-    }
-
-    void EdaDataFile::PropertyRecord::from_protobuf(const Odb::Lib::Protobuf::EdaDataFile::PropertyRecord& message)
-    {
-    }
+    }       
 
     // Inherited via IProtoBuffable
     std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::PackageRecord>

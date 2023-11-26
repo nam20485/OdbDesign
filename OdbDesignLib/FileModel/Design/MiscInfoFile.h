@@ -4,13 +4,15 @@
 
 #include "../OdbFile.h"
 #include <chrono>
+#include "../../IProtoBuffable.h"
+#include "../../ProtoBuf/miscinfofile.pb.h"
 
 #pragma once
 
 namespace Odb::Lib::FileModel::Design
 {
 
-    class MiscInfoFile : public OdbFile
+    class MiscInfoFile : public OdbFile, public IProtoBuffable<Odb::Lib::Protobuf::MiscInfoFile>
     {
     public:
         MiscInfoFile() = default;
@@ -30,6 +32,10 @@ namespace Odb::Lib::FileModel::Design
 
         bool Parse(std::filesystem::path path) override;
 
+        // Inherited via IProtoBuffable
+        std::unique_ptr<Odb::Lib::Protobuf::MiscInfoFile> to_protobuf() const override;
+        void from_protobuf(const Odb::Lib::Protobuf::MiscInfoFile& message) override;
+
     private:
         std::string m_productModelName;
         std::string m_jobName;
@@ -43,5 +49,12 @@ namespace Odb::Lib::FileModel::Design
         std::string m_units;
         unsigned int m_maxUniqueId;
 
+        static inline bool attributeValueIsOptional(const std::string& attribute);
+
+        constexpr inline static const char* OPTIONAL_ATTRIBUTES[] =
+        {
+           //"ODB_SOURCE",  // not optional per spec pg. 80
+           "MAX_UID",
+        };       
     };
 }

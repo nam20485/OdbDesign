@@ -3,6 +3,8 @@
 #include "FileModel/Design/EdaDataFile.h"
 #include "JsonCrowReturnable.h"
 #include <sstream>
+#include "UrlEncoding.h"
+
 
 using namespace Odb::Lib::App;
 using namespace Odb::Lib::FileModel::Design;
@@ -27,6 +29,12 @@ namespace Odb::App::Server
 					return this->steps_edadata_route_handler(designName, stepName, req);
 				});
 
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>")
+			([&](const crow::request& req, std::string designName)
+				{
+					return this->designs_route_handler(designName, req);
+				});
+
 		//app.route_dynamic(url)
 
 		//register_route_handler("/steps/edadata/package_records", std::bind(&StepsEdaDataController::steps_edadata_route_handler, this, std::placeholders::_1));			
@@ -40,35 +48,56 @@ namespace Odb::App::Server
 																	   const std::string& stepName,
 																	   const crow::request& req)
 	{
-		if (designName.empty())
+		auto designNameDecoded = UrlEncoding::decode(designName);
+		if (designNameDecoded.empty())
 		{
 			return crow::response(crow::status::BAD_REQUEST, "design name not specified");
 		}
 
-		if (stepName.empty())
+		auto stepNameDecoded = UrlEncoding::decode(stepName);
+		if (stepNameDecoded.empty())
 		{
 			return crow::response(crow::status::BAD_REQUEST, "step name not specified");
 		}
-
-		auto pFileArchive = m_serverApp.designs().GetFileArchive(designName);
+	
+		auto pFileArchive = m_serverApp.designs().GetFileArchive(designNameDecoded);
 		if (pFileArchive == nullptr)
 		{
 			std::stringstream ss;
-			ss << "design: \"" << designName << "\" not found";			
+			ss << "design: \"" << designNameDecoded << "\" not found";
 			return crow::response(crow::status::NOT_FOUND, ss.str());
 		}
 
 		auto& stepsByName = pFileArchive->GetStepsByName();
-		auto findIt = stepsByName.find(stepName);
+		auto findIt = stepsByName.find(stepNameDecoded);
 		if (findIt == stepsByName.end())
 		{
 			std::stringstream ss;
-			ss << "(design: \"" << designName << "\")" << " step: \"" << stepName << "\" not found";
+			ss << "(design: \"" << designNameDecoded << "\")" << " step: \"" << stepNameDecoded << "\" not found";
 			return crow::response(crow::status::NOT_FOUND, ss.str());
 		}
 
 		auto& step = findIt->second;
 		auto& edaDataFile = step->GetEdaDataFile();
 		return crow::response(JsonCrowReturnable(edaDataFile));
+	}
+
+	crow::response StepsEdaDataController::designs_route_handler(const std::string& designName, const crow::request& req)
+	{
+		auto designNameDecoded = UrlEncoding::decode(designName);
+		if (designNameDecoded.empty())
+		{
+			return crow::response(crow::status::BAD_REQUEST, "design name not specified");
+		}
+
+		auto pFileArchive = m_serverApp.designs().GetFileArchive(designNameDecoded);
+		if (pFileArchive == nullptr)
+		{
+			std::stringstream ss;
+			ss << "design: \"" << designNameDecoded << "\" not found";
+			return crow::response(crow::status::NOT_FOUND, ss.str());
+		}
+
+		return crow::response(JsonCrowReturnable(*pFileArchive));
 	}
 }

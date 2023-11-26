@@ -23,14 +23,15 @@
 #include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/arena.h>
 #include <google/protobuf/arenastring.h>
-#include <google/protobuf/generated_message_bases.h>
 #include <google/protobuf/generated_message_util.h>
 #include <google/protobuf/metadata_lite.h>
 #include <google/protobuf/generated_message_reflection.h>
 #include <google/protobuf/message.h>
 #include <google/protobuf/repeated_field.h>  // IWYU pragma: export
 #include <google/protobuf/extension_set.h>  // IWYU pragma: export
+#include <google/protobuf/generated_enum_reflection.h>
 #include <google/protobuf/unknown_field_set.h>
+#include "enums.pb.h"
 // @@protoc_insertion_point(includes)
 #include <google/protobuf/port_def.inc>
 #define PROTOBUF_INTERNAL_EXPORT_matrixfile_2eproto
@@ -51,22 +52,805 @@ namespace Protobuf {
 class MatrixFile;
 struct MatrixFileDefaultTypeInternal;
 extern MatrixFileDefaultTypeInternal _MatrixFile_default_instance_;
+class MatrixFile_LayerRecord;
+struct MatrixFile_LayerRecordDefaultTypeInternal;
+extern MatrixFile_LayerRecordDefaultTypeInternal _MatrixFile_LayerRecord_default_instance_;
+class MatrixFile_StepRecord;
+struct MatrixFile_StepRecordDefaultTypeInternal;
+extern MatrixFile_StepRecordDefaultTypeInternal _MatrixFile_StepRecord_default_instance_;
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
 PROTOBUF_NAMESPACE_OPEN
 template<> ::Odb::Lib::Protobuf::MatrixFile* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::MatrixFile>(Arena*);
+template<> ::Odb::Lib::Protobuf::MatrixFile_LayerRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::MatrixFile_LayerRecord>(Arena*);
+template<> ::Odb::Lib::Protobuf::MatrixFile_StepRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::MatrixFile_StepRecord>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace Odb {
 namespace Lib {
 namespace Protobuf {
 
+enum MatrixFile_LayerRecord_Type : int {
+  MatrixFile_LayerRecord_Type_Signal = 0,
+  MatrixFile_LayerRecord_Type_PowerGround = 1,
+  MatrixFile_LayerRecord_Type_Dielectric = 2,
+  MatrixFile_LayerRecord_Type_Mixed = 3,
+  MatrixFile_LayerRecord_Type_SolderMask = 4,
+  MatrixFile_LayerRecord_Type_SolderPaste = 5,
+  MatrixFile_LayerRecord_Type_SilkScreen = 6,
+  MatrixFile_LayerRecord_Type_Drill = 7,
+  MatrixFile_LayerRecord_Type_Rout = 8,
+  MatrixFile_LayerRecord_Type_Document = 9,
+  MatrixFile_LayerRecord_Type_Component = 10,
+  MatrixFile_LayerRecord_Type_Mask = 11,
+  MatrixFile_LayerRecord_Type_ConductivePaste = 12,
+  MatrixFile_LayerRecord_Type_MatrixFile_LayerRecord_Type_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
+  MatrixFile_LayerRecord_Type_MatrixFile_LayerRecord_Type_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
+};
+bool MatrixFile_LayerRecord_Type_IsValid(int value);
+constexpr MatrixFile_LayerRecord_Type MatrixFile_LayerRecord_Type_Type_MIN = MatrixFile_LayerRecord_Type_Signal;
+constexpr MatrixFile_LayerRecord_Type MatrixFile_LayerRecord_Type_Type_MAX = MatrixFile_LayerRecord_Type_ConductivePaste;
+constexpr int MatrixFile_LayerRecord_Type_Type_ARRAYSIZE = MatrixFile_LayerRecord_Type_Type_MAX + 1;
+
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* MatrixFile_LayerRecord_Type_descriptor();
+template<typename T>
+inline const std::string& MatrixFile_LayerRecord_Type_Name(T enum_t_value) {
+  static_assert(::std::is_same<T, MatrixFile_LayerRecord_Type>::value ||
+    ::std::is_integral<T>::value,
+    "Incorrect type passed to function MatrixFile_LayerRecord_Type_Name.");
+  return ::PROTOBUF_NAMESPACE_ID::internal::NameOfEnum(
+    MatrixFile_LayerRecord_Type_descriptor(), enum_t_value);
+}
+inline bool MatrixFile_LayerRecord_Type_Parse(
+    ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, MatrixFile_LayerRecord_Type* value) {
+  return ::PROTOBUF_NAMESPACE_ID::internal::ParseNamedEnum<MatrixFile_LayerRecord_Type>(
+    MatrixFile_LayerRecord_Type_descriptor(), name, value);
+}
+enum MatrixFile_LayerRecord_Context : int {
+  MatrixFile_LayerRecord_Context_Board = 0,
+  MatrixFile_LayerRecord_Context_Misc = 1,
+  MatrixFile_LayerRecord_Context_MatrixFile_LayerRecord_Context_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
+  MatrixFile_LayerRecord_Context_MatrixFile_LayerRecord_Context_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
+};
+bool MatrixFile_LayerRecord_Context_IsValid(int value);
+constexpr MatrixFile_LayerRecord_Context MatrixFile_LayerRecord_Context_Context_MIN = MatrixFile_LayerRecord_Context_Board;
+constexpr MatrixFile_LayerRecord_Context MatrixFile_LayerRecord_Context_Context_MAX = MatrixFile_LayerRecord_Context_Misc;
+constexpr int MatrixFile_LayerRecord_Context_Context_ARRAYSIZE = MatrixFile_LayerRecord_Context_Context_MAX + 1;
+
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* MatrixFile_LayerRecord_Context_descriptor();
+template<typename T>
+inline const std::string& MatrixFile_LayerRecord_Context_Name(T enum_t_value) {
+  static_assert(::std::is_same<T, MatrixFile_LayerRecord_Context>::value ||
+    ::std::is_integral<T>::value,
+    "Incorrect type passed to function MatrixFile_LayerRecord_Context_Name.");
+  return ::PROTOBUF_NAMESPACE_ID::internal::NameOfEnum(
+    MatrixFile_LayerRecord_Context_descriptor(), enum_t_value);
+}
+inline bool MatrixFile_LayerRecord_Context_Parse(
+    ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, MatrixFile_LayerRecord_Context* value) {
+  return ::PROTOBUF_NAMESPACE_ID::internal::ParseNamedEnum<MatrixFile_LayerRecord_Context>(
+    MatrixFile_LayerRecord_Context_descriptor(), name, value);
+}
+enum MatrixFile_LayerRecord_DielectricType : int {
+  MatrixFile_LayerRecord_DielectricType_None = 0,
+  MatrixFile_LayerRecord_DielectricType_Prepreg = 1,
+  MatrixFile_LayerRecord_DielectricType_Core = 2,
+  MatrixFile_LayerRecord_DielectricType_MatrixFile_LayerRecord_DielectricType_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
+  MatrixFile_LayerRecord_DielectricType_MatrixFile_LayerRecord_DielectricType_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
+};
+bool MatrixFile_LayerRecord_DielectricType_IsValid(int value);
+constexpr MatrixFile_LayerRecord_DielectricType MatrixFile_LayerRecord_DielectricType_DielectricType_MIN = MatrixFile_LayerRecord_DielectricType_None;
+constexpr MatrixFile_LayerRecord_DielectricType MatrixFile_LayerRecord_DielectricType_DielectricType_MAX = MatrixFile_LayerRecord_DielectricType_Core;
+constexpr int MatrixFile_LayerRecord_DielectricType_DielectricType_ARRAYSIZE = MatrixFile_LayerRecord_DielectricType_DielectricType_MAX + 1;
+
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* MatrixFile_LayerRecord_DielectricType_descriptor();
+template<typename T>
+inline const std::string& MatrixFile_LayerRecord_DielectricType_Name(T enum_t_value) {
+  static_assert(::std::is_same<T, MatrixFile_LayerRecord_DielectricType>::value ||
+    ::std::is_integral<T>::value,
+    "Incorrect type passed to function MatrixFile_LayerRecord_DielectricType_Name.");
+  return ::PROTOBUF_NAMESPACE_ID::internal::NameOfEnum(
+    MatrixFile_LayerRecord_DielectricType_descriptor(), enum_t_value);
+}
+inline bool MatrixFile_LayerRecord_DielectricType_Parse(
+    ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, MatrixFile_LayerRecord_DielectricType* value) {
+  return ::PROTOBUF_NAMESPACE_ID::internal::ParseNamedEnum<MatrixFile_LayerRecord_DielectricType>(
+    MatrixFile_LayerRecord_DielectricType_descriptor(), name, value);
+}
+enum MatrixFile_LayerRecord_Form : int {
+  MatrixFile_LayerRecord_Form_Rigid = 0,
+  MatrixFile_LayerRecord_Form_Flex = 1,
+  MatrixFile_LayerRecord_Form_MatrixFile_LayerRecord_Form_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
+  MatrixFile_LayerRecord_Form_MatrixFile_LayerRecord_Form_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
+};
+bool MatrixFile_LayerRecord_Form_IsValid(int value);
+constexpr MatrixFile_LayerRecord_Form MatrixFile_LayerRecord_Form_Form_MIN = MatrixFile_LayerRecord_Form_Rigid;
+constexpr MatrixFile_LayerRecord_Form MatrixFile_LayerRecord_Form_Form_MAX = MatrixFile_LayerRecord_Form_Flex;
+constexpr int MatrixFile_LayerRecord_Form_Form_ARRAYSIZE = MatrixFile_LayerRecord_Form_Form_MAX + 1;
+
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* MatrixFile_LayerRecord_Form_descriptor();
+template<typename T>
+inline const std::string& MatrixFile_LayerRecord_Form_Name(T enum_t_value) {
+  static_assert(::std::is_same<T, MatrixFile_LayerRecord_Form>::value ||
+    ::std::is_integral<T>::value,
+    "Incorrect type passed to function MatrixFile_LayerRecord_Form_Name.");
+  return ::PROTOBUF_NAMESPACE_ID::internal::NameOfEnum(
+    MatrixFile_LayerRecord_Form_descriptor(), enum_t_value);
+}
+inline bool MatrixFile_LayerRecord_Form_Parse(
+    ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, MatrixFile_LayerRecord_Form* value) {
+  return ::PROTOBUF_NAMESPACE_ID::internal::ParseNamedEnum<MatrixFile_LayerRecord_Form>(
+    MatrixFile_LayerRecord_Form_descriptor(), name, value);
+}
 // ===================================================================
 
+class MatrixFile_StepRecord final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.MatrixFile.StepRecord) */ {
+ public:
+  inline MatrixFile_StepRecord() : MatrixFile_StepRecord(nullptr) {}
+  ~MatrixFile_StepRecord() override;
+  explicit PROTOBUF_CONSTEXPR MatrixFile_StepRecord(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  MatrixFile_StepRecord(const MatrixFile_StepRecord& from);
+  MatrixFile_StepRecord(MatrixFile_StepRecord&& from) noexcept
+    : MatrixFile_StepRecord() {
+    *this = ::std::move(from);
+  }
+
+  inline MatrixFile_StepRecord& operator=(const MatrixFile_StepRecord& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline MatrixFile_StepRecord& operator=(MatrixFile_StepRecord&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const MatrixFile_StepRecord& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const MatrixFile_StepRecord* internal_default_instance() {
+    return reinterpret_cast<const MatrixFile_StepRecord*>(
+               &_MatrixFile_StepRecord_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    0;
+
+  friend void swap(MatrixFile_StepRecord& a, MatrixFile_StepRecord& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(MatrixFile_StepRecord* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(MatrixFile_StepRecord* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  MatrixFile_StepRecord* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<MatrixFile_StepRecord>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const MatrixFile_StepRecord& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const MatrixFile_StepRecord& from) {
+    MatrixFile_StepRecord::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(MatrixFile_StepRecord* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "Odb.Lib.Protobuf.MatrixFile.StepRecord";
+  }
+  protected:
+  explicit MatrixFile_StepRecord(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kNameFieldNumber = 3,
+    kColumnFieldNumber = 1,
+    kIdFieldNumber = 2,
+  };
+  // string name = 3;
+  void clear_name();
+  const std::string& name() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_name(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_name();
+  PROTOBUF_NODISCARD std::string* release_name();
+  void set_allocated_name(std::string* name);
+  private:
+  const std::string& _internal_name() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_name(const std::string& value);
+  std::string* _internal_mutable_name();
+  public:
+
+  // uint32 column = 1;
+  void clear_column();
+  uint32_t column() const;
+  void set_column(uint32_t value);
+  private:
+  uint32_t _internal_column() const;
+  void _internal_set_column(uint32_t value);
+  public:
+
+  // uint32 id = 2;
+  void clear_id();
+  uint32_t id() const;
+  void set_id(uint32_t value);
+  private:
+  uint32_t _internal_id() const;
+  void _internal_set_id(uint32_t value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:Odb.Lib.Protobuf.MatrixFile.StepRecord)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr name_;
+    uint32_t column_;
+    uint32_t id_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_matrixfile_2eproto;
+};
+// -------------------------------------------------------------------
+
+class MatrixFile_LayerRecord final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.MatrixFile.LayerRecord) */ {
+ public:
+  inline MatrixFile_LayerRecord() : MatrixFile_LayerRecord(nullptr) {}
+  ~MatrixFile_LayerRecord() override;
+  explicit PROTOBUF_CONSTEXPR MatrixFile_LayerRecord(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  MatrixFile_LayerRecord(const MatrixFile_LayerRecord& from);
+  MatrixFile_LayerRecord(MatrixFile_LayerRecord&& from) noexcept
+    : MatrixFile_LayerRecord() {
+    *this = ::std::move(from);
+  }
+
+  inline MatrixFile_LayerRecord& operator=(const MatrixFile_LayerRecord& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline MatrixFile_LayerRecord& operator=(MatrixFile_LayerRecord&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const MatrixFile_LayerRecord& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const MatrixFile_LayerRecord* internal_default_instance() {
+    return reinterpret_cast<const MatrixFile_LayerRecord*>(
+               &_MatrixFile_LayerRecord_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    1;
+
+  friend void swap(MatrixFile_LayerRecord& a, MatrixFile_LayerRecord& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(MatrixFile_LayerRecord* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(MatrixFile_LayerRecord* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  MatrixFile_LayerRecord* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<MatrixFile_LayerRecord>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const MatrixFile_LayerRecord& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const MatrixFile_LayerRecord& from) {
+    MatrixFile_LayerRecord::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(MatrixFile_LayerRecord* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "Odb.Lib.Protobuf.MatrixFile.LayerRecord";
+  }
+  protected:
+  explicit MatrixFile_LayerRecord(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  typedef MatrixFile_LayerRecord_Type Type;
+  static constexpr Type Signal =
+    MatrixFile_LayerRecord_Type_Signal;
+  static constexpr Type PowerGround =
+    MatrixFile_LayerRecord_Type_PowerGround;
+  static constexpr Type Dielectric =
+    MatrixFile_LayerRecord_Type_Dielectric;
+  static constexpr Type Mixed =
+    MatrixFile_LayerRecord_Type_Mixed;
+  static constexpr Type SolderMask =
+    MatrixFile_LayerRecord_Type_SolderMask;
+  static constexpr Type SolderPaste =
+    MatrixFile_LayerRecord_Type_SolderPaste;
+  static constexpr Type SilkScreen =
+    MatrixFile_LayerRecord_Type_SilkScreen;
+  static constexpr Type Drill =
+    MatrixFile_LayerRecord_Type_Drill;
+  static constexpr Type Rout =
+    MatrixFile_LayerRecord_Type_Rout;
+  static constexpr Type Document =
+    MatrixFile_LayerRecord_Type_Document;
+  static constexpr Type Component =
+    MatrixFile_LayerRecord_Type_Component;
+  static constexpr Type Mask =
+    MatrixFile_LayerRecord_Type_Mask;
+  static constexpr Type ConductivePaste =
+    MatrixFile_LayerRecord_Type_ConductivePaste;
+  static inline bool Type_IsValid(int value) {
+    return MatrixFile_LayerRecord_Type_IsValid(value);
+  }
+  static constexpr Type Type_MIN =
+    MatrixFile_LayerRecord_Type_Type_MIN;
+  static constexpr Type Type_MAX =
+    MatrixFile_LayerRecord_Type_Type_MAX;
+  static constexpr int Type_ARRAYSIZE =
+    MatrixFile_LayerRecord_Type_Type_ARRAYSIZE;
+  static inline const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor*
+  Type_descriptor() {
+    return MatrixFile_LayerRecord_Type_descriptor();
+  }
+  template<typename T>
+  static inline const std::string& Type_Name(T enum_t_value) {
+    static_assert(::std::is_same<T, Type>::value ||
+      ::std::is_integral<T>::value,
+      "Incorrect type passed to function Type_Name.");
+    return MatrixFile_LayerRecord_Type_Name(enum_t_value);
+  }
+  static inline bool Type_Parse(::PROTOBUF_NAMESPACE_ID::ConstStringParam name,
+      Type* value) {
+    return MatrixFile_LayerRecord_Type_Parse(name, value);
+  }
+
+  typedef MatrixFile_LayerRecord_Context Context;
+  static constexpr Context Board =
+    MatrixFile_LayerRecord_Context_Board;
+  static constexpr Context Misc =
+    MatrixFile_LayerRecord_Context_Misc;
+  static inline bool Context_IsValid(int value) {
+    return MatrixFile_LayerRecord_Context_IsValid(value);
+  }
+  static constexpr Context Context_MIN =
+    MatrixFile_LayerRecord_Context_Context_MIN;
+  static constexpr Context Context_MAX =
+    MatrixFile_LayerRecord_Context_Context_MAX;
+  static constexpr int Context_ARRAYSIZE =
+    MatrixFile_LayerRecord_Context_Context_ARRAYSIZE;
+  static inline const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor*
+  Context_descriptor() {
+    return MatrixFile_LayerRecord_Context_descriptor();
+  }
+  template<typename T>
+  static inline const std::string& Context_Name(T enum_t_value) {
+    static_assert(::std::is_same<T, Context>::value ||
+      ::std::is_integral<T>::value,
+      "Incorrect type passed to function Context_Name.");
+    return MatrixFile_LayerRecord_Context_Name(enum_t_value);
+  }
+  static inline bool Context_Parse(::PROTOBUF_NAMESPACE_ID::ConstStringParam name,
+      Context* value) {
+    return MatrixFile_LayerRecord_Context_Parse(name, value);
+  }
+
+  typedef MatrixFile_LayerRecord_DielectricType DielectricType;
+  static constexpr DielectricType None =
+    MatrixFile_LayerRecord_DielectricType_None;
+  static constexpr DielectricType Prepreg =
+    MatrixFile_LayerRecord_DielectricType_Prepreg;
+  static constexpr DielectricType Core =
+    MatrixFile_LayerRecord_DielectricType_Core;
+  static inline bool DielectricType_IsValid(int value) {
+    return MatrixFile_LayerRecord_DielectricType_IsValid(value);
+  }
+  static constexpr DielectricType DielectricType_MIN =
+    MatrixFile_LayerRecord_DielectricType_DielectricType_MIN;
+  static constexpr DielectricType DielectricType_MAX =
+    MatrixFile_LayerRecord_DielectricType_DielectricType_MAX;
+  static constexpr int DielectricType_ARRAYSIZE =
+    MatrixFile_LayerRecord_DielectricType_DielectricType_ARRAYSIZE;
+  static inline const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor*
+  DielectricType_descriptor() {
+    return MatrixFile_LayerRecord_DielectricType_descriptor();
+  }
+  template<typename T>
+  static inline const std::string& DielectricType_Name(T enum_t_value) {
+    static_assert(::std::is_same<T, DielectricType>::value ||
+      ::std::is_integral<T>::value,
+      "Incorrect type passed to function DielectricType_Name.");
+    return MatrixFile_LayerRecord_DielectricType_Name(enum_t_value);
+  }
+  static inline bool DielectricType_Parse(::PROTOBUF_NAMESPACE_ID::ConstStringParam name,
+      DielectricType* value) {
+    return MatrixFile_LayerRecord_DielectricType_Parse(name, value);
+  }
+
+  typedef MatrixFile_LayerRecord_Form Form;
+  static constexpr Form Rigid =
+    MatrixFile_LayerRecord_Form_Rigid;
+  static constexpr Form Flex =
+    MatrixFile_LayerRecord_Form_Flex;
+  static inline bool Form_IsValid(int value) {
+    return MatrixFile_LayerRecord_Form_IsValid(value);
+  }
+  static constexpr Form Form_MIN =
+    MatrixFile_LayerRecord_Form_Form_MIN;
+  static constexpr Form Form_MAX =
+    MatrixFile_LayerRecord_Form_Form_MAX;
+  static constexpr int Form_ARRAYSIZE =
+    MatrixFile_LayerRecord_Form_Form_ARRAYSIZE;
+  static inline const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor*
+  Form_descriptor() {
+    return MatrixFile_LayerRecord_Form_descriptor();
+  }
+  template<typename T>
+  static inline const std::string& Form_Name(T enum_t_value) {
+    static_assert(::std::is_same<T, Form>::value ||
+      ::std::is_integral<T>::value,
+      "Incorrect type passed to function Form_Name.");
+    return MatrixFile_LayerRecord_Form_Name(enum_t_value);
+  }
+  static inline bool Form_Parse(::PROTOBUF_NAMESPACE_ID::ConstStringParam name,
+      Form* value) {
+    return MatrixFile_LayerRecord_Form_Parse(name, value);
+  }
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kNameFieldNumber = 4,
+    kDielectricNameFieldNumber = 7,
+    kStartNameFieldNumber = 12,
+    kEndNameFieldNumber = 13,
+    kOldNameFieldNumber = 14,
+    kAddTypeFieldNumber = 15,
+    kRowFieldNumber = 1,
+    kContextFieldNumber = 2,
+    kTypeFieldNumber = 3,
+    kPolarityFieldNumber = 5,
+    kDielectricTypeFieldNumber = 6,
+    kFormFieldNumber = 8,
+    kCuTopFieldNumber = 9,
+    kCuBottomFieldNumber = 10,
+    kRefFieldNumber = 11,
+    kIdFieldNumber = 17,
+  };
+  // string name = 4;
+  void clear_name();
+  const std::string& name() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_name(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_name();
+  PROTOBUF_NODISCARD std::string* release_name();
+  void set_allocated_name(std::string* name);
+  private:
+  const std::string& _internal_name() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_name(const std::string& value);
+  std::string* _internal_mutable_name();
+  public:
+
+  // string dielectricName = 7;
+  void clear_dielectricname();
+  const std::string& dielectricname() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_dielectricname(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_dielectricname();
+  PROTOBUF_NODISCARD std::string* release_dielectricname();
+  void set_allocated_dielectricname(std::string* dielectricname);
+  private:
+  const std::string& _internal_dielectricname() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_dielectricname(const std::string& value);
+  std::string* _internal_mutable_dielectricname();
+  public:
+
+  // string startName = 12;
+  void clear_startname();
+  const std::string& startname() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_startname(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_startname();
+  PROTOBUF_NODISCARD std::string* release_startname();
+  void set_allocated_startname(std::string* startname);
+  private:
+  const std::string& _internal_startname() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_startname(const std::string& value);
+  std::string* _internal_mutable_startname();
+  public:
+
+  // string endName = 13;
+  void clear_endname();
+  const std::string& endname() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_endname(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_endname();
+  PROTOBUF_NODISCARD std::string* release_endname();
+  void set_allocated_endname(std::string* endname);
+  private:
+  const std::string& _internal_endname() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_endname(const std::string& value);
+  std::string* _internal_mutable_endname();
+  public:
+
+  // string oldName = 14;
+  void clear_oldname();
+  const std::string& oldname() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_oldname(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_oldname();
+  PROTOBUF_NODISCARD std::string* release_oldname();
+  void set_allocated_oldname(std::string* oldname);
+  private:
+  const std::string& _internal_oldname() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_oldname(const std::string& value);
+  std::string* _internal_mutable_oldname();
+  public:
+
+  // string addType = 15;
+  void clear_addtype();
+  const std::string& addtype() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_addtype(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_addtype();
+  PROTOBUF_NODISCARD std::string* release_addtype();
+  void set_allocated_addtype(std::string* addtype);
+  private:
+  const std::string& _internal_addtype() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_addtype(const std::string& value);
+  std::string* _internal_mutable_addtype();
+  public:
+
+  // uint32 row = 1;
+  void clear_row();
+  uint32_t row() const;
+  void set_row(uint32_t value);
+  private:
+  uint32_t _internal_row() const;
+  void _internal_set_row(uint32_t value);
+  public:
+
+  // .Odb.Lib.Protobuf.MatrixFile.LayerRecord.Context context = 2;
+  void clear_context();
+  ::Odb::Lib::Protobuf::MatrixFile_LayerRecord_Context context() const;
+  void set_context(::Odb::Lib::Protobuf::MatrixFile_LayerRecord_Context value);
+  private:
+  ::Odb::Lib::Protobuf::MatrixFile_LayerRecord_Context _internal_context() const;
+  void _internal_set_context(::Odb::Lib::Protobuf::MatrixFile_LayerRecord_Context value);
+  public:
+
+  // .Odb.Lib.Protobuf.MatrixFile.LayerRecord.Type type = 3;
+  void clear_type();
+  ::Odb::Lib::Protobuf::MatrixFile_LayerRecord_Type type() const;
+  void set_type(::Odb::Lib::Protobuf::MatrixFile_LayerRecord_Type value);
+  private:
+  ::Odb::Lib::Protobuf::MatrixFile_LayerRecord_Type _internal_type() const;
+  void _internal_set_type(::Odb::Lib::Protobuf::MatrixFile_LayerRecord_Type value);
+  public:
+
+  // .Odb.Lib.Protobuf.Polarity polarity = 5;
+  void clear_polarity();
+  ::Odb::Lib::Protobuf::Polarity polarity() const;
+  void set_polarity(::Odb::Lib::Protobuf::Polarity value);
+  private:
+  ::Odb::Lib::Protobuf::Polarity _internal_polarity() const;
+  void _internal_set_polarity(::Odb::Lib::Protobuf::Polarity value);
+  public:
+
+  // .Odb.Lib.Protobuf.MatrixFile.LayerRecord.DielectricType dielectricType = 6;
+  void clear_dielectrictype();
+  ::Odb::Lib::Protobuf::MatrixFile_LayerRecord_DielectricType dielectrictype() const;
+  void set_dielectrictype(::Odb::Lib::Protobuf::MatrixFile_LayerRecord_DielectricType value);
+  private:
+  ::Odb::Lib::Protobuf::MatrixFile_LayerRecord_DielectricType _internal_dielectrictype() const;
+  void _internal_set_dielectrictype(::Odb::Lib::Protobuf::MatrixFile_LayerRecord_DielectricType value);
+  public:
+
+  // .Odb.Lib.Protobuf.MatrixFile.LayerRecord.Form form = 8;
+  void clear_form();
+  ::Odb::Lib::Protobuf::MatrixFile_LayerRecord_Form form() const;
+  void set_form(::Odb::Lib::Protobuf::MatrixFile_LayerRecord_Form value);
+  private:
+  ::Odb::Lib::Protobuf::MatrixFile_LayerRecord_Form _internal_form() const;
+  void _internal_set_form(::Odb::Lib::Protobuf::MatrixFile_LayerRecord_Form value);
+  public:
+
+  // uint32 cuTop = 9;
+  void clear_cutop();
+  uint32_t cutop() const;
+  void set_cutop(uint32_t value);
+  private:
+  uint32_t _internal_cutop() const;
+  void _internal_set_cutop(uint32_t value);
+  public:
+
+  // uint32 cuBottom = 10;
+  void clear_cubottom();
+  uint32_t cubottom() const;
+  void set_cubottom(uint32_t value);
+  private:
+  uint32_t _internal_cubottom() const;
+  void _internal_set_cubottom(uint32_t value);
+  public:
+
+  // uint32 ref = 11;
+  void clear_ref();
+  uint32_t ref() const;
+  void set_ref(uint32_t value);
+  private:
+  uint32_t _internal_ref() const;
+  void _internal_set_ref(uint32_t value);
+  public:
+
+  // uint32 id = 17;
+  void clear_id();
+  uint32_t id() const;
+  void set_id(uint32_t value);
+  private:
+  uint32_t _internal_id() const;
+  void _internal_set_id(uint32_t value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:Odb.Lib.Protobuf.MatrixFile.LayerRecord)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr name_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr dielectricname_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr startname_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr endname_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr oldname_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr addtype_;
+    uint32_t row_;
+    int context_;
+    int type_;
+    int polarity_;
+    int dielectrictype_;
+    int form_;
+    uint32_t cutop_;
+    uint32_t cubottom_;
+    uint32_t ref_;
+    uint32_t id_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_matrixfile_2eproto;
+};
+// -------------------------------------------------------------------
+
 class MatrixFile final :
-    public ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.MatrixFile) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.MatrixFile) */ {
  public:
   inline MatrixFile() : MatrixFile(nullptr) {}
+  ~MatrixFile() override;
   explicit PROTOBUF_CONSTEXPR MatrixFile(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
 
   MatrixFile(const MatrixFile& from);
@@ -110,7 +894,7 @@ class MatrixFile final :
                &_MatrixFile_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    0;
+    2;
 
   friend void swap(MatrixFile& a, MatrixFile& b) {
     a.Swap(&b);
@@ -139,15 +923,29 @@ class MatrixFile final :
   MatrixFile* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
     return CreateMaybeMessage<MatrixFile>(arena);
   }
-  using ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase::CopyFrom;
-  inline void CopyFrom(const MatrixFile& from) {
-    ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase::CopyImpl(*this, from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const MatrixFile& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const MatrixFile& from) {
+    MatrixFile::MergeImpl(*this, from);
   }
-  using ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase::MergeFrom;
-  void MergeFrom(const MatrixFile& from) {
-    ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase::MergeImpl(*this, from);
-  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
   public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(MatrixFile* other);
 
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
@@ -166,7 +964,50 @@ class MatrixFile final :
 
   // nested types ----------------------------------------------------
 
+  typedef MatrixFile_StepRecord StepRecord;
+  typedef MatrixFile_LayerRecord LayerRecord;
+
   // accessors -------------------------------------------------------
+
+  enum : int {
+    kStepsFieldNumber = 1,
+    kLayersFieldNumber = 2,
+  };
+  // repeated .Odb.Lib.Protobuf.MatrixFile.StepRecord steps = 1;
+  int steps_size() const;
+  private:
+  int _internal_steps_size() const;
+  public:
+  void clear_steps();
+  ::Odb::Lib::Protobuf::MatrixFile_StepRecord* mutable_steps(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::MatrixFile_StepRecord >*
+      mutable_steps();
+  private:
+  const ::Odb::Lib::Protobuf::MatrixFile_StepRecord& _internal_steps(int index) const;
+  ::Odb::Lib::Protobuf::MatrixFile_StepRecord* _internal_add_steps();
+  public:
+  const ::Odb::Lib::Protobuf::MatrixFile_StepRecord& steps(int index) const;
+  ::Odb::Lib::Protobuf::MatrixFile_StepRecord* add_steps();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::MatrixFile_StepRecord >&
+      steps() const;
+
+  // repeated .Odb.Lib.Protobuf.MatrixFile.LayerRecord layers = 2;
+  int layers_size() const;
+  private:
+  int _internal_layers_size() const;
+  public:
+  void clear_layers();
+  ::Odb::Lib::Protobuf::MatrixFile_LayerRecord* mutable_layers(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::MatrixFile_LayerRecord >*
+      mutable_layers();
+  private:
+  const ::Odb::Lib::Protobuf::MatrixFile_LayerRecord& _internal_layers(int index) const;
+  ::Odb::Lib::Protobuf::MatrixFile_LayerRecord* _internal_add_layers();
+  public:
+  const ::Odb::Lib::Protobuf::MatrixFile_LayerRecord& layers(int index) const;
+  ::Odb::Lib::Protobuf::MatrixFile_LayerRecord* add_layers();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::MatrixFile_LayerRecord >&
+      layers() const;
 
   // @@protoc_insertion_point(class_scope:Odb.Lib.Protobuf.MatrixFile)
  private:
@@ -176,7 +1017,11 @@ class MatrixFile final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::MatrixFile_StepRecord > steps_;
+    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::MatrixFile_LayerRecord > layers_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
+  union { Impl_ _impl_; };
   friend struct ::TableStruct_matrixfile_2eproto;
 };
 // ===================================================================
@@ -188,17 +1033,724 @@ class MatrixFile final :
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif  // __GNUC__
+// MatrixFile_StepRecord
+
+// uint32 column = 1;
+inline void MatrixFile_StepRecord::clear_column() {
+  _impl_.column_ = 0u;
+}
+inline uint32_t MatrixFile_StepRecord::_internal_column() const {
+  return _impl_.column_;
+}
+inline uint32_t MatrixFile_StepRecord::column() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.MatrixFile.StepRecord.column)
+  return _internal_column();
+}
+inline void MatrixFile_StepRecord::_internal_set_column(uint32_t value) {
+  
+  _impl_.column_ = value;
+}
+inline void MatrixFile_StepRecord::set_column(uint32_t value) {
+  _internal_set_column(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.MatrixFile.StepRecord.column)
+}
+
+// uint32 id = 2;
+inline void MatrixFile_StepRecord::clear_id() {
+  _impl_.id_ = 0u;
+}
+inline uint32_t MatrixFile_StepRecord::_internal_id() const {
+  return _impl_.id_;
+}
+inline uint32_t MatrixFile_StepRecord::id() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.MatrixFile.StepRecord.id)
+  return _internal_id();
+}
+inline void MatrixFile_StepRecord::_internal_set_id(uint32_t value) {
+  
+  _impl_.id_ = value;
+}
+inline void MatrixFile_StepRecord::set_id(uint32_t value) {
+  _internal_set_id(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.MatrixFile.StepRecord.id)
+}
+
+// string name = 3;
+inline void MatrixFile_StepRecord::clear_name() {
+  _impl_.name_.ClearToEmpty();
+}
+inline const std::string& MatrixFile_StepRecord::name() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.MatrixFile.StepRecord.name)
+  return _internal_name();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void MatrixFile_StepRecord::set_name(ArgT0&& arg0, ArgT... args) {
+ 
+ _impl_.name_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.MatrixFile.StepRecord.name)
+}
+inline std::string* MatrixFile_StepRecord::mutable_name() {
+  std::string* _s = _internal_mutable_name();
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.MatrixFile.StepRecord.name)
+  return _s;
+}
+inline const std::string& MatrixFile_StepRecord::_internal_name() const {
+  return _impl_.name_.Get();
+}
+inline void MatrixFile_StepRecord::_internal_set_name(const std::string& value) {
+  
+  _impl_.name_.Set(value, GetArenaForAllocation());
+}
+inline std::string* MatrixFile_StepRecord::_internal_mutable_name() {
+  
+  return _impl_.name_.Mutable(GetArenaForAllocation());
+}
+inline std::string* MatrixFile_StepRecord::release_name() {
+  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.MatrixFile.StepRecord.name)
+  return _impl_.name_.Release();
+}
+inline void MatrixFile_StepRecord::set_allocated_name(std::string* name) {
+  if (name != nullptr) {
+    
+  } else {
+    
+  }
+  _impl_.name_.SetAllocated(name, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.name_.IsDefault()) {
+    _impl_.name_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.MatrixFile.StepRecord.name)
+}
+
+// -------------------------------------------------------------------
+
+// MatrixFile_LayerRecord
+
+// uint32 row = 1;
+inline void MatrixFile_LayerRecord::clear_row() {
+  _impl_.row_ = 0u;
+}
+inline uint32_t MatrixFile_LayerRecord::_internal_row() const {
+  return _impl_.row_;
+}
+inline uint32_t MatrixFile_LayerRecord::row() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.MatrixFile.LayerRecord.row)
+  return _internal_row();
+}
+inline void MatrixFile_LayerRecord::_internal_set_row(uint32_t value) {
+  
+  _impl_.row_ = value;
+}
+inline void MatrixFile_LayerRecord::set_row(uint32_t value) {
+  _internal_set_row(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.MatrixFile.LayerRecord.row)
+}
+
+// .Odb.Lib.Protobuf.MatrixFile.LayerRecord.Context context = 2;
+inline void MatrixFile_LayerRecord::clear_context() {
+  _impl_.context_ = 0;
+}
+inline ::Odb::Lib::Protobuf::MatrixFile_LayerRecord_Context MatrixFile_LayerRecord::_internal_context() const {
+  return static_cast< ::Odb::Lib::Protobuf::MatrixFile_LayerRecord_Context >(_impl_.context_);
+}
+inline ::Odb::Lib::Protobuf::MatrixFile_LayerRecord_Context MatrixFile_LayerRecord::context() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.MatrixFile.LayerRecord.context)
+  return _internal_context();
+}
+inline void MatrixFile_LayerRecord::_internal_set_context(::Odb::Lib::Protobuf::MatrixFile_LayerRecord_Context value) {
+  
+  _impl_.context_ = value;
+}
+inline void MatrixFile_LayerRecord::set_context(::Odb::Lib::Protobuf::MatrixFile_LayerRecord_Context value) {
+  _internal_set_context(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.MatrixFile.LayerRecord.context)
+}
+
+// .Odb.Lib.Protobuf.MatrixFile.LayerRecord.Type type = 3;
+inline void MatrixFile_LayerRecord::clear_type() {
+  _impl_.type_ = 0;
+}
+inline ::Odb::Lib::Protobuf::MatrixFile_LayerRecord_Type MatrixFile_LayerRecord::_internal_type() const {
+  return static_cast< ::Odb::Lib::Protobuf::MatrixFile_LayerRecord_Type >(_impl_.type_);
+}
+inline ::Odb::Lib::Protobuf::MatrixFile_LayerRecord_Type MatrixFile_LayerRecord::type() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.MatrixFile.LayerRecord.type)
+  return _internal_type();
+}
+inline void MatrixFile_LayerRecord::_internal_set_type(::Odb::Lib::Protobuf::MatrixFile_LayerRecord_Type value) {
+  
+  _impl_.type_ = value;
+}
+inline void MatrixFile_LayerRecord::set_type(::Odb::Lib::Protobuf::MatrixFile_LayerRecord_Type value) {
+  _internal_set_type(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.MatrixFile.LayerRecord.type)
+}
+
+// string name = 4;
+inline void MatrixFile_LayerRecord::clear_name() {
+  _impl_.name_.ClearToEmpty();
+}
+inline const std::string& MatrixFile_LayerRecord::name() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.MatrixFile.LayerRecord.name)
+  return _internal_name();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void MatrixFile_LayerRecord::set_name(ArgT0&& arg0, ArgT... args) {
+ 
+ _impl_.name_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.MatrixFile.LayerRecord.name)
+}
+inline std::string* MatrixFile_LayerRecord::mutable_name() {
+  std::string* _s = _internal_mutable_name();
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.MatrixFile.LayerRecord.name)
+  return _s;
+}
+inline const std::string& MatrixFile_LayerRecord::_internal_name() const {
+  return _impl_.name_.Get();
+}
+inline void MatrixFile_LayerRecord::_internal_set_name(const std::string& value) {
+  
+  _impl_.name_.Set(value, GetArenaForAllocation());
+}
+inline std::string* MatrixFile_LayerRecord::_internal_mutable_name() {
+  
+  return _impl_.name_.Mutable(GetArenaForAllocation());
+}
+inline std::string* MatrixFile_LayerRecord::release_name() {
+  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.MatrixFile.LayerRecord.name)
+  return _impl_.name_.Release();
+}
+inline void MatrixFile_LayerRecord::set_allocated_name(std::string* name) {
+  if (name != nullptr) {
+    
+  } else {
+    
+  }
+  _impl_.name_.SetAllocated(name, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.name_.IsDefault()) {
+    _impl_.name_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.MatrixFile.LayerRecord.name)
+}
+
+// .Odb.Lib.Protobuf.Polarity polarity = 5;
+inline void MatrixFile_LayerRecord::clear_polarity() {
+  _impl_.polarity_ = 0;
+}
+inline ::Odb::Lib::Protobuf::Polarity MatrixFile_LayerRecord::_internal_polarity() const {
+  return static_cast< ::Odb::Lib::Protobuf::Polarity >(_impl_.polarity_);
+}
+inline ::Odb::Lib::Protobuf::Polarity MatrixFile_LayerRecord::polarity() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.MatrixFile.LayerRecord.polarity)
+  return _internal_polarity();
+}
+inline void MatrixFile_LayerRecord::_internal_set_polarity(::Odb::Lib::Protobuf::Polarity value) {
+  
+  _impl_.polarity_ = value;
+}
+inline void MatrixFile_LayerRecord::set_polarity(::Odb::Lib::Protobuf::Polarity value) {
+  _internal_set_polarity(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.MatrixFile.LayerRecord.polarity)
+}
+
+// .Odb.Lib.Protobuf.MatrixFile.LayerRecord.DielectricType dielectricType = 6;
+inline void MatrixFile_LayerRecord::clear_dielectrictype() {
+  _impl_.dielectrictype_ = 0;
+}
+inline ::Odb::Lib::Protobuf::MatrixFile_LayerRecord_DielectricType MatrixFile_LayerRecord::_internal_dielectrictype() const {
+  return static_cast< ::Odb::Lib::Protobuf::MatrixFile_LayerRecord_DielectricType >(_impl_.dielectrictype_);
+}
+inline ::Odb::Lib::Protobuf::MatrixFile_LayerRecord_DielectricType MatrixFile_LayerRecord::dielectrictype() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.MatrixFile.LayerRecord.dielectricType)
+  return _internal_dielectrictype();
+}
+inline void MatrixFile_LayerRecord::_internal_set_dielectrictype(::Odb::Lib::Protobuf::MatrixFile_LayerRecord_DielectricType value) {
+  
+  _impl_.dielectrictype_ = value;
+}
+inline void MatrixFile_LayerRecord::set_dielectrictype(::Odb::Lib::Protobuf::MatrixFile_LayerRecord_DielectricType value) {
+  _internal_set_dielectrictype(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.MatrixFile.LayerRecord.dielectricType)
+}
+
+// string dielectricName = 7;
+inline void MatrixFile_LayerRecord::clear_dielectricname() {
+  _impl_.dielectricname_.ClearToEmpty();
+}
+inline const std::string& MatrixFile_LayerRecord::dielectricname() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.MatrixFile.LayerRecord.dielectricName)
+  return _internal_dielectricname();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void MatrixFile_LayerRecord::set_dielectricname(ArgT0&& arg0, ArgT... args) {
+ 
+ _impl_.dielectricname_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.MatrixFile.LayerRecord.dielectricName)
+}
+inline std::string* MatrixFile_LayerRecord::mutable_dielectricname() {
+  std::string* _s = _internal_mutable_dielectricname();
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.MatrixFile.LayerRecord.dielectricName)
+  return _s;
+}
+inline const std::string& MatrixFile_LayerRecord::_internal_dielectricname() const {
+  return _impl_.dielectricname_.Get();
+}
+inline void MatrixFile_LayerRecord::_internal_set_dielectricname(const std::string& value) {
+  
+  _impl_.dielectricname_.Set(value, GetArenaForAllocation());
+}
+inline std::string* MatrixFile_LayerRecord::_internal_mutable_dielectricname() {
+  
+  return _impl_.dielectricname_.Mutable(GetArenaForAllocation());
+}
+inline std::string* MatrixFile_LayerRecord::release_dielectricname() {
+  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.MatrixFile.LayerRecord.dielectricName)
+  return _impl_.dielectricname_.Release();
+}
+inline void MatrixFile_LayerRecord::set_allocated_dielectricname(std::string* dielectricname) {
+  if (dielectricname != nullptr) {
+    
+  } else {
+    
+  }
+  _impl_.dielectricname_.SetAllocated(dielectricname, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.dielectricname_.IsDefault()) {
+    _impl_.dielectricname_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.MatrixFile.LayerRecord.dielectricName)
+}
+
+// .Odb.Lib.Protobuf.MatrixFile.LayerRecord.Form form = 8;
+inline void MatrixFile_LayerRecord::clear_form() {
+  _impl_.form_ = 0;
+}
+inline ::Odb::Lib::Protobuf::MatrixFile_LayerRecord_Form MatrixFile_LayerRecord::_internal_form() const {
+  return static_cast< ::Odb::Lib::Protobuf::MatrixFile_LayerRecord_Form >(_impl_.form_);
+}
+inline ::Odb::Lib::Protobuf::MatrixFile_LayerRecord_Form MatrixFile_LayerRecord::form() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.MatrixFile.LayerRecord.form)
+  return _internal_form();
+}
+inline void MatrixFile_LayerRecord::_internal_set_form(::Odb::Lib::Protobuf::MatrixFile_LayerRecord_Form value) {
+  
+  _impl_.form_ = value;
+}
+inline void MatrixFile_LayerRecord::set_form(::Odb::Lib::Protobuf::MatrixFile_LayerRecord_Form value) {
+  _internal_set_form(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.MatrixFile.LayerRecord.form)
+}
+
+// uint32 cuTop = 9;
+inline void MatrixFile_LayerRecord::clear_cutop() {
+  _impl_.cutop_ = 0u;
+}
+inline uint32_t MatrixFile_LayerRecord::_internal_cutop() const {
+  return _impl_.cutop_;
+}
+inline uint32_t MatrixFile_LayerRecord::cutop() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.MatrixFile.LayerRecord.cuTop)
+  return _internal_cutop();
+}
+inline void MatrixFile_LayerRecord::_internal_set_cutop(uint32_t value) {
+  
+  _impl_.cutop_ = value;
+}
+inline void MatrixFile_LayerRecord::set_cutop(uint32_t value) {
+  _internal_set_cutop(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.MatrixFile.LayerRecord.cuTop)
+}
+
+// uint32 cuBottom = 10;
+inline void MatrixFile_LayerRecord::clear_cubottom() {
+  _impl_.cubottom_ = 0u;
+}
+inline uint32_t MatrixFile_LayerRecord::_internal_cubottom() const {
+  return _impl_.cubottom_;
+}
+inline uint32_t MatrixFile_LayerRecord::cubottom() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.MatrixFile.LayerRecord.cuBottom)
+  return _internal_cubottom();
+}
+inline void MatrixFile_LayerRecord::_internal_set_cubottom(uint32_t value) {
+  
+  _impl_.cubottom_ = value;
+}
+inline void MatrixFile_LayerRecord::set_cubottom(uint32_t value) {
+  _internal_set_cubottom(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.MatrixFile.LayerRecord.cuBottom)
+}
+
+// uint32 ref = 11;
+inline void MatrixFile_LayerRecord::clear_ref() {
+  _impl_.ref_ = 0u;
+}
+inline uint32_t MatrixFile_LayerRecord::_internal_ref() const {
+  return _impl_.ref_;
+}
+inline uint32_t MatrixFile_LayerRecord::ref() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.MatrixFile.LayerRecord.ref)
+  return _internal_ref();
+}
+inline void MatrixFile_LayerRecord::_internal_set_ref(uint32_t value) {
+  
+  _impl_.ref_ = value;
+}
+inline void MatrixFile_LayerRecord::set_ref(uint32_t value) {
+  _internal_set_ref(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.MatrixFile.LayerRecord.ref)
+}
+
+// string startName = 12;
+inline void MatrixFile_LayerRecord::clear_startname() {
+  _impl_.startname_.ClearToEmpty();
+}
+inline const std::string& MatrixFile_LayerRecord::startname() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.MatrixFile.LayerRecord.startName)
+  return _internal_startname();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void MatrixFile_LayerRecord::set_startname(ArgT0&& arg0, ArgT... args) {
+ 
+ _impl_.startname_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.MatrixFile.LayerRecord.startName)
+}
+inline std::string* MatrixFile_LayerRecord::mutable_startname() {
+  std::string* _s = _internal_mutable_startname();
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.MatrixFile.LayerRecord.startName)
+  return _s;
+}
+inline const std::string& MatrixFile_LayerRecord::_internal_startname() const {
+  return _impl_.startname_.Get();
+}
+inline void MatrixFile_LayerRecord::_internal_set_startname(const std::string& value) {
+  
+  _impl_.startname_.Set(value, GetArenaForAllocation());
+}
+inline std::string* MatrixFile_LayerRecord::_internal_mutable_startname() {
+  
+  return _impl_.startname_.Mutable(GetArenaForAllocation());
+}
+inline std::string* MatrixFile_LayerRecord::release_startname() {
+  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.MatrixFile.LayerRecord.startName)
+  return _impl_.startname_.Release();
+}
+inline void MatrixFile_LayerRecord::set_allocated_startname(std::string* startname) {
+  if (startname != nullptr) {
+    
+  } else {
+    
+  }
+  _impl_.startname_.SetAllocated(startname, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.startname_.IsDefault()) {
+    _impl_.startname_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.MatrixFile.LayerRecord.startName)
+}
+
+// string endName = 13;
+inline void MatrixFile_LayerRecord::clear_endname() {
+  _impl_.endname_.ClearToEmpty();
+}
+inline const std::string& MatrixFile_LayerRecord::endname() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.MatrixFile.LayerRecord.endName)
+  return _internal_endname();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void MatrixFile_LayerRecord::set_endname(ArgT0&& arg0, ArgT... args) {
+ 
+ _impl_.endname_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.MatrixFile.LayerRecord.endName)
+}
+inline std::string* MatrixFile_LayerRecord::mutable_endname() {
+  std::string* _s = _internal_mutable_endname();
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.MatrixFile.LayerRecord.endName)
+  return _s;
+}
+inline const std::string& MatrixFile_LayerRecord::_internal_endname() const {
+  return _impl_.endname_.Get();
+}
+inline void MatrixFile_LayerRecord::_internal_set_endname(const std::string& value) {
+  
+  _impl_.endname_.Set(value, GetArenaForAllocation());
+}
+inline std::string* MatrixFile_LayerRecord::_internal_mutable_endname() {
+  
+  return _impl_.endname_.Mutable(GetArenaForAllocation());
+}
+inline std::string* MatrixFile_LayerRecord::release_endname() {
+  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.MatrixFile.LayerRecord.endName)
+  return _impl_.endname_.Release();
+}
+inline void MatrixFile_LayerRecord::set_allocated_endname(std::string* endname) {
+  if (endname != nullptr) {
+    
+  } else {
+    
+  }
+  _impl_.endname_.SetAllocated(endname, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.endname_.IsDefault()) {
+    _impl_.endname_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.MatrixFile.LayerRecord.endName)
+}
+
+// string oldName = 14;
+inline void MatrixFile_LayerRecord::clear_oldname() {
+  _impl_.oldname_.ClearToEmpty();
+}
+inline const std::string& MatrixFile_LayerRecord::oldname() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.MatrixFile.LayerRecord.oldName)
+  return _internal_oldname();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void MatrixFile_LayerRecord::set_oldname(ArgT0&& arg0, ArgT... args) {
+ 
+ _impl_.oldname_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.MatrixFile.LayerRecord.oldName)
+}
+inline std::string* MatrixFile_LayerRecord::mutable_oldname() {
+  std::string* _s = _internal_mutable_oldname();
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.MatrixFile.LayerRecord.oldName)
+  return _s;
+}
+inline const std::string& MatrixFile_LayerRecord::_internal_oldname() const {
+  return _impl_.oldname_.Get();
+}
+inline void MatrixFile_LayerRecord::_internal_set_oldname(const std::string& value) {
+  
+  _impl_.oldname_.Set(value, GetArenaForAllocation());
+}
+inline std::string* MatrixFile_LayerRecord::_internal_mutable_oldname() {
+  
+  return _impl_.oldname_.Mutable(GetArenaForAllocation());
+}
+inline std::string* MatrixFile_LayerRecord::release_oldname() {
+  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.MatrixFile.LayerRecord.oldName)
+  return _impl_.oldname_.Release();
+}
+inline void MatrixFile_LayerRecord::set_allocated_oldname(std::string* oldname) {
+  if (oldname != nullptr) {
+    
+  } else {
+    
+  }
+  _impl_.oldname_.SetAllocated(oldname, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.oldname_.IsDefault()) {
+    _impl_.oldname_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.MatrixFile.LayerRecord.oldName)
+}
+
+// string addType = 15;
+inline void MatrixFile_LayerRecord::clear_addtype() {
+  _impl_.addtype_.ClearToEmpty();
+}
+inline const std::string& MatrixFile_LayerRecord::addtype() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.MatrixFile.LayerRecord.addType)
+  return _internal_addtype();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void MatrixFile_LayerRecord::set_addtype(ArgT0&& arg0, ArgT... args) {
+ 
+ _impl_.addtype_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.MatrixFile.LayerRecord.addType)
+}
+inline std::string* MatrixFile_LayerRecord::mutable_addtype() {
+  std::string* _s = _internal_mutable_addtype();
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.MatrixFile.LayerRecord.addType)
+  return _s;
+}
+inline const std::string& MatrixFile_LayerRecord::_internal_addtype() const {
+  return _impl_.addtype_.Get();
+}
+inline void MatrixFile_LayerRecord::_internal_set_addtype(const std::string& value) {
+  
+  _impl_.addtype_.Set(value, GetArenaForAllocation());
+}
+inline std::string* MatrixFile_LayerRecord::_internal_mutable_addtype() {
+  
+  return _impl_.addtype_.Mutable(GetArenaForAllocation());
+}
+inline std::string* MatrixFile_LayerRecord::release_addtype() {
+  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.MatrixFile.LayerRecord.addType)
+  return _impl_.addtype_.Release();
+}
+inline void MatrixFile_LayerRecord::set_allocated_addtype(std::string* addtype) {
+  if (addtype != nullptr) {
+    
+  } else {
+    
+  }
+  _impl_.addtype_.SetAllocated(addtype, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.addtype_.IsDefault()) {
+    _impl_.addtype_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.MatrixFile.LayerRecord.addType)
+}
+
+// uint32 id = 17;
+inline void MatrixFile_LayerRecord::clear_id() {
+  _impl_.id_ = 0u;
+}
+inline uint32_t MatrixFile_LayerRecord::_internal_id() const {
+  return _impl_.id_;
+}
+inline uint32_t MatrixFile_LayerRecord::id() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.MatrixFile.LayerRecord.id)
+  return _internal_id();
+}
+inline void MatrixFile_LayerRecord::_internal_set_id(uint32_t value) {
+  
+  _impl_.id_ = value;
+}
+inline void MatrixFile_LayerRecord::set_id(uint32_t value) {
+  _internal_set_id(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.MatrixFile.LayerRecord.id)
+}
+
+// -------------------------------------------------------------------
+
 // MatrixFile
+
+// repeated .Odb.Lib.Protobuf.MatrixFile.StepRecord steps = 1;
+inline int MatrixFile::_internal_steps_size() const {
+  return _impl_.steps_.size();
+}
+inline int MatrixFile::steps_size() const {
+  return _internal_steps_size();
+}
+inline void MatrixFile::clear_steps() {
+  _impl_.steps_.Clear();
+}
+inline ::Odb::Lib::Protobuf::MatrixFile_StepRecord* MatrixFile::mutable_steps(int index) {
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.MatrixFile.steps)
+  return _impl_.steps_.Mutable(index);
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::MatrixFile_StepRecord >*
+MatrixFile::mutable_steps() {
+  // @@protoc_insertion_point(field_mutable_list:Odb.Lib.Protobuf.MatrixFile.steps)
+  return &_impl_.steps_;
+}
+inline const ::Odb::Lib::Protobuf::MatrixFile_StepRecord& MatrixFile::_internal_steps(int index) const {
+  return _impl_.steps_.Get(index);
+}
+inline const ::Odb::Lib::Protobuf::MatrixFile_StepRecord& MatrixFile::steps(int index) const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.MatrixFile.steps)
+  return _internal_steps(index);
+}
+inline ::Odb::Lib::Protobuf::MatrixFile_StepRecord* MatrixFile::_internal_add_steps() {
+  return _impl_.steps_.Add();
+}
+inline ::Odb::Lib::Protobuf::MatrixFile_StepRecord* MatrixFile::add_steps() {
+  ::Odb::Lib::Protobuf::MatrixFile_StepRecord* _add = _internal_add_steps();
+  // @@protoc_insertion_point(field_add:Odb.Lib.Protobuf.MatrixFile.steps)
+  return _add;
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::MatrixFile_StepRecord >&
+MatrixFile::steps() const {
+  // @@protoc_insertion_point(field_list:Odb.Lib.Protobuf.MatrixFile.steps)
+  return _impl_.steps_;
+}
+
+// repeated .Odb.Lib.Protobuf.MatrixFile.LayerRecord layers = 2;
+inline int MatrixFile::_internal_layers_size() const {
+  return _impl_.layers_.size();
+}
+inline int MatrixFile::layers_size() const {
+  return _internal_layers_size();
+}
+inline void MatrixFile::clear_layers() {
+  _impl_.layers_.Clear();
+}
+inline ::Odb::Lib::Protobuf::MatrixFile_LayerRecord* MatrixFile::mutable_layers(int index) {
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.MatrixFile.layers)
+  return _impl_.layers_.Mutable(index);
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::MatrixFile_LayerRecord >*
+MatrixFile::mutable_layers() {
+  // @@protoc_insertion_point(field_mutable_list:Odb.Lib.Protobuf.MatrixFile.layers)
+  return &_impl_.layers_;
+}
+inline const ::Odb::Lib::Protobuf::MatrixFile_LayerRecord& MatrixFile::_internal_layers(int index) const {
+  return _impl_.layers_.Get(index);
+}
+inline const ::Odb::Lib::Protobuf::MatrixFile_LayerRecord& MatrixFile::layers(int index) const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.MatrixFile.layers)
+  return _internal_layers(index);
+}
+inline ::Odb::Lib::Protobuf::MatrixFile_LayerRecord* MatrixFile::_internal_add_layers() {
+  return _impl_.layers_.Add();
+}
+inline ::Odb::Lib::Protobuf::MatrixFile_LayerRecord* MatrixFile::add_layers() {
+  ::Odb::Lib::Protobuf::MatrixFile_LayerRecord* _add = _internal_add_layers();
+  // @@protoc_insertion_point(field_add:Odb.Lib.Protobuf.MatrixFile.layers)
+  return _add;
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::MatrixFile_LayerRecord >&
+MatrixFile::layers() const {
+  // @@protoc_insertion_point(field_list:Odb.Lib.Protobuf.MatrixFile.layers)
+  return _impl_.layers_;
+}
 
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 
 // @@protoc_insertion_point(namespace_scope)
 
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
+
+PROTOBUF_NAMESPACE_OPEN
+
+template <> struct is_proto_enum< ::Odb::Lib::Protobuf::MatrixFile_LayerRecord_Type> : ::std::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::Odb::Lib::Protobuf::MatrixFile_LayerRecord_Type>() {
+  return ::Odb::Lib::Protobuf::MatrixFile_LayerRecord_Type_descriptor();
+}
+template <> struct is_proto_enum< ::Odb::Lib::Protobuf::MatrixFile_LayerRecord_Context> : ::std::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::Odb::Lib::Protobuf::MatrixFile_LayerRecord_Context>() {
+  return ::Odb::Lib::Protobuf::MatrixFile_LayerRecord_Context_descriptor();
+}
+template <> struct is_proto_enum< ::Odb::Lib::Protobuf::MatrixFile_LayerRecord_DielectricType> : ::std::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::Odb::Lib::Protobuf::MatrixFile_LayerRecord_DielectricType>() {
+  return ::Odb::Lib::Protobuf::MatrixFile_LayerRecord_DielectricType_descriptor();
+}
+template <> struct is_proto_enum< ::Odb::Lib::Protobuf::MatrixFile_LayerRecord_Form> : ::std::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::Odb::Lib::Protobuf::MatrixFile_LayerRecord_Form>() {
+  return ::Odb::Lib::Protobuf::MatrixFile_LayerRecord_Form_descriptor();
+}
+
+PROTOBUF_NAMESPACE_CLOSE
 
 // @@protoc_insertion_point(global_scope)
 

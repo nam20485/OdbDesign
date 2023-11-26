@@ -1,9 +1,11 @@
 #include "StepDirectory.h"
+#include "StepDirectory.h"
+#include "StepDirectory.h"
 #include <filesystem>
 #include "LayerDirectory.h"
-#include "ComponentLayerDirectory.h"
 #include <fstream>
 #include <sstream>
+#include "Logger.h"
 
 
 namespace Odb::Lib::FileModel::Design
@@ -39,6 +41,8 @@ namespace Odb::Lib::FileModel::Design
 
         m_name = std::filesystem::path(m_path).filename().string();
 
+        loginfo("Parsing step directory: " + m_name + "...");
+
         auto layersPath = m_path / "layers";
         if (!ParseLayerFiles(layersPath)) return false;
 
@@ -48,11 +52,15 @@ namespace Odb::Lib::FileModel::Design
         auto edaPath = m_path / "eda";
         if (!ParseEdaDataFiles(edaPath)) return false;
 
+        loginfo("Parsing step directory: " + m_name + " complete");
+
         return true;
     }
 
     bool StepDirectory::ParseLayerFiles(std::filesystem::path layersPath)
     {
+        loginfo("Parsing layer directories...");
+
         if (!std::filesystem::exists(layersPath)) return false;
         else if (!std::filesystem::is_directory(layersPath)) return false;
 
@@ -60,24 +68,11 @@ namespace Odb::Lib::FileModel::Design
         {
             if (std::filesystem::is_directory(d))
             {
-                std::shared_ptr<LayerDirectory> pLayer;
-
-                auto layerName = d.path().filename().string();
-                if (layerName == LayerDirectory::TOP_COMPONENTS_LAYER_NAME ||
-                    layerName == LayerDirectory::BOTTOM_COMPONENTS_LAYER_NAME)
-                {
-                    auto boardSide = layerName == LayerDirectory::TOP_COMPONENTS_LAYER_NAME ?
-                        BoardSide::Top :
-                        BoardSide::Bottom;
-                    pLayer = std::make_shared<ComponentLayerDirectory>(d.path(), boardSide);
-                }
-                else
-                {
-                    pLayer = std::make_shared<LayerDirectory>(d.path());
-                }
-
+                auto pLayer = std::make_shared<LayerDirectory>(d.path());               
                 if (pLayer->Parse())
                 {
+                    loginfo("Parsing layer: " + pLayer->GetName() + " complete");
+
                     m_layersByName[pLayer->GetName()] = pLayer;
                 }
                 else
@@ -87,45 +82,96 @@ namespace Odb::Lib::FileModel::Design
             }
         }
 
+        loginfo("Parsing layer directories complete");
+
         return true;
     }
 
     bool StepDirectory::ParseEdaDataFiles(std::filesystem::path edaPath)
     {
+        loginfo("Parsing eda/data file...");
+
         if (!std::filesystem::exists(edaPath)) return false;
         else if (!std::filesystem::is_directory(edaPath)) return false;
 
         // parse nets and packages definitions      
-        return m_edaData.Parse(edaPath);
+        auto success =  m_edaData.Parse(edaPath);
+
+        loginfo("Parsing eda/data file complete");
+
+        return success;
+    }
+
+    std::unique_ptr<Odb::Lib::Protobuf::StepDirectory> StepDirectory::to_protobuf() const
+    {
+        std::unique_ptr<Odb::Lib::Protobuf::StepDirectory> pStepDirectoryMessage(new Odb::Lib::Protobuf::StepDirectory);
+        pStepDirectoryMessage->set_name(m_name);
+        pStepDirectoryMessage->set_path(m_path.string());
+        pStepDirectoryMessage->mutable_edadatafile()->CopyFrom(*m_edaData.to_protobuf());
+
+        // TODO: netlistfiles
+        //m_netlistsByName
+
+        // TODO: layer directories
+        //m_layersByName
+        
+        return pStepDirectoryMessage;
+    }
+
+    void StepDirectory::from_protobuf(const Odb::Lib::Protobuf::StepDirectory& message)
+    {
     }
 
     bool StepDirectory::ParseNetlistFiles(std::filesystem::path netlistsPath)
     {
-        if (!std::filesystem::exists(netlistsPath)) return false;
-        else if (!std::filesystem::is_directory(netlistsPath)) return false;
+        loginfo("Parsing netlist files...");
 
-        // parse net name records
-        for (auto& d : std::filesystem::directory_iterator(netlistsPath))
+        std::size_t netListDirectoriesFound = 0;
+
+        if (std::filesystem::exists(netlistsPath))
         {
-            if (std::filesystem::is_directory(d))
-            {
-                auto pNetlist = std::make_shared<NetlistFile>(d.path());
-                if (pNetlist->Parse())
+            if (std::filesystem::is_directory(netlistsPath))
+            {                
+                // parse net name records
+                for (auto& d : std::filesystem::directory_iterator(netlistsPath))
                 {
-                    m_netlistsByName[pNetlist->GetName()] = pNetlist;
+                    if (std::filesystem::is_directory(d))
+                    {
+                        netListDirectoriesFound++;
+
+                        auto pNetlist = std::make_shared<NetlistFile>(d.path());
+                        if (pNetlist->Parse())
+                        {
+                            m_netlistsByName[pNetlist->GetName()] = pNetlist;
+                        }
+                        else
+                        {
+                            // pNetList will be freed when exiting the above scope
+                            logerror("Failed to parse netlist directory: " + pNetlist->GetName());
+                        }
+                    }
                 }
             }
         }
+       
+        if (netListDirectoriesFound == 0)   // netlist dirs found, but none parsed successfully
+        {      
+            logwarn("No netlist directories found");
+        }
+        else if (netListDirectoriesFound == m_netlistsByName.size())
+        {
+			loginfo("netlist directories parsed successfully");
+		}
 
         return true;
     }
 
-    std::shared_ptr<ComponentLayerDirectory> StepDirectory::GetTopComponentLayerDir() const
+    const ComponentsFile* StepDirectory::GetTopComponentsFile() const
     {
-        auto findIt = m_layersByName.find(LayerDirectory::TOP_COMPONENTS_LAYER_NAME);
+        auto findIt = m_layersByName.find(ComponentsFile::TOP_COMPONENTS_LAYER_NAME);
         if (findIt != m_layersByName.end())
         {
-			return std::dynamic_pointer_cast<ComponentLayerDirectory>(findIt->second);
+            return &(findIt->second->GetComponentsFile());
 		}
         else
         {
@@ -133,12 +179,12 @@ namespace Odb::Lib::FileModel::Design
 		}
     }
 
-    std::shared_ptr<ComponentLayerDirectory> StepDirectory::GetBottomComponentLayerDir() const
+    const ComponentsFile* StepDirectory::GetBottomComponentsFile() const
     {
-        auto findIt = m_layersByName.find(LayerDirectory::BOTTOM_COMPONENTS_LAYER_NAME);
+        auto findIt = m_layersByName.find(ComponentsFile::BOTTOM_COMPONENTS_LAYER_NAME);
         if (findIt != m_layersByName.end())
         {
-            return std::dynamic_pointer_cast<ComponentLayerDirectory>(findIt->second);
+            return &(findIt->second->GetComponentsFile());
         }
         else
         {

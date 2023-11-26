@@ -7,9 +7,9 @@ name: Docker Scout Scan
 
 on:
   push:
-    branches: [ "development", "main", "release" ]
+    branches: [ "development", "main", "release", "nam20485" ]
   pull_request:
-    branches: [ "development", "main", "release" ]
+    branches: [ "development", "main", "release", "nam20485" ]
    
 env:
   # Use docker.io for Docker Hub if empty
@@ -37,6 +37,9 @@ jobs:
       id-token: write
       pull-requests: write
       security-events: write
+
+    # don't run on PRs into development from branches that aren't nam20485 (i.e. dependabot PRs)
+    if: github.event_name != 'pull_request' || github.base_ref != 'development' || github.head_ref == 'nam20485'
 
     steps:
       - name: Checkout repository
@@ -70,8 +73,7 @@ jobs:
 
       # Login against Docker Hub to allow running Docker Scout
       # https://github.com/docker/login-action
-      - name: Log into Docker Hub registry
-        # if: github.event_name != 'pull_request'
+      - name: Log into Docker Hub registry        
         uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d
         with:          
           username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -92,7 +94,7 @@ jobs:
       # https://github.com/docker/build-push-action
       - name: Build and push Docker image
         id: build-and-push
-        uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09
+        uses: docker/build-push-action@4a13e500e55cf31b7a5d59a38ab2040ab0f42f56
         with:
           context: .          
           push: false
@@ -126,7 +128,7 @@ jobs:
       - name: Analyze for critical and high CVEs
         id: docker-scout-cves       
         # if: ${{ github.event_name != 'pull_request_target' }} 
-        uses: docker/scout-action@4e9ac4df44fb56797da111fce8185f7fbffd5a09 # v1.0.9
+        uses: docker/scout-action@704685e6e6dc4462258fb11d36d3a14ca7bda1e6 # v1.1.0
         with:
           command: cves,recommendations
           image: ${{ steps.meta.outputs.tags }}
@@ -136,14 +138,14 @@ jobs:
         
       - name: Upload SARIF result
         id: upload-sarif
-        uses: github/codeql-action/upload-sarif@74483a38d39275f33fcff5f35b679b5ca4a26a99 # v2.22.5
+        uses: github/codeql-action/upload-sarif@66b90a5db151a8042fa97405c6cf843bbe433f7b # v2.22.7
         with:
           sarif_file: sarif.output.json
       
       - name: Docker Scout Compare to Latest
         id: docker-scout
         if: ${{ github.event_name == 'pull_request' }}
-        uses: docker/scout-action@4e9ac4df44fb56797da111fce8185f7fbffd5a09 # v1.0.9
+        uses: docker/scout-action@704685e6e6dc4462258fb11d36d3a14ca7bda1e6 # v1.1.0
         with:
           command: compare
           image: ${{ steps.meta.outputs.tags }}

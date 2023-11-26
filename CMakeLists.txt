@@ -14,7 +14,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # required for SWIG python wrapper
 #set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
+#
 # GoogleTest support
+#
 include(FetchContent)
 FetchContent_Declare(
   googletest
@@ -70,8 +72,6 @@ add_subdirectory("OdbDesignTests")
 #
 # Doxygen
 #
-
-# look for Doxygen package
 find_package(Doxygen)
 
 if (DOXYGEN_FOUND)

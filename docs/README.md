@@ -45,34 +45,45 @@ The diagram describes the current state of parser implementation and data availa
 
 ### CI/CD Build
 
+#### OpenSSF Security Scorecard
+
+[OpenSSF Security Scorecard](https://securityscorecards.dev/#what-is-openssf-scorecard) assesses open source projects for security risks through a series of automated checks.
+
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/nam20485/OdbDesign/badge)](https://securityscorecards.dev/viewer/?uri=github.com/nam20485/OdbDesign)
+
+>90% of tested projects have a score of less than 4.0/10, so OdbDesign's 7.2 score represents a remarkably high level of security.
+
 #### Branches
 
 #### `development`
 
-| Step               | Status  |
-|--------------------|---------|
+| Step                        | Status  |
+|-----------------------------|---------|
 | Build              | [![CMake Build Multi-Platform](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml) |
-| Security Code Scan | [![CodeQL Security Scan](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml) |
-| Docker Image       | [![Docker Publish](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml) |
+| Docker Image                | [![Docker Publish](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml) |
+| Security Code Scan          | [![CodeQL Security Scan](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml) |
 | Docker Security Scan        | [![Docker Scout Scan](https://github.com/nam20485/OdbDesign/actions/workflows/docker-scout-scan.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-scout-scan.yml) |
+| Dependency Review Scan      | [![Dependency Review](https://github.com/nam20485/OdbDesign/actions/workflows/dependency-review.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/dependency-review.yml) |
 
 #### `main`
 
-| Step               | Status   |
-|--------------------|----------|
-| Build              | [![CMake Build Multi-Platform](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml) |
-| Security Code Scan | [![CodeQL Security Scan](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml) |
-| Docker Image       | [![Docker Publish](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml) |
+| Step                        | Status   |
+|-----------------------------|----------|
+| Build                       | [![CMake Build Multi-Platform](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml) |
+| Docker Image                | [![Docker Publish](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml) |
+| Security Code Scan          | [![CodeQL Security Scan](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml) |
 | Docker Security Scan        | [![Docker Scout Scan](https://github.com/nam20485/OdbDesign/actions/workflows/docker-scout-scan.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-scout-scan.yml) |
+| Dependency Review Scan      | [![Dependency Review](https://github.com/nam20485/OdbDesign/actions/workflows/dependency-review.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/dependency-review.yml) |
 
 #### `release`
 
-| Step               | Status   |
-|--------------------|----------|
-| Build              | [![CMake Build Multi-Platform](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml/badge.svg?branch=release)](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml) |
-| Security Code Scan | [![CodeQL Security Scan](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml) |
-| Docker Image       | [![Docker Publish](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml/badge.svg?branch=release)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml) |
+| Step                        | Status   |
+|-----------------------------|----------|
+| Build                       | [![CMake Build Multi-Platform](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml/badge.svg?branch=release)](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml) |
+| Docker Image                | [![Docker Publish](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml/badge.svg?branch=release)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml) |
+| Security Code Scan          | [![CodeQL Security Scan](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml) |
 | Docker Security Scan        | [![Docker Scout Scan](https://github.com/nam20485/OdbDesign/actions/workflows/docker-scout-scan.yml/badge.svg?branch=release)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-scout-scan.yml) |
+| Dependency Review Scan      | [![Dependency Review](https://github.com/nam20485/OdbDesign/actions/workflows/dependency-review.yml/badge.svg?branch=release)](https://github.com/nam20485/OdbDesign/actions/workflows/dependency-review.yml) |
 
 ### Architecture
 

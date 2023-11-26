@@ -2,7 +2,7 @@
 #
 
 add_library(OdbDesign SHARED 
-        "odbdesign_export.h" "FileModel/Design/ComponentLayerDirectory.cpp" "FileModel/Design/ComponentLayerDirectory.h" "FileModel/Design/EdaDataFile.cpp" "FileModel/Design/EdaDataFile.h" "FileModel/Design/LayerDirectory.cpp" "FileModel/Design/LayerDirectory.h" "FileModel/Design/NetlistFile.cpp" "FileModel/Design/NetlistFile.h" "FileModel/Design/FileArchive.cpp" "FileModel/Design/FileArchive.h" "FileModel/Design/StepDirectory.cpp" "FileModel/Design/StepDirectory.h" "ProductModel/Net.h" "ProductModel/Net.cpp" "ProductModel/Component.h" "ProductModel/Component.cpp" "ProductModel/Pin.h" "ProductModel/Pin.cpp" "ProductModel/PinConnection.h" "ProductModel/PinConnection.cpp" "ProductModel/Package.h" "ProductModel/Package.cpp" "ProductModel/Part.h" "ProductModel/Part.cpp" "ProductModel/Via.h" "ProductModel/Via.cpp" "ProductModel/Design.h" "ProductModel/Design.cpp"  "OdbDesign.h" "App/DesignCache.h" "App/DesignCache.cpp"   "win.h" "IProtoBuffable.h" "crow_win.h" "FileModel/OdbFile.h" "FileModel/OdbFile.cpp"  "FileModel/OdbFileRecord.h" "FileModel/OdbFileRecord.cpp"   "App/IOdbApp.h" "App/IOdbApp.cpp" "App/OdbAppBase.h" "App/OdbAppBase.cpp" "App/RouteController.h" "App/RouteController.cpp" "App/IOdbServerApp.h" "App/OdbServerAppBase.h" "App/OdbServerAppBase.cpp" "App/IOdbServerApp.cpp"
+        "odbdesign_export.h" "FileModel/Design/ComponentsFile.cpp" "FileModel/Design/ComponentsFile.h" "FileModel/Design/EdaDataFile.cpp" "FileModel/Design/EdaDataFile.h" "FileModel/Design/LayerDirectory.cpp" "FileModel/Design/LayerDirectory.h" "FileModel/Design/NetlistFile.cpp" "FileModel/Design/NetlistFile.h" "FileModel/Design/FileArchive.cpp" "FileModel/Design/FileArchive.h" "FileModel/Design/StepDirectory.cpp" "FileModel/Design/StepDirectory.h" "ProductModel/Net.h" "ProductModel/Net.cpp" "ProductModel/Component.h" "ProductModel/Component.cpp" "ProductModel/Pin.h" "ProductModel/Pin.cpp" "ProductModel/PinConnection.h" "ProductModel/PinConnection.cpp" "ProductModel/Package.h" "ProductModel/Package.cpp" "ProductModel/Part.h" "ProductModel/Part.cpp" "ProductModel/Via.h" "ProductModel/Via.cpp" "ProductModel/Design.h" "ProductModel/Design.cpp"  "OdbDesign.h" "App/DesignCache.h" "App/DesignCache.cpp"   "win.h" "IProtoBuffable.h" "crow_win.h" "FileModel/OdbFile.h" "FileModel/OdbFile.cpp"  "FileModel/OdbFileRecord.h" "FileModel/OdbFileRecord.cpp"   "App/IOdbApp.h" "App/IOdbApp.cpp" "App/OdbAppBase.h" "App/OdbAppBase.cpp" "App/RouteController.h" "App/RouteController.cpp" "App/IOdbServerApp.h" "App/OdbServerAppBase.h" "App/OdbServerAppBase.cpp" "App/IOdbServerApp.cpp"
         FileModel/Design/MatrixFile.cpp
         FileModel/Design/MatrixFile.h
         FileModel/Design/MiscInfoFile.cpp
@@ -21,7 +21,8 @@ add_library(OdbDesign SHARED
         "ProtoBuf/miscinfofile.pb.h" "ProtoBuf/miscinfofile.pb.cc"
         "ProtoBuf/standardfontsfile.pb.h" "ProtoBuf/standardfontsfile.pb.cc"
         "ProtoBuf/stepdirectory.pb.h" "ProtoBuf/stepdirectory.pb.cc"
-)
+        "ProtoBuf/enums.pb.h" "ProtoBuf/enums.pb.cc"
+   "FileModel/parse_error.h"    "FileModel/parse_info.h" "FileModel/parse_info.cpp" "FileModel/parse_error.cpp" "FileModel/invalid_odb_error.h" "FileModel/invalid_odb_error.cpp" "ProtoBuf/common.pb.h" "ProtoBuf/common.pb.cc" "ProtoBuf/componentsfile.pb.h" "ProtoBuf/componentsfile.pb.cc" "FileModel/Design/PropertyRecord.h" "FileModel/Design/PropertyRecord.cpp")
 
 # disable warning C4250: inheritance by dominance
 target_compile_options(OdbDesign PUBLIC

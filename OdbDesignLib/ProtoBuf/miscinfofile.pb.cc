@@ -24,7 +24,20 @@ namespace Odb {
 namespace Lib {
 namespace Protobuf {
 PROTOBUF_CONSTEXPR MiscInfoFile::MiscInfoFile(
-    ::_pbi::ConstantInitialized) {}
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_._has_bits_)*/{}
+  , /*decltype(_impl_._cached_size_)*/{}
+  , /*decltype(_impl_.productmodelname_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.jobname_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.odbversionmajor_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.odbversionminor_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.odbsource_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.saveapp_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.saveuser_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.units_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.creationdatedate_)*/nullptr
+  , /*decltype(_impl_.savedate_)*/nullptr
+  , /*decltype(_impl_.maxuniqueid_)*/0u} {}
 struct MiscInfoFileDefaultTypeInternal {
   PROTOBUF_CONSTEXPR MiscInfoFileDefaultTypeInternal()
       : _instance(::_pbi::ConstantInitialized{}) {}
@@ -42,15 +55,37 @@ static constexpr ::_pb::EnumDescriptor const** file_level_enum_descriptors_misci
 static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_miscinfofile_2eproto = nullptr;
 
 const uint32_t TableStruct_miscinfofile_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::MiscInfoFile, _impl_._has_bits_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::MiscInfoFile, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::MiscInfoFile, _impl_.productmodelname_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::MiscInfoFile, _impl_.jobname_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::MiscInfoFile, _impl_.odbversionmajor_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::MiscInfoFile, _impl_.odbversionminor_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::MiscInfoFile, _impl_.odbsource_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::MiscInfoFile, _impl_.creationdatedate_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::MiscInfoFile, _impl_.savedate_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::MiscInfoFile, _impl_.saveapp_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::MiscInfoFile, _impl_.saveuser_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::MiscInfoFile, _impl_.units_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::MiscInfoFile, _impl_.maxuniqueid_),
+  0,
+  1,
+  2,
+  3,
+  4,
+  8,
+  9,
+  5,
+  6,
+  7,
+  10,
 };
 static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  { 0, -1, -1, sizeof(::Odb::Lib::Protobuf::MiscInfoFile)},
+  { 0, 17, -1, sizeof(::Odb::Lib::Protobuf::MiscInfoFile)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
@@ -58,14 +93,31 @@ static const ::_pb::Message* const file_default_instances[] = {
 };
 
 const char descriptor_table_protodef_miscinfofile_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
-  "\n\022miscinfofile.proto\022\020Odb.Lib.Protobuf\"\016"
-  "\n\014MiscInfoFileb\006proto3"
+  "\n\022miscinfofile.proto\022\020Odb.Lib.Protobuf\032\037"
+  "google/protobuf/timestamp.proto\"\214\004\n\014Misc"
+  "InfoFile\022\035\n\020productModelName\030\001 \001(\tH\000\210\001\001\022"
+  "\024\n\007jobName\030\002 \001(\tH\001\210\001\001\022\034\n\017odbVersionMajor"
+  "\030\003 \001(\tH\002\210\001\001\022\034\n\017odbVersionMinor\030\004 \001(\tH\003\210\001"
+  "\001\022\026\n\todbSource\030\005 \001(\tH\004\210\001\001\0229\n\020creationDat"
+  "eDate\030\006 \001(\0132\032.google.protobuf.TimestampH"
+  "\005\210\001\001\0221\n\010saveDate\030\007 \001(\0132\032.google.protobuf"
+  ".TimestampH\006\210\001\001\022\024\n\007saveApp\030\010 \001(\tH\007\210\001\001\022\025\n"
+  "\010saveUser\030\t \001(\tH\010\210\001\001\022\022\n\005units\030\n \001(\tH\t\210\001\001"
+  "\022\030\n\013maxUniqueId\030\013 \001(\rH\n\210\001\001B\023\n\021_productMo"
+  "delNameB\n\n\010_jobNameB\022\n\020_odbVersionMajorB"
+  "\022\n\020_odbVersionMinorB\014\n\n_odbSourceB\023\n\021_cr"
+  "eationDateDateB\013\n\t_saveDateB\n\n\010_saveAppB"
+  "\013\n\t_saveUserB\010\n\006_unitsB\016\n\014_maxUniqueIdb\006"
+  "proto3"
   ;
+static const ::_pbi::DescriptorTable* const descriptor_table_miscinfofile_2eproto_deps[1] = {
+  &::descriptor_table_google_2fprotobuf_2ftimestamp_2eproto,
+};
 static ::_pbi::once_flag descriptor_table_miscinfofile_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_miscinfofile_2eproto = {
-    false, false, 62, descriptor_table_protodef_miscinfofile_2eproto,
+    false, false, 606, descriptor_table_protodef_miscinfofile_2eproto,
     "miscinfofile.proto",
-    &descriptor_table_miscinfofile_2eproto_once, nullptr, 0, 1,
+    &descriptor_table_miscinfofile_2eproto_once, descriptor_table_miscinfofile_2eproto_deps, 1, 1,
     schemas, file_default_instances, TableStruct_miscinfofile_2eproto::offsets,
     file_level_metadata_miscinfofile_2eproto, file_level_enum_descriptors_miscinfofile_2eproto,
     file_level_service_descriptors_miscinfofile_2eproto,
@@ -84,35 +136,743 @@ namespace Protobuf {
 
 class MiscInfoFile::_Internal {
  public:
+  using HasBits = decltype(std::declval<MiscInfoFile>()._impl_._has_bits_);
+  static void set_has_productmodelname(HasBits* has_bits) {
+    (*has_bits)[0] |= 1u;
+  }
+  static void set_has_jobname(HasBits* has_bits) {
+    (*has_bits)[0] |= 2u;
+  }
+  static void set_has_odbversionmajor(HasBits* has_bits) {
+    (*has_bits)[0] |= 4u;
+  }
+  static void set_has_odbversionminor(HasBits* has_bits) {
+    (*has_bits)[0] |= 8u;
+  }
+  static void set_has_odbsource(HasBits* has_bits) {
+    (*has_bits)[0] |= 16u;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Timestamp& creationdatedate(const MiscInfoFile* msg);
+  static void set_has_creationdatedate(HasBits* has_bits) {
+    (*has_bits)[0] |= 256u;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Timestamp& savedate(const MiscInfoFile* msg);
+  static void set_has_savedate(HasBits* has_bits) {
+    (*has_bits)[0] |= 512u;
+  }
+  static void set_has_saveapp(HasBits* has_bits) {
+    (*has_bits)[0] |= 32u;
+  }
+  static void set_has_saveuser(HasBits* has_bits) {
+    (*has_bits)[0] |= 64u;
+  }
+  static void set_has_units(HasBits* has_bits) {
+    (*has_bits)[0] |= 128u;
+  }
+  static void set_has_maxuniqueid(HasBits* has_bits) {
+    (*has_bits)[0] |= 1024u;
+  }
 };
 
+const ::PROTOBUF_NAMESPACE_ID::Timestamp&
+MiscInfoFile::_Internal::creationdatedate(const MiscInfoFile* msg) {
+  return *msg->_impl_.creationdatedate_;
+}
+const ::PROTOBUF_NAMESPACE_ID::Timestamp&
+MiscInfoFile::_Internal::savedate(const MiscInfoFile* msg) {
+  return *msg->_impl_.savedate_;
+}
+void MiscInfoFile::clear_creationdatedate() {
+  if (_impl_.creationdatedate_ != nullptr) _impl_.creationdatedate_->Clear();
+  _impl_._has_bits_[0] &= ~0x00000100u;
+}
+void MiscInfoFile::clear_savedate() {
+  if (_impl_.savedate_ != nullptr) _impl_.savedate_->Clear();
+  _impl_._has_bits_[0] &= ~0x00000200u;
+}
 MiscInfoFile::MiscInfoFile(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                          bool is_message_owned)
-  : ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase(arena, is_message_owned) {
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
   // @@protoc_insertion_point(arena_constructor:Odb.Lib.Protobuf.MiscInfoFile)
 }
 MiscInfoFile::MiscInfoFile(const MiscInfoFile& from)
-  : ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase() {
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
   MiscInfoFile* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){from._impl_._has_bits_}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.productmodelname_){}
+    , decltype(_impl_.jobname_){}
+    , decltype(_impl_.odbversionmajor_){}
+    , decltype(_impl_.odbversionminor_){}
+    , decltype(_impl_.odbsource_){}
+    , decltype(_impl_.saveapp_){}
+    , decltype(_impl_.saveuser_){}
+    , decltype(_impl_.units_){}
+    , decltype(_impl_.creationdatedate_){nullptr}
+    , decltype(_impl_.savedate_){nullptr}
+    , decltype(_impl_.maxuniqueid_){}};
+
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _impl_.productmodelname_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.productmodelname_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (from._internal_has_productmodelname()) {
+    _this->_impl_.productmodelname_.Set(from._internal_productmodelname(), 
+      _this->GetArenaForAllocation());
+  }
+  _impl_.jobname_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.jobname_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (from._internal_has_jobname()) {
+    _this->_impl_.jobname_.Set(from._internal_jobname(), 
+      _this->GetArenaForAllocation());
+  }
+  _impl_.odbversionmajor_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.odbversionmajor_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (from._internal_has_odbversionmajor()) {
+    _this->_impl_.odbversionmajor_.Set(from._internal_odbversionmajor(), 
+      _this->GetArenaForAllocation());
+  }
+  _impl_.odbversionminor_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.odbversionminor_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (from._internal_has_odbversionminor()) {
+    _this->_impl_.odbversionminor_.Set(from._internal_odbversionminor(), 
+      _this->GetArenaForAllocation());
+  }
+  _impl_.odbsource_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.odbsource_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (from._internal_has_odbsource()) {
+    _this->_impl_.odbsource_.Set(from._internal_odbsource(), 
+      _this->GetArenaForAllocation());
+  }
+  _impl_.saveapp_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.saveapp_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (from._internal_has_saveapp()) {
+    _this->_impl_.saveapp_.Set(from._internal_saveapp(), 
+      _this->GetArenaForAllocation());
+  }
+  _impl_.saveuser_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.saveuser_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (from._internal_has_saveuser()) {
+    _this->_impl_.saveuser_.Set(from._internal_saveuser(), 
+      _this->GetArenaForAllocation());
+  }
+  _impl_.units_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.units_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (from._internal_has_units()) {
+    _this->_impl_.units_.Set(from._internal_units(), 
+      _this->GetArenaForAllocation());
+  }
+  if (from._internal_has_creationdatedate()) {
+    _this->_impl_.creationdatedate_ = new ::PROTOBUF_NAMESPACE_ID::Timestamp(*from._impl_.creationdatedate_);
+  }
+  if (from._internal_has_savedate()) {
+    _this->_impl_.savedate_ = new ::PROTOBUF_NAMESPACE_ID::Timestamp(*from._impl_.savedate_);
+  }
+  _this->_impl_.maxuniqueid_ = from._impl_.maxuniqueid_;
   // @@protoc_insertion_point(copy_constructor:Odb.Lib.Protobuf.MiscInfoFile)
 }
 
+inline void MiscInfoFile::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.productmodelname_){}
+    , decltype(_impl_.jobname_){}
+    , decltype(_impl_.odbversionmajor_){}
+    , decltype(_impl_.odbversionminor_){}
+    , decltype(_impl_.odbsource_){}
+    , decltype(_impl_.saveapp_){}
+    , decltype(_impl_.saveuser_){}
+    , decltype(_impl_.units_){}
+    , decltype(_impl_.creationdatedate_){nullptr}
+    , decltype(_impl_.savedate_){nullptr}
+    , decltype(_impl_.maxuniqueid_){0u}
+  };
+  _impl_.productmodelname_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.productmodelname_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.jobname_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.jobname_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.odbversionmajor_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.odbversionmajor_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.odbversionminor_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.odbversionminor_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.odbsource_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.odbsource_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.saveapp_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.saveapp_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.saveuser_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.saveuser_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.units_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.units_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+}
 
+MiscInfoFile::~MiscInfoFile() {
+  // @@protoc_insertion_point(destructor:Odb.Lib.Protobuf.MiscInfoFile)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
 
+inline void MiscInfoFile::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  _impl_.productmodelname_.Destroy();
+  _impl_.jobname_.Destroy();
+  _impl_.odbversionmajor_.Destroy();
+  _impl_.odbversionminor_.Destroy();
+  _impl_.odbsource_.Destroy();
+  _impl_.saveapp_.Destroy();
+  _impl_.saveuser_.Destroy();
+  _impl_.units_.Destroy();
+  if (this != internal_default_instance()) delete _impl_.creationdatedate_;
+  if (this != internal_default_instance()) delete _impl_.savedate_;
+}
 
+void MiscInfoFile::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void MiscInfoFile::Clear() {
+// @@protoc_insertion_point(message_clear_start:Odb.Lib.Protobuf.MiscInfoFile)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x000000ffu) {
+    if (cached_has_bits & 0x00000001u) {
+      _impl_.productmodelname_.ClearNonDefaultToEmpty();
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _impl_.jobname_.ClearNonDefaultToEmpty();
+    }
+    if (cached_has_bits & 0x00000004u) {
+      _impl_.odbversionmajor_.ClearNonDefaultToEmpty();
+    }
+    if (cached_has_bits & 0x00000008u) {
+      _impl_.odbversionminor_.ClearNonDefaultToEmpty();
+    }
+    if (cached_has_bits & 0x00000010u) {
+      _impl_.odbsource_.ClearNonDefaultToEmpty();
+    }
+    if (cached_has_bits & 0x00000020u) {
+      _impl_.saveapp_.ClearNonDefaultToEmpty();
+    }
+    if (cached_has_bits & 0x00000040u) {
+      _impl_.saveuser_.ClearNonDefaultToEmpty();
+    }
+    if (cached_has_bits & 0x00000080u) {
+      _impl_.units_.ClearNonDefaultToEmpty();
+    }
+  }
+  if (cached_has_bits & 0x00000300u) {
+    if (cached_has_bits & 0x00000100u) {
+      GOOGLE_DCHECK(_impl_.creationdatedate_ != nullptr);
+      _impl_.creationdatedate_->Clear();
+    }
+    if (cached_has_bits & 0x00000200u) {
+      GOOGLE_DCHECK(_impl_.savedate_ != nullptr);
+      _impl_.savedate_->Clear();
+    }
+  }
+  _impl_.maxuniqueid_ = 0u;
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* MiscInfoFile::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  _Internal::HasBits has_bits{};
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // optional string productModelName = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
+          auto str = _internal_mutable_productmodelname();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "Odb.Lib.Protobuf.MiscInfoFile.productModelName"));
+        } else
+          goto handle_unusual;
+        continue;
+      // optional string jobName = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
+          auto str = _internal_mutable_jobname();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "Odb.Lib.Protobuf.MiscInfoFile.jobName"));
+        } else
+          goto handle_unusual;
+        continue;
+      // optional string odbVersionMajor = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 26)) {
+          auto str = _internal_mutable_odbversionmajor();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "Odb.Lib.Protobuf.MiscInfoFile.odbVersionMajor"));
+        } else
+          goto handle_unusual;
+        continue;
+      // optional string odbVersionMinor = 4;
+      case 4:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 34)) {
+          auto str = _internal_mutable_odbversionminor();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "Odb.Lib.Protobuf.MiscInfoFile.odbVersionMinor"));
+        } else
+          goto handle_unusual;
+        continue;
+      // optional string odbSource = 5;
+      case 5:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 42)) {
+          auto str = _internal_mutable_odbsource();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "Odb.Lib.Protobuf.MiscInfoFile.odbSource"));
+        } else
+          goto handle_unusual;
+        continue;
+      // optional .google.protobuf.Timestamp creationDateDate = 6;
+      case 6:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 50)) {
+          ptr = ctx->ParseMessage(_internal_mutable_creationdatedate(), ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional .google.protobuf.Timestamp saveDate = 7;
+      case 7:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 58)) {
+          ptr = ctx->ParseMessage(_internal_mutable_savedate(), ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional string saveApp = 8;
+      case 8:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 66)) {
+          auto str = _internal_mutable_saveapp();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "Odb.Lib.Protobuf.MiscInfoFile.saveApp"));
+        } else
+          goto handle_unusual;
+        continue;
+      // optional string saveUser = 9;
+      case 9:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 74)) {
+          auto str = _internal_mutable_saveuser();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "Odb.Lib.Protobuf.MiscInfoFile.saveUser"));
+        } else
+          goto handle_unusual;
+        continue;
+      // optional string units = 10;
+      case 10:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 82)) {
+          auto str = _internal_mutable_units();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "Odb.Lib.Protobuf.MiscInfoFile.units"));
+        } else
+          goto handle_unusual;
+        continue;
+      // optional uint32 maxUniqueId = 11;
+      case 11:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 88)) {
+          _Internal::set_has_maxuniqueid(&has_bits);
+          _impl_.maxuniqueid_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  _impl_._has_bits_.Or(has_bits);
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* MiscInfoFile::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:Odb.Lib.Protobuf.MiscInfoFile)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // optional string productModelName = 1;
+  if (_internal_has_productmodelname()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_productmodelname().data(), static_cast<int>(this->_internal_productmodelname().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "Odb.Lib.Protobuf.MiscInfoFile.productModelName");
+    target = stream->WriteStringMaybeAliased(
+        1, this->_internal_productmodelname(), target);
+  }
+
+  // optional string jobName = 2;
+  if (_internal_has_jobname()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_jobname().data(), static_cast<int>(this->_internal_jobname().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "Odb.Lib.Protobuf.MiscInfoFile.jobName");
+    target = stream->WriteStringMaybeAliased(
+        2, this->_internal_jobname(), target);
+  }
+
+  // optional string odbVersionMajor = 3;
+  if (_internal_has_odbversionmajor()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_odbversionmajor().data(), static_cast<int>(this->_internal_odbversionmajor().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "Odb.Lib.Protobuf.MiscInfoFile.odbVersionMajor");
+    target = stream->WriteStringMaybeAliased(
+        3, this->_internal_odbversionmajor(), target);
+  }
+
+  // optional string odbVersionMinor = 4;
+  if (_internal_has_odbversionminor()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_odbversionminor().data(), static_cast<int>(this->_internal_odbversionminor().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "Odb.Lib.Protobuf.MiscInfoFile.odbVersionMinor");
+    target = stream->WriteStringMaybeAliased(
+        4, this->_internal_odbversionminor(), target);
+  }
+
+  // optional string odbSource = 5;
+  if (_internal_has_odbsource()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_odbsource().data(), static_cast<int>(this->_internal_odbsource().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "Odb.Lib.Protobuf.MiscInfoFile.odbSource");
+    target = stream->WriteStringMaybeAliased(
+        5, this->_internal_odbsource(), target);
+  }
+
+  // optional .google.protobuf.Timestamp creationDateDate = 6;
+  if (_internal_has_creationdatedate()) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(6, _Internal::creationdatedate(this),
+        _Internal::creationdatedate(this).GetCachedSize(), target, stream);
+  }
+
+  // optional .google.protobuf.Timestamp saveDate = 7;
+  if (_internal_has_savedate()) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(7, _Internal::savedate(this),
+        _Internal::savedate(this).GetCachedSize(), target, stream);
+  }
+
+  // optional string saveApp = 8;
+  if (_internal_has_saveapp()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_saveapp().data(), static_cast<int>(this->_internal_saveapp().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "Odb.Lib.Protobuf.MiscInfoFile.saveApp");
+    target = stream->WriteStringMaybeAliased(
+        8, this->_internal_saveapp(), target);
+  }
+
+  // optional string saveUser = 9;
+  if (_internal_has_saveuser()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_saveuser().data(), static_cast<int>(this->_internal_saveuser().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "Odb.Lib.Protobuf.MiscInfoFile.saveUser");
+    target = stream->WriteStringMaybeAliased(
+        9, this->_internal_saveuser(), target);
+  }
+
+  // optional string units = 10;
+  if (_internal_has_units()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_units().data(), static_cast<int>(this->_internal_units().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "Odb.Lib.Protobuf.MiscInfoFile.units");
+    target = stream->WriteStringMaybeAliased(
+        10, this->_internal_units(), target);
+  }
+
+  // optional uint32 maxUniqueId = 11;
+  if (_internal_has_maxuniqueid()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteUInt32ToArray(11, this->_internal_maxuniqueid(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:Odb.Lib.Protobuf.MiscInfoFile)
+  return target;
+}
+
+size_t MiscInfoFile::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:Odb.Lib.Protobuf.MiscInfoFile)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x000000ffu) {
+    // optional string productModelName = 1;
+    if (cached_has_bits & 0x00000001u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_productmodelname());
+    }
+
+    // optional string jobName = 2;
+    if (cached_has_bits & 0x00000002u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_jobname());
+    }
+
+    // optional string odbVersionMajor = 3;
+    if (cached_has_bits & 0x00000004u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_odbversionmajor());
+    }
+
+    // optional string odbVersionMinor = 4;
+    if (cached_has_bits & 0x00000008u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_odbversionminor());
+    }
+
+    // optional string odbSource = 5;
+    if (cached_has_bits & 0x00000010u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_odbsource());
+    }
+
+    // optional string saveApp = 8;
+    if (cached_has_bits & 0x00000020u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_saveapp());
+    }
+
+    // optional string saveUser = 9;
+    if (cached_has_bits & 0x00000040u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_saveuser());
+    }
+
+    // optional string units = 10;
+    if (cached_has_bits & 0x00000080u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_units());
+    }
+
+  }
+  if (cached_has_bits & 0x00000700u) {
+    // optional .google.protobuf.Timestamp creationDateDate = 6;
+    if (cached_has_bits & 0x00000100u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+          *_impl_.creationdatedate_);
+    }
+
+    // optional .google.protobuf.Timestamp saveDate = 7;
+    if (cached_has_bits & 0x00000200u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+          *_impl_.savedate_);
+    }
+
+    // optional uint32 maxUniqueId = 11;
+    if (cached_has_bits & 0x00000400u) {
+      total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(this->_internal_maxuniqueid());
+    }
+
+  }
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
 
 const ::PROTOBUF_NAMESPACE_ID::Message::ClassData MiscInfoFile::_class_data_ = {
-    ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase::CopyImpl,
-    ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase::MergeImpl,
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    MiscInfoFile::MergeImpl
 };
 const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*MiscInfoFile::GetClassData() const { return &_class_data_; }
 
 
+void MiscInfoFile::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<MiscInfoFile*>(&to_msg);
+  auto& from = static_cast<const MiscInfoFile&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:Odb.Lib.Protobuf.MiscInfoFile)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
 
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (cached_has_bits & 0x000000ffu) {
+    if (cached_has_bits & 0x00000001u) {
+      _this->_internal_set_productmodelname(from._internal_productmodelname());
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _this->_internal_set_jobname(from._internal_jobname());
+    }
+    if (cached_has_bits & 0x00000004u) {
+      _this->_internal_set_odbversionmajor(from._internal_odbversionmajor());
+    }
+    if (cached_has_bits & 0x00000008u) {
+      _this->_internal_set_odbversionminor(from._internal_odbversionminor());
+    }
+    if (cached_has_bits & 0x00000010u) {
+      _this->_internal_set_odbsource(from._internal_odbsource());
+    }
+    if (cached_has_bits & 0x00000020u) {
+      _this->_internal_set_saveapp(from._internal_saveapp());
+    }
+    if (cached_has_bits & 0x00000040u) {
+      _this->_internal_set_saveuser(from._internal_saveuser());
+    }
+    if (cached_has_bits & 0x00000080u) {
+      _this->_internal_set_units(from._internal_units());
+    }
+  }
+  if (cached_has_bits & 0x00000700u) {
+    if (cached_has_bits & 0x00000100u) {
+      _this->_internal_mutable_creationdatedate()->::PROTOBUF_NAMESPACE_ID::Timestamp::MergeFrom(
+          from._internal_creationdatedate());
+    }
+    if (cached_has_bits & 0x00000200u) {
+      _this->_internal_mutable_savedate()->::PROTOBUF_NAMESPACE_ID::Timestamp::MergeFrom(
+          from._internal_savedate());
+    }
+    if (cached_has_bits & 0x00000400u) {
+      _this->_impl_.maxuniqueid_ = from._impl_.maxuniqueid_;
+    }
+    _this->_impl_._has_bits_[0] |= cached_has_bits;
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
 
+void MiscInfoFile::CopyFrom(const MiscInfoFile& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:Odb.Lib.Protobuf.MiscInfoFile)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
 
+bool MiscInfoFile::IsInitialized() const {
+  return true;
+}
 
+void MiscInfoFile::InternalSwap(MiscInfoFile* other) {
+  using std::swap;
+  auto* lhs_arena = GetArenaForAllocation();
+  auto* rhs_arena = other->GetArenaForAllocation();
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.productmodelname_, lhs_arena,
+      &other->_impl_.productmodelname_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.jobname_, lhs_arena,
+      &other->_impl_.jobname_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.odbversionmajor_, lhs_arena,
+      &other->_impl_.odbversionmajor_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.odbversionminor_, lhs_arena,
+      &other->_impl_.odbversionminor_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.odbsource_, lhs_arena,
+      &other->_impl_.odbsource_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.saveapp_, lhs_arena,
+      &other->_impl_.saveapp_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.saveuser_, lhs_arena,
+      &other->_impl_.saveuser_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.units_, lhs_arena,
+      &other->_impl_.units_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(MiscInfoFile, _impl_.maxuniqueid_)
+      + sizeof(MiscInfoFile::_impl_.maxuniqueid_)
+      - PROTOBUF_FIELD_OFFSET(MiscInfoFile, _impl_.creationdatedate_)>(
+          reinterpret_cast<char*>(&_impl_.creationdatedate_),
+          reinterpret_cast<char*>(&other->_impl_.creationdatedate_));
+}
 
 ::PROTOBUF_NAMESPACE_ID::Metadata MiscInfoFile::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
