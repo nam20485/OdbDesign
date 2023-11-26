@@ -5,7 +5,6 @@
 #include "str_trim.h"
 #include "../../enums.h"
 #include "../../ProtoBuf/edadatafile.pb.h"
-#include "google/protobuf/message.h"
 #include "ArchiveExtractor.h"
 #include "Logger.h"
 #include "../parse_info.h"
@@ -87,6 +86,28 @@ namespace Odb::Lib::FileModel::Design
 
     void EdaDataFile::NetRecord::SubnetRecord::from_protobuf(const Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord& message)
     {
+		type = static_cast<Type>(message.type());
+       
+		if (type == Type::Toeprint)
+		{
+			componentNumber = message.componentnumber();
+			toeprintNumber = message.toeprintnumber();
+			side = static_cast<BoardSide>(message.side());
+		}
+		else if (type == Type::Plane)
+		{
+			fillType = static_cast<FillType>(message.filltype());
+			cutoutType = static_cast<CutoutType>(message.cutouttype());
+			fillSize = message.fillsize();
+            index = message.index();
+		}
+
+        for (const auto& featureIdRecordMessage : message.featureidrecords())
+        {
+            auto pFeatureIdRecord = std::make_shared<FeatureIdRecord>();
+            pFeatureIdRecord->from_protobuf(featureIdRecordMessage);
+            m_featureIdRecords.push_back(pFeatureIdRecord);
+        }
     }
 
     EdaDataFile::NetRecord::~NetRecord()
@@ -118,7 +139,23 @@ namespace Odb::Lib::FileModel::Design
 
     void EdaDataFile::NetRecord::from_protobuf(const Odb::Lib::Protobuf::EdaDataFile::NetRecord& message)
     {
-      
+        name = message.name();
+		attributesIdString = message.attributesidstring();
+		index = message.index();
+
+		for (const auto& propertyRecordMessage : message.propertyrecords())
+		{
+			auto pPropertyRecord = std::make_shared<PropertyRecord>();
+			pPropertyRecord->from_protobuf(propertyRecordMessage);
+			m_propertyRecords.push_back(pPropertyRecord);
+		}
+
+		for (const auto& subnetRecordMessage : message.subnetrecords())
+		{
+			auto pSubnetRecord = std::make_shared<SubnetRecord>();
+			pSubnetRecord->from_protobuf(subnetRecordMessage);
+			m_subnetRecords.push_back(pSubnetRecord);
+		}      
     }
 
     std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::FeatureIdRecord>
@@ -133,7 +170,9 @@ namespace Odb::Lib::FileModel::Design
 
     void EdaDataFile::FeatureIdRecord::from_protobuf(const Odb::Lib::Protobuf::EdaDataFile::FeatureIdRecord& message)
     {
-
+        type = static_cast<Type>(message.type());
+        layerNumber = message.layernumber();
+        featureNumber = message.featurenumber();
     }   
 
     std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::FeatureGroupRecord>
@@ -156,7 +195,19 @@ namespace Odb::Lib::FileModel::Design
 
     void EdaDataFile::FeatureGroupRecord::from_protobuf(const Odb::Lib::Protobuf::EdaDataFile::FeatureGroupRecord& message)
     {
-
+        type = message.type();
+        for (const auto& featureIdRecordMessage : message.featureidrecords())
+		{
+			auto pFeatureIdRecord = std::make_shared<FeatureIdRecord>();
+			pFeatureIdRecord->from_protobuf(featureIdRecordMessage);
+			m_featureIdRecords.push_back(pFeatureIdRecord);
+		}
+        for (const auto& propertyRecordMessage : message.propertyrecords())
+        {
+            auto pPropertyRecord = std::make_shared<PropertyRecord>();
+			pPropertyRecord->from_protobuf(propertyRecordMessage);
+			m_propertyRecords.push_back(pPropertyRecord);
+		}
     }    
 
     const std::vector<std::string>& EdaDataFile::GetLayerNames() const
@@ -256,7 +307,57 @@ namespace Odb::Lib::FileModel::Design
 
     void EdaDataFile::from_protobuf(const Odb::Lib::Protobuf::EdaDataFile& message)
     {
-       
+        m_path = message.path();
+		m_units = message.units();
+		m_source = message.source();
+		for (const auto& layerName : message.layernames())
+		{
+			m_layerNames.push_back(layerName);
+		}
+		for (const auto& attributeName : message.attributenames())
+		{
+			m_attributeNames.push_back(attributeName);
+		}
+		for (const auto& attrTextValue : message.attributetextvalues())
+		{
+			m_attributeTextValues.push_back(attrTextValue);
+		}
+		for (const auto& netRecordMessage : message.netrecords())
+		{
+			auto pNetRecord = std::make_shared<NetRecord>();
+			pNetRecord->from_protobuf(netRecordMessage);
+			m_netRecords.push_back(pNetRecord);
+		}
+		for (const auto& kvNetRecordMessage : message.netrecordsbyname())
+		{
+			auto pNetRecord = std::make_shared<NetRecord>();
+			pNetRecord->from_protobuf(kvNetRecordMessage.second);
+			m_netRecordsByName[kvNetRecordMessage.first] = pNetRecord;
+		}
+		for (const auto& packageRecordMessage : message.packagerecords())
+		{
+			auto pPackageRecord = std::make_shared<PackageRecord>();
+			pPackageRecord->from_protobuf(packageRecordMessage);
+			m_packageRecords.push_back(pPackageRecord);
+		}
+		for (const auto& kvPackageRecordMessage : message.packagerecordsbyname())
+		{
+			auto pPackageRecord = std::make_shared<PackageRecord>();
+			pPackageRecord->from_protobuf(kvPackageRecordMessage.second);
+			m_packageRecordsByName[kvPackageRecordMessage.first] = pPackageRecord;
+		}
+		for (const auto& propertyRecordMessage : message.propertyrecords())
+		{
+			auto pPropertyRecord = std::make_shared<PropertyRecord>();
+			pPropertyRecord->from_protobuf(propertyRecordMessage);
+			m_propertyRecords.push_back(pPropertyRecord);
+		}
+		for (const auto& featureGroupRecordMessage : message.featuregrouprecords())
+		{
+			auto pFeatureGroupRecord = std::make_shared<FeatureGroupRecord>();
+			pFeatureGroupRecord->from_protobuf(featureGroupRecordMessage);
+			m_featureGroupRecords.push_back(pFeatureGroupRecord);
+		}       
     }              
 
     bool EdaDataFile::Parse(std::filesystem::path path)
@@ -1454,6 +1555,35 @@ namespace Odb::Lib::FileModel::Design
 
     void EdaDataFile::PackageRecord::from_protobuf(const Odb::Lib::Protobuf::EdaDataFile::PackageRecord& message)
     {
+        name = message.name();
+        pitch = message.pitch();
+        xMin = message.xmin();
+        yMin = message.ymin();
+        xMax = message.xmax();
+        yMax = message.ymax();
+        attributesIdString = message.attributesidstring();
+
+        for (const auto& pinRecordMessage : message.pinrecords())
+        {
+			auto pPinRecord = std::make_shared<PinRecord>();
+			pPinRecord->from_protobuf(pinRecordMessage);
+			m_pinRecords.push_back(pPinRecord);
+			m_pinRecordsByName[pPinRecord->name] = pPinRecord;
+		}
+
+        for (const auto& kvPinRecordMessage : message.pinrecordsbyname())
+        {
+            auto pPinRecord = std::make_shared<PinRecord>();
+            pPinRecord->from_protobuf(kvPinRecordMessage.second);
+            m_pinRecordsByName[kvPinRecordMessage.first] = pPinRecord;
+        }
+
+        for (const auto& propertyRecordMessage : message.propertyrecords())
+        {
+			auto pPropertyRecord = std::make_shared<PropertyRecord>();
+			pPropertyRecord->from_protobuf(propertyRecordMessage);
+			m_propertyRecords.push_back(pPropertyRecord);
+		}
     }
 
     // Inherited via IProtoBuffable
@@ -1475,5 +1605,14 @@ namespace Odb::Lib::FileModel::Design
 
     void EdaDataFile::PackageRecord::PinRecord::from_protobuf(const Odb::Lib::Protobuf::EdaDataFile::PackageRecord::PinRecord& message)
     {
+        name = message.name();
+        type = (Type)message.type();
+        xCenter = message.xcenter();
+        yCenter = message.ycenter();
+        finishedHoleSize = message.finishedholesize();
+        electricalType = (ElectricalType)message.electricaltype();
+        mountType = (MountType)message.mounttype();
+        id = message.id();
+        index = message.index();
     }
 }
