@@ -400,7 +400,7 @@ namespace Odb::Lib::FileModel::Design
             std::shared_ptr<PackageRecord::PinRecord> pCurrentPinRecord;
 
             std::shared_ptr<PackageRecord::OutlineRecord> pCurrentContourOutlineRecord;
-            std::shared_ptr<PackageRecord::OutlineRecord::ContourPolygon> pCurrentContourPolygon;
+            std::shared_ptr<ContourPolygon> pCurrentContourPolygon;
 
             FeatureGroupRecord::shared_ptr pCurrentFeatureGroupRecord;
 
@@ -1283,7 +1283,7 @@ namespace Odb::Lib::FileModel::Design
 
 						pCurrentContourOutlineRecord.reset();
 					}
-                    else if (line.find(PackageRecord::OutlineRecord::ContourPolygon::BEGIN_RECORD_TOKEN) == 0)
+                    else if (line.find(ContourPolygon::BEGIN_RECORD_TOKEN) == 0)
                     {
                         std::string token;
                         if (!(lineStream >> token))
@@ -1291,12 +1291,12 @@ namespace Odb::Lib::FileModel::Design
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
 
-                        if (token != PackageRecord::OutlineRecord::ContourPolygon::BEGIN_RECORD_TOKEN)
+                        if (token != ContourPolygon::BEGIN_RECORD_TOKEN)
                         {
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
 
-                        pCurrentContourPolygon = std::make_shared<PackageRecord::OutlineRecord::ContourPolygon>();
+                        pCurrentContourPolygon = std::make_shared<ContourPolygon>();
 
                         if (!(lineStream >> pCurrentContourPolygon->xStart))
                         {
@@ -1313,20 +1313,20 @@ namespace Odb::Lib::FileModel::Design
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
 
-                        if (token == PackageRecord::OutlineRecord::ContourPolygon::ISLAND_TYPE_TOKEN)
+                        if (token == ContourPolygon::ISLAND_TYPE_TOKEN)
                         {
-                            pCurrentContourPolygon->type = PackageRecord::OutlineRecord::ContourPolygon::Type::Island;
+                            pCurrentContourPolygon->type = ContourPolygon::Type::Island;
                         }
-                        else if (token == PackageRecord::OutlineRecord::ContourPolygon::HOLE_TYPE_TOKEN)
+                        else if (token == ContourPolygon::HOLE_TYPE_TOKEN)
                         {
-                            pCurrentContourPolygon->type = PackageRecord::OutlineRecord::ContourPolygon::Type::Hole;
+                            pCurrentContourPolygon->type = ContourPolygon::Type::Hole;
                         }
                         else
                         {
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
                     }
-                    else if (line.find(PackageRecord::OutlineRecord::ContourPolygon::END_RECORD_TOKEN) == 0)
+                    else if (line.find(ContourPolygon::END_RECORD_TOKEN) == 0)
                     {
                         std::string token;
                         if (!(lineStream >> token))
@@ -1334,7 +1334,7 @@ namespace Odb::Lib::FileModel::Design
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
 
-                        if (token != PackageRecord::OutlineRecord::ContourPolygon::END_RECORD_TOKEN)
+                        if (token != ContourPolygon::END_RECORD_TOKEN)
                         {
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
@@ -1349,7 +1349,7 @@ namespace Odb::Lib::FileModel::Design
 							throw_parse_error(m_path, line, token, lineNumber);
 						}
                     }
-                    else if (line.find(PackageRecord::OutlineRecord::ContourPolygon::PolygonPart::ARC_RECORD_TOKEN) == 0)
+                    else if (line.find(ContourPolygon::PolygonPart::ARC_RECORD_TOKEN) == 0)
                     {
                         std::string token;
                         if (!(lineStream >> token))
@@ -1357,13 +1357,13 @@ namespace Odb::Lib::FileModel::Design
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
 
-                        if (token != PackageRecord::OutlineRecord::ContourPolygon::PolygonPart::ARC_RECORD_TOKEN)
+                        if (token != ContourPolygon::PolygonPart::ARC_RECORD_TOKEN)
                         {
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
 
-                        auto pPolygonPart = std::make_shared<PackageRecord::OutlineRecord::ContourPolygon::PolygonPart>();
-                        pPolygonPart->type = PackageRecord::OutlineRecord::ContourPolygon::PolygonPart::Type::Arc;
+                        auto pPolygonPart = std::make_shared<ContourPolygon::PolygonPart>();
+                        pPolygonPart->type = ContourPolygon::PolygonPart::Type::Arc;
 
                         if (!(lineStream >> pPolygonPart->endX))
                         {
@@ -1412,7 +1412,7 @@ namespace Odb::Lib::FileModel::Design
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
                     }
-                    else if (line.find(PackageRecord::OutlineRecord::ContourPolygon::PolygonPart::SEGMENT_RECORD_TOKEN) == 0)
+                    else if (line.find(ContourPolygon::PolygonPart::SEGMENT_RECORD_TOKEN) == 0)
                     {
                         std::string token;
                         if (!(lineStream >> token))
@@ -1420,13 +1420,13 @@ namespace Odb::Lib::FileModel::Design
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
 
-                        if (token != PackageRecord::OutlineRecord::ContourPolygon::PolygonPart::SEGMENT_RECORD_TOKEN)
+                        if (token != ContourPolygon::PolygonPart::SEGMENT_RECORD_TOKEN)
                         {
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
 
-                        auto pPolygonPart = std::make_shared<PackageRecord::OutlineRecord::ContourPolygon::PolygonPart>();
-                        pPolygonPart->type = PackageRecord::OutlineRecord::ContourPolygon::PolygonPart::Type::Segment;
+                        auto pPolygonPart = std::make_shared<ContourPolygon::PolygonPart>();
+                        pPolygonPart->type = ContourPolygon::PolygonPart::Type::Segment;
 
                         if (!(lineStream >> pPolygonPart->endX))
                         {
