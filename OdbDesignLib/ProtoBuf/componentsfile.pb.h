@@ -213,7 +213,11 @@ class ComponentsFile_ComponentRecord_ToeprintRecord final :
     kNetNumberFieldNumber = 6,
     kSubnetNumberFieldNumber = 7,
   };
-  // string name = 8;
+  // optional string name = 8;
+  bool has_name() const;
+  private:
+  bool _internal_has_name() const;
+  public:
   void clear_name();
   const std::string& name() const;
   template <typename ArgT0 = const std::string&, typename... ArgT>
@@ -227,7 +231,11 @@ class ComponentsFile_ComponentRecord_ToeprintRecord final :
   std::string* _internal_mutable_name();
   public:
 
-  // uint32 pinNumber = 1;
+  // optional uint32 pinNumber = 1;
+  bool has_pinnumber() const;
+  private:
+  bool _internal_has_pinnumber() const;
+  public:
   void clear_pinnumber();
   uint32_t pinnumber() const;
   void set_pinnumber(uint32_t value);
@@ -236,7 +244,11 @@ class ComponentsFile_ComponentRecord_ToeprintRecord final :
   void _internal_set_pinnumber(uint32_t value);
   public:
 
-  // float locationX = 2;
+  // optional float locationX = 2;
+  bool has_locationx() const;
+  private:
+  bool _internal_has_locationx() const;
+  public:
   void clear_locationx();
   float locationx() const;
   void set_locationx(float value);
@@ -245,7 +257,11 @@ class ComponentsFile_ComponentRecord_ToeprintRecord final :
   void _internal_set_locationx(float value);
   public:
 
-  // float locationY = 3;
+  // optional float locationY = 3;
+  bool has_locationy() const;
+  private:
+  bool _internal_has_locationy() const;
+  public:
   void clear_locationy();
   float locationy() const;
   void set_locationy(float value);
@@ -254,7 +270,11 @@ class ComponentsFile_ComponentRecord_ToeprintRecord final :
   void _internal_set_locationy(float value);
   public:
 
-  // float rotation = 4;
+  // optional float rotation = 4;
+  bool has_rotation() const;
+  private:
+  bool _internal_has_rotation() const;
+  public:
   void clear_rotation();
   float rotation() const;
   void set_rotation(float value);
@@ -263,7 +283,11 @@ class ComponentsFile_ComponentRecord_ToeprintRecord final :
   void _internal_set_rotation(float value);
   public:
 
-  // bool mirror = 5;
+  // optional bool mirror = 5;
+  bool has_mirror() const;
+  private:
+  bool _internal_has_mirror() const;
+  public:
   void clear_mirror();
   bool mirror() const;
   void set_mirror(bool value);
@@ -272,7 +296,11 @@ class ComponentsFile_ComponentRecord_ToeprintRecord final :
   void _internal_set_mirror(bool value);
   public:
 
-  // uint32 netNumber = 6;
+  // optional uint32 netNumber = 6;
+  bool has_netnumber() const;
+  private:
+  bool _internal_has_netnumber() const;
+  public:
   void clear_netnumber();
   uint32_t netnumber() const;
   void set_netnumber(uint32_t value);
@@ -281,7 +309,11 @@ class ComponentsFile_ComponentRecord_ToeprintRecord final :
   void _internal_set_netnumber(uint32_t value);
   public:
 
-  // uint32 subnetNumber = 7;
+  // optional uint32 subnetNumber = 7;
+  bool has_subnetnumber() const;
+  private:
+  bool _internal_has_subnetnumber() const;
+  public:
   void clear_subnetnumber();
   uint32_t subnetnumber() const;
   void set_subnetnumber(uint32_t value);
@@ -298,6 +330,8 @@ class ComponentsFile_ComponentRecord_ToeprintRecord final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr name_;
     uint32_t pinnumber_;
     float locationx_;
@@ -306,7 +340,6 @@ class ComponentsFile_ComponentRecord_ToeprintRecord final :
     bool mirror_;
     uint32_t netnumber_;
     uint32_t subnetnumber_;
-    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
   friend struct ::TableStruct_componentsfile_2eproto;
@@ -485,7 +518,11 @@ class ComponentsFile_ComponentRecord final :
   const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord_ToeprintRecord >&
       toeprintrecords() const;
 
-  // string compName = 6;
+  // optional string compName = 6;
+  bool has_compname() const;
+  private:
+  bool _internal_has_compname() const;
+  public:
   void clear_compname();
   const std::string& compname() const;
   template <typename ArgT0 = const std::string&, typename... ArgT>
@@ -499,7 +536,11 @@ class ComponentsFile_ComponentRecord final :
   std::string* _internal_mutable_compname();
   public:
 
-  // string partName = 7;
+  // optional string partName = 7;
+  bool has_partname() const;
+  private:
+  bool _internal_has_partname() const;
+  public:
   void clear_partname();
   const std::string& partname() const;
   template <typename ArgT0 = const std::string&, typename... ArgT>
@@ -513,7 +554,11 @@ class ComponentsFile_ComponentRecord final :
   std::string* _internal_mutable_partname();
   public:
 
-  // string attributes = 8;
+  // optional string attributes = 8;
+  bool has_attributes() const;
+  private:
+  bool _internal_has_attributes() const;
+  public:
   void clear_attributes();
   const std::string& attributes() const;
   template <typename ArgT0 = const std::string&, typename... ArgT>
@@ -527,7 +572,11 @@ class ComponentsFile_ComponentRecord final :
   std::string* _internal_mutable_attributes();
   public:
 
-  // uint32 pkgRef = 1;
+  // optional uint32 pkgRef = 1;
+  bool has_pkgref() const;
+  private:
+  bool _internal_has_pkgref() const;
+  public:
   void clear_pkgref();
   uint32_t pkgref() const;
   void set_pkgref(uint32_t value);
@@ -536,7 +585,11 @@ class ComponentsFile_ComponentRecord final :
   void _internal_set_pkgref(uint32_t value);
   public:
 
-  // float locationX = 2;
+  // optional float locationX = 2;
+  bool has_locationx() const;
+  private:
+  bool _internal_has_locationx() const;
+  public:
   void clear_locationx();
   float locationx() const;
   void set_locationx(float value);
@@ -545,7 +598,11 @@ class ComponentsFile_ComponentRecord final :
   void _internal_set_locationx(float value);
   public:
 
-  // float locationY = 3;
+  // optional float locationY = 3;
+  bool has_locationy() const;
+  private:
+  bool _internal_has_locationy() const;
+  public:
   void clear_locationy();
   float locationy() const;
   void set_locationy(float value);
@@ -554,7 +611,11 @@ class ComponentsFile_ComponentRecord final :
   void _internal_set_locationy(float value);
   public:
 
-  // float rotation = 4;
+  // optional float rotation = 4;
+  bool has_rotation() const;
+  private:
+  bool _internal_has_rotation() const;
+  public:
   void clear_rotation();
   float rotation() const;
   void set_rotation(float value);
@@ -563,7 +624,11 @@ class ComponentsFile_ComponentRecord final :
   void _internal_set_rotation(float value);
   public:
 
-  // bool mirror = 5;
+  // optional bool mirror = 5;
+  bool has_mirror() const;
+  private:
+  bool _internal_has_mirror() const;
+  public:
   void clear_mirror();
   bool mirror() const;
   void set_mirror(bool value);
@@ -572,7 +637,11 @@ class ComponentsFile_ComponentRecord final :
   void _internal_set_mirror(bool value);
   public:
 
-  // uint32 id = 9;
+  // optional uint32 id = 9;
+  bool has_id() const;
+  private:
+  bool _internal_has_id() const;
+  public:
   void clear_id();
   uint32_t id() const;
   void set_id(uint32_t value);
@@ -581,7 +650,11 @@ class ComponentsFile_ComponentRecord final :
   void _internal_set_id(uint32_t value);
   public:
 
-  // uint32 index = 10;
+  // optional uint32 index = 10;
+  bool has_index() const;
+  private:
+  bool _internal_has_index() const;
+  public:
   void clear_index();
   uint32_t index() const;
   void set_index(uint32_t value);
@@ -598,6 +671,8 @@ class ComponentsFile_ComponentRecord final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
     ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::PropertyRecord > propertyrecords_;
     ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord_ToeprintRecord > toeprintrecords_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr compname_;
@@ -610,7 +685,6 @@ class ComponentsFile_ComponentRecord final :
     bool mirror_;
     uint32_t id_;
     uint32_t index_;
-    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
   friend struct ::TableStruct_componentsfile_2eproto;
@@ -801,7 +875,7 @@ class ComponentsFile final :
     kPropertyRecordsFieldNumber = 11,
     kPropertyRecordsByNameFieldNumber = 12,
     kUnitsFieldNumber = 1,
-    kNameFieldNumber = 4,
+    kLayerNameFieldNumber = 4,
     kPathFieldNumber = 5,
     kDirectoryFieldNumber = 6,
     kIdFieldNumber = 2,
@@ -925,7 +999,11 @@ class ComponentsFile final :
   ::PROTOBUF_NAMESPACE_ID::Map< std::string, ::Odb::Lib::Protobuf::PropertyRecord >*
       mutable_propertyrecordsbyname();
 
-  // string units = 1;
+  // optional string units = 1;
+  bool has_units() const;
+  private:
+  bool _internal_has_units() const;
+  public:
   void clear_units();
   const std::string& units() const;
   template <typename ArgT0 = const std::string&, typename... ArgT>
@@ -939,21 +1017,29 @@ class ComponentsFile final :
   std::string* _internal_mutable_units();
   public:
 
-  // string name = 4;
-  void clear_name();
-  const std::string& name() const;
-  template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_name(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_name();
-  PROTOBUF_NODISCARD std::string* release_name();
-  void set_allocated_name(std::string* name);
+  // optional string layerName = 4;
+  bool has_layername() const;
   private:
-  const std::string& _internal_name() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_name(const std::string& value);
-  std::string* _internal_mutable_name();
+  bool _internal_has_layername() const;
+  public:
+  void clear_layername();
+  const std::string& layername() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_layername(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_layername();
+  PROTOBUF_NODISCARD std::string* release_layername();
+  void set_allocated_layername(std::string* layername);
+  private:
+  const std::string& _internal_layername() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_layername(const std::string& value);
+  std::string* _internal_mutable_layername();
   public:
 
-  // string path = 5;
+  // optional string path = 5;
+  bool has_path() const;
+  private:
+  bool _internal_has_path() const;
+  public:
   void clear_path();
   const std::string& path() const;
   template <typename ArgT0 = const std::string&, typename... ArgT>
@@ -967,7 +1053,11 @@ class ComponentsFile final :
   std::string* _internal_mutable_path();
   public:
 
-  // string directory = 6;
+  // optional string directory = 6;
+  bool has_directory() const;
+  private:
+  bool _internal_has_directory() const;
+  public:
   void clear_directory();
   const std::string& directory() const;
   template <typename ArgT0 = const std::string&, typename... ArgT>
@@ -981,7 +1071,11 @@ class ComponentsFile final :
   std::string* _internal_mutable_directory();
   public:
 
-  // uint32 id = 2;
+  // optional uint32 id = 2;
+  bool has_id() const;
+  private:
+  bool _internal_has_id() const;
+  public:
   void clear_id();
   uint32_t id() const;
   void set_id(uint32_t value);
@@ -990,7 +1084,11 @@ class ComponentsFile final :
   void _internal_set_id(uint32_t value);
   public:
 
-  // .Odb.Lib.Protobuf.BoardSide side = 3;
+  // optional .Odb.Lib.Protobuf.BoardSide side = 3;
+  bool has_side() const;
+  private:
+  bool _internal_has_side() const;
+  public:
   void clear_side();
   ::Odb::Lib::Protobuf::BoardSide side() const;
   void set_side(::Odb::Lib::Protobuf::BoardSide value);
@@ -1007,6 +1105,8 @@ class ComponentsFile final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
     ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string> attributenames_;
     ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string> attributetextvalues_;
     ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord > componentrecords_;
@@ -1022,12 +1122,11 @@ class ComponentsFile final :
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING,
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_MESSAGE> propertyrecordsbyname_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr units_;
-    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr name_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr layername_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr path_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr directory_;
     uint32_t id_;
     int side_;
-    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
   friend struct ::TableStruct_componentsfile_2eproto;
@@ -1043,9 +1142,17 @@ class ComponentsFile final :
 #endif  // __GNUC__
 // ComponentsFile_ComponentRecord_ToeprintRecord
 
-// uint32 pinNumber = 1;
+// optional uint32 pinNumber = 1;
+inline bool ComponentsFile_ComponentRecord_ToeprintRecord::_internal_has_pinnumber() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
+  return value;
+}
+inline bool ComponentsFile_ComponentRecord_ToeprintRecord::has_pinnumber() const {
+  return _internal_has_pinnumber();
+}
 inline void ComponentsFile_ComponentRecord_ToeprintRecord::clear_pinnumber() {
   _impl_.pinnumber_ = 0u;
+  _impl_._has_bits_[0] &= ~0x00000002u;
 }
 inline uint32_t ComponentsFile_ComponentRecord_ToeprintRecord::_internal_pinnumber() const {
   return _impl_.pinnumber_;
@@ -1055,7 +1162,7 @@ inline uint32_t ComponentsFile_ComponentRecord_ToeprintRecord::pinnumber() const
   return _internal_pinnumber();
 }
 inline void ComponentsFile_ComponentRecord_ToeprintRecord::_internal_set_pinnumber(uint32_t value) {
-  
+  _impl_._has_bits_[0] |= 0x00000002u;
   _impl_.pinnumber_ = value;
 }
 inline void ComponentsFile_ComponentRecord_ToeprintRecord::set_pinnumber(uint32_t value) {
@@ -1063,9 +1170,17 @@ inline void ComponentsFile_ComponentRecord_ToeprintRecord::set_pinnumber(uint32_
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.ToeprintRecord.pinNumber)
 }
 
-// float locationX = 2;
+// optional float locationX = 2;
+inline bool ComponentsFile_ComponentRecord_ToeprintRecord::_internal_has_locationx() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
+  return value;
+}
+inline bool ComponentsFile_ComponentRecord_ToeprintRecord::has_locationx() const {
+  return _internal_has_locationx();
+}
 inline void ComponentsFile_ComponentRecord_ToeprintRecord::clear_locationx() {
   _impl_.locationx_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000004u;
 }
 inline float ComponentsFile_ComponentRecord_ToeprintRecord::_internal_locationx() const {
   return _impl_.locationx_;
@@ -1075,7 +1190,7 @@ inline float ComponentsFile_ComponentRecord_ToeprintRecord::locationx() const {
   return _internal_locationx();
 }
 inline void ComponentsFile_ComponentRecord_ToeprintRecord::_internal_set_locationx(float value) {
-  
+  _impl_._has_bits_[0] |= 0x00000004u;
   _impl_.locationx_ = value;
 }
 inline void ComponentsFile_ComponentRecord_ToeprintRecord::set_locationx(float value) {
@@ -1083,9 +1198,17 @@ inline void ComponentsFile_ComponentRecord_ToeprintRecord::set_locationx(float v
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.ToeprintRecord.locationX)
 }
 
-// float locationY = 3;
+// optional float locationY = 3;
+inline bool ComponentsFile_ComponentRecord_ToeprintRecord::_internal_has_locationy() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000008u) != 0;
+  return value;
+}
+inline bool ComponentsFile_ComponentRecord_ToeprintRecord::has_locationy() const {
+  return _internal_has_locationy();
+}
 inline void ComponentsFile_ComponentRecord_ToeprintRecord::clear_locationy() {
   _impl_.locationy_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000008u;
 }
 inline float ComponentsFile_ComponentRecord_ToeprintRecord::_internal_locationy() const {
   return _impl_.locationy_;
@@ -1095,7 +1218,7 @@ inline float ComponentsFile_ComponentRecord_ToeprintRecord::locationy() const {
   return _internal_locationy();
 }
 inline void ComponentsFile_ComponentRecord_ToeprintRecord::_internal_set_locationy(float value) {
-  
+  _impl_._has_bits_[0] |= 0x00000008u;
   _impl_.locationy_ = value;
 }
 inline void ComponentsFile_ComponentRecord_ToeprintRecord::set_locationy(float value) {
@@ -1103,9 +1226,17 @@ inline void ComponentsFile_ComponentRecord_ToeprintRecord::set_locationy(float v
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.ToeprintRecord.locationY)
 }
 
-// float rotation = 4;
+// optional float rotation = 4;
+inline bool ComponentsFile_ComponentRecord_ToeprintRecord::_internal_has_rotation() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000010u) != 0;
+  return value;
+}
+inline bool ComponentsFile_ComponentRecord_ToeprintRecord::has_rotation() const {
+  return _internal_has_rotation();
+}
 inline void ComponentsFile_ComponentRecord_ToeprintRecord::clear_rotation() {
   _impl_.rotation_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000010u;
 }
 inline float ComponentsFile_ComponentRecord_ToeprintRecord::_internal_rotation() const {
   return _impl_.rotation_;
@@ -1115,7 +1246,7 @@ inline float ComponentsFile_ComponentRecord_ToeprintRecord::rotation() const {
   return _internal_rotation();
 }
 inline void ComponentsFile_ComponentRecord_ToeprintRecord::_internal_set_rotation(float value) {
-  
+  _impl_._has_bits_[0] |= 0x00000010u;
   _impl_.rotation_ = value;
 }
 inline void ComponentsFile_ComponentRecord_ToeprintRecord::set_rotation(float value) {
@@ -1123,9 +1254,17 @@ inline void ComponentsFile_ComponentRecord_ToeprintRecord::set_rotation(float va
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.ToeprintRecord.rotation)
 }
 
-// bool mirror = 5;
+// optional bool mirror = 5;
+inline bool ComponentsFile_ComponentRecord_ToeprintRecord::_internal_has_mirror() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000020u) != 0;
+  return value;
+}
+inline bool ComponentsFile_ComponentRecord_ToeprintRecord::has_mirror() const {
+  return _internal_has_mirror();
+}
 inline void ComponentsFile_ComponentRecord_ToeprintRecord::clear_mirror() {
   _impl_.mirror_ = false;
+  _impl_._has_bits_[0] &= ~0x00000020u;
 }
 inline bool ComponentsFile_ComponentRecord_ToeprintRecord::_internal_mirror() const {
   return _impl_.mirror_;
@@ -1135,7 +1274,7 @@ inline bool ComponentsFile_ComponentRecord_ToeprintRecord::mirror() const {
   return _internal_mirror();
 }
 inline void ComponentsFile_ComponentRecord_ToeprintRecord::_internal_set_mirror(bool value) {
-  
+  _impl_._has_bits_[0] |= 0x00000020u;
   _impl_.mirror_ = value;
 }
 inline void ComponentsFile_ComponentRecord_ToeprintRecord::set_mirror(bool value) {
@@ -1143,9 +1282,17 @@ inline void ComponentsFile_ComponentRecord_ToeprintRecord::set_mirror(bool value
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.ToeprintRecord.mirror)
 }
 
-// uint32 netNumber = 6;
+// optional uint32 netNumber = 6;
+inline bool ComponentsFile_ComponentRecord_ToeprintRecord::_internal_has_netnumber() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000040u) != 0;
+  return value;
+}
+inline bool ComponentsFile_ComponentRecord_ToeprintRecord::has_netnumber() const {
+  return _internal_has_netnumber();
+}
 inline void ComponentsFile_ComponentRecord_ToeprintRecord::clear_netnumber() {
   _impl_.netnumber_ = 0u;
+  _impl_._has_bits_[0] &= ~0x00000040u;
 }
 inline uint32_t ComponentsFile_ComponentRecord_ToeprintRecord::_internal_netnumber() const {
   return _impl_.netnumber_;
@@ -1155,7 +1302,7 @@ inline uint32_t ComponentsFile_ComponentRecord_ToeprintRecord::netnumber() const
   return _internal_netnumber();
 }
 inline void ComponentsFile_ComponentRecord_ToeprintRecord::_internal_set_netnumber(uint32_t value) {
-  
+  _impl_._has_bits_[0] |= 0x00000040u;
   _impl_.netnumber_ = value;
 }
 inline void ComponentsFile_ComponentRecord_ToeprintRecord::set_netnumber(uint32_t value) {
@@ -1163,9 +1310,17 @@ inline void ComponentsFile_ComponentRecord_ToeprintRecord::set_netnumber(uint32_
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.ToeprintRecord.netNumber)
 }
 
-// uint32 subnetNumber = 7;
+// optional uint32 subnetNumber = 7;
+inline bool ComponentsFile_ComponentRecord_ToeprintRecord::_internal_has_subnetnumber() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000080u) != 0;
+  return value;
+}
+inline bool ComponentsFile_ComponentRecord_ToeprintRecord::has_subnetnumber() const {
+  return _internal_has_subnetnumber();
+}
 inline void ComponentsFile_ComponentRecord_ToeprintRecord::clear_subnetnumber() {
   _impl_.subnetnumber_ = 0u;
+  _impl_._has_bits_[0] &= ~0x00000080u;
 }
 inline uint32_t ComponentsFile_ComponentRecord_ToeprintRecord::_internal_subnetnumber() const {
   return _impl_.subnetnumber_;
@@ -1175,7 +1330,7 @@ inline uint32_t ComponentsFile_ComponentRecord_ToeprintRecord::subnetnumber() co
   return _internal_subnetnumber();
 }
 inline void ComponentsFile_ComponentRecord_ToeprintRecord::_internal_set_subnetnumber(uint32_t value) {
-  
+  _impl_._has_bits_[0] |= 0x00000080u;
   _impl_.subnetnumber_ = value;
 }
 inline void ComponentsFile_ComponentRecord_ToeprintRecord::set_subnetnumber(uint32_t value) {
@@ -1183,9 +1338,17 @@ inline void ComponentsFile_ComponentRecord_ToeprintRecord::set_subnetnumber(uint
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.ToeprintRecord.subnetNumber)
 }
 
-// string name = 8;
+// optional string name = 8;
+inline bool ComponentsFile_ComponentRecord_ToeprintRecord::_internal_has_name() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
+  return value;
+}
+inline bool ComponentsFile_ComponentRecord_ToeprintRecord::has_name() const {
+  return _internal_has_name();
+}
 inline void ComponentsFile_ComponentRecord_ToeprintRecord::clear_name() {
   _impl_.name_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000001u;
 }
 inline const std::string& ComponentsFile_ComponentRecord_ToeprintRecord::name() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.ToeprintRecord.name)
@@ -1194,7 +1357,7 @@ inline const std::string& ComponentsFile_ComponentRecord_ToeprintRecord::name() 
 template <typename ArgT0, typename... ArgT>
 inline PROTOBUF_ALWAYS_INLINE
 void ComponentsFile_ComponentRecord_ToeprintRecord::set_name(ArgT0&& arg0, ArgT... args) {
- 
+ _impl_._has_bits_[0] |= 0x00000001u;
  _impl_.name_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.ToeprintRecord.name)
 }
@@ -1207,22 +1370,32 @@ inline const std::string& ComponentsFile_ComponentRecord_ToeprintRecord::_intern
   return _impl_.name_.Get();
 }
 inline void ComponentsFile_ComponentRecord_ToeprintRecord::_internal_set_name(const std::string& value) {
-  
+  _impl_._has_bits_[0] |= 0x00000001u;
   _impl_.name_.Set(value, GetArenaForAllocation());
 }
 inline std::string* ComponentsFile_ComponentRecord_ToeprintRecord::_internal_mutable_name() {
-  
+  _impl_._has_bits_[0] |= 0x00000001u;
   return _impl_.name_.Mutable(GetArenaForAllocation());
 }
 inline std::string* ComponentsFile_ComponentRecord_ToeprintRecord::release_name() {
   // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.ToeprintRecord.name)
-  return _impl_.name_.Release();
+  if (!_internal_has_name()) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000001u;
+  auto* p = _impl_.name_.Release();
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.name_.IsDefault()) {
+    _impl_.name_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
 }
 inline void ComponentsFile_ComponentRecord_ToeprintRecord::set_allocated_name(std::string* name) {
   if (name != nullptr) {
-    
+    _impl_._has_bits_[0] |= 0x00000001u;
   } else {
-    
+    _impl_._has_bits_[0] &= ~0x00000001u;
   }
   _impl_.name_.SetAllocated(name, GetArenaForAllocation());
 #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
@@ -1237,9 +1410,17 @@ inline void ComponentsFile_ComponentRecord_ToeprintRecord::set_allocated_name(st
 
 // ComponentsFile_ComponentRecord
 
-// uint32 pkgRef = 1;
+// optional uint32 pkgRef = 1;
+inline bool ComponentsFile_ComponentRecord::_internal_has_pkgref() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000008u) != 0;
+  return value;
+}
+inline bool ComponentsFile_ComponentRecord::has_pkgref() const {
+  return _internal_has_pkgref();
+}
 inline void ComponentsFile_ComponentRecord::clear_pkgref() {
   _impl_.pkgref_ = 0u;
+  _impl_._has_bits_[0] &= ~0x00000008u;
 }
 inline uint32_t ComponentsFile_ComponentRecord::_internal_pkgref() const {
   return _impl_.pkgref_;
@@ -1249,7 +1430,7 @@ inline uint32_t ComponentsFile_ComponentRecord::pkgref() const {
   return _internal_pkgref();
 }
 inline void ComponentsFile_ComponentRecord::_internal_set_pkgref(uint32_t value) {
-  
+  _impl_._has_bits_[0] |= 0x00000008u;
   _impl_.pkgref_ = value;
 }
 inline void ComponentsFile_ComponentRecord::set_pkgref(uint32_t value) {
@@ -1257,9 +1438,17 @@ inline void ComponentsFile_ComponentRecord::set_pkgref(uint32_t value) {
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.pkgRef)
 }
 
-// float locationX = 2;
+// optional float locationX = 2;
+inline bool ComponentsFile_ComponentRecord::_internal_has_locationx() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000010u) != 0;
+  return value;
+}
+inline bool ComponentsFile_ComponentRecord::has_locationx() const {
+  return _internal_has_locationx();
+}
 inline void ComponentsFile_ComponentRecord::clear_locationx() {
   _impl_.locationx_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000010u;
 }
 inline float ComponentsFile_ComponentRecord::_internal_locationx() const {
   return _impl_.locationx_;
@@ -1269,7 +1458,7 @@ inline float ComponentsFile_ComponentRecord::locationx() const {
   return _internal_locationx();
 }
 inline void ComponentsFile_ComponentRecord::_internal_set_locationx(float value) {
-  
+  _impl_._has_bits_[0] |= 0x00000010u;
   _impl_.locationx_ = value;
 }
 inline void ComponentsFile_ComponentRecord::set_locationx(float value) {
@@ -1277,9 +1466,17 @@ inline void ComponentsFile_ComponentRecord::set_locationx(float value) {
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.locationX)
 }
 
-// float locationY = 3;
+// optional float locationY = 3;
+inline bool ComponentsFile_ComponentRecord::_internal_has_locationy() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000020u) != 0;
+  return value;
+}
+inline bool ComponentsFile_ComponentRecord::has_locationy() const {
+  return _internal_has_locationy();
+}
 inline void ComponentsFile_ComponentRecord::clear_locationy() {
   _impl_.locationy_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000020u;
 }
 inline float ComponentsFile_ComponentRecord::_internal_locationy() const {
   return _impl_.locationy_;
@@ -1289,7 +1486,7 @@ inline float ComponentsFile_ComponentRecord::locationy() const {
   return _internal_locationy();
 }
 inline void ComponentsFile_ComponentRecord::_internal_set_locationy(float value) {
-  
+  _impl_._has_bits_[0] |= 0x00000020u;
   _impl_.locationy_ = value;
 }
 inline void ComponentsFile_ComponentRecord::set_locationy(float value) {
@@ -1297,9 +1494,17 @@ inline void ComponentsFile_ComponentRecord::set_locationy(float value) {
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.locationY)
 }
 
-// float rotation = 4;
+// optional float rotation = 4;
+inline bool ComponentsFile_ComponentRecord::_internal_has_rotation() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000040u) != 0;
+  return value;
+}
+inline bool ComponentsFile_ComponentRecord::has_rotation() const {
+  return _internal_has_rotation();
+}
 inline void ComponentsFile_ComponentRecord::clear_rotation() {
   _impl_.rotation_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000040u;
 }
 inline float ComponentsFile_ComponentRecord::_internal_rotation() const {
   return _impl_.rotation_;
@@ -1309,7 +1514,7 @@ inline float ComponentsFile_ComponentRecord::rotation() const {
   return _internal_rotation();
 }
 inline void ComponentsFile_ComponentRecord::_internal_set_rotation(float value) {
-  
+  _impl_._has_bits_[0] |= 0x00000040u;
   _impl_.rotation_ = value;
 }
 inline void ComponentsFile_ComponentRecord::set_rotation(float value) {
@@ -1317,9 +1522,17 @@ inline void ComponentsFile_ComponentRecord::set_rotation(float value) {
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.rotation)
 }
 
-// bool mirror = 5;
+// optional bool mirror = 5;
+inline bool ComponentsFile_ComponentRecord::_internal_has_mirror() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000080u) != 0;
+  return value;
+}
+inline bool ComponentsFile_ComponentRecord::has_mirror() const {
+  return _internal_has_mirror();
+}
 inline void ComponentsFile_ComponentRecord::clear_mirror() {
   _impl_.mirror_ = false;
+  _impl_._has_bits_[0] &= ~0x00000080u;
 }
 inline bool ComponentsFile_ComponentRecord::_internal_mirror() const {
   return _impl_.mirror_;
@@ -1329,7 +1542,7 @@ inline bool ComponentsFile_ComponentRecord::mirror() const {
   return _internal_mirror();
 }
 inline void ComponentsFile_ComponentRecord::_internal_set_mirror(bool value) {
-  
+  _impl_._has_bits_[0] |= 0x00000080u;
   _impl_.mirror_ = value;
 }
 inline void ComponentsFile_ComponentRecord::set_mirror(bool value) {
@@ -1337,9 +1550,17 @@ inline void ComponentsFile_ComponentRecord::set_mirror(bool value) {
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.mirror)
 }
 
-// string compName = 6;
+// optional string compName = 6;
+inline bool ComponentsFile_ComponentRecord::_internal_has_compname() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
+  return value;
+}
+inline bool ComponentsFile_ComponentRecord::has_compname() const {
+  return _internal_has_compname();
+}
 inline void ComponentsFile_ComponentRecord::clear_compname() {
   _impl_.compname_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000001u;
 }
 inline const std::string& ComponentsFile_ComponentRecord::compname() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.compName)
@@ -1348,7 +1569,7 @@ inline const std::string& ComponentsFile_ComponentRecord::compname() const {
 template <typename ArgT0, typename... ArgT>
 inline PROTOBUF_ALWAYS_INLINE
 void ComponentsFile_ComponentRecord::set_compname(ArgT0&& arg0, ArgT... args) {
- 
+ _impl_._has_bits_[0] |= 0x00000001u;
  _impl_.compname_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.compName)
 }
@@ -1361,22 +1582,32 @@ inline const std::string& ComponentsFile_ComponentRecord::_internal_compname() c
   return _impl_.compname_.Get();
 }
 inline void ComponentsFile_ComponentRecord::_internal_set_compname(const std::string& value) {
-  
+  _impl_._has_bits_[0] |= 0x00000001u;
   _impl_.compname_.Set(value, GetArenaForAllocation());
 }
 inline std::string* ComponentsFile_ComponentRecord::_internal_mutable_compname() {
-  
+  _impl_._has_bits_[0] |= 0x00000001u;
   return _impl_.compname_.Mutable(GetArenaForAllocation());
 }
 inline std::string* ComponentsFile_ComponentRecord::release_compname() {
   // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.compName)
-  return _impl_.compname_.Release();
+  if (!_internal_has_compname()) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000001u;
+  auto* p = _impl_.compname_.Release();
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.compname_.IsDefault()) {
+    _impl_.compname_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
 }
 inline void ComponentsFile_ComponentRecord::set_allocated_compname(std::string* compname) {
   if (compname != nullptr) {
-    
+    _impl_._has_bits_[0] |= 0x00000001u;
   } else {
-    
+    _impl_._has_bits_[0] &= ~0x00000001u;
   }
   _impl_.compname_.SetAllocated(compname, GetArenaForAllocation());
 #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
@@ -1387,9 +1618,17 @@ inline void ComponentsFile_ComponentRecord::set_allocated_compname(std::string* 
   // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.compName)
 }
 
-// string partName = 7;
+// optional string partName = 7;
+inline bool ComponentsFile_ComponentRecord::_internal_has_partname() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
+  return value;
+}
+inline bool ComponentsFile_ComponentRecord::has_partname() const {
+  return _internal_has_partname();
+}
 inline void ComponentsFile_ComponentRecord::clear_partname() {
   _impl_.partname_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000002u;
 }
 inline const std::string& ComponentsFile_ComponentRecord::partname() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.partName)
@@ -1398,7 +1637,7 @@ inline const std::string& ComponentsFile_ComponentRecord::partname() const {
 template <typename ArgT0, typename... ArgT>
 inline PROTOBUF_ALWAYS_INLINE
 void ComponentsFile_ComponentRecord::set_partname(ArgT0&& arg0, ArgT... args) {
- 
+ _impl_._has_bits_[0] |= 0x00000002u;
  _impl_.partname_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.partName)
 }
@@ -1411,22 +1650,32 @@ inline const std::string& ComponentsFile_ComponentRecord::_internal_partname() c
   return _impl_.partname_.Get();
 }
 inline void ComponentsFile_ComponentRecord::_internal_set_partname(const std::string& value) {
-  
+  _impl_._has_bits_[0] |= 0x00000002u;
   _impl_.partname_.Set(value, GetArenaForAllocation());
 }
 inline std::string* ComponentsFile_ComponentRecord::_internal_mutable_partname() {
-  
+  _impl_._has_bits_[0] |= 0x00000002u;
   return _impl_.partname_.Mutable(GetArenaForAllocation());
 }
 inline std::string* ComponentsFile_ComponentRecord::release_partname() {
   // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.partName)
-  return _impl_.partname_.Release();
+  if (!_internal_has_partname()) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000002u;
+  auto* p = _impl_.partname_.Release();
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.partname_.IsDefault()) {
+    _impl_.partname_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
 }
 inline void ComponentsFile_ComponentRecord::set_allocated_partname(std::string* partname) {
   if (partname != nullptr) {
-    
+    _impl_._has_bits_[0] |= 0x00000002u;
   } else {
-    
+    _impl_._has_bits_[0] &= ~0x00000002u;
   }
   _impl_.partname_.SetAllocated(partname, GetArenaForAllocation());
 #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
@@ -1437,9 +1686,17 @@ inline void ComponentsFile_ComponentRecord::set_allocated_partname(std::string* 
   // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.partName)
 }
 
-// string attributes = 8;
+// optional string attributes = 8;
+inline bool ComponentsFile_ComponentRecord::_internal_has_attributes() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
+  return value;
+}
+inline bool ComponentsFile_ComponentRecord::has_attributes() const {
+  return _internal_has_attributes();
+}
 inline void ComponentsFile_ComponentRecord::clear_attributes() {
   _impl_.attributes_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000004u;
 }
 inline const std::string& ComponentsFile_ComponentRecord::attributes() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.attributes)
@@ -1448,7 +1705,7 @@ inline const std::string& ComponentsFile_ComponentRecord::attributes() const {
 template <typename ArgT0, typename... ArgT>
 inline PROTOBUF_ALWAYS_INLINE
 void ComponentsFile_ComponentRecord::set_attributes(ArgT0&& arg0, ArgT... args) {
- 
+ _impl_._has_bits_[0] |= 0x00000004u;
  _impl_.attributes_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.attributes)
 }
@@ -1461,22 +1718,32 @@ inline const std::string& ComponentsFile_ComponentRecord::_internal_attributes()
   return _impl_.attributes_.Get();
 }
 inline void ComponentsFile_ComponentRecord::_internal_set_attributes(const std::string& value) {
-  
+  _impl_._has_bits_[0] |= 0x00000004u;
   _impl_.attributes_.Set(value, GetArenaForAllocation());
 }
 inline std::string* ComponentsFile_ComponentRecord::_internal_mutable_attributes() {
-  
+  _impl_._has_bits_[0] |= 0x00000004u;
   return _impl_.attributes_.Mutable(GetArenaForAllocation());
 }
 inline std::string* ComponentsFile_ComponentRecord::release_attributes() {
   // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.attributes)
-  return _impl_.attributes_.Release();
+  if (!_internal_has_attributes()) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000004u;
+  auto* p = _impl_.attributes_.Release();
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.attributes_.IsDefault()) {
+    _impl_.attributes_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
 }
 inline void ComponentsFile_ComponentRecord::set_allocated_attributes(std::string* attributes) {
   if (attributes != nullptr) {
-    
+    _impl_._has_bits_[0] |= 0x00000004u;
   } else {
-    
+    _impl_._has_bits_[0] &= ~0x00000004u;
   }
   _impl_.attributes_.SetAllocated(attributes, GetArenaForAllocation());
 #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
@@ -1487,9 +1754,17 @@ inline void ComponentsFile_ComponentRecord::set_allocated_attributes(std::string
   // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.attributes)
 }
 
-// uint32 id = 9;
+// optional uint32 id = 9;
+inline bool ComponentsFile_ComponentRecord::_internal_has_id() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000100u) != 0;
+  return value;
+}
+inline bool ComponentsFile_ComponentRecord::has_id() const {
+  return _internal_has_id();
+}
 inline void ComponentsFile_ComponentRecord::clear_id() {
   _impl_.id_ = 0u;
+  _impl_._has_bits_[0] &= ~0x00000100u;
 }
 inline uint32_t ComponentsFile_ComponentRecord::_internal_id() const {
   return _impl_.id_;
@@ -1499,7 +1774,7 @@ inline uint32_t ComponentsFile_ComponentRecord::id() const {
   return _internal_id();
 }
 inline void ComponentsFile_ComponentRecord::_internal_set_id(uint32_t value) {
-  
+  _impl_._has_bits_[0] |= 0x00000100u;
   _impl_.id_ = value;
 }
 inline void ComponentsFile_ComponentRecord::set_id(uint32_t value) {
@@ -1507,9 +1782,17 @@ inline void ComponentsFile_ComponentRecord::set_id(uint32_t value) {
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.id)
 }
 
-// uint32 index = 10;
+// optional uint32 index = 10;
+inline bool ComponentsFile_ComponentRecord::_internal_has_index() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000200u) != 0;
+  return value;
+}
+inline bool ComponentsFile_ComponentRecord::has_index() const {
+  return _internal_has_index();
+}
 inline void ComponentsFile_ComponentRecord::clear_index() {
   _impl_.index_ = 0u;
+  _impl_._has_bits_[0] &= ~0x00000200u;
 }
 inline uint32_t ComponentsFile_ComponentRecord::_internal_index() const {
   return _impl_.index_;
@@ -1519,7 +1802,7 @@ inline uint32_t ComponentsFile_ComponentRecord::index() const {
   return _internal_index();
 }
 inline void ComponentsFile_ComponentRecord::_internal_set_index(uint32_t value) {
-  
+  _impl_._has_bits_[0] |= 0x00000200u;
   _impl_.index_ = value;
 }
 inline void ComponentsFile_ComponentRecord::set_index(uint32_t value) {
@@ -1612,9 +1895,17 @@ ComponentsFile_ComponentRecord::toeprintrecords() const {
 
 // ComponentsFile
 
-// string units = 1;
+// optional string units = 1;
+inline bool ComponentsFile::_internal_has_units() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
+  return value;
+}
+inline bool ComponentsFile::has_units() const {
+  return _internal_has_units();
+}
 inline void ComponentsFile::clear_units() {
   _impl_.units_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000001u;
 }
 inline const std::string& ComponentsFile::units() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.ComponentsFile.units)
@@ -1623,7 +1914,7 @@ inline const std::string& ComponentsFile::units() const {
 template <typename ArgT0, typename... ArgT>
 inline PROTOBUF_ALWAYS_INLINE
 void ComponentsFile::set_units(ArgT0&& arg0, ArgT... args) {
- 
+ _impl_._has_bits_[0] |= 0x00000001u;
  _impl_.units_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.units)
 }
@@ -1636,22 +1927,32 @@ inline const std::string& ComponentsFile::_internal_units() const {
   return _impl_.units_.Get();
 }
 inline void ComponentsFile::_internal_set_units(const std::string& value) {
-  
+  _impl_._has_bits_[0] |= 0x00000001u;
   _impl_.units_.Set(value, GetArenaForAllocation());
 }
 inline std::string* ComponentsFile::_internal_mutable_units() {
-  
+  _impl_._has_bits_[0] |= 0x00000001u;
   return _impl_.units_.Mutable(GetArenaForAllocation());
 }
 inline std::string* ComponentsFile::release_units() {
   // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.ComponentsFile.units)
-  return _impl_.units_.Release();
+  if (!_internal_has_units()) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000001u;
+  auto* p = _impl_.units_.Release();
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.units_.IsDefault()) {
+    _impl_.units_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
 }
 inline void ComponentsFile::set_allocated_units(std::string* units) {
   if (units != nullptr) {
-    
+    _impl_._has_bits_[0] |= 0x00000001u;
   } else {
-    
+    _impl_._has_bits_[0] &= ~0x00000001u;
   }
   _impl_.units_.SetAllocated(units, GetArenaForAllocation());
 #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
@@ -1662,9 +1963,17 @@ inline void ComponentsFile::set_allocated_units(std::string* units) {
   // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.ComponentsFile.units)
 }
 
-// uint32 id = 2;
+// optional uint32 id = 2;
+inline bool ComponentsFile::_internal_has_id() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000010u) != 0;
+  return value;
+}
+inline bool ComponentsFile::has_id() const {
+  return _internal_has_id();
+}
 inline void ComponentsFile::clear_id() {
   _impl_.id_ = 0u;
+  _impl_._has_bits_[0] &= ~0x00000010u;
 }
 inline uint32_t ComponentsFile::_internal_id() const {
   return _impl_.id_;
@@ -1674,7 +1983,7 @@ inline uint32_t ComponentsFile::id() const {
   return _internal_id();
 }
 inline void ComponentsFile::_internal_set_id(uint32_t value) {
-  
+  _impl_._has_bits_[0] |= 0x00000010u;
   _impl_.id_ = value;
 }
 inline void ComponentsFile::set_id(uint32_t value) {
@@ -1682,9 +1991,17 @@ inline void ComponentsFile::set_id(uint32_t value) {
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.id)
 }
 
-// .Odb.Lib.Protobuf.BoardSide side = 3;
+// optional .Odb.Lib.Protobuf.BoardSide side = 3;
+inline bool ComponentsFile::_internal_has_side() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000020u) != 0;
+  return value;
+}
+inline bool ComponentsFile::has_side() const {
+  return _internal_has_side();
+}
 inline void ComponentsFile::clear_side() {
   _impl_.side_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000020u;
 }
 inline ::Odb::Lib::Protobuf::BoardSide ComponentsFile::_internal_side() const {
   return static_cast< ::Odb::Lib::Protobuf::BoardSide >(_impl_.side_);
@@ -1694,7 +2011,7 @@ inline ::Odb::Lib::Protobuf::BoardSide ComponentsFile::side() const {
   return _internal_side();
 }
 inline void ComponentsFile::_internal_set_side(::Odb::Lib::Protobuf::BoardSide value) {
-  
+  _impl_._has_bits_[0] |= 0x00000020u;
   _impl_.side_ = value;
 }
 inline void ComponentsFile::set_side(::Odb::Lib::Protobuf::BoardSide value) {
@@ -1702,59 +2019,85 @@ inline void ComponentsFile::set_side(::Odb::Lib::Protobuf::BoardSide value) {
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.side)
 }
 
-// string name = 4;
-inline void ComponentsFile::clear_name() {
-  _impl_.name_.ClearToEmpty();
+// optional string layerName = 4;
+inline bool ComponentsFile::_internal_has_layername() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
+  return value;
 }
-inline const std::string& ComponentsFile::name() const {
-  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.ComponentsFile.name)
-  return _internal_name();
+inline bool ComponentsFile::has_layername() const {
+  return _internal_has_layername();
+}
+inline void ComponentsFile::clear_layername() {
+  _impl_.layername_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000002u;
+}
+inline const std::string& ComponentsFile::layername() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.ComponentsFile.layerName)
+  return _internal_layername();
 }
 template <typename ArgT0, typename... ArgT>
 inline PROTOBUF_ALWAYS_INLINE
-void ComponentsFile::set_name(ArgT0&& arg0, ArgT... args) {
- 
- _impl_.name_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.name)
+void ComponentsFile::set_layername(ArgT0&& arg0, ArgT... args) {
+ _impl_._has_bits_[0] |= 0x00000002u;
+ _impl_.layername_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.layerName)
 }
-inline std::string* ComponentsFile::mutable_name() {
-  std::string* _s = _internal_mutable_name();
-  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.ComponentsFile.name)
+inline std::string* ComponentsFile::mutable_layername() {
+  std::string* _s = _internal_mutable_layername();
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.ComponentsFile.layerName)
   return _s;
 }
-inline const std::string& ComponentsFile::_internal_name() const {
-  return _impl_.name_.Get();
+inline const std::string& ComponentsFile::_internal_layername() const {
+  return _impl_.layername_.Get();
 }
-inline void ComponentsFile::_internal_set_name(const std::string& value) {
-  
-  _impl_.name_.Set(value, GetArenaForAllocation());
+inline void ComponentsFile::_internal_set_layername(const std::string& value) {
+  _impl_._has_bits_[0] |= 0x00000002u;
+  _impl_.layername_.Set(value, GetArenaForAllocation());
 }
-inline std::string* ComponentsFile::_internal_mutable_name() {
-  
-  return _impl_.name_.Mutable(GetArenaForAllocation());
+inline std::string* ComponentsFile::_internal_mutable_layername() {
+  _impl_._has_bits_[0] |= 0x00000002u;
+  return _impl_.layername_.Mutable(GetArenaForAllocation());
 }
-inline std::string* ComponentsFile::release_name() {
-  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.ComponentsFile.name)
-  return _impl_.name_.Release();
-}
-inline void ComponentsFile::set_allocated_name(std::string* name) {
-  if (name != nullptr) {
-    
-  } else {
-    
+inline std::string* ComponentsFile::release_layername() {
+  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.ComponentsFile.layerName)
+  if (!_internal_has_layername()) {
+    return nullptr;
   }
-  _impl_.name_.SetAllocated(name, GetArenaForAllocation());
+  _impl_._has_bits_[0] &= ~0x00000002u;
+  auto* p = _impl_.layername_.Release();
 #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.name_.IsDefault()) {
-    _impl_.name_.Set("", GetArenaForAllocation());
+  if (_impl_.layername_.IsDefault()) {
+    _impl_.layername_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.ComponentsFile.name)
+  return p;
+}
+inline void ComponentsFile::set_allocated_layername(std::string* layername) {
+  if (layername != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000002u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000002u;
+  }
+  _impl_.layername_.SetAllocated(layername, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.layername_.IsDefault()) {
+    _impl_.layername_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.ComponentsFile.layerName)
 }
 
-// string path = 5;
+// optional string path = 5;
+inline bool ComponentsFile::_internal_has_path() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
+  return value;
+}
+inline bool ComponentsFile::has_path() const {
+  return _internal_has_path();
+}
 inline void ComponentsFile::clear_path() {
   _impl_.path_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000004u;
 }
 inline const std::string& ComponentsFile::path() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.ComponentsFile.path)
@@ -1763,7 +2106,7 @@ inline const std::string& ComponentsFile::path() const {
 template <typename ArgT0, typename... ArgT>
 inline PROTOBUF_ALWAYS_INLINE
 void ComponentsFile::set_path(ArgT0&& arg0, ArgT... args) {
- 
+ _impl_._has_bits_[0] |= 0x00000004u;
  _impl_.path_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.path)
 }
@@ -1776,22 +2119,32 @@ inline const std::string& ComponentsFile::_internal_path() const {
   return _impl_.path_.Get();
 }
 inline void ComponentsFile::_internal_set_path(const std::string& value) {
-  
+  _impl_._has_bits_[0] |= 0x00000004u;
   _impl_.path_.Set(value, GetArenaForAllocation());
 }
 inline std::string* ComponentsFile::_internal_mutable_path() {
-  
+  _impl_._has_bits_[0] |= 0x00000004u;
   return _impl_.path_.Mutable(GetArenaForAllocation());
 }
 inline std::string* ComponentsFile::release_path() {
   // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.ComponentsFile.path)
-  return _impl_.path_.Release();
+  if (!_internal_has_path()) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000004u;
+  auto* p = _impl_.path_.Release();
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.path_.IsDefault()) {
+    _impl_.path_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
 }
 inline void ComponentsFile::set_allocated_path(std::string* path) {
   if (path != nullptr) {
-    
+    _impl_._has_bits_[0] |= 0x00000004u;
   } else {
-    
+    _impl_._has_bits_[0] &= ~0x00000004u;
   }
   _impl_.path_.SetAllocated(path, GetArenaForAllocation());
 #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
@@ -1802,9 +2155,17 @@ inline void ComponentsFile::set_allocated_path(std::string* path) {
   // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.ComponentsFile.path)
 }
 
-// string directory = 6;
+// optional string directory = 6;
+inline bool ComponentsFile::_internal_has_directory() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000008u) != 0;
+  return value;
+}
+inline bool ComponentsFile::has_directory() const {
+  return _internal_has_directory();
+}
 inline void ComponentsFile::clear_directory() {
   _impl_.directory_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000008u;
 }
 inline const std::string& ComponentsFile::directory() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.ComponentsFile.directory)
@@ -1813,7 +2174,7 @@ inline const std::string& ComponentsFile::directory() const {
 template <typename ArgT0, typename... ArgT>
 inline PROTOBUF_ALWAYS_INLINE
 void ComponentsFile::set_directory(ArgT0&& arg0, ArgT... args) {
- 
+ _impl_._has_bits_[0] |= 0x00000008u;
  _impl_.directory_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.directory)
 }
@@ -1826,22 +2187,32 @@ inline const std::string& ComponentsFile::_internal_directory() const {
   return _impl_.directory_.Get();
 }
 inline void ComponentsFile::_internal_set_directory(const std::string& value) {
-  
+  _impl_._has_bits_[0] |= 0x00000008u;
   _impl_.directory_.Set(value, GetArenaForAllocation());
 }
 inline std::string* ComponentsFile::_internal_mutable_directory() {
-  
+  _impl_._has_bits_[0] |= 0x00000008u;
   return _impl_.directory_.Mutable(GetArenaForAllocation());
 }
 inline std::string* ComponentsFile::release_directory() {
   // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.ComponentsFile.directory)
-  return _impl_.directory_.Release();
+  if (!_internal_has_directory()) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000008u;
+  auto* p = _impl_.directory_.Release();
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.directory_.IsDefault()) {
+    _impl_.directory_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
 }
 inline void ComponentsFile::set_allocated_directory(std::string* directory) {
   if (directory != nullptr) {
-    
+    _impl_._has_bits_[0] |= 0x00000008u;
   } else {
-    
+    _impl_._has_bits_[0] &= ~0x00000008u;
   }
   _impl_.directory_.SetAllocated(directory, GetArenaForAllocation());
 #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING

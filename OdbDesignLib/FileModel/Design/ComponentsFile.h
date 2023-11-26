@@ -25,7 +25,8 @@ namespace Odb::Lib::FileModel::Design
 		std::string GetUnits() const;
 		BoardSide GetSide() const;
 		std::filesystem::path GetPath();
-		std::filesystem::path GetDirectory();		
+		std::filesystem::path GetDirectory();
+		std::string GetLayerName() const;
 
 		struct ComponentRecord : public IProtoBuffable<Odb::Lib::Protobuf::ComponentsFile::ComponentRecord>
 		{
@@ -100,7 +101,7 @@ namespace Odb::Lib::FileModel::Design
 		std::string m_units;
 		unsigned int m_id;
 		BoardSide m_side;
-		std::string m_name;
+		std::string m_layerName;
 		std::filesystem::path m_path;
 		std::filesystem::path m_directory;
 

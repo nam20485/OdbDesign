@@ -18,39 +18,39 @@ message ComponentsFile {
 
         message ToeprintRecord  {
 
-            uint32 pinNumber = 1;
-            float locationX = 2;
-            float locationY = 3;
-            float rotation = 4;
-            bool mirror = 5;
-            uint32 netNumber = 6;
-            uint32 subnetNumber = 7;
-            string name = 8;
+            optional uint32 pinNumber = 1;
+            optional float locationX = 2;
+            optional float locationY = 3;
+            optional float rotation = 4;
+            optional bool mirror = 5;
+            optional uint32 netNumber = 6;
+            optional uint32 subnetNumber = 7;
+            optional string name = 8;
 
         }
         
-        uint32 pkgRef = 1;
-        float locationX = 2;
-        float locationY = 3;
-        float rotation = 4;
-        bool mirror = 5;
-        string compName = 6;
-        string partName = 7;
-        string attributes = 8;
-        uint32 id = 9;
-        uint32 index = 10; 
+        optional uint32 pkgRef = 1;
+        optional float locationX = 2;
+        optional float locationY = 3;
+        optional float rotation = 4;
+        optional bool mirror = 5;
+        optional string compName = 6;
+        optional string partName = 7;
+        optional string attributes = 8;
+        optional uint32 id = 9;
+        optional uint32 index = 10; 
 
         repeated PropertyRecord propertyRecords = 11;
         repeated ToeprintRecord toeprintRecords = 12;      
 
     }
    
-    string units = 1;
-    uint32 id = 2;
-    BoardSide side = 3;
-    string name = 4;
-    string path = 5;
-    string directory = 6;
+    optional string units = 1;
+    optional uint32 id = 2;
+    optional BoardSide side = 3;
+    optional string layerName = 4;
+    optional string path = 5;
+    optional string directory = 6;
 
     repeated string attributeNames = 7;
     repeated string attributeTextValues = 8;
