@@ -65,6 +65,7 @@ message EdaDataFile {
             optional BoardSide side = 6;
             optional uint32 componentNumber = 7;
             optional uint32 toeprintNumber = 8;
+            optional uint32 index = 9;
         };
 
         optional string name = 1;

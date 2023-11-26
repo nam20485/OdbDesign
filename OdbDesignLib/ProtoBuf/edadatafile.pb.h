@@ -734,6 +734,7 @@ class EdaDataFile_NetRecord_SubnetRecord final :
     kSideFieldNumber = 6,
     kComponentNumberFieldNumber = 7,
     kToeprintNumberFieldNumber = 8,
+    kIndexFieldNumber = 9,
   };
   // repeated .Odb.Lib.Protobuf.EdaDataFile.FeatureIdRecord featureIdRecords = 2;
   int featureidrecords_size() const;
@@ -844,6 +845,19 @@ class EdaDataFile_NetRecord_SubnetRecord final :
   void _internal_set_toeprintnumber(uint32_t value);
   public:
 
+  // optional uint32 index = 9;
+  bool has_index() const;
+  private:
+  bool _internal_has_index() const;
+  public:
+  void clear_index();
+  uint32_t index() const;
+  void set_index(uint32_t value);
+  private:
+  uint32_t _internal_index() const;
+  void _internal_set_index(uint32_t value);
+  public:
+
   // @@protoc_insertion_point(class_scope:Odb.Lib.Protobuf.EdaDataFile.NetRecord.SubnetRecord)
  private:
   class _Internal;
@@ -862,6 +876,7 @@ class EdaDataFile_NetRecord_SubnetRecord final :
     int side_;
     uint32_t componentnumber_;
     uint32_t toeprintnumber_;
+    uint32_t index_;
   };
   union { Impl_ _impl_; };
   friend struct ::TableStruct_edadatafile_2eproto;
@@ -2823,6 +2838,34 @@ inline void EdaDataFile_NetRecord_SubnetRecord::_internal_set_toeprintnumber(uin
 inline void EdaDataFile_NetRecord_SubnetRecord::set_toeprintnumber(uint32_t value) {
   _internal_set_toeprintnumber(value);
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.EdaDataFile.NetRecord.SubnetRecord.toeprintNumber)
+}
+
+// optional uint32 index = 9;
+inline bool EdaDataFile_NetRecord_SubnetRecord::_internal_has_index() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000080u) != 0;
+  return value;
+}
+inline bool EdaDataFile_NetRecord_SubnetRecord::has_index() const {
+  return _internal_has_index();
+}
+inline void EdaDataFile_NetRecord_SubnetRecord::clear_index() {
+  _impl_.index_ = 0u;
+  _impl_._has_bits_[0] &= ~0x00000080u;
+}
+inline uint32_t EdaDataFile_NetRecord_SubnetRecord::_internal_index() const {
+  return _impl_.index_;
+}
+inline uint32_t EdaDataFile_NetRecord_SubnetRecord::index() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.EdaDataFile.NetRecord.SubnetRecord.index)
+  return _internal_index();
+}
+inline void EdaDataFile_NetRecord_SubnetRecord::_internal_set_index(uint32_t value) {
+  _impl_._has_bits_[0] |= 0x00000080u;
+  _impl_.index_ = value;
+}
+inline void EdaDataFile_NetRecord_SubnetRecord::set_index(uint32_t value) {
+  _internal_set_index(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.EdaDataFile.NetRecord.SubnetRecord.index)
 }
 
 // -------------------------------------------------------------------
