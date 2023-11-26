@@ -148,7 +148,8 @@ namespace Utils
 			logMessage.line != -1)
 		{			
 			ss << " " 
-				<< std::setw(18)
+				<< std::setw(20)
+				<< std::left
 				<< path{ logMessage.file }.filename().string()
 				<< ":"
 				<< std::setw(4)
@@ -156,7 +157,8 @@ namespace Utils
 		}
 		
 		ss << " "
-			<< std::setw(5)
+			<< std::setw(6)
+			<< std::right
 			<< logLevelToString(logMessage.level)
 			<< "]";
 		
