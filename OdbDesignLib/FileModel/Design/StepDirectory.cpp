@@ -109,10 +109,11 @@ namespace Odb::Lib::FileModel::Design
         pStepDirectoryMessage->set_path(m_path.string());
         pStepDirectoryMessage->mutable_edadatafile()->CopyFrom(*m_edaData.to_protobuf());
 
-        // TODO: netlistfiles
-        //m_netlistsByName
+        for (const auto& kvNetlistFile : m_netlistsByName)
+        {
+            (*pStepDirectoryMessage->mutable_netlistsbyname())[kvNetlistFile.first] = *kvNetlistFile.second->to_protobuf();
+        }        
 
-        // TODO: layer directories
         for (const auto& kvLayerDirectoryRecord : m_layersByName)
         {
             (*pStepDirectoryMessage->mutable_layersbyname())[kvLayerDirectoryRecord.first] = *kvLayerDirectoryRecord.second->to_protobuf();
@@ -126,6 +127,14 @@ namespace Odb::Lib::FileModel::Design
         m_name = message.name();
 		m_path = message.path();
 		m_edaData.from_protobuf(message.edadatafile());
+
+        for (const auto& kvNetlistFile : message.netlistsbyname())
+        {
+            auto pNetlistFile = std::make_shared<NetlistFile>(std::filesystem::path(kvNetlistFile.second.path()));
+            pNetlistFile->from_protobuf(kvNetlistFile.second);
+            m_netlistsByName[kvNetlistFile.first] = pNetlistFile;
+        }
+
         for (const auto& kvLayerDirectoryRecord : message.layersbyname())
         {
 			auto pLayerDirectory = std::make_shared<LayerDirectory>(std::filesystem::path(kvLayerDirectoryRecord.second.path()));

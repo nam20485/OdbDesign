@@ -157,6 +157,7 @@ namespace Odb::Lib::FileModel::Design
 		std::unique_ptr<Odb::Lib::Protobuf::FileArchive> pFileArchiveMessage(new Odb::Lib::Protobuf::FileArchive);
 		pFileArchiveMessage->mutable_matrixfile()->CopyFrom(*m_matrixFile.to_protobuf());
 		pFileArchiveMessage->mutable_miscinfofile()->CopyFrom(*m_miscInfoFile.to_protobuf());
+		pFileArchiveMessage->mutable_standardfontsfile()->CopyFrom(*m_standardFontsFile.to_protobuf());
 		
 		for (const auto& kvStepDirectoryRecord : m_stepsByName)
 		{
@@ -170,6 +171,7 @@ namespace Odb::Lib::FileModel::Design
 	{
 		m_matrixFile.from_protobuf(message.matrixfile());
 		m_miscInfoFile.from_protobuf(message.miscinfofile());
+		m_standardFontsFile.from_protobuf(message.standardfontsfile());
 
 		for (const auto& kvStepDirectoryRecord : message.stepsbyname())
 		{
