@@ -452,6 +452,18 @@ namespace Odb::Lib::FileModel::Design
 
     void Odb::Lib::FileModel::Design::MatrixFile::from_protobuf(const Odb::Lib::Protobuf::MatrixFile& message)
     {
+        for (const auto& stepRecord : message.steps())
+        {
+			auto pStepRecord = std::make_shared<StepRecord>();
+			pStepRecord->from_protobuf(stepRecord);
+			m_stepRecords.push_back(pStepRecord);
+		}
+        for (const auto& layerRecord : message.layers())
+        {
+			auto pLayerRecord = std::make_shared<LayerRecord>();
+			pLayerRecord->from_protobuf(layerRecord);
+			m_layerRecords.push_back(pLayerRecord);
+		}
     }
     
     std::unique_ptr<Odb::Lib::Protobuf::MatrixFile::StepRecord> Odb::Lib::FileModel::Design::MatrixFile::StepRecord::to_protobuf() const
@@ -465,6 +477,9 @@ namespace Odb::Lib::FileModel::Design
 
     void Odb::Lib::FileModel::Design::MatrixFile::StepRecord::from_protobuf(const Odb::Lib::Protobuf::MatrixFile::StepRecord& message)
     {
+        column = message.column();
+        name = message.name();
+        id = message.id();
     }
 
     std::unique_ptr<Odb::Lib::Protobuf::MatrixFile::LayerRecord> Odb::Lib::FileModel::Design::MatrixFile::LayerRecord::to_protobuf() const
@@ -496,5 +511,24 @@ namespace Odb::Lib::FileModel::Design
 
     void Odb::Lib::FileModel::Design::MatrixFile::LayerRecord::from_protobuf(const Odb::Lib::Protobuf::MatrixFile::LayerRecord& message)
     {
+        addType = message.addtype();
+		context = static_cast<Context>(message.context());
+		cuBottom = message.cubottom();
+		cuTop = message.cutop();
+		dielectricName = message.dielectricname();
+		dielectricType = static_cast<DielectricType>(message.dielectrictype());
+		endName = message.endname();
+		form = static_cast<Form>(message.form());
+		id = message.id();
+		name = message.name();
+		oldName = message.oldname();
+		polarity = static_cast<Polarity>(message.polarity());
+		ref = message.ref();
+		row = message.row();
+		startName = message.startname();
+		type = static_cast<Type>(message.type());
+		//color.r = message.color().r();
+		//color.g = message.color().g();
+		//color.b = message.color().b();
     }
 }

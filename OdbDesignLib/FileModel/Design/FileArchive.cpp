@@ -168,6 +168,15 @@ namespace Odb::Lib::FileModel::Design
 
 	void FileArchive::from_protobuf(const Odb::Lib::Protobuf::FileArchive& message)
 	{
+		m_matrixFile.from_protobuf(message.matrixfile());
+		m_miscInfoFile.from_protobuf(message.miscinfofile());
+
+		for (const auto& kvStepDirectoryRecord : message.stepsbyname())
+		{
+			auto pStepDirectory = std::make_shared<StepDirectory>("");
+			pStepDirectory->from_protobuf(kvStepDirectoryRecord.second);
+			m_stepsByName[kvStepDirectoryRecord.first] = pStepDirectory;
+		}
 	}
 
 	bool FileArchive::ParseDesignDirectory(const std::filesystem::path& path)
@@ -269,30 +278,5 @@ namespace Odb::Lib::FileModel::Design
 	const StandardFontsFile& FileArchive::GetStandardFontsFile() const
 	{
 		return m_standardFontsFile;
-	}
-
-    //const EdaDataFile& FileModel::GetStepEdaDataFile(std::string stepName) const
-	//{		
-	//	auto findIt = m_stepsByName.find(stepName);
-	//	if (findIt != m_stepsByName.end())
-	//	{
-	//		return findIt->second->GetEdaDataFile();
-	//	}
-	//	else
-	//	{
-	//		return EdaDataFile::EMPTY;
-	//	}		
-	//}
-
-	//const EdaDataFile& FileModel::GetFirstStepEdaDataFile() const
-	//{
-	//	if (!m_stepsByName.empty())
-	//	{
-	//		return m_stepsByName.begin()->second->GetEdaDataFile();
-	//	}
-	//	else
-	//	{
-	//		return EdaDataFile::EMPTY;
-	//	}
-	//}
+	}    
 }

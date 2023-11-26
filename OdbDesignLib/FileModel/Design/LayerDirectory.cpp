@@ -68,5 +68,8 @@ namespace Odb::Lib::FileModel::Design
 
 	void Odb::Lib::FileModel::Design::LayerDirectory::from_protobuf(const Odb::Lib::Protobuf::LayerDirectory& message)
 	{
+		m_name = message.name();
+		m_path = message.path();
+		m_componentsFile.from_protobuf(message.components());
 	}
 }

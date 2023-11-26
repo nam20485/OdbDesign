@@ -123,6 +123,15 @@ namespace Odb::Lib::FileModel::Design
 
     void StepDirectory::from_protobuf(const Odb::Lib::Protobuf::StepDirectory& message)
     {
+        m_name = message.name();
+		m_path = message.path();
+		m_edaData.from_protobuf(message.edadatafile());
+        for (const auto& kvLayerDirectoryRecord : message.layersbyname())
+        {
+			auto pLayerDirectory = std::make_shared<LayerDirectory>(std::filesystem::path(kvLayerDirectoryRecord.second.path()));
+			pLayerDirectory->from_protobuf(kvLayerDirectoryRecord.second);
+			m_layersByName[kvLayerDirectoryRecord.first] = pLayerDirectory;
+		}
     }
 
     bool StepDirectory::ParseNetlistFiles(std::filesystem::path netlistsPath)

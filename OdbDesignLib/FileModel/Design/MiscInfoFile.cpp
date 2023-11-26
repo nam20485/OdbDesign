@@ -227,6 +227,18 @@ namespace Odb::Lib::FileModel::Design
 
     void MiscInfoFile::from_protobuf(const Odb::Lib::Protobuf::MiscInfoFile& message)
     {
+        m_jobName = message.jobname();
+		m_productModelName = message.productmodelname();
+		m_odbVersionMajor = message.odbversionmajor();
+		m_odbVersionMinor = message.odbversionminor();
+		m_odbSource = message.odbsource();
+		//m_creationDateDate = system_clock::from_time_t(message.creationdatedate().seconds());        
+        m_creationDateDate = std::chrono::system_clock::time_point(std::chrono::seconds(message.creationdatedate().seconds()));
+		m_saveDate = std::chrono::system_clock::time_point(std::chrono::seconds(message.savedate().seconds()));
+		m_saveApp = message.saveapp();
+		m_saveUser = message.saveuser();
+		m_units = message.units();
+		m_maxUniqueId = message.maxuniqueid();
     }
 
     std::string MiscInfoFile::GetProductModelName() const
