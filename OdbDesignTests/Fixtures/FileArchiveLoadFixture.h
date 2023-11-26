@@ -6,7 +6,7 @@
 #include <memory>
 #include <string>
 
-namespace Odb::Test
+namespace Odb::Test::Fixtures
 {
 	class FileArchiveLoadFixture : public ::testing::Test
 	{

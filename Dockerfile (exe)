@@ -1,4 +1,4 @@
-FROM debian:bookworm-20231030-slim@sha256:6cc67f78e0e8295b4fbe055eba0356648f149daf15db9179aa51fcfa9cc131cd AS build
+FROM debian:bookworm-20231120-slim@sha256:2bc5c236e9b262645a323e9088dfa3bb1ecb16cc75811daf40a23a824d665be9 AS build
 
 # install dependencies
 RUN apt-get update && \
@@ -52,7 +52,7 @@ RUN cp /src/OdbDesign/out/build/linux-release/OdbDesignLib/libOdbDesign.so ./_Py
 #RUN python3 -m build
 
 # much smaller runtime image
-FROM debian:bookworm-20231030-slim@sha256:6cc67f78e0e8295b4fbe055eba0356648f149daf15db9179aa51fcfa9cc131cd AS run
+FROM debian:bookworm-20231120-slim@sha256:2bc5c236e9b262645a323e9088dfa3bb1ecb16cc75811daf40a23a824d665be9 AS run
 
 RUN mkdir /OdbDesign
 WORKDIR /OdbDesign

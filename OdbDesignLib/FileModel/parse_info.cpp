@@ -14,7 +14,7 @@ namespace Odb::Lib::FileModel
 
         if (!dataFile.empty() || !dataLine.empty() || !dataToken.empty())
         {
-            ss << "current file:  [" << dataFile.filename().string() << ":" << dataLineNumber << "]" << std::endl
+            ss << "current file:  [" << dataFile.relative_path().string() << ":" << dataLineNumber << "]" << std::endl
                 << "current line:  [" << dataLine << "]" << std::endl
                 << "current token: [" << dataToken << "]";
         }

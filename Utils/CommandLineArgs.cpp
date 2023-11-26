@@ -7,11 +7,14 @@
 #include "CommandLineArgs.h"
 #include "CommandLineArgs.h"
 #include "CommandLineArgs.h"
+#include "CommandLineArgs.h"
+#include "CommandLineArgs.h"
 #include <exception>
 #include <stdexcept>
 #include "str_trim.h"
 #include <sstream>
 #include <iostream>
+#include <cstring>
 
 
 namespace Utils
@@ -88,6 +91,17 @@ namespace Utils
 	std::string CommandLineArgs::executableName() const
 	{
 		return executable().filename().string();
+	}
+
+	bool CommandLineArgs::isWindows() const
+	{
+		auto pos = executableName().find(EXE_EXTENSION);
+		return (pos >= 0 && pos == executableName().length()-strlen(EXE_EXTENSION));
+	}
+
+	bool CommandLineArgs::isLinux() const
+	{
+		return !isWindows();
 	}
 
 	std::string CommandLineArgs::getArgValue(const std::string& name) const
