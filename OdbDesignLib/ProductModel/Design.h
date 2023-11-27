@@ -46,12 +46,18 @@ namespace Odb::Lib::ProductModel
 		
 		bool BuildNets();
 		bool BuildPackages();
-		bool BuildParts();
-		bool BuildComponents();
-		bool BuildLayerComponents(const Odb::Lib::FileModel::Design::ComponentsFile* pComponentsFile);
-		bool BuildLayerParts(const Odb::Lib::FileModel::Design::ComponentsFile* pComponentsFile);
-		bool BuildPlacements();
-		bool BuildLayerPlacements(const Odb::Lib::FileModel::Design::ComponentsFile* pComponentsFile);
+		bool BuildAllParts();
+		bool BuildParts(const Odb::Lib::FileModel::Design::ComponentsFile* pComponentsFile);
+		bool BuildAllComponents();
+		bool BuildComponents(const Odb::Lib::FileModel::Design::ComponentsFile* pComponentsFile);		
+
+		bool BuildPlacementsFromComponentsFiles();
+		bool BuildPlacementsFromComponentsFile(const Odb::Lib::FileModel::Design::ComponentsFile* pComponentsFile);
+
+		bool BuildPlacementsFromEdaDataFile();
+
+		//bool BuildNoneNet();
+		//bool BreakSinglePinNets();
 
 	};
 }
