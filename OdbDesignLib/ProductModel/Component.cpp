@@ -1,14 +1,16 @@
 #include "Component.h"
+#include "Component.h"
 
 
 namespace Odb::Lib::ProductModel
 {
-	Component::Component(std::string refDes, std::string partName, std::shared_ptr<Package> pPackage, unsigned int index, BoardSide side)
+	Component::Component(std::string refDes, std::string partName, std::shared_ptr<Package> pPackage, unsigned int index, BoardSide side, std::shared_ptr<Part> pPart)
 		: m_refDes(refDes)
 		, m_partName(partName)
 		, m_pPackage(pPackage)
 		, m_index(index)
 		, m_side(side)
+		, m_pPart(pPart)
 	{
 	}
 
@@ -41,5 +43,9 @@ namespace Odb::Lib::ProductModel
 		return m_side;
 	}
 
+	std::shared_ptr<Part> Component::GetPart() const
+	{
+		return m_pPart;
+	}
 
 } // namespace Odb::Lib::ProductModel
