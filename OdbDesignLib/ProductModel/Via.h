@@ -5,6 +5,7 @@
 #include <vector>
 #include <map>
 #include <memory>
+#include "../enums.h"
 
 
 namespace Odb::Lib::ProductModel
@@ -22,6 +23,7 @@ namespace Odb::Lib::ProductModel
 
 	private:
 		std::string m_name;
+		BoardSide m_side;
 
 	};
 } // namespace Odb::Lib::ProductModel
