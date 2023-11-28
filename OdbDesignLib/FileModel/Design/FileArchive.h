@@ -33,6 +33,8 @@ namespace Odb::Lib::FileModel::Design
 		const MatrixFile& GetMatrixFile() const;
 		const StandardFontsFile& GetStandardFontsFile() const;
 
+		std::shared_ptr<StepDirectory> GetStepDirectory(const std::string& stepName = "");
+
 		// TODO: fix these to use pointer return types
 		//const EdaDataFile& GetStepEdaDataFile(std::string stepName) const;
 		//const EdaDataFile& GetFirstStepEdaDataFile() const;		

@@ -1,8 +1,4 @@
 #include "FileArchive.h"
-#include "FileArchive.h"
-#include "FileArchive.h"
-#include "FileArchive.h"
-#include "FileArchive.h"
 #include <filesystem>
 #include "ArchiveExtractor.h"
 #include "MiscInfoFile.h"
@@ -282,4 +278,29 @@ namespace Odb::Lib::FileModel::Design
 	{
 		return m_standardFontsFile;
 	}    
+
+	std::shared_ptr<StepDirectory> FileArchive::GetStepDirectory(const std::string& stepName /*= ""*/)
+	{
+		std::shared_ptr<FileModel::Design::StepDirectory> pStepDirectory;
+
+		const auto& steps = GetStepsByName();
+		if (!steps.empty())
+		{
+			if (stepName.empty())
+			{
+				// return first step
+				pStepDirectory = steps.begin()->second;
+			}
+			else
+			{
+				auto findIt = steps.find(stepName);
+				if (findIt != steps.end())
+				{
+					pStepDirectory = findIt->second;
+				}
+			}
+		}		
+
+		return pStepDirectory;
+	}
 }
