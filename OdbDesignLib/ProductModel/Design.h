@@ -55,16 +55,18 @@ namespace Odb::Lib::ProductModel
 		bool BuildVias();
 
 		bool BuildPlacementsFromComponentsFiles();
-		bool BuildPlacementsFromComponentsFile(const Odb::Lib::FileModel::Design::ComponentsFile* pComponentsFile);
-
-		bool CreatePinConnection(const std::string& refDes, unsigned int netNumber, unsigned int pinNumber, const std::string& pinName);		
+		bool BuildPlacementsFromComponentsFile(const Odb::Lib::FileModel::Design::ComponentsFile* pComponentsFile);		
 
 		bool BuildPlacementsFromEdaDataFile();
-
+		
 		bool BuildNoneNet();
-		//bool BreakSinglePinNets();
+		bool BreakSinglePinNets();
 
-		inline static const char* NONE_NET_NAME = "$NONE$";
+		// helper convienience methods
+		bool CreatePinConnection(const std::string& refDes, unsigned int netNumber, unsigned int pinNumber, const std::string& pinName);
+		bool CreateNetConnections(const std::shared_ptr<FileModel::Design::EdaDataFile::NetRecord>& pNetRecord, const std::shared_ptr<FileModel::Design::StepDirectory>& pStepDirectory);
+
+		constexpr inline static const char* NONE_NET_NAME = "$NONE$";
 
 	};	
 }

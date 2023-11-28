@@ -1,9 +1,4 @@
 #include "Design.h"
-#include "Design.h"
-#include "Design.h"
-#include "Design.h"
-#include "Design.h"
-#include "Design.h"
 #include "Package.h"
 #include "Logger.h"
 
@@ -50,7 +45,10 @@ namespace Odb::Lib::ProductModel
 
 		// built from relationships between atomic elements
 		if (! BuildPlacementsFromComponentsFiles()) return false;
-		if (! BuildNoneNet()) return false;
+		// already build from BuildPlacements()
+		//if (! BuildNoneNet()) return false;
+
+		if (!BreakSinglePinNets()) return false;
 
 		return true;
 	}
@@ -268,7 +266,34 @@ namespace Odb::Lib::ProductModel
 		auto& pNoneNet = findIt->second;
 		if (pNoneNet == nullptr) return false;
 
-		for (const auto& pSubnetRecord : pNoneNet->m_subnetRecords)
+		if (!CreateNetConnections(pNoneNet, pStepDirectory)) return false;
+
+		return true;
+	}
+
+	bool Design::BreakSinglePinNets()
+	{
+		return true;
+	}
+
+	bool Design::BuildPlacementsFromEdaDataFile()
+	{
+		auto pStepDirectory = m_pFileModel->GetStepDirectory();
+		if (pStepDirectory == nullptr) return false;
+
+		const auto& edaData = pStepDirectory->GetEdaDataFile();
+		
+		for (const auto& pNetRecord : edaData.GetNetRecords())
+		{			
+			if (!CreateNetConnections(pNetRecord, pStepDirectory)) return false;			
+		}		
+
+		return true;
+	}
+
+	bool Design::CreateNetConnections(const std::shared_ptr<Odb::Lib::FileModel::Design::EdaDataFile::NetRecord>& pNetRecord, const std::shared_ptr<FileModel::Design::StepDirectory>& pStepDirectory)
+	{
+		for (const auto& pSubnetRecord : pNetRecord->m_subnetRecords)
 		{
 			if (pSubnetRecord->type == FileModel::Design::EdaDataFile::NetRecord::SubnetRecord::Type::Toeprint)
 			{										
@@ -314,62 +339,5 @@ namespace Odb::Lib::ProductModel
 
 		return true;
 	}
-
-	bool Design::BuildPlacementsFromEdaDataFile()
-	{
-		auto pStepDirectory = m_pFileModel->GetStepDirectory();
-		if (pStepDirectory == nullptr) return false;
-
-		const auto& edaData = pStepDirectory->GetEdaDataFile();
-		
-		for (const auto& pNetRecord : edaData.GetNetRecords())
-		{
-			for (const auto& pSubnetRecord : pNetRecord->m_subnetRecords)
-			{
-				if (pSubnetRecord->type == FileModel::Design::EdaDataFile::NetRecord::SubnetRecord::Type::Toeprint)
-				{
-					const FileModel::Design::ComponentsFile* pComponentsFileToUse = nullptr;
-
-					auto side = pSubnetRecord->side;
-					if (side == BoardSide::Top)
-					{
-						pComponentsFileToUse = pStepDirectory->GetTopComponentsFile();
-					}
-					else //if (side == BoardSide::Bottom)
-					{
-						pComponentsFileToUse = pStepDirectory->GetBottomComponentsFile();
-					}
-
-					if (pComponentsFileToUse == nullptr) return false;
-
-					auto componentNumber = pSubnetRecord->componentNumber;
-					if (componentNumber >= pComponentsFileToUse->GetComponentRecords().size()) return false;
-
-					auto& pComponentRecord = pComponentsFileToUse->GetComponentRecords()[componentNumber];
-					if (pComponentRecord == nullptr) return false;
-
-					auto toeprintNumber = pSubnetRecord->toeprintNumber;
-					if (toeprintNumber >= pComponentRecord->m_toeprintRecords.size()) return false;
-
-					auto& pToeprintRecord = pComponentRecord->m_toeprintRecords[toeprintNumber];
-					if (pToeprintRecord == nullptr) return false;
-
-					auto& toeprintName = pToeprintRecord->name;
-					auto pinNumber = pToeprintRecord->pinNumber;
-					auto netNumber = pToeprintRecord->netNumber;
-					auto& refDes = pComponentRecord->compName;
-					//auto subnetNumber = pToeprintRecord->subnetNumber;
-
-					if (!CreatePinConnection(refDes, netNumber, pinNumber, toeprintName)) return false;
-				}
-				else if (pSubnetRecord->type == FileModel::Design::EdaDataFile::NetRecord::SubnetRecord::Type::Via)
-				{
-					// ?
-				}
-			}
-		}		
-
-		return true;
-	}	
 
 } // namespace Odb::Lib::ProductModel
