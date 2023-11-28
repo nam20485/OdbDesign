@@ -21,8 +21,7 @@ using namespace std::filesystem;
 namespace Odb::Lib::FileModel::Design
 {
 	ComponentsFile::ComponentsFile()
-		: m_id((unsigned int)-1)
-		, m_side(BoardSide::Neither)
+		: m_id((unsigned int)-1)		
 	{
 	}
 
@@ -240,8 +239,7 @@ namespace Odb::Lib::FileModel::Design
 					BoardSide::Top :
 					BoardSide::Bottom;
 			}
-
-			if (m_side == BoardSide::Neither)
+			else
 			{
 				// not a components layer
 				return true;
