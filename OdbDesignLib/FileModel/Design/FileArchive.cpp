@@ -23,6 +23,7 @@ namespace Odb::Lib::FileModel::Design
 
 	FileArchive::~FileArchive()
 	{
+		m_stepsByName.clear();
 	}
 
 	std::string FileArchive::GetRootDir() const

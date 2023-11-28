@@ -14,7 +14,7 @@ namespace Odb::Lib::ProductModel
 	{
 	public:
 		Package(std::string name, unsigned int index);
-		//~Package();
+		~Package();
 
 		std::string GetName() const;		
 		unsigned int GetIndex() const;

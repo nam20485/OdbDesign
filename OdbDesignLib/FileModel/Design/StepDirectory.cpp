@@ -18,6 +18,7 @@ namespace Odb::Lib::FileModel::Design
     StepDirectory::~StepDirectory()
     {
         m_layersByName.clear();
+        m_netlistsByName.clear();
     }
 
     std::string StepDirectory::GetName()

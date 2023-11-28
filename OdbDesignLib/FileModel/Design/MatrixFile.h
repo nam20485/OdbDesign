@@ -20,7 +20,7 @@ namespace Odb::Lib::FileModel::Design
     {
     public:
         MatrixFile() = default;
-        ~MatrixFile() = default;      
+        ~MatrixFile();
 
         struct StepRecord : public IProtoBuffable<Odb::Lib::Protobuf::MatrixFile::StepRecord>
         {

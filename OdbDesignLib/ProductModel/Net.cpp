@@ -11,6 +11,7 @@ namespace Odb::Lib::ProductModel
 
 	Net::~Net()
 	{
+		m_pinConnections.clear();
 	}
 
 	std::string Net::GetName() const

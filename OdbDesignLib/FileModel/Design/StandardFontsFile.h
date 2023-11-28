@@ -13,7 +13,7 @@ namespace Odb::Lib::FileModel::Design
 	{
 	public:
 		StandardFontsFile() = default;
-		~StandardFontsFile() = default;
+		~StandardFontsFile();
 	
 		bool Parse(std::filesystem::path path) override;
 
@@ -23,6 +23,8 @@ namespace Odb::Lib::FileModel::Design
 
 		struct CharacterBlock : public IProtoBuffable<Odb::Lib::Protobuf::StandardFontsFile::CharacterBlock>
 		{
+			~CharacterBlock();
+
 			struct LineRecord : public IProtoBuffable<Odb::Lib::Protobuf::StandardFontsFile::CharacterBlock::LineRecord>
 			{
 				float xStart;

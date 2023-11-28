@@ -10,6 +10,11 @@ namespace Odb::Lib::FileModel::Design
 {
 	struct ODBDESIGN_EXPORT ContourPolygon
 	{
+		~ContourPolygon()
+		{
+			m_polygonParts.clear();
+		}
+
 		struct ODBDESIGN_EXPORT PolygonPart
 		{
 			enum class Type
@@ -38,12 +43,7 @@ namespace Odb::Lib::FileModel::Design
 		{
 			Island,
 			Hole
-		};
-
-		~ContourPolygon()
-		{
-			m_polygonParts.clear();
-		}
+		};		
 
 		Type type;
 		float xStart, yStart;

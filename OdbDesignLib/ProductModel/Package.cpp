@@ -1,4 +1,6 @@
 #include "Package.h"
+#include "Package.h"
+#include "Package.h"
 
 namespace Odb::Lib::ProductModel
 {
@@ -6,6 +8,12 @@ namespace Odb::Lib::ProductModel
 		: m_name(name)
 		, m_index(index)
 	{
+	}
+
+	Package::~Package()
+	{
+		m_pins.clear();
+		m_pinsbyName.clear();
 	}
 
 	std::string Package::GetName() const

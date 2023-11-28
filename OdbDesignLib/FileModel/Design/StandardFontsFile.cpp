@@ -11,6 +11,11 @@
 
 namespace Odb::Lib::FileModel::Design
 {
+    StandardFontsFile::~StandardFontsFile()
+    {
+        m_characterBlocks.clear();
+    }
+
     bool StandardFontsFile::Parse(std::filesystem::path path)
     {
         std::ifstream standardFile;
@@ -300,6 +305,11 @@ namespace Odb::Lib::FileModel::Design
             pCharacterBlock->from_protobuf(characterBlockMessage);
             m_characterBlocks.push_back(pCharacterBlock);
         }
+    }
+
+    StandardFontsFile::CharacterBlock::~CharacterBlock()
+    {
+        m_lineRecords.clear();
     }
 
     std::unique_ptr<Odb::Lib::Protobuf::StandardFontsFile::CharacterBlock> StandardFontsFile::CharacterBlock::to_protobuf() const

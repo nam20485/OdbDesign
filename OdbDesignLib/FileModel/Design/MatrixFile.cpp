@@ -1,3 +1,4 @@
+#include "MatrixFile.h"
 //
 // Created by nmill on 10/13/2023.
 //
@@ -16,6 +17,12 @@
 
 namespace Odb::Lib::FileModel::Design
 {
+    MatrixFile::~MatrixFile()
+    {
+        m_layerRecords.clear();
+        m_stepRecords.clear();
+    }
+
     inline const MatrixFile::LayerRecord::Vector& MatrixFile::GetLayerRecords() const
     { 
         return m_layerRecords;
