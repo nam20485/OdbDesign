@@ -1,3 +1,4 @@
+#include "MiscInfoFile.h"
 //
 // Created by nmill on 10/13/2023.
 //
@@ -239,6 +240,11 @@ namespace Odb::Lib::FileModel::Design
 		m_saveUser = message.saveuser();
 		m_units = message.units();
 		m_maxUniqueId = message.maxuniqueid();
+    }
+
+    MiscInfoFile::MiscInfoFile()
+        : m_maxUniqueId((unsigned int)-1)
+    {
     }
 
     std::string MiscInfoFile::GetProductModelName() const

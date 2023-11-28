@@ -30,9 +30,7 @@ namespace Odb::Lib::FileModel::Design
 
 			const ContourPolygon::Vector& GetContourPolygons() const;
 
-			typedef std::vector<std::shared_ptr<FeatureRecord>> Vector;
-
-			
+			typedef std::vector<std::shared_ptr<FeatureRecord>> Vector;			
 		};		
 
 		bool Parse(std::filesystem::path directory);
