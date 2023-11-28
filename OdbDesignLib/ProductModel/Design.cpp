@@ -1,7 +1,12 @@
 #include "Design.h"
 #include "Design.h"
+#include "Design.h"
+#include "Design.h"
+#include "Design.h"
+#include "Design.h"
 #include "Package.h"
 #include "Logger.h"
+
 
 namespace Odb::Lib::ProductModel
 {	
@@ -11,6 +16,14 @@ namespace Odb::Lib::ProductModel
 
 	Design::~Design()
 	{
+		m_components.clear();
+		m_componentsByName.clear();
+		m_nets.clear();
+		m_netsByName.clear();
+		m_packages.clear();
+		m_packagesByName.clear();
+		m_parts.clear();
+		m_partsByName.clear();
 	}
 
 	bool Design::Build(std::string path)
@@ -36,7 +49,8 @@ namespace Odb::Lib::ProductModel
 		if (! BuildAllComponents()) return false;
 
 		// built from relationships between atomic elements
-		if (! BuildPlacementsFromComponentsFiles()) return false;		
+		if (! BuildPlacementsFromComponentsFiles()) return false;
+		if (! BuildNoneNet()) return false;
 
 		return true;
 	}
@@ -81,6 +95,11 @@ namespace Odb::Lib::ProductModel
 		}
 
 		return true;
+	}
+
+	bool Design::BuildVias()
+	{
+		return false;
 	}
 
 	bool Design::BuildNets()
@@ -198,29 +217,97 @@ namespace Odb::Lib::ProductModel
 		{
 			const auto& toeprintRecords = pComponentRecord->m_toeprintRecords;
 			for (const auto& pToeprintRecord : toeprintRecords)
-			{
+			{				
 				auto& toeprintName = pToeprintRecord->name;
 				auto pinNumber = pToeprintRecord->pinNumber;
 				auto netNumber = pToeprintRecord->netNumber;
+				auto& refDes = pComponentRecord->compName;
 				//auto subnetNumber = pToeprintRecord->subnetNumber;
 
-				if (netNumber < m_nets.size())
+				if (!CreatePinConnection(refDes, netNumber, pinNumber, toeprintName)) return false;				
+			}
+		}
+
+		return true;
+	}
+
+	bool Design::CreatePinConnection(const std::string& refDes, unsigned int netNumber, unsigned int pinNumber, const std::string& pinName)
+	{
+		if (netNumber < m_nets.size())
+		{
+			auto& pComponent = m_componentsByName[refDes];
+			if (pComponent == nullptr) return false;
+
+			auto pPin = pComponent->GetPackage()->GetPin(pinNumber);
+			if (pPin == nullptr) return false;
+
+			auto& pNet = m_nets[netNumber];
+			if (pNet == nullptr) return false;
+
+			if (!pNet->AddPinConnection(pComponent, pPin, pinName)) return false;
+			return true;
+		}
+		else
+		{
+			logerror("netNumber out of range: " + std::to_string(netNumber) + ", size = " + std::to_string(m_nets.size()));
+		}	
+
+		return false;
+	}
+
+	bool Design::BuildNoneNet()
+	{
+		auto pStepDirectory = m_pFileModel->GetStepDirectory();
+		if (pStepDirectory == nullptr) return false;		
+
+		const auto& edaData = pStepDirectory->GetEdaDataFile();
+		auto findIt = edaData.GetNetRecordsByName().find(NONE_NET_NAME);
+		if (findIt == edaData.GetNetRecordsByName().end()) return false;
+		
+		auto& pNoneNet = findIt->second;
+		if (pNoneNet == nullptr) return false;
+
+		for (const auto& pSubnetRecord : pNoneNet->m_subnetRecords)
+		{
+			if (pSubnetRecord->type == FileModel::Design::EdaDataFile::NetRecord::SubnetRecord::Type::Toeprint)
+			{										
+				const FileModel::Design::ComponentsFile* pComponentsFileToUse = nullptr;
+
+				auto side = pSubnetRecord->side;
+				if (side == BoardSide::Top)
 				{
-					auto& pComponent = m_componentsByName[pComponentRecord->compName];
-					if (pComponent == nullptr) return false;
-
-					auto pPin = pComponent->GetPackage()->GetPin(pinNumber);
-					if (pPin == nullptr) return false;
-
-					auto& pNet = m_nets[netNumber];
-					if (pNet == nullptr) return false;
-
-					if (!pNet->AddPinConnection(pComponent, pPin, toeprintName)) return false;
+					pComponentsFileToUse = pStepDirectory->GetTopComponentsFile();
 				}
-				else
+				else //if (side == BoardSide::Bottom)
 				{
-					logerror("netNumber out of range: " + std::to_string(netNumber) + ", size = " + std::to_string(m_nets.size()));
+					pComponentsFileToUse = pStepDirectory->GetBottomComponentsFile();
 				}
+
+				if (pComponentsFileToUse == nullptr) return false;
+
+				auto componentNumber = pSubnetRecord->componentNumber;				
+				if (componentNumber >= pComponentsFileToUse->GetComponentRecords().size()) return false;
+
+				auto& pComponentRecord = pComponentsFileToUse->GetComponentRecords()[componentNumber];
+				if (pComponentRecord == nullptr) return false;
+
+				auto toeprintNumber = pSubnetRecord->toeprintNumber;
+				if (toeprintNumber >= pComponentRecord->m_toeprintRecords.size()) return false;
+				
+				auto& pToeprintRecord = pComponentRecord->m_toeprintRecords[toeprintNumber];
+				if (pToeprintRecord == nullptr) return false;
+
+				auto& toeprintName = pToeprintRecord->name;
+				auto pinNumber = pToeprintRecord->pinNumber;
+				auto netNumber = pToeprintRecord->netNumber;
+				auto& refDes = pComponentRecord->compName;
+				//auto subnetNumber = pToeprintRecord->subnetNumber;
+
+				if (!CreatePinConnection(refDes, netNumber, pinNumber, toeprintName)) return false;			
+			}
+			else if (pSubnetRecord->type == FileModel::Design::EdaDataFile::NetRecord::SubnetRecord::Type::Via)
+			{
+				// ?
 			}
 		}
 
@@ -229,7 +316,59 @@ namespace Odb::Lib::ProductModel
 
 	bool Design::BuildPlacementsFromEdaDataFile()
 	{
-		return false;
-	}
+		auto pStepDirectory = m_pFileModel->GetStepDirectory();
+		if (pStepDirectory == nullptr) return false;
+
+		const auto& edaData = pStepDirectory->GetEdaDataFile();
+		
+		for (const auto& pNetRecord : edaData.GetNetRecords())
+		{
+			for (const auto& pSubnetRecord : pNetRecord->m_subnetRecords)
+			{
+				if (pSubnetRecord->type == FileModel::Design::EdaDataFile::NetRecord::SubnetRecord::Type::Toeprint)
+				{
+					const FileModel::Design::ComponentsFile* pComponentsFileToUse = nullptr;
+
+					auto side = pSubnetRecord->side;
+					if (side == BoardSide::Top)
+					{
+						pComponentsFileToUse = pStepDirectory->GetTopComponentsFile();
+					}
+					else //if (side == BoardSide::Bottom)
+					{
+						pComponentsFileToUse = pStepDirectory->GetBottomComponentsFile();
+					}
+
+					if (pComponentsFileToUse == nullptr) return false;
+
+					auto componentNumber = pSubnetRecord->componentNumber;
+					if (componentNumber >= pComponentsFileToUse->GetComponentRecords().size()) return false;
+
+					auto& pComponentRecord = pComponentsFileToUse->GetComponentRecords()[componentNumber];
+					if (pComponentRecord == nullptr) return false;
+
+					auto toeprintNumber = pSubnetRecord->toeprintNumber;
+					if (toeprintNumber >= pComponentRecord->m_toeprintRecords.size()) return false;
+
+					auto& pToeprintRecord = pComponentRecord->m_toeprintRecords[toeprintNumber];
+					if (pToeprintRecord == nullptr) return false;
+
+					auto& toeprintName = pToeprintRecord->name;
+					auto pinNumber = pToeprintRecord->pinNumber;
+					auto netNumber = pToeprintRecord->netNumber;
+					auto& refDes = pComponentRecord->compName;
+					//auto subnetNumber = pToeprintRecord->subnetNumber;
+
+					if (!CreatePinConnection(refDes, netNumber, pinNumber, toeprintName)) return false;
+				}
+				else if (pSubnetRecord->type == FileModel::Design::EdaDataFile::NetRecord::SubnetRecord::Type::Via)
+				{
+					// ?
+				}
+			}
+		}		
+
+		return true;
+	}	
 
 } // namespace Odb::Lib::ProductModel

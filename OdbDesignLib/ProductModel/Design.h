@@ -9,6 +9,7 @@
 #include "Via.h"
 #include "Package.h"
 #include "Part.h"
+#include "../FileModel/Design/StepDirectory.h"
 
 
 namespace Odb::Lib::ProductModel
@@ -42,22 +43,28 @@ namespace Odb::Lib::ProductModel
 		Component::Vector m_components;
 		Component::StringMap m_componentsByName;
 		
+		Part::Vector m_parts;
 		Part::StringMap m_partsByName;
-		
+
 		bool BuildNets();
 		bool BuildPackages();
 		bool BuildAllParts();
 		bool BuildParts(const Odb::Lib::FileModel::Design::ComponentsFile* pComponentsFile);
 		bool BuildAllComponents();
-		bool BuildComponents(const Odb::Lib::FileModel::Design::ComponentsFile* pComponentsFile);		
+		bool BuildComponents(const Odb::Lib::FileModel::Design::ComponentsFile* pComponentsFile);	
+		bool BuildVias();
 
 		bool BuildPlacementsFromComponentsFiles();
 		bool BuildPlacementsFromComponentsFile(const Odb::Lib::FileModel::Design::ComponentsFile* pComponentsFile);
 
+		bool CreatePinConnection(const std::string& refDes, unsigned int netNumber, unsigned int pinNumber, const std::string& pinName);		
+
 		bool BuildPlacementsFromEdaDataFile();
 
-		//bool BuildNoneNet();
+		bool BuildNoneNet();
 		//bool BreakSinglePinNets();
 
-	};
+		inline static const char* NONE_NET_NAME = "$NONE$";
+
+	};	
 }
