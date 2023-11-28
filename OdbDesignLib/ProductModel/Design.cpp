@@ -182,6 +182,7 @@ namespace Odb::Lib::ProductModel
 			if (findIt == m_partsByName.end())
 			{
 				auto pPart = std::make_shared<Part>(partName);
+				m_parts.push_back(pPart);
 				m_partsByName[partName] = pPart;
 			}
 		}
