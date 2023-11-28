@@ -213,7 +213,7 @@ namespace Odb::Lib::FileModel::Design
 							throw_parse_error(m_path, line, token, lineNumber);
 						}
 
-						auto netName = token;
+						auto& netName = token;
 
 						auto pNetRecord = std::make_shared<NetRecord>();
 						pNetRecord->serialNumber = unSerialNumber;
