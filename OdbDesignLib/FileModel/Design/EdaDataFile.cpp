@@ -590,7 +590,11 @@ namespace Odb::Lib::FileModel::Design
                         // net record line
                         std::string token;
 
-                        lineStream >> token;
+                        if (!(lineStream >> token))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
+
                         if (token != NET_RECORD_TOKEN)
                         {
                             throw_parse_error(m_path, line, token, lineNumber);
@@ -607,6 +611,7 @@ namespace Odb::Lib::FileModel::Design
                             }
 
                             m_netRecords.push_back(pCurrentNetRecord);
+                            m_netRecordsByName[pCurrentNetRecord->name] = pCurrentNetRecord;
                             pCurrentNetRecord.reset();
                         }
 
@@ -615,6 +620,9 @@ namespace Odb::Lib::FileModel::Design
                         {
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
+
+                        // trim whitespace from beginning                        
+                        str_trim(token);
 
                         // create new net record
                         pCurrentNetRecord = std::make_shared<NetRecord>();
@@ -814,6 +822,7 @@ namespace Odb::Lib::FileModel::Design
                             }
 
                             m_netRecords.push_back(pCurrentNetRecord);
+                            m_netRecordsByName[pCurrentNetRecord->name] = pCurrentNetRecord;
                             pCurrentNetRecord.reset();
                         }
                         else if (pCurrentPackageRecord != nullptr)
@@ -833,6 +842,7 @@ namespace Odb::Lib::FileModel::Design
 
                             // finish up any current (previous) package records
                             m_packageRecords.push_back(pCurrentPackageRecord);
+                            m_packageRecordsByName[pCurrentPackageRecord->name] = pCurrentPackageRecord;
                             pCurrentPackageRecord.reset();
                         }
 
@@ -1056,6 +1066,7 @@ namespace Odb::Lib::FileModel::Design
                             }
 
                             m_netRecords.push_back(pCurrentNetRecord);
+                            m_netRecordsByName[pCurrentNetRecord->name] = pCurrentNetRecord;
                             pCurrentNetRecord.reset();
                         }
                         else if (pCurrentPackageRecord != nullptr)
@@ -1075,6 +1086,7 @@ namespace Odb::Lib::FileModel::Design
 
                             // finish up any current (previous) package records
                             m_packageRecords.push_back(pCurrentPackageRecord);
+                            m_packageRecordsByName[pCurrentPackageRecord->name] = pCurrentPackageRecord;
                             pCurrentPackageRecord.reset();
                         }                        
                         else if (pCurrentFeatureGroupRecord != nullptr)
@@ -1474,6 +1486,7 @@ namespace Odb::Lib::FileModel::Design
                 }
 
                 m_netRecords.push_back(pCurrentNetRecord);
+                m_netRecordsByName[pCurrentNetRecord->name] = pCurrentNetRecord;
                 pCurrentNetRecord.reset();
             }
             else if (pCurrentPackageRecord != nullptr)
@@ -1493,6 +1506,7 @@ namespace Odb::Lib::FileModel::Design
 
                 // finish up any current (previous) package records
                 m_packageRecords.push_back(pCurrentPackageRecord);
+                m_packageRecordsByName[pCurrentPackageRecord->name] = pCurrentPackageRecord;
                 pCurrentPackageRecord.reset();
             }
             else if (pCurrentFeatureGroupRecord != nullptr)
