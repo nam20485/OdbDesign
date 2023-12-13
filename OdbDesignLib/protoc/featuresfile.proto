@@ -4,7 +4,7 @@ syntax = "proto3";
 //option optimize_for = CODE_SIZE;
 
 import "common.proto";
-//import "enums.proto";
+import "enums.proto";
 
 package Odb.Lib.Protobuf;
 
@@ -15,13 +15,45 @@ package Odb.Lib.Protobuf;
 message FeaturesFile {
 
     message FeatureRecord
-    {
-        // enum Type
-        // {
+    {       
+        enum Type {
+            Arc = 0;
+            Pad = 1;
+            Surface = 2;
+            Barcode = 3;
+            Text = 4;
+            Line = 5;
+        };
 
-        // };
+        optional Type type = 2;
+        optional float xs = 3;
+        optional float ys = 4;
+        optional float xe = 5;
+        optional float ye = 6;
+        optional float x = 7;
+        optional float y = 8;
+        optional int32 apt_def = 9;
+        optional int32 apt_def_symbol_num = 10;
+        optional float apt_def_resize_factor = 11;
+        optional float xc = 12;
+        optional float yc = 13;
+        optional bool cw = 14;
+        optional string font = 15;
+        optional float xsize = 16;
+        optional float ysize = 17;
+        optional float width_factor = 18;
+        optional string text = 19;
+        optional int32 version = 20;
+        optional int32 sym_num = 21;
+        optional Polarity polarity = 22;
+        optional int32 dcode = 23;
+        optional int32 atr = 24;
+        optional string value = 25;
+        optional uint32 id = 26;
+        optional int32 orient_def = 27;
+        optional float orient_def_rotation = 28;  
 
-        repeated ContourPolygon contourPolygons = 1;
+        repeated ContourPolygon contourPolygons = 1;          
     }
 
     optional string units = 1;

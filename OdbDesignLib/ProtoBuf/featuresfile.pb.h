@@ -29,8 +29,10 @@
 #include <google/protobuf/message.h>
 #include <google/protobuf/repeated_field.h>  // IWYU pragma: export
 #include <google/protobuf/extension_set.h>  // IWYU pragma: export
+#include <google/protobuf/generated_enum_reflection.h>
 #include <google/protobuf/unknown_field_set.h>
 #include "common.pb.h"
+#include "enums.pb.h"
 // @@protoc_insertion_point(includes)
 #include <google/protobuf/port_def.inc>
 #define PROTOBUF_INTERNAL_EXPORT_featuresfile_2eproto
@@ -65,6 +67,35 @@ namespace Odb {
 namespace Lib {
 namespace Protobuf {
 
+enum FeaturesFile_FeatureRecord_Type : int {
+  FeaturesFile_FeatureRecord_Type_Arc = 0,
+  FeaturesFile_FeatureRecord_Type_Pad = 1,
+  FeaturesFile_FeatureRecord_Type_Surface = 2,
+  FeaturesFile_FeatureRecord_Type_Barcode = 3,
+  FeaturesFile_FeatureRecord_Type_Text = 4,
+  FeaturesFile_FeatureRecord_Type_Line = 5,
+  FeaturesFile_FeatureRecord_Type_FeaturesFile_FeatureRecord_Type_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
+  FeaturesFile_FeatureRecord_Type_FeaturesFile_FeatureRecord_Type_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
+};
+bool FeaturesFile_FeatureRecord_Type_IsValid(int value);
+constexpr FeaturesFile_FeatureRecord_Type FeaturesFile_FeatureRecord_Type_Type_MIN = FeaturesFile_FeatureRecord_Type_Arc;
+constexpr FeaturesFile_FeatureRecord_Type FeaturesFile_FeatureRecord_Type_Type_MAX = FeaturesFile_FeatureRecord_Type_Line;
+constexpr int FeaturesFile_FeatureRecord_Type_Type_ARRAYSIZE = FeaturesFile_FeatureRecord_Type_Type_MAX + 1;
+
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* FeaturesFile_FeatureRecord_Type_descriptor();
+template<typename T>
+inline const std::string& FeaturesFile_FeatureRecord_Type_Name(T enum_t_value) {
+  static_assert(::std::is_same<T, FeaturesFile_FeatureRecord_Type>::value ||
+    ::std::is_integral<T>::value,
+    "Incorrect type passed to function FeaturesFile_FeatureRecord_Type_Name.");
+  return ::PROTOBUF_NAMESPACE_ID::internal::NameOfEnum(
+    FeaturesFile_FeatureRecord_Type_descriptor(), enum_t_value);
+}
+inline bool FeaturesFile_FeatureRecord_Type_Parse(
+    ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, FeaturesFile_FeatureRecord_Type* value) {
+  return ::PROTOBUF_NAMESPACE_ID::internal::ParseNamedEnum<FeaturesFile_FeatureRecord_Type>(
+    FeaturesFile_FeatureRecord_Type_descriptor(), name, value);
+}
 // ===================================================================
 
 class FeaturesFile_FeatureRecord final :
@@ -185,10 +216,75 @@ class FeaturesFile_FeatureRecord final :
 
   // nested types ----------------------------------------------------
 
+  typedef FeaturesFile_FeatureRecord_Type Type;
+  static constexpr Type Arc =
+    FeaturesFile_FeatureRecord_Type_Arc;
+  static constexpr Type Pad =
+    FeaturesFile_FeatureRecord_Type_Pad;
+  static constexpr Type Surface =
+    FeaturesFile_FeatureRecord_Type_Surface;
+  static constexpr Type Barcode =
+    FeaturesFile_FeatureRecord_Type_Barcode;
+  static constexpr Type Text =
+    FeaturesFile_FeatureRecord_Type_Text;
+  static constexpr Type Line =
+    FeaturesFile_FeatureRecord_Type_Line;
+  static inline bool Type_IsValid(int value) {
+    return FeaturesFile_FeatureRecord_Type_IsValid(value);
+  }
+  static constexpr Type Type_MIN =
+    FeaturesFile_FeatureRecord_Type_Type_MIN;
+  static constexpr Type Type_MAX =
+    FeaturesFile_FeatureRecord_Type_Type_MAX;
+  static constexpr int Type_ARRAYSIZE =
+    FeaturesFile_FeatureRecord_Type_Type_ARRAYSIZE;
+  static inline const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor*
+  Type_descriptor() {
+    return FeaturesFile_FeatureRecord_Type_descriptor();
+  }
+  template<typename T>
+  static inline const std::string& Type_Name(T enum_t_value) {
+    static_assert(::std::is_same<T, Type>::value ||
+      ::std::is_integral<T>::value,
+      "Incorrect type passed to function Type_Name.");
+    return FeaturesFile_FeatureRecord_Type_Name(enum_t_value);
+  }
+  static inline bool Type_Parse(::PROTOBUF_NAMESPACE_ID::ConstStringParam name,
+      Type* value) {
+    return FeaturesFile_FeatureRecord_Type_Parse(name, value);
+  }
+
   // accessors -------------------------------------------------------
 
   enum : int {
     kContourPolygonsFieldNumber = 1,
+    kFontFieldNumber = 15,
+    kTextFieldNumber = 19,
+    kValueFieldNumber = 25,
+    kTypeFieldNumber = 2,
+    kXsFieldNumber = 3,
+    kYsFieldNumber = 4,
+    kXeFieldNumber = 5,
+    kYeFieldNumber = 6,
+    kXFieldNumber = 7,
+    kYFieldNumber = 8,
+    kAptDefFieldNumber = 9,
+    kAptDefSymbolNumFieldNumber = 10,
+    kAptDefResizeFactorFieldNumber = 11,
+    kXcFieldNumber = 12,
+    kYcFieldNumber = 13,
+    kCwFieldNumber = 14,
+    kXsizeFieldNumber = 16,
+    kYsizeFieldNumber = 17,
+    kWidthFactorFieldNumber = 18,
+    kVersionFieldNumber = 20,
+    kSymNumFieldNumber = 21,
+    kPolarityFieldNumber = 22,
+    kDcodeFieldNumber = 23,
+    kAtrFieldNumber = 24,
+    kIdFieldNumber = 26,
+    kOrientDefFieldNumber = 27,
+    kOrientDefRotationFieldNumber = 28,
   };
   // repeated .Odb.Lib.Protobuf.ContourPolygon contourPolygons = 1;
   int contourpolygons_size() const;
@@ -208,6 +304,372 @@ class FeaturesFile_FeatureRecord final :
   const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::ContourPolygon >&
       contourpolygons() const;
 
+  // optional string font = 15;
+  bool has_font() const;
+  private:
+  bool _internal_has_font() const;
+  public:
+  void clear_font();
+  const std::string& font() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_font(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_font();
+  PROTOBUF_NODISCARD std::string* release_font();
+  void set_allocated_font(std::string* font);
+  private:
+  const std::string& _internal_font() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_font(const std::string& value);
+  std::string* _internal_mutable_font();
+  public:
+
+  // optional string text = 19;
+  bool has_text() const;
+  private:
+  bool _internal_has_text() const;
+  public:
+  void clear_text();
+  const std::string& text() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_text(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_text();
+  PROTOBUF_NODISCARD std::string* release_text();
+  void set_allocated_text(std::string* text);
+  private:
+  const std::string& _internal_text() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_text(const std::string& value);
+  std::string* _internal_mutable_text();
+  public:
+
+  // optional string value = 25;
+  bool has_value() const;
+  private:
+  bool _internal_has_value() const;
+  public:
+  void clear_value();
+  const std::string& value() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_value(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_value();
+  PROTOBUF_NODISCARD std::string* release_value();
+  void set_allocated_value(std::string* value);
+  private:
+  const std::string& _internal_value() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_value(const std::string& value);
+  std::string* _internal_mutable_value();
+  public:
+
+  // optional .Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.Type type = 2;
+  bool has_type() const;
+  private:
+  bool _internal_has_type() const;
+  public:
+  void clear_type();
+  ::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord_Type type() const;
+  void set_type(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord_Type value);
+  private:
+  ::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord_Type _internal_type() const;
+  void _internal_set_type(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord_Type value);
+  public:
+
+  // optional float xs = 3;
+  bool has_xs() const;
+  private:
+  bool _internal_has_xs() const;
+  public:
+  void clear_xs();
+  float xs() const;
+  void set_xs(float value);
+  private:
+  float _internal_xs() const;
+  void _internal_set_xs(float value);
+  public:
+
+  // optional float ys = 4;
+  bool has_ys() const;
+  private:
+  bool _internal_has_ys() const;
+  public:
+  void clear_ys();
+  float ys() const;
+  void set_ys(float value);
+  private:
+  float _internal_ys() const;
+  void _internal_set_ys(float value);
+  public:
+
+  // optional float xe = 5;
+  bool has_xe() const;
+  private:
+  bool _internal_has_xe() const;
+  public:
+  void clear_xe();
+  float xe() const;
+  void set_xe(float value);
+  private:
+  float _internal_xe() const;
+  void _internal_set_xe(float value);
+  public:
+
+  // optional float ye = 6;
+  bool has_ye() const;
+  private:
+  bool _internal_has_ye() const;
+  public:
+  void clear_ye();
+  float ye() const;
+  void set_ye(float value);
+  private:
+  float _internal_ye() const;
+  void _internal_set_ye(float value);
+  public:
+
+  // optional float x = 7;
+  bool has_x() const;
+  private:
+  bool _internal_has_x() const;
+  public:
+  void clear_x();
+  float x() const;
+  void set_x(float value);
+  private:
+  float _internal_x() const;
+  void _internal_set_x(float value);
+  public:
+
+  // optional float y = 8;
+  bool has_y() const;
+  private:
+  bool _internal_has_y() const;
+  public:
+  void clear_y();
+  float y() const;
+  void set_y(float value);
+  private:
+  float _internal_y() const;
+  void _internal_set_y(float value);
+  public:
+
+  // optional int32 apt_def = 9;
+  bool has_apt_def() const;
+  private:
+  bool _internal_has_apt_def() const;
+  public:
+  void clear_apt_def();
+  int32_t apt_def() const;
+  void set_apt_def(int32_t value);
+  private:
+  int32_t _internal_apt_def() const;
+  void _internal_set_apt_def(int32_t value);
+  public:
+
+  // optional int32 apt_def_symbol_num = 10;
+  bool has_apt_def_symbol_num() const;
+  private:
+  bool _internal_has_apt_def_symbol_num() const;
+  public:
+  void clear_apt_def_symbol_num();
+  int32_t apt_def_symbol_num() const;
+  void set_apt_def_symbol_num(int32_t value);
+  private:
+  int32_t _internal_apt_def_symbol_num() const;
+  void _internal_set_apt_def_symbol_num(int32_t value);
+  public:
+
+  // optional float apt_def_resize_factor = 11;
+  bool has_apt_def_resize_factor() const;
+  private:
+  bool _internal_has_apt_def_resize_factor() const;
+  public:
+  void clear_apt_def_resize_factor();
+  float apt_def_resize_factor() const;
+  void set_apt_def_resize_factor(float value);
+  private:
+  float _internal_apt_def_resize_factor() const;
+  void _internal_set_apt_def_resize_factor(float value);
+  public:
+
+  // optional float xc = 12;
+  bool has_xc() const;
+  private:
+  bool _internal_has_xc() const;
+  public:
+  void clear_xc();
+  float xc() const;
+  void set_xc(float value);
+  private:
+  float _internal_xc() const;
+  void _internal_set_xc(float value);
+  public:
+
+  // optional float yc = 13;
+  bool has_yc() const;
+  private:
+  bool _internal_has_yc() const;
+  public:
+  void clear_yc();
+  float yc() const;
+  void set_yc(float value);
+  private:
+  float _internal_yc() const;
+  void _internal_set_yc(float value);
+  public:
+
+  // optional bool cw = 14;
+  bool has_cw() const;
+  private:
+  bool _internal_has_cw() const;
+  public:
+  void clear_cw();
+  bool cw() const;
+  void set_cw(bool value);
+  private:
+  bool _internal_cw() const;
+  void _internal_set_cw(bool value);
+  public:
+
+  // optional float xsize = 16;
+  bool has_xsize() const;
+  private:
+  bool _internal_has_xsize() const;
+  public:
+  void clear_xsize();
+  float xsize() const;
+  void set_xsize(float value);
+  private:
+  float _internal_xsize() const;
+  void _internal_set_xsize(float value);
+  public:
+
+  // optional float ysize = 17;
+  bool has_ysize() const;
+  private:
+  bool _internal_has_ysize() const;
+  public:
+  void clear_ysize();
+  float ysize() const;
+  void set_ysize(float value);
+  private:
+  float _internal_ysize() const;
+  void _internal_set_ysize(float value);
+  public:
+
+  // optional float width_factor = 18;
+  bool has_width_factor() const;
+  private:
+  bool _internal_has_width_factor() const;
+  public:
+  void clear_width_factor();
+  float width_factor() const;
+  void set_width_factor(float value);
+  private:
+  float _internal_width_factor() const;
+  void _internal_set_width_factor(float value);
+  public:
+
+  // optional int32 version = 20;
+  bool has_version() const;
+  private:
+  bool _internal_has_version() const;
+  public:
+  void clear_version();
+  int32_t version() const;
+  void set_version(int32_t value);
+  private:
+  int32_t _internal_version() const;
+  void _internal_set_version(int32_t value);
+  public:
+
+  // optional int32 sym_num = 21;
+  bool has_sym_num() const;
+  private:
+  bool _internal_has_sym_num() const;
+  public:
+  void clear_sym_num();
+  int32_t sym_num() const;
+  void set_sym_num(int32_t value);
+  private:
+  int32_t _internal_sym_num() const;
+  void _internal_set_sym_num(int32_t value);
+  public:
+
+  // optional .Odb.Lib.Protobuf.Polarity polarity = 22;
+  bool has_polarity() const;
+  private:
+  bool _internal_has_polarity() const;
+  public:
+  void clear_polarity();
+  ::Odb::Lib::Protobuf::Polarity polarity() const;
+  void set_polarity(::Odb::Lib::Protobuf::Polarity value);
+  private:
+  ::Odb::Lib::Protobuf::Polarity _internal_polarity() const;
+  void _internal_set_polarity(::Odb::Lib::Protobuf::Polarity value);
+  public:
+
+  // optional int32 dcode = 23;
+  bool has_dcode() const;
+  private:
+  bool _internal_has_dcode() const;
+  public:
+  void clear_dcode();
+  int32_t dcode() const;
+  void set_dcode(int32_t value);
+  private:
+  int32_t _internal_dcode() const;
+  void _internal_set_dcode(int32_t value);
+  public:
+
+  // optional int32 atr = 24;
+  bool has_atr() const;
+  private:
+  bool _internal_has_atr() const;
+  public:
+  void clear_atr();
+  int32_t atr() const;
+  void set_atr(int32_t value);
+  private:
+  int32_t _internal_atr() const;
+  void _internal_set_atr(int32_t value);
+  public:
+
+  // optional uint32 id = 26;
+  bool has_id() const;
+  private:
+  bool _internal_has_id() const;
+  public:
+  void clear_id();
+  uint32_t id() const;
+  void set_id(uint32_t value);
+  private:
+  uint32_t _internal_id() const;
+  void _internal_set_id(uint32_t value);
+  public:
+
+  // optional int32 orient_def = 27;
+  bool has_orient_def() const;
+  private:
+  bool _internal_has_orient_def() const;
+  public:
+  void clear_orient_def();
+  int32_t orient_def() const;
+  void set_orient_def(int32_t value);
+  private:
+  int32_t _internal_orient_def() const;
+  void _internal_set_orient_def(int32_t value);
+  public:
+
+  // optional float orient_def_rotation = 28;
+  bool has_orient_def_rotation() const;
+  private:
+  bool _internal_has_orient_def_rotation() const;
+  public:
+  void clear_orient_def_rotation();
+  float orient_def_rotation() const;
+  void set_orient_def_rotation(float value);
+  private:
+  float _internal_orient_def_rotation() const;
+  void _internal_set_orient_def_rotation(float value);
+  public:
+
   // @@protoc_insertion_point(class_scope:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord)
  private:
   class _Internal;
@@ -216,8 +678,36 @@ class FeaturesFile_FeatureRecord final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
-    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::ContourPolygon > contourpolygons_;
+    ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::ContourPolygon > contourpolygons_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr font_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr text_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr value_;
+    int type_;
+    float xs_;
+    float ys_;
+    float xe_;
+    float ye_;
+    float x_;
+    float y_;
+    int32_t apt_def_;
+    int32_t apt_def_symbol_num_;
+    float apt_def_resize_factor_;
+    float xc_;
+    float yc_;
+    bool cw_;
+    float xsize_;
+    float ysize_;
+    float width_factor_;
+    int32_t version_;
+    int32_t sym_num_;
+    int polarity_;
+    int32_t dcode_;
+    int32_t atr_;
+    uint32_t id_;
+    int32_t orient_def_;
+    float orient_def_rotation_;
   };
   union { Impl_ _impl_; };
   friend struct ::TableStruct_featuresfile_2eproto;
@@ -482,6 +972,882 @@ class FeaturesFile final :
   #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif  // __GNUC__
 // FeaturesFile_FeatureRecord
+
+// optional .Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.Type type = 2;
+inline bool FeaturesFile_FeatureRecord::_internal_has_type() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000008u) != 0;
+  return value;
+}
+inline bool FeaturesFile_FeatureRecord::has_type() const {
+  return _internal_has_type();
+}
+inline void FeaturesFile_FeatureRecord::clear_type() {
+  _impl_.type_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000008u;
+}
+inline ::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord_Type FeaturesFile_FeatureRecord::_internal_type() const {
+  return static_cast< ::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord_Type >(_impl_.type_);
+}
+inline ::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord_Type FeaturesFile_FeatureRecord::type() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.type)
+  return _internal_type();
+}
+inline void FeaturesFile_FeatureRecord::_internal_set_type(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord_Type value) {
+  _impl_._has_bits_[0] |= 0x00000008u;
+  _impl_.type_ = value;
+}
+inline void FeaturesFile_FeatureRecord::set_type(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord_Type value) {
+  _internal_set_type(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.type)
+}
+
+// optional float xs = 3;
+inline bool FeaturesFile_FeatureRecord::_internal_has_xs() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000010u) != 0;
+  return value;
+}
+inline bool FeaturesFile_FeatureRecord::has_xs() const {
+  return _internal_has_xs();
+}
+inline void FeaturesFile_FeatureRecord::clear_xs() {
+  _impl_.xs_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000010u;
+}
+inline float FeaturesFile_FeatureRecord::_internal_xs() const {
+  return _impl_.xs_;
+}
+inline float FeaturesFile_FeatureRecord::xs() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.xs)
+  return _internal_xs();
+}
+inline void FeaturesFile_FeatureRecord::_internal_set_xs(float value) {
+  _impl_._has_bits_[0] |= 0x00000010u;
+  _impl_.xs_ = value;
+}
+inline void FeaturesFile_FeatureRecord::set_xs(float value) {
+  _internal_set_xs(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.xs)
+}
+
+// optional float ys = 4;
+inline bool FeaturesFile_FeatureRecord::_internal_has_ys() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000020u) != 0;
+  return value;
+}
+inline bool FeaturesFile_FeatureRecord::has_ys() const {
+  return _internal_has_ys();
+}
+inline void FeaturesFile_FeatureRecord::clear_ys() {
+  _impl_.ys_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000020u;
+}
+inline float FeaturesFile_FeatureRecord::_internal_ys() const {
+  return _impl_.ys_;
+}
+inline float FeaturesFile_FeatureRecord::ys() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.ys)
+  return _internal_ys();
+}
+inline void FeaturesFile_FeatureRecord::_internal_set_ys(float value) {
+  _impl_._has_bits_[0] |= 0x00000020u;
+  _impl_.ys_ = value;
+}
+inline void FeaturesFile_FeatureRecord::set_ys(float value) {
+  _internal_set_ys(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.ys)
+}
+
+// optional float xe = 5;
+inline bool FeaturesFile_FeatureRecord::_internal_has_xe() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000040u) != 0;
+  return value;
+}
+inline bool FeaturesFile_FeatureRecord::has_xe() const {
+  return _internal_has_xe();
+}
+inline void FeaturesFile_FeatureRecord::clear_xe() {
+  _impl_.xe_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000040u;
+}
+inline float FeaturesFile_FeatureRecord::_internal_xe() const {
+  return _impl_.xe_;
+}
+inline float FeaturesFile_FeatureRecord::xe() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.xe)
+  return _internal_xe();
+}
+inline void FeaturesFile_FeatureRecord::_internal_set_xe(float value) {
+  _impl_._has_bits_[0] |= 0x00000040u;
+  _impl_.xe_ = value;
+}
+inline void FeaturesFile_FeatureRecord::set_xe(float value) {
+  _internal_set_xe(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.xe)
+}
+
+// optional float ye = 6;
+inline bool FeaturesFile_FeatureRecord::_internal_has_ye() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000080u) != 0;
+  return value;
+}
+inline bool FeaturesFile_FeatureRecord::has_ye() const {
+  return _internal_has_ye();
+}
+inline void FeaturesFile_FeatureRecord::clear_ye() {
+  _impl_.ye_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000080u;
+}
+inline float FeaturesFile_FeatureRecord::_internal_ye() const {
+  return _impl_.ye_;
+}
+inline float FeaturesFile_FeatureRecord::ye() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.ye)
+  return _internal_ye();
+}
+inline void FeaturesFile_FeatureRecord::_internal_set_ye(float value) {
+  _impl_._has_bits_[0] |= 0x00000080u;
+  _impl_.ye_ = value;
+}
+inline void FeaturesFile_FeatureRecord::set_ye(float value) {
+  _internal_set_ye(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.ye)
+}
+
+// optional float x = 7;
+inline bool FeaturesFile_FeatureRecord::_internal_has_x() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000100u) != 0;
+  return value;
+}
+inline bool FeaturesFile_FeatureRecord::has_x() const {
+  return _internal_has_x();
+}
+inline void FeaturesFile_FeatureRecord::clear_x() {
+  _impl_.x_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000100u;
+}
+inline float FeaturesFile_FeatureRecord::_internal_x() const {
+  return _impl_.x_;
+}
+inline float FeaturesFile_FeatureRecord::x() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.x)
+  return _internal_x();
+}
+inline void FeaturesFile_FeatureRecord::_internal_set_x(float value) {
+  _impl_._has_bits_[0] |= 0x00000100u;
+  _impl_.x_ = value;
+}
+inline void FeaturesFile_FeatureRecord::set_x(float value) {
+  _internal_set_x(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.x)
+}
+
+// optional float y = 8;
+inline bool FeaturesFile_FeatureRecord::_internal_has_y() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000200u) != 0;
+  return value;
+}
+inline bool FeaturesFile_FeatureRecord::has_y() const {
+  return _internal_has_y();
+}
+inline void FeaturesFile_FeatureRecord::clear_y() {
+  _impl_.y_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000200u;
+}
+inline float FeaturesFile_FeatureRecord::_internal_y() const {
+  return _impl_.y_;
+}
+inline float FeaturesFile_FeatureRecord::y() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.y)
+  return _internal_y();
+}
+inline void FeaturesFile_FeatureRecord::_internal_set_y(float value) {
+  _impl_._has_bits_[0] |= 0x00000200u;
+  _impl_.y_ = value;
+}
+inline void FeaturesFile_FeatureRecord::set_y(float value) {
+  _internal_set_y(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.y)
+}
+
+// optional int32 apt_def = 9;
+inline bool FeaturesFile_FeatureRecord::_internal_has_apt_def() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000400u) != 0;
+  return value;
+}
+inline bool FeaturesFile_FeatureRecord::has_apt_def() const {
+  return _internal_has_apt_def();
+}
+inline void FeaturesFile_FeatureRecord::clear_apt_def() {
+  _impl_.apt_def_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000400u;
+}
+inline int32_t FeaturesFile_FeatureRecord::_internal_apt_def() const {
+  return _impl_.apt_def_;
+}
+inline int32_t FeaturesFile_FeatureRecord::apt_def() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.apt_def)
+  return _internal_apt_def();
+}
+inline void FeaturesFile_FeatureRecord::_internal_set_apt_def(int32_t value) {
+  _impl_._has_bits_[0] |= 0x00000400u;
+  _impl_.apt_def_ = value;
+}
+inline void FeaturesFile_FeatureRecord::set_apt_def(int32_t value) {
+  _internal_set_apt_def(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.apt_def)
+}
+
+// optional int32 apt_def_symbol_num = 10;
+inline bool FeaturesFile_FeatureRecord::_internal_has_apt_def_symbol_num() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000800u) != 0;
+  return value;
+}
+inline bool FeaturesFile_FeatureRecord::has_apt_def_symbol_num() const {
+  return _internal_has_apt_def_symbol_num();
+}
+inline void FeaturesFile_FeatureRecord::clear_apt_def_symbol_num() {
+  _impl_.apt_def_symbol_num_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000800u;
+}
+inline int32_t FeaturesFile_FeatureRecord::_internal_apt_def_symbol_num() const {
+  return _impl_.apt_def_symbol_num_;
+}
+inline int32_t FeaturesFile_FeatureRecord::apt_def_symbol_num() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.apt_def_symbol_num)
+  return _internal_apt_def_symbol_num();
+}
+inline void FeaturesFile_FeatureRecord::_internal_set_apt_def_symbol_num(int32_t value) {
+  _impl_._has_bits_[0] |= 0x00000800u;
+  _impl_.apt_def_symbol_num_ = value;
+}
+inline void FeaturesFile_FeatureRecord::set_apt_def_symbol_num(int32_t value) {
+  _internal_set_apt_def_symbol_num(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.apt_def_symbol_num)
+}
+
+// optional float apt_def_resize_factor = 11;
+inline bool FeaturesFile_FeatureRecord::_internal_has_apt_def_resize_factor() const {
+  bool value = (_impl_._has_bits_[0] & 0x00001000u) != 0;
+  return value;
+}
+inline bool FeaturesFile_FeatureRecord::has_apt_def_resize_factor() const {
+  return _internal_has_apt_def_resize_factor();
+}
+inline void FeaturesFile_FeatureRecord::clear_apt_def_resize_factor() {
+  _impl_.apt_def_resize_factor_ = 0;
+  _impl_._has_bits_[0] &= ~0x00001000u;
+}
+inline float FeaturesFile_FeatureRecord::_internal_apt_def_resize_factor() const {
+  return _impl_.apt_def_resize_factor_;
+}
+inline float FeaturesFile_FeatureRecord::apt_def_resize_factor() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.apt_def_resize_factor)
+  return _internal_apt_def_resize_factor();
+}
+inline void FeaturesFile_FeatureRecord::_internal_set_apt_def_resize_factor(float value) {
+  _impl_._has_bits_[0] |= 0x00001000u;
+  _impl_.apt_def_resize_factor_ = value;
+}
+inline void FeaturesFile_FeatureRecord::set_apt_def_resize_factor(float value) {
+  _internal_set_apt_def_resize_factor(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.apt_def_resize_factor)
+}
+
+// optional float xc = 12;
+inline bool FeaturesFile_FeatureRecord::_internal_has_xc() const {
+  bool value = (_impl_._has_bits_[0] & 0x00002000u) != 0;
+  return value;
+}
+inline bool FeaturesFile_FeatureRecord::has_xc() const {
+  return _internal_has_xc();
+}
+inline void FeaturesFile_FeatureRecord::clear_xc() {
+  _impl_.xc_ = 0;
+  _impl_._has_bits_[0] &= ~0x00002000u;
+}
+inline float FeaturesFile_FeatureRecord::_internal_xc() const {
+  return _impl_.xc_;
+}
+inline float FeaturesFile_FeatureRecord::xc() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.xc)
+  return _internal_xc();
+}
+inline void FeaturesFile_FeatureRecord::_internal_set_xc(float value) {
+  _impl_._has_bits_[0] |= 0x00002000u;
+  _impl_.xc_ = value;
+}
+inline void FeaturesFile_FeatureRecord::set_xc(float value) {
+  _internal_set_xc(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.xc)
+}
+
+// optional float yc = 13;
+inline bool FeaturesFile_FeatureRecord::_internal_has_yc() const {
+  bool value = (_impl_._has_bits_[0] & 0x00004000u) != 0;
+  return value;
+}
+inline bool FeaturesFile_FeatureRecord::has_yc() const {
+  return _internal_has_yc();
+}
+inline void FeaturesFile_FeatureRecord::clear_yc() {
+  _impl_.yc_ = 0;
+  _impl_._has_bits_[0] &= ~0x00004000u;
+}
+inline float FeaturesFile_FeatureRecord::_internal_yc() const {
+  return _impl_.yc_;
+}
+inline float FeaturesFile_FeatureRecord::yc() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.yc)
+  return _internal_yc();
+}
+inline void FeaturesFile_FeatureRecord::_internal_set_yc(float value) {
+  _impl_._has_bits_[0] |= 0x00004000u;
+  _impl_.yc_ = value;
+}
+inline void FeaturesFile_FeatureRecord::set_yc(float value) {
+  _internal_set_yc(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.yc)
+}
+
+// optional bool cw = 14;
+inline bool FeaturesFile_FeatureRecord::_internal_has_cw() const {
+  bool value = (_impl_._has_bits_[0] & 0x00008000u) != 0;
+  return value;
+}
+inline bool FeaturesFile_FeatureRecord::has_cw() const {
+  return _internal_has_cw();
+}
+inline void FeaturesFile_FeatureRecord::clear_cw() {
+  _impl_.cw_ = false;
+  _impl_._has_bits_[0] &= ~0x00008000u;
+}
+inline bool FeaturesFile_FeatureRecord::_internal_cw() const {
+  return _impl_.cw_;
+}
+inline bool FeaturesFile_FeatureRecord::cw() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.cw)
+  return _internal_cw();
+}
+inline void FeaturesFile_FeatureRecord::_internal_set_cw(bool value) {
+  _impl_._has_bits_[0] |= 0x00008000u;
+  _impl_.cw_ = value;
+}
+inline void FeaturesFile_FeatureRecord::set_cw(bool value) {
+  _internal_set_cw(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.cw)
+}
+
+// optional string font = 15;
+inline bool FeaturesFile_FeatureRecord::_internal_has_font() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
+  return value;
+}
+inline bool FeaturesFile_FeatureRecord::has_font() const {
+  return _internal_has_font();
+}
+inline void FeaturesFile_FeatureRecord::clear_font() {
+  _impl_.font_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000001u;
+}
+inline const std::string& FeaturesFile_FeatureRecord::font() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.font)
+  return _internal_font();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void FeaturesFile_FeatureRecord::set_font(ArgT0&& arg0, ArgT... args) {
+ _impl_._has_bits_[0] |= 0x00000001u;
+ _impl_.font_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.font)
+}
+inline std::string* FeaturesFile_FeatureRecord::mutable_font() {
+  std::string* _s = _internal_mutable_font();
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.font)
+  return _s;
+}
+inline const std::string& FeaturesFile_FeatureRecord::_internal_font() const {
+  return _impl_.font_.Get();
+}
+inline void FeaturesFile_FeatureRecord::_internal_set_font(const std::string& value) {
+  _impl_._has_bits_[0] |= 0x00000001u;
+  _impl_.font_.Set(value, GetArenaForAllocation());
+}
+inline std::string* FeaturesFile_FeatureRecord::_internal_mutable_font() {
+  _impl_._has_bits_[0] |= 0x00000001u;
+  return _impl_.font_.Mutable(GetArenaForAllocation());
+}
+inline std::string* FeaturesFile_FeatureRecord::release_font() {
+  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.font)
+  if (!_internal_has_font()) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000001u;
+  auto* p = _impl_.font_.Release();
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.font_.IsDefault()) {
+    _impl_.font_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
+}
+inline void FeaturesFile_FeatureRecord::set_allocated_font(std::string* font) {
+  if (font != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000001u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000001u;
+  }
+  _impl_.font_.SetAllocated(font, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.font_.IsDefault()) {
+    _impl_.font_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.font)
+}
+
+// optional float xsize = 16;
+inline bool FeaturesFile_FeatureRecord::_internal_has_xsize() const {
+  bool value = (_impl_._has_bits_[0] & 0x00010000u) != 0;
+  return value;
+}
+inline bool FeaturesFile_FeatureRecord::has_xsize() const {
+  return _internal_has_xsize();
+}
+inline void FeaturesFile_FeatureRecord::clear_xsize() {
+  _impl_.xsize_ = 0;
+  _impl_._has_bits_[0] &= ~0x00010000u;
+}
+inline float FeaturesFile_FeatureRecord::_internal_xsize() const {
+  return _impl_.xsize_;
+}
+inline float FeaturesFile_FeatureRecord::xsize() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.xsize)
+  return _internal_xsize();
+}
+inline void FeaturesFile_FeatureRecord::_internal_set_xsize(float value) {
+  _impl_._has_bits_[0] |= 0x00010000u;
+  _impl_.xsize_ = value;
+}
+inline void FeaturesFile_FeatureRecord::set_xsize(float value) {
+  _internal_set_xsize(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.xsize)
+}
+
+// optional float ysize = 17;
+inline bool FeaturesFile_FeatureRecord::_internal_has_ysize() const {
+  bool value = (_impl_._has_bits_[0] & 0x00020000u) != 0;
+  return value;
+}
+inline bool FeaturesFile_FeatureRecord::has_ysize() const {
+  return _internal_has_ysize();
+}
+inline void FeaturesFile_FeatureRecord::clear_ysize() {
+  _impl_.ysize_ = 0;
+  _impl_._has_bits_[0] &= ~0x00020000u;
+}
+inline float FeaturesFile_FeatureRecord::_internal_ysize() const {
+  return _impl_.ysize_;
+}
+inline float FeaturesFile_FeatureRecord::ysize() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.ysize)
+  return _internal_ysize();
+}
+inline void FeaturesFile_FeatureRecord::_internal_set_ysize(float value) {
+  _impl_._has_bits_[0] |= 0x00020000u;
+  _impl_.ysize_ = value;
+}
+inline void FeaturesFile_FeatureRecord::set_ysize(float value) {
+  _internal_set_ysize(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.ysize)
+}
+
+// optional float width_factor = 18;
+inline bool FeaturesFile_FeatureRecord::_internal_has_width_factor() const {
+  bool value = (_impl_._has_bits_[0] & 0x00040000u) != 0;
+  return value;
+}
+inline bool FeaturesFile_FeatureRecord::has_width_factor() const {
+  return _internal_has_width_factor();
+}
+inline void FeaturesFile_FeatureRecord::clear_width_factor() {
+  _impl_.width_factor_ = 0;
+  _impl_._has_bits_[0] &= ~0x00040000u;
+}
+inline float FeaturesFile_FeatureRecord::_internal_width_factor() const {
+  return _impl_.width_factor_;
+}
+inline float FeaturesFile_FeatureRecord::width_factor() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.width_factor)
+  return _internal_width_factor();
+}
+inline void FeaturesFile_FeatureRecord::_internal_set_width_factor(float value) {
+  _impl_._has_bits_[0] |= 0x00040000u;
+  _impl_.width_factor_ = value;
+}
+inline void FeaturesFile_FeatureRecord::set_width_factor(float value) {
+  _internal_set_width_factor(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.width_factor)
+}
+
+// optional string text = 19;
+inline bool FeaturesFile_FeatureRecord::_internal_has_text() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
+  return value;
+}
+inline bool FeaturesFile_FeatureRecord::has_text() const {
+  return _internal_has_text();
+}
+inline void FeaturesFile_FeatureRecord::clear_text() {
+  _impl_.text_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000002u;
+}
+inline const std::string& FeaturesFile_FeatureRecord::text() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.text)
+  return _internal_text();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void FeaturesFile_FeatureRecord::set_text(ArgT0&& arg0, ArgT... args) {
+ _impl_._has_bits_[0] |= 0x00000002u;
+ _impl_.text_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.text)
+}
+inline std::string* FeaturesFile_FeatureRecord::mutable_text() {
+  std::string* _s = _internal_mutable_text();
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.text)
+  return _s;
+}
+inline const std::string& FeaturesFile_FeatureRecord::_internal_text() const {
+  return _impl_.text_.Get();
+}
+inline void FeaturesFile_FeatureRecord::_internal_set_text(const std::string& value) {
+  _impl_._has_bits_[0] |= 0x00000002u;
+  _impl_.text_.Set(value, GetArenaForAllocation());
+}
+inline std::string* FeaturesFile_FeatureRecord::_internal_mutable_text() {
+  _impl_._has_bits_[0] |= 0x00000002u;
+  return _impl_.text_.Mutable(GetArenaForAllocation());
+}
+inline std::string* FeaturesFile_FeatureRecord::release_text() {
+  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.text)
+  if (!_internal_has_text()) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000002u;
+  auto* p = _impl_.text_.Release();
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.text_.IsDefault()) {
+    _impl_.text_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
+}
+inline void FeaturesFile_FeatureRecord::set_allocated_text(std::string* text) {
+  if (text != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000002u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000002u;
+  }
+  _impl_.text_.SetAllocated(text, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.text_.IsDefault()) {
+    _impl_.text_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.text)
+}
+
+// optional int32 version = 20;
+inline bool FeaturesFile_FeatureRecord::_internal_has_version() const {
+  bool value = (_impl_._has_bits_[0] & 0x00080000u) != 0;
+  return value;
+}
+inline bool FeaturesFile_FeatureRecord::has_version() const {
+  return _internal_has_version();
+}
+inline void FeaturesFile_FeatureRecord::clear_version() {
+  _impl_.version_ = 0;
+  _impl_._has_bits_[0] &= ~0x00080000u;
+}
+inline int32_t FeaturesFile_FeatureRecord::_internal_version() const {
+  return _impl_.version_;
+}
+inline int32_t FeaturesFile_FeatureRecord::version() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.version)
+  return _internal_version();
+}
+inline void FeaturesFile_FeatureRecord::_internal_set_version(int32_t value) {
+  _impl_._has_bits_[0] |= 0x00080000u;
+  _impl_.version_ = value;
+}
+inline void FeaturesFile_FeatureRecord::set_version(int32_t value) {
+  _internal_set_version(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.version)
+}
+
+// optional int32 sym_num = 21;
+inline bool FeaturesFile_FeatureRecord::_internal_has_sym_num() const {
+  bool value = (_impl_._has_bits_[0] & 0x00100000u) != 0;
+  return value;
+}
+inline bool FeaturesFile_FeatureRecord::has_sym_num() const {
+  return _internal_has_sym_num();
+}
+inline void FeaturesFile_FeatureRecord::clear_sym_num() {
+  _impl_.sym_num_ = 0;
+  _impl_._has_bits_[0] &= ~0x00100000u;
+}
+inline int32_t FeaturesFile_FeatureRecord::_internal_sym_num() const {
+  return _impl_.sym_num_;
+}
+inline int32_t FeaturesFile_FeatureRecord::sym_num() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.sym_num)
+  return _internal_sym_num();
+}
+inline void FeaturesFile_FeatureRecord::_internal_set_sym_num(int32_t value) {
+  _impl_._has_bits_[0] |= 0x00100000u;
+  _impl_.sym_num_ = value;
+}
+inline void FeaturesFile_FeatureRecord::set_sym_num(int32_t value) {
+  _internal_set_sym_num(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.sym_num)
+}
+
+// optional .Odb.Lib.Protobuf.Polarity polarity = 22;
+inline bool FeaturesFile_FeatureRecord::_internal_has_polarity() const {
+  bool value = (_impl_._has_bits_[0] & 0x00200000u) != 0;
+  return value;
+}
+inline bool FeaturesFile_FeatureRecord::has_polarity() const {
+  return _internal_has_polarity();
+}
+inline void FeaturesFile_FeatureRecord::clear_polarity() {
+  _impl_.polarity_ = 0;
+  _impl_._has_bits_[0] &= ~0x00200000u;
+}
+inline ::Odb::Lib::Protobuf::Polarity FeaturesFile_FeatureRecord::_internal_polarity() const {
+  return static_cast< ::Odb::Lib::Protobuf::Polarity >(_impl_.polarity_);
+}
+inline ::Odb::Lib::Protobuf::Polarity FeaturesFile_FeatureRecord::polarity() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.polarity)
+  return _internal_polarity();
+}
+inline void FeaturesFile_FeatureRecord::_internal_set_polarity(::Odb::Lib::Protobuf::Polarity value) {
+  _impl_._has_bits_[0] |= 0x00200000u;
+  _impl_.polarity_ = value;
+}
+inline void FeaturesFile_FeatureRecord::set_polarity(::Odb::Lib::Protobuf::Polarity value) {
+  _internal_set_polarity(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.polarity)
+}
+
+// optional int32 dcode = 23;
+inline bool FeaturesFile_FeatureRecord::_internal_has_dcode() const {
+  bool value = (_impl_._has_bits_[0] & 0x00400000u) != 0;
+  return value;
+}
+inline bool FeaturesFile_FeatureRecord::has_dcode() const {
+  return _internal_has_dcode();
+}
+inline void FeaturesFile_FeatureRecord::clear_dcode() {
+  _impl_.dcode_ = 0;
+  _impl_._has_bits_[0] &= ~0x00400000u;
+}
+inline int32_t FeaturesFile_FeatureRecord::_internal_dcode() const {
+  return _impl_.dcode_;
+}
+inline int32_t FeaturesFile_FeatureRecord::dcode() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.dcode)
+  return _internal_dcode();
+}
+inline void FeaturesFile_FeatureRecord::_internal_set_dcode(int32_t value) {
+  _impl_._has_bits_[0] |= 0x00400000u;
+  _impl_.dcode_ = value;
+}
+inline void FeaturesFile_FeatureRecord::set_dcode(int32_t value) {
+  _internal_set_dcode(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.dcode)
+}
+
+// optional int32 atr = 24;
+inline bool FeaturesFile_FeatureRecord::_internal_has_atr() const {
+  bool value = (_impl_._has_bits_[0] & 0x00800000u) != 0;
+  return value;
+}
+inline bool FeaturesFile_FeatureRecord::has_atr() const {
+  return _internal_has_atr();
+}
+inline void FeaturesFile_FeatureRecord::clear_atr() {
+  _impl_.atr_ = 0;
+  _impl_._has_bits_[0] &= ~0x00800000u;
+}
+inline int32_t FeaturesFile_FeatureRecord::_internal_atr() const {
+  return _impl_.atr_;
+}
+inline int32_t FeaturesFile_FeatureRecord::atr() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.atr)
+  return _internal_atr();
+}
+inline void FeaturesFile_FeatureRecord::_internal_set_atr(int32_t value) {
+  _impl_._has_bits_[0] |= 0x00800000u;
+  _impl_.atr_ = value;
+}
+inline void FeaturesFile_FeatureRecord::set_atr(int32_t value) {
+  _internal_set_atr(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.atr)
+}
+
+// optional string value = 25;
+inline bool FeaturesFile_FeatureRecord::_internal_has_value() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
+  return value;
+}
+inline bool FeaturesFile_FeatureRecord::has_value() const {
+  return _internal_has_value();
+}
+inline void FeaturesFile_FeatureRecord::clear_value() {
+  _impl_.value_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000004u;
+}
+inline const std::string& FeaturesFile_FeatureRecord::value() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.value)
+  return _internal_value();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void FeaturesFile_FeatureRecord::set_value(ArgT0&& arg0, ArgT... args) {
+ _impl_._has_bits_[0] |= 0x00000004u;
+ _impl_.value_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.value)
+}
+inline std::string* FeaturesFile_FeatureRecord::mutable_value() {
+  std::string* _s = _internal_mutable_value();
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.value)
+  return _s;
+}
+inline const std::string& FeaturesFile_FeatureRecord::_internal_value() const {
+  return _impl_.value_.Get();
+}
+inline void FeaturesFile_FeatureRecord::_internal_set_value(const std::string& value) {
+  _impl_._has_bits_[0] |= 0x00000004u;
+  _impl_.value_.Set(value, GetArenaForAllocation());
+}
+inline std::string* FeaturesFile_FeatureRecord::_internal_mutable_value() {
+  _impl_._has_bits_[0] |= 0x00000004u;
+  return _impl_.value_.Mutable(GetArenaForAllocation());
+}
+inline std::string* FeaturesFile_FeatureRecord::release_value() {
+  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.value)
+  if (!_internal_has_value()) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000004u;
+  auto* p = _impl_.value_.Release();
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.value_.IsDefault()) {
+    _impl_.value_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
+}
+inline void FeaturesFile_FeatureRecord::set_allocated_value(std::string* value) {
+  if (value != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000004u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000004u;
+  }
+  _impl_.value_.SetAllocated(value, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.value_.IsDefault()) {
+    _impl_.value_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.value)
+}
+
+// optional uint32 id = 26;
+inline bool FeaturesFile_FeatureRecord::_internal_has_id() const {
+  bool value = (_impl_._has_bits_[0] & 0x01000000u) != 0;
+  return value;
+}
+inline bool FeaturesFile_FeatureRecord::has_id() const {
+  return _internal_has_id();
+}
+inline void FeaturesFile_FeatureRecord::clear_id() {
+  _impl_.id_ = 0u;
+  _impl_._has_bits_[0] &= ~0x01000000u;
+}
+inline uint32_t FeaturesFile_FeatureRecord::_internal_id() const {
+  return _impl_.id_;
+}
+inline uint32_t FeaturesFile_FeatureRecord::id() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.id)
+  return _internal_id();
+}
+inline void FeaturesFile_FeatureRecord::_internal_set_id(uint32_t value) {
+  _impl_._has_bits_[0] |= 0x01000000u;
+  _impl_.id_ = value;
+}
+inline void FeaturesFile_FeatureRecord::set_id(uint32_t value) {
+  _internal_set_id(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.id)
+}
+
+// optional int32 orient_def = 27;
+inline bool FeaturesFile_FeatureRecord::_internal_has_orient_def() const {
+  bool value = (_impl_._has_bits_[0] & 0x02000000u) != 0;
+  return value;
+}
+inline bool FeaturesFile_FeatureRecord::has_orient_def() const {
+  return _internal_has_orient_def();
+}
+inline void FeaturesFile_FeatureRecord::clear_orient_def() {
+  _impl_.orient_def_ = 0;
+  _impl_._has_bits_[0] &= ~0x02000000u;
+}
+inline int32_t FeaturesFile_FeatureRecord::_internal_orient_def() const {
+  return _impl_.orient_def_;
+}
+inline int32_t FeaturesFile_FeatureRecord::orient_def() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.orient_def)
+  return _internal_orient_def();
+}
+inline void FeaturesFile_FeatureRecord::_internal_set_orient_def(int32_t value) {
+  _impl_._has_bits_[0] |= 0x02000000u;
+  _impl_.orient_def_ = value;
+}
+inline void FeaturesFile_FeatureRecord::set_orient_def(int32_t value) {
+  _internal_set_orient_def(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.orient_def)
+}
+
+// optional float orient_def_rotation = 28;
+inline bool FeaturesFile_FeatureRecord::_internal_has_orient_def_rotation() const {
+  bool value = (_impl_._has_bits_[0] & 0x04000000u) != 0;
+  return value;
+}
+inline bool FeaturesFile_FeatureRecord::has_orient_def_rotation() const {
+  return _internal_has_orient_def_rotation();
+}
+inline void FeaturesFile_FeatureRecord::clear_orient_def_rotation() {
+  _impl_.orient_def_rotation_ = 0;
+  _impl_._has_bits_[0] &= ~0x04000000u;
+}
+inline float FeaturesFile_FeatureRecord::_internal_orient_def_rotation() const {
+  return _impl_.orient_def_rotation_;
+}
+inline float FeaturesFile_FeatureRecord::orient_def_rotation() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.orient_def_rotation)
+  return _internal_orient_def_rotation();
+}
+inline void FeaturesFile_FeatureRecord::_internal_set_orient_def_rotation(float value) {
+  _impl_._has_bits_[0] |= 0x04000000u;
+  _impl_.orient_def_rotation_ = value;
+}
+inline void FeaturesFile_FeatureRecord::set_orient_def_rotation(float value) {
+  _internal_set_orient_def_rotation(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.orient_def_rotation)
+}
 
 // repeated .Odb.Lib.Protobuf.ContourPolygon contourPolygons = 1;
 inline int FeaturesFile_FeatureRecord::_internal_contourpolygons_size() const {
@@ -835,6 +2201,16 @@ FeaturesFile::featurerecords() const {
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
+
+PROTOBUF_NAMESPACE_OPEN
+
+template <> struct is_proto_enum< ::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord_Type> : ::std::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord_Type>() {
+  return ::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord_Type_descriptor();
+}
+
+PROTOBUF_NAMESPACE_CLOSE
 
 // @@protoc_insertion_point(global_scope)
 

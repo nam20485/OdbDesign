@@ -25,8 +25,36 @@ namespace Lib {
 namespace Protobuf {
 PROTOBUF_CONSTEXPR FeaturesFile_FeatureRecord::FeaturesFile_FeatureRecord(
     ::_pbi::ConstantInitialized): _impl_{
-    /*decltype(_impl_.contourpolygons_)*/{}
-  , /*decltype(_impl_._cached_size_)*/{}} {}
+    /*decltype(_impl_._has_bits_)*/{}
+  , /*decltype(_impl_._cached_size_)*/{}
+  , /*decltype(_impl_.contourpolygons_)*/{}
+  , /*decltype(_impl_.font_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.text_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.value_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.type_)*/0
+  , /*decltype(_impl_.xs_)*/0
+  , /*decltype(_impl_.ys_)*/0
+  , /*decltype(_impl_.xe_)*/0
+  , /*decltype(_impl_.ye_)*/0
+  , /*decltype(_impl_.x_)*/0
+  , /*decltype(_impl_.y_)*/0
+  , /*decltype(_impl_.apt_def_)*/0
+  , /*decltype(_impl_.apt_def_symbol_num_)*/0
+  , /*decltype(_impl_.apt_def_resize_factor_)*/0
+  , /*decltype(_impl_.xc_)*/0
+  , /*decltype(_impl_.yc_)*/0
+  , /*decltype(_impl_.cw_)*/false
+  , /*decltype(_impl_.xsize_)*/0
+  , /*decltype(_impl_.ysize_)*/0
+  , /*decltype(_impl_.width_factor_)*/0
+  , /*decltype(_impl_.version_)*/0
+  , /*decltype(_impl_.sym_num_)*/0
+  , /*decltype(_impl_.polarity_)*/0
+  , /*decltype(_impl_.dcode_)*/0
+  , /*decltype(_impl_.atr_)*/0
+  , /*decltype(_impl_.id_)*/0u
+  , /*decltype(_impl_.orient_def_)*/0
+  , /*decltype(_impl_.orient_def_rotation_)*/0} {}
 struct FeaturesFile_FeatureRecordDefaultTypeInternal {
   PROTOBUF_CONSTEXPR FeaturesFile_FeatureRecordDefaultTypeInternal()
       : _instance(::_pbi::ConstantInitialized{}) {}
@@ -59,17 +87,72 @@ PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORIT
 }  // namespace Lib
 }  // namespace Odb
 static ::_pb::Metadata file_level_metadata_featuresfile_2eproto[2];
-static constexpr ::_pb::EnumDescriptor const** file_level_enum_descriptors_featuresfile_2eproto = nullptr;
+static const ::_pb::EnumDescriptor* file_level_enum_descriptors_featuresfile_2eproto[1];
 static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_featuresfile_2eproto = nullptr;
 
 const uint32_t TableStruct_featuresfile_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord, _impl_._has_bits_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord, _impl_.type_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord, _impl_.xs_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord, _impl_.ys_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord, _impl_.xe_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord, _impl_.ye_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord, _impl_.x_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord, _impl_.y_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord, _impl_.apt_def_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord, _impl_.apt_def_symbol_num_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord, _impl_.apt_def_resize_factor_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord, _impl_.xc_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord, _impl_.yc_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord, _impl_.cw_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord, _impl_.font_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord, _impl_.xsize_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord, _impl_.ysize_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord, _impl_.width_factor_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord, _impl_.text_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord, _impl_.version_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord, _impl_.sym_num_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord, _impl_.polarity_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord, _impl_.dcode_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord, _impl_.atr_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord, _impl_.value_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord, _impl_.id_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord, _impl_.orient_def_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord, _impl_.orient_def_rotation_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord, _impl_.contourpolygons_),
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13,
+  14,
+  15,
+  0,
+  16,
+  17,
+  18,
+  1,
+  19,
+  20,
+  21,
+  22,
+  23,
+  2,
+  24,
+  25,
+  26,
+  ~0u,
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile, _impl_._has_bits_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -90,8 +173,8 @@ const uint32_t TableStruct_featuresfile_2eproto::offsets[] PROTOBUF_SECTION_VARI
   ~0u,
 };
 static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  { 0, -1, -1, sizeof(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord)},
-  { 7, 19, -1, sizeof(::Odb::Lib::Protobuf::FeaturesFile)},
+  { 0, 34, -1, sizeof(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord)},
+  { 62, 74, -1, sizeof(::Odb::Lib::Protobuf::FeaturesFile)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
@@ -101,24 +184,51 @@ static const ::_pb::Message* const file_default_instances[] = {
 
 const char descriptor_table_protodef_featuresfile_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
   "\n\022featuresfile.proto\022\020Odb.Lib.Protobuf\032\014"
-  "common.proto\"\302\002\n\014FeaturesFile\022\022\n\005units\030\001"
-  " \001(\tH\000\210\001\001\022\017\n\002id\030\002 \001(\rH\001\210\001\001\022\021\n\004path\030\005 \001(\t"
-  "H\002\210\001\001\022\026\n\tdirectory\030\006 \001(\tH\003\210\001\001\022\030\n\013numFeat"
-  "ures\030\007 \001(\005H\004\210\001\001\022D\n\016featureRecords\030\010 \003(\0132"
-  ",.Odb.Lib.Protobuf.FeaturesFile.FeatureR"
-  "ecord\032J\n\rFeatureRecord\0229\n\017contourPolygon"
-  "s\030\001 \003(\0132 .Odb.Lib.Protobuf.ContourPolygo"
-  "nB\010\n\006_unitsB\005\n\003_idB\007\n\005_pathB\014\n\n_director"
-  "yB\016\n\014_numFeaturesb\006proto3"
+  "common.proto\032\013enums.proto\"\272\n\n\014FeaturesFi"
+  "le\022\022\n\005units\030\001 \001(\tH\000\210\001\001\022\017\n\002id\030\002 \001(\rH\001\210\001\001\022"
+  "\021\n\004path\030\005 \001(\tH\002\210\001\001\022\026\n\tdirectory\030\006 \001(\tH\003\210"
+  "\001\001\022\030\n\013numFeatures\030\007 \001(\005H\004\210\001\001\022D\n\016featureR"
+  "ecords\030\010 \003(\0132,.Odb.Lib.Protobuf.Features"
+  "File.FeatureRecord\032\301\010\n\rFeatureRecord\022D\n\004"
+  "type\030\002 \001(\01621.Odb.Lib.Protobuf.FeaturesFi"
+  "le.FeatureRecord.TypeH\000\210\001\001\022\017\n\002xs\030\003 \001(\002H\001"
+  "\210\001\001\022\017\n\002ys\030\004 \001(\002H\002\210\001\001\022\017\n\002xe\030\005 \001(\002H\003\210\001\001\022\017\n"
+  "\002ye\030\006 \001(\002H\004\210\001\001\022\016\n\001x\030\007 \001(\002H\005\210\001\001\022\016\n\001y\030\010 \001("
+  "\002H\006\210\001\001\022\024\n\007apt_def\030\t \001(\005H\007\210\001\001\022\037\n\022apt_def_"
+  "symbol_num\030\n \001(\005H\010\210\001\001\022\"\n\025apt_def_resize_"
+  "factor\030\013 \001(\002H\t\210\001\001\022\017\n\002xc\030\014 \001(\002H\n\210\001\001\022\017\n\002yc"
+  "\030\r \001(\002H\013\210\001\001\022\017\n\002cw\030\016 \001(\010H\014\210\001\001\022\021\n\004font\030\017 \001"
+  "(\tH\r\210\001\001\022\022\n\005xsize\030\020 \001(\002H\016\210\001\001\022\022\n\005ysize\030\021 \001"
+  "(\002H\017\210\001\001\022\031\n\014width_factor\030\022 \001(\002H\020\210\001\001\022\021\n\004te"
+  "xt\030\023 \001(\tH\021\210\001\001\022\024\n\007version\030\024 \001(\005H\022\210\001\001\022\024\n\007s"
+  "ym_num\030\025 \001(\005H\023\210\001\001\0221\n\010polarity\030\026 \001(\0162\032.Od"
+  "b.Lib.Protobuf.PolarityH\024\210\001\001\022\022\n\005dcode\030\027 "
+  "\001(\005H\025\210\001\001\022\020\n\003atr\030\030 \001(\005H\026\210\001\001\022\022\n\005value\030\031 \001("
+  "\tH\027\210\001\001\022\017\n\002id\030\032 \001(\rH\030\210\001\001\022\027\n\norient_def\030\033 "
+  "\001(\005H\031\210\001\001\022 \n\023orient_def_rotation\030\034 \001(\002H\032\210"
+  "\001\001\0229\n\017contourPolygons\030\001 \003(\0132 .Odb.Lib.Pr"
+  "otobuf.ContourPolygon\"F\n\004Type\022\007\n\003Arc\020\000\022\007"
+  "\n\003Pad\020\001\022\013\n\007Surface\020\002\022\013\n\007Barcode\020\003\022\010\n\004Tex"
+  "t\020\004\022\010\n\004Line\020\005B\007\n\005_typeB\005\n\003_xsB\005\n\003_ysB\005\n\003"
+  "_xeB\005\n\003_yeB\004\n\002_xB\004\n\002_yB\n\n\010_apt_defB\025\n\023_a"
+  "pt_def_symbol_numB\030\n\026_apt_def_resize_fac"
+  "torB\005\n\003_xcB\005\n\003_ycB\005\n\003_cwB\007\n\005_fontB\010\n\006_xs"
+  "izeB\010\n\006_ysizeB\017\n\r_width_factorB\007\n\005_textB"
+  "\n\n\010_versionB\n\n\010_sym_numB\013\n\t_polarityB\010\n\006"
+  "_dcodeB\006\n\004_atrB\010\n\006_valueB\005\n\003_idB\r\n\013_orie"
+  "nt_defB\026\n\024_orient_def_rotationB\010\n\006_units"
+  "B\005\n\003_idB\007\n\005_pathB\014\n\n_directoryB\016\n\014_numFe"
+  "aturesb\006proto3"
   ;
-static const ::_pbi::DescriptorTable* const descriptor_table_featuresfile_2eproto_deps[1] = {
+static const ::_pbi::DescriptorTable* const descriptor_table_featuresfile_2eproto_deps[2] = {
   &::descriptor_table_common_2eproto,
+  &::descriptor_table_enums_2eproto,
 };
 static ::_pbi::once_flag descriptor_table_featuresfile_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_featuresfile_2eproto = {
-    false, false, 385, descriptor_table_protodef_featuresfile_2eproto,
+    false, false, 1414, descriptor_table_protodef_featuresfile_2eproto,
     "featuresfile.proto",
-    &descriptor_table_featuresfile_2eproto_once, descriptor_table_featuresfile_2eproto_deps, 1, 2,
+    &descriptor_table_featuresfile_2eproto_once, descriptor_table_featuresfile_2eproto_deps, 2, 2,
     schemas, file_default_instances, TableStruct_featuresfile_2eproto::offsets,
     file_level_metadata_featuresfile_2eproto, file_level_enum_descriptors_featuresfile_2eproto,
     file_level_service_descriptors_featuresfile_2eproto,
@@ -132,11 +242,122 @@ PROTOBUF_ATTRIBUTE_INIT_PRIORITY2 static ::_pbi::AddDescriptorsRunner dynamic_in
 namespace Odb {
 namespace Lib {
 namespace Protobuf {
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* FeaturesFile_FeatureRecord_Type_descriptor() {
+  ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&descriptor_table_featuresfile_2eproto);
+  return file_level_enum_descriptors_featuresfile_2eproto[0];
+}
+bool FeaturesFile_FeatureRecord_Type_IsValid(int value) {
+  switch (value) {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+      return true;
+    default:
+      return false;
+  }
+}
+
+#if (__cplusplus < 201703) && (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
+constexpr FeaturesFile_FeatureRecord_Type FeaturesFile_FeatureRecord::Arc;
+constexpr FeaturesFile_FeatureRecord_Type FeaturesFile_FeatureRecord::Pad;
+constexpr FeaturesFile_FeatureRecord_Type FeaturesFile_FeatureRecord::Surface;
+constexpr FeaturesFile_FeatureRecord_Type FeaturesFile_FeatureRecord::Barcode;
+constexpr FeaturesFile_FeatureRecord_Type FeaturesFile_FeatureRecord::Text;
+constexpr FeaturesFile_FeatureRecord_Type FeaturesFile_FeatureRecord::Line;
+constexpr FeaturesFile_FeatureRecord_Type FeaturesFile_FeatureRecord::Type_MIN;
+constexpr FeaturesFile_FeatureRecord_Type FeaturesFile_FeatureRecord::Type_MAX;
+constexpr int FeaturesFile_FeatureRecord::Type_ARRAYSIZE;
+#endif  // (__cplusplus < 201703) && (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
 
 // ===================================================================
 
 class FeaturesFile_FeatureRecord::_Internal {
  public:
+  using HasBits = decltype(std::declval<FeaturesFile_FeatureRecord>()._impl_._has_bits_);
+  static void set_has_type(HasBits* has_bits) {
+    (*has_bits)[0] |= 8u;
+  }
+  static void set_has_xs(HasBits* has_bits) {
+    (*has_bits)[0] |= 16u;
+  }
+  static void set_has_ys(HasBits* has_bits) {
+    (*has_bits)[0] |= 32u;
+  }
+  static void set_has_xe(HasBits* has_bits) {
+    (*has_bits)[0] |= 64u;
+  }
+  static void set_has_ye(HasBits* has_bits) {
+    (*has_bits)[0] |= 128u;
+  }
+  static void set_has_x(HasBits* has_bits) {
+    (*has_bits)[0] |= 256u;
+  }
+  static void set_has_y(HasBits* has_bits) {
+    (*has_bits)[0] |= 512u;
+  }
+  static void set_has_apt_def(HasBits* has_bits) {
+    (*has_bits)[0] |= 1024u;
+  }
+  static void set_has_apt_def_symbol_num(HasBits* has_bits) {
+    (*has_bits)[0] |= 2048u;
+  }
+  static void set_has_apt_def_resize_factor(HasBits* has_bits) {
+    (*has_bits)[0] |= 4096u;
+  }
+  static void set_has_xc(HasBits* has_bits) {
+    (*has_bits)[0] |= 8192u;
+  }
+  static void set_has_yc(HasBits* has_bits) {
+    (*has_bits)[0] |= 16384u;
+  }
+  static void set_has_cw(HasBits* has_bits) {
+    (*has_bits)[0] |= 32768u;
+  }
+  static void set_has_font(HasBits* has_bits) {
+    (*has_bits)[0] |= 1u;
+  }
+  static void set_has_xsize(HasBits* has_bits) {
+    (*has_bits)[0] |= 65536u;
+  }
+  static void set_has_ysize(HasBits* has_bits) {
+    (*has_bits)[0] |= 131072u;
+  }
+  static void set_has_width_factor(HasBits* has_bits) {
+    (*has_bits)[0] |= 262144u;
+  }
+  static void set_has_text(HasBits* has_bits) {
+    (*has_bits)[0] |= 2u;
+  }
+  static void set_has_version(HasBits* has_bits) {
+    (*has_bits)[0] |= 524288u;
+  }
+  static void set_has_sym_num(HasBits* has_bits) {
+    (*has_bits)[0] |= 1048576u;
+  }
+  static void set_has_polarity(HasBits* has_bits) {
+    (*has_bits)[0] |= 2097152u;
+  }
+  static void set_has_dcode(HasBits* has_bits) {
+    (*has_bits)[0] |= 4194304u;
+  }
+  static void set_has_atr(HasBits* has_bits) {
+    (*has_bits)[0] |= 8388608u;
+  }
+  static void set_has_value(HasBits* has_bits) {
+    (*has_bits)[0] |= 4u;
+  }
+  static void set_has_id(HasBits* has_bits) {
+    (*has_bits)[0] |= 16777216u;
+  }
+  static void set_has_orient_def(HasBits* has_bits) {
+    (*has_bits)[0] |= 33554432u;
+  }
+  static void set_has_orient_def_rotation(HasBits* has_bits) {
+    (*has_bits)[0] |= 67108864u;
+  }
 };
 
 void FeaturesFile_FeatureRecord::clear_contourpolygons() {
@@ -152,10 +373,65 @@ FeaturesFile_FeatureRecord::FeaturesFile_FeatureRecord(const FeaturesFile_Featur
   : ::PROTOBUF_NAMESPACE_ID::Message() {
   FeaturesFile_FeatureRecord* const _this = this; (void)_this;
   new (&_impl_) Impl_{
-      decltype(_impl_.contourpolygons_){from._impl_.contourpolygons_}
-    , /*decltype(_impl_._cached_size_)*/{}};
+      decltype(_impl_._has_bits_){from._impl_._has_bits_}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.contourpolygons_){from._impl_.contourpolygons_}
+    , decltype(_impl_.font_){}
+    , decltype(_impl_.text_){}
+    , decltype(_impl_.value_){}
+    , decltype(_impl_.type_){}
+    , decltype(_impl_.xs_){}
+    , decltype(_impl_.ys_){}
+    , decltype(_impl_.xe_){}
+    , decltype(_impl_.ye_){}
+    , decltype(_impl_.x_){}
+    , decltype(_impl_.y_){}
+    , decltype(_impl_.apt_def_){}
+    , decltype(_impl_.apt_def_symbol_num_){}
+    , decltype(_impl_.apt_def_resize_factor_){}
+    , decltype(_impl_.xc_){}
+    , decltype(_impl_.yc_){}
+    , decltype(_impl_.cw_){}
+    , decltype(_impl_.xsize_){}
+    , decltype(_impl_.ysize_){}
+    , decltype(_impl_.width_factor_){}
+    , decltype(_impl_.version_){}
+    , decltype(_impl_.sym_num_){}
+    , decltype(_impl_.polarity_){}
+    , decltype(_impl_.dcode_){}
+    , decltype(_impl_.atr_){}
+    , decltype(_impl_.id_){}
+    , decltype(_impl_.orient_def_){}
+    , decltype(_impl_.orient_def_rotation_){}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _impl_.font_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.font_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (from._internal_has_font()) {
+    _this->_impl_.font_.Set(from._internal_font(), 
+      _this->GetArenaForAllocation());
+  }
+  _impl_.text_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.text_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (from._internal_has_text()) {
+    _this->_impl_.text_.Set(from._internal_text(), 
+      _this->GetArenaForAllocation());
+  }
+  _impl_.value_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.value_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (from._internal_has_value()) {
+    _this->_impl_.value_.Set(from._internal_value(), 
+      _this->GetArenaForAllocation());
+  }
+  ::memcpy(&_impl_.type_, &from._impl_.type_,
+    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.orient_def_rotation_) -
+    reinterpret_cast<char*>(&_impl_.type_)) + sizeof(_impl_.orient_def_rotation_));
   // @@protoc_insertion_point(copy_constructor:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord)
 }
 
@@ -164,9 +440,49 @@ inline void FeaturesFile_FeatureRecord::SharedCtor(
   (void)arena;
   (void)is_message_owned;
   new (&_impl_) Impl_{
-      decltype(_impl_.contourpolygons_){arena}
+      decltype(_impl_._has_bits_){}
     , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.contourpolygons_){arena}
+    , decltype(_impl_.font_){}
+    , decltype(_impl_.text_){}
+    , decltype(_impl_.value_){}
+    , decltype(_impl_.type_){0}
+    , decltype(_impl_.xs_){0}
+    , decltype(_impl_.ys_){0}
+    , decltype(_impl_.xe_){0}
+    , decltype(_impl_.ye_){0}
+    , decltype(_impl_.x_){0}
+    , decltype(_impl_.y_){0}
+    , decltype(_impl_.apt_def_){0}
+    , decltype(_impl_.apt_def_symbol_num_){0}
+    , decltype(_impl_.apt_def_resize_factor_){0}
+    , decltype(_impl_.xc_){0}
+    , decltype(_impl_.yc_){0}
+    , decltype(_impl_.cw_){false}
+    , decltype(_impl_.xsize_){0}
+    , decltype(_impl_.ysize_){0}
+    , decltype(_impl_.width_factor_){0}
+    , decltype(_impl_.version_){0}
+    , decltype(_impl_.sym_num_){0}
+    , decltype(_impl_.polarity_){0}
+    , decltype(_impl_.dcode_){0}
+    , decltype(_impl_.atr_){0}
+    , decltype(_impl_.id_){0u}
+    , decltype(_impl_.orient_def_){0}
+    , decltype(_impl_.orient_def_rotation_){0}
   };
+  _impl_.font_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.font_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.text_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.text_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.value_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.value_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
 }
 
 FeaturesFile_FeatureRecord::~FeaturesFile_FeatureRecord() {
@@ -181,6 +497,9 @@ FeaturesFile_FeatureRecord::~FeaturesFile_FeatureRecord() {
 inline void FeaturesFile_FeatureRecord::SharedDtor() {
   GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
   _impl_.contourpolygons_.~RepeatedPtrField();
+  _impl_.font_.Destroy();
+  _impl_.text_.Destroy();
+  _impl_.value_.Destroy();
 }
 
 void FeaturesFile_FeatureRecord::SetCachedSize(int size) const {
@@ -194,11 +513,45 @@ void FeaturesFile_FeatureRecord::Clear() {
   (void) cached_has_bits;
 
   _impl_.contourpolygons_.Clear();
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000007u) {
+    if (cached_has_bits & 0x00000001u) {
+      _impl_.font_.ClearNonDefaultToEmpty();
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _impl_.text_.ClearNonDefaultToEmpty();
+    }
+    if (cached_has_bits & 0x00000004u) {
+      _impl_.value_.ClearNonDefaultToEmpty();
+    }
+  }
+  if (cached_has_bits & 0x000000f8u) {
+    ::memset(&_impl_.type_, 0, static_cast<size_t>(
+        reinterpret_cast<char*>(&_impl_.ye_) -
+        reinterpret_cast<char*>(&_impl_.type_)) + sizeof(_impl_.ye_));
+  }
+  if (cached_has_bits & 0x0000ff00u) {
+    ::memset(&_impl_.x_, 0, static_cast<size_t>(
+        reinterpret_cast<char*>(&_impl_.cw_) -
+        reinterpret_cast<char*>(&_impl_.x_)) + sizeof(_impl_.cw_));
+  }
+  if (cached_has_bits & 0x00ff0000u) {
+    ::memset(&_impl_.xsize_, 0, static_cast<size_t>(
+        reinterpret_cast<char*>(&_impl_.atr_) -
+        reinterpret_cast<char*>(&_impl_.xsize_)) + sizeof(_impl_.atr_));
+  }
+  if (cached_has_bits & 0x07000000u) {
+    ::memset(&_impl_.id_, 0, static_cast<size_t>(
+        reinterpret_cast<char*>(&_impl_.orient_def_rotation_) -
+        reinterpret_cast<char*>(&_impl_.id_)) + sizeof(_impl_.orient_def_rotation_));
+  }
+  _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 const char* FeaturesFile_FeatureRecord::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  _Internal::HasBits has_bits{};
   while (!ctx->Done(&ptr)) {
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
@@ -213,6 +566,252 @@ const char* FeaturesFile_FeatureRecord::_InternalParse(const char* ptr, ::_pbi::
             CHK_(ptr);
             if (!ctx->DataAvailable(ptr)) break;
           } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<10>(ptr));
+        } else
+          goto handle_unusual;
+        continue;
+      // optional .Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.Type type = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 16)) {
+          uint64_t val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+          _internal_set_type(static_cast<::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord_Type>(val));
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float xs = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 29)) {
+          _Internal::set_has_xs(&has_bits);
+          _impl_.xs_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float ys = 4;
+      case 4:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 37)) {
+          _Internal::set_has_ys(&has_bits);
+          _impl_.ys_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float xe = 5;
+      case 5:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 45)) {
+          _Internal::set_has_xe(&has_bits);
+          _impl_.xe_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float ye = 6;
+      case 6:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 53)) {
+          _Internal::set_has_ye(&has_bits);
+          _impl_.ye_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float x = 7;
+      case 7:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 61)) {
+          _Internal::set_has_x(&has_bits);
+          _impl_.x_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float y = 8;
+      case 8:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 69)) {
+          _Internal::set_has_y(&has_bits);
+          _impl_.y_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional int32 apt_def = 9;
+      case 9:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 72)) {
+          _Internal::set_has_apt_def(&has_bits);
+          _impl_.apt_def_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional int32 apt_def_symbol_num = 10;
+      case 10:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 80)) {
+          _Internal::set_has_apt_def_symbol_num(&has_bits);
+          _impl_.apt_def_symbol_num_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float apt_def_resize_factor = 11;
+      case 11:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 93)) {
+          _Internal::set_has_apt_def_resize_factor(&has_bits);
+          _impl_.apt_def_resize_factor_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float xc = 12;
+      case 12:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 101)) {
+          _Internal::set_has_xc(&has_bits);
+          _impl_.xc_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float yc = 13;
+      case 13:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 109)) {
+          _Internal::set_has_yc(&has_bits);
+          _impl_.yc_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional bool cw = 14;
+      case 14:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 112)) {
+          _Internal::set_has_cw(&has_bits);
+          _impl_.cw_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional string font = 15;
+      case 15:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 122)) {
+          auto str = _internal_mutable_font();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.font"));
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float xsize = 16;
+      case 16:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 133)) {
+          _Internal::set_has_xsize(&has_bits);
+          _impl_.xsize_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float ysize = 17;
+      case 17:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 141)) {
+          _Internal::set_has_ysize(&has_bits);
+          _impl_.ysize_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float width_factor = 18;
+      case 18:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 149)) {
+          _Internal::set_has_width_factor(&has_bits);
+          _impl_.width_factor_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional string text = 19;
+      case 19:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 154)) {
+          auto str = _internal_mutable_text();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.text"));
+        } else
+          goto handle_unusual;
+        continue;
+      // optional int32 version = 20;
+      case 20:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 160)) {
+          _Internal::set_has_version(&has_bits);
+          _impl_.version_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional int32 sym_num = 21;
+      case 21:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 168)) {
+          _Internal::set_has_sym_num(&has_bits);
+          _impl_.sym_num_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional .Odb.Lib.Protobuf.Polarity polarity = 22;
+      case 22:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 176)) {
+          uint64_t val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+          _internal_set_polarity(static_cast<::Odb::Lib::Protobuf::Polarity>(val));
+        } else
+          goto handle_unusual;
+        continue;
+      // optional int32 dcode = 23;
+      case 23:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 184)) {
+          _Internal::set_has_dcode(&has_bits);
+          _impl_.dcode_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional int32 atr = 24;
+      case 24:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 192)) {
+          _Internal::set_has_atr(&has_bits);
+          _impl_.atr_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional string value = 25;
+      case 25:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 202)) {
+          auto str = _internal_mutable_value();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.value"));
+        } else
+          goto handle_unusual;
+        continue;
+      // optional uint32 id = 26;
+      case 26:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 208)) {
+          _Internal::set_has_id(&has_bits);
+          _impl_.id_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional int32 orient_def = 27;
+      case 27:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 216)) {
+          _Internal::set_has_orient_def(&has_bits);
+          _impl_.orient_def_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float orient_def_rotation = 28;
+      case 28:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 229)) {
+          _Internal::set_has_orient_def_rotation(&has_bits);
+          _impl_.orient_def_rotation_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
         } else
           goto handle_unusual;
         continue;
@@ -232,6 +831,7 @@ const char* FeaturesFile_FeatureRecord::_InternalParse(const char* ptr, ::_pbi::
     CHK_(ptr != nullptr);
   }  // while
 message_done:
+  _impl_._has_bits_.Or(has_bits);
   return ptr;
 failure:
   ptr = nullptr;
@@ -251,6 +851,182 @@ uint8_t* FeaturesFile_FeatureRecord::_InternalSerialize(
     const auto& repfield = this->_internal_contourpolygons(i);
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
         InternalWriteMessage(1, repfield, repfield.GetCachedSize(), target, stream);
+  }
+
+  // optional .Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.Type type = 2;
+  if (_internal_has_type()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteEnumToArray(
+      2, this->_internal_type(), target);
+  }
+
+  // optional float xs = 3;
+  if (_internal_has_xs()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(3, this->_internal_xs(), target);
+  }
+
+  // optional float ys = 4;
+  if (_internal_has_ys()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(4, this->_internal_ys(), target);
+  }
+
+  // optional float xe = 5;
+  if (_internal_has_xe()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(5, this->_internal_xe(), target);
+  }
+
+  // optional float ye = 6;
+  if (_internal_has_ye()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(6, this->_internal_ye(), target);
+  }
+
+  // optional float x = 7;
+  if (_internal_has_x()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(7, this->_internal_x(), target);
+  }
+
+  // optional float y = 8;
+  if (_internal_has_y()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(8, this->_internal_y(), target);
+  }
+
+  // optional int32 apt_def = 9;
+  if (_internal_has_apt_def()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteInt32ToArray(9, this->_internal_apt_def(), target);
+  }
+
+  // optional int32 apt_def_symbol_num = 10;
+  if (_internal_has_apt_def_symbol_num()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteInt32ToArray(10, this->_internal_apt_def_symbol_num(), target);
+  }
+
+  // optional float apt_def_resize_factor = 11;
+  if (_internal_has_apt_def_resize_factor()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(11, this->_internal_apt_def_resize_factor(), target);
+  }
+
+  // optional float xc = 12;
+  if (_internal_has_xc()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(12, this->_internal_xc(), target);
+  }
+
+  // optional float yc = 13;
+  if (_internal_has_yc()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(13, this->_internal_yc(), target);
+  }
+
+  // optional bool cw = 14;
+  if (_internal_has_cw()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteBoolToArray(14, this->_internal_cw(), target);
+  }
+
+  // optional string font = 15;
+  if (_internal_has_font()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_font().data(), static_cast<int>(this->_internal_font().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.font");
+    target = stream->WriteStringMaybeAliased(
+        15, this->_internal_font(), target);
+  }
+
+  // optional float xsize = 16;
+  if (_internal_has_xsize()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(16, this->_internal_xsize(), target);
+  }
+
+  // optional float ysize = 17;
+  if (_internal_has_ysize()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(17, this->_internal_ysize(), target);
+  }
+
+  // optional float width_factor = 18;
+  if (_internal_has_width_factor()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(18, this->_internal_width_factor(), target);
+  }
+
+  // optional string text = 19;
+  if (_internal_has_text()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_text().data(), static_cast<int>(this->_internal_text().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.text");
+    target = stream->WriteStringMaybeAliased(
+        19, this->_internal_text(), target);
+  }
+
+  // optional int32 version = 20;
+  if (_internal_has_version()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteInt32ToArray(20, this->_internal_version(), target);
+  }
+
+  // optional int32 sym_num = 21;
+  if (_internal_has_sym_num()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteInt32ToArray(21, this->_internal_sym_num(), target);
+  }
+
+  // optional .Odb.Lib.Protobuf.Polarity polarity = 22;
+  if (_internal_has_polarity()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteEnumToArray(
+      22, this->_internal_polarity(), target);
+  }
+
+  // optional int32 dcode = 23;
+  if (_internal_has_dcode()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteInt32ToArray(23, this->_internal_dcode(), target);
+  }
+
+  // optional int32 atr = 24;
+  if (_internal_has_atr()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteInt32ToArray(24, this->_internal_atr(), target);
+  }
+
+  // optional string value = 25;
+  if (_internal_has_value()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_value().data(), static_cast<int>(this->_internal_value().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.value");
+    target = stream->WriteStringMaybeAliased(
+        25, this->_internal_value(), target);
+  }
+
+  // optional uint32 id = 26;
+  if (_internal_has_id()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteUInt32ToArray(26, this->_internal_id(), target);
+  }
+
+  // optional int32 orient_def = 27;
+  if (_internal_has_orient_def()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteInt32ToArray(27, this->_internal_orient_def(), target);
+  }
+
+  // optional float orient_def_rotation = 28;
+  if (_internal_has_orient_def_rotation()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(28, this->_internal_orient_def_rotation(), target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -276,6 +1052,170 @@ size_t FeaturesFile_FeatureRecord::ByteSizeLong() const {
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(msg);
   }
 
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x000000ffu) {
+    // optional string font = 15;
+    if (cached_has_bits & 0x00000001u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_font());
+    }
+
+    // optional string text = 19;
+    if (cached_has_bits & 0x00000002u) {
+      total_size += 2 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_text());
+    }
+
+    // optional string value = 25;
+    if (cached_has_bits & 0x00000004u) {
+      total_size += 2 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_value());
+    }
+
+    // optional .Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.Type type = 2;
+    if (cached_has_bits & 0x00000008u) {
+      total_size += 1 +
+        ::_pbi::WireFormatLite::EnumSize(this->_internal_type());
+    }
+
+    // optional float xs = 3;
+    if (cached_has_bits & 0x00000010u) {
+      total_size += 1 + 4;
+    }
+
+    // optional float ys = 4;
+    if (cached_has_bits & 0x00000020u) {
+      total_size += 1 + 4;
+    }
+
+    // optional float xe = 5;
+    if (cached_has_bits & 0x00000040u) {
+      total_size += 1 + 4;
+    }
+
+    // optional float ye = 6;
+    if (cached_has_bits & 0x00000080u) {
+      total_size += 1 + 4;
+    }
+
+  }
+  if (cached_has_bits & 0x0000ff00u) {
+    // optional float x = 7;
+    if (cached_has_bits & 0x00000100u) {
+      total_size += 1 + 4;
+    }
+
+    // optional float y = 8;
+    if (cached_has_bits & 0x00000200u) {
+      total_size += 1 + 4;
+    }
+
+    // optional int32 apt_def = 9;
+    if (cached_has_bits & 0x00000400u) {
+      total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(this->_internal_apt_def());
+    }
+
+    // optional int32 apt_def_symbol_num = 10;
+    if (cached_has_bits & 0x00000800u) {
+      total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(this->_internal_apt_def_symbol_num());
+    }
+
+    // optional float apt_def_resize_factor = 11;
+    if (cached_has_bits & 0x00001000u) {
+      total_size += 1 + 4;
+    }
+
+    // optional float xc = 12;
+    if (cached_has_bits & 0x00002000u) {
+      total_size += 1 + 4;
+    }
+
+    // optional float yc = 13;
+    if (cached_has_bits & 0x00004000u) {
+      total_size += 1 + 4;
+    }
+
+    // optional bool cw = 14;
+    if (cached_has_bits & 0x00008000u) {
+      total_size += 1 + 1;
+    }
+
+  }
+  if (cached_has_bits & 0x00ff0000u) {
+    // optional float xsize = 16;
+    if (cached_has_bits & 0x00010000u) {
+      total_size += 2 + 4;
+    }
+
+    // optional float ysize = 17;
+    if (cached_has_bits & 0x00020000u) {
+      total_size += 2 + 4;
+    }
+
+    // optional float width_factor = 18;
+    if (cached_has_bits & 0x00040000u) {
+      total_size += 2 + 4;
+    }
+
+    // optional int32 version = 20;
+    if (cached_has_bits & 0x00080000u) {
+      total_size += 2 +
+        ::_pbi::WireFormatLite::Int32Size(
+          this->_internal_version());
+    }
+
+    // optional int32 sym_num = 21;
+    if (cached_has_bits & 0x00100000u) {
+      total_size += 2 +
+        ::_pbi::WireFormatLite::Int32Size(
+          this->_internal_sym_num());
+    }
+
+    // optional .Odb.Lib.Protobuf.Polarity polarity = 22;
+    if (cached_has_bits & 0x00200000u) {
+      total_size += 2 +
+        ::_pbi::WireFormatLite::EnumSize(this->_internal_polarity());
+    }
+
+    // optional int32 dcode = 23;
+    if (cached_has_bits & 0x00400000u) {
+      total_size += 2 +
+        ::_pbi::WireFormatLite::Int32Size(
+          this->_internal_dcode());
+    }
+
+    // optional int32 atr = 24;
+    if (cached_has_bits & 0x00800000u) {
+      total_size += 2 +
+        ::_pbi::WireFormatLite::Int32Size(
+          this->_internal_atr());
+    }
+
+  }
+  if (cached_has_bits & 0x07000000u) {
+    // optional uint32 id = 26;
+    if (cached_has_bits & 0x01000000u) {
+      total_size += 2 +
+        ::_pbi::WireFormatLite::UInt32Size(
+          this->_internal_id());
+    }
+
+    // optional int32 orient_def = 27;
+    if (cached_has_bits & 0x02000000u) {
+      total_size += 2 +
+        ::_pbi::WireFormatLite::Int32Size(
+          this->_internal_orient_def());
+    }
+
+    // optional float orient_def_rotation = 28;
+    if (cached_has_bits & 0x04000000u) {
+      total_size += 2 + 4;
+    }
+
+  }
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
 }
 
@@ -295,6 +1235,100 @@ void FeaturesFile_FeatureRecord::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_
   (void) cached_has_bits;
 
   _this->_impl_.contourpolygons_.MergeFrom(from._impl_.contourpolygons_);
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (cached_has_bits & 0x000000ffu) {
+    if (cached_has_bits & 0x00000001u) {
+      _this->_internal_set_font(from._internal_font());
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _this->_internal_set_text(from._internal_text());
+    }
+    if (cached_has_bits & 0x00000004u) {
+      _this->_internal_set_value(from._internal_value());
+    }
+    if (cached_has_bits & 0x00000008u) {
+      _this->_impl_.type_ = from._impl_.type_;
+    }
+    if (cached_has_bits & 0x00000010u) {
+      _this->_impl_.xs_ = from._impl_.xs_;
+    }
+    if (cached_has_bits & 0x00000020u) {
+      _this->_impl_.ys_ = from._impl_.ys_;
+    }
+    if (cached_has_bits & 0x00000040u) {
+      _this->_impl_.xe_ = from._impl_.xe_;
+    }
+    if (cached_has_bits & 0x00000080u) {
+      _this->_impl_.ye_ = from._impl_.ye_;
+    }
+    _this->_impl_._has_bits_[0] |= cached_has_bits;
+  }
+  if (cached_has_bits & 0x0000ff00u) {
+    if (cached_has_bits & 0x00000100u) {
+      _this->_impl_.x_ = from._impl_.x_;
+    }
+    if (cached_has_bits & 0x00000200u) {
+      _this->_impl_.y_ = from._impl_.y_;
+    }
+    if (cached_has_bits & 0x00000400u) {
+      _this->_impl_.apt_def_ = from._impl_.apt_def_;
+    }
+    if (cached_has_bits & 0x00000800u) {
+      _this->_impl_.apt_def_symbol_num_ = from._impl_.apt_def_symbol_num_;
+    }
+    if (cached_has_bits & 0x00001000u) {
+      _this->_impl_.apt_def_resize_factor_ = from._impl_.apt_def_resize_factor_;
+    }
+    if (cached_has_bits & 0x00002000u) {
+      _this->_impl_.xc_ = from._impl_.xc_;
+    }
+    if (cached_has_bits & 0x00004000u) {
+      _this->_impl_.yc_ = from._impl_.yc_;
+    }
+    if (cached_has_bits & 0x00008000u) {
+      _this->_impl_.cw_ = from._impl_.cw_;
+    }
+    _this->_impl_._has_bits_[0] |= cached_has_bits;
+  }
+  if (cached_has_bits & 0x00ff0000u) {
+    if (cached_has_bits & 0x00010000u) {
+      _this->_impl_.xsize_ = from._impl_.xsize_;
+    }
+    if (cached_has_bits & 0x00020000u) {
+      _this->_impl_.ysize_ = from._impl_.ysize_;
+    }
+    if (cached_has_bits & 0x00040000u) {
+      _this->_impl_.width_factor_ = from._impl_.width_factor_;
+    }
+    if (cached_has_bits & 0x00080000u) {
+      _this->_impl_.version_ = from._impl_.version_;
+    }
+    if (cached_has_bits & 0x00100000u) {
+      _this->_impl_.sym_num_ = from._impl_.sym_num_;
+    }
+    if (cached_has_bits & 0x00200000u) {
+      _this->_impl_.polarity_ = from._impl_.polarity_;
+    }
+    if (cached_has_bits & 0x00400000u) {
+      _this->_impl_.dcode_ = from._impl_.dcode_;
+    }
+    if (cached_has_bits & 0x00800000u) {
+      _this->_impl_.atr_ = from._impl_.atr_;
+    }
+    _this->_impl_._has_bits_[0] |= cached_has_bits;
+  }
+  if (cached_has_bits & 0x07000000u) {
+    if (cached_has_bits & 0x01000000u) {
+      _this->_impl_.id_ = from._impl_.id_;
+    }
+    if (cached_has_bits & 0x02000000u) {
+      _this->_impl_.orient_def_ = from._impl_.orient_def_;
+    }
+    if (cached_has_bits & 0x04000000u) {
+      _this->_impl_.orient_def_rotation_ = from._impl_.orient_def_rotation_;
+    }
+    _this->_impl_._has_bits_[0] |= cached_has_bits;
+  }
   _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
 }
 
@@ -311,8 +1345,29 @@ bool FeaturesFile_FeatureRecord::IsInitialized() const {
 
 void FeaturesFile_FeatureRecord::InternalSwap(FeaturesFile_FeatureRecord* other) {
   using std::swap;
+  auto* lhs_arena = GetArenaForAllocation();
+  auto* rhs_arena = other->GetArenaForAllocation();
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
   _impl_.contourpolygons_.InternalSwap(&other->_impl_.contourpolygons_);
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.font_, lhs_arena,
+      &other->_impl_.font_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.text_, lhs_arena,
+      &other->_impl_.text_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.value_, lhs_arena,
+      &other->_impl_.value_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(FeaturesFile_FeatureRecord, _impl_.orient_def_rotation_)
+      + sizeof(FeaturesFile_FeatureRecord::_impl_.orient_def_rotation_)
+      - PROTOBUF_FIELD_OFFSET(FeaturesFile_FeatureRecord, _impl_.type_)>(
+          reinterpret_cast<char*>(&_impl_.type_),
+          reinterpret_cast<char*>(&other->_impl_.type_));
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata FeaturesFile_FeatureRecord::GetMetadata() const {

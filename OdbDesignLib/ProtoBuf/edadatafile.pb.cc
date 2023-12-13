@@ -90,6 +90,29 @@ struct EdaDataFile_PackageRecord_PinRecordsByNameEntry_DoNotUseDefaultTypeIntern
   };
 };
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 EdaDataFile_PackageRecord_PinRecordsByNameEntry_DoNotUseDefaultTypeInternal _EdaDataFile_PackageRecord_PinRecordsByNameEntry_DoNotUse_default_instance_;
+PROTOBUF_CONSTEXPR EdaDataFile_PackageRecord_OutlineRecord::EdaDataFile_PackageRecord_OutlineRecord(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_._has_bits_)*/{}
+  , /*decltype(_impl_._cached_size_)*/{}
+  , /*decltype(_impl_.contourpolygons_)*/{}
+  , /*decltype(_impl_.type_)*/0
+  , /*decltype(_impl_.lowerleftx_)*/0
+  , /*decltype(_impl_.lowerlefty_)*/0
+  , /*decltype(_impl_.width_)*/0
+  , /*decltype(_impl_.height_)*/0
+  , /*decltype(_impl_.xcenter_)*/0
+  , /*decltype(_impl_.ycenter_)*/0
+  , /*decltype(_impl_.halfside_)*/0
+  , /*decltype(_impl_.radius_)*/0} {}
+struct EdaDataFile_PackageRecord_OutlineRecordDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR EdaDataFile_PackageRecord_OutlineRecordDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~EdaDataFile_PackageRecord_OutlineRecordDefaultTypeInternal() {}
+  union {
+    EdaDataFile_PackageRecord_OutlineRecord _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 EdaDataFile_PackageRecord_OutlineRecordDefaultTypeInternal _EdaDataFile_PackageRecord_OutlineRecord_default_instance_;
 PROTOBUF_CONSTEXPR EdaDataFile_PackageRecord_PinRecord::EdaDataFile_PackageRecord_PinRecord(
     ::_pbi::ConstantInitialized): _impl_{
     /*decltype(_impl_._has_bits_)*/{}
@@ -119,6 +142,7 @@ PROTOBUF_CONSTEXPR EdaDataFile_PackageRecord::EdaDataFile_PackageRecord(
   , /*decltype(_impl_.pinrecords_)*/{}
   , /*decltype(_impl_.pinrecordsbyname_)*/{::_pbi::ConstantInitialized()}
   , /*decltype(_impl_.propertyrecords_)*/{}
+  , /*decltype(_impl_.outlinerecords_)*/{}
   , /*decltype(_impl_.name_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.attributesidstring_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.pitch_)*/0
@@ -201,8 +225,8 @@ PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORIT
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
-static ::_pb::Metadata file_level_metadata_edadatafile_2eproto[10];
-static const ::_pb::EnumDescriptor* file_level_enum_descriptors_edadatafile_2eproto[7];
+static ::_pb::Metadata file_level_metadata_edadatafile_2eproto[11];
+static const ::_pb::EnumDescriptor* file_level_enum_descriptors_edadatafile_2eproto[8];
 static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_edadatafile_2eproto = nullptr;
 
 const uint32_t TableStruct_edadatafile_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
@@ -268,6 +292,32 @@ const uint32_t TableStruct_edadatafile_2eproto::offsets[] PROTOBUF_SECTION_VARIA
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_PinRecordsByNameEntry_DoNotUse, value_),
   0,
   1,
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord, _impl_.type_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord, _impl_.lowerleftx_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord, _impl_.lowerlefty_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord, _impl_.width_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord, _impl_.height_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord, _impl_.xcenter_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord, _impl_.ycenter_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord, _impl_.halfside_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord, _impl_.radius_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord, _impl_.contourpolygons_),
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  ~0u,
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_PinRecord, _impl_._has_bits_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_PinRecord, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -308,6 +358,7 @@ const uint32_t TableStruct_edadatafile_2eproto::offsets[] PROTOBUF_SECTION_VARIA
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::EdaDataFile_PackageRecord, _impl_.pinrecords_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::EdaDataFile_PackageRecord, _impl_.pinrecordsbyname_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::EdaDataFile_PackageRecord, _impl_.propertyrecords_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::EdaDataFile_PackageRecord, _impl_.outlinerecords_),
   0,
   2,
   3,
@@ -315,6 +366,7 @@ const uint32_t TableStruct_edadatafile_2eproto::offsets[] PROTOBUF_SECTION_VARIA
   5,
   6,
   1,
+  ~0u,
   ~0u,
   ~0u,
   ~0u,
@@ -386,12 +438,13 @@ static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protode
   { 12, 27, -1, sizeof(::Odb::Lib::Protobuf::EdaDataFile_NetRecord_SubnetRecord)},
   { 36, 47, -1, sizeof(::Odb::Lib::Protobuf::EdaDataFile_NetRecord)},
   { 52, 60, -1, sizeof(::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_PinRecordsByNameEntry_DoNotUse)},
-  { 62, 77, -1, sizeof(::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_PinRecord)},
-  { 86, 102, -1, sizeof(::Odb::Lib::Protobuf::EdaDataFile_PackageRecord)},
-  { 112, 121, -1, sizeof(::Odb::Lib::Protobuf::EdaDataFile_FeatureGroupRecord)},
-  { 124, 132, -1, sizeof(::Odb::Lib::Protobuf::EdaDataFile_NetRecordsByNameEntry_DoNotUse)},
-  { 134, 142, -1, sizeof(::Odb::Lib::Protobuf::EdaDataFile_PackageRecordsByNameEntry_DoNotUse)},
-  { 144, 162, -1, sizeof(::Odb::Lib::Protobuf::EdaDataFile)},
+  { 62, 78, -1, sizeof(::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord)},
+  { 88, 103, -1, sizeof(::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_PinRecord)},
+  { 112, 129, -1, sizeof(::Odb::Lib::Protobuf::EdaDataFile_PackageRecord)},
+  { 140, 149, -1, sizeof(::Odb::Lib::Protobuf::EdaDataFile_FeatureGroupRecord)},
+  { 152, 160, -1, sizeof(::Odb::Lib::Protobuf::EdaDataFile_NetRecordsByNameEntry_DoNotUse)},
+  { 162, 170, -1, sizeof(::Odb::Lib::Protobuf::EdaDataFile_PackageRecordsByNameEntry_DoNotUse)},
+  { 172, 190, -1, sizeof(::Odb::Lib::Protobuf::EdaDataFile)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
@@ -399,6 +452,7 @@ static const ::_pb::Message* const file_default_instances[] = {
   &::Odb::Lib::Protobuf::_EdaDataFile_NetRecord_SubnetRecord_default_instance_._instance,
   &::Odb::Lib::Protobuf::_EdaDataFile_NetRecord_default_instance_._instance,
   &::Odb::Lib::Protobuf::_EdaDataFile_PackageRecord_PinRecordsByNameEntry_DoNotUse_default_instance_._instance,
+  &::Odb::Lib::Protobuf::_EdaDataFile_PackageRecord_OutlineRecord_default_instance_._instance,
   &::Odb::Lib::Protobuf::_EdaDataFile_PackageRecord_PinRecord_default_instance_._instance,
   &::Odb::Lib::Protobuf::_EdaDataFile_PackageRecord_default_instance_._instance,
   &::Odb::Lib::Protobuf::_EdaDataFile_FeatureGroupRecord_default_instance_._instance,
@@ -409,7 +463,7 @@ static const ::_pb::Message* const file_default_instances[] = {
 
 const char descriptor_table_protodef_edadatafile_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
   "\n\021edadatafile.proto\022\020Odb.Lib.Protobuf\032\014c"
-  "ommon.proto\032\013enums.proto\"\260\034\n\013EdaDataFile"
+  "ommon.proto\032\013enums.proto\"\376 \n\013EdaDataFile"
   "\022\021\n\004path\030\001 \001(\tH\000\210\001\001\022\022\n\005units\030\002 \001(\tH\001\210\001\001\022"
   "\023\n\006source\030\003 \001(\tH\002\210\001\001\022\022\n\nlayerNames\030\004 \003(\t"
   "\022\026\n\016attributeNames\030\005 \003(\t\022\033\n\023attributeTex"
@@ -455,7 +509,7 @@ const char descriptor_table_protodef_edadatafile_2eproto[] PROTOBUF_SECTION_VARI
   "\n\t_fillTypeB\r\n\013_cutoutTypeB\013\n\t_fillSizeB"
   "\007\n\005_sideB\022\n\020_componentNumberB\021\n\017_toeprin"
   "tNumberB\010\n\006_indexB\007\n\005_nameB\025\n\023_attribute"
-  "sIdStringB\010\n\006_index\032\344\n\n\rPackageRecord\022\021\n"
+  "sIdStringB\010\n\006_index\032\262\017\n\rPackageRecord\022\021\n"
   "\004name\030\001 \001(\tH\000\210\001\001\022\022\n\005pitch\030\002 \001(\002H\001\210\001\001\022\021\n\004"
   "xMin\030\003 \001(\002H\002\210\001\001\022\021\n\004yMin\030\004 \001(\002H\003\210\001\001\022\021\n\004xM"
   "ax\030\005 \001(\002H\004\210\001\001\022\021\n\004yMax\030\006 \001(\002H\005\210\001\001\022\037\n\022attr"
@@ -465,42 +519,57 @@ const char descriptor_table_protodef_edadatafile_2eproto[] PROTOBUF_SECTION_VARI
   "\030\t \003(\0132A.Odb.Lib.Protobuf.EdaDataFile.Pa"
   "ckageRecord.PinRecordsByNameEntry\0229\n\017pro"
   "pertyRecords\030\n \003(\0132 .Odb.Lib.Protobuf.Pr"
-  "opertyRecord\032n\n\025PinRecordsByNameEntry\022\013\n"
-  "\003key\030\001 \001(\t\022D\n\005value\030\002 \001(\01325.Odb.Lib.Prot"
-  "obuf.EdaDataFile.PackageRecord.PinRecord"
-  ":\0028\001\032\235\006\n\tPinRecord\022\021\n\004name\030\001 \001(\tH\000\210\001\001\022M\n"
-  "\004type\030\002 \001(\0162:.Odb.Lib.Protobuf.EdaDataFi"
-  "le.PackageRecord.PinRecord.TypeH\001\210\001\001\022\024\n\007"
-  "xCenter\030\003 \001(\002H\002\210\001\001\022\024\n\007yCenter\030\004 \001(\002H\003\210\001\001"
-  "\022\035\n\020finishedHoleSize\030\005 \001(\002H\004\210\001\001\022a\n\016elect"
-  "ricalType\030\006 \001(\0162D.Odb.Lib.Protobuf.EdaDa"
-  "taFile.PackageRecord.PinRecord.Electrica"
-  "lTypeH\005\210\001\001\022W\n\tmountType\030\007 \001(\0162\?.Odb.Lib."
-  "Protobuf.EdaDataFile.PackageRecord.PinRe"
-  "cord.MountTypeH\006\210\001\001\022\017\n\002id\030\010 \001(\rH\007\210\001\001\022\022\n\005"
-  "index\030\t \001(\rH\010\210\001\001\"0\n\004Type\022\020\n\014THROUGH_HOLE"
-  "\020\000\022\t\n\005BLIND\020\001\022\013\n\007SURFACE\020\002\"C\n\016Electrical"
-  "Type\022\016\n\nELECTRICAL\020\000\022\022\n\016NON_ELECTRICAL\020\001"
-  "\022\r\n\tUNDEFINED\020\002\"\231\001\n\tMountType\022\007\n\003SMT\020\000\022\027"
-  "\n\023RECOMMENDED_SMT_PAD\020\001\022\023\n\017MT_THROUGH_HO"
-  "LE\020\002\022\034\n\030RECOMMENDED_THROUGH_HOLE\020\003\022\014\n\010PR"
-  "ESSFIT\020\004\022\r\n\tNON_BOARD\020\005\022\010\n\004HOLE\020\006\022\020\n\014MT_"
-  "UNDEFINED\020\007B\007\n\005_nameB\007\n\005_typeB\n\n\010_xCente"
-  "rB\n\n\010_yCenterB\023\n\021_finishedHoleSizeB\021\n\017_e"
-  "lectricalTypeB\014\n\n_mountTypeB\005\n\003_idB\010\n\006_i"
-  "ndexB\007\n\005_nameB\010\n\006_pitchB\007\n\005_xMinB\007\n\005_yMi"
-  "nB\007\n\005_xMaxB\007\n\005_yMaxB\025\n\023_attributesIdStri"
-  "ng\032\264\001\n\022FeatureGroupRecord\022\021\n\004type\030\001 \001(\tH"
-  "\000\210\001\001\0229\n\017propertyRecords\030\002 \003(\0132 .Odb.Lib."
-  "Protobuf.PropertyRecord\022G\n\020featureIdReco"
-  "rds\030\003 \003(\0132-.Odb.Lib.Protobuf.EdaDataFile"
-  ".FeatureIdRecordB\007\n\005_type\032`\n\025NetRecordsB"
-  "yNameEntry\022\013\n\003key\030\001 \001(\t\0226\n\005value\030\002 \001(\0132\'"
-  ".Odb.Lib.Protobuf.EdaDataFile.NetRecord:"
-  "\0028\001\032h\n\031PackageRecordsByNameEntry\022\013\n\003key\030"
-  "\001 \001(\t\022:\n\005value\030\002 \001(\0132+.Odb.Lib.Protobuf."
-  "EdaDataFile.PackageRecord:\0028\001B\007\n\005_pathB\010"
-  "\n\006_unitsB\t\n\007_sourceb\006proto3"
+  "opertyRecord\022Q\n\016outlineRecords\030\013 \003(\01329.O"
+  "db.Lib.Protobuf.EdaDataFile.PackageRecor"
+  "d.OutlineRecord\032n\n\025PinRecordsByNameEntry"
+  "\022\013\n\003key\030\001 \001(\t\022D\n\005value\030\002 \001(\01325.Odb.Lib.P"
+  "rotobuf.EdaDataFile.PackageRecord.PinRec"
+  "ord:\0028\001\032\370\003\n\rOutlineRecord\022Q\n\004type\030\001 \001(\0162"
+  ">.Odb.Lib.Protobuf.EdaDataFile.PackageRe"
+  "cord.OutlineRecord.TypeH\000\210\001\001\022\027\n\nlowerLef"
+  "tX\030\002 \001(\002H\001\210\001\001\022\027\n\nlowerLeftY\030\003 \001(\002H\002\210\001\001\022\022"
+  "\n\005width\030\004 \001(\002H\003\210\001\001\022\023\n\006height\030\005 \001(\002H\004\210\001\001\022"
+  "\024\n\007xCenter\030\006 \001(\002H\005\210\001\001\022\024\n\007yCenter\030\007 \001(\002H\006"
+  "\210\001\001\022\025\n\010halfSide\030\010 \001(\002H\007\210\001\001\022\023\n\006radius\030\t \001"
+  "(\002H\010\210\001\001\0229\n\017contourPolygons\030\n \003(\0132 .Odb.L"
+  "ib.Protobuf.ContourPolygon\":\n\004Type\022\r\n\tRe"
+  "ctangle\020\000\022\n\n\006Circle\020\001\022\n\n\006Square\020\002\022\013\n\007Con"
+  "tour\020\003B\007\n\005_typeB\r\n\013_lowerLeftXB\r\n\013_lower"
+  "LeftYB\010\n\006_widthB\t\n\007_heightB\n\n\010_xCenterB\n"
+  "\n\010_yCenterB\013\n\t_halfSideB\t\n\007_radius\032\235\006\n\tP"
+  "inRecord\022\021\n\004name\030\001 \001(\tH\000\210\001\001\022M\n\004type\030\002 \001("
+  "\0162:.Odb.Lib.Protobuf.EdaDataFile.Package"
+  "Record.PinRecord.TypeH\001\210\001\001\022\024\n\007xCenter\030\003 "
+  "\001(\002H\002\210\001\001\022\024\n\007yCenter\030\004 \001(\002H\003\210\001\001\022\035\n\020finish"
+  "edHoleSize\030\005 \001(\002H\004\210\001\001\022a\n\016electricalType\030"
+  "\006 \001(\0162D.Odb.Lib.Protobuf.EdaDataFile.Pac"
+  "kageRecord.PinRecord.ElectricalTypeH\005\210\001\001"
+  "\022W\n\tmountType\030\007 \001(\0162\?.Odb.Lib.Protobuf.E"
+  "daDataFile.PackageRecord.PinRecord.Mount"
+  "TypeH\006\210\001\001\022\017\n\002id\030\010 \001(\rH\007\210\001\001\022\022\n\005index\030\t \001("
+  "\rH\010\210\001\001\"0\n\004Type\022\020\n\014THROUGH_HOLE\020\000\022\t\n\005BLIN"
+  "D\020\001\022\013\n\007SURFACE\020\002\"C\n\016ElectricalType\022\016\n\nEL"
+  "ECTRICAL\020\000\022\022\n\016NON_ELECTRICAL\020\001\022\r\n\tUNDEFI"
+  "NED\020\002\"\231\001\n\tMountType\022\007\n\003SMT\020\000\022\027\n\023RECOMMEN"
+  "DED_SMT_PAD\020\001\022\023\n\017MT_THROUGH_HOLE\020\002\022\034\n\030RE"
+  "COMMENDED_THROUGH_HOLE\020\003\022\014\n\010PRESSFIT\020\004\022\r"
+  "\n\tNON_BOARD\020\005\022\010\n\004HOLE\020\006\022\020\n\014MT_UNDEFINED\020"
+  "\007B\007\n\005_nameB\007\n\005_typeB\n\n\010_xCenterB\n\n\010_yCen"
+  "terB\023\n\021_finishedHoleSizeB\021\n\017_electricalT"
+  "ypeB\014\n\n_mountTypeB\005\n\003_idB\010\n\006_indexB\007\n\005_n"
+  "ameB\010\n\006_pitchB\007\n\005_xMinB\007\n\005_yMinB\007\n\005_xMax"
+  "B\007\n\005_yMaxB\025\n\023_attributesIdString\032\264\001\n\022Fea"
+  "tureGroupRecord\022\021\n\004type\030\001 \001(\tH\000\210\001\001\0229\n\017pr"
+  "opertyRecords\030\002 \003(\0132 .Odb.Lib.Protobuf.P"
+  "ropertyRecord\022G\n\020featureIdRecords\030\003 \003(\0132"
+  "-.Odb.Lib.Protobuf.EdaDataFile.FeatureId"
+  "RecordB\007\n\005_type\032`\n\025NetRecordsByNameEntry"
+  "\022\013\n\003key\030\001 \001(\t\0226\n\005value\030\002 \001(\0132\'.Odb.Lib.P"
+  "rotobuf.EdaDataFile.NetRecord:\0028\001\032h\n\031Pac"
+  "kageRecordsByNameEntry\022\013\n\003key\030\001 \001(\t\022:\n\005v"
+  "alue\030\002 \001(\0132+.Odb.Lib.Protobuf.EdaDataFil"
+  "e.PackageRecord:\0028\001B\007\n\005_pathB\010\n\006_unitsB\t"
+  "\n\007_sourceb\006proto3"
   ;
 static const ::_pbi::DescriptorTable* const descriptor_table_edadatafile_2eproto_deps[2] = {
   &::descriptor_table_common_2eproto,
@@ -508,9 +577,9 @@ static const ::_pbi::DescriptorTable* const descriptor_table_edadatafile_2eproto
 };
 static ::_pbi::once_flag descriptor_table_edadatafile_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_edadatafile_2eproto = {
-    false, false, 3707, descriptor_table_protodef_edadatafile_2eproto,
+    false, false, 4297, descriptor_table_protodef_edadatafile_2eproto,
     "edadatafile.proto",
-    &descriptor_table_edadatafile_2eproto_once, descriptor_table_edadatafile_2eproto_deps, 2, 10,
+    &descriptor_table_edadatafile_2eproto_once, descriptor_table_edadatafile_2eproto_deps, 2, 11,
     schemas, file_default_instances, TableStruct_edadatafile_2eproto::offsets,
     file_level_metadata_edadatafile_2eproto, file_level_enum_descriptors_edadatafile_2eproto,
     file_level_service_descriptors_edadatafile_2eproto,
@@ -618,9 +687,34 @@ constexpr EdaDataFile_NetRecord_SubnetRecord_CutoutType EdaDataFile_NetRecord_Su
 constexpr EdaDataFile_NetRecord_SubnetRecord_CutoutType EdaDataFile_NetRecord_SubnetRecord::CutoutType_MAX;
 constexpr int EdaDataFile_NetRecord_SubnetRecord::CutoutType_ARRAYSIZE;
 #endif  // (__cplusplus < 201703) && (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
-const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* EdaDataFile_PackageRecord_PinRecord_Type_descriptor() {
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* EdaDataFile_PackageRecord_OutlineRecord_Type_descriptor() {
   ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&descriptor_table_edadatafile_2eproto);
   return file_level_enum_descriptors_edadatafile_2eproto[4];
+}
+bool EdaDataFile_PackageRecord_OutlineRecord_Type_IsValid(int value) {
+  switch (value) {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+      return true;
+    default:
+      return false;
+  }
+}
+
+#if (__cplusplus < 201703) && (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
+constexpr EdaDataFile_PackageRecord_OutlineRecord_Type EdaDataFile_PackageRecord_OutlineRecord::Rectangle;
+constexpr EdaDataFile_PackageRecord_OutlineRecord_Type EdaDataFile_PackageRecord_OutlineRecord::Circle;
+constexpr EdaDataFile_PackageRecord_OutlineRecord_Type EdaDataFile_PackageRecord_OutlineRecord::Square;
+constexpr EdaDataFile_PackageRecord_OutlineRecord_Type EdaDataFile_PackageRecord_OutlineRecord::Contour;
+constexpr EdaDataFile_PackageRecord_OutlineRecord_Type EdaDataFile_PackageRecord_OutlineRecord::Type_MIN;
+constexpr EdaDataFile_PackageRecord_OutlineRecord_Type EdaDataFile_PackageRecord_OutlineRecord::Type_MAX;
+constexpr int EdaDataFile_PackageRecord_OutlineRecord::Type_ARRAYSIZE;
+#endif  // (__cplusplus < 201703) && (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* EdaDataFile_PackageRecord_PinRecord_Type_descriptor() {
+  ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&descriptor_table_edadatafile_2eproto);
+  return file_level_enum_descriptors_edadatafile_2eproto[5];
 }
 bool EdaDataFile_PackageRecord_PinRecord_Type_IsValid(int value) {
   switch (value) {
@@ -643,7 +737,7 @@ constexpr int EdaDataFile_PackageRecord_PinRecord::Type_ARRAYSIZE;
 #endif  // (__cplusplus < 201703) && (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
 const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* EdaDataFile_PackageRecord_PinRecord_ElectricalType_descriptor() {
   ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&descriptor_table_edadatafile_2eproto);
-  return file_level_enum_descriptors_edadatafile_2eproto[5];
+  return file_level_enum_descriptors_edadatafile_2eproto[6];
 }
 bool EdaDataFile_PackageRecord_PinRecord_ElectricalType_IsValid(int value) {
   switch (value) {
@@ -666,7 +760,7 @@ constexpr int EdaDataFile_PackageRecord_PinRecord::ElectricalType_ARRAYSIZE;
 #endif  // (__cplusplus < 201703) && (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
 const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* EdaDataFile_PackageRecord_PinRecord_MountType_descriptor() {
   ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&descriptor_table_edadatafile_2eproto);
-  return file_level_enum_descriptors_edadatafile_2eproto[6];
+  return file_level_enum_descriptors_edadatafile_2eproto[7];
 }
 bool EdaDataFile_PackageRecord_PinRecord_MountType_IsValid(int value) {
   switch (value) {
@@ -1808,6 +1902,478 @@ void EdaDataFile_PackageRecord_PinRecordsByNameEntry_DoNotUse::MergeFrom(const E
 
 // ===================================================================
 
+class EdaDataFile_PackageRecord_OutlineRecord::_Internal {
+ public:
+  using HasBits = decltype(std::declval<EdaDataFile_PackageRecord_OutlineRecord>()._impl_._has_bits_);
+  static void set_has_type(HasBits* has_bits) {
+    (*has_bits)[0] |= 1u;
+  }
+  static void set_has_lowerleftx(HasBits* has_bits) {
+    (*has_bits)[0] |= 2u;
+  }
+  static void set_has_lowerlefty(HasBits* has_bits) {
+    (*has_bits)[0] |= 4u;
+  }
+  static void set_has_width(HasBits* has_bits) {
+    (*has_bits)[0] |= 8u;
+  }
+  static void set_has_height(HasBits* has_bits) {
+    (*has_bits)[0] |= 16u;
+  }
+  static void set_has_xcenter(HasBits* has_bits) {
+    (*has_bits)[0] |= 32u;
+  }
+  static void set_has_ycenter(HasBits* has_bits) {
+    (*has_bits)[0] |= 64u;
+  }
+  static void set_has_halfside(HasBits* has_bits) {
+    (*has_bits)[0] |= 128u;
+  }
+  static void set_has_radius(HasBits* has_bits) {
+    (*has_bits)[0] |= 256u;
+  }
+};
+
+void EdaDataFile_PackageRecord_OutlineRecord::clear_contourpolygons() {
+  _impl_.contourpolygons_.Clear();
+}
+EdaDataFile_PackageRecord_OutlineRecord::EdaDataFile_PackageRecord_OutlineRecord(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  // @@protoc_insertion_point(arena_constructor:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord)
+}
+EdaDataFile_PackageRecord_OutlineRecord::EdaDataFile_PackageRecord_OutlineRecord(const EdaDataFile_PackageRecord_OutlineRecord& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  EdaDataFile_PackageRecord_OutlineRecord* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){from._impl_._has_bits_}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.contourpolygons_){from._impl_.contourpolygons_}
+    , decltype(_impl_.type_){}
+    , decltype(_impl_.lowerleftx_){}
+    , decltype(_impl_.lowerlefty_){}
+    , decltype(_impl_.width_){}
+    , decltype(_impl_.height_){}
+    , decltype(_impl_.xcenter_){}
+    , decltype(_impl_.ycenter_){}
+    , decltype(_impl_.halfside_){}
+    , decltype(_impl_.radius_){}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  ::memcpy(&_impl_.type_, &from._impl_.type_,
+    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.radius_) -
+    reinterpret_cast<char*>(&_impl_.type_)) + sizeof(_impl_.radius_));
+  // @@protoc_insertion_point(copy_constructor:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord)
+}
+
+inline void EdaDataFile_PackageRecord_OutlineRecord::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.contourpolygons_){arena}
+    , decltype(_impl_.type_){0}
+    , decltype(_impl_.lowerleftx_){0}
+    , decltype(_impl_.lowerlefty_){0}
+    , decltype(_impl_.width_){0}
+    , decltype(_impl_.height_){0}
+    , decltype(_impl_.xcenter_){0}
+    , decltype(_impl_.ycenter_){0}
+    , decltype(_impl_.halfside_){0}
+    , decltype(_impl_.radius_){0}
+  };
+}
+
+EdaDataFile_PackageRecord_OutlineRecord::~EdaDataFile_PackageRecord_OutlineRecord() {
+  // @@protoc_insertion_point(destructor:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void EdaDataFile_PackageRecord_OutlineRecord::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  _impl_.contourpolygons_.~RepeatedPtrField();
+}
+
+void EdaDataFile_PackageRecord_OutlineRecord::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void EdaDataFile_PackageRecord_OutlineRecord::Clear() {
+// @@protoc_insertion_point(message_clear_start:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  _impl_.contourpolygons_.Clear();
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x000000ffu) {
+    ::memset(&_impl_.type_, 0, static_cast<size_t>(
+        reinterpret_cast<char*>(&_impl_.halfside_) -
+        reinterpret_cast<char*>(&_impl_.type_)) + sizeof(_impl_.halfside_));
+  }
+  _impl_.radius_ = 0;
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* EdaDataFile_PackageRecord_OutlineRecord::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  _Internal::HasBits has_bits{};
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // optional .Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.Type type = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
+          uint64_t val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+          _internal_set_type(static_cast<::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord_Type>(val));
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float lowerLeftX = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 21)) {
+          _Internal::set_has_lowerleftx(&has_bits);
+          _impl_.lowerleftx_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float lowerLeftY = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 29)) {
+          _Internal::set_has_lowerlefty(&has_bits);
+          _impl_.lowerlefty_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float width = 4;
+      case 4:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 37)) {
+          _Internal::set_has_width(&has_bits);
+          _impl_.width_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float height = 5;
+      case 5:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 45)) {
+          _Internal::set_has_height(&has_bits);
+          _impl_.height_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float xCenter = 6;
+      case 6:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 53)) {
+          _Internal::set_has_xcenter(&has_bits);
+          _impl_.xcenter_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float yCenter = 7;
+      case 7:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 61)) {
+          _Internal::set_has_ycenter(&has_bits);
+          _impl_.ycenter_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float halfSide = 8;
+      case 8:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 69)) {
+          _Internal::set_has_halfside(&has_bits);
+          _impl_.halfside_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float radius = 9;
+      case 9:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 77)) {
+          _Internal::set_has_radius(&has_bits);
+          _impl_.radius_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // repeated .Odb.Lib.Protobuf.ContourPolygon contourPolygons = 10;
+      case 10:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 82)) {
+          ptr -= 1;
+          do {
+            ptr += 1;
+            ptr = ctx->ParseMessage(_internal_add_contourpolygons(), ptr);
+            CHK_(ptr);
+            if (!ctx->DataAvailable(ptr)) break;
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<82>(ptr));
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  _impl_._has_bits_.Or(has_bits);
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* EdaDataFile_PackageRecord_OutlineRecord::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // optional .Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.Type type = 1;
+  if (_internal_has_type()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteEnumToArray(
+      1, this->_internal_type(), target);
+  }
+
+  // optional float lowerLeftX = 2;
+  if (_internal_has_lowerleftx()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(2, this->_internal_lowerleftx(), target);
+  }
+
+  // optional float lowerLeftY = 3;
+  if (_internal_has_lowerlefty()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(3, this->_internal_lowerlefty(), target);
+  }
+
+  // optional float width = 4;
+  if (_internal_has_width()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(4, this->_internal_width(), target);
+  }
+
+  // optional float height = 5;
+  if (_internal_has_height()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(5, this->_internal_height(), target);
+  }
+
+  // optional float xCenter = 6;
+  if (_internal_has_xcenter()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(6, this->_internal_xcenter(), target);
+  }
+
+  // optional float yCenter = 7;
+  if (_internal_has_ycenter()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(7, this->_internal_ycenter(), target);
+  }
+
+  // optional float halfSide = 8;
+  if (_internal_has_halfside()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(8, this->_internal_halfside(), target);
+  }
+
+  // optional float radius = 9;
+  if (_internal_has_radius()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(9, this->_internal_radius(), target);
+  }
+
+  // repeated .Odb.Lib.Protobuf.ContourPolygon contourPolygons = 10;
+  for (unsigned i = 0,
+      n = static_cast<unsigned>(this->_internal_contourpolygons_size()); i < n; i++) {
+    const auto& repfield = this->_internal_contourpolygons(i);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+        InternalWriteMessage(10, repfield, repfield.GetCachedSize(), target, stream);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord)
+  return target;
+}
+
+size_t EdaDataFile_PackageRecord_OutlineRecord::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // repeated .Odb.Lib.Protobuf.ContourPolygon contourPolygons = 10;
+  total_size += 1UL * this->_internal_contourpolygons_size();
+  for (const auto& msg : this->_impl_.contourpolygons_) {
+    total_size +=
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(msg);
+  }
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x000000ffu) {
+    // optional .Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.Type type = 1;
+    if (cached_has_bits & 0x00000001u) {
+      total_size += 1 +
+        ::_pbi::WireFormatLite::EnumSize(this->_internal_type());
+    }
+
+    // optional float lowerLeftX = 2;
+    if (cached_has_bits & 0x00000002u) {
+      total_size += 1 + 4;
+    }
+
+    // optional float lowerLeftY = 3;
+    if (cached_has_bits & 0x00000004u) {
+      total_size += 1 + 4;
+    }
+
+    // optional float width = 4;
+    if (cached_has_bits & 0x00000008u) {
+      total_size += 1 + 4;
+    }
+
+    // optional float height = 5;
+    if (cached_has_bits & 0x00000010u) {
+      total_size += 1 + 4;
+    }
+
+    // optional float xCenter = 6;
+    if (cached_has_bits & 0x00000020u) {
+      total_size += 1 + 4;
+    }
+
+    // optional float yCenter = 7;
+    if (cached_has_bits & 0x00000040u) {
+      total_size += 1 + 4;
+    }
+
+    // optional float halfSide = 8;
+    if (cached_has_bits & 0x00000080u) {
+      total_size += 1 + 4;
+    }
+
+  }
+  // optional float radius = 9;
+  if (cached_has_bits & 0x00000100u) {
+    total_size += 1 + 4;
+  }
+
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData EdaDataFile_PackageRecord_OutlineRecord::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    EdaDataFile_PackageRecord_OutlineRecord::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*EdaDataFile_PackageRecord_OutlineRecord::GetClassData() const { return &_class_data_; }
+
+
+void EdaDataFile_PackageRecord_OutlineRecord::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<EdaDataFile_PackageRecord_OutlineRecord*>(&to_msg);
+  auto& from = static_cast<const EdaDataFile_PackageRecord_OutlineRecord&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  _this->_impl_.contourpolygons_.MergeFrom(from._impl_.contourpolygons_);
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (cached_has_bits & 0x000000ffu) {
+    if (cached_has_bits & 0x00000001u) {
+      _this->_impl_.type_ = from._impl_.type_;
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _this->_impl_.lowerleftx_ = from._impl_.lowerleftx_;
+    }
+    if (cached_has_bits & 0x00000004u) {
+      _this->_impl_.lowerlefty_ = from._impl_.lowerlefty_;
+    }
+    if (cached_has_bits & 0x00000008u) {
+      _this->_impl_.width_ = from._impl_.width_;
+    }
+    if (cached_has_bits & 0x00000010u) {
+      _this->_impl_.height_ = from._impl_.height_;
+    }
+    if (cached_has_bits & 0x00000020u) {
+      _this->_impl_.xcenter_ = from._impl_.xcenter_;
+    }
+    if (cached_has_bits & 0x00000040u) {
+      _this->_impl_.ycenter_ = from._impl_.ycenter_;
+    }
+    if (cached_has_bits & 0x00000080u) {
+      _this->_impl_.halfside_ = from._impl_.halfside_;
+    }
+    _this->_impl_._has_bits_[0] |= cached_has_bits;
+  }
+  if (cached_has_bits & 0x00000100u) {
+    _this->_internal_set_radius(from._internal_radius());
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void EdaDataFile_PackageRecord_OutlineRecord::CopyFrom(const EdaDataFile_PackageRecord_OutlineRecord& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool EdaDataFile_PackageRecord_OutlineRecord::IsInitialized() const {
+  return true;
+}
+
+void EdaDataFile_PackageRecord_OutlineRecord::InternalSwap(EdaDataFile_PackageRecord_OutlineRecord* other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  _impl_.contourpolygons_.InternalSwap(&other->_impl_.contourpolygons_);
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_OutlineRecord, _impl_.radius_)
+      + sizeof(EdaDataFile_PackageRecord_OutlineRecord::_impl_.radius_)
+      - PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_OutlineRecord, _impl_.type_)>(
+          reinterpret_cast<char*>(&_impl_.type_),
+          reinterpret_cast<char*>(&other->_impl_.type_));
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata EdaDataFile_PackageRecord_OutlineRecord::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_edadatafile_2eproto_getter, &descriptor_table_edadatafile_2eproto_once,
+      file_level_metadata_edadatafile_2eproto[4]);
+}
+
+// ===================================================================
+
 class EdaDataFile_PackageRecord_PinRecord::_Internal {
  public:
   using HasBits = decltype(std::declval<EdaDataFile_PackageRecord_PinRecord>()._impl_._has_bits_);
@@ -2271,7 +2837,7 @@ void EdaDataFile_PackageRecord_PinRecord::InternalSwap(EdaDataFile_PackageRecord
 ::PROTOBUF_NAMESPACE_ID::Metadata EdaDataFile_PackageRecord_PinRecord::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_edadatafile_2eproto_getter, &descriptor_table_edadatafile_2eproto_once,
-      file_level_metadata_edadatafile_2eproto[4]);
+      file_level_metadata_edadatafile_2eproto[5]);
 }
 
 // ===================================================================
@@ -2323,6 +2889,7 @@ EdaDataFile_PackageRecord::EdaDataFile_PackageRecord(const EdaDataFile_PackageRe
     , decltype(_impl_.pinrecords_){from._impl_.pinrecords_}
     , /*decltype(_impl_.pinrecordsbyname_)*/{}
     , decltype(_impl_.propertyrecords_){from._impl_.propertyrecords_}
+    , decltype(_impl_.outlinerecords_){from._impl_.outlinerecords_}
     , decltype(_impl_.name_){}
     , decltype(_impl_.attributesidstring_){}
     , decltype(_impl_.pitch_){}
@@ -2365,6 +2932,7 @@ inline void EdaDataFile_PackageRecord::SharedCtor(
     , decltype(_impl_.pinrecords_){arena}
     , /*decltype(_impl_.pinrecordsbyname_)*/{::_pbi::ArenaInitialized(), arena}
     , decltype(_impl_.propertyrecords_){arena}
+    , decltype(_impl_.outlinerecords_){arena}
     , decltype(_impl_.name_){}
     , decltype(_impl_.attributesidstring_){}
     , decltype(_impl_.pitch_){0}
@@ -2399,6 +2967,7 @@ inline void EdaDataFile_PackageRecord::SharedDtor() {
   _impl_.pinrecordsbyname_.Destruct();
   _impl_.pinrecordsbyname_.~MapField();
   _impl_.propertyrecords_.~RepeatedPtrField();
+  _impl_.outlinerecords_.~RepeatedPtrField();
   _impl_.name_.Destroy();
   _impl_.attributesidstring_.Destroy();
 }
@@ -2420,6 +2989,7 @@ void EdaDataFile_PackageRecord::Clear() {
   _impl_.pinrecords_.Clear();
   _impl_.pinrecordsbyname_.Clear();
   _impl_.propertyrecords_.Clear();
+  _impl_.outlinerecords_.Clear();
   cached_has_bits = _impl_._has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
     if (cached_has_bits & 0x00000001u) {
@@ -2549,6 +3119,19 @@ const char* EdaDataFile_PackageRecord::_InternalParse(const char* ptr, ::_pbi::P
         } else
           goto handle_unusual;
         continue;
+      // repeated .Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord outlineRecords = 11;
+      case 11:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 90)) {
+          ptr -= 1;
+          do {
+            ptr += 1;
+            ptr = ctx->ParseMessage(_internal_add_outlinerecords(), ptr);
+            CHK_(ptr);
+            if (!ctx->DataAvailable(ptr)) break;
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<90>(ptr));
+        } else
+          goto handle_unusual;
+        continue;
       default:
         goto handle_unusual;
     }  // switch
@@ -2671,6 +3254,14 @@ uint8_t* EdaDataFile_PackageRecord::_InternalSerialize(
         InternalWriteMessage(10, repfield, repfield.GetCachedSize(), target, stream);
   }
 
+  // repeated .Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord outlineRecords = 11;
+  for (unsigned i = 0,
+      n = static_cast<unsigned>(this->_internal_outlinerecords_size()); i < n; i++) {
+    const auto& repfield = this->_internal_outlinerecords(i);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+        InternalWriteMessage(11, repfield, repfield.GetCachedSize(), target, stream);
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -2706,6 +3297,13 @@ size_t EdaDataFile_PackageRecord::ByteSizeLong() const {
   // repeated .Odb.Lib.Protobuf.PropertyRecord propertyRecords = 10;
   total_size += 1UL * this->_internal_propertyrecords_size();
   for (const auto& msg : this->_impl_.propertyrecords_) {
+    total_size +=
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(msg);
+  }
+
+  // repeated .Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord outlineRecords = 11;
+  total_size += 1UL * this->_internal_outlinerecords_size();
+  for (const auto& msg : this->_impl_.outlinerecords_) {
     total_size +=
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(msg);
   }
@@ -2773,6 +3371,7 @@ void EdaDataFile_PackageRecord::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_m
   _this->_impl_.pinrecords_.MergeFrom(from._impl_.pinrecords_);
   _this->_impl_.pinrecordsbyname_.MergeFrom(from._impl_.pinrecordsbyname_);
   _this->_impl_.propertyrecords_.MergeFrom(from._impl_.propertyrecords_);
+  _this->_impl_.outlinerecords_.MergeFrom(from._impl_.outlinerecords_);
   cached_has_bits = from._impl_._has_bits_[0];
   if (cached_has_bits & 0x0000007fu) {
     if (cached_has_bits & 0x00000001u) {
@@ -2821,6 +3420,7 @@ void EdaDataFile_PackageRecord::InternalSwap(EdaDataFile_PackageRecord* other) {
   _impl_.pinrecords_.InternalSwap(&other->_impl_.pinrecords_);
   _impl_.pinrecordsbyname_.InternalSwap(&other->_impl_.pinrecordsbyname_);
   _impl_.propertyrecords_.InternalSwap(&other->_impl_.propertyrecords_);
+  _impl_.outlinerecords_.InternalSwap(&other->_impl_.outlinerecords_);
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
       &_impl_.name_, lhs_arena,
       &other->_impl_.name_, rhs_arena
@@ -2840,7 +3440,7 @@ void EdaDataFile_PackageRecord::InternalSwap(EdaDataFile_PackageRecord* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata EdaDataFile_PackageRecord::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_edadatafile_2eproto_getter, &descriptor_table_edadatafile_2eproto_once,
-      file_level_metadata_edadatafile_2eproto[5]);
+      file_level_metadata_edadatafile_2eproto[6]);
 }
 
 // ===================================================================
@@ -3128,7 +3728,7 @@ void EdaDataFile_FeatureGroupRecord::InternalSwap(EdaDataFile_FeatureGroupRecord
 ::PROTOBUF_NAMESPACE_ID::Metadata EdaDataFile_FeatureGroupRecord::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_edadatafile_2eproto_getter, &descriptor_table_edadatafile_2eproto_once,
-      file_level_metadata_edadatafile_2eproto[6]);
+      file_level_metadata_edadatafile_2eproto[7]);
 }
 
 // ===================================================================
@@ -3142,7 +3742,7 @@ void EdaDataFile_NetRecordsByNameEntry_DoNotUse::MergeFrom(const EdaDataFile_Net
 ::PROTOBUF_NAMESPACE_ID::Metadata EdaDataFile_NetRecordsByNameEntry_DoNotUse::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_edadatafile_2eproto_getter, &descriptor_table_edadatafile_2eproto_once,
-      file_level_metadata_edadatafile_2eproto[7]);
+      file_level_metadata_edadatafile_2eproto[8]);
 }
 
 // ===================================================================
@@ -3156,7 +3756,7 @@ void EdaDataFile_PackageRecordsByNameEntry_DoNotUse::MergeFrom(const EdaDataFile
 ::PROTOBUF_NAMESPACE_ID::Metadata EdaDataFile_PackageRecordsByNameEntry_DoNotUse::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_edadatafile_2eproto_getter, &descriptor_table_edadatafile_2eproto_once,
-      file_level_metadata_edadatafile_2eproto[8]);
+      file_level_metadata_edadatafile_2eproto[9]);
 }
 
 // ===================================================================
@@ -3867,7 +4467,7 @@ void EdaDataFile::InternalSwap(EdaDataFile* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata EdaDataFile::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_edadatafile_2eproto_getter, &descriptor_table_edadatafile_2eproto_once,
-      file_level_metadata_edadatafile_2eproto[9]);
+      file_level_metadata_edadatafile_2eproto[10]);
 }
 
 // @@protoc_insertion_point(namespace_scope)
@@ -3890,6 +4490,10 @@ Arena::CreateMaybeMessage< ::Odb::Lib::Protobuf::EdaDataFile_NetRecord >(Arena* 
 template<> PROTOBUF_NOINLINE ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_PinRecordsByNameEntry_DoNotUse*
 Arena::CreateMaybeMessage< ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_PinRecordsByNameEntry_DoNotUse >(Arena* arena) {
   return Arena::CreateMessageInternal< ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_PinRecordsByNameEntry_DoNotUse >(arena);
+}
+template<> PROTOBUF_NOINLINE ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord*
+Arena::CreateMaybeMessage< ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord >(arena);
 }
 template<> PROTOBUF_NOINLINE ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_PinRecord*
 Arena::CreateMaybeMessage< ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_PinRecord >(Arena* arena) {
