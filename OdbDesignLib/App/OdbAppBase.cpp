@@ -40,8 +40,8 @@ namespace Odb::Lib::App
             try
             {
                 auto pFileArchive = 
-                    //designs().GetDesign(args().loadDesign());
-                    designs().GetFileArchive(args().loadDesign());
+                    designs().GetDesign(args().loadDesign());
+                    //designs().GetFileArchive(args().loadDesign());
                 if (pFileArchive == nullptr)
                 {
                     logerror("Failed to load design specified in arguments \"" + args().loadDesign() + "\"");

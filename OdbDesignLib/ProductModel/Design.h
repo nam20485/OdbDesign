@@ -19,6 +19,21 @@ namespace Odb::Lib::ProductModel
 	public:	
 		Design();
 		~Design();
+		
+		const std::string& GetName() const;
+		const std::string& GetProductModel() const;
+		
+		const Net::Vector& GetNets() const;
+		const Net::StringMap GetNetsByName() const;
+
+		const Package::Vector& GetPackages() const;
+		const Package::StringMap& GetPackagesByName() const;
+
+		const Component::Vector& GetComponents() const;
+		const Component::StringMap& GetComponentsByName() const;
+
+		const Part::Vector& GetParts() const;
+		const Part::StringMap& GetPartsByName() const;
 
 		bool Build(std::string path);
 		bool Build(std::shared_ptr<FileModel::Design::FileArchive> pFileModel);	

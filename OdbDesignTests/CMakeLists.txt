@@ -6,8 +6,8 @@ enable_testing()
 add_executable(OdbDesignTests
     "Fixtures/FileArchiveLoadFixture.h" 
     "Fixtures/FileArchiveLoadFixture.cpp" 
-    "FileArchiveLoadTests.cpp"
-    "TestTests.cpp" "DesignLoadTests.cpp" "Fixtures/DesignNameValueParamTest.h"  )
+    
+    "TestTests.cpp" "DesignLoadTests.cpp" "Fixtures/DesignNameValueParamTest.h"   "FileArchiveLoadTests_Local.cpp" "DesignNameTests.cpp")
 
 target_link_libraries(OdbDesignTests PRIVATE GTest::gtest_main)
 

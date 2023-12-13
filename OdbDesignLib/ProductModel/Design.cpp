@@ -1,4 +1,14 @@
 #include "Design.h"
+#include "Design.h"
+#include "Design.h"
+#include "Design.h"
+#include "Design.h"
+#include "Design.h"
+#include "Design.h"
+#include "Design.h"
+#include "Design.h"
+#include "Design.h"
+#include "Design.h"
 #include "Package.h"
 #include "Logger.h"
 
@@ -19,6 +29,56 @@ namespace Odb::Lib::ProductModel
 		m_packagesByName.clear();
 		m_parts.clear();
 		m_partsByName.clear();
+	}
+
+	const std::string& Design::GetName() const
+	{
+		return m_name;
+	}
+
+	const std::string& Design::GetProductModel() const
+	{
+		return m_productModel;
+	}
+
+	const Net::Vector& Design::GetNets() const
+	{
+		return m_nets;
+	}
+
+	const Net::StringMap Design::GetNetsByName() const
+	{
+		return m_netsByName;
+	}
+
+	const Package::Vector& Design::GetPackages() const
+	{
+		return m_packages;
+	}
+
+	const Package::StringMap& Design::GetPackagesByName() const
+	{
+		return m_packagesByName;
+	}
+
+	const Component::Vector& Design::GetComponents() const
+	{
+		return m_components;
+	}
+
+	const Component::StringMap& Design::GetComponentsByName() const
+	{
+		return m_componentsByName;
+	}
+
+	const Part::Vector& Design::GetParts() const
+	{
+		return m_parts;
+	}
+
+	const Part::StringMap& Design::GetPartsByName() const
+	{
+		return m_partsByName;
 	}
 
 	bool Design::Build(std::string path)
