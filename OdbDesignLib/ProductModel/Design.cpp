@@ -283,7 +283,11 @@ namespace Odb::Lib::ProductModel
 				auto& refDes = pComponentRecord->compName;
 				//auto subnetNumber = pToeprintRecord->subnetNumber;
 
-				if (!CreatePinConnection(refDes, netNumber, pinNumber, toeprintName)) return false;				
+				// -1 means no connection for the component pin
+				if (netNumber != (unsigned int)-1)
+				{
+					if (!CreatePinConnection(refDes, netNumber, pinNumber, toeprintName)) return false;
+				}
 			}
 		}
 
@@ -308,7 +312,7 @@ namespace Odb::Lib::ProductModel
 		}
 		else
 		{
-			logerror("netNumber out of range: " + std::to_string(netNumber) + ", size = " + std::to_string(m_nets.size()));
+			logwarn("netNumber out of range: " + std::to_string(netNumber) + ", size = " + std::to_string(m_nets.size()));
 		}	
 
 		return false;
