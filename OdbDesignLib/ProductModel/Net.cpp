@@ -19,7 +19,7 @@ namespace Odb::Lib::ProductModel
 		return m_name;
 	}
 
-	const PinConnection::Vector& Net::GetPinConnections() const
+	PinConnection::Vector& Net::GetPinConnections()
 	{
 		return m_pinConnections;
 	}
@@ -29,9 +29,9 @@ namespace Odb::Lib::ProductModel
 		return m_index;
 	}
 
-	bool Net::AddPinConnection(std::shared_ptr<Component> pComponent, std::shared_ptr<Pin> pPin, std::string name)
+	bool Net::AddPinConnection(std::shared_ptr<Component> pComponent, std::shared_ptr<Pin> pPin)
 	{
-		m_pinConnections.push_back(std::make_shared<PinConnection>(pComponent, pPin, name));
+		m_pinConnections.push_back(std::make_shared<PinConnection>(pComponent, pPin));
 		return true;
 	}
 }

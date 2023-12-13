@@ -1,13 +1,4 @@
-#include "Design.h"
-#include "Design.h"
-#include "Design.h"
-#include "Design.h"
-#include "Design.h"
-#include "Design.h"
-#include "Design.h"
-#include "Design.h"
-#include "Design.h"
-#include "Design.h"
+#include <vector>
 #include "Design.h"
 #include "Package.h"
 #include "Logger.h"
@@ -81,6 +72,21 @@ namespace Odb::Lib::ProductModel
 		return m_partsByName;
 	}
 
+	std::shared_ptr<Net> Design::GetNet(const std::string& name) const
+	{
+		auto findIt = m_netsByName.find(name);
+		if (findIt != m_netsByName.end())
+		{
+			return findIt->second;
+		}
+		return nullptr;
+	}
+
+	std::shared_ptr<Net> Design::GetNoneNet() const
+	{
+		return GetNet(NONE_NET_NAME);
+	}
+
 	bool Design::Build(std::string path)
 	{
 		auto pFileModel = std::make_shared<FileModel::Design::FileArchive>(path);
@@ -105,10 +111,10 @@ namespace Odb::Lib::ProductModel
 
 		// built from relationships between atomic elements
 		if (! BuildPlacementsFromComponentsFiles()) return false;
-		// already build from BuildPlacements()
-		//if (! BuildNoneNet()) return false;
 
-		if (!BreakSinglePinNets()) return false;
+		// already built from BuildPlacements()
+		//if (! BuildNoneNet()) return false;
+		//if (! BreakSinglePinNets()) return false;
 
 		return true;
 	}
@@ -307,7 +313,7 @@ namespace Odb::Lib::ProductModel
 			auto& pNet = m_nets[netNumber];
 			if (pNet == nullptr) return false;
 
-			if (!pNet->AddPinConnection(pComponent, pPin, pinName)) return false;
+			if (!pNet->AddPinConnection(pComponent, pPin)) return false;
 			return true;
 		}
 		else
@@ -337,6 +343,23 @@ namespace Odb::Lib::ProductModel
 
 	bool Design::BreakSinglePinNets()
 	{
+		const auto& pNoneNet = GetNoneNet();
+		if (pNoneNet == nullptr) return false;
+
+		auto& pinConnections = pNoneNet->GetPinConnections();		
+		while (!pinConnections.empty())
+		{
+			const auto& pExistingPinConnection = pinConnections.back();				
+			
+			std::string newNetName = "$NC_" + pExistingPinConnection->GetComponent()->GetRefDes() + "_" + pExistingPinConnection->GetPin()->GetName();
+			auto pNewNet = std::make_shared<Net>(newNetName, -1);
+			pNewNet->AddPinConnection(pExistingPinConnection->GetComponent(), pExistingPinConnection->GetPin());
+			m_nets.push_back(pNewNet);
+			m_netsByName[pNewNet->GetName()] = pNewNet;
+
+			pinConnections.pop_back();						
+		}			
+
 		return true;
 	}
 
