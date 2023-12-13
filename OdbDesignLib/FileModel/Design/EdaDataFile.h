@@ -128,7 +128,7 @@ namespace Odb::Lib::FileModel::Design
 
 		struct ODBDESIGN_EXPORT PackageRecord : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::PackageRecord>
 		{
-			struct ODBDESIGN_EXPORT OutlineRecord
+			struct ODBDESIGN_EXPORT OutlineRecord : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::PackageRecord::OutlineRecord>
 			{				
 				enum class Type
 				{
@@ -163,6 +163,10 @@ namespace Odb::Lib::FileModel::Design
 				float radius;
 
 				ContourPolygon::Vector m_contourPolygons;
+
+				// Inherited via IProtoBuffable
+				std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::PackageRecord::OutlineRecord> to_protobuf() const override;
+				void from_protobuf(const Odb::Lib::Protobuf::EdaDataFile::PackageRecord::OutlineRecord& message) override;
 
 				inline static const char* RECTANGLE_RECORD_TOKEN = "RC";
 				inline static const char* CIRCLE_RECORD_TOKEN = "CR";

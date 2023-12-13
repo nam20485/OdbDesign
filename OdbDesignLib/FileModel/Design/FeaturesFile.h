@@ -4,33 +4,78 @@
 #include <filesystem>
 #include <vector>
 #include <string>
+#include "../../enums.h"
+#include "../../IProtoBuffable.h"
+#include "../../ProtoBuf/featuresfile.pb.h"
 
 
 namespace Odb::Lib::FileModel::Design
 {
-	class FeaturesFile
+	class FeaturesFile : public IProtoBuffable<Odb::Lib::Protobuf::FeaturesFile>
 	{
 	public:
 		FeaturesFile();
 		~FeaturesFile();
 
-		struct FeatureRecord
+		struct FeatureRecord : public IProtoBuffable<Odb::Lib::Protobuf::FeaturesFile::FeatureRecord>
 		{
 			~FeatureRecord();
 
 			enum class Type
 			{
+				Arc,
+				Pad,
+				Surface,
+				Barcode,
+				Text,
+				Line
+			};			
 
+			Type type;			
+				
+			// Line
+			float xs, ys;
+			float xe, ye;
 
-			};
+			// Pad / Text
+			float x, y;
+			int apt_def;
+			int apt_def_symbol_num;
+			float apt_def_resize_factor;
 
-			// TODO: ALL the feature type fields
+			// Arc
+			float xc, yc;
+			bool cw;
+
+			// Text
+			std::string font;
+			float xsize, ysize;
+			float width_factor;
+			std::string text;
+			int version;
+
+			//TODO: Barcode			
+
+			// common
+			int sym_num;
+			Polarity polarity;
+			int dcode;
+			int atr;
+			std::string value;
+			unsigned int id;
+
+			int orient_def;
+			float orient_def_rotation;
 
 			ContourPolygon::Vector m_contourPolygons;
 
 			const ContourPolygon::Vector& GetContourPolygons() const;
 
-			typedef std::vector<std::shared_ptr<FeatureRecord>> Vector;			
+			typedef std::vector<std::shared_ptr<FeatureRecord>> Vector;		
+
+			// Inherited via IProtoBuffable
+			std::unique_ptr<Odb::Lib::Protobuf::FeaturesFile::FeatureRecord> to_protobuf() const override;
+			void from_protobuf(const Odb::Lib::Protobuf::FeaturesFile::FeatureRecord& message) override;
 		};		
 
 		bool Parse(std::filesystem::path directory);
@@ -42,6 +87,10 @@ namespace Odb::Lib::FileModel::Design
 		unsigned int GetId() const;
 
 		const FeatureRecord::Vector& GetFeatureRecords() const;
+
+		// Inherited via IProtoBuffable
+		std::unique_ptr<Odb::Lib::Protobuf::FeaturesFile> to_protobuf() const override;
+		void from_protobuf(const Odb::Lib::Protobuf::FeaturesFile& message) override;
 		
 	private:
 		std::string m_units;
@@ -68,7 +117,7 @@ namespace Odb::Lib::FileModel::Design
 		constexpr inline static const char* ATTRIBUTE_VALUE_TOKEN = "&";
 		constexpr inline static const char* SYMBOL_NAME_TOKEN = "&";
 		constexpr inline static const char* COMMENT_TOKEN = "#";
-		constexpr inline static const char* NUM_FEATURES_TOKEN = "F";
+		constexpr inline static const char* NUM_FEATURES_TOKEN = "F";		
 
 	};
 }

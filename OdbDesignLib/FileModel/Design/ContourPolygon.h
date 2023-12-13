@@ -4,18 +4,21 @@
 #include <vector>
 #include <memory>
 #include "../../odbdesign_export.h"
+#include "../../IProtoBuffable.h"
+#include "../../ProtoBuf/common.pb.h"
+#include "../../odbdesign_export.h"
 
 
 namespace Odb::Lib::FileModel::Design
 {
-	struct ODBDESIGN_EXPORT ContourPolygon
+	struct ODBDESIGN_EXPORT ContourPolygon : public IProtoBuffable<Odb::Lib::Protobuf::ContourPolygon>
 	{
 		~ContourPolygon()
 		{
 			m_polygonParts.clear();
 		}
 
-		struct ODBDESIGN_EXPORT PolygonPart
+		struct ODBDESIGN_EXPORT PolygonPart : public IProtoBuffable<Odb::Lib::Protobuf::ContourPolygon::PolygonPart>
 		{
 			enum class Type
 			{
@@ -31,6 +34,10 @@ namespace Odb::Lib::FileModel::Design
 			// Arc
 			float xCenter, yCenter;
 			bool isClockwise;
+
+			// Inherited via IProtoBuffable
+			std::unique_ptr<Odb::Lib::Protobuf::ContourPolygon::PolygonPart> to_protobuf() const override;
+			void from_protobuf(const Odb::Lib::Protobuf::ContourPolygon::PolygonPart& message) override;
 
 			typedef std::vector<std::shared_ptr<PolygonPart>> Vector;
 
@@ -49,6 +56,10 @@ namespace Odb::Lib::FileModel::Design
 		float xStart, yStart;
 
 		PolygonPart::Vector m_polygonParts;
+
+		// Inherited via IProtoBuffable
+		std::unique_ptr<Odb::Lib::Protobuf::ContourPolygon> to_protobuf() const override;
+		void from_protobuf(const Odb::Lib::Protobuf::ContourPolygon& message) override;
 
 		typedef std::vector<std::shared_ptr<ContourPolygon>> Vector;
 

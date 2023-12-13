@@ -1564,6 +1564,11 @@ namespace Odb::Lib::FileModel::Design
             auto pPropertyRecordMessage = pPackageRecordMessage->add_propertyrecords();
             pPropertyRecordMessage->CopyFrom(*propertyRecord->to_protobuf());
         }
+        for (const auto& outlineRecord : m_outlineRecords)
+        {
+			auto pOutlineRecordMessage = pPackageRecordMessage->add_outlinerecords();
+			pOutlineRecordMessage->CopyFrom(*outlineRecord->to_protobuf());
+		}
         return pPackageRecordMessage;
     }
 
@@ -1597,6 +1602,53 @@ namespace Odb::Lib::FileModel::Design
 			auto pPropertyRecord = std::make_shared<PropertyRecord>();
 			pPropertyRecord->from_protobuf(propertyRecordMessage);
 			m_propertyRecords.push_back(pPropertyRecord);
+		}
+
+        for (const auto& outlineRecordMessage : message.outlinerecords())
+        {
+            auto pOutlineRecord = std::make_shared<OutlineRecord>();
+            pOutlineRecord->from_protobuf(outlineRecordMessage);
+            m_outlineRecords.push_back(pOutlineRecord);
+        }
+    }
+
+    // Inherited via IProtoBuffable
+    std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::PackageRecord::OutlineRecord> EdaDataFile::PackageRecord::OutlineRecord::to_protobuf() const
+    {
+        std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::PackageRecord::OutlineRecord> pOutlineRecordMessage(new Odb::Lib::Protobuf::EdaDataFile::PackageRecord::OutlineRecord);
+		pOutlineRecordMessage->set_type((Odb::Lib::Protobuf::EdaDataFile::PackageRecord::OutlineRecord::Type)type);
+		pOutlineRecordMessage->set_lowerleftx(lowerLeftX);
+		pOutlineRecordMessage->set_lowerlefty(lowerLeftY);
+		pOutlineRecordMessage->set_width(width);
+		pOutlineRecordMessage->set_height(height);
+		pOutlineRecordMessage->set_xcenter(xCenter);
+		pOutlineRecordMessage->set_ycenter(yCenter);
+		pOutlineRecordMessage->set_radius(radius);
+		pOutlineRecordMessage->set_halfside(halfSide);
+        for (const auto& contourPolygon : m_contourPolygons)
+        {
+			auto pContourPolygonMessage = pOutlineRecordMessage->add_contourpolygons();
+			pContourPolygonMessage->CopyFrom(*contourPolygon->to_protobuf());
+		}
+		return pOutlineRecordMessage;
+    }
+
+    void EdaDataFile::PackageRecord::OutlineRecord::from_protobuf(const Odb::Lib::Protobuf::EdaDataFile::PackageRecord::OutlineRecord& message)
+    {
+        type = (Type)message.type();
+		lowerLeftX = message.lowerleftx();
+		lowerLeftY = message.lowerlefty();
+		width = message.width();
+		height = message.height();
+		xCenter = message.xcenter();
+		yCenter = message.ycenter();
+		radius = message.radius();
+		halfSide = message.halfside();
+        for (const auto& contourPolygonMessage : message.contourpolygons())
+        {
+			auto pContourPolygon = std::make_shared<ContourPolygon>();
+			pContourPolygon->from_protobuf(contourPolygonMessage);
+			m_contourPolygons.push_back(pContourPolygon);
 		}
     }
 
