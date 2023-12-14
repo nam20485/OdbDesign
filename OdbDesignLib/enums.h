@@ -19,4 +19,11 @@ namespace Odb::Lib
 		Positive,
 		Negative
 	};
+
+	enum class UnitType
+	{
+		None,
+		Metric,
+		Imperial
+	};
 }
