@@ -20,7 +20,6 @@ namespace Odb::Lib::ProductModel
 		m_packagesByName.clear();
 		m_parts.clear();
 		m_partsByName.clear();
-		m_pFileModel.reset();
 	}
 
 	const std::string& Design::GetName() const
