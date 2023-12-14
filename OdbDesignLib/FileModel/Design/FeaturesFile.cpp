@@ -1,14 +1,11 @@
 #include "FeaturesFile.h"
-#include "FeaturesFile.h"
-#include "FeaturesFile.h"
-#include "FeaturesFile.h"
-#include "FeaturesFile.h"
 #include "ArchiveExtractor.h"
 #include <fstream>
 #include "Logger.h"
 #include "../invalid_odb_error.h"
 #include <str_trim.h>
 #include "../parse_error.h"
+#include "SymbolName.h"
 
 
 namespace Odb::Lib::FileModel::Design
@@ -25,6 +22,7 @@ namespace Odb::Lib::FileModel::Design
 	FeaturesFile::~FeaturesFile()
 	{
 		m_featureRecords.clear();
+		m_symbolNames.clear();
 		m_attributeNames.clear();
 		m_attributeTextValues.clear();
 	}
@@ -77,6 +75,7 @@ namespace Odb::Lib::FileModel::Design
 			}
 
 			std::shared_ptr<FeatureRecord> pCurrentFeatureRecord;
+			std::shared_ptr<ContourPolygon> pCurrentContourPolygon;
 
 			while (std::getline(featuresFile, line))
 			{
@@ -102,6 +101,20 @@ namespace Odb::Lib::FileModel::Design
 							throw_parse_error(m_path, line, token, lineNumber);
 						}
 						else if (!std::getline(lineStream, token, '='))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						m_units = token;
+					}
+					else if (line.find("U") == 0)
+					{
+						std::string token;
+						if (!std::getline(lineStream, token, ' '))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+						else if (!std::getline(lineStream, token, ' '))
 						{
 							throw_parse_error(m_path, line, token, lineNumber);
 						}
@@ -170,10 +183,517 @@ namespace Odb::Lib::FileModel::Design
 						}
 						m_attributeTextValues.push_back(token);
 					}
+					else if (line.find(SYMBOL_NAME_TOKEN) == 0)
+					{
+						// component attribute text string values	
+						auto pSymbolName = std::make_shared<SymbolName>();						
+						if (!pSymbolName->SymbolName::Parse(m_path, line, lineNumber))
+						{
+							throw_parse_error(m_path, line, "", lineNumber);
+						}
+						m_symbolNames.push_back(pSymbolName);
+					}
+					else if (line.find(FeatureRecord::LINE_TOKEN) == 0)
+					{
+						std::string token;
+						if (!(lineStream >> token) || token != FeatureRecord::LINE_TOKEN)
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						auto pFeatureRecord = std::make_shared<FeatureRecord>();
+						pFeatureRecord->type = FeatureRecord::Type::Line;
+
+						if (!(lineStream >> pFeatureRecord->xs))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (!(lineStream >> pFeatureRecord->ys))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (!(lineStream >> pFeatureRecord->xe))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (!(lineStream >> pFeatureRecord->ye))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (!(lineStream >> pFeatureRecord->sym_num))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						char polarity;
+						if (!(lineStream >> polarity))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+						switch (polarity)
+						{
+						case 'P': pFeatureRecord->polarity = Polarity::Positive; break;
+						case 'N': pFeatureRecord->polarity = Polarity::Negative; break;
+						default: throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (!(lineStream >> pFeatureRecord->dcode))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						lineStream >> pFeatureRecord->attributesIdString;
+
+						m_featureRecords.push_back(pFeatureRecord);
+					}
+					else if (line.find(FeatureRecord::PAD_TOKEN) == 0)
+					{
+						std::string token;
+						if (!(lineStream >> token) || token != FeatureRecord::PAD_TOKEN)
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						auto pFeatureRecord = std::make_shared<FeatureRecord>();
+						pFeatureRecord->type = FeatureRecord::Type::Pad;
+
+						if (!(lineStream >> pFeatureRecord->x))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (!(lineStream >> pFeatureRecord->y))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (!(lineStream >> pFeatureRecord->apt_def_symbol_num))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+						if (pFeatureRecord->apt_def_symbol_num == -1)
+						{
+							if (!(lineStream >> pFeatureRecord->apt_def_resize_factor))
+							{
+								throw_parse_error(m_path, line, token, lineNumber);
+							}
+						}
+
+						char polarity;
+						if (!(lineStream >> polarity))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+						switch (polarity)
+						{
+						case 'P': pFeatureRecord->polarity = Polarity::Positive; break;
+						case 'N': pFeatureRecord->polarity = Polarity::Negative; break;
+						default: throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (!(lineStream >> pFeatureRecord->dcode))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (!(lineStream >> pFeatureRecord->orient_def))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						lineStream >> pFeatureRecord->attributesIdString;
+
+						m_featureRecords.push_back(pFeatureRecord);
+					}
+					else if (line.find(FeatureRecord::TEXT_TOKEN) == 0)
+					{
+						std::string token;
+						if (!(lineStream >> token) || token != FeatureRecord::TEXT_TOKEN)
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						auto pFeatureRecord = std::make_shared<FeatureRecord>();
+						pFeatureRecord->type = FeatureRecord::Type::Text;
+
+						if (!(lineStream >> pFeatureRecord->x))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (!(lineStream >> pFeatureRecord->y))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (!(lineStream >> pFeatureRecord->apt_def_symbol_num))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+						if (pFeatureRecord->apt_def_symbol_num == -1)
+						{
+							if (!(lineStream >> pFeatureRecord->apt_def_resize_factor))
+							{
+								throw_parse_error(m_path, line, token, lineNumber);
+							}
+						}
+
+						if (!(lineStream >> pFeatureRecord->font))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (!(lineStream >> pFeatureRecord->xsize))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (!(lineStream >> pFeatureRecord->ysize))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (!(lineStream >> pFeatureRecord->width_factor))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (!(lineStream >> pFeatureRecord->text))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (!(lineStream >> pFeatureRecord->version))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (!(lineStream >> pFeatureRecord->dcode))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						lineStream >> pFeatureRecord->attributesIdString;
+
+						m_featureRecords.push_back(pFeatureRecord);
+					}					
+					else if (line.find(FeatureRecord::ARC_TOKEN) == 0)
+					{
+						std::string token;
+						if (!(lineStream >> token) || token != FeatureRecord::ARC_TOKEN)
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						auto pFeatureRecord = std::make_shared<FeatureRecord>();
+						pFeatureRecord->type = FeatureRecord::Type::Arc;
+
+						if (!(lineStream >> pFeatureRecord->xs))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (!(lineStream >> pFeatureRecord->ys))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (!(lineStream >> pFeatureRecord->xe))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (!(lineStream >> pFeatureRecord->ye))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (!(lineStream >> pFeatureRecord->xc))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (!(lineStream >> pFeatureRecord->yc))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+						
+
+						if (!(lineStream >> pFeatureRecord->sym_num))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						char polarity;
+						if (!(lineStream >> polarity))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+						switch (polarity)
+						{
+						case 'P': pFeatureRecord->polarity = Polarity::Positive; break;
+						case 'N': pFeatureRecord->polarity = Polarity::Negative; break;
+						default: throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (!(lineStream >> pFeatureRecord->dcode))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						char cw;
+						if (!(lineStream >> cw))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+						switch (cw)
+						{
+						case 'Y': pFeatureRecord->cw = true; break;
+						case 'N': pFeatureRecord->cw = false; break;
+						default: throw_parse_error(m_path, line, token, lineNumber);
+						}						
+
+						lineStream >> pFeatureRecord->attributesIdString;
+
+						m_featureRecords.push_back(pFeatureRecord);
+					}
+					else if (line.find(FeatureRecord::BARCODE_TOKEN) == 0)
+					{
+						std::string token;
+						if (!(lineStream >> token) || token != FeatureRecord::BARCODE_TOKEN)
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						auto pFeatureRecord = std::make_shared<FeatureRecord>();
+						pFeatureRecord->type = FeatureRecord::Type::Barcode;
+						
+						// TODO: barcode feature record type
+
+						m_featureRecords.push_back(pFeatureRecord);						
+					}
+					else if (line.find(FeatureRecord::SURFACE_START_TOKEN) == 0 &&
+							 line.size() > 1 && line[1] == ' ')
+					{
+						std::string token;
+						if (!(lineStream >> token) || token != FeatureRecord::SURFACE_START_TOKEN)
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						pCurrentFeatureRecord = std::make_shared<FeatureRecord>();
+						pCurrentFeatureRecord->type = FeatureRecord::Type::Surface;
+
+						char polarity;
+						if (!(lineStream >> polarity))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+						switch (polarity)
+						{
+						case 'P': pCurrentFeatureRecord->polarity = Polarity::Positive; break;
+						case 'N': pCurrentFeatureRecord->polarity = Polarity::Negative; break;
+						default: throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (!(lineStream >> pCurrentFeatureRecord->dcode))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}						
+
+						lineStream >> pCurrentFeatureRecord->attributesIdString;
+					}
+					else if (line.find(FeatureRecord::SURFACE_END_TOKEN) == 0)
+					{
+						std::string token;
+						if (!(lineStream >> token) || token != FeatureRecord::SURFACE_END_TOKEN)
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (pCurrentFeatureRecord != nullptr)
+						{
+							m_featureRecords.push_back(pCurrentFeatureRecord);
+							pCurrentFeatureRecord.reset();
+						}
+						else
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+					}
+					else if (line.find(ContourPolygon::BEGIN_RECORD_TOKEN) == 0)
+					{
+						std::string token;
+						if (!(lineStream >> token))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (token != ContourPolygon::BEGIN_RECORD_TOKEN)
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						pCurrentContourPolygon = std::make_shared<ContourPolygon>();
+
+						if (!(lineStream >> pCurrentContourPolygon->xStart))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (!(lineStream >> pCurrentContourPolygon->yStart))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (!(lineStream >> token))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (token == ContourPolygon::ISLAND_TYPE_TOKEN)
+						{
+							pCurrentContourPolygon->type = ContourPolygon::Type::Island;
+						}
+						else if (token == ContourPolygon::HOLE_TYPE_TOKEN)
+						{
+							pCurrentContourPolygon->type = ContourPolygon::Type::Hole;
+						}
+						else
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+					}
+					else if (line.find(ContourPolygon::END_RECORD_TOKEN) == 0)
+					{
+						std::string token;
+						if (!(lineStream >> token))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (token != ContourPolygon::END_RECORD_TOKEN)
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (pCurrentFeatureRecord != nullptr)
+						{
+							pCurrentFeatureRecord->m_contourPolygons.push_back(pCurrentContourPolygon);
+							pCurrentContourPolygon.reset();
+						}
+						else
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+					}
+					else if (line.find(ContourPolygon::PolygonPart::ARC_RECORD_TOKEN) == 0)
+					{
+						std::string token;
+						if (!(lineStream >> token))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (token != ContourPolygon::PolygonPart::ARC_RECORD_TOKEN)
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						auto pPolygonPart = std::make_shared<ContourPolygon::PolygonPart>();
+						pPolygonPart->type = ContourPolygon::PolygonPart::Type::Arc;
+
+						if (!(lineStream >> pPolygonPart->endX))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (!(lineStream >> pPolygonPart->endY))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (!(lineStream >> pPolygonPart->xCenter))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (!(lineStream >> pPolygonPart->yCenter))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (!(lineStream >> token))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (token == "y" || token == "Y")
+						{
+							pPolygonPart->isClockwise = true;
+						}
+						else if (token == "n" || token == "N")
+						{
+							pPolygonPart->isClockwise = false;
+						}
+						else
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (pCurrentContourPolygon != nullptr)
+						{
+							pCurrentContourPolygon->m_polygonParts.push_back(pPolygonPart);
+						}
+						else
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+					}
+					else if (line.find(ContourPolygon::PolygonPart::SEGMENT_RECORD_TOKEN) == 0)
+					{
+						std::string token;
+						if (!(lineStream >> token))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (token != ContourPolygon::PolygonPart::SEGMENT_RECORD_TOKEN)
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						auto pPolygonPart = std::make_shared<ContourPolygon::PolygonPart>();
+						pPolygonPart->type = ContourPolygon::PolygonPart::Type::Segment;
+
+						if (!(lineStream >> pPolygonPart->endX))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (!(lineStream >> pPolygonPart->endY))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (pCurrentContourPolygon != nullptr)
+						{
+							pCurrentContourPolygon->m_polygonParts.push_back(pPolygonPart);
+						}
+						else
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+					}
 					else
 					{
-						//auto message = "unknown line: [" + line + "]";
-						//throw invalid_odb_error(message.c_str());
+						// unrecognized record line
+						parse_info pi(m_path, line, lineNumber);
+						logwarn(pi.toString("unrecognized record line in features file:"));
 					}
 				}
 			}
@@ -232,6 +752,11 @@ namespace Odb::Lib::FileModel::Design
 		return m_id;
 	}
 
+	const SymbolName::Vector& FeaturesFile::GetSymbolNames() const
+	{
+		return m_symbolNames;
+	}
+
 	const FeaturesFile::FeatureRecord::Vector& FeaturesFile::GetFeatureRecords() const
 	{
 		return m_featureRecords;
@@ -275,8 +800,7 @@ namespace Odb::Lib::FileModel::Design
 
 	std::unique_ptr<Odb::Lib::Protobuf::FeaturesFile::FeatureRecord> Odb::Lib::FileModel::Design::FeaturesFile::FeatureRecord::to_protobuf() const
 	{
-		std::unique_ptr<Odb::Lib::Protobuf::FeaturesFile::FeatureRecord> pFeatureRecordMessage(new Odb::Lib::Protobuf::FeaturesFile::FeatureRecord);
-		pFeatureRecordMessage->set_apt_def(apt_def);
+		std::unique_ptr<Odb::Lib::Protobuf::FeaturesFile::FeatureRecord> pFeatureRecordMessage(new Odb::Lib::Protobuf::FeaturesFile::FeatureRecord);		
 		pFeatureRecordMessage->set_apt_def_resize_factor(apt_def_resize_factor);
 		pFeatureRecordMessage->set_xc(xc);
 		pFeatureRecordMessage->set_yc(yc);
@@ -290,8 +814,6 @@ namespace Odb::Lib::FileModel::Design
 		pFeatureRecordMessage->set_sym_num(sym_num);
 		pFeatureRecordMessage->set_polarity(static_cast<Odb::Lib::Protobuf::Polarity>(polarity));
 		pFeatureRecordMessage->set_dcode(dcode);
-		pFeatureRecordMessage->set_atr(atr);
-		pFeatureRecordMessage->set_value(value);
 		pFeatureRecordMessage->set_id(id);
 		pFeatureRecordMessage->set_orient_def(orient_def);
 		pFeatureRecordMessage->set_orient_def_rotation(orient_def_rotation);
@@ -312,7 +834,6 @@ namespace Odb::Lib::FileModel::Design
 
 	void Odb::Lib::FileModel::Design::FeaturesFile::FeatureRecord::from_protobuf(const Odb::Lib::Protobuf::FeaturesFile::FeatureRecord& message)
 	{
-		apt_def = message.apt_def();
 		apt_def_resize_factor = message.apt_def_resize_factor();
 		xc = message.xc();
 		yc = message.yc();
@@ -326,8 +847,6 @@ namespace Odb::Lib::FileModel::Design
 		sym_num = message.sym_num();
 		polarity = static_cast<Polarity>(message.polarity());
 		dcode = message.dcode();
-		atr = message.atr();
-		value = message.value();
 		id = message.id();
 		orient_def = message.orient_def();
 		orient_def_rotation = message.orient_def_rotation();

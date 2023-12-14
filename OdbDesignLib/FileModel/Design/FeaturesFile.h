@@ -7,6 +7,7 @@
 #include "../../enums.h"
 #include "../../IProtoBuffable.h"
 #include "../../ProtoBuf/featuresfile.pb.h"
+#include "SymbolName.h"
 
 
 namespace Odb::Lib::FileModel::Design
@@ -39,7 +40,6 @@ namespace Odb::Lib::FileModel::Design
 
 			// Pad / Text
 			float x, y;
-			int apt_def;
 			int apt_def_symbol_num;
 			float apt_def_resize_factor;
 
@@ -60,12 +60,12 @@ namespace Odb::Lib::FileModel::Design
 			int sym_num;
 			Polarity polarity;
 			int dcode;
-			int atr;
-			std::string value;
 			unsigned int id;
 
 			int orient_def;
 			float orient_def_rotation;
+
+			std::string attributesIdString;
 
 			ContourPolygon::Vector m_contourPolygons;
 
@@ -76,6 +76,14 @@ namespace Odb::Lib::FileModel::Design
 			// Inherited via IProtoBuffable
 			std::unique_ptr<Odb::Lib::Protobuf::FeaturesFile::FeatureRecord> to_protobuf() const override;
 			void from_protobuf(const Odb::Lib::Protobuf::FeaturesFile::FeatureRecord& message) override;
+
+			constexpr inline static const char* LINE_TOKEN = "L";
+			constexpr inline static const char* PAD_TOKEN = "P";
+			constexpr inline static const char* TEXT_TOKEN = "T";
+			constexpr inline static const char* ARC_TOKEN = "A";
+			constexpr inline static const char* BARCODE_TOKEN = "B";
+			constexpr inline static const char* SURFACE_START_TOKEN = "S";
+			constexpr inline static const char* SURFACE_END_TOKEN = "SE";
 		};		
 
 		bool Parse(std::filesystem::path directory);
@@ -86,6 +94,7 @@ namespace Odb::Lib::FileModel::Design
 		int GetNumFeatures() const;
 		unsigned int GetId() const;
 
+		const SymbolName::Vector& GetSymbolNames() const;
 		const FeatureRecord::Vector& GetFeatureRecords() const;
 
 		// Inherited via IProtoBuffable
@@ -101,8 +110,10 @@ namespace Odb::Lib::FileModel::Design
 
 		FeatureRecord::Vector m_featureRecords;
 
+		SymbolName::Vector m_symbolNames;
+
 		std::vector<std::string> m_attributeNames;
-		std::vector<std::string> m_attributeTextValues;
+		std::vector<std::string> m_attributeTextValues;		
 
 		constexpr inline static const char* FEATURES_FILENAMES[] =
 		{
@@ -115,7 +126,7 @@ namespace Odb::Lib::FileModel::Design
 		constexpr inline static const char* ID_TOKEN = "ID";
 		constexpr inline static const char* ATTRIBUTE_NAME_TOKEN = "@";
 		constexpr inline static const char* ATTRIBUTE_VALUE_TOKEN = "&";
-		constexpr inline static const char* SYMBOL_NAME_TOKEN = "&";
+		constexpr inline static const char* SYMBOL_NAME_TOKEN = "$";
 		constexpr inline static const char* COMMENT_TOKEN = "#";
 		constexpr inline static const char* NUM_FEATURES_TOKEN = "F";		
 
