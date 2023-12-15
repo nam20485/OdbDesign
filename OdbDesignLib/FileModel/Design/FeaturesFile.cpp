@@ -330,21 +330,35 @@ namespace Odb::Lib::FileModel::Design
 							throw_parse_error(m_path, line, token, lineNumber);
 						}
 
-						if (!(lineStream >> pFeatureRecord->apt_def_symbol_num))
-						{
-							throw_parse_error(m_path, line, token, lineNumber);
-						}
-						if (pFeatureRecord->apt_def_symbol_num == -1)
-						{
-							if (!(lineStream >> pFeatureRecord->apt_def_resize_factor))
-							{
-								throw_parse_error(m_path, line, token, lineNumber);
-							}
-						}
-
 						if (!(lineStream >> pFeatureRecord->font))
 						{
 							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						char polarity;
+						if (!(lineStream >> polarity))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+						switch (polarity)
+						{
+						case 'P': pFeatureRecord->polarity = Polarity::Positive; break;
+						case 'N': pFeatureRecord->polarity = Polarity::Negative; break;
+						default: throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (!(lineStream >> pFeatureRecord->orient_def))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (pFeatureRecord->orient_def == 8 ||
+							pFeatureRecord->orient_def == 9)
+						{
+							if (!(lineStream >> pFeatureRecord->orient_def_rotation))
+							{
+								throw_parse_error(m_path, line, token, lineNumber);
+							}
 						}
 
 						if (!(lineStream >> pFeatureRecord->xsize))
@@ -370,12 +384,7 @@ namespace Odb::Lib::FileModel::Design
 						if (!(lineStream >> pFeatureRecord->version))
 						{
 							throw_parse_error(m_path, line, token, lineNumber);
-						}
-
-						if (!(lineStream >> pFeatureRecord->dcode))
-						{
-							throw_parse_error(m_path, line, token, lineNumber);
-						}
+						}						
 
 						lineStream >> pFeatureRecord->attributesIdString;
 
