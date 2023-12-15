@@ -6,6 +6,7 @@
 #include <str_trim.h>
 #include "../parse_error.h"
 #include "SymbolName.h"
+#include "equals_within.h"
 
 
 namespace Odb::Lib::FileModel::Design
