@@ -7,10 +7,13 @@
 #include "../../enums.h"
 #include "../../odbdesign_export.h"
 #include "../parse_error.h"
+#include "../../IProtoBuffable.h"
+
+// TODO: add SymbolName serialization
 
 namespace Odb::Lib::FileModel::Design
 {
-	class ODBDESIGN_EXPORT SymbolName
+	class ODBDESIGN_EXPORT SymbolName 
 	{
 	public:
 		SymbolName();		
