@@ -377,13 +377,7 @@ namespace Odb::Lib::FileModel::Design
 							throw_parse_error(m_path, line, token, lineNumber);
 						}
 
-						//std::string remainingLine;
-						//if (!std::getline(lineStream, remainingLine))
-						//{
-						//	throw_parse_error(m_path, line, token, lineNumber);
-						//}
-						
-						if (!(lineStream >> std::quoted(pFeatureRecord->text, '\'')))
+						if (!(lineStream >> std::quoted(pCurrentFeatureRecord->text, '\'')))
 						{
 							throw_parse_error(m_path, line, token, lineNumber);
 						}
