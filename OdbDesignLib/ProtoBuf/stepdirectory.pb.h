@@ -37,6 +37,7 @@
 #include "netlistfile.pb.h"
 #include "layerdirectory.pb.h"
 #include "attrlistfile.pb.h"
+#include "featuresfile.pb.h"
 // @@protoc_insertion_point(includes)
 #include <google/protobuf/port_def.inc>
 #define PROTOBUF_INTERNAL_EXPORT_stepdirectory_2eproto
@@ -259,6 +260,7 @@ class StepDirectory final :
     kPathFieldNumber = 2,
     kEdadatafileFieldNumber = 5,
     kAttrlistfileFieldNumber = 6,
+    kProfilefileFieldNumber = 7,
   };
   // map<string, .Odb.Lib.Protobuf.LayerDirectory> layersByName = 3;
   int layersbyname_size() const;
@@ -366,6 +368,24 @@ class StepDirectory final :
       ::Odb::Lib::Protobuf::AttrListFile* attrlistfile);
   ::Odb::Lib::Protobuf::AttrListFile* unsafe_arena_release_attrlistfile();
 
+  // optional .Odb.Lib.Protobuf.FeaturesFile profilefile = 7;
+  bool has_profilefile() const;
+  private:
+  bool _internal_has_profilefile() const;
+  public:
+  void clear_profilefile();
+  const ::Odb::Lib::Protobuf::FeaturesFile& profilefile() const;
+  PROTOBUF_NODISCARD ::Odb::Lib::Protobuf::FeaturesFile* release_profilefile();
+  ::Odb::Lib::Protobuf::FeaturesFile* mutable_profilefile();
+  void set_allocated_profilefile(::Odb::Lib::Protobuf::FeaturesFile* profilefile);
+  private:
+  const ::Odb::Lib::Protobuf::FeaturesFile& _internal_profilefile() const;
+  ::Odb::Lib::Protobuf::FeaturesFile* _internal_mutable_profilefile();
+  public:
+  void unsafe_arena_set_allocated_profilefile(
+      ::Odb::Lib::Protobuf::FeaturesFile* profilefile);
+  ::Odb::Lib::Protobuf::FeaturesFile* unsafe_arena_release_profilefile();
+
   // @@protoc_insertion_point(class_scope:Odb.Lib.Protobuf.StepDirectory)
  private:
   class _Internal;
@@ -390,6 +410,7 @@ class StepDirectory final :
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr path_;
     ::Odb::Lib::Protobuf::EdaDataFile* edadatafile_;
     ::Odb::Lib::Protobuf::AttrListFile* attrlistfile_;
+    ::Odb::Lib::Protobuf::FeaturesFile* profilefile_;
   };
   union { Impl_ _impl_; };
   friend struct ::TableStruct_stepdirectory_2eproto;
@@ -769,6 +790,93 @@ inline void StepDirectory::set_allocated_attrlistfile(::Odb::Lib::Protobuf::Attr
   }
   _impl_.attrlistfile_ = attrlistfile;
   // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.StepDirectory.attrlistfile)
+}
+
+// optional .Odb.Lib.Protobuf.FeaturesFile profilefile = 7;
+inline bool StepDirectory::_internal_has_profilefile() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000010u) != 0;
+  PROTOBUF_ASSUME(!value || _impl_.profilefile_ != nullptr);
+  return value;
+}
+inline bool StepDirectory::has_profilefile() const {
+  return _internal_has_profilefile();
+}
+inline const ::Odb::Lib::Protobuf::FeaturesFile& StepDirectory::_internal_profilefile() const {
+  const ::Odb::Lib::Protobuf::FeaturesFile* p = _impl_.profilefile_;
+  return p != nullptr ? *p : reinterpret_cast<const ::Odb::Lib::Protobuf::FeaturesFile&>(
+      ::Odb::Lib::Protobuf::_FeaturesFile_default_instance_);
+}
+inline const ::Odb::Lib::Protobuf::FeaturesFile& StepDirectory::profilefile() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.StepDirectory.profilefile)
+  return _internal_profilefile();
+}
+inline void StepDirectory::unsafe_arena_set_allocated_profilefile(
+    ::Odb::Lib::Protobuf::FeaturesFile* profilefile) {
+  if (GetArenaForAllocation() == nullptr) {
+    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.profilefile_);
+  }
+  _impl_.profilefile_ = profilefile;
+  if (profilefile) {
+    _impl_._has_bits_[0] |= 0x00000010u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000010u;
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:Odb.Lib.Protobuf.StepDirectory.profilefile)
+}
+inline ::Odb::Lib::Protobuf::FeaturesFile* StepDirectory::release_profilefile() {
+  _impl_._has_bits_[0] &= ~0x00000010u;
+  ::Odb::Lib::Protobuf::FeaturesFile* temp = _impl_.profilefile_;
+  _impl_.profilefile_ = nullptr;
+#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
+  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
+  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  if (GetArenaForAllocation() == nullptr) { delete old; }
+#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
+  if (GetArenaForAllocation() != nullptr) {
+    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  }
+#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
+  return temp;
+}
+inline ::Odb::Lib::Protobuf::FeaturesFile* StepDirectory::unsafe_arena_release_profilefile() {
+  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.StepDirectory.profilefile)
+  _impl_._has_bits_[0] &= ~0x00000010u;
+  ::Odb::Lib::Protobuf::FeaturesFile* temp = _impl_.profilefile_;
+  _impl_.profilefile_ = nullptr;
+  return temp;
+}
+inline ::Odb::Lib::Protobuf::FeaturesFile* StepDirectory::_internal_mutable_profilefile() {
+  _impl_._has_bits_[0] |= 0x00000010u;
+  if (_impl_.profilefile_ == nullptr) {
+    auto* p = CreateMaybeMessage<::Odb::Lib::Protobuf::FeaturesFile>(GetArenaForAllocation());
+    _impl_.profilefile_ = p;
+  }
+  return _impl_.profilefile_;
+}
+inline ::Odb::Lib::Protobuf::FeaturesFile* StepDirectory::mutable_profilefile() {
+  ::Odb::Lib::Protobuf::FeaturesFile* _msg = _internal_mutable_profilefile();
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.StepDirectory.profilefile)
+  return _msg;
+}
+inline void StepDirectory::set_allocated_profilefile(::Odb::Lib::Protobuf::FeaturesFile* profilefile) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
+  if (message_arena == nullptr) {
+    delete reinterpret_cast< ::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.profilefile_);
+  }
+  if (profilefile) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
+        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(
+                reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(profilefile));
+    if (message_arena != submessage_arena) {
+      profilefile = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, profilefile, submessage_arena);
+    }
+    _impl_._has_bits_[0] |= 0x00000010u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000010u;
+  }
+  _impl_.profilefile_ = profilefile;
+  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.StepDirectory.profilefile)
 }
 
 #ifdef __GNUC__

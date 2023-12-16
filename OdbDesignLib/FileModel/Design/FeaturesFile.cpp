@@ -7,6 +7,7 @@
 #include "../parse_error.h"
 #include "SymbolName.h"
 #include "equals_within.h"
+#include "macros.h"
 
 
 namespace Odb::Lib::FileModel::Design
@@ -28,7 +29,7 @@ namespace Odb::Lib::FileModel::Design
 		m_attributeTextValues.clear();
 	}
 
-	bool FeaturesFile::Parse(std::filesystem::path directory)
+	bool FeaturesFile::Parse(std::filesystem::path directory, const std::string& alternateFilename /*= ""*/)
 	{
 		std::ifstream featuresFile;
 		int lineNumber = 0;
@@ -40,8 +41,18 @@ namespace Odb::Lib::FileModel::Design
 
 			loginfo("checking for extraction...");
 
+			std::vector<std::string> filenames;
+			if (alternateFilename.empty())
+			{
+				std::copy(std::begin(FEATURES_FILENAMES), std::end(FEATURES_FILENAMES), std::back_inserter(filenames));
+			}			
+			else
+			{
+				filenames.push_back(alternateFilename);
+			}
+
 			std::filesystem::path featuresFilePath;
-			for (const std::string featuresFilename : FEATURES_FILENAMES)
+			for (const std::string featuresFilename : filenames)
 			{
 				loginfo("trying features file: [" + featuresFilename + "]...");
 

@@ -40,6 +40,11 @@ namespace Odb::Lib::FileModel::Design
         return m_attrListFile;
     }
 
+    const FeaturesFile& StepDirectory::GetProfileFile() const
+    {
+        return m_profileFile;
+    }
+
     bool StepDirectory::Parse()
     {
         if (!std::filesystem::exists(m_path)) return false;
@@ -60,6 +65,9 @@ namespace Odb::Lib::FileModel::Design
 
         auto attrListPath = m_path;
         if (!ParseAttrListFile(attrListPath)) return false;
+
+        auto profilePath = m_path;
+        if (!ParseProfileFile(profilePath)) return false;
 
         loginfo("Parsing step directory: " + m_name + " complete");
 
@@ -126,6 +134,21 @@ namespace Odb::Lib::FileModel::Design
         return success;        
     }
 
+    bool StepDirectory::ParseProfileFile(std::filesystem::path profileFileDirectory)
+    {
+        loginfo("Parsing profile file...");
+
+        if (!std::filesystem::exists(profileFileDirectory)) return false;
+        if (!std::filesystem::is_directory(profileFileDirectory)) return false;
+
+        // parse nets and packages definitions      
+        auto success = m_profileFile.Parse(profileFileDirectory, PROFILE_FILENAME);
+
+        loginfo("Parsing profile file complete");
+
+        return success;
+    }
+
     std::unique_ptr<Odb::Lib::Protobuf::StepDirectory> StepDirectory::to_protobuf() const
     {
         std::unique_ptr<Odb::Lib::Protobuf::StepDirectory> pStepDirectoryMessage(new Odb::Lib::Protobuf::StepDirectory);
@@ -133,6 +156,7 @@ namespace Odb::Lib::FileModel::Design
         pStepDirectoryMessage->set_path(m_path.string());
         pStepDirectoryMessage->mutable_edadatafile()->CopyFrom(*m_edaData.to_protobuf());
         pStepDirectoryMessage->mutable_attrlistfile()->CopyFrom(*m_attrListFile.to_protobuf());
+        pStepDirectoryMessage->mutable_profilefile()->CopyFrom(*m_profileFile.to_protobuf());
 
         for (const auto& kvNetlistFile : m_netlistsByName)
         {
@@ -153,6 +177,7 @@ namespace Odb::Lib::FileModel::Design
 		m_path = message.path();
 		m_edaData.from_protobuf(message.edadatafile());
         m_attrListFile.from_protobuf(message.attrlistfile());
+        m_profileFile.from_protobuf(message.profilefile());
 
         for (const auto& kvNetlistFile : message.netlistsbyname())
         {

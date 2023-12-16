@@ -86,7 +86,7 @@ namespace Odb::Lib::FileModel::Design
 			constexpr inline static const char* SURFACE_END_TOKEN = "SE";
 		};		
 
-		bool Parse(std::filesystem::path directory);
+		bool Parse(std::filesystem::path directory, const std::string& alternateFilename = "");
 
 		std::string GetUnits() const;
 		std::filesystem::path GetPath();

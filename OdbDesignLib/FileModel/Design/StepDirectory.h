@@ -31,6 +31,7 @@ namespace Odb::Lib::FileModel::Design
 		const LayerDirectory::StringMap& GetLayersByName() const;
 		const NetlistFile::StringMap& GetNetlistsByName() const;
 		const AttrListFile& GetAttrListFile() const;
+		const FeaturesFile& GetProfileFile() const;
 
 		const ComponentsFile* GetTopComponentsFile() const;
 		const ComponentsFile* GetBottomComponentsFile() const;
@@ -51,11 +52,15 @@ namespace Odb::Lib::FileModel::Design
 		NetlistFile::StringMap m_netlistsByName;
 		EdaDataFile m_edaData;
 		AttrListFile m_attrListFile;
+		FeaturesFile m_profileFile;
 
 		bool ParseLayerFiles(std::filesystem::path layersPath);
 		bool ParseNetlistFiles(std::filesystem::path netlistsPath);
 		bool ParseEdaDataFiles(std::filesystem::path edaPath);
 		bool ParseAttrListFile(std::filesystem::path attrListFileDirectory);
+		bool ParseProfileFile(std::filesystem::path profileFileDirectory);
+
+		constexpr inline static const char* PROFILE_FILENAME = "profile";
 		
 	};
 }
