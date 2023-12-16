@@ -132,6 +132,7 @@ namespace Odb::Lib::FileModel::Design
         pStepDirectoryMessage->set_name(m_name);
         pStepDirectoryMessage->set_path(m_path.string());
         pStepDirectoryMessage->mutable_edadatafile()->CopyFrom(*m_edaData.to_protobuf());
+        pStepDirectoryMessage->mutable_attrlistfile()->CopyFrom(*m_attrListFile.to_protobuf());
 
         for (const auto& kvNetlistFile : m_netlistsByName)
         {
@@ -151,6 +152,7 @@ namespace Odb::Lib::FileModel::Design
         m_name = message.name();
 		m_path = message.path();
 		m_edaData.from_protobuf(message.edadatafile());
+        m_attrListFile.from_protobuf(message.attrlistfile());
 
         for (const auto& kvNetlistFile : message.netlistsbyname())
         {
