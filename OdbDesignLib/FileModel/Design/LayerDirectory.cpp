@@ -82,6 +82,7 @@ namespace Odb::Lib::FileModel::Design
 		pLayerDirectoryMessage->set_name(m_name);
 		pLayerDirectoryMessage->set_path(m_path.string());
 		pLayerDirectoryMessage->mutable_components()->CopyFrom(*m_componentsFile.to_protobuf());
+		pLayerDirectoryMessage->mutable_featurefile()->CopyFrom(*m_featuresFile.to_protobuf());
 		return pLayerDirectoryMessage;
 	}
 
@@ -90,5 +91,6 @@ namespace Odb::Lib::FileModel::Design
 		m_name = message.name();
 		m_path = message.path();
 		m_componentsFile.from_protobuf(message.components());
+		m_featuresFile.from_protobuf(message.featurefile());
 	}
 }
