@@ -7,10 +7,13 @@
 #include <string>
 #include <map>
 #include <filesystem>
+#include "../../IProtoBuffable.h"
+#include "../../ProtoBuf/attrlistfile.pb.h"
+#include "../../odbdesign_export.h"
 
 namespace Odb::Lib::FileModel::Design
 {
-    class AttrListFile
+    class ODBDESIGN_EXPORT AttrListFile
     {
     public:
         AttrListFile();
