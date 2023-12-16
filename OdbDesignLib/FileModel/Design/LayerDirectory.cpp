@@ -39,10 +39,16 @@ namespace Odb::Lib::FileModel::Design
 		
 		if (!ParseComponentsFile(m_path)) return false;
 		if (!ParseFeaturesFile(m_path)) return false;
+		if (!ParseAttrListFile(m_path)) return false;
 
 		loginfo("Parsing layer directory: " + m_name + " complete");
 
 		return true;
+	}
+
+	bool LayerDirectory::ParseAttrListFile(std::filesystem::path directory)
+	{
+		return m_attrListFile.Parse(directory);
 	}
 
 	bool Odb::Lib::FileModel::Design::LayerDirectory::ParseComponentsFile(std::filesystem::path directory)
@@ -63,6 +69,11 @@ namespace Odb::Lib::FileModel::Design
 	const FeaturesFile& LayerDirectory::GetFeaturesFile() const
 	{
 		return m_featuresFile;
+	}
+
+	const AttrListFile& LayerDirectory::GetAttrListFile() const
+	{
+		return m_attrListFile;
 	}
 
 	std::unique_ptr<Odb::Lib::Protobuf::LayerDirectory> Odb::Lib::FileModel::Design::LayerDirectory::to_protobuf() const

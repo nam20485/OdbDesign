@@ -13,6 +13,7 @@
 #include "../../IProtoBuffable.h"
 #include "../../ProtoBuf/stepdirectory.pb.h"
 #include "ComponentsFile.h"
+#include "AttrListFile.h"
 
 
 namespace Odb::Lib::FileModel::Design
@@ -29,6 +30,7 @@ namespace Odb::Lib::FileModel::Design
 		const EdaDataFile& GetEdaDataFile() const;
 		const LayerDirectory::StringMap& GetLayersByName() const;
 		const NetlistFile::StringMap& GetNetlistsByName() const;
+		const AttrListFile& GetAttrListFile() const;
 
 		const ComponentsFile* GetTopComponentsFile() const;
 		const ComponentsFile* GetBottomComponentsFile() const;
@@ -48,10 +50,12 @@ namespace Odb::Lib::FileModel::Design
 		LayerDirectory::StringMap m_layersByName;
 		NetlistFile::StringMap m_netlistsByName;
 		EdaDataFile m_edaData;
+		AttrListFile m_attrListFile;
 
 		bool ParseLayerFiles(std::filesystem::path layersPath);
 		bool ParseNetlistFiles(std::filesystem::path netlistsPath);
 		bool ParseEdaDataFiles(std::filesystem::path edaPath);
+		bool ParseAttrListFile(std::filesystem::path attrListFileDirectory);
 		
 	};
 }

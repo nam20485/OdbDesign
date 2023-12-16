@@ -35,6 +35,11 @@ namespace Odb::Lib::FileModel::Design
     const LayerDirectory::StringMap& StepDirectory::GetLayersByName() const { return m_layersByName; }
     const NetlistFile::StringMap& StepDirectory::GetNetlistsByName() const { return m_netlistsByName; }
 
+    const AttrListFile& StepDirectory::GetAttrListFile() const
+    {
+        return m_attrListFile;
+    }
+
     bool StepDirectory::Parse()
     {
         if (!std::filesystem::exists(m_path)) return false;
@@ -52,6 +57,9 @@ namespace Odb::Lib::FileModel::Design
 
         auto edaPath = m_path / "eda";
         if (!ParseEdaDataFiles(edaPath)) return false;
+
+        auto attrListPath = m_path;
+        if (!ParseAttrListFile(attrListPath)) return false;
 
         loginfo("Parsing step directory: " + m_name + " complete");
 
@@ -101,6 +109,21 @@ namespace Odb::Lib::FileModel::Design
         loginfo("Parsing eda/data file complete");
 
         return success;
+    }
+
+    bool StepDirectory::ParseAttrListFile(std::filesystem::path attrListFileDirectory)
+    {
+        loginfo("Parsing attrlist file...");
+
+        if (!std::filesystem::exists(attrListFileDirectory)) return false;
+        if (!std::filesystem::is_directory(attrListFileDirectory)) return false;
+
+        // parse nets and packages definitions      
+        auto success = m_attrListFile.Parse(attrListFileDirectory);
+
+        loginfo("Parsing attrlist file complete");
+
+        return success;        
     }
 
     std::unique_ptr<Odb::Lib::Protobuf::StepDirectory> StepDirectory::to_protobuf() const
