@@ -13,7 +13,7 @@
 
 namespace Odb::Lib::FileModel::Design
 {
-    class ODBDESIGN_EXPORT AttrListFile
+    class ODBDESIGN_EXPORT AttrListFile : public IProtoBuffable<Odb::Lib::Protobuf::AttrListFile>
     {
     public:
         AttrListFile();
@@ -25,16 +25,20 @@ namespace Odb::Lib::FileModel::Design
 
         bool Parse(std::filesystem::path directory);
 
+        // Inherited via IProtoBuffable
+        std::unique_ptr<Odb::Lib::Protobuf::AttrListFile> to_protobuf() const override;
+        void from_protobuf(const Odb::Lib::Protobuf::AttrListFile& message) override;
+
     private:
         std::filesystem::path m_directory;
         std::filesystem::path m_path;
         std::string m_units;    
-        AttributeMap m_attributes;
+        AttributeMap m_attributesByName;
 
         bool attributeValueIsOptional(const std::string& attributeName) const;
 
         inline static const auto ATTRLIST_FILENAMES = { "attrlist" };
-        inline static const char* OPTIONAL_ATTRIBUTES[] = { "" };
+        inline static const char* OPTIONAL_ATTRIBUTES[] = { "" };       
     };
 
 }

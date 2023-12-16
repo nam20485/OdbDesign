@@ -14,5 +14,5 @@ message AttrListFile {
     optional string directory = 1;
     optional string path = 2;
     optional string units = 3;
-    map<string, string> attributes = 4;
+    map<string, string> attributesByName = 4;
 }

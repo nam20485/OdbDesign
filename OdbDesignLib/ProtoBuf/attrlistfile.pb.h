@@ -53,15 +53,15 @@ namespace Protobuf {
 class AttrListFile;
 struct AttrListFileDefaultTypeInternal;
 extern AttrListFileDefaultTypeInternal _AttrListFile_default_instance_;
-class AttrListFile_AttributesEntry_DoNotUse;
-struct AttrListFile_AttributesEntry_DoNotUseDefaultTypeInternal;
-extern AttrListFile_AttributesEntry_DoNotUseDefaultTypeInternal _AttrListFile_AttributesEntry_DoNotUse_default_instance_;
+class AttrListFile_AttributesByNameEntry_DoNotUse;
+struct AttrListFile_AttributesByNameEntry_DoNotUseDefaultTypeInternal;
+extern AttrListFile_AttributesByNameEntry_DoNotUseDefaultTypeInternal _AttrListFile_AttributesByNameEntry_DoNotUse_default_instance_;
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
 PROTOBUF_NAMESPACE_OPEN
 template<> ::Odb::Lib::Protobuf::AttrListFile* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::AttrListFile>(Arena*);
-template<> ::Odb::Lib::Protobuf::AttrListFile_AttributesEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::AttrListFile_AttributesEntry_DoNotUse>(Arena*);
+template<> ::Odb::Lib::Protobuf::AttrListFile_AttributesByNameEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::AttrListFile_AttributesByNameEntry_DoNotUse>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace Odb {
 namespace Lib {
@@ -69,26 +69,26 @@ namespace Protobuf {
 
 // ===================================================================
 
-class AttrListFile_AttributesEntry_DoNotUse : public ::PROTOBUF_NAMESPACE_ID::internal::MapEntry<AttrListFile_AttributesEntry_DoNotUse, 
+class AttrListFile_AttributesByNameEntry_DoNotUse : public ::PROTOBUF_NAMESPACE_ID::internal::MapEntry<AttrListFile_AttributesByNameEntry_DoNotUse, 
     std::string, std::string,
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING,
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING> {
 public:
-  typedef ::PROTOBUF_NAMESPACE_ID::internal::MapEntry<AttrListFile_AttributesEntry_DoNotUse, 
+  typedef ::PROTOBUF_NAMESPACE_ID::internal::MapEntry<AttrListFile_AttributesByNameEntry_DoNotUse, 
     std::string, std::string,
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING,
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING> SuperType;
-  AttrListFile_AttributesEntry_DoNotUse();
-  explicit PROTOBUF_CONSTEXPR AttrListFile_AttributesEntry_DoNotUse(
+  AttrListFile_AttributesByNameEntry_DoNotUse();
+  explicit PROTOBUF_CONSTEXPR AttrListFile_AttributesByNameEntry_DoNotUse(
       ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
-  explicit AttrListFile_AttributesEntry_DoNotUse(::PROTOBUF_NAMESPACE_ID::Arena* arena);
-  void MergeFrom(const AttrListFile_AttributesEntry_DoNotUse& other);
-  static const AttrListFile_AttributesEntry_DoNotUse* internal_default_instance() { return reinterpret_cast<const AttrListFile_AttributesEntry_DoNotUse*>(&_AttrListFile_AttributesEntry_DoNotUse_default_instance_); }
+  explicit AttrListFile_AttributesByNameEntry_DoNotUse(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  void MergeFrom(const AttrListFile_AttributesByNameEntry_DoNotUse& other);
+  static const AttrListFile_AttributesByNameEntry_DoNotUse* internal_default_instance() { return reinterpret_cast<const AttrListFile_AttributesByNameEntry_DoNotUse*>(&_AttrListFile_AttributesByNameEntry_DoNotUse_default_instance_); }
   static bool ValidateKey(std::string* s) {
-    return ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(s->data(), static_cast<int>(s->size()), ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::PARSE, "Odb.Lib.Protobuf.AttrListFile.AttributesEntry.key");
+    return ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(s->data(), static_cast<int>(s->size()), ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::PARSE, "Odb.Lib.Protobuf.AttrListFile.AttributesByNameEntry.key");
  }
   static bool ValidateValue(std::string* s) {
-    return ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(s->data(), static_cast<int>(s->size()), ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::PARSE, "Odb.Lib.Protobuf.AttrListFile.AttributesEntry.value");
+    return ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(s->data(), static_cast<int>(s->size()), ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::PARSE, "Odb.Lib.Protobuf.AttrListFile.AttributesByNameEntry.value");
  }
   using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
   ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
@@ -221,27 +221,27 @@ class AttrListFile final :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kAttributesFieldNumber = 4,
+    kAttributesByNameFieldNumber = 4,
     kDirectoryFieldNumber = 1,
     kPathFieldNumber = 2,
     kUnitsFieldNumber = 3,
   };
-  // map<string, string> attributes = 4;
-  int attributes_size() const;
+  // map<string, string> attributesByName = 4;
+  int attributesbyname_size() const;
   private:
-  int _internal_attributes_size() const;
+  int _internal_attributesbyname_size() const;
   public:
-  void clear_attributes();
+  void clear_attributesbyname();
   private:
   const ::PROTOBUF_NAMESPACE_ID::Map< std::string, std::string >&
-      _internal_attributes() const;
+      _internal_attributesbyname() const;
   ::PROTOBUF_NAMESPACE_ID::Map< std::string, std::string >*
-      _internal_mutable_attributes();
+      _internal_mutable_attributesbyname();
   public:
   const ::PROTOBUF_NAMESPACE_ID::Map< std::string, std::string >&
-      attributes() const;
+      attributesbyname() const;
   ::PROTOBUF_NAMESPACE_ID::Map< std::string, std::string >*
-      mutable_attributes();
+      mutable_attributesbyname();
 
   // optional string directory = 1;
   bool has_directory() const;
@@ -308,10 +308,10 @@ class AttrListFile final :
     ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
     ::PROTOBUF_NAMESPACE_ID::internal::MapField<
-        AttrListFile_AttributesEntry_DoNotUse,
+        AttrListFile_AttributesByNameEntry_DoNotUse,
         std::string, std::string,
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING,
-        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING> attributes_;
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING> attributesbyname_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr directory_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr path_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr units_;
@@ -536,33 +536,33 @@ inline void AttrListFile::set_allocated_units(std::string* units) {
   // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.AttrListFile.units)
 }
 
-// map<string, string> attributes = 4;
-inline int AttrListFile::_internal_attributes_size() const {
-  return _impl_.attributes_.size();
+// map<string, string> attributesByName = 4;
+inline int AttrListFile::_internal_attributesbyname_size() const {
+  return _impl_.attributesbyname_.size();
 }
-inline int AttrListFile::attributes_size() const {
-  return _internal_attributes_size();
+inline int AttrListFile::attributesbyname_size() const {
+  return _internal_attributesbyname_size();
 }
-inline void AttrListFile::clear_attributes() {
-  _impl_.attributes_.Clear();
-}
-inline const ::PROTOBUF_NAMESPACE_ID::Map< std::string, std::string >&
-AttrListFile::_internal_attributes() const {
-  return _impl_.attributes_.GetMap();
+inline void AttrListFile::clear_attributesbyname() {
+  _impl_.attributesbyname_.Clear();
 }
 inline const ::PROTOBUF_NAMESPACE_ID::Map< std::string, std::string >&
-AttrListFile::attributes() const {
-  // @@protoc_insertion_point(field_map:Odb.Lib.Protobuf.AttrListFile.attributes)
-  return _internal_attributes();
+AttrListFile::_internal_attributesbyname() const {
+  return _impl_.attributesbyname_.GetMap();
+}
+inline const ::PROTOBUF_NAMESPACE_ID::Map< std::string, std::string >&
+AttrListFile::attributesbyname() const {
+  // @@protoc_insertion_point(field_map:Odb.Lib.Protobuf.AttrListFile.attributesByName)
+  return _internal_attributesbyname();
 }
 inline ::PROTOBUF_NAMESPACE_ID::Map< std::string, std::string >*
-AttrListFile::_internal_mutable_attributes() {
-  return _impl_.attributes_.MutableMap();
+AttrListFile::_internal_mutable_attributesbyname() {
+  return _impl_.attributesbyname_.MutableMap();
 }
 inline ::PROTOBUF_NAMESPACE_ID::Map< std::string, std::string >*
-AttrListFile::mutable_attributes() {
-  // @@protoc_insertion_point(field_mutable_map:Odb.Lib.Protobuf.AttrListFile.attributes)
-  return _internal_mutable_attributes();
+AttrListFile::mutable_attributesbyname() {
+  // @@protoc_insertion_point(field_mutable_map:Odb.Lib.Protobuf.AttrListFile.attributesByName)
+  return _internal_mutable_attributesbyname();
 }
 
 #ifdef __GNUC__

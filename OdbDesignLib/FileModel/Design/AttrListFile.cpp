@@ -28,7 +28,7 @@ namespace Odb::Lib::FileModel::Design
 
     const AttrListFile::AttributeMap& AttrListFile::GetAttributes() const
     {
-        return m_attributes;
+        return m_attributesByName;
     }
 
     bool Lib::FileModel::Design::AttrListFile::Parse(std::filesystem::path directory)
@@ -133,7 +133,7 @@ namespace Odb::Lib::FileModel::Design
 						Utils::str_trim(attribute);
 						Utils::str_trim(value);
 
-						m_attributes[attribute] = value;
+						m_attributesByName[attribute] = value;
 					}
 				}
 			}			
@@ -157,7 +157,36 @@ namespace Odb::Lib::FileModel::Design
 		}
 
 		return true;
-    }	
+    }
+
+	std::unique_ptr<Odb::Lib::Protobuf::AttrListFile> Lib::FileModel::Design::AttrListFile::to_protobuf() const
+	{
+		auto message = std::make_unique<Odb::Lib::Protobuf::AttrListFile>();
+
+		message->set_directory(m_directory.string());
+		message->set_path(m_path.string());
+		message->set_units(m_units);
+
+		for (const auto& kvAttribute : m_attributesByName)
+		{
+			(*message->mutable_attributesbyname())[kvAttribute.first] = kvAttribute.second;
+		}
+
+		return message;
+	
+	}
+
+	void Lib::FileModel::Design::AttrListFile::from_protobuf(const Odb::Lib::Protobuf::AttrListFile& message)
+	{
+		m_directory = message.directory();
+		m_path = message.path();
+		m_units = message.units();
+
+		for (const auto& kvAttribute : message.attributesbyname())
+		{
+			m_attributesByName[kvAttribute.first] = kvAttribute.second;
+		}
+	}
 
 	bool Lib::FileModel::Design::AttrListFile::attributeValueIsOptional(const std::string& attributeName) const
 	{
@@ -173,5 +202,7 @@ namespace Odb::Lib::FileModel::Design
 		// all atrributes are "optional", i.e. value is not required
 		return true;
 	}
+
+	
 
 } // namespace Odb::Lib::FileModel::Design

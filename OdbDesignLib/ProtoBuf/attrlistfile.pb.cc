@@ -23,22 +23,22 @@ namespace _pbi = _pb::internal;
 namespace Odb {
 namespace Lib {
 namespace Protobuf {
-PROTOBUF_CONSTEXPR AttrListFile_AttributesEntry_DoNotUse::AttrListFile_AttributesEntry_DoNotUse(
+PROTOBUF_CONSTEXPR AttrListFile_AttributesByNameEntry_DoNotUse::AttrListFile_AttributesByNameEntry_DoNotUse(
     ::_pbi::ConstantInitialized) {}
-struct AttrListFile_AttributesEntry_DoNotUseDefaultTypeInternal {
-  PROTOBUF_CONSTEXPR AttrListFile_AttributesEntry_DoNotUseDefaultTypeInternal()
+struct AttrListFile_AttributesByNameEntry_DoNotUseDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR AttrListFile_AttributesByNameEntry_DoNotUseDefaultTypeInternal()
       : _instance(::_pbi::ConstantInitialized{}) {}
-  ~AttrListFile_AttributesEntry_DoNotUseDefaultTypeInternal() {}
+  ~AttrListFile_AttributesByNameEntry_DoNotUseDefaultTypeInternal() {}
   union {
-    AttrListFile_AttributesEntry_DoNotUse _instance;
+    AttrListFile_AttributesByNameEntry_DoNotUse _instance;
   };
 };
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 AttrListFile_AttributesEntry_DoNotUseDefaultTypeInternal _AttrListFile_AttributesEntry_DoNotUse_default_instance_;
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 AttrListFile_AttributesByNameEntry_DoNotUseDefaultTypeInternal _AttrListFile_AttributesByNameEntry_DoNotUse_default_instance_;
 PROTOBUF_CONSTEXPR AttrListFile::AttrListFile(
     ::_pbi::ConstantInitialized): _impl_{
     /*decltype(_impl_._has_bits_)*/{}
   , /*decltype(_impl_._cached_size_)*/{}
-  , /*decltype(_impl_.attributes_)*/{::_pbi::ConstantInitialized()}
+  , /*decltype(_impl_.attributesbyname_)*/{::_pbi::ConstantInitialized()}
   , /*decltype(_impl_.directory_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.path_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.units_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}} {}
@@ -59,14 +59,14 @@ static constexpr ::_pb::EnumDescriptor const** file_level_enum_descriptors_attrl
 static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_attrlistfile_2eproto = nullptr;
 
 const uint32_t TableStruct_attrlistfile_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::AttrListFile_AttributesEntry_DoNotUse, _has_bits_),
-  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::AttrListFile_AttributesEntry_DoNotUse, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::AttrListFile_AttributesByNameEntry_DoNotUse, _has_bits_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::AttrListFile_AttributesByNameEntry_DoNotUse, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::AttrListFile_AttributesEntry_DoNotUse, key_),
-  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::AttrListFile_AttributesEntry_DoNotUse, value_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::AttrListFile_AttributesByNameEntry_DoNotUse, key_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::AttrListFile_AttributesByNameEntry_DoNotUse, value_),
   0,
   1,
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::AttrListFile, _impl_._has_bits_),
@@ -78,34 +78,35 @@ const uint32_t TableStruct_attrlistfile_2eproto::offsets[] PROTOBUF_SECTION_VARI
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::AttrListFile, _impl_.directory_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::AttrListFile, _impl_.path_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::AttrListFile, _impl_.units_),
-  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::AttrListFile, _impl_.attributes_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::AttrListFile, _impl_.attributesbyname_),
   0,
   1,
   2,
   ~0u,
 };
 static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  { 0, 8, -1, sizeof(::Odb::Lib::Protobuf::AttrListFile_AttributesEntry_DoNotUse)},
+  { 0, 8, -1, sizeof(::Odb::Lib::Protobuf::AttrListFile_AttributesByNameEntry_DoNotUse)},
   { 10, 20, -1, sizeof(::Odb::Lib::Protobuf::AttrListFile)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
-  &::Odb::Lib::Protobuf::_AttrListFile_AttributesEntry_DoNotUse_default_instance_._instance,
+  &::Odb::Lib::Protobuf::_AttrListFile_AttributesByNameEntry_DoNotUse_default_instance_._instance,
   &::Odb::Lib::Protobuf::_AttrListFile_default_instance_._instance,
 };
 
 const char descriptor_table_protodef_attrlistfile_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
-  "\n\022attrlistfile.proto\022\020Odb.Lib.Protobuf\"\345"
+  "\n\022attrlistfile.proto\022\020Odb.Lib.Protobuf\"\367"
   "\001\n\014AttrListFile\022\026\n\tdirectory\030\001 \001(\tH\000\210\001\001\022"
-  "\021\n\004path\030\002 \001(\tH\001\210\001\001\022\022\n\005units\030\003 \001(\tH\002\210\001\001\022B"
-  "\n\nattributes\030\004 \003(\0132..Odb.Lib.Protobuf.At"
-  "trListFile.AttributesEntry\0321\n\017Attributes"
-  "Entry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001B\014\n"
-  "\n_directoryB\007\n\005_pathB\010\n\006_unitsb\006proto3"
+  "\021\n\004path\030\002 \001(\tH\001\210\001\001\022\022\n\005units\030\003 \001(\tH\002\210\001\001\022N"
+  "\n\020attributesByName\030\004 \003(\01324.Odb.Lib.Proto"
+  "buf.AttrListFile.AttributesByNameEntry\0327"
+  "\n\025AttributesByNameEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005"
+  "value\030\002 \001(\t:\0028\001B\014\n\n_directoryB\007\n\005_pathB\010"
+  "\n\006_unitsb\006proto3"
   ;
 static ::_pbi::once_flag descriptor_table_attrlistfile_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_attrlistfile_2eproto = {
-    false, false, 278, descriptor_table_protodef_attrlistfile_2eproto,
+    false, false, 296, descriptor_table_protodef_attrlistfile_2eproto,
     "attrlistfile.proto",
     &descriptor_table_attrlistfile_2eproto_once, nullptr, 0, 2,
     schemas, file_default_instances, TableStruct_attrlistfile_2eproto::offsets,
@@ -124,13 +125,13 @@ namespace Protobuf {
 
 // ===================================================================
 
-AttrListFile_AttributesEntry_DoNotUse::AttrListFile_AttributesEntry_DoNotUse() {}
-AttrListFile_AttributesEntry_DoNotUse::AttrListFile_AttributesEntry_DoNotUse(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+AttrListFile_AttributesByNameEntry_DoNotUse::AttrListFile_AttributesByNameEntry_DoNotUse() {}
+AttrListFile_AttributesByNameEntry_DoNotUse::AttrListFile_AttributesByNameEntry_DoNotUse(::PROTOBUF_NAMESPACE_ID::Arena* arena)
     : SuperType(arena) {}
-void AttrListFile_AttributesEntry_DoNotUse::MergeFrom(const AttrListFile_AttributesEntry_DoNotUse& other) {
+void AttrListFile_AttributesByNameEntry_DoNotUse::MergeFrom(const AttrListFile_AttributesByNameEntry_DoNotUse& other) {
   MergeFromInternal(other);
 }
-::PROTOBUF_NAMESPACE_ID::Metadata AttrListFile_AttributesEntry_DoNotUse::GetMetadata() const {
+::PROTOBUF_NAMESPACE_ID::Metadata AttrListFile_AttributesByNameEntry_DoNotUse::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_attrlistfile_2eproto_getter, &descriptor_table_attrlistfile_2eproto_once,
       file_level_metadata_attrlistfile_2eproto[0]);
@@ -167,13 +168,13 @@ AttrListFile::AttrListFile(const AttrListFile& from)
   new (&_impl_) Impl_{
       decltype(_impl_._has_bits_){from._impl_._has_bits_}
     , /*decltype(_impl_._cached_size_)*/{}
-    , /*decltype(_impl_.attributes_)*/{}
+    , /*decltype(_impl_.attributesbyname_)*/{}
     , decltype(_impl_.directory_){}
     , decltype(_impl_.path_){}
     , decltype(_impl_.units_){}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  _this->_impl_.attributes_.MergeFrom(from._impl_.attributes_);
+  _this->_impl_.attributesbyname_.MergeFrom(from._impl_.attributesbyname_);
   _impl_.directory_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
     _impl_.directory_.Set("", GetArenaForAllocation());
@@ -208,7 +209,7 @@ inline void AttrListFile::SharedCtor(
   new (&_impl_) Impl_{
       decltype(_impl_._has_bits_){}
     , /*decltype(_impl_._cached_size_)*/{}
-    , /*decltype(_impl_.attributes_)*/{::_pbi::ArenaInitialized(), arena}
+    , /*decltype(_impl_.attributesbyname_)*/{::_pbi::ArenaInitialized(), arena}
     , decltype(_impl_.directory_){}
     , decltype(_impl_.path_){}
     , decltype(_impl_.units_){}
@@ -239,8 +240,8 @@ AttrListFile::~AttrListFile() {
 
 inline void AttrListFile::SharedDtor() {
   GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
-  _impl_.attributes_.Destruct();
-  _impl_.attributes_.~MapField();
+  _impl_.attributesbyname_.Destruct();
+  _impl_.attributesbyname_.~MapField();
   _impl_.directory_.Destroy();
   _impl_.path_.Destroy();
   _impl_.units_.Destroy();
@@ -248,7 +249,7 @@ inline void AttrListFile::SharedDtor() {
 
 void AttrListFile::ArenaDtor(void* object) {
   AttrListFile* _this = reinterpret_cast< AttrListFile* >(object);
-  _this->_impl_.attributes_.Destruct();
+  _this->_impl_.attributesbyname_.Destruct();
 }
 void AttrListFile::SetCachedSize(int size) const {
   _impl_._cached_size_.Set(size);
@@ -260,7 +261,7 @@ void AttrListFile::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  _impl_.attributes_.Clear();
+  _impl_.attributesbyname_.Clear();
   cached_has_bits = _impl_._has_bits_[0];
   if (cached_has_bits & 0x00000007u) {
     if (cached_has_bits & 0x00000001u) {
@@ -314,13 +315,13 @@ const char* AttrListFile::_InternalParse(const char* ptr, ::_pbi::ParseContext* 
         } else
           goto handle_unusual;
         continue;
-      // map<string, string> attributes = 4;
+      // map<string, string> attributesByName = 4;
       case 4:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 34)) {
           ptr -= 1;
           do {
             ptr += 1;
-            ptr = ctx->ParseMessage(&_impl_.attributes_, ptr);
+            ptr = ctx->ParseMessage(&_impl_.attributesbyname_, ptr);
             CHK_(ptr);
             if (!ctx->DataAvailable(ptr)) break;
           } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<34>(ptr));
@@ -387,21 +388,21 @@ uint8_t* AttrListFile::_InternalSerialize(
         3, this->_internal_units(), target);
   }
 
-  // map<string, string> attributes = 4;
-  if (!this->_internal_attributes().empty()) {
+  // map<string, string> attributesByName = 4;
+  if (!this->_internal_attributesbyname().empty()) {
     using MapType = ::_pb::Map<std::string, std::string>;
-    using WireHelper = AttrListFile_AttributesEntry_DoNotUse::Funcs;
-    const auto& map_field = this->_internal_attributes();
+    using WireHelper = AttrListFile_AttributesByNameEntry_DoNotUse::Funcs;
+    const auto& map_field = this->_internal_attributesbyname();
     auto check_utf8 = [](const MapType::value_type& entry) {
       (void)entry;
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
         entry.first.data(), static_cast<int>(entry.first.length()),
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-        "Odb.Lib.Protobuf.AttrListFile.AttributesEntry.key");
+        "Odb.Lib.Protobuf.AttrListFile.AttributesByNameEntry.key");
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
         entry.second.data(), static_cast<int>(entry.second.length()),
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-        "Odb.Lib.Protobuf.AttrListFile.AttributesEntry.value");
+        "Odb.Lib.Protobuf.AttrListFile.AttributesByNameEntry.value");
     };
 
     if (stream->IsSerializationDeterministic() && map_field.size() > 1) {
@@ -433,13 +434,13 @@ size_t AttrListFile::ByteSizeLong() const {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  // map<string, string> attributes = 4;
+  // map<string, string> attributesByName = 4;
   total_size += 1 *
-      ::PROTOBUF_NAMESPACE_ID::internal::FromIntSize(this->_internal_attributes_size());
+      ::PROTOBUF_NAMESPACE_ID::internal::FromIntSize(this->_internal_attributesbyname_size());
   for (::PROTOBUF_NAMESPACE_ID::Map< std::string, std::string >::const_iterator
-      it = this->_internal_attributes().begin();
-      it != this->_internal_attributes().end(); ++it) {
-    total_size += AttrListFile_AttributesEntry_DoNotUse::Funcs::ByteSizeLong(it->first, it->second);
+      it = this->_internal_attributesbyname().begin();
+      it != this->_internal_attributesbyname().end(); ++it) {
+    total_size += AttrListFile_AttributesByNameEntry_DoNotUse::Funcs::ByteSizeLong(it->first, it->second);
   }
 
   cached_has_bits = _impl_._has_bits_[0];
@@ -484,7 +485,7 @@ void AttrListFile::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::P
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  _this->_impl_.attributes_.MergeFrom(from._impl_.attributes_);
+  _this->_impl_.attributesbyname_.MergeFrom(from._impl_.attributesbyname_);
   cached_has_bits = from._impl_._has_bits_[0];
   if (cached_has_bits & 0x00000007u) {
     if (cached_has_bits & 0x00000001u) {
@@ -517,7 +518,7 @@ void AttrListFile::InternalSwap(AttrListFile* other) {
   auto* rhs_arena = other->GetArenaForAllocation();
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
-  _impl_.attributes_.InternalSwap(&other->_impl_.attributes_);
+  _impl_.attributesbyname_.InternalSwap(&other->_impl_.attributesbyname_);
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
       &_impl_.directory_, lhs_arena,
       &other->_impl_.directory_, rhs_arena
@@ -543,9 +544,9 @@ void AttrListFile::InternalSwap(AttrListFile* other) {
 }  // namespace Lib
 }  // namespace Odb
 PROTOBUF_NAMESPACE_OPEN
-template<> PROTOBUF_NOINLINE ::Odb::Lib::Protobuf::AttrListFile_AttributesEntry_DoNotUse*
-Arena::CreateMaybeMessage< ::Odb::Lib::Protobuf::AttrListFile_AttributesEntry_DoNotUse >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::Odb::Lib::Protobuf::AttrListFile_AttributesEntry_DoNotUse >(arena);
+template<> PROTOBUF_NOINLINE ::Odb::Lib::Protobuf::AttrListFile_AttributesByNameEntry_DoNotUse*
+Arena::CreateMaybeMessage< ::Odb::Lib::Protobuf::AttrListFile_AttributesByNameEntry_DoNotUse >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::Odb::Lib::Protobuf::AttrListFile_AttributesByNameEntry_DoNotUse >(arena);
 }
 template<> PROTOBUF_NOINLINE ::Odb::Lib::Protobuf::AttrListFile*
 Arena::CreateMaybeMessage< ::Odb::Lib::Protobuf::AttrListFile >(Arena* arena) {
