@@ -33,5 +33,5 @@ testlog.txt
 testlog.txt.tmp*
 testlog.xml
 /OdbDesignTests/FileArchiveLoadTests_Local.cpp
-/OdbDesignTests/DesignNameTests.cpp
 /OdbDesignTests/CMakeLists_Local.txt
+/OdbDesignTests/DesignNameTests_Local.cpp
