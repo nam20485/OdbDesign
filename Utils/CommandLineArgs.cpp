@@ -96,7 +96,8 @@ namespace Utils
 	bool CommandLineArgs::isWindows() const
 	{
 		auto pos = executableName().find(EXE_EXTENSION);
-		return (pos >= 0 && pos == executableName().length()-strlen(EXE_EXTENSION));
+		return (pos != std::string::npos && 
+				pos == executableName().length()-strlen(EXE_EXTENSION));
 	}
 
 	bool CommandLineArgs::isLinux() const
