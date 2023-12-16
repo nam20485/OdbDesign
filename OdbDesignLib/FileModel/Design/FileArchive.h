@@ -13,6 +13,7 @@
 #include <filesystem>
 #include "../../IProtoBuffable.h"
 #include "../../ProtoBuf/filearchive.pb.h"
+#include "SymbolsDirectory.h"
 
 
 namespace Odb::Lib::FileModel::Design
@@ -29,6 +30,7 @@ namespace Odb::Lib::FileModel::Design
 		std::string GetFilePath() const;
 
 		const StepDirectory::StringMap& GetStepsByName() const;
+		const SymbolsDirectory::StringMap& GetSymbolsDirectoriesByName() const;
         const MiscInfoFile& GetMiscInfoFile() const;
 		const MatrixFile& GetMatrixFile() const;
 		const StandardFontsFile& GetStandardFontsFile() const;
@@ -54,6 +56,7 @@ namespace Odb::Lib::FileModel::Design
         MiscInfoFile m_miscInfoFile;
 		MatrixFile m_matrixFile;
 		StandardFontsFile m_standardFontsFile;
+		SymbolsDirectory::StringMap m_symbolsDirectoriesByName;
 
 		bool ParseDesignDirectory(const std::filesystem::path& path);
 		bool ParseStepDirectories(const std::filesystem::path& path);

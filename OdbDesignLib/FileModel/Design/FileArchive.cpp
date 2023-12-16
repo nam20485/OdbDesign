@@ -20,6 +20,7 @@ namespace Odb::Lib::FileModel::Design
 	FileArchive::~FileArchive()
 	{
 		m_stepsByName.clear();
+		m_symbolsDirectoriesByName.clear();
 	}
 
 	std::string FileArchive::GetRootDir() const
@@ -48,6 +49,11 @@ namespace Odb::Lib::FileModel::Design
 		return m_stepsByName;
 	}
 
+	const SymbolsDirectory::StringMap& FileArchive::GetSymbolsDirectoriesByName() const
+	{
+		return m_symbolsDirectoriesByName;
+	}
+
 	bool FileArchive::ParseFileModel()
 	{
 		//try
@@ -72,7 +78,7 @@ namespace Odb::Lib::FileModel::Design
 				{
 					timer.stop();					
 					auto s = timer.getElapsedSecondsString();
-					loginfo("Successfully parsed. (" + s + " s)");
+					loginfo("Successfully parsed. (" + s + "s)");
 
 					return true;
 				}
