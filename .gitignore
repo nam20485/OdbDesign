@@ -35,3 +35,4 @@ testlog.xml
 /OdbDesignTests/FileArchiveLoadTests_Local.cpp
 /OdbDesignTests/CMakeLists_Local.txt
 /OdbDesignTests/DesignNameTests_Local.cpp
+/output
