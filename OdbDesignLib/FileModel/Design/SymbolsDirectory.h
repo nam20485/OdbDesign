@@ -19,7 +19,7 @@ namespace Odb::Lib::FileModel::Design
 		typedef std::vector<std::shared_ptr<SymbolsDirectory>> Vector;
 		typedef std::map<std::string, std::shared_ptr<SymbolsDirectory>> StringMap;
 
-		virtual bool Parse();
+		bool Parse();
 
 		std::string GetName() const;
 		std::filesystem::path GetPath() const;

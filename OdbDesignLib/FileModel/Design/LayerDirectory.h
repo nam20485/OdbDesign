@@ -23,7 +23,7 @@ namespace Odb::Lib::FileModel::Design
 		std::string GetName() const;
 		std::filesystem::path GetPath() const;
 
-		virtual bool Parse();
+		bool Parse();
 
 		bool ParseComponentsFile(std::filesystem::path directory);
 		bool ParseFeaturesFile(std::filesystem::path directory);
