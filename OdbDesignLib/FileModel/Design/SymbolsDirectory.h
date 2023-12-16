@@ -8,10 +8,12 @@
 #include <string>
 #include <memory>
 #include <filesystem>
+#include "../../IProtoBuffable.h"
+#include "../../ProtoBuf/symbolsdirectory.pb.h"
 
 namespace Odb::Lib::FileModel::Design
 {
-	class ODBDESIGN_EXPORT SymbolsDirectory
+	class ODBDESIGN_EXPORT SymbolsDirectory : public IProtoBuffable<Odb::Lib::Protobuf::SymbolsDirectory>
 	{
 	public:
 		SymbolsDirectory(const std::filesystem::path& path);
@@ -27,6 +29,10 @@ namespace Odb::Lib::FileModel::Design
 		const FeaturesFile& GetFeaturesFile() const;
 		const AttrListFile& GetAttrListFile() const;
 
+		// Inherited via IProtoBuffable
+		std::unique_ptr<Odb::Lib::Protobuf::SymbolsDirectory> to_protobuf() const override;
+		void from_protobuf(const Odb::Lib::Protobuf::SymbolsDirectory& message) override;
+
 	private:
 		std::string m_name;		
 		std::filesystem::path m_path;
@@ -35,7 +41,7 @@ namespace Odb::Lib::FileModel::Design
 		AttrListFile m_attrListFile;
 
 		bool ParseFeaturesFile(const std::filesystem::path& directory);
-		bool ParseAttrListFile(const std::filesystem::path& directory);
+		bool ParseAttrListFile(const std::filesystem::path& directory);		
 
 	};
 }

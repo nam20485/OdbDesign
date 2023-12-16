@@ -33,6 +33,24 @@ namespace Odb::Lib::FileModel::Design
 
 	const FeaturesFile& SymbolsDirectory::GetFeaturesFile() const { return m_featuresFile; }
 	const AttrListFile& SymbolsDirectory::GetAttrListFile() const { return m_attrListFile; }
+
+	std::unique_ptr<Odb::Lib::Protobuf::SymbolsDirectory> SymbolsDirectory::to_protobuf() const
+	{
+		auto message = std::make_unique<Odb::Lib::Protobuf::SymbolsDirectory>();
+		message->set_name(m_name);
+		message->set_path(m_path.string());
+		message->mutable_attrlistfile()->CopyFrom(*m_attrListFile.to_protobuf());
+		message->mutable_featurefile()->CopyFrom(*m_featuresFile.to_protobuf());
+		return message;
+	}
+
+	void SymbolsDirectory::from_protobuf(const Odb::Lib::Protobuf::SymbolsDirectory& message)
+	{
+		m_name = message.name();
+		m_path = message.path();
+		m_attrListFile.from_protobuf(message.attrlistfile());
+		m_featuresFile.from_protobuf(message.featurefile());
+	}
 	
 	bool SymbolsDirectory::ParseFeaturesFile(const std::filesystem::path& directory)
 	{
