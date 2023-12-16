@@ -5,6 +5,7 @@ syntax = "proto3";
 
 import "common.proto";
 import "enums.proto";
+import "symbolname.proto";
 
 package Odb.Lib.Protobuf;
 
@@ -63,5 +64,6 @@ message FeaturesFile {
     optional int32 numFeatures = 7;
     
     repeated FeatureRecord featureRecords = 8;
+    map<string, SymbolName> symbolNamesByName = 9;
 
 }

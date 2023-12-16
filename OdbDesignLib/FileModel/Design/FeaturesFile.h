@@ -94,7 +94,7 @@ namespace Odb::Lib::FileModel::Design
 		int GetNumFeatures() const;
 		unsigned int GetId() const;
 
-		const SymbolName::Vector& GetSymbolNames() const;
+		const SymbolName::StringMap& GetSymbolNamesByName() const;
 		const FeatureRecord::Vector& GetFeatureRecords() const;
 
 		// Inherited via IProtoBuffable
@@ -109,8 +109,7 @@ namespace Odb::Lib::FileModel::Design
 		unsigned int m_id;
 
 		FeatureRecord::Vector m_featureRecords;
-
-		SymbolName::Vector m_symbolNames;
+		SymbolName::StringMap m_symbolNamesByName;
 
 		std::vector<std::string> m_attributeNames;
 		std::vector<std::string> m_attributeTextValues;		

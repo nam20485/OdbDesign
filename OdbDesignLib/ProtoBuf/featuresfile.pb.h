@@ -29,10 +29,14 @@
 #include <google/protobuf/message.h>
 #include <google/protobuf/repeated_field.h>  // IWYU pragma: export
 #include <google/protobuf/extension_set.h>  // IWYU pragma: export
+#include <google/protobuf/map.h>  // IWYU pragma: export
+#include <google/protobuf/map_entry.h>
+#include <google/protobuf/map_field_inl.h>
 #include <google/protobuf/generated_enum_reflection.h>
 #include <google/protobuf/unknown_field_set.h>
 #include "common.pb.h"
 #include "enums.pb.h"
+#include "symbolname.pb.h"
 // @@protoc_insertion_point(includes)
 #include <google/protobuf/port_def.inc>
 #define PROTOBUF_INTERNAL_EXPORT_featuresfile_2eproto
@@ -56,12 +60,16 @@ extern FeaturesFileDefaultTypeInternal _FeaturesFile_default_instance_;
 class FeaturesFile_FeatureRecord;
 struct FeaturesFile_FeatureRecordDefaultTypeInternal;
 extern FeaturesFile_FeatureRecordDefaultTypeInternal _FeaturesFile_FeatureRecord_default_instance_;
+class FeaturesFile_SymbolNamesByNameEntry_DoNotUse;
+struct FeaturesFile_SymbolNamesByNameEntry_DoNotUseDefaultTypeInternal;
+extern FeaturesFile_SymbolNamesByNameEntry_DoNotUseDefaultTypeInternal _FeaturesFile_SymbolNamesByNameEntry_DoNotUse_default_instance_;
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
 PROTOBUF_NAMESPACE_OPEN
 template<> ::Odb::Lib::Protobuf::FeaturesFile* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::FeaturesFile>(Arena*);
 template<> ::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord>(Arena*);
+template<> ::Odb::Lib::Protobuf::FeaturesFile_SymbolNamesByNameEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::FeaturesFile_SymbolNamesByNameEntry_DoNotUse>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace Odb {
 namespace Lib {
@@ -714,6 +722,32 @@ class FeaturesFile_FeatureRecord final :
 };
 // -------------------------------------------------------------------
 
+class FeaturesFile_SymbolNamesByNameEntry_DoNotUse : public ::PROTOBUF_NAMESPACE_ID::internal::MapEntry<FeaturesFile_SymbolNamesByNameEntry_DoNotUse, 
+    std::string, ::Odb::Lib::Protobuf::SymbolName,
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING,
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_MESSAGE> {
+public:
+  typedef ::PROTOBUF_NAMESPACE_ID::internal::MapEntry<FeaturesFile_SymbolNamesByNameEntry_DoNotUse, 
+    std::string, ::Odb::Lib::Protobuf::SymbolName,
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING,
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_MESSAGE> SuperType;
+  FeaturesFile_SymbolNamesByNameEntry_DoNotUse();
+  explicit PROTOBUF_CONSTEXPR FeaturesFile_SymbolNamesByNameEntry_DoNotUse(
+      ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+  explicit FeaturesFile_SymbolNamesByNameEntry_DoNotUse(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  void MergeFrom(const FeaturesFile_SymbolNamesByNameEntry_DoNotUse& other);
+  static const FeaturesFile_SymbolNamesByNameEntry_DoNotUse* internal_default_instance() { return reinterpret_cast<const FeaturesFile_SymbolNamesByNameEntry_DoNotUse*>(&_FeaturesFile_SymbolNamesByNameEntry_DoNotUse_default_instance_); }
+  static bool ValidateKey(std::string* s) {
+    return ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(s->data(), static_cast<int>(s->size()), ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::PARSE, "Odb.Lib.Protobuf.FeaturesFile.SymbolNamesByNameEntry.key");
+ }
+  static bool ValidateValue(void*) { return true; }
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+  friend struct ::TableStruct_featuresfile_2eproto;
+};
+
+// -------------------------------------------------------------------
+
 class FeaturesFile final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.FeaturesFile) */ {
  public:
@@ -762,7 +796,7 @@ class FeaturesFile final :
                &_FeaturesFile_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    1;
+    2;
 
   friend void swap(FeaturesFile& a, FeaturesFile& b) {
     a.Swap(&b);
@@ -823,6 +857,8 @@ class FeaturesFile final :
   protected:
   explicit FeaturesFile(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                        bool is_message_owned = false);
+  private:
+  static void ArenaDtor(void* object);
   public:
 
   static const ClassData _class_data_;
@@ -838,6 +874,7 @@ class FeaturesFile final :
 
   enum : int {
     kFeatureRecordsFieldNumber = 8,
+    kSymbolNamesByNameFieldNumber = 9,
     kUnitsFieldNumber = 1,
     kPathFieldNumber = 5,
     kDirectoryFieldNumber = 6,
@@ -861,6 +898,23 @@ class FeaturesFile final :
   ::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord* add_featurerecords();
   const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord >&
       featurerecords() const;
+
+  // map<string, .Odb.Lib.Protobuf.SymbolName> symbolNamesByName = 9;
+  int symbolnamesbyname_size() const;
+  private:
+  int _internal_symbolnamesbyname_size() const;
+  public:
+  void clear_symbolnamesbyname();
+  private:
+  const ::PROTOBUF_NAMESPACE_ID::Map< std::string, ::Odb::Lib::Protobuf::SymbolName >&
+      _internal_symbolnamesbyname() const;
+  ::PROTOBUF_NAMESPACE_ID::Map< std::string, ::Odb::Lib::Protobuf::SymbolName >*
+      _internal_mutable_symbolnamesbyname();
+  public:
+  const ::PROTOBUF_NAMESPACE_ID::Map< std::string, ::Odb::Lib::Protobuf::SymbolName >&
+      symbolnamesbyname() const;
+  ::PROTOBUF_NAMESPACE_ID::Map< std::string, ::Odb::Lib::Protobuf::SymbolName >*
+      mutable_symbolnamesbyname();
 
   // optional string units = 1;
   bool has_units() const;
@@ -953,6 +1007,11 @@ class FeaturesFile final :
     ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
     ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord > featurerecords_;
+    ::PROTOBUF_NAMESPACE_ID::internal::MapField<
+        FeaturesFile_SymbolNamesByNameEntry_DoNotUse,
+        std::string, ::Odb::Lib::Protobuf::SymbolName,
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING,
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_MESSAGE> symbolnamesbyname_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr units_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr path_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr directory_;
@@ -1888,6 +1947,8 @@ FeaturesFile_FeatureRecord::contourpolygons() const {
 
 // -------------------------------------------------------------------
 
+// -------------------------------------------------------------------
+
 // FeaturesFile
 
 // optional string units = 1;
@@ -2190,9 +2251,37 @@ FeaturesFile::featurerecords() const {
   return _impl_.featurerecords_;
 }
 
+// map<string, .Odb.Lib.Protobuf.SymbolName> symbolNamesByName = 9;
+inline int FeaturesFile::_internal_symbolnamesbyname_size() const {
+  return _impl_.symbolnamesbyname_.size();
+}
+inline int FeaturesFile::symbolnamesbyname_size() const {
+  return _internal_symbolnamesbyname_size();
+}
+inline const ::PROTOBUF_NAMESPACE_ID::Map< std::string, ::Odb::Lib::Protobuf::SymbolName >&
+FeaturesFile::_internal_symbolnamesbyname() const {
+  return _impl_.symbolnamesbyname_.GetMap();
+}
+inline const ::PROTOBUF_NAMESPACE_ID::Map< std::string, ::Odb::Lib::Protobuf::SymbolName >&
+FeaturesFile::symbolnamesbyname() const {
+  // @@protoc_insertion_point(field_map:Odb.Lib.Protobuf.FeaturesFile.symbolNamesByName)
+  return _internal_symbolnamesbyname();
+}
+inline ::PROTOBUF_NAMESPACE_ID::Map< std::string, ::Odb::Lib::Protobuf::SymbolName >*
+FeaturesFile::_internal_mutable_symbolnamesbyname() {
+  return _impl_.symbolnamesbyname_.MutableMap();
+}
+inline ::PROTOBUF_NAMESPACE_ID::Map< std::string, ::Odb::Lib::Protobuf::SymbolName >*
+FeaturesFile::mutable_symbolnamesbyname() {
+  // @@protoc_insertion_point(field_mutable_map:Odb.Lib.Protobuf.FeaturesFile.symbolNamesByName)
+  return _internal_mutable_symbolnamesbyname();
+}
+
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 
