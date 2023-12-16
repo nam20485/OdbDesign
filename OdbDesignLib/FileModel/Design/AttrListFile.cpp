@@ -15,9 +15,9 @@
 namespace Odb::Lib::FileModel::Design
 {
     AttrListFile::AttrListFile()
-        : m_units("")
-		, m_directory("")
+        : m_directory("")
 		, m_path("")
+		, m_units("")
     {
     }
 

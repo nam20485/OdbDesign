@@ -12,11 +12,11 @@
 namespace Odb::Lib::FileModel::Design
 {
 	FeaturesFile::FeaturesFile()
-		: m_id((unsigned) -1)
-		, m_numFeatures(0)
-		, m_units("")
+		: m_units("")
 		, m_path("")
 		, m_directory("")
+		, m_numFeatures(0)
+		, m_id((unsigned) -1)		
 	{
 	}
 
