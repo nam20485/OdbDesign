@@ -8,6 +8,7 @@ import "miscinfofile.proto";
 import "matrixfile.proto";
 import "standardfontsfile.proto";
 import "symbolsdirectory.proto";
+import "attrlistfile.proto";
 
 package Odb.Lib.Protobuf;
 
@@ -22,5 +23,6 @@ message FileArchive {
     optional MatrixFile matrixFile = 3;
     optional StandardFontsFile standardFontsFile = 4;
     map<string, SymbolsDirectory> symbolsDirectoriesByName = 5;
+    optional AttrListFile miscAttrListFile = 6;
         
 }

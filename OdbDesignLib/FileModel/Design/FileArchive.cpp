@@ -161,6 +161,7 @@ namespace Odb::Lib::FileModel::Design
 		pFileArchiveMessage->mutable_matrixfile()->CopyFrom(*m_matrixFile.to_protobuf());
 		pFileArchiveMessage->mutable_miscinfofile()->CopyFrom(*m_miscInfoFile.to_protobuf());
 		pFileArchiveMessage->mutable_standardfontsfile()->CopyFrom(*m_standardFontsFile.to_protobuf());
+		pFileArchiveMessage->mutable_miscattrlistfile()->CopyFrom(*m_miscAttrListFile.to_protobuf());
 		
 		for (const auto& kvStepDirectoryRecord : m_stepsByName)
 		{
@@ -180,6 +181,7 @@ namespace Odb::Lib::FileModel::Design
 		m_matrixFile.from_protobuf(message.matrixfile());
 		m_miscInfoFile.from_protobuf(message.miscinfofile());
 		m_standardFontsFile.from_protobuf(message.standardfontsfile());
+		m_miscAttrListFile.from_protobuf(message.miscattrlistfile());
 
 		for (const auto& kvStepDirectoryRecord : message.stepsbyname())
 		{
@@ -208,6 +210,7 @@ namespace Odb::Lib::FileModel::Design
 		if (! ParseMatrixFile(path)) return false;
 		if (! ParseStandardFontsFile(path)) return false;
 		if (! ParseSymbolsDirectories(path)) return false;
+		if (! ParseMiscAttrListFile(path)) return false;
 
 		return true;
 	}
@@ -253,6 +256,21 @@ namespace Odb::Lib::FileModel::Design
 
         return true;
     }
+
+	bool FileArchive::ParseMiscAttrListFile(const std::filesystem::path& path)
+	{
+		loginfo("Parsing misc/attrlist file...");
+
+		auto miscDirectory = path / "misc";
+		if (!exists(miscDirectory)) return false;
+		if (!is_directory(miscDirectory)) return false;
+
+		if (!m_miscAttrListFile.Parse(miscDirectory)) return false;
+
+		loginfo("Parsing misc/attrlist file complete");
+
+		return true;
+	}
 
 	bool FileArchive::ParseMatrixFile(const std::filesystem::path& path)
 	{
@@ -314,7 +332,7 @@ namespace Odb::Lib::FileModel::Design
 		loginfo("Parsing symbols root directory complete");
 
 		return true;
-	}
+	}	
 
     const MiscInfoFile &FileArchive::GetMiscInfoFile() const
     {
@@ -329,7 +347,12 @@ namespace Odb::Lib::FileModel::Design
 	const StandardFontsFile& FileArchive::GetStandardFontsFile() const
 	{
 		return m_standardFontsFile;
-	}    
+	}
+
+	const AttrListFile& FileArchive::GetMiscAttrListFile() const
+	{
+		return m_miscAttrListFile;
+	}
 
 	std::shared_ptr<StepDirectory> FileArchive::GetStepDirectory(const std::string& stepName /*= ""*/)
 	{

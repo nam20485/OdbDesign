@@ -14,6 +14,7 @@
 #include "../../IProtoBuffable.h"
 #include "../../ProtoBuf/filearchive.pb.h"
 #include "SymbolsDirectory.h"
+#include "AttrListFile.h"
 
 
 namespace Odb::Lib::FileModel::Design
@@ -34,6 +35,7 @@ namespace Odb::Lib::FileModel::Design
         const MiscInfoFile& GetMiscInfoFile() const;
 		const MatrixFile& GetMatrixFile() const;
 		const StandardFontsFile& GetStandardFontsFile() const;
+		const AttrListFile& GetMiscAttrListFile() const;
 
 		std::shared_ptr<StepDirectory> GetStepDirectory(const std::string& stepName = "");
 
@@ -57,6 +59,7 @@ namespace Odb::Lib::FileModel::Design
 		MatrixFile m_matrixFile;
 		StandardFontsFile m_standardFontsFile;
 		SymbolsDirectory::StringMap m_symbolsDirectoriesByName;
+		AttrListFile m_miscAttrListFile;
 
 		bool ParseDesignDirectory(const std::filesystem::path& path);
 		bool ParseStepDirectories(const std::filesystem::path& path);
@@ -64,6 +67,7 @@ namespace Odb::Lib::FileModel::Design
 		bool ParseMatrixFile(const std::filesystem::path& path);
 		bool ParseStandardFontsFile(const std::filesystem::path& path);		
 		bool ParseSymbolsDirectories(const std::filesystem::path& path);
+		bool ParseMiscAttrListFile(const std::filesystem::path& path);
 
 		bool ExtractDesignArchive(const std::filesystem::path& path, std::filesystem::path& extractedPath);
 

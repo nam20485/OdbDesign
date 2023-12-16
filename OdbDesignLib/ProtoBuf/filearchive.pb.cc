@@ -53,7 +53,8 @@ PROTOBUF_CONSTEXPR FileArchive::FileArchive(
   , /*decltype(_impl_.symbolsdirectoriesbyname_)*/{::_pbi::ConstantInitialized()}
   , /*decltype(_impl_.miscinfofile_)*/nullptr
   , /*decltype(_impl_.matrixfile_)*/nullptr
-  , /*decltype(_impl_.standardfontsfile_)*/nullptr} {}
+  , /*decltype(_impl_.standardfontsfile_)*/nullptr
+  , /*decltype(_impl_.miscattrlistfile_)*/nullptr} {}
 struct FileArchiveDefaultTypeInternal {
   PROTOBUF_CONSTEXPR FileArchiveDefaultTypeInternal()
       : _instance(::_pbi::ConstantInitialized{}) {}
@@ -102,16 +103,18 @@ const uint32_t TableStruct_filearchive_2eproto::offsets[] PROTOBUF_SECTION_VARIA
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FileArchive, _impl_.matrixfile_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FileArchive, _impl_.standardfontsfile_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FileArchive, _impl_.symbolsdirectoriesbyname_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FileArchive, _impl_.miscattrlistfile_),
   ~0u,
   0,
   1,
   2,
   ~0u,
+  3,
 };
 static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, 8, -1, sizeof(::Odb::Lib::Protobuf::FileArchive_StepsByNameEntry_DoNotUse)},
   { 10, 18, -1, sizeof(::Odb::Lib::Protobuf::FileArchive_SymbolsDirectoriesByNameEntry_DoNotUse)},
-  { 20, 31, -1, sizeof(::Odb::Lib::Protobuf::FileArchive)},
+  { 20, 32, -1, sizeof(::Odb::Lib::Protobuf::FileArchive)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
@@ -124,24 +127,28 @@ const char descriptor_table_protodef_filearchive_2eproto[] PROTOBUF_SECTION_VARI
   "\n\021filearchive.proto\022\020Odb.Lib.Protobuf\032\023s"
   "tepdirectory.proto\032\022miscinfofile.proto\032\020"
   "matrixfile.proto\032\027standardfontsfile.prot"
-  "o\032\026symbolsdirectory.proto\"\330\004\n\013FileArchiv"
-  "e\022C\n\013stepsByName\030\001 \003(\0132..Odb.Lib.Protobu"
-  "f.FileArchive.StepsByNameEntry\0229\n\014miscIn"
-  "foFile\030\002 \001(\0132\036.Odb.Lib.Protobuf.MiscInfo"
-  "FileH\000\210\001\001\0225\n\nmatrixFile\030\003 \001(\0132\034.Odb.Lib."
-  "Protobuf.MatrixFileH\001\210\001\001\022C\n\021standardFont"
-  "sFile\030\004 \001(\0132#.Odb.Lib.Protobuf.StandardF"
-  "ontsFileH\002\210\001\001\022]\n\030symbolsDirectoriesByNam"
-  "e\030\005 \003(\0132;.Odb.Lib.Protobuf.FileArchive.S"
-  "ymbolsDirectoriesByNameEntry\032S\n\020StepsByN"
-  "ameEntry\022\013\n\003key\030\001 \001(\t\022.\n\005value\030\002 \001(\0132\037.O"
-  "db.Lib.Protobuf.StepDirectory:\0028\001\032c\n\035Sym"
-  "bolsDirectoriesByNameEntry\022\013\n\003key\030\001 \001(\t\022"
-  "1\n\005value\030\002 \001(\0132\".Odb.Lib.Protobuf.Symbol"
-  "sDirectory:\0028\001B\017\n\r_miscInfoFileB\r\n\013_matr"
-  "ixFileB\024\n\022_standardFontsFileb\006proto3"
+  "o\032\026symbolsdirectory.proto\032\022attrlistfile."
+  "proto\"\254\005\n\013FileArchive\022C\n\013stepsByName\030\001 \003"
+  "(\0132..Odb.Lib.Protobuf.FileArchive.StepsB"
+  "yNameEntry\0229\n\014miscInfoFile\030\002 \001(\0132\036.Odb.L"
+  "ib.Protobuf.MiscInfoFileH\000\210\001\001\0225\n\nmatrixF"
+  "ile\030\003 \001(\0132\034.Odb.Lib.Protobuf.MatrixFileH"
+  "\001\210\001\001\022C\n\021standardFontsFile\030\004 \001(\0132#.Odb.Li"
+  "b.Protobuf.StandardFontsFileH\002\210\001\001\022]\n\030sym"
+  "bolsDirectoriesByName\030\005 \003(\0132;.Odb.Lib.Pr"
+  "otobuf.FileArchive.SymbolsDirectoriesByN"
+  "ameEntry\022=\n\020miscAttrListFile\030\006 \001(\0132\036.Odb"
+  ".Lib.Protobuf.AttrListFileH\003\210\001\001\032S\n\020Steps"
+  "ByNameEntry\022\013\n\003key\030\001 \001(\t\022.\n\005value\030\002 \001(\0132"
+  "\037.Odb.Lib.Protobuf.StepDirectory:\0028\001\032c\n\035"
+  "SymbolsDirectoriesByNameEntry\022\013\n\003key\030\001 \001"
+  "(\t\0221\n\005value\030\002 \001(\0132\".Odb.Lib.Protobuf.Sym"
+  "bolsDirectory:\0028\001B\017\n\r_miscInfoFileB\r\n\013_m"
+  "atrixFileB\024\n\022_standardFontsFileB\023\n\021_misc"
+  "AttrListFileb\006proto3"
   ;
-static const ::_pbi::DescriptorTable* const descriptor_table_filearchive_2eproto_deps[5] = {
+static const ::_pbi::DescriptorTable* const descriptor_table_filearchive_2eproto_deps[6] = {
+  &::descriptor_table_attrlistfile_2eproto,
   &::descriptor_table_matrixfile_2eproto,
   &::descriptor_table_miscinfofile_2eproto,
   &::descriptor_table_standardfontsfile_2eproto,
@@ -150,9 +157,9 @@ static const ::_pbi::DescriptorTable* const descriptor_table_filearchive_2eproto
 };
 static ::_pbi::once_flag descriptor_table_filearchive_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_filearchive_2eproto = {
-    false, false, 756, descriptor_table_protodef_filearchive_2eproto,
+    false, false, 860, descriptor_table_protodef_filearchive_2eproto,
     "filearchive.proto",
-    &descriptor_table_filearchive_2eproto_once, descriptor_table_filearchive_2eproto_deps, 5, 3,
+    &descriptor_table_filearchive_2eproto_once, descriptor_table_filearchive_2eproto_deps, 6, 3,
     schemas, file_default_instances, TableStruct_filearchive_2eproto::offsets,
     file_level_metadata_filearchive_2eproto, file_level_enum_descriptors_filearchive_2eproto,
     file_level_service_descriptors_filearchive_2eproto,
@@ -212,6 +219,10 @@ class FileArchive::_Internal {
   static void set_has_standardfontsfile(HasBits* has_bits) {
     (*has_bits)[0] |= 4u;
   }
+  static const ::Odb::Lib::Protobuf::AttrListFile& miscattrlistfile(const FileArchive* msg);
+  static void set_has_miscattrlistfile(HasBits* has_bits) {
+    (*has_bits)[0] |= 8u;
+  }
 };
 
 const ::Odb::Lib::Protobuf::MiscInfoFile&
@@ -225,6 +236,10 @@ FileArchive::_Internal::matrixfile(const FileArchive* msg) {
 const ::Odb::Lib::Protobuf::StandardFontsFile&
 FileArchive::_Internal::standardfontsfile(const FileArchive* msg) {
   return *msg->_impl_.standardfontsfile_;
+}
+const ::Odb::Lib::Protobuf::AttrListFile&
+FileArchive::_Internal::miscattrlistfile(const FileArchive* msg) {
+  return *msg->_impl_.miscattrlistfile_;
 }
 void FileArchive::clear_stepsbyname() {
   _impl_.stepsbyname_.Clear();
@@ -243,6 +258,10 @@ void FileArchive::clear_standardfontsfile() {
 }
 void FileArchive::clear_symbolsdirectoriesbyname() {
   _impl_.symbolsdirectoriesbyname_.Clear();
+}
+void FileArchive::clear_miscattrlistfile() {
+  if (_impl_.miscattrlistfile_ != nullptr) _impl_.miscattrlistfile_->Clear();
+  _impl_._has_bits_[0] &= ~0x00000008u;
 }
 FileArchive::FileArchive(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                          bool is_message_owned)
@@ -263,7 +282,8 @@ FileArchive::FileArchive(const FileArchive& from)
     , /*decltype(_impl_.symbolsdirectoriesbyname_)*/{}
     , decltype(_impl_.miscinfofile_){nullptr}
     , decltype(_impl_.matrixfile_){nullptr}
-    , decltype(_impl_.standardfontsfile_){nullptr}};
+    , decltype(_impl_.standardfontsfile_){nullptr}
+    , decltype(_impl_.miscattrlistfile_){nullptr}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   _this->_impl_.stepsbyname_.MergeFrom(from._impl_.stepsbyname_);
@@ -276,6 +296,9 @@ FileArchive::FileArchive(const FileArchive& from)
   }
   if (from._internal_has_standardfontsfile()) {
     _this->_impl_.standardfontsfile_ = new ::Odb::Lib::Protobuf::StandardFontsFile(*from._impl_.standardfontsfile_);
+  }
+  if (from._internal_has_miscattrlistfile()) {
+    _this->_impl_.miscattrlistfile_ = new ::Odb::Lib::Protobuf::AttrListFile(*from._impl_.miscattrlistfile_);
   }
   // @@protoc_insertion_point(copy_constructor:Odb.Lib.Protobuf.FileArchive)
 }
@@ -292,6 +315,7 @@ inline void FileArchive::SharedCtor(
     , decltype(_impl_.miscinfofile_){nullptr}
     , decltype(_impl_.matrixfile_){nullptr}
     , decltype(_impl_.standardfontsfile_){nullptr}
+    , decltype(_impl_.miscattrlistfile_){nullptr}
   };
 }
 
@@ -314,6 +338,7 @@ inline void FileArchive::SharedDtor() {
   if (this != internal_default_instance()) delete _impl_.miscinfofile_;
   if (this != internal_default_instance()) delete _impl_.matrixfile_;
   if (this != internal_default_instance()) delete _impl_.standardfontsfile_;
+  if (this != internal_default_instance()) delete _impl_.miscattrlistfile_;
 }
 
 void FileArchive::ArenaDtor(void* object) {
@@ -334,7 +359,7 @@ void FileArchive::Clear() {
   _impl_.stepsbyname_.Clear();
   _impl_.symbolsdirectoriesbyname_.Clear();
   cached_has_bits = _impl_._has_bits_[0];
-  if (cached_has_bits & 0x00000007u) {
+  if (cached_has_bits & 0x0000000fu) {
     if (cached_has_bits & 0x00000001u) {
       GOOGLE_DCHECK(_impl_.miscinfofile_ != nullptr);
       _impl_.miscinfofile_->Clear();
@@ -346,6 +371,10 @@ void FileArchive::Clear() {
     if (cached_has_bits & 0x00000004u) {
       GOOGLE_DCHECK(_impl_.standardfontsfile_ != nullptr);
       _impl_.standardfontsfile_->Clear();
+    }
+    if (cached_has_bits & 0x00000008u) {
+      GOOGLE_DCHECK(_impl_.miscattrlistfile_ != nullptr);
+      _impl_.miscattrlistfile_->Clear();
     }
   }
   _impl_._has_bits_.Clear();
@@ -406,6 +435,14 @@ const char* FileArchive::_InternalParse(const char* ptr, ::_pbi::ParseContext* c
             CHK_(ptr);
             if (!ctx->DataAvailable(ptr)) break;
           } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<42>(ptr));
+        } else
+          goto handle_unusual;
+        continue;
+      // optional .Odb.Lib.Protobuf.AttrListFile miscAttrListFile = 6;
+      case 6:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 50)) {
+          ptr = ctx->ParseMessage(_internal_mutable_miscattrlistfile(), ptr);
+          CHK_(ptr);
         } else
           goto handle_unusual;
         continue;
@@ -512,6 +549,13 @@ uint8_t* FileArchive::_InternalSerialize(
     }
   }
 
+  // optional .Odb.Lib.Protobuf.AttrListFile miscAttrListFile = 6;
+  if (_internal_has_miscattrlistfile()) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(6, _Internal::miscattrlistfile(this),
+        _Internal::miscattrlistfile(this).GetCachedSize(), target, stream);
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -547,7 +591,7 @@ size_t FileArchive::ByteSizeLong() const {
   }
 
   cached_has_bits = _impl_._has_bits_[0];
-  if (cached_has_bits & 0x00000007u) {
+  if (cached_has_bits & 0x0000000fu) {
     // optional .Odb.Lib.Protobuf.MiscInfoFile miscInfoFile = 2;
     if (cached_has_bits & 0x00000001u) {
       total_size += 1 +
@@ -567,6 +611,13 @@ size_t FileArchive::ByteSizeLong() const {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
           *_impl_.standardfontsfile_);
+    }
+
+    // optional .Odb.Lib.Protobuf.AttrListFile miscAttrListFile = 6;
+    if (cached_has_bits & 0x00000008u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+          *_impl_.miscattrlistfile_);
     }
 
   }
@@ -591,7 +642,7 @@ void FileArchive::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PR
   _this->_impl_.stepsbyname_.MergeFrom(from._impl_.stepsbyname_);
   _this->_impl_.symbolsdirectoriesbyname_.MergeFrom(from._impl_.symbolsdirectoriesbyname_);
   cached_has_bits = from._impl_._has_bits_[0];
-  if (cached_has_bits & 0x00000007u) {
+  if (cached_has_bits & 0x0000000fu) {
     if (cached_has_bits & 0x00000001u) {
       _this->_internal_mutable_miscinfofile()->::Odb::Lib::Protobuf::MiscInfoFile::MergeFrom(
           from._internal_miscinfofile());
@@ -603,6 +654,10 @@ void FileArchive::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PR
     if (cached_has_bits & 0x00000004u) {
       _this->_internal_mutable_standardfontsfile()->::Odb::Lib::Protobuf::StandardFontsFile::MergeFrom(
           from._internal_standardfontsfile());
+    }
+    if (cached_has_bits & 0x00000008u) {
+      _this->_internal_mutable_miscattrlistfile()->::Odb::Lib::Protobuf::AttrListFile::MergeFrom(
+          from._internal_miscattrlistfile());
     }
   }
   _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
@@ -626,8 +681,8 @@ void FileArchive::InternalSwap(FileArchive* other) {
   _impl_.stepsbyname_.InternalSwap(&other->_impl_.stepsbyname_);
   _impl_.symbolsdirectoriesbyname_.InternalSwap(&other->_impl_.symbolsdirectoriesbyname_);
   ::PROTOBUF_NAMESPACE_ID::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(FileArchive, _impl_.standardfontsfile_)
-      + sizeof(FileArchive::_impl_.standardfontsfile_)
+      PROTOBUF_FIELD_OFFSET(FileArchive, _impl_.miscattrlistfile_)
+      + sizeof(FileArchive::_impl_.miscattrlistfile_)
       - PROTOBUF_FIELD_OFFSET(FileArchive, _impl_.miscinfofile_)>(
           reinterpret_cast<char*>(&_impl_.miscinfofile_),
           reinterpret_cast<char*>(&other->_impl_.miscinfofile_));

@@ -38,6 +38,7 @@
 #include "matrixfile.pb.h"
 #include "standardfontsfile.pb.h"
 #include "symbolsdirectory.pb.h"
+#include "attrlistfile.pb.h"
 // @@protoc_insertion_point(includes)
 #include <google/protobuf/port_def.inc>
 #define PROTOBUF_INTERNAL_EXPORT_filearchive_2eproto
@@ -259,6 +260,7 @@ class FileArchive final :
     kMiscInfoFileFieldNumber = 2,
     kMatrixFileFieldNumber = 3,
     kStandardFontsFileFieldNumber = 4,
+    kMiscAttrListFileFieldNumber = 6,
   };
   // map<string, .Odb.Lib.Protobuf.StepDirectory> stepsByName = 1;
   int stepsbyname_size() const;
@@ -348,6 +350,24 @@ class FileArchive final :
       ::Odb::Lib::Protobuf::StandardFontsFile* standardfontsfile);
   ::Odb::Lib::Protobuf::StandardFontsFile* unsafe_arena_release_standardfontsfile();
 
+  // optional .Odb.Lib.Protobuf.AttrListFile miscAttrListFile = 6;
+  bool has_miscattrlistfile() const;
+  private:
+  bool _internal_has_miscattrlistfile() const;
+  public:
+  void clear_miscattrlistfile();
+  const ::Odb::Lib::Protobuf::AttrListFile& miscattrlistfile() const;
+  PROTOBUF_NODISCARD ::Odb::Lib::Protobuf::AttrListFile* release_miscattrlistfile();
+  ::Odb::Lib::Protobuf::AttrListFile* mutable_miscattrlistfile();
+  void set_allocated_miscattrlistfile(::Odb::Lib::Protobuf::AttrListFile* miscattrlistfile);
+  private:
+  const ::Odb::Lib::Protobuf::AttrListFile& _internal_miscattrlistfile() const;
+  ::Odb::Lib::Protobuf::AttrListFile* _internal_mutable_miscattrlistfile();
+  public:
+  void unsafe_arena_set_allocated_miscattrlistfile(
+      ::Odb::Lib::Protobuf::AttrListFile* miscattrlistfile);
+  ::Odb::Lib::Protobuf::AttrListFile* unsafe_arena_release_miscattrlistfile();
+
   // @@protoc_insertion_point(class_scope:Odb.Lib.Protobuf.FileArchive)
  private:
   class _Internal;
@@ -371,6 +391,7 @@ class FileArchive final :
     ::Odb::Lib::Protobuf::MiscInfoFile* miscinfofile_;
     ::Odb::Lib::Protobuf::MatrixFile* matrixfile_;
     ::Odb::Lib::Protobuf::StandardFontsFile* standardfontsfile_;
+    ::Odb::Lib::Protobuf::AttrListFile* miscattrlistfile_;
   };
   union { Impl_ _impl_; };
   friend struct ::TableStruct_filearchive_2eproto;
@@ -701,6 +722,93 @@ inline ::PROTOBUF_NAMESPACE_ID::Map< std::string, ::Odb::Lib::Protobuf::SymbolsD
 FileArchive::mutable_symbolsdirectoriesbyname() {
   // @@protoc_insertion_point(field_mutable_map:Odb.Lib.Protobuf.FileArchive.symbolsDirectoriesByName)
   return _internal_mutable_symbolsdirectoriesbyname();
+}
+
+// optional .Odb.Lib.Protobuf.AttrListFile miscAttrListFile = 6;
+inline bool FileArchive::_internal_has_miscattrlistfile() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000008u) != 0;
+  PROTOBUF_ASSUME(!value || _impl_.miscattrlistfile_ != nullptr);
+  return value;
+}
+inline bool FileArchive::has_miscattrlistfile() const {
+  return _internal_has_miscattrlistfile();
+}
+inline const ::Odb::Lib::Protobuf::AttrListFile& FileArchive::_internal_miscattrlistfile() const {
+  const ::Odb::Lib::Protobuf::AttrListFile* p = _impl_.miscattrlistfile_;
+  return p != nullptr ? *p : reinterpret_cast<const ::Odb::Lib::Protobuf::AttrListFile&>(
+      ::Odb::Lib::Protobuf::_AttrListFile_default_instance_);
+}
+inline const ::Odb::Lib::Protobuf::AttrListFile& FileArchive::miscattrlistfile() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FileArchive.miscAttrListFile)
+  return _internal_miscattrlistfile();
+}
+inline void FileArchive::unsafe_arena_set_allocated_miscattrlistfile(
+    ::Odb::Lib::Protobuf::AttrListFile* miscattrlistfile) {
+  if (GetArenaForAllocation() == nullptr) {
+    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.miscattrlistfile_);
+  }
+  _impl_.miscattrlistfile_ = miscattrlistfile;
+  if (miscattrlistfile) {
+    _impl_._has_bits_[0] |= 0x00000008u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000008u;
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:Odb.Lib.Protobuf.FileArchive.miscAttrListFile)
+}
+inline ::Odb::Lib::Protobuf::AttrListFile* FileArchive::release_miscattrlistfile() {
+  _impl_._has_bits_[0] &= ~0x00000008u;
+  ::Odb::Lib::Protobuf::AttrListFile* temp = _impl_.miscattrlistfile_;
+  _impl_.miscattrlistfile_ = nullptr;
+#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
+  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
+  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  if (GetArenaForAllocation() == nullptr) { delete old; }
+#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
+  if (GetArenaForAllocation() != nullptr) {
+    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  }
+#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
+  return temp;
+}
+inline ::Odb::Lib::Protobuf::AttrListFile* FileArchive::unsafe_arena_release_miscattrlistfile() {
+  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.FileArchive.miscAttrListFile)
+  _impl_._has_bits_[0] &= ~0x00000008u;
+  ::Odb::Lib::Protobuf::AttrListFile* temp = _impl_.miscattrlistfile_;
+  _impl_.miscattrlistfile_ = nullptr;
+  return temp;
+}
+inline ::Odb::Lib::Protobuf::AttrListFile* FileArchive::_internal_mutable_miscattrlistfile() {
+  _impl_._has_bits_[0] |= 0x00000008u;
+  if (_impl_.miscattrlistfile_ == nullptr) {
+    auto* p = CreateMaybeMessage<::Odb::Lib::Protobuf::AttrListFile>(GetArenaForAllocation());
+    _impl_.miscattrlistfile_ = p;
+  }
+  return _impl_.miscattrlistfile_;
+}
+inline ::Odb::Lib::Protobuf::AttrListFile* FileArchive::mutable_miscattrlistfile() {
+  ::Odb::Lib::Protobuf::AttrListFile* _msg = _internal_mutable_miscattrlistfile();
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.FileArchive.miscAttrListFile)
+  return _msg;
+}
+inline void FileArchive::set_allocated_miscattrlistfile(::Odb::Lib::Protobuf::AttrListFile* miscattrlistfile) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
+  if (message_arena == nullptr) {
+    delete reinterpret_cast< ::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.miscattrlistfile_);
+  }
+  if (miscattrlistfile) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
+        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(
+                reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(miscattrlistfile));
+    if (message_arena != submessage_arena) {
+      miscattrlistfile = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, miscattrlistfile, submessage_arena);
+    }
+    _impl_._has_bits_[0] |= 0x00000008u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000008u;
+  }
+  _impl_.miscattrlistfile_ = miscattrlistfile;
+  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.FileArchive.miscAttrListFile)
 }
 
 #ifdef __GNUC__
