@@ -37,6 +37,7 @@
 #include "miscinfofile.pb.h"
 #include "matrixfile.pb.h"
 #include "standardfontsfile.pb.h"
+#include "symbolsdirectory.pb.h"
 // @@protoc_insertion_point(includes)
 #include <google/protobuf/port_def.inc>
 #define PROTOBUF_INTERNAL_EXPORT_filearchive_2eproto
@@ -60,12 +61,16 @@ extern FileArchiveDefaultTypeInternal _FileArchive_default_instance_;
 class FileArchive_StepsByNameEntry_DoNotUse;
 struct FileArchive_StepsByNameEntry_DoNotUseDefaultTypeInternal;
 extern FileArchive_StepsByNameEntry_DoNotUseDefaultTypeInternal _FileArchive_StepsByNameEntry_DoNotUse_default_instance_;
+class FileArchive_SymbolsDirectoriesByNameEntry_DoNotUse;
+struct FileArchive_SymbolsDirectoriesByNameEntry_DoNotUseDefaultTypeInternal;
+extern FileArchive_SymbolsDirectoriesByNameEntry_DoNotUseDefaultTypeInternal _FileArchive_SymbolsDirectoriesByNameEntry_DoNotUse_default_instance_;
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
 PROTOBUF_NAMESPACE_OPEN
 template<> ::Odb::Lib::Protobuf::FileArchive* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::FileArchive>(Arena*);
 template<> ::Odb::Lib::Protobuf::FileArchive_StepsByNameEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::FileArchive_StepsByNameEntry_DoNotUse>(Arena*);
+template<> ::Odb::Lib::Protobuf::FileArchive_SymbolsDirectoriesByNameEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::FileArchive_SymbolsDirectoriesByNameEntry_DoNotUse>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace Odb {
 namespace Lib {
@@ -90,6 +95,32 @@ public:
   static const FileArchive_StepsByNameEntry_DoNotUse* internal_default_instance() { return reinterpret_cast<const FileArchive_StepsByNameEntry_DoNotUse*>(&_FileArchive_StepsByNameEntry_DoNotUse_default_instance_); }
   static bool ValidateKey(std::string* s) {
     return ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(s->data(), static_cast<int>(s->size()), ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::PARSE, "Odb.Lib.Protobuf.FileArchive.StepsByNameEntry.key");
+ }
+  static bool ValidateValue(void*) { return true; }
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+  friend struct ::TableStruct_filearchive_2eproto;
+};
+
+// -------------------------------------------------------------------
+
+class FileArchive_SymbolsDirectoriesByNameEntry_DoNotUse : public ::PROTOBUF_NAMESPACE_ID::internal::MapEntry<FileArchive_SymbolsDirectoriesByNameEntry_DoNotUse, 
+    std::string, ::Odb::Lib::Protobuf::SymbolsDirectory,
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING,
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_MESSAGE> {
+public:
+  typedef ::PROTOBUF_NAMESPACE_ID::internal::MapEntry<FileArchive_SymbolsDirectoriesByNameEntry_DoNotUse, 
+    std::string, ::Odb::Lib::Protobuf::SymbolsDirectory,
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING,
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_MESSAGE> SuperType;
+  FileArchive_SymbolsDirectoriesByNameEntry_DoNotUse();
+  explicit PROTOBUF_CONSTEXPR FileArchive_SymbolsDirectoriesByNameEntry_DoNotUse(
+      ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+  explicit FileArchive_SymbolsDirectoriesByNameEntry_DoNotUse(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  void MergeFrom(const FileArchive_SymbolsDirectoriesByNameEntry_DoNotUse& other);
+  static const FileArchive_SymbolsDirectoriesByNameEntry_DoNotUse* internal_default_instance() { return reinterpret_cast<const FileArchive_SymbolsDirectoriesByNameEntry_DoNotUse*>(&_FileArchive_SymbolsDirectoriesByNameEntry_DoNotUse_default_instance_); }
+  static bool ValidateKey(std::string* s) {
+    return ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(s->data(), static_cast<int>(s->size()), ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::PARSE, "Odb.Lib.Protobuf.FileArchive.SymbolsDirectoriesByNameEntry.key");
  }
   static bool ValidateValue(void*) { return true; }
   using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
@@ -147,7 +178,7 @@ class FileArchive final :
                &_FileArchive_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    1;
+    2;
 
   friend void swap(FileArchive& a, FileArchive& b) {
     a.Swap(&b);
@@ -224,6 +255,7 @@ class FileArchive final :
 
   enum : int {
     kStepsByNameFieldNumber = 1,
+    kSymbolsDirectoriesByNameFieldNumber = 5,
     kMiscInfoFileFieldNumber = 2,
     kMatrixFileFieldNumber = 3,
     kStandardFontsFileFieldNumber = 4,
@@ -244,6 +276,23 @@ class FileArchive final :
       stepsbyname() const;
   ::PROTOBUF_NAMESPACE_ID::Map< std::string, ::Odb::Lib::Protobuf::StepDirectory >*
       mutable_stepsbyname();
+
+  // map<string, .Odb.Lib.Protobuf.SymbolsDirectory> symbolsDirectoriesByName = 5;
+  int symbolsdirectoriesbyname_size() const;
+  private:
+  int _internal_symbolsdirectoriesbyname_size() const;
+  public:
+  void clear_symbolsdirectoriesbyname();
+  private:
+  const ::PROTOBUF_NAMESPACE_ID::Map< std::string, ::Odb::Lib::Protobuf::SymbolsDirectory >&
+      _internal_symbolsdirectoriesbyname() const;
+  ::PROTOBUF_NAMESPACE_ID::Map< std::string, ::Odb::Lib::Protobuf::SymbolsDirectory >*
+      _internal_mutable_symbolsdirectoriesbyname();
+  public:
+  const ::PROTOBUF_NAMESPACE_ID::Map< std::string, ::Odb::Lib::Protobuf::SymbolsDirectory >&
+      symbolsdirectoriesbyname() const;
+  ::PROTOBUF_NAMESPACE_ID::Map< std::string, ::Odb::Lib::Protobuf::SymbolsDirectory >*
+      mutable_symbolsdirectoriesbyname();
 
   // optional .Odb.Lib.Protobuf.MiscInfoFile miscInfoFile = 2;
   bool has_miscinfofile() const;
@@ -314,6 +363,11 @@ class FileArchive final :
         std::string, ::Odb::Lib::Protobuf::StepDirectory,
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING,
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_MESSAGE> stepsbyname_;
+    ::PROTOBUF_NAMESPACE_ID::internal::MapField<
+        FileArchive_SymbolsDirectoriesByNameEntry_DoNotUse,
+        std::string, ::Odb::Lib::Protobuf::SymbolsDirectory,
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING,
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_MESSAGE> symbolsdirectoriesbyname_;
     ::Odb::Lib::Protobuf::MiscInfoFile* miscinfofile_;
     ::Odb::Lib::Protobuf::MatrixFile* matrixfile_;
     ::Odb::Lib::Protobuf::StandardFontsFile* standardfontsfile_;
@@ -330,6 +384,8 @@ class FileArchive final :
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // FileArchive
@@ -621,9 +677,37 @@ inline void FileArchive::set_allocated_standardfontsfile(::Odb::Lib::Protobuf::S
   // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.FileArchive.standardFontsFile)
 }
 
+// map<string, .Odb.Lib.Protobuf.SymbolsDirectory> symbolsDirectoriesByName = 5;
+inline int FileArchive::_internal_symbolsdirectoriesbyname_size() const {
+  return _impl_.symbolsdirectoriesbyname_.size();
+}
+inline int FileArchive::symbolsdirectoriesbyname_size() const {
+  return _internal_symbolsdirectoriesbyname_size();
+}
+inline const ::PROTOBUF_NAMESPACE_ID::Map< std::string, ::Odb::Lib::Protobuf::SymbolsDirectory >&
+FileArchive::_internal_symbolsdirectoriesbyname() const {
+  return _impl_.symbolsdirectoriesbyname_.GetMap();
+}
+inline const ::PROTOBUF_NAMESPACE_ID::Map< std::string, ::Odb::Lib::Protobuf::SymbolsDirectory >&
+FileArchive::symbolsdirectoriesbyname() const {
+  // @@protoc_insertion_point(field_map:Odb.Lib.Protobuf.FileArchive.symbolsDirectoriesByName)
+  return _internal_symbolsdirectoriesbyname();
+}
+inline ::PROTOBUF_NAMESPACE_ID::Map< std::string, ::Odb::Lib::Protobuf::SymbolsDirectory >*
+FileArchive::_internal_mutable_symbolsdirectoriesbyname() {
+  return _impl_.symbolsdirectoriesbyname_.MutableMap();
+}
+inline ::PROTOBUF_NAMESPACE_ID::Map< std::string, ::Odb::Lib::Protobuf::SymbolsDirectory >*
+FileArchive::mutable_symbolsdirectoriesbyname() {
+  // @@protoc_insertion_point(field_mutable_map:Odb.Lib.Protobuf.FileArchive.symbolsDirectoriesByName)
+  return _internal_mutable_symbolsdirectoriesbyname();
+}
+
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 

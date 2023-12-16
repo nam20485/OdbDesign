@@ -6,6 +6,7 @@ syntax = "proto3";
 import "edadatafile.proto";
 import "netlistfile.proto";
 import "layerdirectory.proto";
+import "attrlistfile.proto";
 
 package Odb.Lib.Protobuf;
 
@@ -21,5 +22,6 @@ message StepDirectory {
     map<string, LayerDirectory> layersByName = 3;
     map<string, NetlistFile> netlistsByName = 4;
     optional EdaDataFile edadatafile = 5;
+    optional AttrListFile attrlistfile = 6;
 
 }
