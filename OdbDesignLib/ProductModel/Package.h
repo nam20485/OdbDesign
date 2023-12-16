@@ -22,8 +22,8 @@ namespace Odb::Lib::ProductModel
 		void AddPin(std::string name);		
 		std::shared_ptr<Pin> GetPin(std::string name) const;
 		std::shared_ptr<Pin> GetPin(unsigned int index) const;
-		//const Pin::StringMap& GetPinsByName() const;		
-		//const Pin::Vector& GetPins() const;
+		const Pin::StringMap& GetPinsByName() const;		
+		const Pin::Vector& GetPins() const;
 
 		typedef std::vector<std::shared_ptr<Package>> Vector;
 		typedef std::map<std::string, std::shared_ptr<Package>> StringMap;
@@ -31,7 +31,7 @@ namespace Odb::Lib::ProductModel
 	private:
 		std::string m_name;
 		Pin::Vector m_pins;		
-		Pin::StringMap m_pinsbyName;
+		Pin::StringMap m_pinsByName;
 		unsigned int m_index;
 
 	};
