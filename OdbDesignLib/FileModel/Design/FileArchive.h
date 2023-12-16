@@ -62,7 +62,8 @@ namespace Odb::Lib::FileModel::Design
 		bool ParseStepDirectories(const std::filesystem::path& path);
         bool ParseMiscInfoFile(const std::filesystem::path& path);
 		bool ParseMatrixFile(const std::filesystem::path& path);
-		bool ParseStandardFontsFile(const std::filesystem::path& path);
+		bool ParseStandardFontsFile(const std::filesystem::path& path);		
+		bool ParseSymbolsDirectories(const std::filesystem::path& path);
 
 		bool ExtractDesignArchive(const std::filesystem::path& path, std::filesystem::path& extractedPath);
 

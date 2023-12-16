@@ -194,7 +194,8 @@ namespace Odb::Lib::FileModel::Design
 		if (! ParseStepDirectories(path)) return false;
         if (! ParseMiscInfoFile(path)) return false;
 		if (! ParseMatrixFile(path)) return false;
-		if (! ParseStandardFontsFile(path)) return false;		
+		if (! ParseStandardFontsFile(path)) return false;
+		if (! ParseSymbolsDirectories(path)) return false;
 
 		return true;
 	}
@@ -266,6 +267,39 @@ namespace Odb::Lib::FileModel::Design
 		if (!m_standardFontsFile.Parse(fontsDir)) return false;
 
 		loginfo("Parsing fonts/standard file complete");
+
+		return true;
+	}
+
+	bool FileArchive::ParseSymbolsDirectories(const std::filesystem::path& path)
+	{
+		loginfo("Parsing symbols root directory...");
+
+		auto symbolsDirectory = path / "symbols";
+
+		if (!std::filesystem::exists(symbolsDirectory)) return false;
+		else if (!std::filesystem::is_directory(symbolsDirectory)) return false;
+
+		for (auto& d : std::filesystem::directory_iterator(symbolsDirectory))
+		{
+			if (std::filesystem::is_directory(d))
+			{
+				auto pSymbolsDirectory = std::make_shared<SymbolsDirectory>(d.path());
+				if (pSymbolsDirectory->Parse())
+				{
+					//loginfo("Parsing symbols directory: " + pSymbolsDirectory->GetName() + " complete");
+
+					m_symbolsDirectoriesByName[pSymbolsDirectory->GetName()] = pSymbolsDirectory;
+				}
+				else
+				{
+					logerror("Parsing symbol directory: " + pSymbolsDirectory->GetName() + " failed");
+					return false;
+				}
+			}
+		}
+
+		loginfo("Parsing symbols root directory complete");
 
 		return true;
 	}
