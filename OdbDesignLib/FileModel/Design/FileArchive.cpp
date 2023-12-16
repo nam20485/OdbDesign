@@ -167,6 +167,11 @@ namespace Odb::Lib::FileModel::Design
 			(*pFileArchiveMessage->mutable_stepsbyname())[kvStepDirectoryRecord.first] = *kvStepDirectoryRecord.second->to_protobuf();
 		}
 
+		for (const auto& kvSymbolsDirectory : m_symbolsDirectoriesByName)
+		{
+			(*pFileArchiveMessage->mutable_symbolsdirectoriesbyname())[kvSymbolsDirectory.first] = *kvSymbolsDirectory.second->to_protobuf();
+		}
+
 		return pFileArchiveMessage;
 	}
 
@@ -181,6 +186,13 @@ namespace Odb::Lib::FileModel::Design
 			auto pStepDirectory = std::make_shared<StepDirectory>("");
 			pStepDirectory->from_protobuf(kvStepDirectoryRecord.second);
 			m_stepsByName[kvStepDirectoryRecord.first] = pStepDirectory;
+		}
+
+		for (const auto& kvSymbolsDirectory : message.symbolsdirectoriesbyname())
+		{
+			auto pSymbolsDirectory = std::make_shared<SymbolsDirectory>("");
+			pSymbolsDirectory->from_protobuf(kvSymbolsDirectory.second);
+			m_symbolsDirectoriesByName[kvSymbolsDirectory.first] = pSymbolsDirectory;
 		}
 	}
 
