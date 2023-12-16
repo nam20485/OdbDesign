@@ -62,8 +62,10 @@ namespace Odb::Lib::FileModel::Design
 
 			if (!std::filesystem::exists(m_path))
 			{
-				auto message = "attrlist file does not exist: [" + m_path.string() + "]";
-				throw invalid_odb_error(message.c_str());
+				auto message = "attrlist file does not exist: [" + m_directory.string() + "]";
+				logwarn(message);
+				return true;
+				//throw invalid_odb_error(message.c_str());
 			}
 			else if (!std::filesystem::is_regular_file(m_path))
 			{
