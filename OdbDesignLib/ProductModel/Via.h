@@ -14,9 +14,9 @@ namespace Odb::Lib::ProductModel
 	{
 	public:
 		Via();
-		~Via();
 
 		std::string GetName() const;
+		BoardSide GetSide() const;
 
 		typedef std::vector<std::shared_ptr<Via>> Vector;
 		typedef std::map<std::string, std::shared_ptr<Via>> StringMap;
