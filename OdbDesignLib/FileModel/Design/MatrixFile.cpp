@@ -23,12 +23,12 @@ namespace Odb::Lib::FileModel::Design
         m_stepRecords.clear();
     }
 
-    inline const MatrixFile::LayerRecord::Vector& MatrixFile::GetLayerRecords() const
+    const MatrixFile::LayerRecord::Vector& MatrixFile::GetLayerRecords() const
     { 
         return m_layerRecords;
     }
 
-    inline const MatrixFile::StepRecord::Vector& MatrixFile::GetStepRecords() const
+    const MatrixFile::StepRecord::Vector& MatrixFile::GetStepRecords() const
     { 
         return m_stepRecords;
     }

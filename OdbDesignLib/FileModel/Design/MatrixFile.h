@@ -18,8 +18,7 @@ namespace Odb::Lib::FileModel::Design
 {
     class MatrixFile : public OdbFile, public IProtoBuffable<Odb::Lib::Protobuf::MatrixFile>
     {
-    public:
-        MatrixFile() = default;
+    public:        
         ~MatrixFile();
 
         struct StepRecord : public IProtoBuffable<Odb::Lib::Protobuf::MatrixFile::StepRecord>
@@ -102,8 +101,8 @@ namespace Odb::Lib::FileModel::Design
             void from_protobuf(const Odb::Lib::Protobuf::MatrixFile::LayerRecord& message) override;
         };
 
-        const inline LayerRecord::Vector& GetLayerRecords() const;
-        const inline StepRecord::Vector& GetStepRecords() const;
+        const LayerRecord::Vector& GetLayerRecords() const;
+        const StepRecord::Vector& GetStepRecords() const;
 
         // Inherited via OdbFile
         bool Parse(std::filesystem::path path) override;
