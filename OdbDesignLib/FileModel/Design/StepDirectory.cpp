@@ -45,6 +45,11 @@ namespace Odb::Lib::FileModel::Design
         return m_profileFile;
     }
 
+    const StepHdrFile& StepDirectory::GetStepHdrFile() const
+    {
+        return m_stepHdrFile;
+    }
+
     bool StepDirectory::Parse()
     {
         if (!std::filesystem::exists(m_path)) return false;
@@ -68,6 +73,9 @@ namespace Odb::Lib::FileModel::Design
 
         auto profilePath = m_path;
         if (!ParseProfileFile(profilePath)) return false;
+
+        auto stepHdrPath = m_path;
+        if (!ParseStepHdrFile(stepHdrPath)) return false;
 
         loginfo("Parsing step directory: " + m_name + " complete");
 
@@ -149,6 +157,21 @@ namespace Odb::Lib::FileModel::Design
         return success;
     }
 
+    bool StepDirectory::ParseStepHdrFile(std::filesystem::path stepHdrFileDirectory)
+    {
+        loginfo("Parsing stephdr file...");
+
+        if (!std::filesystem::exists(stepHdrFileDirectory)) return false;
+        if (!std::filesystem::is_directory(stepHdrFileDirectory)) return false;
+
+        // parse nets and packages definitions      
+        auto success = m_stepHdrFile.Parse(stepHdrFileDirectory);
+
+        loginfo("Parsing stephdr file complete");
+
+        return success;
+    }
+
     std::unique_ptr<Odb::Lib::Protobuf::StepDirectory> StepDirectory::to_protobuf() const
     {
         std::unique_ptr<Odb::Lib::Protobuf::StepDirectory> pStepDirectoryMessage(new Odb::Lib::Protobuf::StepDirectory);
@@ -157,6 +180,7 @@ namespace Odb::Lib::FileModel::Design
         pStepDirectoryMessage->mutable_edadatafile()->CopyFrom(*m_edaData.to_protobuf());
         pStepDirectoryMessage->mutable_attrlistfile()->CopyFrom(*m_attrListFile.to_protobuf());
         pStepDirectoryMessage->mutable_profilefile()->CopyFrom(*m_profileFile.to_protobuf());
+        pStepDirectoryMessage->mutable_stephdrfile()->CopyFrom(*m_stepHdrFile.to_protobuf());
 
         for (const auto& kvNetlistFile : m_netlistsByName)
         {
@@ -178,6 +202,7 @@ namespace Odb::Lib::FileModel::Design
 		m_edaData.from_protobuf(message.edadatafile());
         m_attrListFile.from_protobuf(message.attrlistfile());
         m_profileFile.from_protobuf(message.profilefile());
+        m_stepHdrFile.from_protobuf(message.stephdrfile());
 
         for (const auto& kvNetlistFile : message.netlistsbyname())
         {

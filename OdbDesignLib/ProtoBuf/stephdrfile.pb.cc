@@ -23,55 +23,187 @@ namespace _pbi = _pb::internal;
 namespace Odb {
 namespace Lib {
 namespace Protobuf {
-PROTOBUF_CONSTEXPR StepHrdFile::StepHrdFile(
+PROTOBUF_CONSTEXPR StepHdrFile_StepRepeatRecord::StepHdrFile_StepRepeatRecord(
     ::_pbi::ConstantInitialized): _impl_{
     /*decltype(_impl_._has_bits_)*/{}
   , /*decltype(_impl_._cached_size_)*/{}
-  , /*decltype(_impl_.path_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}} {}
-struct StepHrdFileDefaultTypeInternal {
-  PROTOBUF_CONSTEXPR StepHrdFileDefaultTypeInternal()
+  , /*decltype(_impl_.name_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.x_)*/0
+  , /*decltype(_impl_.y_)*/0
+  , /*decltype(_impl_.dx_)*/0
+  , /*decltype(_impl_.dy_)*/0
+  , /*decltype(_impl_.nx_)*/0
+  , /*decltype(_impl_.ny_)*/0
+  , /*decltype(_impl_.angle_)*/0} {}
+struct StepHdrFile_StepRepeatRecordDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR StepHdrFile_StepRepeatRecordDefaultTypeInternal()
       : _instance(::_pbi::ConstantInitialized{}) {}
-  ~StepHrdFileDefaultTypeInternal() {}
+  ~StepHdrFile_StepRepeatRecordDefaultTypeInternal() {}
   union {
-    StepHrdFile _instance;
+    StepHdrFile_StepRepeatRecord _instance;
   };
 };
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 StepHrdFileDefaultTypeInternal _StepHrdFile_default_instance_;
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 StepHdrFile_StepRepeatRecordDefaultTypeInternal _StepHdrFile_StepRepeatRecord_default_instance_;
+PROTOBUF_CONSTEXPR StepHdrFile_OnlineValuesEntry_DoNotUse::StepHdrFile_OnlineValuesEntry_DoNotUse(
+    ::_pbi::ConstantInitialized) {}
+struct StepHdrFile_OnlineValuesEntry_DoNotUseDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR StepHdrFile_OnlineValuesEntry_DoNotUseDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~StepHdrFile_OnlineValuesEntry_DoNotUseDefaultTypeInternal() {}
+  union {
+    StepHdrFile_OnlineValuesEntry_DoNotUse _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 StepHdrFile_OnlineValuesEntry_DoNotUseDefaultTypeInternal _StepHdrFile_OnlineValuesEntry_DoNotUse_default_instance_;
+PROTOBUF_CONSTEXPR StepHdrFile::StepHdrFile(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_._has_bits_)*/{}
+  , /*decltype(_impl_._cached_size_)*/{}
+  , /*decltype(_impl_.steprepeatrecords_)*/{}
+  , /*decltype(_impl_.onlinevalues_)*/{::_pbi::ConstantInitialized()}
+  , /*decltype(_impl_.online_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.path_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.xdatum_)*/0
+  , /*decltype(_impl_.ydatum_)*/0
+  , /*decltype(_impl_.id_)*/0
+  , /*decltype(_impl_.xorigin_)*/0
+  , /*decltype(_impl_.yorigin_)*/0
+  , /*decltype(_impl_.topactive_)*/0
+  , /*decltype(_impl_.bottomactive_)*/0
+  , /*decltype(_impl_.rightactive_)*/0
+  , /*decltype(_impl_.leftactive_)*/0
+  , /*decltype(_impl_.affectingbom_)*/0
+  , /*decltype(_impl_.affectingbomchanged_)*/false} {}
+struct StepHdrFileDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR StepHdrFileDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~StepHdrFileDefaultTypeInternal() {}
+  union {
+    StepHdrFile _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 StepHdrFileDefaultTypeInternal _StepHdrFile_default_instance_;
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
-static ::_pb::Metadata file_level_metadata_stephdrfile_2eproto[1];
+static ::_pb::Metadata file_level_metadata_stephdrfile_2eproto[3];
 static constexpr ::_pb::EnumDescriptor const** file_level_enum_descriptors_stephdrfile_2eproto = nullptr;
 static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_stephdrfile_2eproto = nullptr;
 
 const uint32_t TableStruct_stephdrfile_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StepHrdFile, _impl_._has_bits_),
-  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StepHrdFile, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StepHdrFile_StepRepeatRecord, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StepHdrFile_StepRepeatRecord, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StepHrdFile, _impl_.path_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StepHdrFile_StepRepeatRecord, _impl_.name_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StepHdrFile_StepRepeatRecord, _impl_.x_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StepHdrFile_StepRepeatRecord, _impl_.y_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StepHdrFile_StepRepeatRecord, _impl_.dx_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StepHdrFile_StepRepeatRecord, _impl_.dy_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StepHdrFile_StepRepeatRecord, _impl_.nx_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StepHdrFile_StepRepeatRecord, _impl_.ny_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StepHdrFile_StepRepeatRecord, _impl_.angle_),
   0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StepHdrFile_OnlineValuesEntry_DoNotUse, _has_bits_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StepHdrFile_OnlineValuesEntry_DoNotUse, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StepHdrFile_OnlineValuesEntry_DoNotUse, key_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StepHdrFile_OnlineValuesEntry_DoNotUse, value_),
+  0,
+  1,
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StepHdrFile, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StepHdrFile, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StepHdrFile, _impl_.xdatum_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StepHdrFile, _impl_.ydatum_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StepHdrFile, _impl_.id_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StepHdrFile, _impl_.xorigin_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StepHdrFile, _impl_.yorigin_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StepHdrFile, _impl_.topactive_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StepHdrFile, _impl_.bottomactive_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StepHdrFile, _impl_.rightactive_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StepHdrFile, _impl_.leftactive_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StepHdrFile, _impl_.affectingbom_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StepHdrFile, _impl_.affectingbomchanged_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StepHdrFile, _impl_.online_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StepHdrFile, _impl_.steprepeatrecords_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StepHdrFile, _impl_.path_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StepHdrFile, _impl_.onlinevalues_),
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  0,
+  ~0u,
+  1,
+  ~0u,
 };
 static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  { 0, 7, -1, sizeof(::Odb::Lib::Protobuf::StepHrdFile)},
+  { 0, 14, -1, sizeof(::Odb::Lib::Protobuf::StepHdrFile_StepRepeatRecord)},
+  { 22, 30, -1, sizeof(::Odb::Lib::Protobuf::StepHdrFile_OnlineValuesEntry_DoNotUse)},
+  { 32, 53, -1, sizeof(::Odb::Lib::Protobuf::StepHdrFile)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
-  &::Odb::Lib::Protobuf::_StepHrdFile_default_instance_._instance,
+  &::Odb::Lib::Protobuf::_StepHdrFile_StepRepeatRecord_default_instance_._instance,
+  &::Odb::Lib::Protobuf::_StepHdrFile_OnlineValuesEntry_DoNotUse_default_instance_._instance,
+  &::Odb::Lib::Protobuf::_StepHdrFile_default_instance_._instance,
 };
 
 const char descriptor_table_protodef_stephdrfile_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
-  "\n\021stephdrfile.proto\022\020Odb.Lib.Protobuf\")\n"
-  "\013StepHrdFile\022\021\n\004path\030\001 \001(\tH\000\210\001\001B\007\n\005_path"
-  "b\006proto3"
+  "\n\021stephdrfile.proto\022\020Odb.Lib.Protobuf\"\221\007"
+  "\n\013StepHdrFile\022\023\n\006xDatum\030\001 \001(\002H\000\210\001\001\022\023\n\006yD"
+  "atum\030\002 \001(\002H\001\210\001\001\022\017\n\002id\030\003 \001(\005H\002\210\001\001\022\024\n\007xOri"
+  "gin\030\004 \001(\002H\003\210\001\001\022\024\n\007yOrigin\030\005 \001(\002H\004\210\001\001\022\026\n\t"
+  "topActive\030\006 \001(\002H\005\210\001\001\022\031\n\014bottomActive\030\007 \001"
+  "(\002H\006\210\001\001\022\030\n\013rightActive\030\010 \001(\002H\007\210\001\001\022\027\n\nlef"
+  "tActive\030\t \001(\002H\010\210\001\001\022\031\n\014affectingBom\030\n \001(\005"
+  "H\t\210\001\001\022 \n\023affectingBomChanged\030\013 \001(\010H\n\210\001\001\022"
+  "\023\n\006online\030\014 \001(\tH\013\210\001\001\022I\n\021stepRepeatRecord"
+  "s\030\r \003(\0132..Odb.Lib.Protobuf.StepHdrFile.S"
+  "tepRepeatRecord\022\021\n\004path\030\016 \001(\tH\014\210\001\001\022E\n\014on"
+  "lineValues\030\017 \003(\0132/.Odb.Lib.Protobuf.Step"
+  "HdrFile.OnlineValuesEntry\032\330\001\n\020StepRepeat"
+  "Record\022\021\n\004name\030\001 \001(\tH\000\210\001\001\022\016\n\001x\030\002 \001(\002H\001\210\001"
+  "\001\022\016\n\001y\030\003 \001(\002H\002\210\001\001\022\017\n\002dx\030\004 \001(\002H\003\210\001\001\022\017\n\002dy"
+  "\030\005 \001(\002H\004\210\001\001\022\017\n\002nx\030\006 \001(\005H\005\210\001\001\022\017\n\002ny\030\007 \001(\005"
+  "H\006\210\001\001\022\022\n\005angle\030\010 \001(\002H\007\210\001\001B\007\n\005_nameB\004\n\002_x"
+  "B\004\n\002_yB\005\n\003_dxB\005\n\003_dyB\005\n\003_nxB\005\n\003_nyB\010\n\006_a"
+  "ngle\0323\n\021OnlineValuesEntry\022\013\n\003key\030\001 \001(\t\022\r"
+  "\n\005value\030\002 \001(\t:\0028\001B\t\n\007_xDatumB\t\n\007_yDatumB"
+  "\005\n\003_idB\n\n\010_xOriginB\n\n\010_yOriginB\014\n\n_topAc"
+  "tiveB\017\n\r_bottomActiveB\016\n\014_rightActiveB\r\n"
+  "\013_leftActiveB\017\n\r_affectingBomB\026\n\024_affect"
+  "ingBomChangedB\t\n\007_onlineB\007\n\005_pathb\006proto"
+  "3"
   ;
 static ::_pbi::once_flag descriptor_table_stephdrfile_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_stephdrfile_2eproto = {
-    false, false, 88, descriptor_table_protodef_stephdrfile_2eproto,
+    false, false, 961, descriptor_table_protodef_stephdrfile_2eproto,
     "stephdrfile.proto",
-    &descriptor_table_stephdrfile_2eproto_once, nullptr, 0, 1,
+    &descriptor_table_stephdrfile_2eproto_once, nullptr, 0, 3,
     schemas, file_default_instances, TableStruct_stephdrfile_2eproto::offsets,
     file_level_metadata_stephdrfile_2eproto, file_level_enum_descriptors_stephdrfile_2eproto,
     file_level_service_descriptors_stephdrfile_2eproto,
@@ -88,57 +220,95 @@ namespace Protobuf {
 
 // ===================================================================
 
-class StepHrdFile::_Internal {
+class StepHdrFile_StepRepeatRecord::_Internal {
  public:
-  using HasBits = decltype(std::declval<StepHrdFile>()._impl_._has_bits_);
-  static void set_has_path(HasBits* has_bits) {
+  using HasBits = decltype(std::declval<StepHdrFile_StepRepeatRecord>()._impl_._has_bits_);
+  static void set_has_name(HasBits* has_bits) {
     (*has_bits)[0] |= 1u;
+  }
+  static void set_has_x(HasBits* has_bits) {
+    (*has_bits)[0] |= 2u;
+  }
+  static void set_has_y(HasBits* has_bits) {
+    (*has_bits)[0] |= 4u;
+  }
+  static void set_has_dx(HasBits* has_bits) {
+    (*has_bits)[0] |= 8u;
+  }
+  static void set_has_dy(HasBits* has_bits) {
+    (*has_bits)[0] |= 16u;
+  }
+  static void set_has_nx(HasBits* has_bits) {
+    (*has_bits)[0] |= 32u;
+  }
+  static void set_has_ny(HasBits* has_bits) {
+    (*has_bits)[0] |= 64u;
+  }
+  static void set_has_angle(HasBits* has_bits) {
+    (*has_bits)[0] |= 128u;
   }
 };
 
-StepHrdFile::StepHrdFile(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+StepHdrFile_StepRepeatRecord::StepHdrFile_StepRepeatRecord(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:Odb.Lib.Protobuf.StepHrdFile)
+  // @@protoc_insertion_point(arena_constructor:Odb.Lib.Protobuf.StepHdrFile.StepRepeatRecord)
 }
-StepHrdFile::StepHrdFile(const StepHrdFile& from)
+StepHdrFile_StepRepeatRecord::StepHdrFile_StepRepeatRecord(const StepHdrFile_StepRepeatRecord& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
-  StepHrdFile* const _this = this; (void)_this;
+  StepHdrFile_StepRepeatRecord* const _this = this; (void)_this;
   new (&_impl_) Impl_{
       decltype(_impl_._has_bits_){from._impl_._has_bits_}
     , /*decltype(_impl_._cached_size_)*/{}
-    , decltype(_impl_.path_){}};
+    , decltype(_impl_.name_){}
+    , decltype(_impl_.x_){}
+    , decltype(_impl_.y_){}
+    , decltype(_impl_.dx_){}
+    , decltype(_impl_.dy_){}
+    , decltype(_impl_.nx_){}
+    , decltype(_impl_.ny_){}
+    , decltype(_impl_.angle_){}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  _impl_.path_.InitDefault();
+  _impl_.name_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.path_.Set("", GetArenaForAllocation());
+    _impl_.name_.Set("", GetArenaForAllocation());
   #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (from._internal_has_path()) {
-    _this->_impl_.path_.Set(from._internal_path(), 
+  if (from._internal_has_name()) {
+    _this->_impl_.name_.Set(from._internal_name(), 
       _this->GetArenaForAllocation());
   }
-  // @@protoc_insertion_point(copy_constructor:Odb.Lib.Protobuf.StepHrdFile)
+  ::memcpy(&_impl_.x_, &from._impl_.x_,
+    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.angle_) -
+    reinterpret_cast<char*>(&_impl_.x_)) + sizeof(_impl_.angle_));
+  // @@protoc_insertion_point(copy_constructor:Odb.Lib.Protobuf.StepHdrFile.StepRepeatRecord)
 }
 
-inline void StepHrdFile::SharedCtor(
+inline void StepHdrFile_StepRepeatRecord::SharedCtor(
     ::_pb::Arena* arena, bool is_message_owned) {
   (void)arena;
   (void)is_message_owned;
   new (&_impl_) Impl_{
       decltype(_impl_._has_bits_){}
     , /*decltype(_impl_._cached_size_)*/{}
-    , decltype(_impl_.path_){}
+    , decltype(_impl_.name_){}
+    , decltype(_impl_.x_){0}
+    , decltype(_impl_.y_){0}
+    , decltype(_impl_.dx_){0}
+    , decltype(_impl_.dy_){0}
+    , decltype(_impl_.nx_){0}
+    , decltype(_impl_.ny_){0}
+    , decltype(_impl_.angle_){0}
   };
-  _impl_.path_.InitDefault();
+  _impl_.name_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.path_.Set("", GetArenaForAllocation());
+    _impl_.name_.Set("", GetArenaForAllocation());
   #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
 }
 
-StepHrdFile::~StepHrdFile() {
-  // @@protoc_insertion_point(destructor:Odb.Lib.Protobuf.StepHrdFile)
+StepHdrFile_StepRepeatRecord::~StepHdrFile_StepRepeatRecord() {
+  // @@protoc_insertion_point(destructor:Odb.Lib.Protobuf.StepHdrFile.StepRepeatRecord)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -146,43 +316,111 @@ StepHrdFile::~StepHrdFile() {
   SharedDtor();
 }
 
-inline void StepHrdFile::SharedDtor() {
+inline void StepHdrFile_StepRepeatRecord::SharedDtor() {
   GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
-  _impl_.path_.Destroy();
+  _impl_.name_.Destroy();
 }
 
-void StepHrdFile::SetCachedSize(int size) const {
+void StepHdrFile_StepRepeatRecord::SetCachedSize(int size) const {
   _impl_._cached_size_.Set(size);
 }
 
-void StepHrdFile::Clear() {
-// @@protoc_insertion_point(message_clear_start:Odb.Lib.Protobuf.StepHrdFile)
+void StepHdrFile_StepRepeatRecord::Clear() {
+// @@protoc_insertion_point(message_clear_start:Odb.Lib.Protobuf.StepHdrFile.StepRepeatRecord)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
   cached_has_bits = _impl_._has_bits_[0];
   if (cached_has_bits & 0x00000001u) {
-    _impl_.path_.ClearNonDefaultToEmpty();
+    _impl_.name_.ClearNonDefaultToEmpty();
+  }
+  if (cached_has_bits & 0x000000feu) {
+    ::memset(&_impl_.x_, 0, static_cast<size_t>(
+        reinterpret_cast<char*>(&_impl_.angle_) -
+        reinterpret_cast<char*>(&_impl_.x_)) + sizeof(_impl_.angle_));
   }
   _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
-const char* StepHrdFile::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+const char* StepHdrFile_StepRepeatRecord::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
   _Internal::HasBits has_bits{};
   while (!ctx->Done(&ptr)) {
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // optional string path = 1;
+      // optional string name = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
-          auto str = _internal_mutable_path();
+          auto str = _internal_mutable_name();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "Odb.Lib.Protobuf.StepHrdFile.path"));
+          CHK_(::_pbi::VerifyUTF8(str, "Odb.Lib.Protobuf.StepHdrFile.StepRepeatRecord.name"));
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float x = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 21)) {
+          _Internal::set_has_x(&has_bits);
+          _impl_.x_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float y = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 29)) {
+          _Internal::set_has_y(&has_bits);
+          _impl_.y_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float dx = 4;
+      case 4:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 37)) {
+          _Internal::set_has_dx(&has_bits);
+          _impl_.dx_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float dy = 5;
+      case 5:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 45)) {
+          _Internal::set_has_dy(&has_bits);
+          _impl_.dy_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional int32 nx = 6;
+      case 6:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 48)) {
+          _Internal::set_has_nx(&has_bits);
+          _impl_.nx_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional int32 ny = 7;
+      case 7:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 56)) {
+          _Internal::set_has_ny(&has_bits);
+          _impl_.ny_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float angle = 8;
+      case 8:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 69)) {
+          _Internal::set_has_angle(&has_bits);
+          _impl_.angle_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
         } else
           goto handle_unusual;
         continue;
@@ -210,97 +448,935 @@ failure:
 #undef CHK_
 }
 
-uint8_t* StepHrdFile::_InternalSerialize(
+uint8_t* StepHdrFile_StepRepeatRecord::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:Odb.Lib.Protobuf.StepHrdFile)
+  // @@protoc_insertion_point(serialize_to_array_start:Odb.Lib.Protobuf.StepHdrFile.StepRepeatRecord)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // optional string path = 1;
-  if (_internal_has_path()) {
+  // optional string name = 1;
+  if (_internal_has_name()) {
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_path().data(), static_cast<int>(this->_internal_path().length()),
+      this->_internal_name().data(), static_cast<int>(this->_internal_name().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "Odb.Lib.Protobuf.StepHrdFile.path");
+      "Odb.Lib.Protobuf.StepHdrFile.StepRepeatRecord.name");
     target = stream->WriteStringMaybeAliased(
-        1, this->_internal_path(), target);
+        1, this->_internal_name(), target);
+  }
+
+  // optional float x = 2;
+  if (_internal_has_x()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(2, this->_internal_x(), target);
+  }
+
+  // optional float y = 3;
+  if (_internal_has_y()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(3, this->_internal_y(), target);
+  }
+
+  // optional float dx = 4;
+  if (_internal_has_dx()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(4, this->_internal_dx(), target);
+  }
+
+  // optional float dy = 5;
+  if (_internal_has_dy()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(5, this->_internal_dy(), target);
+  }
+
+  // optional int32 nx = 6;
+  if (_internal_has_nx()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteInt32ToArray(6, this->_internal_nx(), target);
+  }
+
+  // optional int32 ny = 7;
+  if (_internal_has_ny()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteInt32ToArray(7, this->_internal_ny(), target);
+  }
+
+  // optional float angle = 8;
+  if (_internal_has_angle()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(8, this->_internal_angle(), target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:Odb.Lib.Protobuf.StepHrdFile)
+  // @@protoc_insertion_point(serialize_to_array_end:Odb.Lib.Protobuf.StepHdrFile.StepRepeatRecord)
   return target;
 }
 
-size_t StepHrdFile::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:Odb.Lib.Protobuf.StepHrdFile)
+size_t StepHdrFile_StepRepeatRecord::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:Odb.Lib.Protobuf.StepHdrFile.StepRepeatRecord)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  // optional string path = 1;
   cached_has_bits = _impl_._has_bits_[0];
-  if (cached_has_bits & 0x00000001u) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_path());
-  }
+  if (cached_has_bits & 0x000000ffu) {
+    // optional string name = 1;
+    if (cached_has_bits & 0x00000001u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_name());
+    }
 
+    // optional float x = 2;
+    if (cached_has_bits & 0x00000002u) {
+      total_size += 1 + 4;
+    }
+
+    // optional float y = 3;
+    if (cached_has_bits & 0x00000004u) {
+      total_size += 1 + 4;
+    }
+
+    // optional float dx = 4;
+    if (cached_has_bits & 0x00000008u) {
+      total_size += 1 + 4;
+    }
+
+    // optional float dy = 5;
+    if (cached_has_bits & 0x00000010u) {
+      total_size += 1 + 4;
+    }
+
+    // optional int32 nx = 6;
+    if (cached_has_bits & 0x00000020u) {
+      total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(this->_internal_nx());
+    }
+
+    // optional int32 ny = 7;
+    if (cached_has_bits & 0x00000040u) {
+      total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(this->_internal_ny());
+    }
+
+    // optional float angle = 8;
+    if (cached_has_bits & 0x00000080u) {
+      total_size += 1 + 4;
+    }
+
+  }
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
 }
 
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData StepHrdFile::_class_data_ = {
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData StepHdrFile_StepRepeatRecord::_class_data_ = {
     ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
-    StepHrdFile::MergeImpl
+    StepHdrFile_StepRepeatRecord::MergeImpl
 };
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*StepHrdFile::GetClassData() const { return &_class_data_; }
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*StepHdrFile_StepRepeatRecord::GetClassData() const { return &_class_data_; }
 
 
-void StepHrdFile::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
-  auto* const _this = static_cast<StepHrdFile*>(&to_msg);
-  auto& from = static_cast<const StepHrdFile&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:Odb.Lib.Protobuf.StepHrdFile)
+void StepHdrFile_StepRepeatRecord::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<StepHdrFile_StepRepeatRecord*>(&to_msg);
+  auto& from = static_cast<const StepHdrFile_StepRepeatRecord&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:Odb.Lib.Protobuf.StepHdrFile.StepRepeatRecord)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (from._internal_has_path()) {
-    _this->_internal_set_path(from._internal_path());
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (cached_has_bits & 0x000000ffu) {
+    if (cached_has_bits & 0x00000001u) {
+      _this->_internal_set_name(from._internal_name());
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _this->_impl_.x_ = from._impl_.x_;
+    }
+    if (cached_has_bits & 0x00000004u) {
+      _this->_impl_.y_ = from._impl_.y_;
+    }
+    if (cached_has_bits & 0x00000008u) {
+      _this->_impl_.dx_ = from._impl_.dx_;
+    }
+    if (cached_has_bits & 0x00000010u) {
+      _this->_impl_.dy_ = from._impl_.dy_;
+    }
+    if (cached_has_bits & 0x00000020u) {
+      _this->_impl_.nx_ = from._impl_.nx_;
+    }
+    if (cached_has_bits & 0x00000040u) {
+      _this->_impl_.ny_ = from._impl_.ny_;
+    }
+    if (cached_has_bits & 0x00000080u) {
+      _this->_impl_.angle_ = from._impl_.angle_;
+    }
+    _this->_impl_._has_bits_[0] |= cached_has_bits;
   }
   _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
 }
 
-void StepHrdFile::CopyFrom(const StepHrdFile& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:Odb.Lib.Protobuf.StepHrdFile)
+void StepHdrFile_StepRepeatRecord::CopyFrom(const StepHdrFile_StepRepeatRecord& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:Odb.Lib.Protobuf.StepHdrFile.StepRepeatRecord)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-bool StepHrdFile::IsInitialized() const {
+bool StepHdrFile_StepRepeatRecord::IsInitialized() const {
   return true;
 }
 
-void StepHrdFile::InternalSwap(StepHrdFile* other) {
+void StepHdrFile_StepRepeatRecord::InternalSwap(StepHdrFile_StepRepeatRecord* other) {
   using std::swap;
   auto* lhs_arena = GetArenaForAllocation();
   auto* rhs_arena = other->GetArenaForAllocation();
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.path_, lhs_arena,
-      &other->_impl_.path_, rhs_arena
+      &_impl_.name_, lhs_arena,
+      &other->_impl_.name_, rhs_arena
   );
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(StepHdrFile_StepRepeatRecord, _impl_.angle_)
+      + sizeof(StepHdrFile_StepRepeatRecord::_impl_.angle_)
+      - PROTOBUF_FIELD_OFFSET(StepHdrFile_StepRepeatRecord, _impl_.x_)>(
+          reinterpret_cast<char*>(&_impl_.x_),
+          reinterpret_cast<char*>(&other->_impl_.x_));
 }
 
-::PROTOBUF_NAMESPACE_ID::Metadata StepHrdFile::GetMetadata() const {
+::PROTOBUF_NAMESPACE_ID::Metadata StepHdrFile_StepRepeatRecord::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_stephdrfile_2eproto_getter, &descriptor_table_stephdrfile_2eproto_once,
       file_level_metadata_stephdrfile_2eproto[0]);
+}
+
+// ===================================================================
+
+StepHdrFile_OnlineValuesEntry_DoNotUse::StepHdrFile_OnlineValuesEntry_DoNotUse() {}
+StepHdrFile_OnlineValuesEntry_DoNotUse::StepHdrFile_OnlineValuesEntry_DoNotUse(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+    : SuperType(arena) {}
+void StepHdrFile_OnlineValuesEntry_DoNotUse::MergeFrom(const StepHdrFile_OnlineValuesEntry_DoNotUse& other) {
+  MergeFromInternal(other);
+}
+::PROTOBUF_NAMESPACE_ID::Metadata StepHdrFile_OnlineValuesEntry_DoNotUse::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_stephdrfile_2eproto_getter, &descriptor_table_stephdrfile_2eproto_once,
+      file_level_metadata_stephdrfile_2eproto[1]);
+}
+
+// ===================================================================
+
+class StepHdrFile::_Internal {
+ public:
+  using HasBits = decltype(std::declval<StepHdrFile>()._impl_._has_bits_);
+  static void set_has_xdatum(HasBits* has_bits) {
+    (*has_bits)[0] |= 4u;
+  }
+  static void set_has_ydatum(HasBits* has_bits) {
+    (*has_bits)[0] |= 8u;
+  }
+  static void set_has_id(HasBits* has_bits) {
+    (*has_bits)[0] |= 16u;
+  }
+  static void set_has_xorigin(HasBits* has_bits) {
+    (*has_bits)[0] |= 32u;
+  }
+  static void set_has_yorigin(HasBits* has_bits) {
+    (*has_bits)[0] |= 64u;
+  }
+  static void set_has_topactive(HasBits* has_bits) {
+    (*has_bits)[0] |= 128u;
+  }
+  static void set_has_bottomactive(HasBits* has_bits) {
+    (*has_bits)[0] |= 256u;
+  }
+  static void set_has_rightactive(HasBits* has_bits) {
+    (*has_bits)[0] |= 512u;
+  }
+  static void set_has_leftactive(HasBits* has_bits) {
+    (*has_bits)[0] |= 1024u;
+  }
+  static void set_has_affectingbom(HasBits* has_bits) {
+    (*has_bits)[0] |= 2048u;
+  }
+  static void set_has_affectingbomchanged(HasBits* has_bits) {
+    (*has_bits)[0] |= 4096u;
+  }
+  static void set_has_online(HasBits* has_bits) {
+    (*has_bits)[0] |= 1u;
+  }
+  static void set_has_path(HasBits* has_bits) {
+    (*has_bits)[0] |= 2u;
+  }
+};
+
+StepHdrFile::StepHdrFile(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  if (arena != nullptr && !is_message_owned) {
+    arena->OwnCustomDestructor(this, &StepHdrFile::ArenaDtor);
+  }
+  // @@protoc_insertion_point(arena_constructor:Odb.Lib.Protobuf.StepHdrFile)
+}
+StepHdrFile::StepHdrFile(const StepHdrFile& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  StepHdrFile* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){from._impl_._has_bits_}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.steprepeatrecords_){from._impl_.steprepeatrecords_}
+    , /*decltype(_impl_.onlinevalues_)*/{}
+    , decltype(_impl_.online_){}
+    , decltype(_impl_.path_){}
+    , decltype(_impl_.xdatum_){}
+    , decltype(_impl_.ydatum_){}
+    , decltype(_impl_.id_){}
+    , decltype(_impl_.xorigin_){}
+    , decltype(_impl_.yorigin_){}
+    , decltype(_impl_.topactive_){}
+    , decltype(_impl_.bottomactive_){}
+    , decltype(_impl_.rightactive_){}
+    , decltype(_impl_.leftactive_){}
+    , decltype(_impl_.affectingbom_){}
+    , decltype(_impl_.affectingbomchanged_){}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _this->_impl_.onlinevalues_.MergeFrom(from._impl_.onlinevalues_);
+  _impl_.online_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.online_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (from._internal_has_online()) {
+    _this->_impl_.online_.Set(from._internal_online(), 
+      _this->GetArenaForAllocation());
+  }
+  _impl_.path_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.path_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (from._internal_has_path()) {
+    _this->_impl_.path_.Set(from._internal_path(), 
+      _this->GetArenaForAllocation());
+  }
+  ::memcpy(&_impl_.xdatum_, &from._impl_.xdatum_,
+    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.affectingbomchanged_) -
+    reinterpret_cast<char*>(&_impl_.xdatum_)) + sizeof(_impl_.affectingbomchanged_));
+  // @@protoc_insertion_point(copy_constructor:Odb.Lib.Protobuf.StepHdrFile)
+}
+
+inline void StepHdrFile::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.steprepeatrecords_){arena}
+    , /*decltype(_impl_.onlinevalues_)*/{::_pbi::ArenaInitialized(), arena}
+    , decltype(_impl_.online_){}
+    , decltype(_impl_.path_){}
+    , decltype(_impl_.xdatum_){0}
+    , decltype(_impl_.ydatum_){0}
+    , decltype(_impl_.id_){0}
+    , decltype(_impl_.xorigin_){0}
+    , decltype(_impl_.yorigin_){0}
+    , decltype(_impl_.topactive_){0}
+    , decltype(_impl_.bottomactive_){0}
+    , decltype(_impl_.rightactive_){0}
+    , decltype(_impl_.leftactive_){0}
+    , decltype(_impl_.affectingbom_){0}
+    , decltype(_impl_.affectingbomchanged_){false}
+  };
+  _impl_.online_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.online_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.path_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.path_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+}
+
+StepHdrFile::~StepHdrFile() {
+  // @@protoc_insertion_point(destructor:Odb.Lib.Protobuf.StepHdrFile)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    ArenaDtor(this);
+    return;
+  }
+  SharedDtor();
+}
+
+inline void StepHdrFile::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  _impl_.steprepeatrecords_.~RepeatedPtrField();
+  _impl_.onlinevalues_.Destruct();
+  _impl_.onlinevalues_.~MapField();
+  _impl_.online_.Destroy();
+  _impl_.path_.Destroy();
+}
+
+void StepHdrFile::ArenaDtor(void* object) {
+  StepHdrFile* _this = reinterpret_cast< StepHdrFile* >(object);
+  _this->_impl_.onlinevalues_.Destruct();
+}
+void StepHdrFile::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void StepHdrFile::Clear() {
+// @@protoc_insertion_point(message_clear_start:Odb.Lib.Protobuf.StepHdrFile)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  _impl_.steprepeatrecords_.Clear();
+  _impl_.onlinevalues_.Clear();
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000003u) {
+    if (cached_has_bits & 0x00000001u) {
+      _impl_.online_.ClearNonDefaultToEmpty();
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _impl_.path_.ClearNonDefaultToEmpty();
+    }
+  }
+  if (cached_has_bits & 0x000000fcu) {
+    ::memset(&_impl_.xdatum_, 0, static_cast<size_t>(
+        reinterpret_cast<char*>(&_impl_.topactive_) -
+        reinterpret_cast<char*>(&_impl_.xdatum_)) + sizeof(_impl_.topactive_));
+  }
+  if (cached_has_bits & 0x00001f00u) {
+    ::memset(&_impl_.bottomactive_, 0, static_cast<size_t>(
+        reinterpret_cast<char*>(&_impl_.affectingbomchanged_) -
+        reinterpret_cast<char*>(&_impl_.bottomactive_)) + sizeof(_impl_.affectingbomchanged_));
+  }
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* StepHdrFile::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  _Internal::HasBits has_bits{};
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // optional float xDatum = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 13)) {
+          _Internal::set_has_xdatum(&has_bits);
+          _impl_.xdatum_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float yDatum = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 21)) {
+          _Internal::set_has_ydatum(&has_bits);
+          _impl_.ydatum_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional int32 id = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 24)) {
+          _Internal::set_has_id(&has_bits);
+          _impl_.id_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float xOrigin = 4;
+      case 4:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 37)) {
+          _Internal::set_has_xorigin(&has_bits);
+          _impl_.xorigin_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float yOrigin = 5;
+      case 5:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 45)) {
+          _Internal::set_has_yorigin(&has_bits);
+          _impl_.yorigin_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float topActive = 6;
+      case 6:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 53)) {
+          _Internal::set_has_topactive(&has_bits);
+          _impl_.topactive_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float bottomActive = 7;
+      case 7:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 61)) {
+          _Internal::set_has_bottomactive(&has_bits);
+          _impl_.bottomactive_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float rightActive = 8;
+      case 8:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 69)) {
+          _Internal::set_has_rightactive(&has_bits);
+          _impl_.rightactive_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float leftActive = 9;
+      case 9:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 77)) {
+          _Internal::set_has_leftactive(&has_bits);
+          _impl_.leftactive_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional int32 affectingBom = 10;
+      case 10:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 80)) {
+          _Internal::set_has_affectingbom(&has_bits);
+          _impl_.affectingbom_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional bool affectingBomChanged = 11;
+      case 11:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 88)) {
+          _Internal::set_has_affectingbomchanged(&has_bits);
+          _impl_.affectingbomchanged_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional string online = 12;
+      case 12:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 98)) {
+          auto str = _internal_mutable_online();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "Odb.Lib.Protobuf.StepHdrFile.online"));
+        } else
+          goto handle_unusual;
+        continue;
+      // repeated .Odb.Lib.Protobuf.StepHdrFile.StepRepeatRecord stepRepeatRecords = 13;
+      case 13:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 106)) {
+          ptr -= 1;
+          do {
+            ptr += 1;
+            ptr = ctx->ParseMessage(_internal_add_steprepeatrecords(), ptr);
+            CHK_(ptr);
+            if (!ctx->DataAvailable(ptr)) break;
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<106>(ptr));
+        } else
+          goto handle_unusual;
+        continue;
+      // optional string path = 14;
+      case 14:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 114)) {
+          auto str = _internal_mutable_path();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "Odb.Lib.Protobuf.StepHdrFile.path"));
+        } else
+          goto handle_unusual;
+        continue;
+      // map<string, string> onlineValues = 15;
+      case 15:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 122)) {
+          ptr -= 1;
+          do {
+            ptr += 1;
+            ptr = ctx->ParseMessage(&_impl_.onlinevalues_, ptr);
+            CHK_(ptr);
+            if (!ctx->DataAvailable(ptr)) break;
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<122>(ptr));
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  _impl_._has_bits_.Or(has_bits);
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* StepHdrFile::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:Odb.Lib.Protobuf.StepHdrFile)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // optional float xDatum = 1;
+  if (_internal_has_xdatum()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(1, this->_internal_xdatum(), target);
+  }
+
+  // optional float yDatum = 2;
+  if (_internal_has_ydatum()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(2, this->_internal_ydatum(), target);
+  }
+
+  // optional int32 id = 3;
+  if (_internal_has_id()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteInt32ToArray(3, this->_internal_id(), target);
+  }
+
+  // optional float xOrigin = 4;
+  if (_internal_has_xorigin()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(4, this->_internal_xorigin(), target);
+  }
+
+  // optional float yOrigin = 5;
+  if (_internal_has_yorigin()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(5, this->_internal_yorigin(), target);
+  }
+
+  // optional float topActive = 6;
+  if (_internal_has_topactive()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(6, this->_internal_topactive(), target);
+  }
+
+  // optional float bottomActive = 7;
+  if (_internal_has_bottomactive()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(7, this->_internal_bottomactive(), target);
+  }
+
+  // optional float rightActive = 8;
+  if (_internal_has_rightactive()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(8, this->_internal_rightactive(), target);
+  }
+
+  // optional float leftActive = 9;
+  if (_internal_has_leftactive()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(9, this->_internal_leftactive(), target);
+  }
+
+  // optional int32 affectingBom = 10;
+  if (_internal_has_affectingbom()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteInt32ToArray(10, this->_internal_affectingbom(), target);
+  }
+
+  // optional bool affectingBomChanged = 11;
+  if (_internal_has_affectingbomchanged()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteBoolToArray(11, this->_internal_affectingbomchanged(), target);
+  }
+
+  // optional string online = 12;
+  if (_internal_has_online()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_online().data(), static_cast<int>(this->_internal_online().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "Odb.Lib.Protobuf.StepHdrFile.online");
+    target = stream->WriteStringMaybeAliased(
+        12, this->_internal_online(), target);
+  }
+
+  // repeated .Odb.Lib.Protobuf.StepHdrFile.StepRepeatRecord stepRepeatRecords = 13;
+  for (unsigned i = 0,
+      n = static_cast<unsigned>(this->_internal_steprepeatrecords_size()); i < n; i++) {
+    const auto& repfield = this->_internal_steprepeatrecords(i);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+        InternalWriteMessage(13, repfield, repfield.GetCachedSize(), target, stream);
+  }
+
+  // optional string path = 14;
+  if (_internal_has_path()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_path().data(), static_cast<int>(this->_internal_path().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "Odb.Lib.Protobuf.StepHdrFile.path");
+    target = stream->WriteStringMaybeAliased(
+        14, this->_internal_path(), target);
+  }
+
+  // map<string, string> onlineValues = 15;
+  if (!this->_internal_onlinevalues().empty()) {
+    using MapType = ::_pb::Map<std::string, std::string>;
+    using WireHelper = StepHdrFile_OnlineValuesEntry_DoNotUse::Funcs;
+    const auto& map_field = this->_internal_onlinevalues();
+    auto check_utf8 = [](const MapType::value_type& entry) {
+      (void)entry;
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+        entry.first.data(), static_cast<int>(entry.first.length()),
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+        "Odb.Lib.Protobuf.StepHdrFile.OnlineValuesEntry.key");
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+        entry.second.data(), static_cast<int>(entry.second.length()),
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+        "Odb.Lib.Protobuf.StepHdrFile.OnlineValuesEntry.value");
+    };
+
+    if (stream->IsSerializationDeterministic() && map_field.size() > 1) {
+      for (const auto& entry : ::_pbi::MapSorterPtr<MapType>(map_field)) {
+        target = WireHelper::InternalSerialize(15, entry.first, entry.second, target, stream);
+        check_utf8(entry);
+      }
+    } else {
+      for (const auto& entry : map_field) {
+        target = WireHelper::InternalSerialize(15, entry.first, entry.second, target, stream);
+        check_utf8(entry);
+      }
+    }
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:Odb.Lib.Protobuf.StepHdrFile)
+  return target;
+}
+
+size_t StepHdrFile::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:Odb.Lib.Protobuf.StepHdrFile)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // repeated .Odb.Lib.Protobuf.StepHdrFile.StepRepeatRecord stepRepeatRecords = 13;
+  total_size += 1UL * this->_internal_steprepeatrecords_size();
+  for (const auto& msg : this->_impl_.steprepeatrecords_) {
+    total_size +=
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(msg);
+  }
+
+  // map<string, string> onlineValues = 15;
+  total_size += 1 *
+      ::PROTOBUF_NAMESPACE_ID::internal::FromIntSize(this->_internal_onlinevalues_size());
+  for (::PROTOBUF_NAMESPACE_ID::Map< std::string, std::string >::const_iterator
+      it = this->_internal_onlinevalues().begin();
+      it != this->_internal_onlinevalues().end(); ++it) {
+    total_size += StepHdrFile_OnlineValuesEntry_DoNotUse::Funcs::ByteSizeLong(it->first, it->second);
+  }
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x000000ffu) {
+    // optional string online = 12;
+    if (cached_has_bits & 0x00000001u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_online());
+    }
+
+    // optional string path = 14;
+    if (cached_has_bits & 0x00000002u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_path());
+    }
+
+    // optional float xDatum = 1;
+    if (cached_has_bits & 0x00000004u) {
+      total_size += 1 + 4;
+    }
+
+    // optional float yDatum = 2;
+    if (cached_has_bits & 0x00000008u) {
+      total_size += 1 + 4;
+    }
+
+    // optional int32 id = 3;
+    if (cached_has_bits & 0x00000010u) {
+      total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(this->_internal_id());
+    }
+
+    // optional float xOrigin = 4;
+    if (cached_has_bits & 0x00000020u) {
+      total_size += 1 + 4;
+    }
+
+    // optional float yOrigin = 5;
+    if (cached_has_bits & 0x00000040u) {
+      total_size += 1 + 4;
+    }
+
+    // optional float topActive = 6;
+    if (cached_has_bits & 0x00000080u) {
+      total_size += 1 + 4;
+    }
+
+  }
+  if (cached_has_bits & 0x00001f00u) {
+    // optional float bottomActive = 7;
+    if (cached_has_bits & 0x00000100u) {
+      total_size += 1 + 4;
+    }
+
+    // optional float rightActive = 8;
+    if (cached_has_bits & 0x00000200u) {
+      total_size += 1 + 4;
+    }
+
+    // optional float leftActive = 9;
+    if (cached_has_bits & 0x00000400u) {
+      total_size += 1 + 4;
+    }
+
+    // optional int32 affectingBom = 10;
+    if (cached_has_bits & 0x00000800u) {
+      total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(this->_internal_affectingbom());
+    }
+
+    // optional bool affectingBomChanged = 11;
+    if (cached_has_bits & 0x00001000u) {
+      total_size += 1 + 1;
+    }
+
+  }
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData StepHdrFile::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    StepHdrFile::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*StepHdrFile::GetClassData() const { return &_class_data_; }
+
+
+void StepHdrFile::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<StepHdrFile*>(&to_msg);
+  auto& from = static_cast<const StepHdrFile&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:Odb.Lib.Protobuf.StepHdrFile)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  _this->_impl_.steprepeatrecords_.MergeFrom(from._impl_.steprepeatrecords_);
+  _this->_impl_.onlinevalues_.MergeFrom(from._impl_.onlinevalues_);
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (cached_has_bits & 0x000000ffu) {
+    if (cached_has_bits & 0x00000001u) {
+      _this->_internal_set_online(from._internal_online());
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _this->_internal_set_path(from._internal_path());
+    }
+    if (cached_has_bits & 0x00000004u) {
+      _this->_impl_.xdatum_ = from._impl_.xdatum_;
+    }
+    if (cached_has_bits & 0x00000008u) {
+      _this->_impl_.ydatum_ = from._impl_.ydatum_;
+    }
+    if (cached_has_bits & 0x00000010u) {
+      _this->_impl_.id_ = from._impl_.id_;
+    }
+    if (cached_has_bits & 0x00000020u) {
+      _this->_impl_.xorigin_ = from._impl_.xorigin_;
+    }
+    if (cached_has_bits & 0x00000040u) {
+      _this->_impl_.yorigin_ = from._impl_.yorigin_;
+    }
+    if (cached_has_bits & 0x00000080u) {
+      _this->_impl_.topactive_ = from._impl_.topactive_;
+    }
+    _this->_impl_._has_bits_[0] |= cached_has_bits;
+  }
+  if (cached_has_bits & 0x00001f00u) {
+    if (cached_has_bits & 0x00000100u) {
+      _this->_impl_.bottomactive_ = from._impl_.bottomactive_;
+    }
+    if (cached_has_bits & 0x00000200u) {
+      _this->_impl_.rightactive_ = from._impl_.rightactive_;
+    }
+    if (cached_has_bits & 0x00000400u) {
+      _this->_impl_.leftactive_ = from._impl_.leftactive_;
+    }
+    if (cached_has_bits & 0x00000800u) {
+      _this->_impl_.affectingbom_ = from._impl_.affectingbom_;
+    }
+    if (cached_has_bits & 0x00001000u) {
+      _this->_impl_.affectingbomchanged_ = from._impl_.affectingbomchanged_;
+    }
+    _this->_impl_._has_bits_[0] |= cached_has_bits;
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void StepHdrFile::CopyFrom(const StepHdrFile& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:Odb.Lib.Protobuf.StepHdrFile)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool StepHdrFile::IsInitialized() const {
+  return true;
+}
+
+void StepHdrFile::InternalSwap(StepHdrFile* other) {
+  using std::swap;
+  auto* lhs_arena = GetArenaForAllocation();
+  auto* rhs_arena = other->GetArenaForAllocation();
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  _impl_.steprepeatrecords_.InternalSwap(&other->_impl_.steprepeatrecords_);
+  _impl_.onlinevalues_.InternalSwap(&other->_impl_.onlinevalues_);
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.online_, lhs_arena,
+      &other->_impl_.online_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.path_, lhs_arena,
+      &other->_impl_.path_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.affectingbomchanged_)
+      + sizeof(StepHdrFile::_impl_.affectingbomchanged_)
+      - PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.xdatum_)>(
+          reinterpret_cast<char*>(&_impl_.xdatum_),
+          reinterpret_cast<char*>(&other->_impl_.xdatum_));
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata StepHdrFile::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_stephdrfile_2eproto_getter, &descriptor_table_stephdrfile_2eproto_once,
+      file_level_metadata_stephdrfile_2eproto[2]);
 }
 
 // @@protoc_insertion_point(namespace_scope)
@@ -308,9 +1384,17 @@ void StepHrdFile::InternalSwap(StepHrdFile* other) {
 }  // namespace Lib
 }  // namespace Odb
 PROTOBUF_NAMESPACE_OPEN
-template<> PROTOBUF_NOINLINE ::Odb::Lib::Protobuf::StepHrdFile*
-Arena::CreateMaybeMessage< ::Odb::Lib::Protobuf::StepHrdFile >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::Odb::Lib::Protobuf::StepHrdFile >(arena);
+template<> PROTOBUF_NOINLINE ::Odb::Lib::Protobuf::StepHdrFile_StepRepeatRecord*
+Arena::CreateMaybeMessage< ::Odb::Lib::Protobuf::StepHdrFile_StepRepeatRecord >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::Odb::Lib::Protobuf::StepHdrFile_StepRepeatRecord >(arena);
+}
+template<> PROTOBUF_NOINLINE ::Odb::Lib::Protobuf::StepHdrFile_OnlineValuesEntry_DoNotUse*
+Arena::CreateMaybeMessage< ::Odb::Lib::Protobuf::StepHdrFile_OnlineValuesEntry_DoNotUse >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::Odb::Lib::Protobuf::StepHdrFile_OnlineValuesEntry_DoNotUse >(arena);
+}
+template<> PROTOBUF_NOINLINE ::Odb::Lib::Protobuf::StepHdrFile*
+Arena::CreateMaybeMessage< ::Odb::Lib::Protobuf::StepHdrFile >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::Odb::Lib::Protobuf::StepHdrFile >(arena);
 }
 PROTOBUF_NAMESPACE_CLOSE
 

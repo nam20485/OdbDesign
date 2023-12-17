@@ -9,8 +9,34 @@ package Odb.Lib.Protobuf;
 //  StepHdrFile.h
 //
 
-message StepHrdFile {
-    
-    optional string path = 1;
+message StepHdrFile {
+
+    message StepRepeatRecord
+    {
+        optional string name = 1;
+        optional float x = 2;
+        optional float y = 3;
+        optional float dx = 4;
+        optional float dy = 5;
+        optional int32 nx = 6;
+        optional int32 ny = 7;
+        optional float angle = 8;
+    }
+
+    optional float xDatum = 1;
+    optional float yDatum = 2;
+    optional int32 id = 3;
+    optional float xOrigin = 4;
+    optional float yOrigin = 5;
+    optional float topActive = 6;
+    optional float bottomActive = 7;
+    optional float rightActive = 8;
+    optional float leftActive = 9;
+    optional int32 affectingBom = 10;
+    optional bool affectingBomChanged = 11;
+    optional string online = 12;
+    repeated StepRepeatRecord stepRepeatRecords = 13;    
+    optional string path = 14;    
+    map<string, string> onlineValues = 15;
 
 }

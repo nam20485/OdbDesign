@@ -8,6 +8,7 @@ import "netlistfile.proto";
 import "layerdirectory.proto";
 import "attrlistfile.proto";
 import "featuresfile.proto";
+import "stephdrfile.proto";
 
 package Odb.Lib.Protobuf;
 
@@ -25,5 +26,6 @@ message StepDirectory {
     optional EdaDataFile edadatafile = 5;
     optional AttrListFile attrlistfile = 6;
     optional FeaturesFile profilefile = 7;
+    optional StepHdrFile stephdrfile = 8;
 
 }
