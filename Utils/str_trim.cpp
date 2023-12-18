@@ -1,4 +1,6 @@
 #include "str_trim.h"
+#include "str_trim.h"
+#include "str_trim.h"
 #include <iostream>
 #include <string>
 #include <algorithm>
@@ -103,5 +105,29 @@ namespace Utils
     {
         auto copy(s);
         return str_trim(copy, toRemove);
+    }
+
+    void Utils::str_to_lower(std::string& s)
+    {
+        std::transform(s.begin(), s.end(), s.begin(), [](unsigned char c) { return std::tolower(c); });
+    }
+
+    void Utils::str_to_upper(std::string& s)
+    {
+		std::transform(s.begin(), s.end(), s.begin(), [](unsigned char c) { return std::toupper(c); });
+	}   
+
+    std::string Utils::str_to_lower_copy(const std::string& s)
+    {
+        std::string copy = s;
+        std::transform(copy.begin(), copy.end(), copy.begin(), [](unsigned char c) { return std::tolower(c); });
+        return copy;
+    }
+
+    std::string Utils::str_to_upper_copy(const std::string& s)
+    {
+        std::string copy;
+        std::transform(copy.begin(), copy.end(), copy.begin(), [](unsigned char c) { return std::toupper(c); });
+        return copy;
     }
 }

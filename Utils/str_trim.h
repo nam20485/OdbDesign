@@ -31,4 +31,10 @@ namespace Utils
 	UTILS_EXPORT std::string str_rtrim_copy(std::string s, /*unsigned*/ char toRemove);
 	// trim from both ends (copying)
 	UTILS_EXPORT std::string str_trim_copy(std::string s, /*unsigned*/ char toRemove);
+
+	UTILS_EXPORT void str_to_lower(std::string& s);
+	UTILS_EXPORT void str_to_upper(std::string& s);
+
+	UTILS_EXPORT std::string str_to_lower_copy(const std::string& s);
+	UTILS_EXPORT std::string str_to_upper_copy(const std::string& s);
 }
