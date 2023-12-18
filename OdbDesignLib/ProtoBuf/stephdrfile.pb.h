@@ -202,6 +202,8 @@ class StepHdrFile_StepRepeatRecord final :
     kNxFieldNumber = 6,
     kNyFieldNumber = 7,
     kAngleFieldNumber = 8,
+    kFlipFieldNumber = 9,
+    kMirrorFieldNumber = 10,
   };
   // optional string name = 1;
   bool has_name() const;
@@ -312,6 +314,32 @@ class StepHdrFile_StepRepeatRecord final :
   void _internal_set_angle(float value);
   public:
 
+  // optional bool flip = 9;
+  bool has_flip() const;
+  private:
+  bool _internal_has_flip() const;
+  public:
+  void clear_flip();
+  bool flip() const;
+  void set_flip(bool value);
+  private:
+  bool _internal_flip() const;
+  void _internal_set_flip(bool value);
+  public:
+
+  // optional bool mirror = 10;
+  bool has_mirror() const;
+  private:
+  bool _internal_has_mirror() const;
+  public:
+  void clear_mirror();
+  bool mirror() const;
+  void set_mirror(bool value);
+  private:
+  bool _internal_mirror() const;
+  void _internal_set_mirror(bool value);
+  public:
+
   // @@protoc_insertion_point(class_scope:Odb.Lib.Protobuf.StepHdrFile.StepRepeatRecord)
  private:
   class _Internal;
@@ -330,6 +358,8 @@ class StepHdrFile_StepRepeatRecord final :
     int32_t nx_;
     int32_t ny_;
     float angle_;
+    bool flip_;
+    bool mirror_;
   };
   union { Impl_ _impl_; };
   friend struct ::TableStruct_stephdrfile_2eproto;
@@ -491,6 +521,7 @@ class StepHdrFile final :
   enum : int {
     kStepRepeatRecordsFieldNumber = 13,
     kOnlineValuesFieldNumber = 15,
+    kAffectingBomFieldNumber = 10,
     kOnlineFieldNumber = 12,
     kPathFieldNumber = 14,
     kXDatumFieldNumber = 1,
@@ -502,7 +533,6 @@ class StepHdrFile final :
     kBottomActiveFieldNumber = 7,
     kRightActiveFieldNumber = 8,
     kLeftActiveFieldNumber = 9,
-    kAffectingBomFieldNumber = 10,
     kAffectingBomChangedFieldNumber = 11,
   };
   // repeated .Odb.Lib.Protobuf.StepHdrFile.StepRepeatRecord stepRepeatRecords = 13;
@@ -539,6 +569,24 @@ class StepHdrFile final :
       onlinevalues() const;
   ::PROTOBUF_NAMESPACE_ID::Map< std::string, std::string >*
       mutable_onlinevalues();
+
+  // optional string affectingBom = 10;
+  bool has_affectingbom() const;
+  private:
+  bool _internal_has_affectingbom() const;
+  public:
+  void clear_affectingbom();
+  const std::string& affectingbom() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_affectingbom(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_affectingbom();
+  PROTOBUF_NODISCARD std::string* release_affectingbom();
+  void set_allocated_affectingbom(std::string* affectingbom);
+  private:
+  const std::string& _internal_affectingbom() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_affectingbom(const std::string& value);
+  std::string* _internal_mutable_affectingbom();
+  public:
 
   // optional string online = 12;
   bool has_online() const;
@@ -693,19 +741,6 @@ class StepHdrFile final :
   void _internal_set_leftactive(float value);
   public:
 
-  // optional int32 affectingBom = 10;
-  bool has_affectingbom() const;
-  private:
-  bool _internal_has_affectingbom() const;
-  public:
-  void clear_affectingbom();
-  int32_t affectingbom() const;
-  void set_affectingbom(int32_t value);
-  private:
-  int32_t _internal_affectingbom() const;
-  void _internal_set_affectingbom(int32_t value);
-  public:
-
   // optional bool affectingBomChanged = 11;
   bool has_affectingbomchanged() const;
   private:
@@ -735,6 +770,7 @@ class StepHdrFile final :
         std::string, std::string,
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING,
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING> onlinevalues_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr affectingbom_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr online_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr path_;
     float xdatum_;
@@ -746,7 +782,6 @@ class StepHdrFile final :
     float bottomactive_;
     float rightactive_;
     float leftactive_;
-    int32_t affectingbom_;
     bool affectingbomchanged_;
   };
   union { Impl_ _impl_; };
@@ -1027,6 +1062,62 @@ inline void StepHdrFile_StepRepeatRecord::set_angle(float value) {
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.StepHdrFile.StepRepeatRecord.angle)
 }
 
+// optional bool flip = 9;
+inline bool StepHdrFile_StepRepeatRecord::_internal_has_flip() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000100u) != 0;
+  return value;
+}
+inline bool StepHdrFile_StepRepeatRecord::has_flip() const {
+  return _internal_has_flip();
+}
+inline void StepHdrFile_StepRepeatRecord::clear_flip() {
+  _impl_.flip_ = false;
+  _impl_._has_bits_[0] &= ~0x00000100u;
+}
+inline bool StepHdrFile_StepRepeatRecord::_internal_flip() const {
+  return _impl_.flip_;
+}
+inline bool StepHdrFile_StepRepeatRecord::flip() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.StepHdrFile.StepRepeatRecord.flip)
+  return _internal_flip();
+}
+inline void StepHdrFile_StepRepeatRecord::_internal_set_flip(bool value) {
+  _impl_._has_bits_[0] |= 0x00000100u;
+  _impl_.flip_ = value;
+}
+inline void StepHdrFile_StepRepeatRecord::set_flip(bool value) {
+  _internal_set_flip(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.StepHdrFile.StepRepeatRecord.flip)
+}
+
+// optional bool mirror = 10;
+inline bool StepHdrFile_StepRepeatRecord::_internal_has_mirror() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000200u) != 0;
+  return value;
+}
+inline bool StepHdrFile_StepRepeatRecord::has_mirror() const {
+  return _internal_has_mirror();
+}
+inline void StepHdrFile_StepRepeatRecord::clear_mirror() {
+  _impl_.mirror_ = false;
+  _impl_._has_bits_[0] &= ~0x00000200u;
+}
+inline bool StepHdrFile_StepRepeatRecord::_internal_mirror() const {
+  return _impl_.mirror_;
+}
+inline bool StepHdrFile_StepRepeatRecord::mirror() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.StepHdrFile.StepRepeatRecord.mirror)
+  return _internal_mirror();
+}
+inline void StepHdrFile_StepRepeatRecord::_internal_set_mirror(bool value) {
+  _impl_._has_bits_[0] |= 0x00000200u;
+  _impl_.mirror_ = value;
+}
+inline void StepHdrFile_StepRepeatRecord::set_mirror(bool value) {
+  _internal_set_mirror(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.StepHdrFile.StepRepeatRecord.mirror)
+}
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------
@@ -1035,7 +1126,7 @@ inline void StepHdrFile_StepRepeatRecord::set_angle(float value) {
 
 // optional float xDatum = 1;
 inline bool StepHdrFile::_internal_has_xdatum() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000008u) != 0;
   return value;
 }
 inline bool StepHdrFile::has_xdatum() const {
@@ -1043,7 +1134,7 @@ inline bool StepHdrFile::has_xdatum() const {
 }
 inline void StepHdrFile::clear_xdatum() {
   _impl_.xdatum_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000004u;
+  _impl_._has_bits_[0] &= ~0x00000008u;
 }
 inline float StepHdrFile::_internal_xdatum() const {
   return _impl_.xdatum_;
@@ -1053,7 +1144,7 @@ inline float StepHdrFile::xdatum() const {
   return _internal_xdatum();
 }
 inline void StepHdrFile::_internal_set_xdatum(float value) {
-  _impl_._has_bits_[0] |= 0x00000004u;
+  _impl_._has_bits_[0] |= 0x00000008u;
   _impl_.xdatum_ = value;
 }
 inline void StepHdrFile::set_xdatum(float value) {
@@ -1063,7 +1154,7 @@ inline void StepHdrFile::set_xdatum(float value) {
 
 // optional float yDatum = 2;
 inline bool StepHdrFile::_internal_has_ydatum() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000008u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000010u) != 0;
   return value;
 }
 inline bool StepHdrFile::has_ydatum() const {
@@ -1071,7 +1162,7 @@ inline bool StepHdrFile::has_ydatum() const {
 }
 inline void StepHdrFile::clear_ydatum() {
   _impl_.ydatum_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000008u;
+  _impl_._has_bits_[0] &= ~0x00000010u;
 }
 inline float StepHdrFile::_internal_ydatum() const {
   return _impl_.ydatum_;
@@ -1081,7 +1172,7 @@ inline float StepHdrFile::ydatum() const {
   return _internal_ydatum();
 }
 inline void StepHdrFile::_internal_set_ydatum(float value) {
-  _impl_._has_bits_[0] |= 0x00000008u;
+  _impl_._has_bits_[0] |= 0x00000010u;
   _impl_.ydatum_ = value;
 }
 inline void StepHdrFile::set_ydatum(float value) {
@@ -1091,7 +1182,7 @@ inline void StepHdrFile::set_ydatum(float value) {
 
 // optional int32 id = 3;
 inline bool StepHdrFile::_internal_has_id() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000010u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000020u) != 0;
   return value;
 }
 inline bool StepHdrFile::has_id() const {
@@ -1099,7 +1190,7 @@ inline bool StepHdrFile::has_id() const {
 }
 inline void StepHdrFile::clear_id() {
   _impl_.id_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000010u;
+  _impl_._has_bits_[0] &= ~0x00000020u;
 }
 inline int32_t StepHdrFile::_internal_id() const {
   return _impl_.id_;
@@ -1109,7 +1200,7 @@ inline int32_t StepHdrFile::id() const {
   return _internal_id();
 }
 inline void StepHdrFile::_internal_set_id(int32_t value) {
-  _impl_._has_bits_[0] |= 0x00000010u;
+  _impl_._has_bits_[0] |= 0x00000020u;
   _impl_.id_ = value;
 }
 inline void StepHdrFile::set_id(int32_t value) {
@@ -1119,7 +1210,7 @@ inline void StepHdrFile::set_id(int32_t value) {
 
 // optional float xOrigin = 4;
 inline bool StepHdrFile::_internal_has_xorigin() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000020u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000040u) != 0;
   return value;
 }
 inline bool StepHdrFile::has_xorigin() const {
@@ -1127,7 +1218,7 @@ inline bool StepHdrFile::has_xorigin() const {
 }
 inline void StepHdrFile::clear_xorigin() {
   _impl_.xorigin_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000020u;
+  _impl_._has_bits_[0] &= ~0x00000040u;
 }
 inline float StepHdrFile::_internal_xorigin() const {
   return _impl_.xorigin_;
@@ -1137,7 +1228,7 @@ inline float StepHdrFile::xorigin() const {
   return _internal_xorigin();
 }
 inline void StepHdrFile::_internal_set_xorigin(float value) {
-  _impl_._has_bits_[0] |= 0x00000020u;
+  _impl_._has_bits_[0] |= 0x00000040u;
   _impl_.xorigin_ = value;
 }
 inline void StepHdrFile::set_xorigin(float value) {
@@ -1147,7 +1238,7 @@ inline void StepHdrFile::set_xorigin(float value) {
 
 // optional float yOrigin = 5;
 inline bool StepHdrFile::_internal_has_yorigin() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000040u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000080u) != 0;
   return value;
 }
 inline bool StepHdrFile::has_yorigin() const {
@@ -1155,7 +1246,7 @@ inline bool StepHdrFile::has_yorigin() const {
 }
 inline void StepHdrFile::clear_yorigin() {
   _impl_.yorigin_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000040u;
+  _impl_._has_bits_[0] &= ~0x00000080u;
 }
 inline float StepHdrFile::_internal_yorigin() const {
   return _impl_.yorigin_;
@@ -1165,7 +1256,7 @@ inline float StepHdrFile::yorigin() const {
   return _internal_yorigin();
 }
 inline void StepHdrFile::_internal_set_yorigin(float value) {
-  _impl_._has_bits_[0] |= 0x00000040u;
+  _impl_._has_bits_[0] |= 0x00000080u;
   _impl_.yorigin_ = value;
 }
 inline void StepHdrFile::set_yorigin(float value) {
@@ -1175,7 +1266,7 @@ inline void StepHdrFile::set_yorigin(float value) {
 
 // optional float topActive = 6;
 inline bool StepHdrFile::_internal_has_topactive() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000080u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000100u) != 0;
   return value;
 }
 inline bool StepHdrFile::has_topactive() const {
@@ -1183,7 +1274,7 @@ inline bool StepHdrFile::has_topactive() const {
 }
 inline void StepHdrFile::clear_topactive() {
   _impl_.topactive_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000080u;
+  _impl_._has_bits_[0] &= ~0x00000100u;
 }
 inline float StepHdrFile::_internal_topactive() const {
   return _impl_.topactive_;
@@ -1193,7 +1284,7 @@ inline float StepHdrFile::topactive() const {
   return _internal_topactive();
 }
 inline void StepHdrFile::_internal_set_topactive(float value) {
-  _impl_._has_bits_[0] |= 0x00000080u;
+  _impl_._has_bits_[0] |= 0x00000100u;
   _impl_.topactive_ = value;
 }
 inline void StepHdrFile::set_topactive(float value) {
@@ -1203,7 +1294,7 @@ inline void StepHdrFile::set_topactive(float value) {
 
 // optional float bottomActive = 7;
 inline bool StepHdrFile::_internal_has_bottomactive() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000100u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000200u) != 0;
   return value;
 }
 inline bool StepHdrFile::has_bottomactive() const {
@@ -1211,7 +1302,7 @@ inline bool StepHdrFile::has_bottomactive() const {
 }
 inline void StepHdrFile::clear_bottomactive() {
   _impl_.bottomactive_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000100u;
+  _impl_._has_bits_[0] &= ~0x00000200u;
 }
 inline float StepHdrFile::_internal_bottomactive() const {
   return _impl_.bottomactive_;
@@ -1221,7 +1312,7 @@ inline float StepHdrFile::bottomactive() const {
   return _internal_bottomactive();
 }
 inline void StepHdrFile::_internal_set_bottomactive(float value) {
-  _impl_._has_bits_[0] |= 0x00000100u;
+  _impl_._has_bits_[0] |= 0x00000200u;
   _impl_.bottomactive_ = value;
 }
 inline void StepHdrFile::set_bottomactive(float value) {
@@ -1231,7 +1322,7 @@ inline void StepHdrFile::set_bottomactive(float value) {
 
 // optional float rightActive = 8;
 inline bool StepHdrFile::_internal_has_rightactive() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000200u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000400u) != 0;
   return value;
 }
 inline bool StepHdrFile::has_rightactive() const {
@@ -1239,7 +1330,7 @@ inline bool StepHdrFile::has_rightactive() const {
 }
 inline void StepHdrFile::clear_rightactive() {
   _impl_.rightactive_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000200u;
+  _impl_._has_bits_[0] &= ~0x00000400u;
 }
 inline float StepHdrFile::_internal_rightactive() const {
   return _impl_.rightactive_;
@@ -1249,7 +1340,7 @@ inline float StepHdrFile::rightactive() const {
   return _internal_rightactive();
 }
 inline void StepHdrFile::_internal_set_rightactive(float value) {
-  _impl_._has_bits_[0] |= 0x00000200u;
+  _impl_._has_bits_[0] |= 0x00000400u;
   _impl_.rightactive_ = value;
 }
 inline void StepHdrFile::set_rightactive(float value) {
@@ -1259,7 +1350,7 @@ inline void StepHdrFile::set_rightactive(float value) {
 
 // optional float leftActive = 9;
 inline bool StepHdrFile::_internal_has_leftactive() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000400u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000800u) != 0;
   return value;
 }
 inline bool StepHdrFile::has_leftactive() const {
@@ -1267,7 +1358,7 @@ inline bool StepHdrFile::has_leftactive() const {
 }
 inline void StepHdrFile::clear_leftactive() {
   _impl_.leftactive_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000400u;
+  _impl_._has_bits_[0] &= ~0x00000800u;
 }
 inline float StepHdrFile::_internal_leftactive() const {
   return _impl_.leftactive_;
@@ -1277,7 +1368,7 @@ inline float StepHdrFile::leftactive() const {
   return _internal_leftactive();
 }
 inline void StepHdrFile::_internal_set_leftactive(float value) {
-  _impl_._has_bits_[0] |= 0x00000400u;
+  _impl_._has_bits_[0] |= 0x00000800u;
   _impl_.leftactive_ = value;
 }
 inline void StepHdrFile::set_leftactive(float value) {
@@ -1285,32 +1376,72 @@ inline void StepHdrFile::set_leftactive(float value) {
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.StepHdrFile.leftActive)
 }
 
-// optional int32 affectingBom = 10;
+// optional string affectingBom = 10;
 inline bool StepHdrFile::_internal_has_affectingbom() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000800u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
   return value;
 }
 inline bool StepHdrFile::has_affectingbom() const {
   return _internal_has_affectingbom();
 }
 inline void StepHdrFile::clear_affectingbom() {
-  _impl_.affectingbom_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000800u;
+  _impl_.affectingbom_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000001u;
 }
-inline int32_t StepHdrFile::_internal_affectingbom() const {
-  return _impl_.affectingbom_;
-}
-inline int32_t StepHdrFile::affectingbom() const {
+inline const std::string& StepHdrFile::affectingbom() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.StepHdrFile.affectingBom)
   return _internal_affectingbom();
 }
-inline void StepHdrFile::_internal_set_affectingbom(int32_t value) {
-  _impl_._has_bits_[0] |= 0x00000800u;
-  _impl_.affectingbom_ = value;
-}
-inline void StepHdrFile::set_affectingbom(int32_t value) {
-  _internal_set_affectingbom(value);
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void StepHdrFile::set_affectingbom(ArgT0&& arg0, ArgT... args) {
+ _impl_._has_bits_[0] |= 0x00000001u;
+ _impl_.affectingbom_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.StepHdrFile.affectingBom)
+}
+inline std::string* StepHdrFile::mutable_affectingbom() {
+  std::string* _s = _internal_mutable_affectingbom();
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.StepHdrFile.affectingBom)
+  return _s;
+}
+inline const std::string& StepHdrFile::_internal_affectingbom() const {
+  return _impl_.affectingbom_.Get();
+}
+inline void StepHdrFile::_internal_set_affectingbom(const std::string& value) {
+  _impl_._has_bits_[0] |= 0x00000001u;
+  _impl_.affectingbom_.Set(value, GetArenaForAllocation());
+}
+inline std::string* StepHdrFile::_internal_mutable_affectingbom() {
+  _impl_._has_bits_[0] |= 0x00000001u;
+  return _impl_.affectingbom_.Mutable(GetArenaForAllocation());
+}
+inline std::string* StepHdrFile::release_affectingbom() {
+  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.StepHdrFile.affectingBom)
+  if (!_internal_has_affectingbom()) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000001u;
+  auto* p = _impl_.affectingbom_.Release();
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.affectingbom_.IsDefault()) {
+    _impl_.affectingbom_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
+}
+inline void StepHdrFile::set_allocated_affectingbom(std::string* affectingbom) {
+  if (affectingbom != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000001u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000001u;
+  }
+  _impl_.affectingbom_.SetAllocated(affectingbom, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.affectingbom_.IsDefault()) {
+    _impl_.affectingbom_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.StepHdrFile.affectingBom)
 }
 
 // optional bool affectingBomChanged = 11;
@@ -1343,7 +1474,7 @@ inline void StepHdrFile::set_affectingbomchanged(bool value) {
 
 // optional string online = 12;
 inline bool StepHdrFile::_internal_has_online() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
   return value;
 }
 inline bool StepHdrFile::has_online() const {
@@ -1351,7 +1482,7 @@ inline bool StepHdrFile::has_online() const {
 }
 inline void StepHdrFile::clear_online() {
   _impl_.online_.ClearToEmpty();
-  _impl_._has_bits_[0] &= ~0x00000001u;
+  _impl_._has_bits_[0] &= ~0x00000002u;
 }
 inline const std::string& StepHdrFile::online() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.StepHdrFile.online)
@@ -1360,7 +1491,7 @@ inline const std::string& StepHdrFile::online() const {
 template <typename ArgT0, typename... ArgT>
 inline PROTOBUF_ALWAYS_INLINE
 void StepHdrFile::set_online(ArgT0&& arg0, ArgT... args) {
- _impl_._has_bits_[0] |= 0x00000001u;
+ _impl_._has_bits_[0] |= 0x00000002u;
  _impl_.online_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.StepHdrFile.online)
 }
@@ -1373,11 +1504,11 @@ inline const std::string& StepHdrFile::_internal_online() const {
   return _impl_.online_.Get();
 }
 inline void StepHdrFile::_internal_set_online(const std::string& value) {
-  _impl_._has_bits_[0] |= 0x00000001u;
+  _impl_._has_bits_[0] |= 0x00000002u;
   _impl_.online_.Set(value, GetArenaForAllocation());
 }
 inline std::string* StepHdrFile::_internal_mutable_online() {
-  _impl_._has_bits_[0] |= 0x00000001u;
+  _impl_._has_bits_[0] |= 0x00000002u;
   return _impl_.online_.Mutable(GetArenaForAllocation());
 }
 inline std::string* StepHdrFile::release_online() {
@@ -1385,7 +1516,7 @@ inline std::string* StepHdrFile::release_online() {
   if (!_internal_has_online()) {
     return nullptr;
   }
-  _impl_._has_bits_[0] &= ~0x00000001u;
+  _impl_._has_bits_[0] &= ~0x00000002u;
   auto* p = _impl_.online_.Release();
 #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
   if (_impl_.online_.IsDefault()) {
@@ -1396,9 +1527,9 @@ inline std::string* StepHdrFile::release_online() {
 }
 inline void StepHdrFile::set_allocated_online(std::string* online) {
   if (online != nullptr) {
-    _impl_._has_bits_[0] |= 0x00000001u;
+    _impl_._has_bits_[0] |= 0x00000002u;
   } else {
-    _impl_._has_bits_[0] &= ~0x00000001u;
+    _impl_._has_bits_[0] &= ~0x00000002u;
   }
   _impl_.online_.SetAllocated(online, GetArenaForAllocation());
 #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
@@ -1451,7 +1582,7 @@ StepHdrFile::steprepeatrecords() const {
 
 // optional string path = 14;
 inline bool StepHdrFile::_internal_has_path() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
   return value;
 }
 inline bool StepHdrFile::has_path() const {
@@ -1459,7 +1590,7 @@ inline bool StepHdrFile::has_path() const {
 }
 inline void StepHdrFile::clear_path() {
   _impl_.path_.ClearToEmpty();
-  _impl_._has_bits_[0] &= ~0x00000002u;
+  _impl_._has_bits_[0] &= ~0x00000004u;
 }
 inline const std::string& StepHdrFile::path() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.StepHdrFile.path)
@@ -1468,7 +1599,7 @@ inline const std::string& StepHdrFile::path() const {
 template <typename ArgT0, typename... ArgT>
 inline PROTOBUF_ALWAYS_INLINE
 void StepHdrFile::set_path(ArgT0&& arg0, ArgT... args) {
- _impl_._has_bits_[0] |= 0x00000002u;
+ _impl_._has_bits_[0] |= 0x00000004u;
  _impl_.path_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.StepHdrFile.path)
 }
@@ -1481,11 +1612,11 @@ inline const std::string& StepHdrFile::_internal_path() const {
   return _impl_.path_.Get();
 }
 inline void StepHdrFile::_internal_set_path(const std::string& value) {
-  _impl_._has_bits_[0] |= 0x00000002u;
+  _impl_._has_bits_[0] |= 0x00000004u;
   _impl_.path_.Set(value, GetArenaForAllocation());
 }
 inline std::string* StepHdrFile::_internal_mutable_path() {
-  _impl_._has_bits_[0] |= 0x00000002u;
+  _impl_._has_bits_[0] |= 0x00000004u;
   return _impl_.path_.Mutable(GetArenaForAllocation());
 }
 inline std::string* StepHdrFile::release_path() {
@@ -1493,7 +1624,7 @@ inline std::string* StepHdrFile::release_path() {
   if (!_internal_has_path()) {
     return nullptr;
   }
-  _impl_._has_bits_[0] &= ~0x00000002u;
+  _impl_._has_bits_[0] &= ~0x00000004u;
   auto* p = _impl_.path_.Release();
 #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
   if (_impl_.path_.IsDefault()) {
@@ -1504,9 +1635,9 @@ inline std::string* StepHdrFile::release_path() {
 }
 inline void StepHdrFile::set_allocated_path(std::string* path) {
   if (path != nullptr) {
-    _impl_._has_bits_[0] |= 0x00000002u;
+    _impl_._has_bits_[0] |= 0x00000004u;
   } else {
-    _impl_._has_bits_[0] &= ~0x00000002u;
+    _impl_._has_bits_[0] &= ~0x00000004u;
   }
   _impl_.path_.SetAllocated(path, GetArenaForAllocation());
 #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING

@@ -169,6 +169,36 @@ namespace Odb::Lib::FileModel::Design
 								{
 									pCurrentStepRepeatRecord->angle = std::stof(value);
 								}
+                                else if (attribute == "FLIP" || attribute == "flip")
+                                {
+                                    if (value == "YES" || value == "yes")
+                                    {
+										pCurrentStepRepeatRecord->flip = true;
+									}
+                                    else if (value == "NO" || value == "no")
+                                    {
+										pCurrentStepRepeatRecord->flip = false;
+									}
+                                    else
+                                    {
+										throw_parse_error(m_path, line, attribute, lineNumber);
+									}
+                                }
+                                else if (attribute == "MIRROR" || attribute == "mirror")
+                                {
+                                    if (value == "YES" || value == "yes")
+                                    {
+                                        pCurrentStepRepeatRecord->mirror = true;
+                                    }
+                                    else if (value == "NO" || value == "no")
+                                    {
+                                        pCurrentStepRepeatRecord->mirror = false;
+                                    }
+                                    else
+                                    {
+                                        throw_parse_error(m_path, line, attribute, lineNumber);
+                                    }
+                                }
                                 else
                                 {
                                     throw_parse_error(m_path, line, attribute, lineNumber);
@@ -214,7 +244,7 @@ namespace Odb::Lib::FileModel::Design
 								}
 								else if (attribute == "AFFECTING_BOM" || attribute == "affecting_bom")
 								{
-									affectingBom = std::stoi(value);
+                                    affectingBom = value;
 								}
 								else if (attribute == "AFFECTING_BOM_CHANGED" || attribute == "affecting_bom_changed")
 								{
@@ -332,6 +362,8 @@ namespace Odb::Lib::FileModel::Design
 		message->set_nx(nx);
 		message->set_ny(ny);
 		message->set_angle(angle);
+        message->set_flip(flip);
+        message->set_mirror(mirror);
 		return message;		
 	}
 
@@ -344,6 +376,8 @@ namespace Odb::Lib::FileModel::Design
 		dy = message.dy();
 		nx = message.nx();
 		ny = message.ny();
+        flip = message.flip();
+        mirror = message.mirror();
 		angle = message.angle();
 	}
 }

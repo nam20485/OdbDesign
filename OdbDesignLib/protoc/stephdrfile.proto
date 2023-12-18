@@ -21,6 +21,8 @@ message StepHdrFile {
         optional int32 nx = 6;
         optional int32 ny = 7;
         optional float angle = 8;
+        optional bool flip = 9;
+        optional bool mirror = 10;
     }
 
     optional float xDatum = 1;
@@ -32,7 +34,7 @@ message StepHdrFile {
     optional float bottomActive = 7;
     optional float rightActive = 8;
     optional float leftActive = 9;
-    optional int32 affectingBom = 10;
+    optional string affectingBom = 10;
     optional bool affectingBomChanged = 11;
     optional string online = 12;
     repeated StepRepeatRecord stepRepeatRecords = 13;    

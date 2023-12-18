@@ -26,6 +26,8 @@ namespace Odb::Lib::FileModel::Design
 			int nx;
 			int ny;
 			float angle;
+			bool flip;
+			bool mirror;
 
 			typedef std::vector<std::shared_ptr<StepRepeatRecord>> Vector;
 
@@ -53,7 +55,7 @@ namespace Odb::Lib::FileModel::Design
 		float bottomActive;
 		float rightActive;
 		float leftActive;
-		int affectingBom;
+		std::string affectingBom;
 		bool affectingBomChanged;		
 		std::map<std::string, std::string> m_onlineValues;
 
