@@ -307,8 +307,16 @@ namespace Odb::Lib::FileModel::Design
 
 		auto symbolsDirectory = path / "symbols";
 
-		if (!std::filesystem::exists(symbolsDirectory)) return false;
-		else if (!std::filesystem::is_directory(symbolsDirectory)) return false;
+		if (!std::filesystem::exists(symbolsDirectory))
+		{
+			logwarn("symbols root directory does not exist (" + symbolsDirectory.string() + ")");
+			return true;
+		}
+		else if (!std::filesystem::is_directory(symbolsDirectory))
+		{
+			logerror("symbols root directory exists but is a regular file/not a directory (" + symbolsDirectory.string() + ")");
+			return false;
+		}
 
 		for (auto& d : std::filesystem::directory_iterator(symbolsDirectory))
 		{
