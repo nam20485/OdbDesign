@@ -17,6 +17,7 @@ namespace Odb::Lib::App
 		std::string templatesDir() const;
 		bool help() const;
 		std::string loadDesign() const;
+		bool loadAll() const;
 
 	protected:
 		// Inherited via CommandLineArgs
@@ -30,6 +31,7 @@ namespace Odb::Lib::App
 		constexpr static const char* DEFAULT_TEMPLATES_DIR = "templates";
 		constexpr static const bool DEFAULT_HELP = false;
 		constexpr static const char* DEFAULT_LOAD_DESIGN = "";		
+		constexpr static const char* DEFAULT_LOAD_ALL = false;
 
 	};
 }
