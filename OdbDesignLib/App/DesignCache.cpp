@@ -1,21 +1,15 @@
+#include "ArchiveExtractor.h"
 #include "DesignCache.h"
-#include "DesignCache.h"
-#include "DesignCache.h"
-#include <filesystem>
-#include <utility>
 #include "Logger.h"
 #include <exception>
+#include <filesystem>
+#include <utility>
 
 using namespace Utils;
 using namespace std::filesystem;
 
 namespace Odb::Lib::App
-{
-    DesignCache::DesignCache()
-        : DesignCache(".")
-    {
-    }
-
+{    
     DesignCache::DesignCache(std::string directory) :
         m_directory(std::move(directory))
     {
@@ -121,9 +115,10 @@ namespace Odb::Lib::App
         {
             if (entry.is_regular_file())
             {                
-                for (const auto& designExt : DESIGN_EXTENSIONS)
-                {
-                    if (entry.path().extension() == designExt)
+                //for (const auto& designExt : DESIGN_EXTENSIONS)
+                //{
+                    //if (entry.path().extension() == designExt)
+                    if (ArchiveExtractor::IsArchiveTypeSupported(entry.path().filename()))
                     {
                         try
                         {
@@ -138,10 +133,9 @@ namespace Odb::Lib::App
                             // continue if we encounter an error loading one
                             logexception(e);
                             if (stopOnError) throw e;
-                        }
-                        break;                        
+                        }                                    
                     }
-                }
+                //}
             }
         }
 
@@ -156,9 +150,11 @@ namespace Odb::Lib::App
         {
             if (entry.is_regular_file())
             {
-                for (const auto& designExt : DESIGN_EXTENSIONS)
-                {
-                    if (entry.path().extension() == designExt)
+                //for (const auto& designExt : DESIGN_EXTENSIONS)                
+                //{
+                    //auto ext = entry.path().extension().string();
+                    //if (ext == designExt)
+                    if (ArchiveExtractor::IsArchiveTypeSupported(entry.path().filename()))
                     {
                         try
                         {
@@ -176,9 +172,8 @@ namespace Odb::Lib::App
                                 throw e;
                             }
                         }
-                        break;
                     }
-                }
+                //}
             }
         }
 
@@ -233,6 +228,16 @@ namespace Odb::Lib::App
         return loaded;
     }
 
+    void DesignCache::setDirectory(const std::string& directory)
+    {
+        m_directory = directory;
+    }
+
+    const std::string& DesignCache::getDirectory() const
+    {
+        return m_directory;
+    }
+
     //bool DesignCache::isQueryValid(const std::string& query) const
     //{
     //    return false;
@@ -246,7 +251,7 @@ namespace Odb::Lib::App
 
     std::shared_ptr<ProductModel::Design> DesignCache::LoadDesign(const std::string& designName)
     { 
-        for (const auto& entry : std::filesystem::directory_iterator(m_directory))
+        for (const auto& entry : directory_iterator(m_directory))
         {
             if (entry.is_regular_file())
             {
@@ -283,8 +288,8 @@ namespace Odb::Lib::App
         auto fileFound = false;
 
         // skip inaccessible files and do not follow symlinks
-        const auto options = std::filesystem::directory_options::skip_permission_denied;
-        for (const auto& entry : std::filesystem::directory_iterator(m_directory, options))
+        const auto options = directory_options::skip_permission_denied;
+        for (const auto& entry : directory_iterator(m_directory, options))
         {
             if (entry.is_regular_file())
             {

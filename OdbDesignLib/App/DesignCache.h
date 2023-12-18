@@ -10,8 +10,7 @@ namespace Odb::Lib::App
 {
 	class ODBDESIGN_EXPORT DesignCache
 	{
-	public:
-		DesignCache();
+	public:		
 		DesignCache(std::string directory);
 		~DesignCache();
 		
@@ -27,9 +26,12 @@ namespace Odb::Lib::App
 		int loadFileArchives(const Utils::StringVector& names);
 		int loadDesigns(const Utils::StringVector& names);
 
+		void setDirectory(const std::string& directory);
+		const std::string& getDirectory() const;
+
 		//bool isQueryValid(const std::string& query) const;
 
-		void Clear();
+		void Clear();		
 		
 	private:
 		std::string m_directory;
