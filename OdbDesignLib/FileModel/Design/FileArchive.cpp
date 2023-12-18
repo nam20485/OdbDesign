@@ -65,7 +65,11 @@ namespace Odb::Lib::FileModel::Design
 			if (is_regular_file(m_filePath))
 			{
 				std::filesystem::path extractedPath;
-				if (! ExtractDesignArchive(m_filePath, extractedPath)) return false;
+				if (!ExtractDesignArchive(m_filePath, extractedPath))
+				{
+					logerror("failed to extract archive: (" + m_filePath + ")");
+					return false;
+				}
 
 				m_rootDir = findRootDir(extractedPath);
 			}			
@@ -106,7 +110,11 @@ namespace Odb::Lib::FileModel::Design
 	{
 		loginfo("Extracting... ");
 
-		if (!Utils::ArchiveExtractor::IsArchiveTypeSupported(path)) return false;
+		if (!Utils::ArchiveExtractor::IsArchiveTypeSupported(path))
+		{
+			logerror("Unsupported archive type: (" + path.string() + ")");
+			return false;			
+		}
 
 		Utils::ArchiveExtractor extractor(path.string());
 		if (!extractor.Extract()) return false;
