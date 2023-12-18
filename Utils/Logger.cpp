@@ -57,10 +57,7 @@ namespace Utils
 
 	void Logger::log(Level level, const std::string& message, const std::string& file, int line)
 	{
-		if (level >= m_level)
-		{
-			m_logMessageLoop.addWorkItem(Message { message, level, file, line });
-		}				
+		m_logMessageLoop.addWorkItem(Message { message, level, file, line });						
 	}
 
 	void Logger::error(const std::string& message, const std::string& file, int line)
@@ -70,7 +67,7 @@ namespace Utils
 
 	void Logger::warn(const std::string& message, const std::string& file, int line)
 	{
-		log(Level::Warning, message, file, line);
+		log(Level::Warn, message, file, line);
 	}
 
 	void Logger::info(const std::string& message, const std::string& file, int line)
@@ -173,15 +170,24 @@ namespace Utils
 	{
 		auto message = formatLogMessage(logMessage);
 
-		if (m_outputTypes & OutputTypes::StdOut) std::cout << message << std::flush;		
-		if (m_outputTypes & OutputTypes::StdErr) std::cerr << message << std::flush;
+		if (logMessage.level >= m_level)
+		{
+			if (m_outputTypes & OutputTypes::StdOut) std::cout << message << std::flush;
+			if (m_outputTypes & OutputTypes::StdErr) std::cerr << message << std::flush;
+		}
+		//else if (logMessage.level == Level::Error ||
+		//		 logMessage.level == Level::Warn)
+		//{
+		//	if (m_outputTypes & OutputTypes::StdErr) std::cerr << message << std::flush;
+		//}
+
 		if (m_outputTypes & OutputTypes::File)
 		{
 			m_logFileStream.open(m_logFilename, std::ios::out | std::ios::app);
 			if (m_logFileStream)
 			{
 				m_logFileStream << message << std::flush;
-				m_logFileStream.flush();
+				//m_logFileStream.flush();
 				m_logFileStream.close();
 			}
 		}
