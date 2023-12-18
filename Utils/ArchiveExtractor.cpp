@@ -4,6 +4,7 @@
 #include "Logger.h"
 #include <exception>
 #include "macros.h"
+#include "str_trim.h"
 
 using namespace std::filesystem;
 
@@ -26,11 +27,12 @@ namespace Utils
 
 	bool ArchiveExtractor::IsArchiveTypeSupported(const std::filesystem::path& file)
 	{
-		//if (ALLOW_ALL_ARCHIVE_EXTENSION_TYPES) return true;
+		if (ALLOW_ALL_ARCHIVE_EXTENSION_TYPES) return true;
 
 		for (const auto& ext : SupportedExtensions)
 		{
-			if (file.extension() == "." + std::string(ext))
+			auto extLower = str_to_lower_copy(file.extension().string());
+			if (extLower == "." + std::string(ext))
 			{
 				return true;
 			}
