@@ -36,7 +36,7 @@ namespace Utils
 		static std::filesystem::path getUncompressedFilePath(const std::filesystem::path& directory, const std::string& filename);
 
 		inline static bool ALLOW_ALL_ARCHIVE_EXTENSION_TYPES = true;
-		constexpr static inline const char* SupportedExtensions[] = { "tgz", "tar.gz", "gz", "zip", "Z" };
+		constexpr static inline const char* SupportedExtensions[] = { "tgz", "tar.gz", "gz", "zip", "Z", "gzip" };
 
 	private:
 		std::string m_path;

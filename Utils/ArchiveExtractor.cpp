@@ -26,7 +26,7 @@ namespace Utils
 
 	bool ArchiveExtractor::IsArchiveTypeSupported(const std::filesystem::path& file)
 	{
-		if (ALLOW_ALL_ARCHIVE_EXTENSION_TYPES) return true;
+		//if (ALLOW_ALL_ARCHIVE_EXTENSION_TYPES) return true;
 
 		for (const auto& ext : SupportedExtensions)
 		{
