@@ -23,11 +23,23 @@ namespace _pbi = _pb::internal;
 namespace Odb {
 namespace Lib {
 namespace Protobuf {
+PROTOBUF_CONSTEXPR FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse::FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse(
+    ::_pbi::ConstantInitialized) {}
+struct FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeInternal() {}
+  union {
+    FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeInternal _FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse_default_instance_;
 PROTOBUF_CONSTEXPR FeaturesFile_FeatureRecord::FeaturesFile_FeatureRecord(
     ::_pbi::ConstantInitialized): _impl_{
     /*decltype(_impl_._has_bits_)*/{}
   , /*decltype(_impl_._cached_size_)*/{}
   , /*decltype(_impl_.contourpolygons_)*/{}
+  , /*decltype(_impl_.attributelookuptable_)*/{::_pbi::ConstantInitialized()}
   , /*decltype(_impl_.font_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.text_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.value_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
@@ -98,11 +110,21 @@ PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORIT
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
-static ::_pb::Metadata file_level_metadata_featuresfile_2eproto[3];
+static ::_pb::Metadata file_level_metadata_featuresfile_2eproto[4];
 static const ::_pb::EnumDescriptor* file_level_enum_descriptors_featuresfile_2eproto[1];
 static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_featuresfile_2eproto = nullptr;
 
 const uint32_t TableStruct_featuresfile_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse, _has_bits_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse, key_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse, value_),
+  0,
+  1,
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord, _impl_._has_bits_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -137,6 +159,7 @@ const uint32_t TableStruct_featuresfile_2eproto::offsets[] PROTOBUF_SECTION_VARI
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord, _impl_.orient_def_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord, _impl_.orient_def_rotation_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord, _impl_.contourpolygons_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord, _impl_.attributelookuptable_),
   3,
   4,
   5,
@@ -164,6 +187,7 @@ const uint32_t TableStruct_featuresfile_2eproto::offsets[] PROTOBUF_SECTION_VARI
   24,
   25,
   26,
+  ~0u,
   ~0u,
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile_SymbolNamesByNameEntry_DoNotUse, _has_bits_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile_SymbolNamesByNameEntry_DoNotUse, _internal_metadata_),
@@ -197,12 +221,14 @@ const uint32_t TableStruct_featuresfile_2eproto::offsets[] PROTOBUF_SECTION_VARI
   ~0u,
 };
 static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  { 0, 34, -1, sizeof(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord)},
-  { 62, 70, -1, sizeof(::Odb::Lib::Protobuf::FeaturesFile_SymbolNamesByNameEntry_DoNotUse)},
-  { 72, 85, -1, sizeof(::Odb::Lib::Protobuf::FeaturesFile)},
+  { 0, 8, -1, sizeof(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse)},
+  { 10, 45, -1, sizeof(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord)},
+  { 74, 82, -1, sizeof(::Odb::Lib::Protobuf::FeaturesFile_SymbolNamesByNameEntry_DoNotUse)},
+  { 84, 97, -1, sizeof(::Odb::Lib::Protobuf::FeaturesFile)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
+  &::Odb::Lib::Protobuf::_FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse_default_instance_._instance,
   &::Odb::Lib::Protobuf::_FeaturesFile_FeatureRecord_default_instance_._instance,
   &::Odb::Lib::Protobuf::_FeaturesFile_SymbolNamesByNameEntry_DoNotUse_default_instance_._instance,
   &::Odb::Lib::Protobuf::_FeaturesFile_default_instance_._instance,
@@ -211,14 +237,14 @@ static const ::_pb::Message* const file_default_instances[] = {
 const char descriptor_table_protodef_featuresfile_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
   "\n\022featuresfile.proto\022\020Odb.Lib.Protobuf\032\014"
   "common.proto\032\013enums.proto\032\020symbolname.pr"
-  "oto\"\344\013\n\014FeaturesFile\022\022\n\005units\030\001 \001(\tH\000\210\001\001"
+  "oto\"\207\r\n\014FeaturesFile\022\022\n\005units\030\001 \001(\tH\000\210\001\001"
   "\022\017\n\002id\030\002 \001(\rH\001\210\001\001\022\021\n\004path\030\005 \001(\tH\002\210\001\001\022\026\n\t"
   "directory\030\006 \001(\tH\003\210\001\001\022\030\n\013numFeatures\030\007 \001("
   "\005H\004\210\001\001\022D\n\016featureRecords\030\010 \003(\0132,.Odb.Lib"
   ".Protobuf.FeaturesFile.FeatureRecord\022P\n\021"
   "symbolNamesByName\030\t \003(\01325.Odb.Lib.Protob"
-  "uf.FeaturesFile.SymbolNamesByNameEntry\032\301"
-  "\010\n\rFeatureRecord\022D\n\004type\030\002 \001(\01621.Odb.Lib"
+  "uf.FeaturesFile.SymbolNamesByNameEntry\032\344"
+  "\t\n\rFeatureRecord\022D\n\004type\030\002 \001(\01621.Odb.Lib"
   ".Protobuf.FeaturesFile.FeatureRecord.Typ"
   "eH\000\210\001\001\022\017\n\002xs\030\003 \001(\002H\001\210\001\001\022\017\n\002ys\030\004 \001(\002H\002\210\001\001"
   "\022\017\n\002xe\030\005 \001(\002H\003\210\001\001\022\017\n\002ye\030\006 \001(\002H\004\210\001\001\022\016\n\001x\030"
@@ -236,20 +262,24 @@ const char descriptor_table_protodef_featuresfile_2eproto[] PROTOBUF_SECTION_VAR
   "\210\001\001\022\027\n\norient_def\030\033 \001(\005H\031\210\001\001\022 \n\023orient_d"
   "ef_rotation\030\034 \001(\002H\032\210\001\001\0229\n\017contourPolygon"
   "s\030\001 \003(\0132 .Odb.Lib.Protobuf.ContourPolygo"
-  "n\"F\n\004Type\022\007\n\003Arc\020\000\022\007\n\003Pad\020\001\022\013\n\007Surface\020\002"
-  "\022\013\n\007Barcode\020\003\022\010\n\004Text\020\004\022\010\n\004Line\020\005B\007\n\005_ty"
-  "peB\005\n\003_xsB\005\n\003_ysB\005\n\003_xeB\005\n\003_yeB\004\n\002_xB\004\n\002"
-  "_yB\n\n\010_apt_defB\025\n\023_apt_def_symbol_numB\030\n"
-  "\026_apt_def_resize_factorB\005\n\003_xcB\005\n\003_ycB\005\n"
-  "\003_cwB\007\n\005_fontB\010\n\006_xsizeB\010\n\006_ysizeB\017\n\r_wi"
-  "dth_factorB\007\n\005_textB\n\n\010_versionB\n\n\010_sym_"
-  "numB\013\n\t_polarityB\010\n\006_dcodeB\006\n\004_atrB\010\n\006_v"
-  "alueB\005\n\003_idB\r\n\013_orient_defB\026\n\024_orient_de"
-  "f_rotation\032V\n\026SymbolNamesByNameEntry\022\013\n\003"
-  "key\030\001 \001(\t\022+\n\005value\030\002 \001(\0132\034.Odb.Lib.Proto"
-  "buf.SymbolName:\0028\001B\010\n\006_unitsB\005\n\003_idB\007\n\005_"
-  "pathB\014\n\n_directoryB\016\n\014_numFeaturesb\006prot"
-  "o3"
+  "n\022d\n\024attributeLookupTable\030\035 \003(\0132F.Odb.Li"
+  "b.Protobuf.FeaturesFile.FeatureRecord.At"
+  "tributeLookupTableEntry\032;\n\031AttributeLook"
+  "upTableEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t"
+  ":\0028\001\"F\n\004Type\022\007\n\003Arc\020\000\022\007\n\003Pad\020\001\022\013\n\007Surfac"
+  "e\020\002\022\013\n\007Barcode\020\003\022\010\n\004Text\020\004\022\010\n\004Line\020\005B\007\n\005"
+  "_typeB\005\n\003_xsB\005\n\003_ysB\005\n\003_xeB\005\n\003_yeB\004\n\002_xB"
+  "\004\n\002_yB\n\n\010_apt_defB\025\n\023_apt_def_symbol_num"
+  "B\030\n\026_apt_def_resize_factorB\005\n\003_xcB\005\n\003_yc"
+  "B\005\n\003_cwB\007\n\005_fontB\010\n\006_xsizeB\010\n\006_ysizeB\017\n\r"
+  "_width_factorB\007\n\005_textB\n\n\010_versionB\n\n\010_s"
+  "ym_numB\013\n\t_polarityB\010\n\006_dcodeB\006\n\004_atrB\010\n"
+  "\006_valueB\005\n\003_idB\r\n\013_orient_defB\026\n\024_orient"
+  "_def_rotation\032V\n\026SymbolNamesByNameEntry\022"
+  "\013\n\003key\030\001 \001(\t\022+\n\005value\030\002 \001(\0132\034.Odb.Lib.Pr"
+  "otobuf.SymbolName:\0028\001B\010\n\006_unitsB\005\n\003_idB\007"
+  "\n\005_pathB\014\n\n_directoryB\016\n\014_numFeaturesb\006p"
+  "roto3"
   ;
 static const ::_pbi::DescriptorTable* const descriptor_table_featuresfile_2eproto_deps[3] = {
   &::descriptor_table_common_2eproto,
@@ -258,9 +288,9 @@ static const ::_pbi::DescriptorTable* const descriptor_table_featuresfile_2eprot
 };
 static ::_pbi::once_flag descriptor_table_featuresfile_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_featuresfile_2eproto = {
-    false, false, 1602, descriptor_table_protodef_featuresfile_2eproto,
+    false, false, 1765, descriptor_table_protodef_featuresfile_2eproto,
     "featuresfile.proto",
-    &descriptor_table_featuresfile_2eproto_once, descriptor_table_featuresfile_2eproto_deps, 3, 3,
+    &descriptor_table_featuresfile_2eproto_once, descriptor_table_featuresfile_2eproto_deps, 3, 4,
     schemas, file_default_instances, TableStruct_featuresfile_2eproto::offsets,
     file_level_metadata_featuresfile_2eproto, file_level_enum_descriptors_featuresfile_2eproto,
     file_level_service_descriptors_featuresfile_2eproto,
@@ -303,6 +333,20 @@ constexpr FeaturesFile_FeatureRecord_Type FeaturesFile_FeatureRecord::Type_MIN;
 constexpr FeaturesFile_FeatureRecord_Type FeaturesFile_FeatureRecord::Type_MAX;
 constexpr int FeaturesFile_FeatureRecord::Type_ARRAYSIZE;
 #endif  // (__cplusplus < 201703) && (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
+
+// ===================================================================
+
+FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse::FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse() {}
+FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse::FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+    : SuperType(arena) {}
+void FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse::MergeFrom(const FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse& other) {
+  MergeFromInternal(other);
+}
+::PROTOBUF_NAMESPACE_ID::Metadata FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_featuresfile_2eproto_getter, &descriptor_table_featuresfile_2eproto_once,
+      file_level_metadata_featuresfile_2eproto[0]);
+}
 
 // ===================================================================
 
@@ -399,6 +443,9 @@ FeaturesFile_FeatureRecord::FeaturesFile_FeatureRecord(::PROTOBUF_NAMESPACE_ID::
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
+  if (arena != nullptr && !is_message_owned) {
+    arena->OwnCustomDestructor(this, &FeaturesFile_FeatureRecord::ArenaDtor);
+  }
   // @@protoc_insertion_point(arena_constructor:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord)
 }
 FeaturesFile_FeatureRecord::FeaturesFile_FeatureRecord(const FeaturesFile_FeatureRecord& from)
@@ -408,6 +455,7 @@ FeaturesFile_FeatureRecord::FeaturesFile_FeatureRecord(const FeaturesFile_Featur
       decltype(_impl_._has_bits_){from._impl_._has_bits_}
     , /*decltype(_impl_._cached_size_)*/{}
     , decltype(_impl_.contourpolygons_){from._impl_.contourpolygons_}
+    , /*decltype(_impl_.attributelookuptable_)*/{}
     , decltype(_impl_.font_){}
     , decltype(_impl_.text_){}
     , decltype(_impl_.value_){}
@@ -437,6 +485,7 @@ FeaturesFile_FeatureRecord::FeaturesFile_FeatureRecord(const FeaturesFile_Featur
     , decltype(_impl_.orient_def_rotation_){}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _this->_impl_.attributelookuptable_.MergeFrom(from._impl_.attributelookuptable_);
   _impl_.font_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
     _impl_.font_.Set("", GetArenaForAllocation());
@@ -475,6 +524,7 @@ inline void FeaturesFile_FeatureRecord::SharedCtor(
       decltype(_impl_._has_bits_){}
     , /*decltype(_impl_._cached_size_)*/{}
     , decltype(_impl_.contourpolygons_){arena}
+    , /*decltype(_impl_.attributelookuptable_)*/{::_pbi::ArenaInitialized(), arena}
     , decltype(_impl_.font_){}
     , decltype(_impl_.text_){}
     , decltype(_impl_.value_){}
@@ -521,6 +571,7 @@ FeaturesFile_FeatureRecord::~FeaturesFile_FeatureRecord() {
   // @@protoc_insertion_point(destructor:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
+    ArenaDtor(this);
     return;
   }
   SharedDtor();
@@ -529,11 +580,17 @@ FeaturesFile_FeatureRecord::~FeaturesFile_FeatureRecord() {
 inline void FeaturesFile_FeatureRecord::SharedDtor() {
   GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
   _impl_.contourpolygons_.~RepeatedPtrField();
+  _impl_.attributelookuptable_.Destruct();
+  _impl_.attributelookuptable_.~MapField();
   _impl_.font_.Destroy();
   _impl_.text_.Destroy();
   _impl_.value_.Destroy();
 }
 
+void FeaturesFile_FeatureRecord::ArenaDtor(void* object) {
+  FeaturesFile_FeatureRecord* _this = reinterpret_cast< FeaturesFile_FeatureRecord* >(object);
+  _this->_impl_.attributelookuptable_.Destruct();
+}
 void FeaturesFile_FeatureRecord::SetCachedSize(int size) const {
   _impl_._cached_size_.Set(size);
 }
@@ -545,6 +602,7 @@ void FeaturesFile_FeatureRecord::Clear() {
   (void) cached_has_bits;
 
   _impl_.contourpolygons_.Clear();
+  _impl_.attributelookuptable_.Clear();
   cached_has_bits = _impl_._has_bits_[0];
   if (cached_has_bits & 0x00000007u) {
     if (cached_has_bits & 0x00000001u) {
@@ -847,6 +905,19 @@ const char* FeaturesFile_FeatureRecord::_InternalParse(const char* ptr, ::_pbi::
         } else
           goto handle_unusual;
         continue;
+      // map<string, string> attributeLookupTable = 29;
+      case 29:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 234)) {
+          ptr -= 2;
+          do {
+            ptr += 2;
+            ptr = ctx->ParseMessage(&_impl_.attributelookuptable_, ptr);
+            CHK_(ptr);
+            if (!ctx->DataAvailable(ptr)) break;
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<234>(ptr));
+        } else
+          goto handle_unusual;
+        continue;
       default:
         goto handle_unusual;
     }  // switch
@@ -1061,6 +1132,36 @@ uint8_t* FeaturesFile_FeatureRecord::_InternalSerialize(
     target = ::_pbi::WireFormatLite::WriteFloatToArray(28, this->_internal_orient_def_rotation(), target);
   }
 
+  // map<string, string> attributeLookupTable = 29;
+  if (!this->_internal_attributelookuptable().empty()) {
+    using MapType = ::_pb::Map<std::string, std::string>;
+    using WireHelper = FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse::Funcs;
+    const auto& map_field = this->_internal_attributelookuptable();
+    auto check_utf8 = [](const MapType::value_type& entry) {
+      (void)entry;
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+        entry.first.data(), static_cast<int>(entry.first.length()),
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+        "Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.AttributeLookupTableEntry.key");
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+        entry.second.data(), static_cast<int>(entry.second.length()),
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+        "Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.AttributeLookupTableEntry.value");
+    };
+
+    if (stream->IsSerializationDeterministic() && map_field.size() > 1) {
+      for (const auto& entry : ::_pbi::MapSorterPtr<MapType>(map_field)) {
+        target = WireHelper::InternalSerialize(29, entry.first, entry.second, target, stream);
+        check_utf8(entry);
+      }
+    } else {
+      for (const auto& entry : map_field) {
+        target = WireHelper::InternalSerialize(29, entry.first, entry.second, target, stream);
+        check_utf8(entry);
+      }
+    }
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -1082,6 +1183,15 @@ size_t FeaturesFile_FeatureRecord::ByteSizeLong() const {
   for (const auto& msg : this->_impl_.contourpolygons_) {
     total_size +=
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(msg);
+  }
+
+  // map<string, string> attributeLookupTable = 29;
+  total_size += 2 *
+      ::PROTOBUF_NAMESPACE_ID::internal::FromIntSize(this->_internal_attributelookuptable_size());
+  for (::PROTOBUF_NAMESPACE_ID::Map< std::string, std::string >::const_iterator
+      it = this->_internal_attributelookuptable().begin();
+      it != this->_internal_attributelookuptable().end(); ++it) {
+    total_size += FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse::Funcs::ByteSizeLong(it->first, it->second);
   }
 
   cached_has_bits = _impl_._has_bits_[0];
@@ -1267,6 +1377,7 @@ void FeaturesFile_FeatureRecord::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_
   (void) cached_has_bits;
 
   _this->_impl_.contourpolygons_.MergeFrom(from._impl_.contourpolygons_);
+  _this->_impl_.attributelookuptable_.MergeFrom(from._impl_.attributelookuptable_);
   cached_has_bits = from._impl_._has_bits_[0];
   if (cached_has_bits & 0x000000ffu) {
     if (cached_has_bits & 0x00000001u) {
@@ -1382,6 +1493,7 @@ void FeaturesFile_FeatureRecord::InternalSwap(FeaturesFile_FeatureRecord* other)
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
   _impl_.contourpolygons_.InternalSwap(&other->_impl_.contourpolygons_);
+  _impl_.attributelookuptable_.InternalSwap(&other->_impl_.attributelookuptable_);
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
       &_impl_.font_, lhs_arena,
       &other->_impl_.font_, rhs_arena
@@ -1405,7 +1517,7 @@ void FeaturesFile_FeatureRecord::InternalSwap(FeaturesFile_FeatureRecord* other)
 ::PROTOBUF_NAMESPACE_ID::Metadata FeaturesFile_FeatureRecord::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_featuresfile_2eproto_getter, &descriptor_table_featuresfile_2eproto_once,
-      file_level_metadata_featuresfile_2eproto[0]);
+      file_level_metadata_featuresfile_2eproto[1]);
 }
 
 // ===================================================================
@@ -1419,7 +1531,7 @@ void FeaturesFile_SymbolNamesByNameEntry_DoNotUse::MergeFrom(const FeaturesFile_
 ::PROTOBUF_NAMESPACE_ID::Metadata FeaturesFile_SymbolNamesByNameEntry_DoNotUse::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_featuresfile_2eproto_getter, &descriptor_table_featuresfile_2eproto_once,
-      file_level_metadata_featuresfile_2eproto[1]);
+      file_level_metadata_featuresfile_2eproto[2]);
 }
 
 // ===================================================================
@@ -1925,7 +2037,7 @@ void FeaturesFile::InternalSwap(FeaturesFile* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata FeaturesFile::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_featuresfile_2eproto_getter, &descriptor_table_featuresfile_2eproto_once,
-      file_level_metadata_featuresfile_2eproto[2]);
+      file_level_metadata_featuresfile_2eproto[3]);
 }
 
 // @@protoc_insertion_point(namespace_scope)
@@ -1933,6 +2045,10 @@ void FeaturesFile::InternalSwap(FeaturesFile* other) {
 }  // namespace Lib
 }  // namespace Odb
 PROTOBUF_NAMESPACE_OPEN
+template<> PROTOBUF_NOINLINE ::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse*
+Arena::CreateMaybeMessage< ::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse >(arena);
+}
 template<> PROTOBUF_NOINLINE ::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord*
 Arena::CreateMaybeMessage< ::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord >(Arena* arena) {
   return Arena::CreateMessageInternal< ::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord >(arena);

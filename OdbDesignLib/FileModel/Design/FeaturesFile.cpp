@@ -1,4 +1,5 @@
 #include "FeaturesFile.h"
+#include "FeaturesFile.h"
 #include "ArchiveExtractor.h"
 #include <fstream>
 #include "Logger.h"
@@ -258,7 +259,13 @@ namespace Odb::Lib::FileModel::Design
 							throw_parse_error(m_path, line, token, lineNumber);
 						}
 
-						lineStream >> pFeatureRecord->attributesIdString;
+						std::string attrIdString;
+						lineStream >> attrIdString;
+
+						if (!pFeatureRecord->ParseAttributeLookupTable(attrIdString))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}						
 
 						m_featureRecords.push_back(pFeatureRecord);
 					}
@@ -796,7 +803,7 @@ namespace Odb::Lib::FileModel::Design
 		for (const auto& kvSymbolName : m_symbolNamesByName)
 		{
 			(*pFeaturesFileMessage->mutable_symbolnamesbyname())[kvSymbolName.first] = *kvSymbolName.second->to_protobuf();
-		}
+		}		
 		return pFeaturesFileMessage;
 	}
 
@@ -816,7 +823,7 @@ namespace Odb::Lib::FileModel::Design
 			auto pSymbolName = std::make_shared<SymbolName>();
 			pSymbolName->from_protobuf(kvSymbolNameMessage.second);
 			m_symbolNamesByName[kvSymbolNameMessage.first] = pSymbolName;
-		}
+		}			
 	}
 
 	FeaturesFile::FeatureRecord::~FeatureRecord()
@@ -859,6 +866,10 @@ namespace Odb::Lib::FileModel::Design
 		for (const auto& pContourPolygon : m_contourPolygons)
 		{
 			pFeatureRecordMessage->add_contourpolygons()->CopyFrom(*pContourPolygon->to_protobuf());
+		}		
+		for (const auto& kvAttributeAssignment : m_attributeLookupTable)
+		{
+			(*pFeatureRecordMessage->mutable_attributelookuptable())[kvAttributeAssignment.first] = kvAttributeAssignment.second;
 		}
 		return pFeatureRecordMessage;
 	}
@@ -894,6 +905,10 @@ namespace Odb::Lib::FileModel::Design
 			std::shared_ptr<ContourPolygon> pContourPolygon(new ContourPolygon);
 			pContourPolygon->from_protobuf(contourPolygonMessage);
 			m_contourPolygons.push_back(pContourPolygon);
+		}
+		for (const auto& kvAttributeAssignment : message.attributelookuptable())
+		{
+			m_attributeLookupTable[kvAttributeAssignment.first] = kvAttributeAssignment.second;
 		}
 	}
 }

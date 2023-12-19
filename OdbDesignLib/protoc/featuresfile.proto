@@ -54,7 +54,8 @@ message FeaturesFile {
         optional int32 orient_def = 27;
         optional float orient_def_rotation = 28;  
 
-        repeated ContourPolygon contourPolygons = 1;          
+        repeated ContourPolygon contourPolygons = 1;
+        map<string, string> attributeLookupTable = 29;      
     }
 
     optional string units = 1;
@@ -64,6 +65,6 @@ message FeaturesFile {
     optional int32 numFeatures = 7;
     
     repeated FeatureRecord featureRecords = 8;
-    map<string, SymbolName> symbolNamesByName = 9;
+    map<string, SymbolName> symbolNamesByName = 9;    
 
 }

@@ -60,6 +60,9 @@ extern FeaturesFileDefaultTypeInternal _FeaturesFile_default_instance_;
 class FeaturesFile_FeatureRecord;
 struct FeaturesFile_FeatureRecordDefaultTypeInternal;
 extern FeaturesFile_FeatureRecordDefaultTypeInternal _FeaturesFile_FeatureRecord_default_instance_;
+class FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse;
+struct FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeInternal;
+extern FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeInternal _FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse_default_instance_;
 class FeaturesFile_SymbolNamesByNameEntry_DoNotUse;
 struct FeaturesFile_SymbolNamesByNameEntry_DoNotUseDefaultTypeInternal;
 extern FeaturesFile_SymbolNamesByNameEntry_DoNotUseDefaultTypeInternal _FeaturesFile_SymbolNamesByNameEntry_DoNotUse_default_instance_;
@@ -69,6 +72,7 @@ extern FeaturesFile_SymbolNamesByNameEntry_DoNotUseDefaultTypeInternal _Features
 PROTOBUF_NAMESPACE_OPEN
 template<> ::Odb::Lib::Protobuf::FeaturesFile* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::FeaturesFile>(Arena*);
 template<> ::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord>(Arena*);
+template<> ::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse>(Arena*);
 template<> ::Odb::Lib::Protobuf::FeaturesFile_SymbolNamesByNameEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::FeaturesFile_SymbolNamesByNameEntry_DoNotUse>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace Odb {
@@ -105,6 +109,34 @@ inline bool FeaturesFile_FeatureRecord_Type_Parse(
     FeaturesFile_FeatureRecord_Type_descriptor(), name, value);
 }
 // ===================================================================
+
+class FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse : public ::PROTOBUF_NAMESPACE_ID::internal::MapEntry<FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse, 
+    std::string, std::string,
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING,
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING> {
+public:
+  typedef ::PROTOBUF_NAMESPACE_ID::internal::MapEntry<FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse, 
+    std::string, std::string,
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING,
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING> SuperType;
+  FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse();
+  explicit PROTOBUF_CONSTEXPR FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse(
+      ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+  explicit FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  void MergeFrom(const FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse& other);
+  static const FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse* internal_default_instance() { return reinterpret_cast<const FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse*>(&_FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse_default_instance_); }
+  static bool ValidateKey(std::string* s) {
+    return ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(s->data(), static_cast<int>(s->size()), ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::PARSE, "Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.AttributeLookupTableEntry.key");
+ }
+  static bool ValidateValue(std::string* s) {
+    return ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(s->data(), static_cast<int>(s->size()), ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::PARSE, "Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.AttributeLookupTableEntry.value");
+ }
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+  friend struct ::TableStruct_featuresfile_2eproto;
+};
+
+// -------------------------------------------------------------------
 
 class FeaturesFile_FeatureRecord final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord) */ {
@@ -154,7 +186,7 @@ class FeaturesFile_FeatureRecord final :
                &_FeaturesFile_FeatureRecord_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    0;
+    1;
 
   friend void swap(FeaturesFile_FeatureRecord& a, FeaturesFile_FeatureRecord& b) {
     a.Swap(&b);
@@ -215,6 +247,8 @@ class FeaturesFile_FeatureRecord final :
   protected:
   explicit FeaturesFile_FeatureRecord(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                        bool is_message_owned = false);
+  private:
+  static void ArenaDtor(void* object);
   public:
 
   static const ClassData _class_data_;
@@ -223,6 +257,7 @@ class FeaturesFile_FeatureRecord final :
   ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
 
   // nested types ----------------------------------------------------
+
 
   typedef FeaturesFile_FeatureRecord_Type Type;
   static constexpr Type Arc =
@@ -266,6 +301,7 @@ class FeaturesFile_FeatureRecord final :
 
   enum : int {
     kContourPolygonsFieldNumber = 1,
+    kAttributeLookupTableFieldNumber = 29,
     kFontFieldNumber = 15,
     kTextFieldNumber = 19,
     kValueFieldNumber = 25,
@@ -311,6 +347,23 @@ class FeaturesFile_FeatureRecord final :
   ::Odb::Lib::Protobuf::ContourPolygon* add_contourpolygons();
   const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::ContourPolygon >&
       contourpolygons() const;
+
+  // map<string, string> attributeLookupTable = 29;
+  int attributelookuptable_size() const;
+  private:
+  int _internal_attributelookuptable_size() const;
+  public:
+  void clear_attributelookuptable();
+  private:
+  const ::PROTOBUF_NAMESPACE_ID::Map< std::string, std::string >&
+      _internal_attributelookuptable() const;
+  ::PROTOBUF_NAMESPACE_ID::Map< std::string, std::string >*
+      _internal_mutable_attributelookuptable();
+  public:
+  const ::PROTOBUF_NAMESPACE_ID::Map< std::string, std::string >&
+      attributelookuptable() const;
+  ::PROTOBUF_NAMESPACE_ID::Map< std::string, std::string >*
+      mutable_attributelookuptable();
 
   // optional string font = 15;
   bool has_font() const;
@@ -689,6 +742,11 @@ class FeaturesFile_FeatureRecord final :
     ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
     ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::ContourPolygon > contourpolygons_;
+    ::PROTOBUF_NAMESPACE_ID::internal::MapField<
+        FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse,
+        std::string, std::string,
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING,
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING> attributelookuptable_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr font_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr text_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr value_;
@@ -796,7 +854,7 @@ class FeaturesFile final :
                &_FeaturesFile_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    2;
+    3;
 
   friend void swap(FeaturesFile& a, FeaturesFile& b) {
     a.Swap(&b);
@@ -1030,6 +1088,8 @@ class FeaturesFile final :
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
 // FeaturesFile_FeatureRecord
 
 // optional .Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.Type type = 2;
@@ -1945,6 +2005,35 @@ FeaturesFile_FeatureRecord::contourpolygons() const {
   return _impl_.contourpolygons_;
 }
 
+// map<string, string> attributeLookupTable = 29;
+inline int FeaturesFile_FeatureRecord::_internal_attributelookuptable_size() const {
+  return _impl_.attributelookuptable_.size();
+}
+inline int FeaturesFile_FeatureRecord::attributelookuptable_size() const {
+  return _internal_attributelookuptable_size();
+}
+inline void FeaturesFile_FeatureRecord::clear_attributelookuptable() {
+  _impl_.attributelookuptable_.Clear();
+}
+inline const ::PROTOBUF_NAMESPACE_ID::Map< std::string, std::string >&
+FeaturesFile_FeatureRecord::_internal_attributelookuptable() const {
+  return _impl_.attributelookuptable_.GetMap();
+}
+inline const ::PROTOBUF_NAMESPACE_ID::Map< std::string, std::string >&
+FeaturesFile_FeatureRecord::attributelookuptable() const {
+  // @@protoc_insertion_point(field_map:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.attributeLookupTable)
+  return _internal_attributelookuptable();
+}
+inline ::PROTOBUF_NAMESPACE_ID::Map< std::string, std::string >*
+FeaturesFile_FeatureRecord::_internal_mutable_attributelookuptable() {
+  return _impl_.attributelookuptable_.MutableMap();
+}
+inline ::PROTOBUF_NAMESPACE_ID::Map< std::string, std::string >*
+FeaturesFile_FeatureRecord::mutable_attributelookuptable() {
+  // @@protoc_insertion_point(field_mutable_map:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.attributeLookupTable)
+  return _internal_mutable_attributelookuptable();
+}
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------
@@ -2280,6 +2369,8 @@ FeaturesFile::mutable_symbolnamesbyname() {
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

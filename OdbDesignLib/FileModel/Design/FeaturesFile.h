@@ -8,6 +8,7 @@
 #include "../../IProtoBuffable.h"
 #include "../../ProtoBuf/featuresfile.pb.h"
 #include "SymbolName.h"
+#include "AttributeLookupTable.h"
 
 
 namespace Odb::Lib::FileModel::Design
@@ -18,7 +19,7 @@ namespace Odb::Lib::FileModel::Design
 		FeaturesFile();
 		~FeaturesFile();
 
-		struct FeatureRecord : public IProtoBuffable<Odb::Lib::Protobuf::FeaturesFile::FeatureRecord>
+		struct FeatureRecord : public IProtoBuffable<Odb::Lib::Protobuf::FeaturesFile::FeatureRecord>, public AttributeLookupTable
 		{
 			~FeatureRecord();
 
@@ -112,7 +113,7 @@ namespace Odb::Lib::FileModel::Design
 		SymbolName::StringMap m_symbolNamesByName;
 
 		std::vector<std::string> m_attributeNames;
-		std::vector<std::string> m_attributeTextValues;		
+		std::vector<std::string> m_attributeTextValues;			
 
 		constexpr inline static const char* FEATURES_FILENAMES[] =
 		{
