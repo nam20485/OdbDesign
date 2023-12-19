@@ -1,11 +1,12 @@
 #pragma once
 #include <string>
 #include <map>
+#include "../../odbdesign_export.h"
 
 
 namespace Odb::Lib::FileModel::Design
 {
-	class AttributeLookupTable
+	class ODBDESIGN_EXPORT AttributeLookupTable
 	{
 	public:				
 
