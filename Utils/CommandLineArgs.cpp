@@ -21,11 +21,7 @@ namespace Utils
 {
 	CommandLineArgs::CommandLineArgs(int argc, char* argv[])
 	{
-		// save arguments in std::string vector
-		//for (int i = 0; i < argc; i++)
-		//{
-		//	m_vecArguments.push_back(argv[i]);
-		//}
+		// save arguments in std::string vector		
 		std::copy(argv, argv + argc, std::back_inserter(m_vecArguments));
 		parse();
 	}
