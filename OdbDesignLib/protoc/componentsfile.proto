@@ -41,7 +41,8 @@ message ComponentsFile {
         optional uint32 index = 10; 
 
         repeated PropertyRecord propertyRecords = 11;
-        repeated ToeprintRecord toeprintRecords = 12;      
+        repeated ToeprintRecord toeprintRecords = 12; 
+        map<string, string> attributeLookupTable = 13;       
 
     }
    

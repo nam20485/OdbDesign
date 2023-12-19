@@ -10,6 +10,7 @@
 #include "../../IProtoBuffable.h"
 #include "PropertyRecord.h"
 #include "../../ProtoBuf/componentsfile.pb.h"
+#include "AttributeLookupTable.h"
 
 
 namespace Odb::Lib::FileModel::Design
@@ -28,7 +29,7 @@ namespace Odb::Lib::FileModel::Design
 		std::filesystem::path GetDirectory();
 		std::string GetLayerName() const;
 
-		struct ComponentRecord : public IProtoBuffable<Odb::Lib::Protobuf::ComponentsFile::ComponentRecord>
+		struct ComponentRecord : public IProtoBuffable<Odb::Lib::Protobuf::ComponentsFile::ComponentRecord>, public AttributeLookupTable
 		{
 			~ComponentRecord();
 
@@ -40,7 +41,7 @@ namespace Odb::Lib::FileModel::Design
 			bool mirror;
 			std::string compName;	// refDes
 			std::string partName;
-			std::string attributes;
+			//std::string attributes;
 			unsigned int id;
 			// TODO: deal with index of records
 			unsigned int index;

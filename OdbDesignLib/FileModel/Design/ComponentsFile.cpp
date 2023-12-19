@@ -150,7 +150,7 @@ namespace Odb::Lib::FileModel::Design
 		pComponentRecordMessage->set_mirror(mirror);
 		pComponentRecordMessage->set_compname(compName);
 		pComponentRecordMessage->set_partname(partName);
-		pComponentRecordMessage->set_attributes(attributes);
+		//pComponentRecordMessage->set_attributes(attributes);
 		pComponentRecordMessage->set_index(index);
 
 		for (const auto& pPropertyRecord : m_propertyRecords)
@@ -165,6 +165,11 @@ namespace Odb::Lib::FileModel::Design
 			pComponentRecordMessage->add_toeprintrecords()->CopyFrom(*pToeprintRecordMessage);
 		}
 
+		for (const auto& kvAttributeAssignment : m_attributeLookupTable)
+		{
+			(*pComponentRecordMessage->mutable_attributelookuptable())[kvAttributeAssignment.first] = kvAttributeAssignment.second;
+		}
+
 		return pComponentRecordMessage;
 	}
 
@@ -177,7 +182,7 @@ namespace Odb::Lib::FileModel::Design
 		mirror = message.mirror();
 		compName = message.compname();
 		partName = message.partname();
-		attributes = message.attributes();
+		//attributes = message.attributes();
 		index = message.index();
 
 		for (const auto& propertyRecordMessage : message.propertyrecords())
@@ -192,6 +197,11 @@ namespace Odb::Lib::FileModel::Design
 			auto pToeprintRecord = std::make_shared<ToeprintRecord>();
 			pToeprintRecord->from_protobuf(toeprintRecordMessage);
 			m_toeprintRecords.push_back(pToeprintRecord);
+		}
+
+		for (const auto& kvAttributeAssignment : message.attributelookuptable())
+		{
+			m_attributeLookupTable[kvAttributeAssignment.first] = kvAttributeAssignment.second;
 		}
 	}
 
@@ -389,7 +399,7 @@ namespace Odb::Lib::FileModel::Design
 
 						lineStream >> pCurrentComponentRecord->compName;
 						lineStream >> pCurrentComponentRecord->partName;
-						lineStream >> pCurrentComponentRecord->attributes;
+						//lineStream >> pCurrentComponentRecord->attributes;
 
 						if (m_componentRecords.size() > UINT_MAX)
 						{
@@ -398,14 +408,13 @@ namespace Odb::Lib::FileModel::Design
 						
 						pCurrentComponentRecord->index = static_cast<unsigned int>(m_componentRecords.size());
 
-						// TODO: parse attributes and id string
-						//std::string strId;
-						//lineStream >> strId;
-						//std::stringstream idStream(strId);
-						//if (!std::getline(idStream, token, '=')) return false;
-						//else if (!std::getline(idStream, token, '=')) return false;
-						//pCurrentComponentRecord->id = std::stoul(token);
+						std::string attrIdString;
+						lineStream >> attrIdString;
 
+						if (!pCurrentComponentRecord->ParseAttributeLookupTable(attrIdString))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}						
 					}
 					else if (line.find(PropertyRecord::RECORD_TOKEN) == 0)
 					{

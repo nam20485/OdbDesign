@@ -44,12 +44,24 @@ struct ComponentsFile_ComponentRecord_ToeprintRecordDefaultTypeInternal {
   };
 };
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ComponentsFile_ComponentRecord_ToeprintRecordDefaultTypeInternal _ComponentsFile_ComponentRecord_ToeprintRecord_default_instance_;
+PROTOBUF_CONSTEXPR ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse::ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse(
+    ::_pbi::ConstantInitialized) {}
+struct ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeInternal() {}
+  union {
+    ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeInternal _ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse_default_instance_;
 PROTOBUF_CONSTEXPR ComponentsFile_ComponentRecord::ComponentsFile_ComponentRecord(
     ::_pbi::ConstantInitialized): _impl_{
     /*decltype(_impl_._has_bits_)*/{}
   , /*decltype(_impl_._cached_size_)*/{}
   , /*decltype(_impl_.propertyrecords_)*/{}
   , /*decltype(_impl_.toeprintrecords_)*/{}
+  , /*decltype(_impl_.attributelookuptable_)*/{::_pbi::ConstantInitialized()}
   , /*decltype(_impl_.compname_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.partname_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.attributes_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
@@ -119,7 +131,7 @@ PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORIT
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
-static ::_pb::Metadata file_level_metadata_componentsfile_2eproto[5];
+static ::_pb::Metadata file_level_metadata_componentsfile_2eproto[6];
 static constexpr ::_pb::EnumDescriptor const** file_level_enum_descriptors_componentsfile_2eproto = nullptr;
 static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_componentsfile_2eproto = nullptr;
 
@@ -146,6 +158,16 @@ const uint32_t TableStruct_componentsfile_2eproto::offsets[] PROTOBUF_SECTION_VA
   6,
   7,
   0,
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse, _has_bits_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse, key_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse, value_),
+  0,
+  1,
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord, _impl_._has_bits_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -164,6 +186,7 @@ const uint32_t TableStruct_componentsfile_2eproto::offsets[] PROTOBUF_SECTION_VA
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord, _impl_.index_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord, _impl_.propertyrecords_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord, _impl_.toeprintrecords_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord, _impl_.attributelookuptable_),
   3,
   4,
   5,
@@ -174,6 +197,7 @@ const uint32_t TableStruct_componentsfile_2eproto::offsets[] PROTOBUF_SECTION_VA
   2,
   8,
   9,
+  ~0u,
   ~0u,
   ~0u,
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecordsByNameEntry_DoNotUse, _has_bits_),
@@ -229,14 +253,16 @@ const uint32_t TableStruct_componentsfile_2eproto::offsets[] PROTOBUF_SECTION_VA
 };
 static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, 14, -1, sizeof(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord_ToeprintRecord)},
-  { 22, 40, -1, sizeof(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord)},
-  { 52, 60, -1, sizeof(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecordsByNameEntry_DoNotUse)},
-  { 62, 70, -1, sizeof(::Odb::Lib::Protobuf::ComponentsFile_PropertyRecordsByNameEntry_DoNotUse)},
-  { 72, 90, -1, sizeof(::Odb::Lib::Protobuf::ComponentsFile)},
+  { 22, 30, -1, sizeof(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse)},
+  { 32, 51, -1, sizeof(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord)},
+  { 64, 72, -1, sizeof(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecordsByNameEntry_DoNotUse)},
+  { 74, 82, -1, sizeof(::Odb::Lib::Protobuf::ComponentsFile_PropertyRecordsByNameEntry_DoNotUse)},
+  { 84, 102, -1, sizeof(::Odb::Lib::Protobuf::ComponentsFile)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
   &::Odb::Lib::Protobuf::_ComponentsFile_ComponentRecord_ToeprintRecord_default_instance_._instance,
+  &::Odb::Lib::Protobuf::_ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse_default_instance_._instance,
   &::Odb::Lib::Protobuf::_ComponentsFile_ComponentRecord_default_instance_._instance,
   &::Odb::Lib::Protobuf::_ComponentsFile_ComponentRecordsByNameEntry_DoNotUse_default_instance_._instance,
   &::Odb::Lib::Protobuf::_ComponentsFile_PropertyRecordsByNameEntry_DoNotUse_default_instance_._instance,
@@ -245,7 +271,7 @@ static const ::_pb::Message* const file_default_instances[] = {
 
 const char descriptor_table_protodef_componentsfile_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
   "\n\024componentsfile.proto\022\020Odb.Lib.Protobuf"
-  "\032\014common.proto\032\013enums.proto\"\344\014\n\016Componen"
+  "\032\014common.proto\032\013enums.proto\"\213\016\n\016Componen"
   "tsFile\022\022\n\005units\030\001 \001(\tH\000\210\001\001\022\017\n\002id\030\002 \001(\rH\001"
   "\210\001\001\022.\n\004side\030\003 \001(\0162\033.Odb.Lib.Protobuf.Boa"
   "rdSideH\002\210\001\001\022\026\n\tlayerName\030\004 \001(\tH\003\210\001\001\022\021\n\004p"
@@ -259,7 +285,7 @@ const char descriptor_table_protodef_componentsfile_2eproto[] PROTOBUF_SECTION_V
   "\030\013 \003(\0132 .Odb.Lib.Protobuf.PropertyRecord"
   "\022Z\n\025propertyRecordsByName\030\014 \003(\0132;.Odb.Li"
   "b.Protobuf.ComponentsFile.PropertyRecord"
-  "sByNameEntry\032\263\006\n\017ComponentRecord\022\023\n\006pkgR"
+  "sByNameEntry\032\332\007\n\017ComponentRecord\022\023\n\006pkgR"
   "ef\030\001 \001(\rH\000\210\001\001\022\026\n\tlocationX\030\002 \001(\002H\001\210\001\001\022\026\n"
   "\tlocationY\030\003 \001(\002H\002\210\001\001\022\025\n\010rotation\030\004 \001(\002H"
   "\003\210\001\001\022\023\n\006mirror\030\005 \001(\010H\004\210\001\001\022\025\n\010compName\030\006 "
@@ -269,24 +295,29 @@ const char descriptor_table_protodef_componentsfile_2eproto[] PROTOBUF_SECTION_V
   ".Odb.Lib.Protobuf.PropertyRecord\022X\n\017toep"
   "rintRecords\030\014 \003(\0132\?.Odb.Lib.Protobuf.Com"
   "ponentsFile.ComponentRecord.ToeprintReco"
-  "rd\032\264\002\n\016ToeprintRecord\022\026\n\tpinNumber\030\001 \001(\r"
-  "H\000\210\001\001\022\026\n\tlocationX\030\002 \001(\002H\001\210\001\001\022\026\n\tlocatio"
-  "nY\030\003 \001(\002H\002\210\001\001\022\025\n\010rotation\030\004 \001(\002H\003\210\001\001\022\023\n\006"
-  "mirror\030\005 \001(\010H\004\210\001\001\022\026\n\tnetNumber\030\006 \001(\rH\005\210\001"
-  "\001\022\031\n\014subnetNumber\030\007 \001(\rH\006\210\001\001\022\021\n\004name\030\010 \001"
-  "(\tH\007\210\001\001B\014\n\n_pinNumberB\014\n\n_locationXB\014\n\n_"
-  "locationYB\013\n\t_rotationB\t\n\007_mirrorB\014\n\n_ne"
-  "tNumberB\017\n\r_subnetNumberB\007\n\005_nameB\t\n\007_pk"
-  "gRefB\014\n\n_locationXB\014\n\n_locationYB\013\n\t_rot"
-  "ationB\t\n\007_mirrorB\013\n\t_compNameB\013\n\t_partNa"
-  "meB\r\n\013_attributesB\005\n\003_idB\010\n\006_index\032o\n\033Co"
-  "mponentRecordsByNameEntry\022\013\n\003key\030\001 \001(\t\022\?"
-  "\n\005value\030\002 \001(\01320.Odb.Lib.Protobuf.Compone"
-  "ntsFile.ComponentRecord:\0028\001\032^\n\032PropertyR"
-  "ecordsByNameEntry\022\013\n\003key\030\001 \001(\t\022/\n\005value\030"
-  "\002 \001(\0132 .Odb.Lib.Protobuf.PropertyRecord:"
-  "\0028\001B\010\n\006_unitsB\005\n\003_idB\007\n\005_sideB\014\n\n_layerN"
-  "ameB\007\n\005_pathB\014\n\n_directoryb\006proto3"
+  "rd\022h\n\024attributeLookupTable\030\r \003(\0132J.Odb.L"
+  "ib.Protobuf.ComponentsFile.ComponentReco"
+  "rd.AttributeLookupTableEntry\032\264\002\n\016Toeprin"
+  "tRecord\022\026\n\tpinNumber\030\001 \001(\rH\000\210\001\001\022\026\n\tlocat"
+  "ionX\030\002 \001(\002H\001\210\001\001\022\026\n\tlocationY\030\003 \001(\002H\002\210\001\001\022"
+  "\025\n\010rotation\030\004 \001(\002H\003\210\001\001\022\023\n\006mirror\030\005 \001(\010H\004"
+  "\210\001\001\022\026\n\tnetNumber\030\006 \001(\rH\005\210\001\001\022\031\n\014subnetNum"
+  "ber\030\007 \001(\rH\006\210\001\001\022\021\n\004name\030\010 \001(\tH\007\210\001\001B\014\n\n_pi"
+  "nNumberB\014\n\n_locationXB\014\n\n_locationYB\013\n\t_"
+  "rotationB\t\n\007_mirrorB\014\n\n_netNumberB\017\n\r_su"
+  "bnetNumberB\007\n\005_name\032;\n\031AttributeLookupTa"
+  "bleEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001"
+  "B\t\n\007_pkgRefB\014\n\n_locationXB\014\n\n_locationYB"
+  "\013\n\t_rotationB\t\n\007_mirrorB\013\n\t_compNameB\013\n\t"
+  "_partNameB\r\n\013_attributesB\005\n\003_idB\010\n\006_inde"
+  "x\032o\n\033ComponentRecordsByNameEntry\022\013\n\003key\030"
+  "\001 \001(\t\022\?\n\005value\030\002 \001(\01320.Odb.Lib.Protobuf."
+  "ComponentsFile.ComponentRecord:\0028\001\032^\n\032Pr"
+  "opertyRecordsByNameEntry\022\013\n\003key\030\001 \001(\t\022/\n"
+  "\005value\030\002 \001(\0132 .Odb.Lib.Protobuf.Property"
+  "Record:\0028\001B\010\n\006_unitsB\005\n\003_idB\007\n\005_sideB\014\n\n"
+  "_layerNameB\007\n\005_pathB\014\n\n_directoryb\006proto"
+  "3"
   ;
 static const ::_pbi::DescriptorTable* const descriptor_table_componentsfile_2eproto_deps[2] = {
   &::descriptor_table_common_2eproto,
@@ -294,9 +325,9 @@ static const ::_pbi::DescriptorTable* const descriptor_table_componentsfile_2epr
 };
 static ::_pbi::once_flag descriptor_table_componentsfile_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_componentsfile_2eproto = {
-    false, false, 1714, descriptor_table_protodef_componentsfile_2eproto,
+    false, false, 1881, descriptor_table_protodef_componentsfile_2eproto,
     "componentsfile.proto",
-    &descriptor_table_componentsfile_2eproto_once, descriptor_table_componentsfile_2eproto_deps, 2, 5,
+    &descriptor_table_componentsfile_2eproto_once, descriptor_table_componentsfile_2eproto_deps, 2, 6,
     schemas, file_default_instances, TableStruct_componentsfile_2eproto::offsets,
     file_level_metadata_componentsfile_2eproto, file_level_enum_descriptors_componentsfile_2eproto,
     file_level_service_descriptors_componentsfile_2eproto,
@@ -746,6 +777,20 @@ void ComponentsFile_ComponentRecord_ToeprintRecord::InternalSwap(ComponentsFile_
 
 // ===================================================================
 
+ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse::ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse() {}
+ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse::ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+    : SuperType(arena) {}
+void ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse::MergeFrom(const ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse& other) {
+  MergeFromInternal(other);
+}
+::PROTOBUF_NAMESPACE_ID::Metadata ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_componentsfile_2eproto_getter, &descriptor_table_componentsfile_2eproto_once,
+      file_level_metadata_componentsfile_2eproto[1]);
+}
+
+// ===================================================================
+
 class ComponentsFile_ComponentRecord::_Internal {
  public:
   using HasBits = decltype(std::declval<ComponentsFile_ComponentRecord>()._impl_._has_bits_);
@@ -788,6 +833,9 @@ ComponentsFile_ComponentRecord::ComponentsFile_ComponentRecord(::PROTOBUF_NAMESP
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
+  if (arena != nullptr && !is_message_owned) {
+    arena->OwnCustomDestructor(this, &ComponentsFile_ComponentRecord::ArenaDtor);
+  }
   // @@protoc_insertion_point(arena_constructor:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord)
 }
 ComponentsFile_ComponentRecord::ComponentsFile_ComponentRecord(const ComponentsFile_ComponentRecord& from)
@@ -798,6 +846,7 @@ ComponentsFile_ComponentRecord::ComponentsFile_ComponentRecord(const ComponentsF
     , /*decltype(_impl_._cached_size_)*/{}
     , decltype(_impl_.propertyrecords_){from._impl_.propertyrecords_}
     , decltype(_impl_.toeprintrecords_){from._impl_.toeprintrecords_}
+    , /*decltype(_impl_.attributelookuptable_)*/{}
     , decltype(_impl_.compname_){}
     , decltype(_impl_.partname_){}
     , decltype(_impl_.attributes_){}
@@ -810,6 +859,7 @@ ComponentsFile_ComponentRecord::ComponentsFile_ComponentRecord(const ComponentsF
     , decltype(_impl_.index_){}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _this->_impl_.attributelookuptable_.MergeFrom(from._impl_.attributelookuptable_);
   _impl_.compname_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
     _impl_.compname_.Set("", GetArenaForAllocation());
@@ -849,6 +899,7 @@ inline void ComponentsFile_ComponentRecord::SharedCtor(
     , /*decltype(_impl_._cached_size_)*/{}
     , decltype(_impl_.propertyrecords_){arena}
     , decltype(_impl_.toeprintrecords_){arena}
+    , /*decltype(_impl_.attributelookuptable_)*/{::_pbi::ArenaInitialized(), arena}
     , decltype(_impl_.compname_){}
     , decltype(_impl_.partname_){}
     , decltype(_impl_.attributes_){}
@@ -878,6 +929,7 @@ ComponentsFile_ComponentRecord::~ComponentsFile_ComponentRecord() {
   // @@protoc_insertion_point(destructor:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
+    ArenaDtor(this);
     return;
   }
   SharedDtor();
@@ -887,11 +939,17 @@ inline void ComponentsFile_ComponentRecord::SharedDtor() {
   GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
   _impl_.propertyrecords_.~RepeatedPtrField();
   _impl_.toeprintrecords_.~RepeatedPtrField();
+  _impl_.attributelookuptable_.Destruct();
+  _impl_.attributelookuptable_.~MapField();
   _impl_.compname_.Destroy();
   _impl_.partname_.Destroy();
   _impl_.attributes_.Destroy();
 }
 
+void ComponentsFile_ComponentRecord::ArenaDtor(void* object) {
+  ComponentsFile_ComponentRecord* _this = reinterpret_cast< ComponentsFile_ComponentRecord* >(object);
+  _this->_impl_.attributelookuptable_.Destruct();
+}
 void ComponentsFile_ComponentRecord::SetCachedSize(int size) const {
   _impl_._cached_size_.Set(size);
 }
@@ -904,6 +962,7 @@ void ComponentsFile_ComponentRecord::Clear() {
 
   _impl_.propertyrecords_.Clear();
   _impl_.toeprintrecords_.Clear();
+  _impl_.attributelookuptable_.Clear();
   cached_has_bits = _impl_._has_bits_[0];
   if (cached_has_bits & 0x00000007u) {
     if (cached_has_bits & 0x00000001u) {
@@ -1056,6 +1115,19 @@ const char* ComponentsFile_ComponentRecord::_InternalParse(const char* ptr, ::_p
         } else
           goto handle_unusual;
         continue;
+      // map<string, string> attributeLookupTable = 13;
+      case 13:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 106)) {
+          ptr -= 1;
+          do {
+            ptr += 1;
+            ptr = ctx->ParseMessage(&_impl_.attributelookuptable_, ptr);
+            CHK_(ptr);
+            if (!ctx->DataAvailable(ptr)) break;
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<106>(ptr));
+        } else
+          goto handle_unusual;
+        continue;
       default:
         goto handle_unusual;
     }  // switch
@@ -1174,6 +1246,36 @@ uint8_t* ComponentsFile_ComponentRecord::_InternalSerialize(
         InternalWriteMessage(12, repfield, repfield.GetCachedSize(), target, stream);
   }
 
+  // map<string, string> attributeLookupTable = 13;
+  if (!this->_internal_attributelookuptable().empty()) {
+    using MapType = ::_pb::Map<std::string, std::string>;
+    using WireHelper = ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse::Funcs;
+    const auto& map_field = this->_internal_attributelookuptable();
+    auto check_utf8 = [](const MapType::value_type& entry) {
+      (void)entry;
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+        entry.first.data(), static_cast<int>(entry.first.length()),
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+        "Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.AttributeLookupTableEntry.key");
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+        entry.second.data(), static_cast<int>(entry.second.length()),
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+        "Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.AttributeLookupTableEntry.value");
+    };
+
+    if (stream->IsSerializationDeterministic() && map_field.size() > 1) {
+      for (const auto& entry : ::_pbi::MapSorterPtr<MapType>(map_field)) {
+        target = WireHelper::InternalSerialize(13, entry.first, entry.second, target, stream);
+        check_utf8(entry);
+      }
+    } else {
+      for (const auto& entry : map_field) {
+        target = WireHelper::InternalSerialize(13, entry.first, entry.second, target, stream);
+        check_utf8(entry);
+      }
+    }
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -1202,6 +1304,15 @@ size_t ComponentsFile_ComponentRecord::ByteSizeLong() const {
   for (const auto& msg : this->_impl_.toeprintrecords_) {
     total_size +=
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(msg);
+  }
+
+  // map<string, string> attributeLookupTable = 13;
+  total_size += 1 *
+      ::PROTOBUF_NAMESPACE_ID::internal::FromIntSize(this->_internal_attributelookuptable_size());
+  for (::PROTOBUF_NAMESPACE_ID::Map< std::string, std::string >::const_iterator
+      it = this->_internal_attributelookuptable().begin();
+      it != this->_internal_attributelookuptable().end(); ++it) {
+    total_size += ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse::Funcs::ByteSizeLong(it->first, it->second);
   }
 
   cached_has_bits = _impl_._has_bits_[0];
@@ -1285,6 +1396,7 @@ void ComponentsFile_ComponentRecord::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message&
 
   _this->_impl_.propertyrecords_.MergeFrom(from._impl_.propertyrecords_);
   _this->_impl_.toeprintrecords_.MergeFrom(from._impl_.toeprintrecords_);
+  _this->_impl_.attributelookuptable_.MergeFrom(from._impl_.attributelookuptable_);
   cached_has_bits = from._impl_._has_bits_[0];
   if (cached_has_bits & 0x000000ffu) {
     if (cached_has_bits & 0x00000001u) {
@@ -1344,6 +1456,7 @@ void ComponentsFile_ComponentRecord::InternalSwap(ComponentsFile_ComponentRecord
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
   _impl_.propertyrecords_.InternalSwap(&other->_impl_.propertyrecords_);
   _impl_.toeprintrecords_.InternalSwap(&other->_impl_.toeprintrecords_);
+  _impl_.attributelookuptable_.InternalSwap(&other->_impl_.attributelookuptable_);
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
       &_impl_.compname_, lhs_arena,
       &other->_impl_.compname_, rhs_arena
@@ -1367,7 +1480,7 @@ void ComponentsFile_ComponentRecord::InternalSwap(ComponentsFile_ComponentRecord
 ::PROTOBUF_NAMESPACE_ID::Metadata ComponentsFile_ComponentRecord::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_componentsfile_2eproto_getter, &descriptor_table_componentsfile_2eproto_once,
-      file_level_metadata_componentsfile_2eproto[1]);
+      file_level_metadata_componentsfile_2eproto[2]);
 }
 
 // ===================================================================
@@ -1381,7 +1494,7 @@ void ComponentsFile_ComponentRecordsByNameEntry_DoNotUse::MergeFrom(const Compon
 ::PROTOBUF_NAMESPACE_ID::Metadata ComponentsFile_ComponentRecordsByNameEntry_DoNotUse::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_componentsfile_2eproto_getter, &descriptor_table_componentsfile_2eproto_once,
-      file_level_metadata_componentsfile_2eproto[2]);
+      file_level_metadata_componentsfile_2eproto[3]);
 }
 
 // ===================================================================
@@ -1395,7 +1508,7 @@ void ComponentsFile_PropertyRecordsByNameEntry_DoNotUse::MergeFrom(const Compone
 ::PROTOBUF_NAMESPACE_ID::Metadata ComponentsFile_PropertyRecordsByNameEntry_DoNotUse::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_componentsfile_2eproto_getter, &descriptor_table_componentsfile_2eproto_once,
-      file_level_metadata_componentsfile_2eproto[3]);
+      file_level_metadata_componentsfile_2eproto[4]);
 }
 
 // ===================================================================
@@ -2130,7 +2243,7 @@ void ComponentsFile::InternalSwap(ComponentsFile* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata ComponentsFile::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_componentsfile_2eproto_getter, &descriptor_table_componentsfile_2eproto_once,
-      file_level_metadata_componentsfile_2eproto[4]);
+      file_level_metadata_componentsfile_2eproto[5]);
 }
 
 // @@protoc_insertion_point(namespace_scope)
@@ -2141,6 +2254,10 @@ PROTOBUF_NAMESPACE_OPEN
 template<> PROTOBUF_NOINLINE ::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord_ToeprintRecord*
 Arena::CreateMaybeMessage< ::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord_ToeprintRecord >(Arena* arena) {
   return Arena::CreateMessageInternal< ::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord_ToeprintRecord >(arena);
+}
+template<> PROTOBUF_NOINLINE ::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse*
+Arena::CreateMaybeMessage< ::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse >(arena);
 }
 template<> PROTOBUF_NOINLINE ::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord*
 Arena::CreateMaybeMessage< ::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord >(Arena* arena) {
