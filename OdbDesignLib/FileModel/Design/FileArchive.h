@@ -107,5 +107,20 @@ namespace Odb::Lib::FileModel::Design
 		//the file misc / info of the product model.If the default is not defined for the product model, the
 		//default is imperial.
 
+
+		// Attriubute Lookup Tables spec pg. 30
+		//
+		//Symbol Feature / symbols / <symbol_name> / features
+		//	“<symbol_name> / features (Symbol Features)” on page 97
+
+		//Net / steps / <step_name> / eda / data
+		//	“eda / data(EDA Data)” on page 111
+
+		//Feature / steps / <step_name> / layers / <layer_name> / features
+		//	“<layer_name> / features(Graphic Features)” on page 172
+
+		//Component / steps / <step_name> / layers / //<layer_name> / components
+		//	“<layer_name> / components (Components)” on page 155
+
 	};
 }
