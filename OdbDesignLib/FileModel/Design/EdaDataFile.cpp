@@ -955,6 +955,7 @@ namespace Odb::Lib::FileModel::Design
                         }
                         else
                         {
+                            logerror("unknown pin type: [" + token + "]");
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
 
@@ -990,6 +991,7 @@ namespace Odb::Lib::FileModel::Design
                         }
                         else
                         {
+                            logerror("unknown pin electrical type: [" + token + "]");
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
 
@@ -1033,6 +1035,7 @@ namespace Odb::Lib::FileModel::Design
                         }
                         else
                         {
+                            logerror("unknown pin mount type: [" + token + "]");
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
 
