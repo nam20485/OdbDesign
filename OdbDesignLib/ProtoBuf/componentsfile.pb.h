@@ -55,6 +55,12 @@ namespace Protobuf {
 class ComponentsFile;
 struct ComponentsFileDefaultTypeInternal;
 extern ComponentsFileDefaultTypeInternal _ComponentsFile_default_instance_;
+class ComponentsFile_BomDescriptionRecord;
+struct ComponentsFile_BomDescriptionRecordDefaultTypeInternal;
+extern ComponentsFile_BomDescriptionRecordDefaultTypeInternal _ComponentsFile_BomDescriptionRecord_default_instance_;
+class ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUse;
+struct ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUseDefaultTypeInternal;
+extern ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUseDefaultTypeInternal _ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUse_default_instance_;
 class ComponentsFile_ComponentRecord;
 struct ComponentsFile_ComponentRecordDefaultTypeInternal;
 extern ComponentsFile_ComponentRecordDefaultTypeInternal _ComponentsFile_ComponentRecord_default_instance_;
@@ -75,6 +81,8 @@ extern ComponentsFile_PropertyRecordsByNameEntry_DoNotUseDefaultTypeInternal _Co
 }  // namespace Odb
 PROTOBUF_NAMESPACE_OPEN
 template<> ::Odb::Lib::Protobuf::ComponentsFile* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::ComponentsFile>(Arena*);
+template<> ::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecord>(Arena*);
+template<> ::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUse>(Arena*);
 template<> ::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord>(Arena*);
 template<> ::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse>(Arena*);
 template<> ::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord_ToeprintRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord_ToeprintRecord>(Arena*);
@@ -748,6 +756,304 @@ class ComponentsFile_ComponentRecord final :
 };
 // -------------------------------------------------------------------
 
+class ComponentsFile_BomDescriptionRecord final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord) */ {
+ public:
+  inline ComponentsFile_BomDescriptionRecord() : ComponentsFile_BomDescriptionRecord(nullptr) {}
+  ~ComponentsFile_BomDescriptionRecord() override;
+  explicit PROTOBUF_CONSTEXPR ComponentsFile_BomDescriptionRecord(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  ComponentsFile_BomDescriptionRecord(const ComponentsFile_BomDescriptionRecord& from);
+  ComponentsFile_BomDescriptionRecord(ComponentsFile_BomDescriptionRecord&& from) noexcept
+    : ComponentsFile_BomDescriptionRecord() {
+    *this = ::std::move(from);
+  }
+
+  inline ComponentsFile_BomDescriptionRecord& operator=(const ComponentsFile_BomDescriptionRecord& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline ComponentsFile_BomDescriptionRecord& operator=(ComponentsFile_BomDescriptionRecord&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const ComponentsFile_BomDescriptionRecord& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const ComponentsFile_BomDescriptionRecord* internal_default_instance() {
+    return reinterpret_cast<const ComponentsFile_BomDescriptionRecord*>(
+               &_ComponentsFile_BomDescriptionRecord_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    3;
+
+  friend void swap(ComponentsFile_BomDescriptionRecord& a, ComponentsFile_BomDescriptionRecord& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(ComponentsFile_BomDescriptionRecord* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(ComponentsFile_BomDescriptionRecord* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  ComponentsFile_BomDescriptionRecord* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<ComponentsFile_BomDescriptionRecord>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const ComponentsFile_BomDescriptionRecord& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const ComponentsFile_BomDescriptionRecord& from) {
+    ComponentsFile_BomDescriptionRecord::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(ComponentsFile_BomDescriptionRecord* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord";
+  }
+  protected:
+  explicit ComponentsFile_BomDescriptionRecord(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kCpnFieldNumber = 1,
+    kPkgFieldNumber = 2,
+    kIpnFieldNumber = 3,
+    kDscFieldNumber = 4,
+    kVplVndFieldNumber = 5,
+    kVplMpnFieldNumber = 6,
+    kVndFieldNumber = 7,
+    kMpnFieldNumber = 8,
+  };
+  // optional string cpn = 1;
+  bool has_cpn() const;
+  private:
+  bool _internal_has_cpn() const;
+  public:
+  void clear_cpn();
+  const std::string& cpn() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_cpn(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_cpn();
+  PROTOBUF_NODISCARD std::string* release_cpn();
+  void set_allocated_cpn(std::string* cpn);
+  private:
+  const std::string& _internal_cpn() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_cpn(const std::string& value);
+  std::string* _internal_mutable_cpn();
+  public:
+
+  // optional string pkg = 2;
+  bool has_pkg() const;
+  private:
+  bool _internal_has_pkg() const;
+  public:
+  void clear_pkg();
+  const std::string& pkg() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_pkg(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_pkg();
+  PROTOBUF_NODISCARD std::string* release_pkg();
+  void set_allocated_pkg(std::string* pkg);
+  private:
+  const std::string& _internal_pkg() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_pkg(const std::string& value);
+  std::string* _internal_mutable_pkg();
+  public:
+
+  // optional string ipn = 3;
+  bool has_ipn() const;
+  private:
+  bool _internal_has_ipn() const;
+  public:
+  void clear_ipn();
+  const std::string& ipn() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_ipn(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_ipn();
+  PROTOBUF_NODISCARD std::string* release_ipn();
+  void set_allocated_ipn(std::string* ipn);
+  private:
+  const std::string& _internal_ipn() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_ipn(const std::string& value);
+  std::string* _internal_mutable_ipn();
+  public:
+
+  // optional string dsc = 4;
+  bool has_dsc() const;
+  private:
+  bool _internal_has_dsc() const;
+  public:
+  void clear_dsc();
+  const std::string& dsc() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_dsc(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_dsc();
+  PROTOBUF_NODISCARD std::string* release_dsc();
+  void set_allocated_dsc(std::string* dsc);
+  private:
+  const std::string& _internal_dsc() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_dsc(const std::string& value);
+  std::string* _internal_mutable_dsc();
+  public:
+
+  // optional string vpl_vnd = 5;
+  bool has_vpl_vnd() const;
+  private:
+  bool _internal_has_vpl_vnd() const;
+  public:
+  void clear_vpl_vnd();
+  const std::string& vpl_vnd() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_vpl_vnd(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_vpl_vnd();
+  PROTOBUF_NODISCARD std::string* release_vpl_vnd();
+  void set_allocated_vpl_vnd(std::string* vpl_vnd);
+  private:
+  const std::string& _internal_vpl_vnd() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_vpl_vnd(const std::string& value);
+  std::string* _internal_mutable_vpl_vnd();
+  public:
+
+  // optional string vpl_mpn = 6;
+  bool has_vpl_mpn() const;
+  private:
+  bool _internal_has_vpl_mpn() const;
+  public:
+  void clear_vpl_mpn();
+  const std::string& vpl_mpn() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_vpl_mpn(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_vpl_mpn();
+  PROTOBUF_NODISCARD std::string* release_vpl_mpn();
+  void set_allocated_vpl_mpn(std::string* vpl_mpn);
+  private:
+  const std::string& _internal_vpl_mpn() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_vpl_mpn(const std::string& value);
+  std::string* _internal_mutable_vpl_mpn();
+  public:
+
+  // optional string vnd = 7;
+  bool has_vnd() const;
+  private:
+  bool _internal_has_vnd() const;
+  public:
+  void clear_vnd();
+  const std::string& vnd() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_vnd(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_vnd();
+  PROTOBUF_NODISCARD std::string* release_vnd();
+  void set_allocated_vnd(std::string* vnd);
+  private:
+  const std::string& _internal_vnd() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_vnd(const std::string& value);
+  std::string* _internal_mutable_vnd();
+  public:
+
+  // optional string mpn = 8;
+  bool has_mpn() const;
+  private:
+  bool _internal_has_mpn() const;
+  public:
+  void clear_mpn();
+  const std::string& mpn() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_mpn(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_mpn();
+  PROTOBUF_NODISCARD std::string* release_mpn();
+  void set_allocated_mpn(std::string* mpn);
+  private:
+  const std::string& _internal_mpn() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_mpn(const std::string& value);
+  std::string* _internal_mutable_mpn();
+  public:
+
+  // @@protoc_insertion_point(class_scope:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr cpn_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr pkg_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr ipn_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr dsc_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr vpl_vnd_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr vpl_mpn_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr vnd_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr mpn_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_componentsfile_2eproto;
+};
+// -------------------------------------------------------------------
+
 class ComponentsFile_ComponentRecordsByNameEntry_DoNotUse : public ::PROTOBUF_NAMESPACE_ID::internal::MapEntry<ComponentsFile_ComponentRecordsByNameEntry_DoNotUse, 
     std::string, ::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord,
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING,
@@ -791,6 +1097,32 @@ public:
   static const ComponentsFile_PropertyRecordsByNameEntry_DoNotUse* internal_default_instance() { return reinterpret_cast<const ComponentsFile_PropertyRecordsByNameEntry_DoNotUse*>(&_ComponentsFile_PropertyRecordsByNameEntry_DoNotUse_default_instance_); }
   static bool ValidateKey(std::string* s) {
     return ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(s->data(), static_cast<int>(s->size()), ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::PARSE, "Odb.Lib.Protobuf.ComponentsFile.PropertyRecordsByNameEntry.key");
+ }
+  static bool ValidateValue(void*) { return true; }
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+  friend struct ::TableStruct_componentsfile_2eproto;
+};
+
+// -------------------------------------------------------------------
+
+class ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUse : public ::PROTOBUF_NAMESPACE_ID::internal::MapEntry<ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUse, 
+    std::string, ::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecord,
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING,
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_MESSAGE> {
+public:
+  typedef ::PROTOBUF_NAMESPACE_ID::internal::MapEntry<ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUse, 
+    std::string, ::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecord,
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING,
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_MESSAGE> SuperType;
+  ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUse();
+  explicit PROTOBUF_CONSTEXPR ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUse(
+      ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+  explicit ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUse(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  void MergeFrom(const ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUse& other);
+  static const ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUse* internal_default_instance() { return reinterpret_cast<const ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUse*>(&_ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUse_default_instance_); }
+  static bool ValidateKey(std::string* s) {
+    return ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(s->data(), static_cast<int>(s->size()), ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::PARSE, "Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecordsByCpnEntry.key");
  }
   static bool ValidateValue(void*) { return true; }
   using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
@@ -848,7 +1180,7 @@ class ComponentsFile final :
                &_ComponentsFile_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    5;
+    7;
 
   friend void swap(ComponentsFile& a, ComponentsFile& b) {
     a.Swap(&b);
@@ -921,6 +1253,7 @@ class ComponentsFile final :
   // nested types ----------------------------------------------------
 
   typedef ComponentsFile_ComponentRecord ComponentRecord;
+  typedef ComponentsFile_BomDescriptionRecord BomDescriptionRecord;
 
   // accessors -------------------------------------------------------
 
@@ -931,6 +1264,7 @@ class ComponentsFile final :
     kComponentRecordsByNameFieldNumber = 10,
     kPropertyRecordsFieldNumber = 11,
     kPropertyRecordsByNameFieldNumber = 12,
+    kBomDescriptionRecordsByCpnFieldNumber = 13,
     kUnitsFieldNumber = 1,
     kLayerNameFieldNumber = 4,
     kPathFieldNumber = 5,
@@ -1056,6 +1390,23 @@ class ComponentsFile final :
   ::PROTOBUF_NAMESPACE_ID::Map< std::string, ::Odb::Lib::Protobuf::PropertyRecord >*
       mutable_propertyrecordsbyname();
 
+  // map<string, .Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord> bomDescriptionRecordsByCpn = 13;
+  int bomdescriptionrecordsbycpn_size() const;
+  private:
+  int _internal_bomdescriptionrecordsbycpn_size() const;
+  public:
+  void clear_bomdescriptionrecordsbycpn();
+  private:
+  const ::PROTOBUF_NAMESPACE_ID::Map< std::string, ::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecord >&
+      _internal_bomdescriptionrecordsbycpn() const;
+  ::PROTOBUF_NAMESPACE_ID::Map< std::string, ::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecord >*
+      _internal_mutable_bomdescriptionrecordsbycpn();
+  public:
+  const ::PROTOBUF_NAMESPACE_ID::Map< std::string, ::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecord >&
+      bomdescriptionrecordsbycpn() const;
+  ::PROTOBUF_NAMESPACE_ID::Map< std::string, ::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecord >*
+      mutable_bomdescriptionrecordsbycpn();
+
   // optional string units = 1;
   bool has_units() const;
   private:
@@ -1178,6 +1529,11 @@ class ComponentsFile final :
         std::string, ::Odb::Lib::Protobuf::PropertyRecord,
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING,
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_MESSAGE> propertyrecordsbyname_;
+    ::PROTOBUF_NAMESPACE_ID::internal::MapField<
+        ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUse,
+        std::string, ::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecord,
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING,
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_MESSAGE> bomdescriptionrecordsbycpn_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr units_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr layername_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr path_;
@@ -1977,6 +2333,556 @@ ComponentsFile_ComponentRecord::mutable_attributelookuptable() {
 
 // -------------------------------------------------------------------
 
+// ComponentsFile_BomDescriptionRecord
+
+// optional string cpn = 1;
+inline bool ComponentsFile_BomDescriptionRecord::_internal_has_cpn() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
+  return value;
+}
+inline bool ComponentsFile_BomDescriptionRecord::has_cpn() const {
+  return _internal_has_cpn();
+}
+inline void ComponentsFile_BomDescriptionRecord::clear_cpn() {
+  _impl_.cpn_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000001u;
+}
+inline const std::string& ComponentsFile_BomDescriptionRecord::cpn() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.cpn)
+  return _internal_cpn();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void ComponentsFile_BomDescriptionRecord::set_cpn(ArgT0&& arg0, ArgT... args) {
+ _impl_._has_bits_[0] |= 0x00000001u;
+ _impl_.cpn_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.cpn)
+}
+inline std::string* ComponentsFile_BomDescriptionRecord::mutable_cpn() {
+  std::string* _s = _internal_mutable_cpn();
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.cpn)
+  return _s;
+}
+inline const std::string& ComponentsFile_BomDescriptionRecord::_internal_cpn() const {
+  return _impl_.cpn_.Get();
+}
+inline void ComponentsFile_BomDescriptionRecord::_internal_set_cpn(const std::string& value) {
+  _impl_._has_bits_[0] |= 0x00000001u;
+  _impl_.cpn_.Set(value, GetArenaForAllocation());
+}
+inline std::string* ComponentsFile_BomDescriptionRecord::_internal_mutable_cpn() {
+  _impl_._has_bits_[0] |= 0x00000001u;
+  return _impl_.cpn_.Mutable(GetArenaForAllocation());
+}
+inline std::string* ComponentsFile_BomDescriptionRecord::release_cpn() {
+  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.cpn)
+  if (!_internal_has_cpn()) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000001u;
+  auto* p = _impl_.cpn_.Release();
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.cpn_.IsDefault()) {
+    _impl_.cpn_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
+}
+inline void ComponentsFile_BomDescriptionRecord::set_allocated_cpn(std::string* cpn) {
+  if (cpn != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000001u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000001u;
+  }
+  _impl_.cpn_.SetAllocated(cpn, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.cpn_.IsDefault()) {
+    _impl_.cpn_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.cpn)
+}
+
+// optional string pkg = 2;
+inline bool ComponentsFile_BomDescriptionRecord::_internal_has_pkg() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
+  return value;
+}
+inline bool ComponentsFile_BomDescriptionRecord::has_pkg() const {
+  return _internal_has_pkg();
+}
+inline void ComponentsFile_BomDescriptionRecord::clear_pkg() {
+  _impl_.pkg_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000002u;
+}
+inline const std::string& ComponentsFile_BomDescriptionRecord::pkg() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.pkg)
+  return _internal_pkg();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void ComponentsFile_BomDescriptionRecord::set_pkg(ArgT0&& arg0, ArgT... args) {
+ _impl_._has_bits_[0] |= 0x00000002u;
+ _impl_.pkg_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.pkg)
+}
+inline std::string* ComponentsFile_BomDescriptionRecord::mutable_pkg() {
+  std::string* _s = _internal_mutable_pkg();
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.pkg)
+  return _s;
+}
+inline const std::string& ComponentsFile_BomDescriptionRecord::_internal_pkg() const {
+  return _impl_.pkg_.Get();
+}
+inline void ComponentsFile_BomDescriptionRecord::_internal_set_pkg(const std::string& value) {
+  _impl_._has_bits_[0] |= 0x00000002u;
+  _impl_.pkg_.Set(value, GetArenaForAllocation());
+}
+inline std::string* ComponentsFile_BomDescriptionRecord::_internal_mutable_pkg() {
+  _impl_._has_bits_[0] |= 0x00000002u;
+  return _impl_.pkg_.Mutable(GetArenaForAllocation());
+}
+inline std::string* ComponentsFile_BomDescriptionRecord::release_pkg() {
+  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.pkg)
+  if (!_internal_has_pkg()) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000002u;
+  auto* p = _impl_.pkg_.Release();
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.pkg_.IsDefault()) {
+    _impl_.pkg_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
+}
+inline void ComponentsFile_BomDescriptionRecord::set_allocated_pkg(std::string* pkg) {
+  if (pkg != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000002u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000002u;
+  }
+  _impl_.pkg_.SetAllocated(pkg, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.pkg_.IsDefault()) {
+    _impl_.pkg_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.pkg)
+}
+
+// optional string ipn = 3;
+inline bool ComponentsFile_BomDescriptionRecord::_internal_has_ipn() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
+  return value;
+}
+inline bool ComponentsFile_BomDescriptionRecord::has_ipn() const {
+  return _internal_has_ipn();
+}
+inline void ComponentsFile_BomDescriptionRecord::clear_ipn() {
+  _impl_.ipn_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000004u;
+}
+inline const std::string& ComponentsFile_BomDescriptionRecord::ipn() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.ipn)
+  return _internal_ipn();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void ComponentsFile_BomDescriptionRecord::set_ipn(ArgT0&& arg0, ArgT... args) {
+ _impl_._has_bits_[0] |= 0x00000004u;
+ _impl_.ipn_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.ipn)
+}
+inline std::string* ComponentsFile_BomDescriptionRecord::mutable_ipn() {
+  std::string* _s = _internal_mutable_ipn();
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.ipn)
+  return _s;
+}
+inline const std::string& ComponentsFile_BomDescriptionRecord::_internal_ipn() const {
+  return _impl_.ipn_.Get();
+}
+inline void ComponentsFile_BomDescriptionRecord::_internal_set_ipn(const std::string& value) {
+  _impl_._has_bits_[0] |= 0x00000004u;
+  _impl_.ipn_.Set(value, GetArenaForAllocation());
+}
+inline std::string* ComponentsFile_BomDescriptionRecord::_internal_mutable_ipn() {
+  _impl_._has_bits_[0] |= 0x00000004u;
+  return _impl_.ipn_.Mutable(GetArenaForAllocation());
+}
+inline std::string* ComponentsFile_BomDescriptionRecord::release_ipn() {
+  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.ipn)
+  if (!_internal_has_ipn()) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000004u;
+  auto* p = _impl_.ipn_.Release();
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.ipn_.IsDefault()) {
+    _impl_.ipn_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
+}
+inline void ComponentsFile_BomDescriptionRecord::set_allocated_ipn(std::string* ipn) {
+  if (ipn != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000004u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000004u;
+  }
+  _impl_.ipn_.SetAllocated(ipn, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.ipn_.IsDefault()) {
+    _impl_.ipn_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.ipn)
+}
+
+// optional string dsc = 4;
+inline bool ComponentsFile_BomDescriptionRecord::_internal_has_dsc() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000008u) != 0;
+  return value;
+}
+inline bool ComponentsFile_BomDescriptionRecord::has_dsc() const {
+  return _internal_has_dsc();
+}
+inline void ComponentsFile_BomDescriptionRecord::clear_dsc() {
+  _impl_.dsc_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000008u;
+}
+inline const std::string& ComponentsFile_BomDescriptionRecord::dsc() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.dsc)
+  return _internal_dsc();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void ComponentsFile_BomDescriptionRecord::set_dsc(ArgT0&& arg0, ArgT... args) {
+ _impl_._has_bits_[0] |= 0x00000008u;
+ _impl_.dsc_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.dsc)
+}
+inline std::string* ComponentsFile_BomDescriptionRecord::mutable_dsc() {
+  std::string* _s = _internal_mutable_dsc();
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.dsc)
+  return _s;
+}
+inline const std::string& ComponentsFile_BomDescriptionRecord::_internal_dsc() const {
+  return _impl_.dsc_.Get();
+}
+inline void ComponentsFile_BomDescriptionRecord::_internal_set_dsc(const std::string& value) {
+  _impl_._has_bits_[0] |= 0x00000008u;
+  _impl_.dsc_.Set(value, GetArenaForAllocation());
+}
+inline std::string* ComponentsFile_BomDescriptionRecord::_internal_mutable_dsc() {
+  _impl_._has_bits_[0] |= 0x00000008u;
+  return _impl_.dsc_.Mutable(GetArenaForAllocation());
+}
+inline std::string* ComponentsFile_BomDescriptionRecord::release_dsc() {
+  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.dsc)
+  if (!_internal_has_dsc()) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000008u;
+  auto* p = _impl_.dsc_.Release();
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.dsc_.IsDefault()) {
+    _impl_.dsc_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
+}
+inline void ComponentsFile_BomDescriptionRecord::set_allocated_dsc(std::string* dsc) {
+  if (dsc != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000008u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000008u;
+  }
+  _impl_.dsc_.SetAllocated(dsc, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.dsc_.IsDefault()) {
+    _impl_.dsc_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.dsc)
+}
+
+// optional string vpl_vnd = 5;
+inline bool ComponentsFile_BomDescriptionRecord::_internal_has_vpl_vnd() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000010u) != 0;
+  return value;
+}
+inline bool ComponentsFile_BomDescriptionRecord::has_vpl_vnd() const {
+  return _internal_has_vpl_vnd();
+}
+inline void ComponentsFile_BomDescriptionRecord::clear_vpl_vnd() {
+  _impl_.vpl_vnd_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000010u;
+}
+inline const std::string& ComponentsFile_BomDescriptionRecord::vpl_vnd() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.vpl_vnd)
+  return _internal_vpl_vnd();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void ComponentsFile_BomDescriptionRecord::set_vpl_vnd(ArgT0&& arg0, ArgT... args) {
+ _impl_._has_bits_[0] |= 0x00000010u;
+ _impl_.vpl_vnd_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.vpl_vnd)
+}
+inline std::string* ComponentsFile_BomDescriptionRecord::mutable_vpl_vnd() {
+  std::string* _s = _internal_mutable_vpl_vnd();
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.vpl_vnd)
+  return _s;
+}
+inline const std::string& ComponentsFile_BomDescriptionRecord::_internal_vpl_vnd() const {
+  return _impl_.vpl_vnd_.Get();
+}
+inline void ComponentsFile_BomDescriptionRecord::_internal_set_vpl_vnd(const std::string& value) {
+  _impl_._has_bits_[0] |= 0x00000010u;
+  _impl_.vpl_vnd_.Set(value, GetArenaForAllocation());
+}
+inline std::string* ComponentsFile_BomDescriptionRecord::_internal_mutable_vpl_vnd() {
+  _impl_._has_bits_[0] |= 0x00000010u;
+  return _impl_.vpl_vnd_.Mutable(GetArenaForAllocation());
+}
+inline std::string* ComponentsFile_BomDescriptionRecord::release_vpl_vnd() {
+  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.vpl_vnd)
+  if (!_internal_has_vpl_vnd()) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000010u;
+  auto* p = _impl_.vpl_vnd_.Release();
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.vpl_vnd_.IsDefault()) {
+    _impl_.vpl_vnd_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
+}
+inline void ComponentsFile_BomDescriptionRecord::set_allocated_vpl_vnd(std::string* vpl_vnd) {
+  if (vpl_vnd != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000010u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000010u;
+  }
+  _impl_.vpl_vnd_.SetAllocated(vpl_vnd, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.vpl_vnd_.IsDefault()) {
+    _impl_.vpl_vnd_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.vpl_vnd)
+}
+
+// optional string vpl_mpn = 6;
+inline bool ComponentsFile_BomDescriptionRecord::_internal_has_vpl_mpn() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000020u) != 0;
+  return value;
+}
+inline bool ComponentsFile_BomDescriptionRecord::has_vpl_mpn() const {
+  return _internal_has_vpl_mpn();
+}
+inline void ComponentsFile_BomDescriptionRecord::clear_vpl_mpn() {
+  _impl_.vpl_mpn_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000020u;
+}
+inline const std::string& ComponentsFile_BomDescriptionRecord::vpl_mpn() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.vpl_mpn)
+  return _internal_vpl_mpn();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void ComponentsFile_BomDescriptionRecord::set_vpl_mpn(ArgT0&& arg0, ArgT... args) {
+ _impl_._has_bits_[0] |= 0x00000020u;
+ _impl_.vpl_mpn_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.vpl_mpn)
+}
+inline std::string* ComponentsFile_BomDescriptionRecord::mutable_vpl_mpn() {
+  std::string* _s = _internal_mutable_vpl_mpn();
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.vpl_mpn)
+  return _s;
+}
+inline const std::string& ComponentsFile_BomDescriptionRecord::_internal_vpl_mpn() const {
+  return _impl_.vpl_mpn_.Get();
+}
+inline void ComponentsFile_BomDescriptionRecord::_internal_set_vpl_mpn(const std::string& value) {
+  _impl_._has_bits_[0] |= 0x00000020u;
+  _impl_.vpl_mpn_.Set(value, GetArenaForAllocation());
+}
+inline std::string* ComponentsFile_BomDescriptionRecord::_internal_mutable_vpl_mpn() {
+  _impl_._has_bits_[0] |= 0x00000020u;
+  return _impl_.vpl_mpn_.Mutable(GetArenaForAllocation());
+}
+inline std::string* ComponentsFile_BomDescriptionRecord::release_vpl_mpn() {
+  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.vpl_mpn)
+  if (!_internal_has_vpl_mpn()) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000020u;
+  auto* p = _impl_.vpl_mpn_.Release();
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.vpl_mpn_.IsDefault()) {
+    _impl_.vpl_mpn_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
+}
+inline void ComponentsFile_BomDescriptionRecord::set_allocated_vpl_mpn(std::string* vpl_mpn) {
+  if (vpl_mpn != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000020u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000020u;
+  }
+  _impl_.vpl_mpn_.SetAllocated(vpl_mpn, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.vpl_mpn_.IsDefault()) {
+    _impl_.vpl_mpn_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.vpl_mpn)
+}
+
+// optional string vnd = 7;
+inline bool ComponentsFile_BomDescriptionRecord::_internal_has_vnd() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000040u) != 0;
+  return value;
+}
+inline bool ComponentsFile_BomDescriptionRecord::has_vnd() const {
+  return _internal_has_vnd();
+}
+inline void ComponentsFile_BomDescriptionRecord::clear_vnd() {
+  _impl_.vnd_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000040u;
+}
+inline const std::string& ComponentsFile_BomDescriptionRecord::vnd() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.vnd)
+  return _internal_vnd();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void ComponentsFile_BomDescriptionRecord::set_vnd(ArgT0&& arg0, ArgT... args) {
+ _impl_._has_bits_[0] |= 0x00000040u;
+ _impl_.vnd_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.vnd)
+}
+inline std::string* ComponentsFile_BomDescriptionRecord::mutable_vnd() {
+  std::string* _s = _internal_mutable_vnd();
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.vnd)
+  return _s;
+}
+inline const std::string& ComponentsFile_BomDescriptionRecord::_internal_vnd() const {
+  return _impl_.vnd_.Get();
+}
+inline void ComponentsFile_BomDescriptionRecord::_internal_set_vnd(const std::string& value) {
+  _impl_._has_bits_[0] |= 0x00000040u;
+  _impl_.vnd_.Set(value, GetArenaForAllocation());
+}
+inline std::string* ComponentsFile_BomDescriptionRecord::_internal_mutable_vnd() {
+  _impl_._has_bits_[0] |= 0x00000040u;
+  return _impl_.vnd_.Mutable(GetArenaForAllocation());
+}
+inline std::string* ComponentsFile_BomDescriptionRecord::release_vnd() {
+  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.vnd)
+  if (!_internal_has_vnd()) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000040u;
+  auto* p = _impl_.vnd_.Release();
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.vnd_.IsDefault()) {
+    _impl_.vnd_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
+}
+inline void ComponentsFile_BomDescriptionRecord::set_allocated_vnd(std::string* vnd) {
+  if (vnd != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000040u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000040u;
+  }
+  _impl_.vnd_.SetAllocated(vnd, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.vnd_.IsDefault()) {
+    _impl_.vnd_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.vnd)
+}
+
+// optional string mpn = 8;
+inline bool ComponentsFile_BomDescriptionRecord::_internal_has_mpn() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000080u) != 0;
+  return value;
+}
+inline bool ComponentsFile_BomDescriptionRecord::has_mpn() const {
+  return _internal_has_mpn();
+}
+inline void ComponentsFile_BomDescriptionRecord::clear_mpn() {
+  _impl_.mpn_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000080u;
+}
+inline const std::string& ComponentsFile_BomDescriptionRecord::mpn() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.mpn)
+  return _internal_mpn();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void ComponentsFile_BomDescriptionRecord::set_mpn(ArgT0&& arg0, ArgT... args) {
+ _impl_._has_bits_[0] |= 0x00000080u;
+ _impl_.mpn_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.mpn)
+}
+inline std::string* ComponentsFile_BomDescriptionRecord::mutable_mpn() {
+  std::string* _s = _internal_mutable_mpn();
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.mpn)
+  return _s;
+}
+inline const std::string& ComponentsFile_BomDescriptionRecord::_internal_mpn() const {
+  return _impl_.mpn_.Get();
+}
+inline void ComponentsFile_BomDescriptionRecord::_internal_set_mpn(const std::string& value) {
+  _impl_._has_bits_[0] |= 0x00000080u;
+  _impl_.mpn_.Set(value, GetArenaForAllocation());
+}
+inline std::string* ComponentsFile_BomDescriptionRecord::_internal_mutable_mpn() {
+  _impl_._has_bits_[0] |= 0x00000080u;
+  return _impl_.mpn_.Mutable(GetArenaForAllocation());
+}
+inline std::string* ComponentsFile_BomDescriptionRecord::release_mpn() {
+  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.mpn)
+  if (!_internal_has_mpn()) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000080u;
+  auto* p = _impl_.mpn_.Release();
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.mpn_.IsDefault()) {
+    _impl_.mpn_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
+}
+inline void ComponentsFile_BomDescriptionRecord::set_allocated_mpn(std::string* mpn) {
+  if (mpn != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000080u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000080u;
+  }
+  _impl_.mpn_.SetAllocated(mpn, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.mpn_.IsDefault()) {
+    _impl_.mpn_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.mpn)
+}
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------
@@ -2593,9 +3499,42 @@ ComponentsFile::mutable_propertyrecordsbyname() {
   return _internal_mutable_propertyrecordsbyname();
 }
 
+// map<string, .Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord> bomDescriptionRecordsByCpn = 13;
+inline int ComponentsFile::_internal_bomdescriptionrecordsbycpn_size() const {
+  return _impl_.bomdescriptionrecordsbycpn_.size();
+}
+inline int ComponentsFile::bomdescriptionrecordsbycpn_size() const {
+  return _internal_bomdescriptionrecordsbycpn_size();
+}
+inline void ComponentsFile::clear_bomdescriptionrecordsbycpn() {
+  _impl_.bomdescriptionrecordsbycpn_.Clear();
+}
+inline const ::PROTOBUF_NAMESPACE_ID::Map< std::string, ::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecord >&
+ComponentsFile::_internal_bomdescriptionrecordsbycpn() const {
+  return _impl_.bomdescriptionrecordsbycpn_.GetMap();
+}
+inline const ::PROTOBUF_NAMESPACE_ID::Map< std::string, ::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecord >&
+ComponentsFile::bomdescriptionrecordsbycpn() const {
+  // @@protoc_insertion_point(field_map:Odb.Lib.Protobuf.ComponentsFile.bomDescriptionRecordsByCpn)
+  return _internal_bomdescriptionrecordsbycpn();
+}
+inline ::PROTOBUF_NAMESPACE_ID::Map< std::string, ::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecord >*
+ComponentsFile::_internal_mutable_bomdescriptionrecordsbycpn() {
+  return _impl_.bomdescriptionrecordsbycpn_.MutableMap();
+}
+inline ::PROTOBUF_NAMESPACE_ID::Map< std::string, ::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecord >*
+ComponentsFile::mutable_bomdescriptionrecordsbycpn() {
+  // @@protoc_insertion_point(field_mutable_map:Odb.Lib.Protobuf.ComponentsFile.bomDescriptionRecordsByCpn)
+  return _internal_mutable_bomdescriptionrecordsbycpn();
+}
+
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

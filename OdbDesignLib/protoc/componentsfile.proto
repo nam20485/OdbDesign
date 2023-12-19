@@ -45,6 +45,18 @@ message ComponentsFile {
         map<string, string> attributeLookupTable = 13;       
 
     }
+
+    message BomDescriptionRecord
+    {
+        optional string cpn = 1;
+        optional string pkg = 2;
+        optional string ipn = 3;
+        optional string dsc = 4;
+        optional string vpl_vnd = 5;
+        optional string vpl_mpn = 6;
+        optional string vnd = 7;
+        optional string mpn = 8;
+    }
    
     optional string units = 1;
     optional uint32 id = 2;
@@ -61,4 +73,6 @@ message ComponentsFile {
 
     repeated PropertyRecord propertyRecords = 11;
     map<string, PropertyRecord> propertyRecordsByName = 12;
+
+    map<string, BomDescriptionRecord> bomDescriptionRecordsByCpn = 13;
 }
