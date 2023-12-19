@@ -1,11 +1,16 @@
-#include "AttributeIdString.h"
+#include "AttributeLookupTable.h"
 #include <sstream>
 
 namespace Odb::Lib::FileModel::Design
 {
-	bool AttributeIdString::ParseAttributeIdString(const std::string& attributeIdString)
+	const std::map<std::string, std::string>& AttributeLookupTable::GetAttributeLookupTable() const
 	{
-		std::stringstream ss(attributeIdString);
+		return m_attributeLookupTable;
+	}
+
+	bool AttributeLookupTable::ParseAttributeLookupTable(const std::string& attributeLookupTableString)
+	{
+		std::stringstream ss(attributeLookupTableString);
 		std::string token;
 
 		// attributes
@@ -30,7 +35,7 @@ namespace Odb::Lib::FileModel::Design
 						if (!std::getline(aa_ss, name)) return false;
 					}
 
-					m_attributeAssignments[name] = value;
+					m_attributeLookupTable[name] = value;
 				}
 			}
 		}
@@ -48,8 +53,7 @@ namespace Odb::Lib::FileModel::Design
 				if (!std::getline(token_ss, value)) return false;
 			}
 
-			m_attributeAssignments[name] = value;
-
+			m_attributeLookupTable[name] = value;
 		}
 
 		return true;
