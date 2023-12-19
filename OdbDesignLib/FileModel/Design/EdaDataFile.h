@@ -11,6 +11,7 @@
 #include "../../IProtoBuffable.h"
 #include "PropertyRecord.h"
 #include "ContourPolygon.h"
+#include "AttributeLookupTable.h"
 
 
 namespace Odb::Lib::FileModel::Design
@@ -48,7 +49,7 @@ namespace Odb::Lib::FileModel::Design
 			void from_protobuf(const Odb::Lib::Protobuf::EdaDataFile::FeatureIdRecord& message) override;
 		};
 
-		struct ODBDESIGN_EXPORT NetRecord : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::NetRecord>
+		struct ODBDESIGN_EXPORT NetRecord : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::NetRecord>, public AttributeLookupTable
 		{
 			struct ODBDESIGN_EXPORT SubnetRecord final : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord>
 			{
@@ -113,7 +114,7 @@ namespace Odb::Lib::FileModel::Design
 			~NetRecord();
 
 			std::string name;
-			std::string attributesIdString;
+			//std::string attributesIdString;
 			// TODO: store index of records
 			unsigned int index;
 
@@ -126,7 +127,7 @@ namespace Odb::Lib::FileModel::Design
 
 		}; // NetRecord
 
-		struct ODBDESIGN_EXPORT PackageRecord : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::PackageRecord>
+		struct ODBDESIGN_EXPORT PackageRecord : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::PackageRecord>, public AttributeLookupTable
 		{
 			struct ODBDESIGN_EXPORT OutlineRecord : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::PackageRecord::OutlineRecord>
 			{				
@@ -245,7 +246,7 @@ namespace Odb::Lib::FileModel::Design
 			float pitch;
 			float xMin, yMin;
 			float xMax, yMax;
-			std::string attributesIdString;
+			//std::string attributesIdString;
 			unsigned int index;
 
 			OutlineRecord::Vector m_outlineRecords;

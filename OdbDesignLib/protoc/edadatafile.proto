@@ -74,6 +74,7 @@ message EdaDataFile {
 
         repeated SubnetRecord subnetRecords = 4;
         repeated PropertyRecord propertyRecords = 5;
+        map<string, string> attributeLookupTable = 6;  
     }
 
     message PackageRecord {    
@@ -90,6 +91,7 @@ message EdaDataFile {
         map<string, PinRecord> pinRecordsByName = 9;
         repeated PropertyRecord propertyRecords = 10;
         repeated OutlineRecord outlineRecords = 11;
+        map<string, string> attributeLookupTable = 12;  
 
         message OutlineRecord {
 

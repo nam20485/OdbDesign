@@ -120,7 +120,7 @@ namespace Odb::Lib::FileModel::Design
     {
         std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::NetRecord> pNetRecordMessage(new Odb::Lib::Protobuf::EdaDataFile::NetRecord);        
         pNetRecordMessage->set_name(name);
-        pNetRecordMessage->set_attributesidstring(attributesIdString);
+        //pNetRecordMessage->set_attributesidstring(attributesIdString);
         pNetRecordMessage->set_index(index);
 
         for (const auto& propertyRecord : m_propertyRecords)
@@ -133,14 +133,18 @@ namespace Odb::Lib::FileModel::Design
         {
 			auto pSubnetRecordMessage = pNetRecordMessage->add_subnetrecords();
 			pSubnetRecordMessage->CopyFrom(*subnetRecord->to_protobuf());
-        }        
+        }   
+        for (const auto& kvAttributeAssignment : m_attributeLookupTable)
+        {
+            (*pNetRecordMessage->mutable_attributelookuptable())[kvAttributeAssignment.first] = kvAttributeAssignment.second;
+        }
         return pNetRecordMessage;
     }
 
     void EdaDataFile::NetRecord::from_protobuf(const Odb::Lib::Protobuf::EdaDataFile::NetRecord& message)
     {
         name = message.name();
-		attributesIdString = message.attributesidstring();
+		//attributesIdString = message.attributesidstring();
 		index = message.index();
 
 		for (const auto& propertyRecordMessage : message.propertyrecords())
@@ -155,7 +159,12 @@ namespace Odb::Lib::FileModel::Design
 			auto pSubnetRecord = std::make_shared<SubnetRecord>();
 			pSubnetRecord->from_protobuf(subnetRecordMessage);
 			m_subnetRecords.push_back(pSubnetRecord);
-		}      
+		}   
+
+        for (const auto& kvAttributeAssignment : message.attributelookuptable())
+        {
+            m_attributeLookupTable[kvAttributeAssignment.first] = kvAttributeAssignment.second;
+        }
     }
 
     std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::FeatureIdRecord>
@@ -629,7 +638,12 @@ namespace Odb::Lib::FileModel::Design
                         pCurrentNetRecord->name = token;
                         pCurrentNetRecord->index = static_cast<unsigned>(m_netRecords.size());
 
-                        lineStream >> pCurrentNetRecord->attributesIdString;
+                        std::string attrIdString;
+                        lineStream >> attrIdString;
+                        if (!pCurrentNetRecord->ParseAttributeLookupTable(attrIdString))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
                     }
                     else if (line.find(NetRecord::SubnetRecord::RECORD_TOKEN) == 0)
                     {
@@ -882,7 +896,12 @@ namespace Odb::Lib::FileModel::Design
                         // ymax
                         pCurrentPackageRecord->yMax = std::stof(token);
 
-                        lineStream >> pCurrentPackageRecord->attributesIdString;
+                        std::string attrIdString;
+                        lineStream >> attrIdString;
+                        if (!pCurrentPackageRecord->ParseAttributeLookupTable(attrIdString))
+                        {
+                            throw_parse_error(m_path, line, token, lineNumber);
+                        }
                     }
                     else if (line.find(PIN_RECORD_TOKEN) == 0)
                     {
@@ -1549,7 +1568,7 @@ namespace Odb::Lib::FileModel::Design
         pPackageRecordMessage->set_ymin(yMin);
         pPackageRecordMessage->set_xmax(xMax);
         pPackageRecordMessage->set_ymax(yMax);
-        pPackageRecordMessage->set_attributesidstring(attributesIdString);
+        //pPackageRecordMessage->set_attributesidstring(attributesIdString);
         for (const auto& pinRecord : m_pinRecords)
         {
             auto pPinRecordMessage = pPackageRecordMessage->add_pinrecords();
@@ -1569,6 +1588,10 @@ namespace Odb::Lib::FileModel::Design
 			auto pOutlineRecordMessage = pPackageRecordMessage->add_outlinerecords();
 			pOutlineRecordMessage->CopyFrom(*outlineRecord->to_protobuf());
 		}
+        for (const auto& kvAttributeAssignment : m_attributeLookupTable)
+        {
+            (*pPackageRecordMessage->mutable_attributelookuptable())[kvAttributeAssignment.first] = kvAttributeAssignment.second;
+        }
         return pPackageRecordMessage;
     }
 
@@ -1580,7 +1603,7 @@ namespace Odb::Lib::FileModel::Design
         yMin = message.ymin();
         xMax = message.xmax();
         yMax = message.ymax();
-        attributesIdString = message.attributesidstring();
+        //attributesIdString = message.attributesidstring();
 
         for (const auto& pinRecordMessage : message.pinrecords())
         {
@@ -1609,6 +1632,11 @@ namespace Odb::Lib::FileModel::Design
             auto pOutlineRecord = std::make_shared<OutlineRecord>();
             pOutlineRecord->from_protobuf(outlineRecordMessage);
             m_outlineRecords.push_back(pOutlineRecord);
+        }
+
+        for (const auto& kvAttributeAssignment : message.attributelookuptable())
+        {
+            m_attributeLookupTable[kvAttributeAssignment.first] = kvAttributeAssignment.second;
         }
     }
 
