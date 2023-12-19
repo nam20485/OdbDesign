@@ -64,9 +64,7 @@ namespace Odb::Lib::FileModel::Design
 			unsigned int id;
 
 			int orient_def;
-			float orient_def_rotation;
-
-			std::string attributesIdString;
+			float orient_def_rotation;			
 
 			ContourPolygon::Vector m_contourPolygons;
 

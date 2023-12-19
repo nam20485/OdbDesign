@@ -324,7 +324,13 @@ namespace Odb::Lib::FileModel::Design
 							throw_parse_error(m_path, line, token, lineNumber);
 						}
 
-						lineStream >> pFeatureRecord->attributesIdString;
+						std::string attrIdString;
+						lineStream >> attrIdString;
+
+						if (!pFeatureRecord->ParseAttributeLookupTable(attrIdString))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
 
 						m_featureRecords.push_back(pFeatureRecord);
 					}
@@ -405,7 +411,13 @@ namespace Odb::Lib::FileModel::Design
 							throw_parse_error(m_path, line, token, lineNumber);
 						}						
 
-						lineStream >> pFeatureRecord->attributesIdString;
+						std::string attrIdString;
+						lineStream >> attrIdString;
+
+						if (!pFeatureRecord->ParseAttributeLookupTable(attrIdString))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
 
 						m_featureRecords.push_back(pFeatureRecord);
 					}					
@@ -485,7 +497,13 @@ namespace Odb::Lib::FileModel::Design
 						default: throw_parse_error(m_path, line, token, lineNumber);
 						}						
 
-						lineStream >> pFeatureRecord->attributesIdString;
+						std::string attrIdString;
+						lineStream >> attrIdString;
+
+						if (!pFeatureRecord->ParseAttributeLookupTable(attrIdString))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
 
 						m_featureRecords.push_back(pFeatureRecord);
 					}
@@ -501,6 +519,14 @@ namespace Odb::Lib::FileModel::Design
 						pFeatureRecord->type = FeatureRecord::Type::Barcode;
 						
 						// TODO: barcode feature record type
+
+						//std::string attrIdString;
+						//lineStream >> attrIdString;
+
+						//if (!pFeatureRecord->ParseAttributeLookupTable(attrIdString))
+						//{
+						//	throw_parse_error(m_path, line, token, lineNumber);
+						//}
 
 						m_featureRecords.push_back(pFeatureRecord);						
 					}
@@ -533,7 +559,13 @@ namespace Odb::Lib::FileModel::Design
 							throw_parse_error(m_path, line, token, lineNumber);
 						}						
 
-						lineStream >> pCurrentFeatureRecord->attributesIdString;
+						std::string attrIdString;
+						lineStream >> attrIdString;
+
+						if (!pCurrentFeatureRecord->ParseAttributeLookupTable(attrIdString))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
 					}
 					else if (line.find(FeatureRecord::SURFACE_END_TOKEN) == 0)
 					{
