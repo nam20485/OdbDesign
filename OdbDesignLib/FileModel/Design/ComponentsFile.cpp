@@ -160,7 +160,10 @@ namespace Odb::Lib::FileModel::Design
 		pBomDescriptionRecordMessage->set_cpn(cpn);
 		pBomDescriptionRecordMessage->set_pkg(pkg);
 		pBomDescriptionRecordMessage->set_ipn(ipn);
-		pBomDescriptionRecordMessage->set_dsc(dsc);
+		for (const auto& description : descriptions)
+		{			
+			pBomDescriptionRecordMessage->add_descriptions()->assign(description);
+		}
 		pBomDescriptionRecordMessage->set_vpl_vnd(vpl_vnd);
 		pBomDescriptionRecordMessage->set_vpl_mpn(vpl_mpn);
 		pBomDescriptionRecordMessage->set_vnd(vnd);
@@ -173,7 +176,10 @@ namespace Odb::Lib::FileModel::Design
 		cpn = message.cpn();
 		pkg = message.pkg();
 		ipn = message.ipn();
-		dsc = message.dsc();
+		for (const auto& description : message.descriptions())
+		{
+			descriptions.push_back(description);
+		}
 		vpl_vnd = message.vpl_vnd();
 		vpl_mpn = message.vpl_mpn();
 		vnd = message.vnd();
@@ -424,6 +430,13 @@ namespace Odb::Lib::FileModel::Design
 							throw_parse_error(m_path, line, token, lineNumber);
 						}
 
+						if (pCurrentBomDescriptionRecord != nullptr)
+						{
+							// BomDescriptionRecord end (i.e. MPN) line
+							m_bomDescriptionRecordsByCpn[pCurrentBomDescriptionRecord->cpn] = pCurrentBomDescriptionRecord;
+							pCurrentBomDescriptionRecord.reset();
+						}
+
 						// do we have a current component record?
 						if (pCurrentComponentRecord != nullptr)
 						{
@@ -628,10 +641,14 @@ namespace Odb::Lib::FileModel::Design
 							throw_parse_error(m_path, line, token, lineNumber);
 						}
 
-						if (!(lineStream >> pCurrentBomDescriptionRecord->dsc))
+						std::string description;
+
+						if (!(lineStream >> description))
 						{
 							throw_parse_error(m_path, line, token, lineNumber);
 						}
+
+						pCurrentBomDescriptionRecord->descriptions.push_back(description);
 					}
 					else if (line.find(ComponentsFile::BomDescriptionRecord::VPL_VND_RECORD_TOKEN) == 0)
 					{
@@ -710,10 +727,17 @@ namespace Odb::Lib::FileModel::Design
 						}
 
 						// BomDescriptionRecord end (i.e. MPN) line
-						m_bomDescriptionRecordsByCpn[pCurrentBomDescriptionRecord->cpn] = pCurrentBomDescriptionRecord;
-						pCurrentBomDescriptionRecord.reset();
+						//m_bomDescriptionRecordsByCpn[pCurrentBomDescriptionRecord->cpn] = pCurrentBomDescriptionRecord;
+						//pCurrentBomDescriptionRecord.reset();
 					}					
 				}
+			}
+
+			if (pCurrentBomDescriptionRecord != nullptr)
+			{
+				// BomDescriptionRecord end (i.e. MPN) line
+				m_bomDescriptionRecordsByCpn[pCurrentBomDescriptionRecord->cpn] = pCurrentBomDescriptionRecord;
+				pCurrentBomDescriptionRecord.reset();
 			}
 
 			// do we have a current component record? (finish up the last record in the file- i.e. ran out of file)

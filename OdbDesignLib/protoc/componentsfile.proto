@@ -51,7 +51,7 @@ message ComponentsFile {
         optional string cpn = 1;
         optional string pkg = 2;
         optional string ipn = 3;
-        optional string dsc = 4;
+        repeated string descriptions = 4;
         optional string vpl_vnd = 5;
         optional string vpl_mpn = 6;
         optional string vnd = 7;

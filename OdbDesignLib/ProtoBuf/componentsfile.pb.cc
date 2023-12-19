@@ -85,10 +85,10 @@ PROTOBUF_CONSTEXPR ComponentsFile_BomDescriptionRecord::ComponentsFile_BomDescri
     ::_pbi::ConstantInitialized): _impl_{
     /*decltype(_impl_._has_bits_)*/{}
   , /*decltype(_impl_._cached_size_)*/{}
+  , /*decltype(_impl_.descriptions_)*/{}
   , /*decltype(_impl_.cpn_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.pkg_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.ipn_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.dsc_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.vpl_vnd_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.vpl_mpn_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.vnd_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
@@ -242,7 +242,7 @@ const uint32_t TableStruct_componentsfile_2eproto::offsets[] PROTOBUF_SECTION_VA
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecord, _impl_.cpn_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecord, _impl_.pkg_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecord, _impl_.ipn_),
-  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecord, _impl_.dsc_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecord, _impl_.descriptions_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecord, _impl_.vpl_vnd_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecord, _impl_.vpl_mpn_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecord, _impl_.vnd_),
@@ -250,11 +250,11 @@ const uint32_t TableStruct_componentsfile_2eproto::offsets[] PROTOBUF_SECTION_VA
   0,
   1,
   2,
+  ~0u,
   3,
   4,
   5,
   6,
-  7,
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecordsByNameEntry_DoNotUse, _has_bits_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecordsByNameEntry_DoNotUse, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -342,7 +342,7 @@ static const ::_pb::Message* const file_default_instances[] = {
 
 const char descriptor_table_protodef_componentsfile_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
   "\n\024componentsfile.proto\022\020Odb.Lib.Protobuf"
-  "\032\014common.proto\032\013enums.proto\"\344\021\n\016Componen"
+  "\032\014common.proto\032\013enums.proto\"\340\021\n\016Componen"
   "tsFile\022\022\n\005units\030\001 \001(\tH\000\210\001\001\022\017\n\002id\030\002 \001(\rH\001"
   "\210\001\001\022.\n\004side\030\003 \001(\0162\033.Odb.Lib.Protobuf.Boa"
   "rdSideH\002\210\001\001\022\026\n\tlayerName\030\004 \001(\tH\003\210\001\001\022\021\n\004p"
@@ -383,23 +383,23 @@ const char descriptor_table_protodef_componentsfile_2eproto[] PROTOBUF_SECTION_V
   "\001(\t\022\r\n\005value\030\002 \001(\t:\0028\001B\t\n\007_pkgRefB\014\n\n_lo"
   "cationXB\014\n\n_locationYB\013\n\t_rotationB\t\n\007_m"
   "irrorB\013\n\t_compNameB\013\n\t_partNameB\r\n\013_attr"
-  "ibutesB\005\n\003_idB\010\n\006_index\032\366\001\n\024BomDescripti"
+  "ibutesB\005\n\003_idB\010\n\006_index\032\362\001\n\024BomDescripti"
   "onRecord\022\020\n\003cpn\030\001 \001(\tH\000\210\001\001\022\020\n\003pkg\030\002 \001(\tH"
-  "\001\210\001\001\022\020\n\003ipn\030\003 \001(\tH\002\210\001\001\022\020\n\003dsc\030\004 \001(\tH\003\210\001\001"
-  "\022\024\n\007vpl_vnd\030\005 \001(\tH\004\210\001\001\022\024\n\007vpl_mpn\030\006 \001(\tH"
-  "\005\210\001\001\022\020\n\003vnd\030\007 \001(\tH\006\210\001\001\022\020\n\003mpn\030\010 \001(\tH\007\210\001\001"
-  "B\006\n\004_cpnB\006\n\004_pkgB\006\n\004_ipnB\006\n\004_dscB\n\n\010_vpl"
-  "_vndB\n\n\010_vpl_mpnB\006\n\004_vndB\006\n\004_mpn\032o\n\033Comp"
-  "onentRecordsByNameEntry\022\013\n\003key\030\001 \001(\t\022\?\n\005"
-  "value\030\002 \001(\01320.Odb.Lib.Protobuf.Component"
-  "sFile.ComponentRecord:\0028\001\032^\n\032PropertyRec"
-  "ordsByNameEntry\022\013\n\003key\030\001 \001(\t\022/\n\005value\030\002 "
-  "\001(\0132 .Odb.Lib.Protobuf.PropertyRecord:\0028"
-  "\001\032x\n\037BomDescriptionRecordsByCpnEntry\022\013\n\003"
-  "key\030\001 \001(\t\022D\n\005value\030\002 \001(\01325.Odb.Lib.Proto"
-  "buf.ComponentsFile.BomDescriptionRecord:"
-  "\0028\001B\010\n\006_unitsB\005\n\003_idB\007\n\005_sideB\014\n\n_layerN"
-  "ameB\007\n\005_pathB\014\n\n_directoryb\006proto3"
+  "\001\210\001\001\022\020\n\003ipn\030\003 \001(\tH\002\210\001\001\022\024\n\014descriptions\030\004"
+  " \003(\t\022\024\n\007vpl_vnd\030\005 \001(\tH\003\210\001\001\022\024\n\007vpl_mpn\030\006 "
+  "\001(\tH\004\210\001\001\022\020\n\003vnd\030\007 \001(\tH\005\210\001\001\022\020\n\003mpn\030\010 \001(\tH"
+  "\006\210\001\001B\006\n\004_cpnB\006\n\004_pkgB\006\n\004_ipnB\n\n\010_vpl_vnd"
+  "B\n\n\010_vpl_mpnB\006\n\004_vndB\006\n\004_mpn\032o\n\033Componen"
+  "tRecordsByNameEntry\022\013\n\003key\030\001 \001(\t\022\?\n\005valu"
+  "e\030\002 \001(\01320.Odb.Lib.Protobuf.ComponentsFil"
+  "e.ComponentRecord:\0028\001\032^\n\032PropertyRecords"
+  "ByNameEntry\022\013\n\003key\030\001 \001(\t\022/\n\005value\030\002 \001(\0132"
+  " .Odb.Lib.Protobuf.PropertyRecord:\0028\001\032x\n"
+  "\037BomDescriptionRecordsByCpnEntry\022\013\n\003key\030"
+  "\001 \001(\t\022D\n\005value\030\002 \001(\01325.Odb.Lib.Protobuf."
+  "ComponentsFile.BomDescriptionRecord:\0028\001B"
+  "\010\n\006_unitsB\005\n\003_idB\007\n\005_sideB\014\n\n_layerNameB"
+  "\007\n\005_pathB\014\n\n_directoryb\006proto3"
   ;
 static const ::_pbi::DescriptorTable* const descriptor_table_componentsfile_2eproto_deps[2] = {
   &::descriptor_table_common_2eproto,
@@ -407,7 +407,7 @@ static const ::_pbi::DescriptorTable* const descriptor_table_componentsfile_2epr
 };
 static ::_pbi::once_flag descriptor_table_componentsfile_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_componentsfile_2eproto = {
-    false, false, 2354, descriptor_table_protodef_componentsfile_2eproto,
+    false, false, 2350, descriptor_table_protodef_componentsfile_2eproto,
     "componentsfile.proto",
     &descriptor_table_componentsfile_2eproto_once, descriptor_table_componentsfile_2eproto_deps, 2, 8,
     schemas, file_default_instances, TableStruct_componentsfile_2eproto::offsets,
@@ -1579,20 +1579,17 @@ class ComponentsFile_BomDescriptionRecord::_Internal {
   static void set_has_ipn(HasBits* has_bits) {
     (*has_bits)[0] |= 4u;
   }
-  static void set_has_dsc(HasBits* has_bits) {
+  static void set_has_vpl_vnd(HasBits* has_bits) {
     (*has_bits)[0] |= 8u;
   }
-  static void set_has_vpl_vnd(HasBits* has_bits) {
+  static void set_has_vpl_mpn(HasBits* has_bits) {
     (*has_bits)[0] |= 16u;
   }
-  static void set_has_vpl_mpn(HasBits* has_bits) {
+  static void set_has_vnd(HasBits* has_bits) {
     (*has_bits)[0] |= 32u;
   }
-  static void set_has_vnd(HasBits* has_bits) {
-    (*has_bits)[0] |= 64u;
-  }
   static void set_has_mpn(HasBits* has_bits) {
-    (*has_bits)[0] |= 128u;
+    (*has_bits)[0] |= 64u;
   }
 };
 
@@ -1608,10 +1605,10 @@ ComponentsFile_BomDescriptionRecord::ComponentsFile_BomDescriptionRecord(const C
   new (&_impl_) Impl_{
       decltype(_impl_._has_bits_){from._impl_._has_bits_}
     , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.descriptions_){from._impl_.descriptions_}
     , decltype(_impl_.cpn_){}
     , decltype(_impl_.pkg_){}
     , decltype(_impl_.ipn_){}
-    , decltype(_impl_.dsc_){}
     , decltype(_impl_.vpl_vnd_){}
     , decltype(_impl_.vpl_mpn_){}
     , decltype(_impl_.vnd_){}
@@ -1640,14 +1637,6 @@ ComponentsFile_BomDescriptionRecord::ComponentsFile_BomDescriptionRecord(const C
   #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
   if (from._internal_has_ipn()) {
     _this->_impl_.ipn_.Set(from._internal_ipn(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.dsc_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.dsc_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (from._internal_has_dsc()) {
-    _this->_impl_.dsc_.Set(from._internal_dsc(), 
       _this->GetArenaForAllocation());
   }
   _impl_.vpl_vnd_.InitDefault();
@@ -1692,10 +1681,10 @@ inline void ComponentsFile_BomDescriptionRecord::SharedCtor(
   new (&_impl_) Impl_{
       decltype(_impl_._has_bits_){}
     , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.descriptions_){arena}
     , decltype(_impl_.cpn_){}
     , decltype(_impl_.pkg_){}
     , decltype(_impl_.ipn_){}
-    , decltype(_impl_.dsc_){}
     , decltype(_impl_.vpl_vnd_){}
     , decltype(_impl_.vpl_mpn_){}
     , decltype(_impl_.vnd_){}
@@ -1712,10 +1701,6 @@ inline void ComponentsFile_BomDescriptionRecord::SharedCtor(
   _impl_.ipn_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
     _impl_.ipn_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.dsc_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.dsc_.Set("", GetArenaForAllocation());
   #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
   _impl_.vpl_vnd_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
@@ -1746,10 +1731,10 @@ ComponentsFile_BomDescriptionRecord::~ComponentsFile_BomDescriptionRecord() {
 
 inline void ComponentsFile_BomDescriptionRecord::SharedDtor() {
   GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  _impl_.descriptions_.~RepeatedPtrField();
   _impl_.cpn_.Destroy();
   _impl_.pkg_.Destroy();
   _impl_.ipn_.Destroy();
-  _impl_.dsc_.Destroy();
   _impl_.vpl_vnd_.Destroy();
   _impl_.vpl_mpn_.Destroy();
   _impl_.vnd_.Destroy();
@@ -1766,8 +1751,9 @@ void ComponentsFile_BomDescriptionRecord::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
+  _impl_.descriptions_.Clear();
   cached_has_bits = _impl_._has_bits_[0];
-  if (cached_has_bits & 0x000000ffu) {
+  if (cached_has_bits & 0x0000007fu) {
     if (cached_has_bits & 0x00000001u) {
       _impl_.cpn_.ClearNonDefaultToEmpty();
     }
@@ -1778,18 +1764,15 @@ void ComponentsFile_BomDescriptionRecord::Clear() {
       _impl_.ipn_.ClearNonDefaultToEmpty();
     }
     if (cached_has_bits & 0x00000008u) {
-      _impl_.dsc_.ClearNonDefaultToEmpty();
-    }
-    if (cached_has_bits & 0x00000010u) {
       _impl_.vpl_vnd_.ClearNonDefaultToEmpty();
     }
-    if (cached_has_bits & 0x00000020u) {
+    if (cached_has_bits & 0x00000010u) {
       _impl_.vpl_mpn_.ClearNonDefaultToEmpty();
     }
-    if (cached_has_bits & 0x00000040u) {
+    if (cached_has_bits & 0x00000020u) {
       _impl_.vnd_.ClearNonDefaultToEmpty();
     }
-    if (cached_has_bits & 0x00000080u) {
+    if (cached_has_bits & 0x00000040u) {
       _impl_.mpn_.ClearNonDefaultToEmpty();
     }
   }
@@ -1834,13 +1817,18 @@ const char* ComponentsFile_BomDescriptionRecord::_InternalParse(const char* ptr,
         } else
           goto handle_unusual;
         continue;
-      // optional string dsc = 4;
+      // repeated string descriptions = 4;
       case 4:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 34)) {
-          auto str = _internal_mutable_dsc();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.dsc"));
+          ptr -= 1;
+          do {
+            ptr += 1;
+            auto str = _internal_add_descriptions();
+            ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+            CHK_(ptr);
+            CHK_(::_pbi::VerifyUTF8(str, "Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.descriptions"));
+            if (!ctx->DataAvailable(ptr)) break;
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<34>(ptr));
         } else
           goto handle_unusual;
         continue;
@@ -1944,14 +1932,14 @@ uint8_t* ComponentsFile_BomDescriptionRecord::_InternalSerialize(
         3, this->_internal_ipn(), target);
   }
 
-  // optional string dsc = 4;
-  if (_internal_has_dsc()) {
+  // repeated string descriptions = 4;
+  for (int i = 0, n = this->_internal_descriptions_size(); i < n; i++) {
+    const auto& s = this->_internal_descriptions(i);
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_dsc().data(), static_cast<int>(this->_internal_dsc().length()),
+      s.data(), static_cast<int>(s.length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.dsc");
-    target = stream->WriteStringMaybeAliased(
-        4, this->_internal_dsc(), target);
+      "Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.descriptions");
+    target = stream->WriteString(4, s, target);
   }
 
   // optional string vpl_vnd = 5;
@@ -2010,8 +1998,16 @@ size_t ComponentsFile_BomDescriptionRecord::ByteSizeLong() const {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
+  // repeated string descriptions = 4;
+  total_size += 1 *
+      ::PROTOBUF_NAMESPACE_ID::internal::FromIntSize(_impl_.descriptions_.size());
+  for (int i = 0, n = _impl_.descriptions_.size(); i < n; i++) {
+    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+      _impl_.descriptions_.Get(i));
+  }
+
   cached_has_bits = _impl_._has_bits_[0];
-  if (cached_has_bits & 0x000000ffu) {
+  if (cached_has_bits & 0x0000007fu) {
     // optional string cpn = 1;
     if (cached_has_bits & 0x00000001u) {
       total_size += 1 +
@@ -2033,36 +2029,29 @@ size_t ComponentsFile_BomDescriptionRecord::ByteSizeLong() const {
           this->_internal_ipn());
     }
 
-    // optional string dsc = 4;
-    if (cached_has_bits & 0x00000008u) {
-      total_size += 1 +
-        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-          this->_internal_dsc());
-    }
-
     // optional string vpl_vnd = 5;
-    if (cached_has_bits & 0x00000010u) {
+    if (cached_has_bits & 0x00000008u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
           this->_internal_vpl_vnd());
     }
 
     // optional string vpl_mpn = 6;
-    if (cached_has_bits & 0x00000020u) {
+    if (cached_has_bits & 0x00000010u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
           this->_internal_vpl_mpn());
     }
 
     // optional string vnd = 7;
-    if (cached_has_bits & 0x00000040u) {
+    if (cached_has_bits & 0x00000020u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
           this->_internal_vnd());
     }
 
     // optional string mpn = 8;
-    if (cached_has_bits & 0x00000080u) {
+    if (cached_has_bits & 0x00000040u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
           this->_internal_mpn());
@@ -2087,8 +2076,9 @@ void ComponentsFile_BomDescriptionRecord::MergeImpl(::PROTOBUF_NAMESPACE_ID::Mes
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
+  _this->_impl_.descriptions_.MergeFrom(from._impl_.descriptions_);
   cached_has_bits = from._impl_._has_bits_[0];
-  if (cached_has_bits & 0x000000ffu) {
+  if (cached_has_bits & 0x0000007fu) {
     if (cached_has_bits & 0x00000001u) {
       _this->_internal_set_cpn(from._internal_cpn());
     }
@@ -2099,18 +2089,15 @@ void ComponentsFile_BomDescriptionRecord::MergeImpl(::PROTOBUF_NAMESPACE_ID::Mes
       _this->_internal_set_ipn(from._internal_ipn());
     }
     if (cached_has_bits & 0x00000008u) {
-      _this->_internal_set_dsc(from._internal_dsc());
-    }
-    if (cached_has_bits & 0x00000010u) {
       _this->_internal_set_vpl_vnd(from._internal_vpl_vnd());
     }
-    if (cached_has_bits & 0x00000020u) {
+    if (cached_has_bits & 0x00000010u) {
       _this->_internal_set_vpl_mpn(from._internal_vpl_mpn());
     }
-    if (cached_has_bits & 0x00000040u) {
+    if (cached_has_bits & 0x00000020u) {
       _this->_internal_set_vnd(from._internal_vnd());
     }
-    if (cached_has_bits & 0x00000080u) {
+    if (cached_has_bits & 0x00000040u) {
       _this->_internal_set_mpn(from._internal_mpn());
     }
   }
@@ -2134,6 +2121,7 @@ void ComponentsFile_BomDescriptionRecord::InternalSwap(ComponentsFile_BomDescrip
   auto* rhs_arena = other->GetArenaForAllocation();
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  _impl_.descriptions_.InternalSwap(&other->_impl_.descriptions_);
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
       &_impl_.cpn_, lhs_arena,
       &other->_impl_.cpn_, rhs_arena
@@ -2145,10 +2133,6 @@ void ComponentsFile_BomDescriptionRecord::InternalSwap(ComponentsFile_BomDescrip
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
       &_impl_.ipn_, lhs_arena,
       &other->_impl_.ipn_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.dsc_, lhs_arena,
-      &other->_impl_.dsc_, rhs_arena
   );
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
       &_impl_.vpl_vnd_, lhs_arena,

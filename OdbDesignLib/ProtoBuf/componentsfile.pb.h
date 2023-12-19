@@ -877,15 +877,39 @@ class ComponentsFile_BomDescriptionRecord final :
   // accessors -------------------------------------------------------
 
   enum : int {
+    kDescriptionsFieldNumber = 4,
     kCpnFieldNumber = 1,
     kPkgFieldNumber = 2,
     kIpnFieldNumber = 3,
-    kDscFieldNumber = 4,
     kVplVndFieldNumber = 5,
     kVplMpnFieldNumber = 6,
     kVndFieldNumber = 7,
     kMpnFieldNumber = 8,
   };
+  // repeated string descriptions = 4;
+  int descriptions_size() const;
+  private:
+  int _internal_descriptions_size() const;
+  public:
+  void clear_descriptions();
+  const std::string& descriptions(int index) const;
+  std::string* mutable_descriptions(int index);
+  void set_descriptions(int index, const std::string& value);
+  void set_descriptions(int index, std::string&& value);
+  void set_descriptions(int index, const char* value);
+  void set_descriptions(int index, const char* value, size_t size);
+  std::string* add_descriptions();
+  void add_descriptions(const std::string& value);
+  void add_descriptions(std::string&& value);
+  void add_descriptions(const char* value);
+  void add_descriptions(const char* value, size_t size);
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>& descriptions() const;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>* mutable_descriptions();
+  private:
+  const std::string& _internal_descriptions(int index) const;
+  std::string* _internal_add_descriptions();
+  public:
+
   // optional string cpn = 1;
   bool has_cpn() const;
   private:
@@ -938,24 +962,6 @@ class ComponentsFile_BomDescriptionRecord final :
   const std::string& _internal_ipn() const;
   inline PROTOBUF_ALWAYS_INLINE void _internal_set_ipn(const std::string& value);
   std::string* _internal_mutable_ipn();
-  public:
-
-  // optional string dsc = 4;
-  bool has_dsc() const;
-  private:
-  bool _internal_has_dsc() const;
-  public:
-  void clear_dsc();
-  const std::string& dsc() const;
-  template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_dsc(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_dsc();
-  PROTOBUF_NODISCARD std::string* release_dsc();
-  void set_allocated_dsc(std::string* dsc);
-  private:
-  const std::string& _internal_dsc() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_dsc(const std::string& value);
-  std::string* _internal_mutable_dsc();
   public:
 
   // optional string vpl_vnd = 5;
@@ -1040,10 +1046,10 @@ class ComponentsFile_BomDescriptionRecord final :
   struct Impl_ {
     ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string> descriptions_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr cpn_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr pkg_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr ipn_;
-    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr dsc_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr vpl_vnd_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr vpl_mpn_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr vnd_;
@@ -2539,77 +2545,84 @@ inline void ComponentsFile_BomDescriptionRecord::set_allocated_ipn(std::string* 
   // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.ipn)
 }
 
-// optional string dsc = 4;
-inline bool ComponentsFile_BomDescriptionRecord::_internal_has_dsc() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000008u) != 0;
-  return value;
+// repeated string descriptions = 4;
+inline int ComponentsFile_BomDescriptionRecord::_internal_descriptions_size() const {
+  return _impl_.descriptions_.size();
 }
-inline bool ComponentsFile_BomDescriptionRecord::has_dsc() const {
-  return _internal_has_dsc();
+inline int ComponentsFile_BomDescriptionRecord::descriptions_size() const {
+  return _internal_descriptions_size();
 }
-inline void ComponentsFile_BomDescriptionRecord::clear_dsc() {
-  _impl_.dsc_.ClearToEmpty();
-  _impl_._has_bits_[0] &= ~0x00000008u;
+inline void ComponentsFile_BomDescriptionRecord::clear_descriptions() {
+  _impl_.descriptions_.Clear();
 }
-inline const std::string& ComponentsFile_BomDescriptionRecord::dsc() const {
-  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.dsc)
-  return _internal_dsc();
-}
-template <typename ArgT0, typename... ArgT>
-inline PROTOBUF_ALWAYS_INLINE
-void ComponentsFile_BomDescriptionRecord::set_dsc(ArgT0&& arg0, ArgT... args) {
- _impl_._has_bits_[0] |= 0x00000008u;
- _impl_.dsc_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.dsc)
-}
-inline std::string* ComponentsFile_BomDescriptionRecord::mutable_dsc() {
-  std::string* _s = _internal_mutable_dsc();
-  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.dsc)
+inline std::string* ComponentsFile_BomDescriptionRecord::add_descriptions() {
+  std::string* _s = _internal_add_descriptions();
+  // @@protoc_insertion_point(field_add_mutable:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.descriptions)
   return _s;
 }
-inline const std::string& ComponentsFile_BomDescriptionRecord::_internal_dsc() const {
-  return _impl_.dsc_.Get();
+inline const std::string& ComponentsFile_BomDescriptionRecord::_internal_descriptions(int index) const {
+  return _impl_.descriptions_.Get(index);
 }
-inline void ComponentsFile_BomDescriptionRecord::_internal_set_dsc(const std::string& value) {
-  _impl_._has_bits_[0] |= 0x00000008u;
-  _impl_.dsc_.Set(value, GetArenaForAllocation());
+inline const std::string& ComponentsFile_BomDescriptionRecord::descriptions(int index) const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.descriptions)
+  return _internal_descriptions(index);
 }
-inline std::string* ComponentsFile_BomDescriptionRecord::_internal_mutable_dsc() {
-  _impl_._has_bits_[0] |= 0x00000008u;
-  return _impl_.dsc_.Mutable(GetArenaForAllocation());
+inline std::string* ComponentsFile_BomDescriptionRecord::mutable_descriptions(int index) {
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.descriptions)
+  return _impl_.descriptions_.Mutable(index);
 }
-inline std::string* ComponentsFile_BomDescriptionRecord::release_dsc() {
-  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.dsc)
-  if (!_internal_has_dsc()) {
-    return nullptr;
-  }
-  _impl_._has_bits_[0] &= ~0x00000008u;
-  auto* p = _impl_.dsc_.Release();
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.dsc_.IsDefault()) {
-    _impl_.dsc_.Set("", GetArenaForAllocation());
-  }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  return p;
+inline void ComponentsFile_BomDescriptionRecord::set_descriptions(int index, const std::string& value) {
+  _impl_.descriptions_.Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.descriptions)
 }
-inline void ComponentsFile_BomDescriptionRecord::set_allocated_dsc(std::string* dsc) {
-  if (dsc != nullptr) {
-    _impl_._has_bits_[0] |= 0x00000008u;
-  } else {
-    _impl_._has_bits_[0] &= ~0x00000008u;
-  }
-  _impl_.dsc_.SetAllocated(dsc, GetArenaForAllocation());
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.dsc_.IsDefault()) {
-    _impl_.dsc_.Set("", GetArenaForAllocation());
-  }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.dsc)
+inline void ComponentsFile_BomDescriptionRecord::set_descriptions(int index, std::string&& value) {
+  _impl_.descriptions_.Mutable(index)->assign(std::move(value));
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.descriptions)
+}
+inline void ComponentsFile_BomDescriptionRecord::set_descriptions(int index, const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  _impl_.descriptions_.Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set_char:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.descriptions)
+}
+inline void ComponentsFile_BomDescriptionRecord::set_descriptions(int index, const char* value, size_t size) {
+  _impl_.descriptions_.Mutable(index)->assign(
+    reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.descriptions)
+}
+inline std::string* ComponentsFile_BomDescriptionRecord::_internal_add_descriptions() {
+  return _impl_.descriptions_.Add();
+}
+inline void ComponentsFile_BomDescriptionRecord::add_descriptions(const std::string& value) {
+  _impl_.descriptions_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.descriptions)
+}
+inline void ComponentsFile_BomDescriptionRecord::add_descriptions(std::string&& value) {
+  _impl_.descriptions_.Add(std::move(value));
+  // @@protoc_insertion_point(field_add:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.descriptions)
+}
+inline void ComponentsFile_BomDescriptionRecord::add_descriptions(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  _impl_.descriptions_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add_char:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.descriptions)
+}
+inline void ComponentsFile_BomDescriptionRecord::add_descriptions(const char* value, size_t size) {
+  _impl_.descriptions_.Add()->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_add_pointer:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.descriptions)
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>&
+ComponentsFile_BomDescriptionRecord::descriptions() const {
+  // @@protoc_insertion_point(field_list:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.descriptions)
+  return _impl_.descriptions_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>*
+ComponentsFile_BomDescriptionRecord::mutable_descriptions() {
+  // @@protoc_insertion_point(field_mutable_list:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.descriptions)
+  return &_impl_.descriptions_;
 }
 
 // optional string vpl_vnd = 5;
 inline bool ComponentsFile_BomDescriptionRecord::_internal_has_vpl_vnd() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000010u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000008u) != 0;
   return value;
 }
 inline bool ComponentsFile_BomDescriptionRecord::has_vpl_vnd() const {
@@ -2617,7 +2630,7 @@ inline bool ComponentsFile_BomDescriptionRecord::has_vpl_vnd() const {
 }
 inline void ComponentsFile_BomDescriptionRecord::clear_vpl_vnd() {
   _impl_.vpl_vnd_.ClearToEmpty();
-  _impl_._has_bits_[0] &= ~0x00000010u;
+  _impl_._has_bits_[0] &= ~0x00000008u;
 }
 inline const std::string& ComponentsFile_BomDescriptionRecord::vpl_vnd() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.vpl_vnd)
@@ -2626,7 +2639,7 @@ inline const std::string& ComponentsFile_BomDescriptionRecord::vpl_vnd() const {
 template <typename ArgT0, typename... ArgT>
 inline PROTOBUF_ALWAYS_INLINE
 void ComponentsFile_BomDescriptionRecord::set_vpl_vnd(ArgT0&& arg0, ArgT... args) {
- _impl_._has_bits_[0] |= 0x00000010u;
+ _impl_._has_bits_[0] |= 0x00000008u;
  _impl_.vpl_vnd_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.vpl_vnd)
 }
@@ -2639,11 +2652,11 @@ inline const std::string& ComponentsFile_BomDescriptionRecord::_internal_vpl_vnd
   return _impl_.vpl_vnd_.Get();
 }
 inline void ComponentsFile_BomDescriptionRecord::_internal_set_vpl_vnd(const std::string& value) {
-  _impl_._has_bits_[0] |= 0x00000010u;
+  _impl_._has_bits_[0] |= 0x00000008u;
   _impl_.vpl_vnd_.Set(value, GetArenaForAllocation());
 }
 inline std::string* ComponentsFile_BomDescriptionRecord::_internal_mutable_vpl_vnd() {
-  _impl_._has_bits_[0] |= 0x00000010u;
+  _impl_._has_bits_[0] |= 0x00000008u;
   return _impl_.vpl_vnd_.Mutable(GetArenaForAllocation());
 }
 inline std::string* ComponentsFile_BomDescriptionRecord::release_vpl_vnd() {
@@ -2651,7 +2664,7 @@ inline std::string* ComponentsFile_BomDescriptionRecord::release_vpl_vnd() {
   if (!_internal_has_vpl_vnd()) {
     return nullptr;
   }
-  _impl_._has_bits_[0] &= ~0x00000010u;
+  _impl_._has_bits_[0] &= ~0x00000008u;
   auto* p = _impl_.vpl_vnd_.Release();
 #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
   if (_impl_.vpl_vnd_.IsDefault()) {
@@ -2662,9 +2675,9 @@ inline std::string* ComponentsFile_BomDescriptionRecord::release_vpl_vnd() {
 }
 inline void ComponentsFile_BomDescriptionRecord::set_allocated_vpl_vnd(std::string* vpl_vnd) {
   if (vpl_vnd != nullptr) {
-    _impl_._has_bits_[0] |= 0x00000010u;
+    _impl_._has_bits_[0] |= 0x00000008u;
   } else {
-    _impl_._has_bits_[0] &= ~0x00000010u;
+    _impl_._has_bits_[0] &= ~0x00000008u;
   }
   _impl_.vpl_vnd_.SetAllocated(vpl_vnd, GetArenaForAllocation());
 #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
@@ -2677,7 +2690,7 @@ inline void ComponentsFile_BomDescriptionRecord::set_allocated_vpl_vnd(std::stri
 
 // optional string vpl_mpn = 6;
 inline bool ComponentsFile_BomDescriptionRecord::_internal_has_vpl_mpn() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000020u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000010u) != 0;
   return value;
 }
 inline bool ComponentsFile_BomDescriptionRecord::has_vpl_mpn() const {
@@ -2685,7 +2698,7 @@ inline bool ComponentsFile_BomDescriptionRecord::has_vpl_mpn() const {
 }
 inline void ComponentsFile_BomDescriptionRecord::clear_vpl_mpn() {
   _impl_.vpl_mpn_.ClearToEmpty();
-  _impl_._has_bits_[0] &= ~0x00000020u;
+  _impl_._has_bits_[0] &= ~0x00000010u;
 }
 inline const std::string& ComponentsFile_BomDescriptionRecord::vpl_mpn() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.vpl_mpn)
@@ -2694,7 +2707,7 @@ inline const std::string& ComponentsFile_BomDescriptionRecord::vpl_mpn() const {
 template <typename ArgT0, typename... ArgT>
 inline PROTOBUF_ALWAYS_INLINE
 void ComponentsFile_BomDescriptionRecord::set_vpl_mpn(ArgT0&& arg0, ArgT... args) {
- _impl_._has_bits_[0] |= 0x00000020u;
+ _impl_._has_bits_[0] |= 0x00000010u;
  _impl_.vpl_mpn_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.vpl_mpn)
 }
@@ -2707,11 +2720,11 @@ inline const std::string& ComponentsFile_BomDescriptionRecord::_internal_vpl_mpn
   return _impl_.vpl_mpn_.Get();
 }
 inline void ComponentsFile_BomDescriptionRecord::_internal_set_vpl_mpn(const std::string& value) {
-  _impl_._has_bits_[0] |= 0x00000020u;
+  _impl_._has_bits_[0] |= 0x00000010u;
   _impl_.vpl_mpn_.Set(value, GetArenaForAllocation());
 }
 inline std::string* ComponentsFile_BomDescriptionRecord::_internal_mutable_vpl_mpn() {
-  _impl_._has_bits_[0] |= 0x00000020u;
+  _impl_._has_bits_[0] |= 0x00000010u;
   return _impl_.vpl_mpn_.Mutable(GetArenaForAllocation());
 }
 inline std::string* ComponentsFile_BomDescriptionRecord::release_vpl_mpn() {
@@ -2719,7 +2732,7 @@ inline std::string* ComponentsFile_BomDescriptionRecord::release_vpl_mpn() {
   if (!_internal_has_vpl_mpn()) {
     return nullptr;
   }
-  _impl_._has_bits_[0] &= ~0x00000020u;
+  _impl_._has_bits_[0] &= ~0x00000010u;
   auto* p = _impl_.vpl_mpn_.Release();
 #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
   if (_impl_.vpl_mpn_.IsDefault()) {
@@ -2730,9 +2743,9 @@ inline std::string* ComponentsFile_BomDescriptionRecord::release_vpl_mpn() {
 }
 inline void ComponentsFile_BomDescriptionRecord::set_allocated_vpl_mpn(std::string* vpl_mpn) {
   if (vpl_mpn != nullptr) {
-    _impl_._has_bits_[0] |= 0x00000020u;
+    _impl_._has_bits_[0] |= 0x00000010u;
   } else {
-    _impl_._has_bits_[0] &= ~0x00000020u;
+    _impl_._has_bits_[0] &= ~0x00000010u;
   }
   _impl_.vpl_mpn_.SetAllocated(vpl_mpn, GetArenaForAllocation());
 #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
@@ -2745,7 +2758,7 @@ inline void ComponentsFile_BomDescriptionRecord::set_allocated_vpl_mpn(std::stri
 
 // optional string vnd = 7;
 inline bool ComponentsFile_BomDescriptionRecord::_internal_has_vnd() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000040u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000020u) != 0;
   return value;
 }
 inline bool ComponentsFile_BomDescriptionRecord::has_vnd() const {
@@ -2753,7 +2766,7 @@ inline bool ComponentsFile_BomDescriptionRecord::has_vnd() const {
 }
 inline void ComponentsFile_BomDescriptionRecord::clear_vnd() {
   _impl_.vnd_.ClearToEmpty();
-  _impl_._has_bits_[0] &= ~0x00000040u;
+  _impl_._has_bits_[0] &= ~0x00000020u;
 }
 inline const std::string& ComponentsFile_BomDescriptionRecord::vnd() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.vnd)
@@ -2762,7 +2775,7 @@ inline const std::string& ComponentsFile_BomDescriptionRecord::vnd() const {
 template <typename ArgT0, typename... ArgT>
 inline PROTOBUF_ALWAYS_INLINE
 void ComponentsFile_BomDescriptionRecord::set_vnd(ArgT0&& arg0, ArgT... args) {
- _impl_._has_bits_[0] |= 0x00000040u;
+ _impl_._has_bits_[0] |= 0x00000020u;
  _impl_.vnd_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.vnd)
 }
@@ -2775,11 +2788,11 @@ inline const std::string& ComponentsFile_BomDescriptionRecord::_internal_vnd() c
   return _impl_.vnd_.Get();
 }
 inline void ComponentsFile_BomDescriptionRecord::_internal_set_vnd(const std::string& value) {
-  _impl_._has_bits_[0] |= 0x00000040u;
+  _impl_._has_bits_[0] |= 0x00000020u;
   _impl_.vnd_.Set(value, GetArenaForAllocation());
 }
 inline std::string* ComponentsFile_BomDescriptionRecord::_internal_mutable_vnd() {
-  _impl_._has_bits_[0] |= 0x00000040u;
+  _impl_._has_bits_[0] |= 0x00000020u;
   return _impl_.vnd_.Mutable(GetArenaForAllocation());
 }
 inline std::string* ComponentsFile_BomDescriptionRecord::release_vnd() {
@@ -2787,7 +2800,7 @@ inline std::string* ComponentsFile_BomDescriptionRecord::release_vnd() {
   if (!_internal_has_vnd()) {
     return nullptr;
   }
-  _impl_._has_bits_[0] &= ~0x00000040u;
+  _impl_._has_bits_[0] &= ~0x00000020u;
   auto* p = _impl_.vnd_.Release();
 #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
   if (_impl_.vnd_.IsDefault()) {
@@ -2798,9 +2811,9 @@ inline std::string* ComponentsFile_BomDescriptionRecord::release_vnd() {
 }
 inline void ComponentsFile_BomDescriptionRecord::set_allocated_vnd(std::string* vnd) {
   if (vnd != nullptr) {
-    _impl_._has_bits_[0] |= 0x00000040u;
+    _impl_._has_bits_[0] |= 0x00000020u;
   } else {
-    _impl_._has_bits_[0] &= ~0x00000040u;
+    _impl_._has_bits_[0] &= ~0x00000020u;
   }
   _impl_.vnd_.SetAllocated(vnd, GetArenaForAllocation());
 #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
@@ -2813,7 +2826,7 @@ inline void ComponentsFile_BomDescriptionRecord::set_allocated_vnd(std::string* 
 
 // optional string mpn = 8;
 inline bool ComponentsFile_BomDescriptionRecord::_internal_has_mpn() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000080u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000040u) != 0;
   return value;
 }
 inline bool ComponentsFile_BomDescriptionRecord::has_mpn() const {
@@ -2821,7 +2834,7 @@ inline bool ComponentsFile_BomDescriptionRecord::has_mpn() const {
 }
 inline void ComponentsFile_BomDescriptionRecord::clear_mpn() {
   _impl_.mpn_.ClearToEmpty();
-  _impl_._has_bits_[0] &= ~0x00000080u;
+  _impl_._has_bits_[0] &= ~0x00000040u;
 }
 inline const std::string& ComponentsFile_BomDescriptionRecord::mpn() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.mpn)
@@ -2830,7 +2843,7 @@ inline const std::string& ComponentsFile_BomDescriptionRecord::mpn() const {
 template <typename ArgT0, typename... ArgT>
 inline PROTOBUF_ALWAYS_INLINE
 void ComponentsFile_BomDescriptionRecord::set_mpn(ArgT0&& arg0, ArgT... args) {
- _impl_._has_bits_[0] |= 0x00000080u;
+ _impl_._has_bits_[0] |= 0x00000040u;
  _impl_.mpn_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.mpn)
 }
@@ -2843,11 +2856,11 @@ inline const std::string& ComponentsFile_BomDescriptionRecord::_internal_mpn() c
   return _impl_.mpn_.Get();
 }
 inline void ComponentsFile_BomDescriptionRecord::_internal_set_mpn(const std::string& value) {
-  _impl_._has_bits_[0] |= 0x00000080u;
+  _impl_._has_bits_[0] |= 0x00000040u;
   _impl_.mpn_.Set(value, GetArenaForAllocation());
 }
 inline std::string* ComponentsFile_BomDescriptionRecord::_internal_mutable_mpn() {
-  _impl_._has_bits_[0] |= 0x00000080u;
+  _impl_._has_bits_[0] |= 0x00000040u;
   return _impl_.mpn_.Mutable(GetArenaForAllocation());
 }
 inline std::string* ComponentsFile_BomDescriptionRecord::release_mpn() {
@@ -2855,7 +2868,7 @@ inline std::string* ComponentsFile_BomDescriptionRecord::release_mpn() {
   if (!_internal_has_mpn()) {
     return nullptr;
   }
-  _impl_._has_bits_[0] &= ~0x00000080u;
+  _impl_._has_bits_[0] &= ~0x00000040u;
   auto* p = _impl_.mpn_.Release();
 #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
   if (_impl_.mpn_.IsDefault()) {
@@ -2866,9 +2879,9 @@ inline std::string* ComponentsFile_BomDescriptionRecord::release_mpn() {
 }
 inline void ComponentsFile_BomDescriptionRecord::set_allocated_mpn(std::string* mpn) {
   if (mpn != nullptr) {
-    _impl_._has_bits_[0] |= 0x00000080u;
+    _impl_._has_bits_[0] |= 0x00000040u;
   } else {
-    _impl_._has_bits_[0] &= ~0x00000080u;
+    _impl_._has_bits_[0] &= ~0x00000040u;
   }
   _impl_.mpn_.SetAllocated(mpn, GetArenaForAllocation());
 #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
