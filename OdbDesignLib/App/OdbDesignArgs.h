@@ -24,14 +24,14 @@ namespace Odb::Lib::App
 		std::string getUsageString() const override;
 
 	private:
-		constexpr static const int DEFAULT_PORT = 8888;
-		constexpr static const bool DEFAULT_USE_HTTPS = false;
-		constexpr static const char* DEFAULT_SSL_DIR = "./ssl";
-		constexpr static const char* DEFAULT_DESIGNS_DIR = "designs";
-		constexpr static const char* DEFAULT_TEMPLATES_DIR = "templates";
-		constexpr static const bool DEFAULT_HELP = false;
-		constexpr static const char* DEFAULT_LOAD_DESIGN = "";		
-		constexpr static const char* DEFAULT_LOAD_ALL = false;
+		constexpr static const int		DEFAULT_PORT =			8888;
+		constexpr static const bool		DEFAULT_USE_HTTPS =		false;
+		constexpr static const char*	DEFAULT_SSL_DIR =		"./ssl";
+		constexpr static const char*	DEFAULT_DESIGNS_DIR =	"designs";
+		constexpr static const char*	DEFAULT_TEMPLATES_DIR = "templates";
+		constexpr static const bool		DEFAULT_HELP =			false;
+		constexpr static const char*	DEFAULT_LOAD_DESIGN =	"";		
+		constexpr static const bool		DEFAULT_LOAD_ALL =		false;
 
 	};
 }
