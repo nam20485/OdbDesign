@@ -504,7 +504,7 @@ namespace Odb::Lib::FileModel::Design
 						{
 							// netNumber == -1
 							parse_info pi(m_path, line, lineNumber);
-							logwarn(pi.toString("Component Toeprint record with netNumber = -1"));
+							logdebug(pi.toString("Component Toeprint record with netNumber = -1"));
 
 							if (!m_allowToepintNetNumbersOfNegative1)
 							{
@@ -517,7 +517,7 @@ namespace Odb::Lib::FileModel::Design
 						{
 							// subnetNumber == -1
 							parse_info pi(m_path, line, lineNumber);
-							logwarn(pi.toString("Component Toeprint record with subnetNumber = -1"));
+							logdebug(pi.toString("Component Toeprint record with subnetNumber = -1"));
 
 							if (!m_allowToepintNetNumbersOfNegative1)
 							{
