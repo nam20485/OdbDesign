@@ -4,20 +4,28 @@
 #include "../../odbdesign_export.h"
 #include "../../enums.h"
 #include <vector>
+#include "../../IProtoBuffable.h"
+#include "../../ProtoBuf/standardfontsfile.pb.h"
 
 namespace Odb::Lib::FileModel::Design
 {
-	class StandardFontsFile : public OdbFile
+	class StandardFontsFile : public OdbFile, public IProtoBuffable<Odb::Lib::Protobuf::StandardFontsFile>
 	{
 	public:
 		StandardFontsFile() = default;
-		~StandardFontsFile() = default;
+		~StandardFontsFile();
 	
 		bool Parse(std::filesystem::path path) override;
 
-		struct CharacterBlock
+		// Inherited via IProtoBuffable
+		std::unique_ptr<Odb::Lib::Protobuf::StandardFontsFile> to_protobuf() const override;
+		void from_protobuf(const Odb::Lib::Protobuf::StandardFontsFile& message) override;
+
+		struct CharacterBlock : public IProtoBuffable<Odb::Lib::Protobuf::StandardFontsFile::CharacterBlock>
 		{
-			struct LineRecord
+			~CharacterBlock();
+
+			struct LineRecord : public IProtoBuffable<Odb::Lib::Protobuf::StandardFontsFile::CharacterBlock::LineRecord>
 			{
 				float xStart;
 				float yStart;
@@ -26,6 +34,9 @@ namespace Odb::Lib::FileModel::Design
 				Polarity polarity;
 				LineShape shape;
 				float width;
+
+				std::unique_ptr<Odb::Lib::Protobuf::StandardFontsFile::CharacterBlock::LineRecord> to_protobuf() const override;
+				void from_protobuf(const Odb::Lib::Protobuf::StandardFontsFile::CharacterBlock::LineRecord& message) override;
 
 				typedef std::vector<std::shared_ptr<LineRecord>> Vector;
 
@@ -38,6 +49,9 @@ namespace Odb::Lib::FileModel::Design
 			char character;
 			LineRecord::Vector m_lineRecords;
 
+			std::unique_ptr<Odb::Lib::Protobuf::StandardFontsFile::CharacterBlock> to_protobuf() const override;
+			void from_protobuf(const Odb::Lib::Protobuf::StandardFontsFile::CharacterBlock& message) override;			
+
 			typedef std::vector<std::shared_ptr<CharacterBlock>> Vector;
 
 		};
@@ -47,7 +61,6 @@ namespace Odb::Lib::FileModel::Design
 		float m_ySize;
 		float m_offset;
 
-		CharacterBlock::Vector m_characterBlocks;
-
+		CharacterBlock::Vector m_characterBlocks;		
 	};
 }

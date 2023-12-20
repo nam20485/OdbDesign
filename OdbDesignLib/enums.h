@@ -5,8 +5,7 @@ namespace Odb::Lib
 	enum class BoardSide
 	{
 		Top,
-		Bottom,
-		Neither
+		Bottom		
 	};
 
 	enum class LineShape
@@ -19,5 +18,12 @@ namespace Odb::Lib
 	{
 		Positive,
 		Negative
+	};
+
+	enum class UnitType
+	{
+		None,
+		Metric,
+		Imperial
 	};
 }

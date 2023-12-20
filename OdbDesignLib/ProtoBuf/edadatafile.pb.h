@@ -65,6 +65,9 @@ extern EdaDataFile_FeatureIdRecordDefaultTypeInternal _EdaDataFile_FeatureIdReco
 class EdaDataFile_NetRecord;
 struct EdaDataFile_NetRecordDefaultTypeInternal;
 extern EdaDataFile_NetRecordDefaultTypeInternal _EdaDataFile_NetRecord_default_instance_;
+class EdaDataFile_NetRecord_AttributeLookupTableEntry_DoNotUse;
+struct EdaDataFile_NetRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeInternal;
+extern EdaDataFile_NetRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeInternal _EdaDataFile_NetRecord_AttributeLookupTableEntry_DoNotUse_default_instance_;
 class EdaDataFile_NetRecord_SubnetRecord;
 struct EdaDataFile_NetRecord_SubnetRecordDefaultTypeInternal;
 extern EdaDataFile_NetRecord_SubnetRecordDefaultTypeInternal _EdaDataFile_NetRecord_SubnetRecord_default_instance_;
@@ -74,6 +77,12 @@ extern EdaDataFile_NetRecordsByNameEntry_DoNotUseDefaultTypeInternal _EdaDataFil
 class EdaDataFile_PackageRecord;
 struct EdaDataFile_PackageRecordDefaultTypeInternal;
 extern EdaDataFile_PackageRecordDefaultTypeInternal _EdaDataFile_PackageRecord_default_instance_;
+class EdaDataFile_PackageRecord_AttributeLookupTableEntry_DoNotUse;
+struct EdaDataFile_PackageRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeInternal;
+extern EdaDataFile_PackageRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeInternal _EdaDataFile_PackageRecord_AttributeLookupTableEntry_DoNotUse_default_instance_;
+class EdaDataFile_PackageRecord_OutlineRecord;
+struct EdaDataFile_PackageRecord_OutlineRecordDefaultTypeInternal;
+extern EdaDataFile_PackageRecord_OutlineRecordDefaultTypeInternal _EdaDataFile_PackageRecord_OutlineRecord_default_instance_;
 class EdaDataFile_PackageRecord_PinRecord;
 struct EdaDataFile_PackageRecord_PinRecordDefaultTypeInternal;
 extern EdaDataFile_PackageRecord_PinRecordDefaultTypeInternal _EdaDataFile_PackageRecord_PinRecord_default_instance_;
@@ -91,9 +100,12 @@ template<> ::Odb::Lib::Protobuf::EdaDataFile* Arena::CreateMaybeMessage<::Odb::L
 template<> ::Odb::Lib::Protobuf::EdaDataFile_FeatureGroupRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::EdaDataFile_FeatureGroupRecord>(Arena*);
 template<> ::Odb::Lib::Protobuf::EdaDataFile_FeatureIdRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::EdaDataFile_FeatureIdRecord>(Arena*);
 template<> ::Odb::Lib::Protobuf::EdaDataFile_NetRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::EdaDataFile_NetRecord>(Arena*);
+template<> ::Odb::Lib::Protobuf::EdaDataFile_NetRecord_AttributeLookupTableEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::EdaDataFile_NetRecord_AttributeLookupTableEntry_DoNotUse>(Arena*);
 template<> ::Odb::Lib::Protobuf::EdaDataFile_NetRecord_SubnetRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::EdaDataFile_NetRecord_SubnetRecord>(Arena*);
 template<> ::Odb::Lib::Protobuf::EdaDataFile_NetRecordsByNameEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::EdaDataFile_NetRecordsByNameEntry_DoNotUse>(Arena*);
 template<> ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::EdaDataFile_PackageRecord>(Arena*);
+template<> ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_AttributeLookupTableEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_AttributeLookupTableEntry_DoNotUse>(Arena*);
+template<> ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord>(Arena*);
 template<> ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_PinRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_PinRecord>(Arena*);
 template<> ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_PinRecordsByNameEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_PinRecordsByNameEntry_DoNotUse>(Arena*);
 template<> ::Odb::Lib::Protobuf::EdaDataFile_PackageRecordsByNameEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::EdaDataFile_PackageRecordsByNameEntry_DoNotUse>(Arena*);
@@ -206,6 +218,33 @@ inline bool EdaDataFile_NetRecord_SubnetRecord_CutoutType_Parse(
     ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, EdaDataFile_NetRecord_SubnetRecord_CutoutType* value) {
   return ::PROTOBUF_NAMESPACE_ID::internal::ParseNamedEnum<EdaDataFile_NetRecord_SubnetRecord_CutoutType>(
     EdaDataFile_NetRecord_SubnetRecord_CutoutType_descriptor(), name, value);
+}
+enum EdaDataFile_PackageRecord_OutlineRecord_Type : int {
+  EdaDataFile_PackageRecord_OutlineRecord_Type_Rectangle = 0,
+  EdaDataFile_PackageRecord_OutlineRecord_Type_Circle = 1,
+  EdaDataFile_PackageRecord_OutlineRecord_Type_Square = 2,
+  EdaDataFile_PackageRecord_OutlineRecord_Type_Contour = 3,
+  EdaDataFile_PackageRecord_OutlineRecord_Type_EdaDataFile_PackageRecord_OutlineRecord_Type_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
+  EdaDataFile_PackageRecord_OutlineRecord_Type_EdaDataFile_PackageRecord_OutlineRecord_Type_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
+};
+bool EdaDataFile_PackageRecord_OutlineRecord_Type_IsValid(int value);
+constexpr EdaDataFile_PackageRecord_OutlineRecord_Type EdaDataFile_PackageRecord_OutlineRecord_Type_Type_MIN = EdaDataFile_PackageRecord_OutlineRecord_Type_Rectangle;
+constexpr EdaDataFile_PackageRecord_OutlineRecord_Type EdaDataFile_PackageRecord_OutlineRecord_Type_Type_MAX = EdaDataFile_PackageRecord_OutlineRecord_Type_Contour;
+constexpr int EdaDataFile_PackageRecord_OutlineRecord_Type_Type_ARRAYSIZE = EdaDataFile_PackageRecord_OutlineRecord_Type_Type_MAX + 1;
+
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* EdaDataFile_PackageRecord_OutlineRecord_Type_descriptor();
+template<typename T>
+inline const std::string& EdaDataFile_PackageRecord_OutlineRecord_Type_Name(T enum_t_value) {
+  static_assert(::std::is_same<T, EdaDataFile_PackageRecord_OutlineRecord_Type>::value ||
+    ::std::is_integral<T>::value,
+    "Incorrect type passed to function EdaDataFile_PackageRecord_OutlineRecord_Type_Name.");
+  return ::PROTOBUF_NAMESPACE_ID::internal::NameOfEnum(
+    EdaDataFile_PackageRecord_OutlineRecord_Type_descriptor(), enum_t_value);
+}
+inline bool EdaDataFile_PackageRecord_OutlineRecord_Type_Parse(
+    ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, EdaDataFile_PackageRecord_OutlineRecord_Type* value) {
+  return ::PROTOBUF_NAMESPACE_ID::internal::ParseNamedEnum<EdaDataFile_PackageRecord_OutlineRecord_Type>(
+    EdaDataFile_PackageRecord_OutlineRecord_Type_descriptor(), name, value);
 }
 enum EdaDataFile_PackageRecord_PinRecord_Type : int {
   EdaDataFile_PackageRecord_PinRecord_Type_THROUGH_HOLE = 0,
@@ -734,6 +773,7 @@ class EdaDataFile_NetRecord_SubnetRecord final :
     kSideFieldNumber = 6,
     kComponentNumberFieldNumber = 7,
     kToeprintNumberFieldNumber = 8,
+    kIndexFieldNumber = 9,
   };
   // repeated .Odb.Lib.Protobuf.EdaDataFile.FeatureIdRecord featureIdRecords = 2;
   int featureidrecords_size() const;
@@ -844,6 +884,19 @@ class EdaDataFile_NetRecord_SubnetRecord final :
   void _internal_set_toeprintnumber(uint32_t value);
   public:
 
+  // optional uint32 index = 9;
+  bool has_index() const;
+  private:
+  bool _internal_has_index() const;
+  public:
+  void clear_index();
+  uint32_t index() const;
+  void set_index(uint32_t value);
+  private:
+  uint32_t _internal_index() const;
+  void _internal_set_index(uint32_t value);
+  public:
+
   // @@protoc_insertion_point(class_scope:Odb.Lib.Protobuf.EdaDataFile.NetRecord.SubnetRecord)
  private:
   class _Internal;
@@ -862,10 +915,39 @@ class EdaDataFile_NetRecord_SubnetRecord final :
     int side_;
     uint32_t componentnumber_;
     uint32_t toeprintnumber_;
+    uint32_t index_;
   };
   union { Impl_ _impl_; };
   friend struct ::TableStruct_edadatafile_2eproto;
 };
+// -------------------------------------------------------------------
+
+class EdaDataFile_NetRecord_AttributeLookupTableEntry_DoNotUse : public ::PROTOBUF_NAMESPACE_ID::internal::MapEntry<EdaDataFile_NetRecord_AttributeLookupTableEntry_DoNotUse, 
+    std::string, std::string,
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING,
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING> {
+public:
+  typedef ::PROTOBUF_NAMESPACE_ID::internal::MapEntry<EdaDataFile_NetRecord_AttributeLookupTableEntry_DoNotUse, 
+    std::string, std::string,
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING,
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING> SuperType;
+  EdaDataFile_NetRecord_AttributeLookupTableEntry_DoNotUse();
+  explicit PROTOBUF_CONSTEXPR EdaDataFile_NetRecord_AttributeLookupTableEntry_DoNotUse(
+      ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+  explicit EdaDataFile_NetRecord_AttributeLookupTableEntry_DoNotUse(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  void MergeFrom(const EdaDataFile_NetRecord_AttributeLookupTableEntry_DoNotUse& other);
+  static const EdaDataFile_NetRecord_AttributeLookupTableEntry_DoNotUse* internal_default_instance() { return reinterpret_cast<const EdaDataFile_NetRecord_AttributeLookupTableEntry_DoNotUse*>(&_EdaDataFile_NetRecord_AttributeLookupTableEntry_DoNotUse_default_instance_); }
+  static bool ValidateKey(std::string* s) {
+    return ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(s->data(), static_cast<int>(s->size()), ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::PARSE, "Odb.Lib.Protobuf.EdaDataFile.NetRecord.AttributeLookupTableEntry.key");
+ }
+  static bool ValidateValue(std::string* s) {
+    return ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(s->data(), static_cast<int>(s->size()), ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::PARSE, "Odb.Lib.Protobuf.EdaDataFile.NetRecord.AttributeLookupTableEntry.value");
+ }
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+  friend struct ::TableStruct_edadatafile_2eproto;
+};
+
 // -------------------------------------------------------------------
 
 class EdaDataFile_NetRecord final :
@@ -916,7 +998,7 @@ class EdaDataFile_NetRecord final :
                &_EdaDataFile_NetRecord_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    2;
+    3;
 
   friend void swap(EdaDataFile_NetRecord& a, EdaDataFile_NetRecord& b) {
     a.Swap(&b);
@@ -977,6 +1059,8 @@ class EdaDataFile_NetRecord final :
   protected:
   explicit EdaDataFile_NetRecord(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                        bool is_message_owned = false);
+  private:
+  static void ArenaDtor(void* object);
   public:
 
   static const ClassData _class_data_;
@@ -993,6 +1077,7 @@ class EdaDataFile_NetRecord final :
   enum : int {
     kSubnetRecordsFieldNumber = 4,
     kPropertyRecordsFieldNumber = 5,
+    kAttributeLookupTableFieldNumber = 6,
     kNameFieldNumber = 1,
     kAttributesIdStringFieldNumber = 2,
     kIndexFieldNumber = 3,
@@ -1032,6 +1117,23 @@ class EdaDataFile_NetRecord final :
   ::Odb::Lib::Protobuf::PropertyRecord* add_propertyrecords();
   const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::PropertyRecord >&
       propertyrecords() const;
+
+  // map<string, string> attributeLookupTable = 6;
+  int attributelookuptable_size() const;
+  private:
+  int _internal_attributelookuptable_size() const;
+  public:
+  void clear_attributelookuptable();
+  private:
+  const ::PROTOBUF_NAMESPACE_ID::Map< std::string, std::string >&
+      _internal_attributelookuptable() const;
+  ::PROTOBUF_NAMESPACE_ID::Map< std::string, std::string >*
+      _internal_mutable_attributelookuptable();
+  public:
+  const ::PROTOBUF_NAMESPACE_ID::Map< std::string, std::string >&
+      attributelookuptable() const;
+  ::PROTOBUF_NAMESPACE_ID::Map< std::string, std::string >*
+      mutable_attributelookuptable();
 
   // optional string name = 1;
   bool has_name() const;
@@ -1094,6 +1196,11 @@ class EdaDataFile_NetRecord final :
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
     ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::EdaDataFile_NetRecord_SubnetRecord > subnetrecords_;
     ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::PropertyRecord > propertyrecords_;
+    ::PROTOBUF_NAMESPACE_ID::internal::MapField<
+        EdaDataFile_NetRecord_AttributeLookupTableEntry_DoNotUse,
+        std::string, std::string,
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING,
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING> attributelookuptable_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr name_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr attributesidstring_;
     uint32_t index_;
@@ -1127,6 +1234,361 @@ public:
   friend struct ::TableStruct_edadatafile_2eproto;
 };
 
+// -------------------------------------------------------------------
+
+class EdaDataFile_PackageRecord_AttributeLookupTableEntry_DoNotUse : public ::PROTOBUF_NAMESPACE_ID::internal::MapEntry<EdaDataFile_PackageRecord_AttributeLookupTableEntry_DoNotUse, 
+    std::string, std::string,
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING,
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING> {
+public:
+  typedef ::PROTOBUF_NAMESPACE_ID::internal::MapEntry<EdaDataFile_PackageRecord_AttributeLookupTableEntry_DoNotUse, 
+    std::string, std::string,
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING,
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING> SuperType;
+  EdaDataFile_PackageRecord_AttributeLookupTableEntry_DoNotUse();
+  explicit PROTOBUF_CONSTEXPR EdaDataFile_PackageRecord_AttributeLookupTableEntry_DoNotUse(
+      ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+  explicit EdaDataFile_PackageRecord_AttributeLookupTableEntry_DoNotUse(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  void MergeFrom(const EdaDataFile_PackageRecord_AttributeLookupTableEntry_DoNotUse& other);
+  static const EdaDataFile_PackageRecord_AttributeLookupTableEntry_DoNotUse* internal_default_instance() { return reinterpret_cast<const EdaDataFile_PackageRecord_AttributeLookupTableEntry_DoNotUse*>(&_EdaDataFile_PackageRecord_AttributeLookupTableEntry_DoNotUse_default_instance_); }
+  static bool ValidateKey(std::string* s) {
+    return ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(s->data(), static_cast<int>(s->size()), ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::PARSE, "Odb.Lib.Protobuf.EdaDataFile.PackageRecord.AttributeLookupTableEntry.key");
+ }
+  static bool ValidateValue(std::string* s) {
+    return ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(s->data(), static_cast<int>(s->size()), ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::PARSE, "Odb.Lib.Protobuf.EdaDataFile.PackageRecord.AttributeLookupTableEntry.value");
+ }
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+  friend struct ::TableStruct_edadatafile_2eproto;
+};
+
+// -------------------------------------------------------------------
+
+class EdaDataFile_PackageRecord_OutlineRecord final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord) */ {
+ public:
+  inline EdaDataFile_PackageRecord_OutlineRecord() : EdaDataFile_PackageRecord_OutlineRecord(nullptr) {}
+  ~EdaDataFile_PackageRecord_OutlineRecord() override;
+  explicit PROTOBUF_CONSTEXPR EdaDataFile_PackageRecord_OutlineRecord(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  EdaDataFile_PackageRecord_OutlineRecord(const EdaDataFile_PackageRecord_OutlineRecord& from);
+  EdaDataFile_PackageRecord_OutlineRecord(EdaDataFile_PackageRecord_OutlineRecord&& from) noexcept
+    : EdaDataFile_PackageRecord_OutlineRecord() {
+    *this = ::std::move(from);
+  }
+
+  inline EdaDataFile_PackageRecord_OutlineRecord& operator=(const EdaDataFile_PackageRecord_OutlineRecord& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline EdaDataFile_PackageRecord_OutlineRecord& operator=(EdaDataFile_PackageRecord_OutlineRecord&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const EdaDataFile_PackageRecord_OutlineRecord& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const EdaDataFile_PackageRecord_OutlineRecord* internal_default_instance() {
+    return reinterpret_cast<const EdaDataFile_PackageRecord_OutlineRecord*>(
+               &_EdaDataFile_PackageRecord_OutlineRecord_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    6;
+
+  friend void swap(EdaDataFile_PackageRecord_OutlineRecord& a, EdaDataFile_PackageRecord_OutlineRecord& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(EdaDataFile_PackageRecord_OutlineRecord* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(EdaDataFile_PackageRecord_OutlineRecord* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  EdaDataFile_PackageRecord_OutlineRecord* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<EdaDataFile_PackageRecord_OutlineRecord>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const EdaDataFile_PackageRecord_OutlineRecord& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const EdaDataFile_PackageRecord_OutlineRecord& from) {
+    EdaDataFile_PackageRecord_OutlineRecord::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(EdaDataFile_PackageRecord_OutlineRecord* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord";
+  }
+  protected:
+  explicit EdaDataFile_PackageRecord_OutlineRecord(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  typedef EdaDataFile_PackageRecord_OutlineRecord_Type Type;
+  static constexpr Type Rectangle =
+    EdaDataFile_PackageRecord_OutlineRecord_Type_Rectangle;
+  static constexpr Type Circle =
+    EdaDataFile_PackageRecord_OutlineRecord_Type_Circle;
+  static constexpr Type Square =
+    EdaDataFile_PackageRecord_OutlineRecord_Type_Square;
+  static constexpr Type Contour =
+    EdaDataFile_PackageRecord_OutlineRecord_Type_Contour;
+  static inline bool Type_IsValid(int value) {
+    return EdaDataFile_PackageRecord_OutlineRecord_Type_IsValid(value);
+  }
+  static constexpr Type Type_MIN =
+    EdaDataFile_PackageRecord_OutlineRecord_Type_Type_MIN;
+  static constexpr Type Type_MAX =
+    EdaDataFile_PackageRecord_OutlineRecord_Type_Type_MAX;
+  static constexpr int Type_ARRAYSIZE =
+    EdaDataFile_PackageRecord_OutlineRecord_Type_Type_ARRAYSIZE;
+  static inline const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor*
+  Type_descriptor() {
+    return EdaDataFile_PackageRecord_OutlineRecord_Type_descriptor();
+  }
+  template<typename T>
+  static inline const std::string& Type_Name(T enum_t_value) {
+    static_assert(::std::is_same<T, Type>::value ||
+      ::std::is_integral<T>::value,
+      "Incorrect type passed to function Type_Name.");
+    return EdaDataFile_PackageRecord_OutlineRecord_Type_Name(enum_t_value);
+  }
+  static inline bool Type_Parse(::PROTOBUF_NAMESPACE_ID::ConstStringParam name,
+      Type* value) {
+    return EdaDataFile_PackageRecord_OutlineRecord_Type_Parse(name, value);
+  }
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kContourPolygonsFieldNumber = 10,
+    kTypeFieldNumber = 1,
+    kLowerLeftXFieldNumber = 2,
+    kLowerLeftYFieldNumber = 3,
+    kWidthFieldNumber = 4,
+    kHeightFieldNumber = 5,
+    kXCenterFieldNumber = 6,
+    kYCenterFieldNumber = 7,
+    kHalfSideFieldNumber = 8,
+    kRadiusFieldNumber = 9,
+  };
+  // repeated .Odb.Lib.Protobuf.ContourPolygon contourPolygons = 10;
+  int contourpolygons_size() const;
+  private:
+  int _internal_contourpolygons_size() const;
+  public:
+  void clear_contourpolygons();
+  ::Odb::Lib::Protobuf::ContourPolygon* mutable_contourpolygons(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::ContourPolygon >*
+      mutable_contourpolygons();
+  private:
+  const ::Odb::Lib::Protobuf::ContourPolygon& _internal_contourpolygons(int index) const;
+  ::Odb::Lib::Protobuf::ContourPolygon* _internal_add_contourpolygons();
+  public:
+  const ::Odb::Lib::Protobuf::ContourPolygon& contourpolygons(int index) const;
+  ::Odb::Lib::Protobuf::ContourPolygon* add_contourpolygons();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::ContourPolygon >&
+      contourpolygons() const;
+
+  // optional .Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.Type type = 1;
+  bool has_type() const;
+  private:
+  bool _internal_has_type() const;
+  public:
+  void clear_type();
+  ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord_Type type() const;
+  void set_type(::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord_Type value);
+  private:
+  ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord_Type _internal_type() const;
+  void _internal_set_type(::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord_Type value);
+  public:
+
+  // optional float lowerLeftX = 2;
+  bool has_lowerleftx() const;
+  private:
+  bool _internal_has_lowerleftx() const;
+  public:
+  void clear_lowerleftx();
+  float lowerleftx() const;
+  void set_lowerleftx(float value);
+  private:
+  float _internal_lowerleftx() const;
+  void _internal_set_lowerleftx(float value);
+  public:
+
+  // optional float lowerLeftY = 3;
+  bool has_lowerlefty() const;
+  private:
+  bool _internal_has_lowerlefty() const;
+  public:
+  void clear_lowerlefty();
+  float lowerlefty() const;
+  void set_lowerlefty(float value);
+  private:
+  float _internal_lowerlefty() const;
+  void _internal_set_lowerlefty(float value);
+  public:
+
+  // optional float width = 4;
+  bool has_width() const;
+  private:
+  bool _internal_has_width() const;
+  public:
+  void clear_width();
+  float width() const;
+  void set_width(float value);
+  private:
+  float _internal_width() const;
+  void _internal_set_width(float value);
+  public:
+
+  // optional float height = 5;
+  bool has_height() const;
+  private:
+  bool _internal_has_height() const;
+  public:
+  void clear_height();
+  float height() const;
+  void set_height(float value);
+  private:
+  float _internal_height() const;
+  void _internal_set_height(float value);
+  public:
+
+  // optional float xCenter = 6;
+  bool has_xcenter() const;
+  private:
+  bool _internal_has_xcenter() const;
+  public:
+  void clear_xcenter();
+  float xcenter() const;
+  void set_xcenter(float value);
+  private:
+  float _internal_xcenter() const;
+  void _internal_set_xcenter(float value);
+  public:
+
+  // optional float yCenter = 7;
+  bool has_ycenter() const;
+  private:
+  bool _internal_has_ycenter() const;
+  public:
+  void clear_ycenter();
+  float ycenter() const;
+  void set_ycenter(float value);
+  private:
+  float _internal_ycenter() const;
+  void _internal_set_ycenter(float value);
+  public:
+
+  // optional float halfSide = 8;
+  bool has_halfside() const;
+  private:
+  bool _internal_has_halfside() const;
+  public:
+  void clear_halfside();
+  float halfside() const;
+  void set_halfside(float value);
+  private:
+  float _internal_halfside() const;
+  void _internal_set_halfside(float value);
+  public:
+
+  // optional float radius = 9;
+  bool has_radius() const;
+  private:
+  bool _internal_has_radius() const;
+  public:
+  void clear_radius();
+  float radius() const;
+  void set_radius(float value);
+  private:
+  float _internal_radius() const;
+  void _internal_set_radius(float value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::ContourPolygon > contourpolygons_;
+    int type_;
+    float lowerleftx_;
+    float lowerlefty_;
+    float width_;
+    float height_;
+    float xcenter_;
+    float ycenter_;
+    float halfside_;
+    float radius_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_edadatafile_2eproto;
+};
 // -------------------------------------------------------------------
 
 class EdaDataFile_PackageRecord_PinRecord final :
@@ -1177,7 +1639,7 @@ class EdaDataFile_PackageRecord_PinRecord final :
                &_EdaDataFile_PackageRecord_PinRecord_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    4;
+    7;
 
   friend void swap(EdaDataFile_PackageRecord_PinRecord& a, EdaDataFile_PackageRecord_PinRecord& b) {
     a.Swap(&b);
@@ -1561,7 +2023,7 @@ class EdaDataFile_PackageRecord final :
                &_EdaDataFile_PackageRecord_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    5;
+    8;
 
   friend void swap(EdaDataFile_PackageRecord& a, EdaDataFile_PackageRecord& b) {
     a.Swap(&b);
@@ -1633,6 +2095,7 @@ class EdaDataFile_PackageRecord final :
 
   // nested types ----------------------------------------------------
 
+  typedef EdaDataFile_PackageRecord_OutlineRecord OutlineRecord;
   typedef EdaDataFile_PackageRecord_PinRecord PinRecord;
 
   // accessors -------------------------------------------------------
@@ -1641,6 +2104,8 @@ class EdaDataFile_PackageRecord final :
     kPinRecordsFieldNumber = 8,
     kPinRecordsByNameFieldNumber = 9,
     kPropertyRecordsFieldNumber = 10,
+    kOutlineRecordsFieldNumber = 11,
+    kAttributeLookupTableFieldNumber = 12,
     kNameFieldNumber = 1,
     kAttributesIdStringFieldNumber = 7,
     kPitchFieldNumber = 2,
@@ -1701,6 +2166,41 @@ class EdaDataFile_PackageRecord final :
   ::Odb::Lib::Protobuf::PropertyRecord* add_propertyrecords();
   const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::PropertyRecord >&
       propertyrecords() const;
+
+  // repeated .Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord outlineRecords = 11;
+  int outlinerecords_size() const;
+  private:
+  int _internal_outlinerecords_size() const;
+  public:
+  void clear_outlinerecords();
+  ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord* mutable_outlinerecords(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord >*
+      mutable_outlinerecords();
+  private:
+  const ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord& _internal_outlinerecords(int index) const;
+  ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord* _internal_add_outlinerecords();
+  public:
+  const ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord& outlinerecords(int index) const;
+  ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord* add_outlinerecords();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord >&
+      outlinerecords() const;
+
+  // map<string, string> attributeLookupTable = 12;
+  int attributelookuptable_size() const;
+  private:
+  int _internal_attributelookuptable_size() const;
+  public:
+  void clear_attributelookuptable();
+  private:
+  const ::PROTOBUF_NAMESPACE_ID::Map< std::string, std::string >&
+      _internal_attributelookuptable() const;
+  ::PROTOBUF_NAMESPACE_ID::Map< std::string, std::string >*
+      _internal_mutable_attributelookuptable();
+  public:
+  const ::PROTOBUF_NAMESPACE_ID::Map< std::string, std::string >&
+      attributelookuptable() const;
+  ::PROTOBUF_NAMESPACE_ID::Map< std::string, std::string >*
+      mutable_attributelookuptable();
 
   // optional string name = 1;
   bool has_name() const;
@@ -1820,6 +2320,12 @@ class EdaDataFile_PackageRecord final :
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING,
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_MESSAGE> pinrecordsbyname_;
     ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::PropertyRecord > propertyrecords_;
+    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord > outlinerecords_;
+    ::PROTOBUF_NAMESPACE_ID::internal::MapField<
+        EdaDataFile_PackageRecord_AttributeLookupTableEntry_DoNotUse,
+        std::string, std::string,
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING,
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING> attributelookuptable_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr name_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr attributesidstring_;
     float pitch_;
@@ -1881,7 +2387,7 @@ class EdaDataFile_FeatureGroupRecord final :
                &_EdaDataFile_FeatureGroupRecord_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    6;
+    9;
 
   friend void swap(EdaDataFile_FeatureGroupRecord& a, EdaDataFile_FeatureGroupRecord& b) {
     a.Swap(&b);
@@ -2131,7 +2637,7 @@ class EdaDataFile final :
                &_EdaDataFile_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    9;
+    12;
 
   friend void swap(EdaDataFile& a, EdaDataFile& b) {
     a.Swap(&b);
@@ -2825,6 +3331,36 @@ inline void EdaDataFile_NetRecord_SubnetRecord::set_toeprintnumber(uint32_t valu
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.EdaDataFile.NetRecord.SubnetRecord.toeprintNumber)
 }
 
+// optional uint32 index = 9;
+inline bool EdaDataFile_NetRecord_SubnetRecord::_internal_has_index() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000080u) != 0;
+  return value;
+}
+inline bool EdaDataFile_NetRecord_SubnetRecord::has_index() const {
+  return _internal_has_index();
+}
+inline void EdaDataFile_NetRecord_SubnetRecord::clear_index() {
+  _impl_.index_ = 0u;
+  _impl_._has_bits_[0] &= ~0x00000080u;
+}
+inline uint32_t EdaDataFile_NetRecord_SubnetRecord::_internal_index() const {
+  return _impl_.index_;
+}
+inline uint32_t EdaDataFile_NetRecord_SubnetRecord::index() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.EdaDataFile.NetRecord.SubnetRecord.index)
+  return _internal_index();
+}
+inline void EdaDataFile_NetRecord_SubnetRecord::_internal_set_index(uint32_t value) {
+  _impl_._has_bits_[0] |= 0x00000080u;
+  _impl_.index_ = value;
+}
+inline void EdaDataFile_NetRecord_SubnetRecord::set_index(uint32_t value) {
+  _internal_set_index(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.EdaDataFile.NetRecord.SubnetRecord.index)
+}
+
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // EdaDataFile_NetRecord
@@ -3070,7 +3606,331 @@ EdaDataFile_NetRecord::propertyrecords() const {
   return _impl_.propertyrecords_;
 }
 
+// map<string, string> attributeLookupTable = 6;
+inline int EdaDataFile_NetRecord::_internal_attributelookuptable_size() const {
+  return _impl_.attributelookuptable_.size();
+}
+inline int EdaDataFile_NetRecord::attributelookuptable_size() const {
+  return _internal_attributelookuptable_size();
+}
+inline void EdaDataFile_NetRecord::clear_attributelookuptable() {
+  _impl_.attributelookuptable_.Clear();
+}
+inline const ::PROTOBUF_NAMESPACE_ID::Map< std::string, std::string >&
+EdaDataFile_NetRecord::_internal_attributelookuptable() const {
+  return _impl_.attributelookuptable_.GetMap();
+}
+inline const ::PROTOBUF_NAMESPACE_ID::Map< std::string, std::string >&
+EdaDataFile_NetRecord::attributelookuptable() const {
+  // @@protoc_insertion_point(field_map:Odb.Lib.Protobuf.EdaDataFile.NetRecord.attributeLookupTable)
+  return _internal_attributelookuptable();
+}
+inline ::PROTOBUF_NAMESPACE_ID::Map< std::string, std::string >*
+EdaDataFile_NetRecord::_internal_mutable_attributelookuptable() {
+  return _impl_.attributelookuptable_.MutableMap();
+}
+inline ::PROTOBUF_NAMESPACE_ID::Map< std::string, std::string >*
+EdaDataFile_NetRecord::mutable_attributelookuptable() {
+  // @@protoc_insertion_point(field_mutable_map:Odb.Lib.Protobuf.EdaDataFile.NetRecord.attributeLookupTable)
+  return _internal_mutable_attributelookuptable();
+}
+
 // -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// EdaDataFile_PackageRecord_OutlineRecord
+
+// optional .Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.Type type = 1;
+inline bool EdaDataFile_PackageRecord_OutlineRecord::_internal_has_type() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
+  return value;
+}
+inline bool EdaDataFile_PackageRecord_OutlineRecord::has_type() const {
+  return _internal_has_type();
+}
+inline void EdaDataFile_PackageRecord_OutlineRecord::clear_type() {
+  _impl_.type_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000001u;
+}
+inline ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord_Type EdaDataFile_PackageRecord_OutlineRecord::_internal_type() const {
+  return static_cast< ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord_Type >(_impl_.type_);
+}
+inline ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord_Type EdaDataFile_PackageRecord_OutlineRecord::type() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.type)
+  return _internal_type();
+}
+inline void EdaDataFile_PackageRecord_OutlineRecord::_internal_set_type(::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord_Type value) {
+  _impl_._has_bits_[0] |= 0x00000001u;
+  _impl_.type_ = value;
+}
+inline void EdaDataFile_PackageRecord_OutlineRecord::set_type(::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord_Type value) {
+  _internal_set_type(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.type)
+}
+
+// optional float lowerLeftX = 2;
+inline bool EdaDataFile_PackageRecord_OutlineRecord::_internal_has_lowerleftx() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
+  return value;
+}
+inline bool EdaDataFile_PackageRecord_OutlineRecord::has_lowerleftx() const {
+  return _internal_has_lowerleftx();
+}
+inline void EdaDataFile_PackageRecord_OutlineRecord::clear_lowerleftx() {
+  _impl_.lowerleftx_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000002u;
+}
+inline float EdaDataFile_PackageRecord_OutlineRecord::_internal_lowerleftx() const {
+  return _impl_.lowerleftx_;
+}
+inline float EdaDataFile_PackageRecord_OutlineRecord::lowerleftx() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.lowerLeftX)
+  return _internal_lowerleftx();
+}
+inline void EdaDataFile_PackageRecord_OutlineRecord::_internal_set_lowerleftx(float value) {
+  _impl_._has_bits_[0] |= 0x00000002u;
+  _impl_.lowerleftx_ = value;
+}
+inline void EdaDataFile_PackageRecord_OutlineRecord::set_lowerleftx(float value) {
+  _internal_set_lowerleftx(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.lowerLeftX)
+}
+
+// optional float lowerLeftY = 3;
+inline bool EdaDataFile_PackageRecord_OutlineRecord::_internal_has_lowerlefty() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
+  return value;
+}
+inline bool EdaDataFile_PackageRecord_OutlineRecord::has_lowerlefty() const {
+  return _internal_has_lowerlefty();
+}
+inline void EdaDataFile_PackageRecord_OutlineRecord::clear_lowerlefty() {
+  _impl_.lowerlefty_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000004u;
+}
+inline float EdaDataFile_PackageRecord_OutlineRecord::_internal_lowerlefty() const {
+  return _impl_.lowerlefty_;
+}
+inline float EdaDataFile_PackageRecord_OutlineRecord::lowerlefty() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.lowerLeftY)
+  return _internal_lowerlefty();
+}
+inline void EdaDataFile_PackageRecord_OutlineRecord::_internal_set_lowerlefty(float value) {
+  _impl_._has_bits_[0] |= 0x00000004u;
+  _impl_.lowerlefty_ = value;
+}
+inline void EdaDataFile_PackageRecord_OutlineRecord::set_lowerlefty(float value) {
+  _internal_set_lowerlefty(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.lowerLeftY)
+}
+
+// optional float width = 4;
+inline bool EdaDataFile_PackageRecord_OutlineRecord::_internal_has_width() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000008u) != 0;
+  return value;
+}
+inline bool EdaDataFile_PackageRecord_OutlineRecord::has_width() const {
+  return _internal_has_width();
+}
+inline void EdaDataFile_PackageRecord_OutlineRecord::clear_width() {
+  _impl_.width_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000008u;
+}
+inline float EdaDataFile_PackageRecord_OutlineRecord::_internal_width() const {
+  return _impl_.width_;
+}
+inline float EdaDataFile_PackageRecord_OutlineRecord::width() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.width)
+  return _internal_width();
+}
+inline void EdaDataFile_PackageRecord_OutlineRecord::_internal_set_width(float value) {
+  _impl_._has_bits_[0] |= 0x00000008u;
+  _impl_.width_ = value;
+}
+inline void EdaDataFile_PackageRecord_OutlineRecord::set_width(float value) {
+  _internal_set_width(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.width)
+}
+
+// optional float height = 5;
+inline bool EdaDataFile_PackageRecord_OutlineRecord::_internal_has_height() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000010u) != 0;
+  return value;
+}
+inline bool EdaDataFile_PackageRecord_OutlineRecord::has_height() const {
+  return _internal_has_height();
+}
+inline void EdaDataFile_PackageRecord_OutlineRecord::clear_height() {
+  _impl_.height_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000010u;
+}
+inline float EdaDataFile_PackageRecord_OutlineRecord::_internal_height() const {
+  return _impl_.height_;
+}
+inline float EdaDataFile_PackageRecord_OutlineRecord::height() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.height)
+  return _internal_height();
+}
+inline void EdaDataFile_PackageRecord_OutlineRecord::_internal_set_height(float value) {
+  _impl_._has_bits_[0] |= 0x00000010u;
+  _impl_.height_ = value;
+}
+inline void EdaDataFile_PackageRecord_OutlineRecord::set_height(float value) {
+  _internal_set_height(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.height)
+}
+
+// optional float xCenter = 6;
+inline bool EdaDataFile_PackageRecord_OutlineRecord::_internal_has_xcenter() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000020u) != 0;
+  return value;
+}
+inline bool EdaDataFile_PackageRecord_OutlineRecord::has_xcenter() const {
+  return _internal_has_xcenter();
+}
+inline void EdaDataFile_PackageRecord_OutlineRecord::clear_xcenter() {
+  _impl_.xcenter_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000020u;
+}
+inline float EdaDataFile_PackageRecord_OutlineRecord::_internal_xcenter() const {
+  return _impl_.xcenter_;
+}
+inline float EdaDataFile_PackageRecord_OutlineRecord::xcenter() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.xCenter)
+  return _internal_xcenter();
+}
+inline void EdaDataFile_PackageRecord_OutlineRecord::_internal_set_xcenter(float value) {
+  _impl_._has_bits_[0] |= 0x00000020u;
+  _impl_.xcenter_ = value;
+}
+inline void EdaDataFile_PackageRecord_OutlineRecord::set_xcenter(float value) {
+  _internal_set_xcenter(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.xCenter)
+}
+
+// optional float yCenter = 7;
+inline bool EdaDataFile_PackageRecord_OutlineRecord::_internal_has_ycenter() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000040u) != 0;
+  return value;
+}
+inline bool EdaDataFile_PackageRecord_OutlineRecord::has_ycenter() const {
+  return _internal_has_ycenter();
+}
+inline void EdaDataFile_PackageRecord_OutlineRecord::clear_ycenter() {
+  _impl_.ycenter_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000040u;
+}
+inline float EdaDataFile_PackageRecord_OutlineRecord::_internal_ycenter() const {
+  return _impl_.ycenter_;
+}
+inline float EdaDataFile_PackageRecord_OutlineRecord::ycenter() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.yCenter)
+  return _internal_ycenter();
+}
+inline void EdaDataFile_PackageRecord_OutlineRecord::_internal_set_ycenter(float value) {
+  _impl_._has_bits_[0] |= 0x00000040u;
+  _impl_.ycenter_ = value;
+}
+inline void EdaDataFile_PackageRecord_OutlineRecord::set_ycenter(float value) {
+  _internal_set_ycenter(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.yCenter)
+}
+
+// optional float halfSide = 8;
+inline bool EdaDataFile_PackageRecord_OutlineRecord::_internal_has_halfside() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000080u) != 0;
+  return value;
+}
+inline bool EdaDataFile_PackageRecord_OutlineRecord::has_halfside() const {
+  return _internal_has_halfside();
+}
+inline void EdaDataFile_PackageRecord_OutlineRecord::clear_halfside() {
+  _impl_.halfside_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000080u;
+}
+inline float EdaDataFile_PackageRecord_OutlineRecord::_internal_halfside() const {
+  return _impl_.halfside_;
+}
+inline float EdaDataFile_PackageRecord_OutlineRecord::halfside() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.halfSide)
+  return _internal_halfside();
+}
+inline void EdaDataFile_PackageRecord_OutlineRecord::_internal_set_halfside(float value) {
+  _impl_._has_bits_[0] |= 0x00000080u;
+  _impl_.halfside_ = value;
+}
+inline void EdaDataFile_PackageRecord_OutlineRecord::set_halfside(float value) {
+  _internal_set_halfside(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.halfSide)
+}
+
+// optional float radius = 9;
+inline bool EdaDataFile_PackageRecord_OutlineRecord::_internal_has_radius() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000100u) != 0;
+  return value;
+}
+inline bool EdaDataFile_PackageRecord_OutlineRecord::has_radius() const {
+  return _internal_has_radius();
+}
+inline void EdaDataFile_PackageRecord_OutlineRecord::clear_radius() {
+  _impl_.radius_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000100u;
+}
+inline float EdaDataFile_PackageRecord_OutlineRecord::_internal_radius() const {
+  return _impl_.radius_;
+}
+inline float EdaDataFile_PackageRecord_OutlineRecord::radius() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.radius)
+  return _internal_radius();
+}
+inline void EdaDataFile_PackageRecord_OutlineRecord::_internal_set_radius(float value) {
+  _impl_._has_bits_[0] |= 0x00000100u;
+  _impl_.radius_ = value;
+}
+inline void EdaDataFile_PackageRecord_OutlineRecord::set_radius(float value) {
+  _internal_set_radius(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.radius)
+}
+
+// repeated .Odb.Lib.Protobuf.ContourPolygon contourPolygons = 10;
+inline int EdaDataFile_PackageRecord_OutlineRecord::_internal_contourpolygons_size() const {
+  return _impl_.contourpolygons_.size();
+}
+inline int EdaDataFile_PackageRecord_OutlineRecord::contourpolygons_size() const {
+  return _internal_contourpolygons_size();
+}
+inline ::Odb::Lib::Protobuf::ContourPolygon* EdaDataFile_PackageRecord_OutlineRecord::mutable_contourpolygons(int index) {
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.contourPolygons)
+  return _impl_.contourpolygons_.Mutable(index);
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::ContourPolygon >*
+EdaDataFile_PackageRecord_OutlineRecord::mutable_contourpolygons() {
+  // @@protoc_insertion_point(field_mutable_list:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.contourPolygons)
+  return &_impl_.contourpolygons_;
+}
+inline const ::Odb::Lib::Protobuf::ContourPolygon& EdaDataFile_PackageRecord_OutlineRecord::_internal_contourpolygons(int index) const {
+  return _impl_.contourpolygons_.Get(index);
+}
+inline const ::Odb::Lib::Protobuf::ContourPolygon& EdaDataFile_PackageRecord_OutlineRecord::contourpolygons(int index) const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.contourPolygons)
+  return _internal_contourpolygons(index);
+}
+inline ::Odb::Lib::Protobuf::ContourPolygon* EdaDataFile_PackageRecord_OutlineRecord::_internal_add_contourpolygons() {
+  return _impl_.contourpolygons_.Add();
+}
+inline ::Odb::Lib::Protobuf::ContourPolygon* EdaDataFile_PackageRecord_OutlineRecord::add_contourpolygons() {
+  ::Odb::Lib::Protobuf::ContourPolygon* _add = _internal_add_contourpolygons();
+  // @@protoc_insertion_point(field_add:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.contourPolygons)
+  return _add;
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::ContourPolygon >&
+EdaDataFile_PackageRecord_OutlineRecord::contourpolygons() const {
+  // @@protoc_insertion_point(field_list:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.contourPolygons)
+  return _impl_.contourpolygons_;
+}
 
 // -------------------------------------------------------------------
 
@@ -3752,6 +4612,75 @@ inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::Pr
 EdaDataFile_PackageRecord::propertyrecords() const {
   // @@protoc_insertion_point(field_list:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.propertyRecords)
   return _impl_.propertyrecords_;
+}
+
+// repeated .Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord outlineRecords = 11;
+inline int EdaDataFile_PackageRecord::_internal_outlinerecords_size() const {
+  return _impl_.outlinerecords_.size();
+}
+inline int EdaDataFile_PackageRecord::outlinerecords_size() const {
+  return _internal_outlinerecords_size();
+}
+inline void EdaDataFile_PackageRecord::clear_outlinerecords() {
+  _impl_.outlinerecords_.Clear();
+}
+inline ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord* EdaDataFile_PackageRecord::mutable_outlinerecords(int index) {
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.outlineRecords)
+  return _impl_.outlinerecords_.Mutable(index);
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord >*
+EdaDataFile_PackageRecord::mutable_outlinerecords() {
+  // @@protoc_insertion_point(field_mutable_list:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.outlineRecords)
+  return &_impl_.outlinerecords_;
+}
+inline const ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord& EdaDataFile_PackageRecord::_internal_outlinerecords(int index) const {
+  return _impl_.outlinerecords_.Get(index);
+}
+inline const ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord& EdaDataFile_PackageRecord::outlinerecords(int index) const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.outlineRecords)
+  return _internal_outlinerecords(index);
+}
+inline ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord* EdaDataFile_PackageRecord::_internal_add_outlinerecords() {
+  return _impl_.outlinerecords_.Add();
+}
+inline ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord* EdaDataFile_PackageRecord::add_outlinerecords() {
+  ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord* _add = _internal_add_outlinerecords();
+  // @@protoc_insertion_point(field_add:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.outlineRecords)
+  return _add;
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord >&
+EdaDataFile_PackageRecord::outlinerecords() const {
+  // @@protoc_insertion_point(field_list:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.outlineRecords)
+  return _impl_.outlinerecords_;
+}
+
+// map<string, string> attributeLookupTable = 12;
+inline int EdaDataFile_PackageRecord::_internal_attributelookuptable_size() const {
+  return _impl_.attributelookuptable_.size();
+}
+inline int EdaDataFile_PackageRecord::attributelookuptable_size() const {
+  return _internal_attributelookuptable_size();
+}
+inline void EdaDataFile_PackageRecord::clear_attributelookuptable() {
+  _impl_.attributelookuptable_.Clear();
+}
+inline const ::PROTOBUF_NAMESPACE_ID::Map< std::string, std::string >&
+EdaDataFile_PackageRecord::_internal_attributelookuptable() const {
+  return _impl_.attributelookuptable_.GetMap();
+}
+inline const ::PROTOBUF_NAMESPACE_ID::Map< std::string, std::string >&
+EdaDataFile_PackageRecord::attributelookuptable() const {
+  // @@protoc_insertion_point(field_map:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.attributeLookupTable)
+  return _internal_attributelookuptable();
+}
+inline ::PROTOBUF_NAMESPACE_ID::Map< std::string, std::string >*
+EdaDataFile_PackageRecord::_internal_mutable_attributelookuptable() {
+  return _impl_.attributelookuptable_.MutableMap();
+}
+inline ::PROTOBUF_NAMESPACE_ID::Map< std::string, std::string >*
+EdaDataFile_PackageRecord::mutable_attributelookuptable() {
+  // @@protoc_insertion_point(field_mutable_map:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.attributeLookupTable)
+  return _internal_mutable_attributelookuptable();
 }
 
 // -------------------------------------------------------------------
@@ -4576,6 +5505,12 @@ EdaDataFile::featuregrouprecords() const {
 
 // -------------------------------------------------------------------
 
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 
 // @@protoc_insertion_point(namespace_scope)
 
@@ -4604,6 +5539,11 @@ template <> struct is_proto_enum< ::Odb::Lib::Protobuf::EdaDataFile_NetRecord_Su
 template <>
 inline const EnumDescriptor* GetEnumDescriptor< ::Odb::Lib::Protobuf::EdaDataFile_NetRecord_SubnetRecord_CutoutType>() {
   return ::Odb::Lib::Protobuf::EdaDataFile_NetRecord_SubnetRecord_CutoutType_descriptor();
+}
+template <> struct is_proto_enum< ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord_Type> : ::std::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord_Type>() {
+  return ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord_Type_descriptor();
 }
 template <> struct is_proto_enum< ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_PinRecord_Type> : ::std::true_type {};
 template <>

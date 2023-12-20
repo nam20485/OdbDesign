@@ -25,15 +25,16 @@ namespace Lib {
 namespace Protobuf {
 PROTOBUF_CONSTEXPR ComponentsFile_ComponentRecord_ToeprintRecord::ComponentsFile_ComponentRecord_ToeprintRecord(
     ::_pbi::ConstantInitialized): _impl_{
-    /*decltype(_impl_.name_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+    /*decltype(_impl_._has_bits_)*/{}
+  , /*decltype(_impl_._cached_size_)*/{}
+  , /*decltype(_impl_.name_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.pinnumber_)*/0u
   , /*decltype(_impl_.locationx_)*/0
   , /*decltype(_impl_.locationy_)*/0
   , /*decltype(_impl_.rotation_)*/0
   , /*decltype(_impl_.mirror_)*/false
   , /*decltype(_impl_.netnumber_)*/0u
-  , /*decltype(_impl_.subnetnumber_)*/0u
-  , /*decltype(_impl_._cached_size_)*/{}} {}
+  , /*decltype(_impl_.subnetnumber_)*/0u} {}
 struct ComponentsFile_ComponentRecord_ToeprintRecordDefaultTypeInternal {
   PROTOBUF_CONSTEXPR ComponentsFile_ComponentRecord_ToeprintRecordDefaultTypeInternal()
       : _instance(::_pbi::ConstantInitialized{}) {}
@@ -43,10 +44,24 @@ struct ComponentsFile_ComponentRecord_ToeprintRecordDefaultTypeInternal {
   };
 };
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ComponentsFile_ComponentRecord_ToeprintRecordDefaultTypeInternal _ComponentsFile_ComponentRecord_ToeprintRecord_default_instance_;
+PROTOBUF_CONSTEXPR ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse::ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse(
+    ::_pbi::ConstantInitialized) {}
+struct ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeInternal() {}
+  union {
+    ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeInternal _ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse_default_instance_;
 PROTOBUF_CONSTEXPR ComponentsFile_ComponentRecord::ComponentsFile_ComponentRecord(
     ::_pbi::ConstantInitialized): _impl_{
-    /*decltype(_impl_.propertyrecords_)*/{}
+    /*decltype(_impl_._has_bits_)*/{}
+  , /*decltype(_impl_._cached_size_)*/{}
+  , /*decltype(_impl_.propertyrecords_)*/{}
   , /*decltype(_impl_.toeprintrecords_)*/{}
+  , /*decltype(_impl_.attributelookuptable_)*/{::_pbi::ConstantInitialized()}
   , /*decltype(_impl_.compname_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.partname_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.attributes_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
@@ -56,8 +71,7 @@ PROTOBUF_CONSTEXPR ComponentsFile_ComponentRecord::ComponentsFile_ComponentRecor
   , /*decltype(_impl_.rotation_)*/0
   , /*decltype(_impl_.mirror_)*/false
   , /*decltype(_impl_.id_)*/0u
-  , /*decltype(_impl_.index_)*/0u
-  , /*decltype(_impl_._cached_size_)*/{}} {}
+  , /*decltype(_impl_.index_)*/0u} {}
 struct ComponentsFile_ComponentRecordDefaultTypeInternal {
   PROTOBUF_CONSTEXPR ComponentsFile_ComponentRecordDefaultTypeInternal()
       : _instance(::_pbi::ConstantInitialized{}) {}
@@ -67,6 +81,27 @@ struct ComponentsFile_ComponentRecordDefaultTypeInternal {
   };
 };
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ComponentsFile_ComponentRecordDefaultTypeInternal _ComponentsFile_ComponentRecord_default_instance_;
+PROTOBUF_CONSTEXPR ComponentsFile_BomDescriptionRecord::ComponentsFile_BomDescriptionRecord(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_._has_bits_)*/{}
+  , /*decltype(_impl_._cached_size_)*/{}
+  , /*decltype(_impl_.descriptions_)*/{}
+  , /*decltype(_impl_.cpn_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.pkg_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.ipn_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.vpl_vnd_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.vpl_mpn_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.vnd_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.mpn_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}} {}
+struct ComponentsFile_BomDescriptionRecordDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR ComponentsFile_BomDescriptionRecordDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~ComponentsFile_BomDescriptionRecordDefaultTypeInternal() {}
+  union {
+    ComponentsFile_BomDescriptionRecord _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ComponentsFile_BomDescriptionRecordDefaultTypeInternal _ComponentsFile_BomDescriptionRecord_default_instance_;
 PROTOBUF_CONSTEXPR ComponentsFile_ComponentRecordsByNameEntry_DoNotUse::ComponentsFile_ComponentRecordsByNameEntry_DoNotUse(
     ::_pbi::ConstantInitialized) {}
 struct ComponentsFile_ComponentRecordsByNameEntry_DoNotUseDefaultTypeInternal {
@@ -89,21 +124,34 @@ struct ComponentsFile_PropertyRecordsByNameEntry_DoNotUseDefaultTypeInternal {
   };
 };
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ComponentsFile_PropertyRecordsByNameEntry_DoNotUseDefaultTypeInternal _ComponentsFile_PropertyRecordsByNameEntry_DoNotUse_default_instance_;
+PROTOBUF_CONSTEXPR ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUse::ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUse(
+    ::_pbi::ConstantInitialized) {}
+struct ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUseDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUseDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUseDefaultTypeInternal() {}
+  union {
+    ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUse _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUseDefaultTypeInternal _ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUse_default_instance_;
 PROTOBUF_CONSTEXPR ComponentsFile::ComponentsFile(
     ::_pbi::ConstantInitialized): _impl_{
-    /*decltype(_impl_.attributenames_)*/{}
+    /*decltype(_impl_._has_bits_)*/{}
+  , /*decltype(_impl_._cached_size_)*/{}
+  , /*decltype(_impl_.attributenames_)*/{}
   , /*decltype(_impl_.attributetextvalues_)*/{}
   , /*decltype(_impl_.componentrecords_)*/{}
   , /*decltype(_impl_.componentrecordsbyname_)*/{::_pbi::ConstantInitialized()}
   , /*decltype(_impl_.propertyrecords_)*/{}
   , /*decltype(_impl_.propertyrecordsbyname_)*/{::_pbi::ConstantInitialized()}
+  , /*decltype(_impl_.bomdescriptionrecordsbycpn_)*/{::_pbi::ConstantInitialized()}
   , /*decltype(_impl_.units_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.name_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.layername_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.path_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.directory_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.id_)*/0u
-  , /*decltype(_impl_.side_)*/0
-  , /*decltype(_impl_._cached_size_)*/{}} {}
+  , /*decltype(_impl_.side_)*/0} {}
 struct ComponentsFileDefaultTypeInternal {
   PROTOBUF_CONSTEXPR ComponentsFileDefaultTypeInternal()
       : _instance(::_pbi::ConstantInitialized{}) {}
@@ -116,12 +164,12 @@ PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORIT
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
-static ::_pb::Metadata file_level_metadata_componentsfile_2eproto[5];
+static ::_pb::Metadata file_level_metadata_componentsfile_2eproto[8];
 static constexpr ::_pb::EnumDescriptor const** file_level_enum_descriptors_componentsfile_2eproto = nullptr;
 static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_componentsfile_2eproto = nullptr;
 
 const uint32_t TableStruct_componentsfile_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord_ToeprintRecord, _impl_._has_bits_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord_ToeprintRecord, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
@@ -135,7 +183,25 @@ const uint32_t TableStruct_componentsfile_2eproto::offsets[] PROTOBUF_SECTION_VA
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord_ToeprintRecord, _impl_.netnumber_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord_ToeprintRecord, _impl_.subnetnumber_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord_ToeprintRecord, _impl_.name_),
-  ~0u,  // no _has_bits_
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  0,
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse, _has_bits_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse, key_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse, value_),
+  0,
+  1,
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord, _impl_._has_bits_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
@@ -153,6 +219,42 @@ const uint32_t TableStruct_componentsfile_2eproto::offsets[] PROTOBUF_SECTION_VA
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord, _impl_.index_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord, _impl_.propertyrecords_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord, _impl_.toeprintrecords_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord, _impl_.attributelookuptable_),
+  3,
+  4,
+  5,
+  6,
+  7,
+  0,
+  1,
+  2,
+  8,
+  9,
+  ~0u,
+  ~0u,
+  ~0u,
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecord, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecord, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecord, _impl_.cpn_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecord, _impl_.pkg_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecord, _impl_.ipn_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecord, _impl_.descriptions_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecord, _impl_.vpl_vnd_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecord, _impl_.vpl_mpn_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecord, _impl_.vnd_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecord, _impl_.mpn_),
+  0,
+  1,
+  2,
+  ~0u,
+  3,
+  4,
+  5,
+  6,
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecordsByNameEntry_DoNotUse, _has_bits_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecordsByNameEntry_DoNotUse, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -173,7 +275,17 @@ const uint32_t TableStruct_componentsfile_2eproto::offsets[] PROTOBUF_SECTION_VA
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_PropertyRecordsByNameEntry_DoNotUse, value_),
   0,
   1,
-  ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUse, _has_bits_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUse, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUse, key_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUse, value_),
+  0,
+  1,
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile, _impl_._has_bits_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
@@ -182,7 +294,7 @@ const uint32_t TableStruct_componentsfile_2eproto::offsets[] PROTOBUF_SECTION_VA
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile, _impl_.units_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile, _impl_.id_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile, _impl_.side_),
-  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile, _impl_.name_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile, _impl_.layername_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile, _impl_.path_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile, _impl_.directory_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile, _impl_.attributenames_),
@@ -191,57 +303,103 @@ const uint32_t TableStruct_componentsfile_2eproto::offsets[] PROTOBUF_SECTION_VA
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile, _impl_.componentrecordsbyname_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile, _impl_.propertyrecords_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile, _impl_.propertyrecordsbyname_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile, _impl_.bomdescriptionrecordsbycpn_),
+  0,
+  4,
+  5,
+  1,
+  2,
+  3,
+  ~0u,
+  ~0u,
+  ~0u,
+  ~0u,
+  ~0u,
+  ~0u,
+  ~0u,
 };
 static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  { 0, -1, -1, sizeof(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord_ToeprintRecord)},
-  { 14, -1, -1, sizeof(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord)},
-  { 32, 40, -1, sizeof(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecordsByNameEntry_DoNotUse)},
-  { 42, 50, -1, sizeof(::Odb::Lib::Protobuf::ComponentsFile_PropertyRecordsByNameEntry_DoNotUse)},
-  { 52, -1, -1, sizeof(::Odb::Lib::Protobuf::ComponentsFile)},
+  { 0, 14, -1, sizeof(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord_ToeprintRecord)},
+  { 22, 30, -1, sizeof(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse)},
+  { 32, 51, -1, sizeof(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord)},
+  { 64, 78, -1, sizeof(::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecord)},
+  { 86, 94, -1, sizeof(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecordsByNameEntry_DoNotUse)},
+  { 96, 104, -1, sizeof(::Odb::Lib::Protobuf::ComponentsFile_PropertyRecordsByNameEntry_DoNotUse)},
+  { 106, 114, -1, sizeof(::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUse)},
+  { 116, 135, -1, sizeof(::Odb::Lib::Protobuf::ComponentsFile)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
   &::Odb::Lib::Protobuf::_ComponentsFile_ComponentRecord_ToeprintRecord_default_instance_._instance,
+  &::Odb::Lib::Protobuf::_ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse_default_instance_._instance,
   &::Odb::Lib::Protobuf::_ComponentsFile_ComponentRecord_default_instance_._instance,
+  &::Odb::Lib::Protobuf::_ComponentsFile_BomDescriptionRecord_default_instance_._instance,
   &::Odb::Lib::Protobuf::_ComponentsFile_ComponentRecordsByNameEntry_DoNotUse_default_instance_._instance,
   &::Odb::Lib::Protobuf::_ComponentsFile_PropertyRecordsByNameEntry_DoNotUse_default_instance_._instance,
+  &::Odb::Lib::Protobuf::_ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUse_default_instance_._instance,
   &::Odb::Lib::Protobuf::_ComponentsFile_default_instance_._instance,
 };
 
 const char descriptor_table_protodef_componentsfile_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
   "\n\024componentsfile.proto\022\020Odb.Lib.Protobuf"
-  "\032\014common.proto\032\013enums.proto\"\305\t\n\016Componen"
-  "tsFile\022\r\n\005units\030\001 \001(\t\022\n\n\002id\030\002 \001(\r\022)\n\004sid"
-  "e\030\003 \001(\0162\033.Odb.Lib.Protobuf.BoardSide\022\014\n\004"
-  "name\030\004 \001(\t\022\014\n\004path\030\005 \001(\t\022\021\n\tdirectory\030\006 "
-  "\001(\t\022\026\n\016attributeNames\030\007 \003(\t\022\033\n\023attribute"
-  "TextValues\030\010 \003(\t\022J\n\020componentRecords\030\t \003"
-  "(\01320.Odb.Lib.Protobuf.ComponentsFile.Com"
-  "ponentRecord\022\\\n\026componentRecordsByName\030\n"
-  " \003(\0132<.Odb.Lib.Protobuf.ComponentsFile.C"
-  "omponentRecordsByNameEntry\0229\n\017propertyRe"
-  "cords\030\013 \003(\0132 .Odb.Lib.Protobuf.PropertyR"
-  "ecord\022Z\n\025propertyRecordsByName\030\014 \003(\0132;.O"
-  "db.Lib.Protobuf.ComponentsFile.PropertyR"
-  "ecordsByNameEntry\032\366\003\n\017ComponentRecord\022\016\n"
-  "\006pkgRef\030\001 \001(\r\022\021\n\tlocationX\030\002 \001(\002\022\021\n\tloca"
-  "tionY\030\003 \001(\002\022\020\n\010rotation\030\004 \001(\002\022\016\n\006mirror\030"
-  "\005 \001(\010\022\020\n\010compName\030\006 \001(\t\022\020\n\010partName\030\007 \001("
-  "\t\022\022\n\nattributes\030\010 \001(\t\022\n\n\002id\030\t \001(\r\022\r\n\005ind"
-  "ex\030\n \001(\r\0229\n\017propertyRecords\030\013 \003(\0132 .Odb."
-  "Lib.Protobuf.PropertyRecord\022X\n\017toeprintR"
-  "ecords\030\014 \003(\0132\?.Odb.Lib.Protobuf.Componen"
-  "tsFile.ComponentRecord.ToeprintRecord\032\242\001"
-  "\n\016ToeprintRecord\022\021\n\tpinNumber\030\001 \001(\r\022\021\n\tl"
-  "ocationX\030\002 \001(\002\022\021\n\tlocationY\030\003 \001(\002\022\020\n\010rot"
-  "ation\030\004 \001(\002\022\016\n\006mirror\030\005 \001(\010\022\021\n\tnetNumber"
-  "\030\006 \001(\r\022\024\n\014subnetNumber\030\007 \001(\r\022\014\n\004name\030\010 \001"
-  "(\t\032o\n\033ComponentRecordsByNameEntry\022\013\n\003key"
-  "\030\001 \001(\t\022\?\n\005value\030\002 \001(\01320.Odb.Lib.Protobuf"
-  ".ComponentsFile.ComponentRecord:\0028\001\032^\n\032P"
-  "ropertyRecordsByNameEntry\022\013\n\003key\030\001 \001(\t\022/"
-  "\n\005value\030\002 \001(\0132 .Odb.Lib.Protobuf.Propert"
-  "yRecord:\0028\001b\006proto3"
+  "\032\014common.proto\032\013enums.proto\"\340\021\n\016Componen"
+  "tsFile\022\022\n\005units\030\001 \001(\tH\000\210\001\001\022\017\n\002id\030\002 \001(\rH\001"
+  "\210\001\001\022.\n\004side\030\003 \001(\0162\033.Odb.Lib.Protobuf.Boa"
+  "rdSideH\002\210\001\001\022\026\n\tlayerName\030\004 \001(\tH\003\210\001\001\022\021\n\004p"
+  "ath\030\005 \001(\tH\004\210\001\001\022\026\n\tdirectory\030\006 \001(\tH\005\210\001\001\022\026"
+  "\n\016attributeNames\030\007 \003(\t\022\033\n\023attributeTextV"
+  "alues\030\010 \003(\t\022J\n\020componentRecords\030\t \003(\01320."
+  "Odb.Lib.Protobuf.ComponentsFile.Componen"
+  "tRecord\022\\\n\026componentRecordsByName\030\n \003(\0132"
+  "<.Odb.Lib.Protobuf.ComponentsFile.Compon"
+  "entRecordsByNameEntry\0229\n\017propertyRecords"
+  "\030\013 \003(\0132 .Odb.Lib.Protobuf.PropertyRecord"
+  "\022Z\n\025propertyRecordsByName\030\014 \003(\0132;.Odb.Li"
+  "b.Protobuf.ComponentsFile.PropertyRecord"
+  "sByNameEntry\022d\n\032bomDescriptionRecordsByC"
+  "pn\030\r \003(\0132@.Odb.Lib.Protobuf.ComponentsFi"
+  "le.BomDescriptionRecordsByCpnEntry\032\332\007\n\017C"
+  "omponentRecord\022\023\n\006pkgRef\030\001 \001(\rH\000\210\001\001\022\026\n\tl"
+  "ocationX\030\002 \001(\002H\001\210\001\001\022\026\n\tlocationY\030\003 \001(\002H\002"
+  "\210\001\001\022\025\n\010rotation\030\004 \001(\002H\003\210\001\001\022\023\n\006mirror\030\005 \001"
+  "(\010H\004\210\001\001\022\025\n\010compName\030\006 \001(\tH\005\210\001\001\022\025\n\010partNa"
+  "me\030\007 \001(\tH\006\210\001\001\022\027\n\nattributes\030\010 \001(\tH\007\210\001\001\022\017"
+  "\n\002id\030\t \001(\rH\010\210\001\001\022\022\n\005index\030\n \001(\rH\t\210\001\001\0229\n\017p"
+  "ropertyRecords\030\013 \003(\0132 .Odb.Lib.Protobuf."
+  "PropertyRecord\022X\n\017toeprintRecords\030\014 \003(\0132"
+  "\?.Odb.Lib.Protobuf.ComponentsFile.Compon"
+  "entRecord.ToeprintRecord\022h\n\024attributeLoo"
+  "kupTable\030\r \003(\0132J.Odb.Lib.Protobuf.Compon"
+  "entsFile.ComponentRecord.AttributeLookup"
+  "TableEntry\032\264\002\n\016ToeprintRecord\022\026\n\tpinNumb"
+  "er\030\001 \001(\rH\000\210\001\001\022\026\n\tlocationX\030\002 \001(\002H\001\210\001\001\022\026\n"
+  "\tlocationY\030\003 \001(\002H\002\210\001\001\022\025\n\010rotation\030\004 \001(\002H"
+  "\003\210\001\001\022\023\n\006mirror\030\005 \001(\010H\004\210\001\001\022\026\n\tnetNumber\030\006"
+  " \001(\rH\005\210\001\001\022\031\n\014subnetNumber\030\007 \001(\rH\006\210\001\001\022\021\n\004"
+  "name\030\010 \001(\tH\007\210\001\001B\014\n\n_pinNumberB\014\n\n_locati"
+  "onXB\014\n\n_locationYB\013\n\t_rotationB\t\n\007_mirro"
+  "rB\014\n\n_netNumberB\017\n\r_subnetNumberB\007\n\005_nam"
+  "e\032;\n\031AttributeLookupTableEntry\022\013\n\003key\030\001 "
+  "\001(\t\022\r\n\005value\030\002 \001(\t:\0028\001B\t\n\007_pkgRefB\014\n\n_lo"
+  "cationXB\014\n\n_locationYB\013\n\t_rotationB\t\n\007_m"
+  "irrorB\013\n\t_compNameB\013\n\t_partNameB\r\n\013_attr"
+  "ibutesB\005\n\003_idB\010\n\006_index\032\362\001\n\024BomDescripti"
+  "onRecord\022\020\n\003cpn\030\001 \001(\tH\000\210\001\001\022\020\n\003pkg\030\002 \001(\tH"
+  "\001\210\001\001\022\020\n\003ipn\030\003 \001(\tH\002\210\001\001\022\024\n\014descriptions\030\004"
+  " \003(\t\022\024\n\007vpl_vnd\030\005 \001(\tH\003\210\001\001\022\024\n\007vpl_mpn\030\006 "
+  "\001(\tH\004\210\001\001\022\020\n\003vnd\030\007 \001(\tH\005\210\001\001\022\020\n\003mpn\030\010 \001(\tH"
+  "\006\210\001\001B\006\n\004_cpnB\006\n\004_pkgB\006\n\004_ipnB\n\n\010_vpl_vnd"
+  "B\n\n\010_vpl_mpnB\006\n\004_vndB\006\n\004_mpn\032o\n\033Componen"
+  "tRecordsByNameEntry\022\013\n\003key\030\001 \001(\t\022\?\n\005valu"
+  "e\030\002 \001(\01320.Odb.Lib.Protobuf.ComponentsFil"
+  "e.ComponentRecord:\0028\001\032^\n\032PropertyRecords"
+  "ByNameEntry\022\013\n\003key\030\001 \001(\t\022/\n\005value\030\002 \001(\0132"
+  " .Odb.Lib.Protobuf.PropertyRecord:\0028\001\032x\n"
+  "\037BomDescriptionRecordsByCpnEntry\022\013\n\003key\030"
+  "\001 \001(\t\022D\n\005value\030\002 \001(\01325.Odb.Lib.Protobuf."
+  "ComponentsFile.BomDescriptionRecord:\0028\001B"
+  "\010\n\006_unitsB\005\n\003_idB\007\n\005_sideB\014\n\n_layerNameB"
+  "\007\n\005_pathB\014\n\n_directoryb\006proto3"
   ;
 static const ::_pbi::DescriptorTable* const descriptor_table_componentsfile_2eproto_deps[2] = {
   &::descriptor_table_common_2eproto,
@@ -249,9 +407,9 @@ static const ::_pbi::DescriptorTable* const descriptor_table_componentsfile_2epr
 };
 static ::_pbi::once_flag descriptor_table_componentsfile_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_componentsfile_2eproto = {
-    false, false, 1299, descriptor_table_protodef_componentsfile_2eproto,
+    false, false, 2350, descriptor_table_protodef_componentsfile_2eproto,
     "componentsfile.proto",
-    &descriptor_table_componentsfile_2eproto_once, descriptor_table_componentsfile_2eproto_deps, 2, 5,
+    &descriptor_table_componentsfile_2eproto_once, descriptor_table_componentsfile_2eproto_deps, 2, 8,
     schemas, file_default_instances, TableStruct_componentsfile_2eproto::offsets,
     file_level_metadata_componentsfile_2eproto, file_level_enum_descriptors_componentsfile_2eproto,
     file_level_service_descriptors_componentsfile_2eproto,
@@ -270,6 +428,31 @@ namespace Protobuf {
 
 class ComponentsFile_ComponentRecord_ToeprintRecord::_Internal {
  public:
+  using HasBits = decltype(std::declval<ComponentsFile_ComponentRecord_ToeprintRecord>()._impl_._has_bits_);
+  static void set_has_pinnumber(HasBits* has_bits) {
+    (*has_bits)[0] |= 2u;
+  }
+  static void set_has_locationx(HasBits* has_bits) {
+    (*has_bits)[0] |= 4u;
+  }
+  static void set_has_locationy(HasBits* has_bits) {
+    (*has_bits)[0] |= 8u;
+  }
+  static void set_has_rotation(HasBits* has_bits) {
+    (*has_bits)[0] |= 16u;
+  }
+  static void set_has_mirror(HasBits* has_bits) {
+    (*has_bits)[0] |= 32u;
+  }
+  static void set_has_netnumber(HasBits* has_bits) {
+    (*has_bits)[0] |= 64u;
+  }
+  static void set_has_subnetnumber(HasBits* has_bits) {
+    (*has_bits)[0] |= 128u;
+  }
+  static void set_has_name(HasBits* has_bits) {
+    (*has_bits)[0] |= 1u;
+  }
 };
 
 ComponentsFile_ComponentRecord_ToeprintRecord::ComponentsFile_ComponentRecord_ToeprintRecord(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -282,22 +465,23 @@ ComponentsFile_ComponentRecord_ToeprintRecord::ComponentsFile_ComponentRecord_To
   : ::PROTOBUF_NAMESPACE_ID::Message() {
   ComponentsFile_ComponentRecord_ToeprintRecord* const _this = this; (void)_this;
   new (&_impl_) Impl_{
-      decltype(_impl_.name_){}
+      decltype(_impl_._has_bits_){from._impl_._has_bits_}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.name_){}
     , decltype(_impl_.pinnumber_){}
     , decltype(_impl_.locationx_){}
     , decltype(_impl_.locationy_){}
     , decltype(_impl_.rotation_){}
     , decltype(_impl_.mirror_){}
     , decltype(_impl_.netnumber_){}
-    , decltype(_impl_.subnetnumber_){}
-    , /*decltype(_impl_._cached_size_)*/{}};
+    , decltype(_impl_.subnetnumber_){}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   _impl_.name_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
     _impl_.name_.Set("", GetArenaForAllocation());
   #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_name().empty()) {
+  if (from._internal_has_name()) {
     _this->_impl_.name_.Set(from._internal_name(), 
       _this->GetArenaForAllocation());
   }
@@ -312,7 +496,9 @@ inline void ComponentsFile_ComponentRecord_ToeprintRecord::SharedCtor(
   (void)arena;
   (void)is_message_owned;
   new (&_impl_) Impl_{
-      decltype(_impl_.name_){}
+      decltype(_impl_._has_bits_){}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.name_){}
     , decltype(_impl_.pinnumber_){0u}
     , decltype(_impl_.locationx_){0}
     , decltype(_impl_.locationy_){0}
@@ -320,7 +506,6 @@ inline void ComponentsFile_ComponentRecord_ToeprintRecord::SharedCtor(
     , decltype(_impl_.mirror_){false}
     , decltype(_impl_.netnumber_){0u}
     , decltype(_impl_.subnetnumber_){0u}
-    , /*decltype(_impl_._cached_size_)*/{}
   };
   _impl_.name_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
@@ -352,76 +537,90 @@ void ComponentsFile_ComponentRecord_ToeprintRecord::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  _impl_.name_.ClearToEmpty();
-  ::memset(&_impl_.pinnumber_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&_impl_.subnetnumber_) -
-      reinterpret_cast<char*>(&_impl_.pinnumber_)) + sizeof(_impl_.subnetnumber_));
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000001u) {
+    _impl_.name_.ClearNonDefaultToEmpty();
+  }
+  if (cached_has_bits & 0x000000feu) {
+    ::memset(&_impl_.pinnumber_, 0, static_cast<size_t>(
+        reinterpret_cast<char*>(&_impl_.subnetnumber_) -
+        reinterpret_cast<char*>(&_impl_.pinnumber_)) + sizeof(_impl_.subnetnumber_));
+  }
+  _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 const char* ComponentsFile_ComponentRecord_ToeprintRecord::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  _Internal::HasBits has_bits{};
   while (!ctx->Done(&ptr)) {
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // uint32 pinNumber = 1;
+      // optional uint32 pinNumber = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
+          _Internal::set_has_pinnumber(&has_bits);
           _impl_.pinnumber_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
           CHK_(ptr);
         } else
           goto handle_unusual;
         continue;
-      // float locationX = 2;
+      // optional float locationX = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 21)) {
+          _Internal::set_has_locationx(&has_bits);
           _impl_.locationx_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
           ptr += sizeof(float);
         } else
           goto handle_unusual;
         continue;
-      // float locationY = 3;
+      // optional float locationY = 3;
       case 3:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 29)) {
+          _Internal::set_has_locationy(&has_bits);
           _impl_.locationy_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
           ptr += sizeof(float);
         } else
           goto handle_unusual;
         continue;
-      // float rotation = 4;
+      // optional float rotation = 4;
       case 4:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 37)) {
+          _Internal::set_has_rotation(&has_bits);
           _impl_.rotation_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
           ptr += sizeof(float);
         } else
           goto handle_unusual;
         continue;
-      // bool mirror = 5;
+      // optional bool mirror = 5;
       case 5:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 40)) {
+          _Internal::set_has_mirror(&has_bits);
           _impl_.mirror_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
         } else
           goto handle_unusual;
         continue;
-      // uint32 netNumber = 6;
+      // optional uint32 netNumber = 6;
       case 6:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 48)) {
+          _Internal::set_has_netnumber(&has_bits);
           _impl_.netnumber_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
           CHK_(ptr);
         } else
           goto handle_unusual;
         continue;
-      // uint32 subnetNumber = 7;
+      // optional uint32 subnetNumber = 7;
       case 7:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 56)) {
+          _Internal::set_has_subnetnumber(&has_bits);
           _impl_.subnetnumber_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
           CHK_(ptr);
         } else
           goto handle_unusual;
         continue;
-      // string name = 8;
+      // optional string name = 8;
       case 8:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 66)) {
           auto str = _internal_mutable_name();
@@ -447,6 +646,7 @@ const char* ComponentsFile_ComponentRecord_ToeprintRecord::_InternalParse(const 
     CHK_(ptr != nullptr);
   }  // while
 message_done:
+  _impl_._has_bits_.Or(has_bits);
   return ptr;
 failure:
   ptr = nullptr;
@@ -460,62 +660,50 @@ uint8_t* ComponentsFile_ComponentRecord_ToeprintRecord::_InternalSerialize(
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // uint32 pinNumber = 1;
-  if (this->_internal_pinnumber() != 0) {
+  // optional uint32 pinNumber = 1;
+  if (_internal_has_pinnumber()) {
     target = stream->EnsureSpace(target);
     target = ::_pbi::WireFormatLite::WriteUInt32ToArray(1, this->_internal_pinnumber(), target);
   }
 
-  // float locationX = 2;
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
-  float tmp_locationx = this->_internal_locationx();
-  uint32_t raw_locationx;
-  memcpy(&raw_locationx, &tmp_locationx, sizeof(tmp_locationx));
-  if (raw_locationx != 0) {
+  // optional float locationX = 2;
+  if (_internal_has_locationx()) {
     target = stream->EnsureSpace(target);
     target = ::_pbi::WireFormatLite::WriteFloatToArray(2, this->_internal_locationx(), target);
   }
 
-  // float locationY = 3;
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
-  float tmp_locationy = this->_internal_locationy();
-  uint32_t raw_locationy;
-  memcpy(&raw_locationy, &tmp_locationy, sizeof(tmp_locationy));
-  if (raw_locationy != 0) {
+  // optional float locationY = 3;
+  if (_internal_has_locationy()) {
     target = stream->EnsureSpace(target);
     target = ::_pbi::WireFormatLite::WriteFloatToArray(3, this->_internal_locationy(), target);
   }
 
-  // float rotation = 4;
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
-  float tmp_rotation = this->_internal_rotation();
-  uint32_t raw_rotation;
-  memcpy(&raw_rotation, &tmp_rotation, sizeof(tmp_rotation));
-  if (raw_rotation != 0) {
+  // optional float rotation = 4;
+  if (_internal_has_rotation()) {
     target = stream->EnsureSpace(target);
     target = ::_pbi::WireFormatLite::WriteFloatToArray(4, this->_internal_rotation(), target);
   }
 
-  // bool mirror = 5;
-  if (this->_internal_mirror() != 0) {
+  // optional bool mirror = 5;
+  if (_internal_has_mirror()) {
     target = stream->EnsureSpace(target);
     target = ::_pbi::WireFormatLite::WriteBoolToArray(5, this->_internal_mirror(), target);
   }
 
-  // uint32 netNumber = 6;
-  if (this->_internal_netnumber() != 0) {
+  // optional uint32 netNumber = 6;
+  if (_internal_has_netnumber()) {
     target = stream->EnsureSpace(target);
     target = ::_pbi::WireFormatLite::WriteUInt32ToArray(6, this->_internal_netnumber(), target);
   }
 
-  // uint32 subnetNumber = 7;
-  if (this->_internal_subnetnumber() != 0) {
+  // optional uint32 subnetNumber = 7;
+  if (_internal_has_subnetnumber()) {
     target = stream->EnsureSpace(target);
     target = ::_pbi::WireFormatLite::WriteUInt32ToArray(7, this->_internal_subnetnumber(), target);
   }
 
-  // string name = 8;
-  if (!this->_internal_name().empty()) {
+  // optional string name = 8;
+  if (_internal_has_name()) {
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_name().data(), static_cast<int>(this->_internal_name().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
@@ -540,60 +728,51 @@ size_t ComponentsFile_ComponentRecord_ToeprintRecord::ByteSizeLong() const {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  // string name = 8;
-  if (!this->_internal_name().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_name());
-  }
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x000000ffu) {
+    // optional string name = 8;
+    if (cached_has_bits & 0x00000001u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_name());
+    }
 
-  // uint32 pinNumber = 1;
-  if (this->_internal_pinnumber() != 0) {
-    total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(this->_internal_pinnumber());
-  }
+    // optional uint32 pinNumber = 1;
+    if (cached_has_bits & 0x00000002u) {
+      total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(this->_internal_pinnumber());
+    }
 
-  // float locationX = 2;
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
-  float tmp_locationx = this->_internal_locationx();
-  uint32_t raw_locationx;
-  memcpy(&raw_locationx, &tmp_locationx, sizeof(tmp_locationx));
-  if (raw_locationx != 0) {
-    total_size += 1 + 4;
-  }
+    // optional float locationX = 2;
+    if (cached_has_bits & 0x00000004u) {
+      total_size += 1 + 4;
+    }
 
-  // float locationY = 3;
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
-  float tmp_locationy = this->_internal_locationy();
-  uint32_t raw_locationy;
-  memcpy(&raw_locationy, &tmp_locationy, sizeof(tmp_locationy));
-  if (raw_locationy != 0) {
-    total_size += 1 + 4;
-  }
+    // optional float locationY = 3;
+    if (cached_has_bits & 0x00000008u) {
+      total_size += 1 + 4;
+    }
 
-  // float rotation = 4;
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
-  float tmp_rotation = this->_internal_rotation();
-  uint32_t raw_rotation;
-  memcpy(&raw_rotation, &tmp_rotation, sizeof(tmp_rotation));
-  if (raw_rotation != 0) {
-    total_size += 1 + 4;
-  }
+    // optional float rotation = 4;
+    if (cached_has_bits & 0x00000010u) {
+      total_size += 1 + 4;
+    }
 
-  // bool mirror = 5;
-  if (this->_internal_mirror() != 0) {
-    total_size += 1 + 1;
-  }
+    // optional bool mirror = 5;
+    if (cached_has_bits & 0x00000020u) {
+      total_size += 1 + 1;
+    }
 
-  // uint32 netNumber = 6;
-  if (this->_internal_netnumber() != 0) {
-    total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(this->_internal_netnumber());
-  }
+    // optional uint32 netNumber = 6;
+    if (cached_has_bits & 0x00000040u) {
+      total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(this->_internal_netnumber());
+    }
 
-  // uint32 subnetNumber = 7;
-  if (this->_internal_subnetnumber() != 0) {
-    total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(this->_internal_subnetnumber());
-  }
+    // optional uint32 subnetNumber = 7;
+    if (cached_has_bits & 0x00000080u) {
+      total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(this->_internal_subnetnumber());
+    }
 
+  }
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
 }
 
@@ -612,41 +791,33 @@ void ComponentsFile_ComponentRecord_ToeprintRecord::MergeImpl(::PROTOBUF_NAMESPA
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (!from._internal_name().empty()) {
-    _this->_internal_set_name(from._internal_name());
-  }
-  if (from._internal_pinnumber() != 0) {
-    _this->_internal_set_pinnumber(from._internal_pinnumber());
-  }
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
-  float tmp_locationx = from._internal_locationx();
-  uint32_t raw_locationx;
-  memcpy(&raw_locationx, &tmp_locationx, sizeof(tmp_locationx));
-  if (raw_locationx != 0) {
-    _this->_internal_set_locationx(from._internal_locationx());
-  }
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
-  float tmp_locationy = from._internal_locationy();
-  uint32_t raw_locationy;
-  memcpy(&raw_locationy, &tmp_locationy, sizeof(tmp_locationy));
-  if (raw_locationy != 0) {
-    _this->_internal_set_locationy(from._internal_locationy());
-  }
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
-  float tmp_rotation = from._internal_rotation();
-  uint32_t raw_rotation;
-  memcpy(&raw_rotation, &tmp_rotation, sizeof(tmp_rotation));
-  if (raw_rotation != 0) {
-    _this->_internal_set_rotation(from._internal_rotation());
-  }
-  if (from._internal_mirror() != 0) {
-    _this->_internal_set_mirror(from._internal_mirror());
-  }
-  if (from._internal_netnumber() != 0) {
-    _this->_internal_set_netnumber(from._internal_netnumber());
-  }
-  if (from._internal_subnetnumber() != 0) {
-    _this->_internal_set_subnetnumber(from._internal_subnetnumber());
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (cached_has_bits & 0x000000ffu) {
+    if (cached_has_bits & 0x00000001u) {
+      _this->_internal_set_name(from._internal_name());
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _this->_impl_.pinnumber_ = from._impl_.pinnumber_;
+    }
+    if (cached_has_bits & 0x00000004u) {
+      _this->_impl_.locationx_ = from._impl_.locationx_;
+    }
+    if (cached_has_bits & 0x00000008u) {
+      _this->_impl_.locationy_ = from._impl_.locationy_;
+    }
+    if (cached_has_bits & 0x00000010u) {
+      _this->_impl_.rotation_ = from._impl_.rotation_;
+    }
+    if (cached_has_bits & 0x00000020u) {
+      _this->_impl_.mirror_ = from._impl_.mirror_;
+    }
+    if (cached_has_bits & 0x00000040u) {
+      _this->_impl_.netnumber_ = from._impl_.netnumber_;
+    }
+    if (cached_has_bits & 0x00000080u) {
+      _this->_impl_.subnetnumber_ = from._impl_.subnetnumber_;
+    }
+    _this->_impl_._has_bits_[0] |= cached_has_bits;
   }
   _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
 }
@@ -667,6 +838,7 @@ void ComponentsFile_ComponentRecord_ToeprintRecord::InternalSwap(ComponentsFile_
   auto* lhs_arena = GetArenaForAllocation();
   auto* rhs_arena = other->GetArenaForAllocation();
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
       &_impl_.name_, lhs_arena,
       &other->_impl_.name_, rhs_arena
@@ -687,8 +859,53 @@ void ComponentsFile_ComponentRecord_ToeprintRecord::InternalSwap(ComponentsFile_
 
 // ===================================================================
 
+ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse::ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse() {}
+ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse::ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+    : SuperType(arena) {}
+void ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse::MergeFrom(const ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse& other) {
+  MergeFromInternal(other);
+}
+::PROTOBUF_NAMESPACE_ID::Metadata ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_componentsfile_2eproto_getter, &descriptor_table_componentsfile_2eproto_once,
+      file_level_metadata_componentsfile_2eproto[1]);
+}
+
+// ===================================================================
+
 class ComponentsFile_ComponentRecord::_Internal {
  public:
+  using HasBits = decltype(std::declval<ComponentsFile_ComponentRecord>()._impl_._has_bits_);
+  static void set_has_pkgref(HasBits* has_bits) {
+    (*has_bits)[0] |= 8u;
+  }
+  static void set_has_locationx(HasBits* has_bits) {
+    (*has_bits)[0] |= 16u;
+  }
+  static void set_has_locationy(HasBits* has_bits) {
+    (*has_bits)[0] |= 32u;
+  }
+  static void set_has_rotation(HasBits* has_bits) {
+    (*has_bits)[0] |= 64u;
+  }
+  static void set_has_mirror(HasBits* has_bits) {
+    (*has_bits)[0] |= 128u;
+  }
+  static void set_has_compname(HasBits* has_bits) {
+    (*has_bits)[0] |= 1u;
+  }
+  static void set_has_partname(HasBits* has_bits) {
+    (*has_bits)[0] |= 2u;
+  }
+  static void set_has_attributes(HasBits* has_bits) {
+    (*has_bits)[0] |= 4u;
+  }
+  static void set_has_id(HasBits* has_bits) {
+    (*has_bits)[0] |= 256u;
+  }
+  static void set_has_index(HasBits* has_bits) {
+    (*has_bits)[0] |= 512u;
+  }
 };
 
 void ComponentsFile_ComponentRecord::clear_propertyrecords() {
@@ -698,14 +915,20 @@ ComponentsFile_ComponentRecord::ComponentsFile_ComponentRecord(::PROTOBUF_NAMESP
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
+  if (arena != nullptr && !is_message_owned) {
+    arena->OwnCustomDestructor(this, &ComponentsFile_ComponentRecord::ArenaDtor);
+  }
   // @@protoc_insertion_point(arena_constructor:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord)
 }
 ComponentsFile_ComponentRecord::ComponentsFile_ComponentRecord(const ComponentsFile_ComponentRecord& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
   ComponentsFile_ComponentRecord* const _this = this; (void)_this;
   new (&_impl_) Impl_{
-      decltype(_impl_.propertyrecords_){from._impl_.propertyrecords_}
+      decltype(_impl_._has_bits_){from._impl_._has_bits_}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.propertyrecords_){from._impl_.propertyrecords_}
     , decltype(_impl_.toeprintrecords_){from._impl_.toeprintrecords_}
+    , /*decltype(_impl_.attributelookuptable_)*/{}
     , decltype(_impl_.compname_){}
     , decltype(_impl_.partname_){}
     , decltype(_impl_.attributes_){}
@@ -715,15 +938,15 @@ ComponentsFile_ComponentRecord::ComponentsFile_ComponentRecord(const ComponentsF
     , decltype(_impl_.rotation_){}
     , decltype(_impl_.mirror_){}
     , decltype(_impl_.id_){}
-    , decltype(_impl_.index_){}
-    , /*decltype(_impl_._cached_size_)*/{}};
+    , decltype(_impl_.index_){}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _this->_impl_.attributelookuptable_.MergeFrom(from._impl_.attributelookuptable_);
   _impl_.compname_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
     _impl_.compname_.Set("", GetArenaForAllocation());
   #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_compname().empty()) {
+  if (from._internal_has_compname()) {
     _this->_impl_.compname_.Set(from._internal_compname(), 
       _this->GetArenaForAllocation());
   }
@@ -731,7 +954,7 @@ ComponentsFile_ComponentRecord::ComponentsFile_ComponentRecord(const ComponentsF
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
     _impl_.partname_.Set("", GetArenaForAllocation());
   #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_partname().empty()) {
+  if (from._internal_has_partname()) {
     _this->_impl_.partname_.Set(from._internal_partname(), 
       _this->GetArenaForAllocation());
   }
@@ -739,7 +962,7 @@ ComponentsFile_ComponentRecord::ComponentsFile_ComponentRecord(const ComponentsF
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
     _impl_.attributes_.Set("", GetArenaForAllocation());
   #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_attributes().empty()) {
+  if (from._internal_has_attributes()) {
     _this->_impl_.attributes_.Set(from._internal_attributes(), 
       _this->GetArenaForAllocation());
   }
@@ -754,8 +977,11 @@ inline void ComponentsFile_ComponentRecord::SharedCtor(
   (void)arena;
   (void)is_message_owned;
   new (&_impl_) Impl_{
-      decltype(_impl_.propertyrecords_){arena}
+      decltype(_impl_._has_bits_){}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.propertyrecords_){arena}
     , decltype(_impl_.toeprintrecords_){arena}
+    , /*decltype(_impl_.attributelookuptable_)*/{::_pbi::ArenaInitialized(), arena}
     , decltype(_impl_.compname_){}
     , decltype(_impl_.partname_){}
     , decltype(_impl_.attributes_){}
@@ -766,7 +992,6 @@ inline void ComponentsFile_ComponentRecord::SharedCtor(
     , decltype(_impl_.mirror_){false}
     , decltype(_impl_.id_){0u}
     , decltype(_impl_.index_){0u}
-    , /*decltype(_impl_._cached_size_)*/{}
   };
   _impl_.compname_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
@@ -786,6 +1011,7 @@ ComponentsFile_ComponentRecord::~ComponentsFile_ComponentRecord() {
   // @@protoc_insertion_point(destructor:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
+    ArenaDtor(this);
     return;
   }
   SharedDtor();
@@ -795,11 +1021,17 @@ inline void ComponentsFile_ComponentRecord::SharedDtor() {
   GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
   _impl_.propertyrecords_.~RepeatedPtrField();
   _impl_.toeprintrecords_.~RepeatedPtrField();
+  _impl_.attributelookuptable_.Destruct();
+  _impl_.attributelookuptable_.~MapField();
   _impl_.compname_.Destroy();
   _impl_.partname_.Destroy();
   _impl_.attributes_.Destroy();
 }
 
+void ComponentsFile_ComponentRecord::ArenaDtor(void* object) {
+  ComponentsFile_ComponentRecord* _this = reinterpret_cast< ComponentsFile_ComponentRecord* >(object);
+  _this->_impl_.attributelookuptable_.Destruct();
+}
 void ComponentsFile_ComponentRecord::SetCachedSize(int size) const {
   _impl_._cached_size_.Set(size);
 }
@@ -812,62 +1044,86 @@ void ComponentsFile_ComponentRecord::Clear() {
 
   _impl_.propertyrecords_.Clear();
   _impl_.toeprintrecords_.Clear();
-  _impl_.compname_.ClearToEmpty();
-  _impl_.partname_.ClearToEmpty();
-  _impl_.attributes_.ClearToEmpty();
-  ::memset(&_impl_.pkgref_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&_impl_.index_) -
-      reinterpret_cast<char*>(&_impl_.pkgref_)) + sizeof(_impl_.index_));
+  _impl_.attributelookuptable_.Clear();
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000007u) {
+    if (cached_has_bits & 0x00000001u) {
+      _impl_.compname_.ClearNonDefaultToEmpty();
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _impl_.partname_.ClearNonDefaultToEmpty();
+    }
+    if (cached_has_bits & 0x00000004u) {
+      _impl_.attributes_.ClearNonDefaultToEmpty();
+    }
+  }
+  if (cached_has_bits & 0x000000f8u) {
+    ::memset(&_impl_.pkgref_, 0, static_cast<size_t>(
+        reinterpret_cast<char*>(&_impl_.mirror_) -
+        reinterpret_cast<char*>(&_impl_.pkgref_)) + sizeof(_impl_.mirror_));
+  }
+  if (cached_has_bits & 0x00000300u) {
+    ::memset(&_impl_.id_, 0, static_cast<size_t>(
+        reinterpret_cast<char*>(&_impl_.index_) -
+        reinterpret_cast<char*>(&_impl_.id_)) + sizeof(_impl_.index_));
+  }
+  _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 const char* ComponentsFile_ComponentRecord::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  _Internal::HasBits has_bits{};
   while (!ctx->Done(&ptr)) {
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // uint32 pkgRef = 1;
+      // optional uint32 pkgRef = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
+          _Internal::set_has_pkgref(&has_bits);
           _impl_.pkgref_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
           CHK_(ptr);
         } else
           goto handle_unusual;
         continue;
-      // float locationX = 2;
+      // optional float locationX = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 21)) {
+          _Internal::set_has_locationx(&has_bits);
           _impl_.locationx_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
           ptr += sizeof(float);
         } else
           goto handle_unusual;
         continue;
-      // float locationY = 3;
+      // optional float locationY = 3;
       case 3:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 29)) {
+          _Internal::set_has_locationy(&has_bits);
           _impl_.locationy_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
           ptr += sizeof(float);
         } else
           goto handle_unusual;
         continue;
-      // float rotation = 4;
+      // optional float rotation = 4;
       case 4:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 37)) {
+          _Internal::set_has_rotation(&has_bits);
           _impl_.rotation_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
           ptr += sizeof(float);
         } else
           goto handle_unusual;
         continue;
-      // bool mirror = 5;
+      // optional bool mirror = 5;
       case 5:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 40)) {
+          _Internal::set_has_mirror(&has_bits);
           _impl_.mirror_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
         } else
           goto handle_unusual;
         continue;
-      // string compName = 6;
+      // optional string compName = 6;
       case 6:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 50)) {
           auto str = _internal_mutable_compname();
@@ -877,7 +1133,7 @@ const char* ComponentsFile_ComponentRecord::_InternalParse(const char* ptr, ::_p
         } else
           goto handle_unusual;
         continue;
-      // string partName = 7;
+      // optional string partName = 7;
       case 7:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 58)) {
           auto str = _internal_mutable_partname();
@@ -887,7 +1143,7 @@ const char* ComponentsFile_ComponentRecord::_InternalParse(const char* ptr, ::_p
         } else
           goto handle_unusual;
         continue;
-      // string attributes = 8;
+      // optional string attributes = 8;
       case 8:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 66)) {
           auto str = _internal_mutable_attributes();
@@ -897,17 +1153,19 @@ const char* ComponentsFile_ComponentRecord::_InternalParse(const char* ptr, ::_p
         } else
           goto handle_unusual;
         continue;
-      // uint32 id = 9;
+      // optional uint32 id = 9;
       case 9:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 72)) {
+          _Internal::set_has_id(&has_bits);
           _impl_.id_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
           CHK_(ptr);
         } else
           goto handle_unusual;
         continue;
-      // uint32 index = 10;
+      // optional uint32 index = 10;
       case 10:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 80)) {
+          _Internal::set_has_index(&has_bits);
           _impl_.index_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
           CHK_(ptr);
         } else
@@ -939,6 +1197,19 @@ const char* ComponentsFile_ComponentRecord::_InternalParse(const char* ptr, ::_p
         } else
           goto handle_unusual;
         continue;
+      // map<string, string> attributeLookupTable = 13;
+      case 13:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 106)) {
+          ptr -= 1;
+          do {
+            ptr += 1;
+            ptr = ctx->ParseMessage(&_impl_.attributelookuptable_, ptr);
+            CHK_(ptr);
+            if (!ctx->DataAvailable(ptr)) break;
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<106>(ptr));
+        } else
+          goto handle_unusual;
+        continue;
       default:
         goto handle_unusual;
     }  // switch
@@ -955,6 +1226,7 @@ const char* ComponentsFile_ComponentRecord::_InternalParse(const char* ptr, ::_p
     CHK_(ptr != nullptr);
   }  // while
 message_done:
+  _impl_._has_bits_.Or(has_bits);
   return ptr;
 failure:
   ptr = nullptr;
@@ -968,50 +1240,38 @@ uint8_t* ComponentsFile_ComponentRecord::_InternalSerialize(
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // uint32 pkgRef = 1;
-  if (this->_internal_pkgref() != 0) {
+  // optional uint32 pkgRef = 1;
+  if (_internal_has_pkgref()) {
     target = stream->EnsureSpace(target);
     target = ::_pbi::WireFormatLite::WriteUInt32ToArray(1, this->_internal_pkgref(), target);
   }
 
-  // float locationX = 2;
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
-  float tmp_locationx = this->_internal_locationx();
-  uint32_t raw_locationx;
-  memcpy(&raw_locationx, &tmp_locationx, sizeof(tmp_locationx));
-  if (raw_locationx != 0) {
+  // optional float locationX = 2;
+  if (_internal_has_locationx()) {
     target = stream->EnsureSpace(target);
     target = ::_pbi::WireFormatLite::WriteFloatToArray(2, this->_internal_locationx(), target);
   }
 
-  // float locationY = 3;
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
-  float tmp_locationy = this->_internal_locationy();
-  uint32_t raw_locationy;
-  memcpy(&raw_locationy, &tmp_locationy, sizeof(tmp_locationy));
-  if (raw_locationy != 0) {
+  // optional float locationY = 3;
+  if (_internal_has_locationy()) {
     target = stream->EnsureSpace(target);
     target = ::_pbi::WireFormatLite::WriteFloatToArray(3, this->_internal_locationy(), target);
   }
 
-  // float rotation = 4;
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
-  float tmp_rotation = this->_internal_rotation();
-  uint32_t raw_rotation;
-  memcpy(&raw_rotation, &tmp_rotation, sizeof(tmp_rotation));
-  if (raw_rotation != 0) {
+  // optional float rotation = 4;
+  if (_internal_has_rotation()) {
     target = stream->EnsureSpace(target);
     target = ::_pbi::WireFormatLite::WriteFloatToArray(4, this->_internal_rotation(), target);
   }
 
-  // bool mirror = 5;
-  if (this->_internal_mirror() != 0) {
+  // optional bool mirror = 5;
+  if (_internal_has_mirror()) {
     target = stream->EnsureSpace(target);
     target = ::_pbi::WireFormatLite::WriteBoolToArray(5, this->_internal_mirror(), target);
   }
 
-  // string compName = 6;
-  if (!this->_internal_compname().empty()) {
+  // optional string compName = 6;
+  if (_internal_has_compname()) {
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_compname().data(), static_cast<int>(this->_internal_compname().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
@@ -1020,8 +1280,8 @@ uint8_t* ComponentsFile_ComponentRecord::_InternalSerialize(
         6, this->_internal_compname(), target);
   }
 
-  // string partName = 7;
-  if (!this->_internal_partname().empty()) {
+  // optional string partName = 7;
+  if (_internal_has_partname()) {
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_partname().data(), static_cast<int>(this->_internal_partname().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
@@ -1030,8 +1290,8 @@ uint8_t* ComponentsFile_ComponentRecord::_InternalSerialize(
         7, this->_internal_partname(), target);
   }
 
-  // string attributes = 8;
-  if (!this->_internal_attributes().empty()) {
+  // optional string attributes = 8;
+  if (_internal_has_attributes()) {
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_attributes().data(), static_cast<int>(this->_internal_attributes().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
@@ -1040,14 +1300,14 @@ uint8_t* ComponentsFile_ComponentRecord::_InternalSerialize(
         8, this->_internal_attributes(), target);
   }
 
-  // uint32 id = 9;
-  if (this->_internal_id() != 0) {
+  // optional uint32 id = 9;
+  if (_internal_has_id()) {
     target = stream->EnsureSpace(target);
     target = ::_pbi::WireFormatLite::WriteUInt32ToArray(9, this->_internal_id(), target);
   }
 
-  // uint32 index = 10;
-  if (this->_internal_index() != 0) {
+  // optional uint32 index = 10;
+  if (_internal_has_index()) {
     target = stream->EnsureSpace(target);
     target = ::_pbi::WireFormatLite::WriteUInt32ToArray(10, this->_internal_index(), target);
   }
@@ -1066,6 +1326,36 @@ uint8_t* ComponentsFile_ComponentRecord::_InternalSerialize(
     const auto& repfield = this->_internal_toeprintrecords(i);
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
         InternalWriteMessage(12, repfield, repfield.GetCachedSize(), target, stream);
+  }
+
+  // map<string, string> attributeLookupTable = 13;
+  if (!this->_internal_attributelookuptable().empty()) {
+    using MapType = ::_pb::Map<std::string, std::string>;
+    using WireHelper = ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse::Funcs;
+    const auto& map_field = this->_internal_attributelookuptable();
+    auto check_utf8 = [](const MapType::value_type& entry) {
+      (void)entry;
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+        entry.first.data(), static_cast<int>(entry.first.length()),
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+        "Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.AttributeLookupTableEntry.key");
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+        entry.second.data(), static_cast<int>(entry.second.length()),
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+        "Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.AttributeLookupTableEntry.value");
+    };
+
+    if (stream->IsSerializationDeterministic() && map_field.size() > 1) {
+      for (const auto& entry : ::_pbi::MapSorterPtr<MapType>(map_field)) {
+        target = WireHelper::InternalSerialize(13, entry.first, entry.second, target, stream);
+        check_utf8(entry);
+      }
+    } else {
+      for (const auto& entry : map_field) {
+        target = WireHelper::InternalSerialize(13, entry.first, entry.second, target, stream);
+        check_utf8(entry);
+      }
+    }
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -1098,74 +1388,76 @@ size_t ComponentsFile_ComponentRecord::ByteSizeLong() const {
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(msg);
   }
 
-  // string compName = 6;
-  if (!this->_internal_compname().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_compname());
+  // map<string, string> attributeLookupTable = 13;
+  total_size += 1 *
+      ::PROTOBUF_NAMESPACE_ID::internal::FromIntSize(this->_internal_attributelookuptable_size());
+  for (::PROTOBUF_NAMESPACE_ID::Map< std::string, std::string >::const_iterator
+      it = this->_internal_attributelookuptable().begin();
+      it != this->_internal_attributelookuptable().end(); ++it) {
+    total_size += ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse::Funcs::ByteSizeLong(it->first, it->second);
   }
 
-  // string partName = 7;
-  if (!this->_internal_partname().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_partname());
-  }
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x000000ffu) {
+    // optional string compName = 6;
+    if (cached_has_bits & 0x00000001u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_compname());
+    }
 
-  // string attributes = 8;
-  if (!this->_internal_attributes().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_attributes());
-  }
+    // optional string partName = 7;
+    if (cached_has_bits & 0x00000002u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_partname());
+    }
 
-  // uint32 pkgRef = 1;
-  if (this->_internal_pkgref() != 0) {
-    total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(this->_internal_pkgref());
-  }
+    // optional string attributes = 8;
+    if (cached_has_bits & 0x00000004u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_attributes());
+    }
 
-  // float locationX = 2;
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
-  float tmp_locationx = this->_internal_locationx();
-  uint32_t raw_locationx;
-  memcpy(&raw_locationx, &tmp_locationx, sizeof(tmp_locationx));
-  if (raw_locationx != 0) {
-    total_size += 1 + 4;
-  }
+    // optional uint32 pkgRef = 1;
+    if (cached_has_bits & 0x00000008u) {
+      total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(this->_internal_pkgref());
+    }
 
-  // float locationY = 3;
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
-  float tmp_locationy = this->_internal_locationy();
-  uint32_t raw_locationy;
-  memcpy(&raw_locationy, &tmp_locationy, sizeof(tmp_locationy));
-  if (raw_locationy != 0) {
-    total_size += 1 + 4;
-  }
+    // optional float locationX = 2;
+    if (cached_has_bits & 0x00000010u) {
+      total_size += 1 + 4;
+    }
 
-  // float rotation = 4;
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
-  float tmp_rotation = this->_internal_rotation();
-  uint32_t raw_rotation;
-  memcpy(&raw_rotation, &tmp_rotation, sizeof(tmp_rotation));
-  if (raw_rotation != 0) {
-    total_size += 1 + 4;
-  }
+    // optional float locationY = 3;
+    if (cached_has_bits & 0x00000020u) {
+      total_size += 1 + 4;
+    }
 
-  // bool mirror = 5;
-  if (this->_internal_mirror() != 0) {
-    total_size += 1 + 1;
-  }
+    // optional float rotation = 4;
+    if (cached_has_bits & 0x00000040u) {
+      total_size += 1 + 4;
+    }
 
-  // uint32 id = 9;
-  if (this->_internal_id() != 0) {
-    total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(this->_internal_id());
-  }
+    // optional bool mirror = 5;
+    if (cached_has_bits & 0x00000080u) {
+      total_size += 1 + 1;
+    }
 
-  // uint32 index = 10;
-  if (this->_internal_index() != 0) {
-    total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(this->_internal_index());
   }
+  if (cached_has_bits & 0x00000300u) {
+    // optional uint32 id = 9;
+    if (cached_has_bits & 0x00000100u) {
+      total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(this->_internal_id());
+    }
 
+    // optional uint32 index = 10;
+    if (cached_has_bits & 0x00000200u) {
+      total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(this->_internal_index());
+    }
+
+  }
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
 }
 
@@ -1186,47 +1478,43 @@ void ComponentsFile_ComponentRecord::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message&
 
   _this->_impl_.propertyrecords_.MergeFrom(from._impl_.propertyrecords_);
   _this->_impl_.toeprintrecords_.MergeFrom(from._impl_.toeprintrecords_);
-  if (!from._internal_compname().empty()) {
-    _this->_internal_set_compname(from._internal_compname());
+  _this->_impl_.attributelookuptable_.MergeFrom(from._impl_.attributelookuptable_);
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (cached_has_bits & 0x000000ffu) {
+    if (cached_has_bits & 0x00000001u) {
+      _this->_internal_set_compname(from._internal_compname());
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _this->_internal_set_partname(from._internal_partname());
+    }
+    if (cached_has_bits & 0x00000004u) {
+      _this->_internal_set_attributes(from._internal_attributes());
+    }
+    if (cached_has_bits & 0x00000008u) {
+      _this->_impl_.pkgref_ = from._impl_.pkgref_;
+    }
+    if (cached_has_bits & 0x00000010u) {
+      _this->_impl_.locationx_ = from._impl_.locationx_;
+    }
+    if (cached_has_bits & 0x00000020u) {
+      _this->_impl_.locationy_ = from._impl_.locationy_;
+    }
+    if (cached_has_bits & 0x00000040u) {
+      _this->_impl_.rotation_ = from._impl_.rotation_;
+    }
+    if (cached_has_bits & 0x00000080u) {
+      _this->_impl_.mirror_ = from._impl_.mirror_;
+    }
+    _this->_impl_._has_bits_[0] |= cached_has_bits;
   }
-  if (!from._internal_partname().empty()) {
-    _this->_internal_set_partname(from._internal_partname());
-  }
-  if (!from._internal_attributes().empty()) {
-    _this->_internal_set_attributes(from._internal_attributes());
-  }
-  if (from._internal_pkgref() != 0) {
-    _this->_internal_set_pkgref(from._internal_pkgref());
-  }
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
-  float tmp_locationx = from._internal_locationx();
-  uint32_t raw_locationx;
-  memcpy(&raw_locationx, &tmp_locationx, sizeof(tmp_locationx));
-  if (raw_locationx != 0) {
-    _this->_internal_set_locationx(from._internal_locationx());
-  }
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
-  float tmp_locationy = from._internal_locationy();
-  uint32_t raw_locationy;
-  memcpy(&raw_locationy, &tmp_locationy, sizeof(tmp_locationy));
-  if (raw_locationy != 0) {
-    _this->_internal_set_locationy(from._internal_locationy());
-  }
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
-  float tmp_rotation = from._internal_rotation();
-  uint32_t raw_rotation;
-  memcpy(&raw_rotation, &tmp_rotation, sizeof(tmp_rotation));
-  if (raw_rotation != 0) {
-    _this->_internal_set_rotation(from._internal_rotation());
-  }
-  if (from._internal_mirror() != 0) {
-    _this->_internal_set_mirror(from._internal_mirror());
-  }
-  if (from._internal_id() != 0) {
-    _this->_internal_set_id(from._internal_id());
-  }
-  if (from._internal_index() != 0) {
-    _this->_internal_set_index(from._internal_index());
+  if (cached_has_bits & 0x00000300u) {
+    if (cached_has_bits & 0x00000100u) {
+      _this->_impl_.id_ = from._impl_.id_;
+    }
+    if (cached_has_bits & 0x00000200u) {
+      _this->_impl_.index_ = from._impl_.index_;
+    }
+    _this->_impl_._has_bits_[0] |= cached_has_bits;
   }
   _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
 }
@@ -1247,8 +1535,10 @@ void ComponentsFile_ComponentRecord::InternalSwap(ComponentsFile_ComponentRecord
   auto* lhs_arena = GetArenaForAllocation();
   auto* rhs_arena = other->GetArenaForAllocation();
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
   _impl_.propertyrecords_.InternalSwap(&other->_impl_.propertyrecords_);
   _impl_.toeprintrecords_.InternalSwap(&other->_impl_.toeprintrecords_);
+  _impl_.attributelookuptable_.InternalSwap(&other->_impl_.attributelookuptable_);
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
       &_impl_.compname_, lhs_arena,
       &other->_impl_.compname_, rhs_arena
@@ -1272,7 +1562,600 @@ void ComponentsFile_ComponentRecord::InternalSwap(ComponentsFile_ComponentRecord
 ::PROTOBUF_NAMESPACE_ID::Metadata ComponentsFile_ComponentRecord::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_componentsfile_2eproto_getter, &descriptor_table_componentsfile_2eproto_once,
-      file_level_metadata_componentsfile_2eproto[1]);
+      file_level_metadata_componentsfile_2eproto[2]);
+}
+
+// ===================================================================
+
+class ComponentsFile_BomDescriptionRecord::_Internal {
+ public:
+  using HasBits = decltype(std::declval<ComponentsFile_BomDescriptionRecord>()._impl_._has_bits_);
+  static void set_has_cpn(HasBits* has_bits) {
+    (*has_bits)[0] |= 1u;
+  }
+  static void set_has_pkg(HasBits* has_bits) {
+    (*has_bits)[0] |= 2u;
+  }
+  static void set_has_ipn(HasBits* has_bits) {
+    (*has_bits)[0] |= 4u;
+  }
+  static void set_has_vpl_vnd(HasBits* has_bits) {
+    (*has_bits)[0] |= 8u;
+  }
+  static void set_has_vpl_mpn(HasBits* has_bits) {
+    (*has_bits)[0] |= 16u;
+  }
+  static void set_has_vnd(HasBits* has_bits) {
+    (*has_bits)[0] |= 32u;
+  }
+  static void set_has_mpn(HasBits* has_bits) {
+    (*has_bits)[0] |= 64u;
+  }
+};
+
+ComponentsFile_BomDescriptionRecord::ComponentsFile_BomDescriptionRecord(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  // @@protoc_insertion_point(arena_constructor:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord)
+}
+ComponentsFile_BomDescriptionRecord::ComponentsFile_BomDescriptionRecord(const ComponentsFile_BomDescriptionRecord& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  ComponentsFile_BomDescriptionRecord* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){from._impl_._has_bits_}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.descriptions_){from._impl_.descriptions_}
+    , decltype(_impl_.cpn_){}
+    , decltype(_impl_.pkg_){}
+    , decltype(_impl_.ipn_){}
+    , decltype(_impl_.vpl_vnd_){}
+    , decltype(_impl_.vpl_mpn_){}
+    , decltype(_impl_.vnd_){}
+    , decltype(_impl_.mpn_){}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _impl_.cpn_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.cpn_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (from._internal_has_cpn()) {
+    _this->_impl_.cpn_.Set(from._internal_cpn(), 
+      _this->GetArenaForAllocation());
+  }
+  _impl_.pkg_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.pkg_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (from._internal_has_pkg()) {
+    _this->_impl_.pkg_.Set(from._internal_pkg(), 
+      _this->GetArenaForAllocation());
+  }
+  _impl_.ipn_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.ipn_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (from._internal_has_ipn()) {
+    _this->_impl_.ipn_.Set(from._internal_ipn(), 
+      _this->GetArenaForAllocation());
+  }
+  _impl_.vpl_vnd_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.vpl_vnd_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (from._internal_has_vpl_vnd()) {
+    _this->_impl_.vpl_vnd_.Set(from._internal_vpl_vnd(), 
+      _this->GetArenaForAllocation());
+  }
+  _impl_.vpl_mpn_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.vpl_mpn_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (from._internal_has_vpl_mpn()) {
+    _this->_impl_.vpl_mpn_.Set(from._internal_vpl_mpn(), 
+      _this->GetArenaForAllocation());
+  }
+  _impl_.vnd_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.vnd_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (from._internal_has_vnd()) {
+    _this->_impl_.vnd_.Set(from._internal_vnd(), 
+      _this->GetArenaForAllocation());
+  }
+  _impl_.mpn_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.mpn_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (from._internal_has_mpn()) {
+    _this->_impl_.mpn_.Set(from._internal_mpn(), 
+      _this->GetArenaForAllocation());
+  }
+  // @@protoc_insertion_point(copy_constructor:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord)
+}
+
+inline void ComponentsFile_BomDescriptionRecord::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.descriptions_){arena}
+    , decltype(_impl_.cpn_){}
+    , decltype(_impl_.pkg_){}
+    , decltype(_impl_.ipn_){}
+    , decltype(_impl_.vpl_vnd_){}
+    , decltype(_impl_.vpl_mpn_){}
+    , decltype(_impl_.vnd_){}
+    , decltype(_impl_.mpn_){}
+  };
+  _impl_.cpn_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.cpn_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.pkg_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.pkg_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.ipn_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.ipn_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.vpl_vnd_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.vpl_vnd_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.vpl_mpn_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.vpl_mpn_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.vnd_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.vnd_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.mpn_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.mpn_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+}
+
+ComponentsFile_BomDescriptionRecord::~ComponentsFile_BomDescriptionRecord() {
+  // @@protoc_insertion_point(destructor:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void ComponentsFile_BomDescriptionRecord::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  _impl_.descriptions_.~RepeatedPtrField();
+  _impl_.cpn_.Destroy();
+  _impl_.pkg_.Destroy();
+  _impl_.ipn_.Destroy();
+  _impl_.vpl_vnd_.Destroy();
+  _impl_.vpl_mpn_.Destroy();
+  _impl_.vnd_.Destroy();
+  _impl_.mpn_.Destroy();
+}
+
+void ComponentsFile_BomDescriptionRecord::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void ComponentsFile_BomDescriptionRecord::Clear() {
+// @@protoc_insertion_point(message_clear_start:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  _impl_.descriptions_.Clear();
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x0000007fu) {
+    if (cached_has_bits & 0x00000001u) {
+      _impl_.cpn_.ClearNonDefaultToEmpty();
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _impl_.pkg_.ClearNonDefaultToEmpty();
+    }
+    if (cached_has_bits & 0x00000004u) {
+      _impl_.ipn_.ClearNonDefaultToEmpty();
+    }
+    if (cached_has_bits & 0x00000008u) {
+      _impl_.vpl_vnd_.ClearNonDefaultToEmpty();
+    }
+    if (cached_has_bits & 0x00000010u) {
+      _impl_.vpl_mpn_.ClearNonDefaultToEmpty();
+    }
+    if (cached_has_bits & 0x00000020u) {
+      _impl_.vnd_.ClearNonDefaultToEmpty();
+    }
+    if (cached_has_bits & 0x00000040u) {
+      _impl_.mpn_.ClearNonDefaultToEmpty();
+    }
+  }
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* ComponentsFile_BomDescriptionRecord::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  _Internal::HasBits has_bits{};
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // optional string cpn = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
+          auto str = _internal_mutable_cpn();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.cpn"));
+        } else
+          goto handle_unusual;
+        continue;
+      // optional string pkg = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
+          auto str = _internal_mutable_pkg();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.pkg"));
+        } else
+          goto handle_unusual;
+        continue;
+      // optional string ipn = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 26)) {
+          auto str = _internal_mutable_ipn();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.ipn"));
+        } else
+          goto handle_unusual;
+        continue;
+      // repeated string descriptions = 4;
+      case 4:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 34)) {
+          ptr -= 1;
+          do {
+            ptr += 1;
+            auto str = _internal_add_descriptions();
+            ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+            CHK_(ptr);
+            CHK_(::_pbi::VerifyUTF8(str, "Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.descriptions"));
+            if (!ctx->DataAvailable(ptr)) break;
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<34>(ptr));
+        } else
+          goto handle_unusual;
+        continue;
+      // optional string vpl_vnd = 5;
+      case 5:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 42)) {
+          auto str = _internal_mutable_vpl_vnd();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.vpl_vnd"));
+        } else
+          goto handle_unusual;
+        continue;
+      // optional string vpl_mpn = 6;
+      case 6:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 50)) {
+          auto str = _internal_mutable_vpl_mpn();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.vpl_mpn"));
+        } else
+          goto handle_unusual;
+        continue;
+      // optional string vnd = 7;
+      case 7:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 58)) {
+          auto str = _internal_mutable_vnd();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.vnd"));
+        } else
+          goto handle_unusual;
+        continue;
+      // optional string mpn = 8;
+      case 8:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 66)) {
+          auto str = _internal_mutable_mpn();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.mpn"));
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  _impl_._has_bits_.Or(has_bits);
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* ComponentsFile_BomDescriptionRecord::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // optional string cpn = 1;
+  if (_internal_has_cpn()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_cpn().data(), static_cast<int>(this->_internal_cpn().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.cpn");
+    target = stream->WriteStringMaybeAliased(
+        1, this->_internal_cpn(), target);
+  }
+
+  // optional string pkg = 2;
+  if (_internal_has_pkg()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_pkg().data(), static_cast<int>(this->_internal_pkg().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.pkg");
+    target = stream->WriteStringMaybeAliased(
+        2, this->_internal_pkg(), target);
+  }
+
+  // optional string ipn = 3;
+  if (_internal_has_ipn()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_ipn().data(), static_cast<int>(this->_internal_ipn().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.ipn");
+    target = stream->WriteStringMaybeAliased(
+        3, this->_internal_ipn(), target);
+  }
+
+  // repeated string descriptions = 4;
+  for (int i = 0, n = this->_internal_descriptions_size(); i < n; i++) {
+    const auto& s = this->_internal_descriptions(i);
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      s.data(), static_cast<int>(s.length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.descriptions");
+    target = stream->WriteString(4, s, target);
+  }
+
+  // optional string vpl_vnd = 5;
+  if (_internal_has_vpl_vnd()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_vpl_vnd().data(), static_cast<int>(this->_internal_vpl_vnd().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.vpl_vnd");
+    target = stream->WriteStringMaybeAliased(
+        5, this->_internal_vpl_vnd(), target);
+  }
+
+  // optional string vpl_mpn = 6;
+  if (_internal_has_vpl_mpn()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_vpl_mpn().data(), static_cast<int>(this->_internal_vpl_mpn().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.vpl_mpn");
+    target = stream->WriteStringMaybeAliased(
+        6, this->_internal_vpl_mpn(), target);
+  }
+
+  // optional string vnd = 7;
+  if (_internal_has_vnd()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_vnd().data(), static_cast<int>(this->_internal_vnd().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.vnd");
+    target = stream->WriteStringMaybeAliased(
+        7, this->_internal_vnd(), target);
+  }
+
+  // optional string mpn = 8;
+  if (_internal_has_mpn()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_mpn().data(), static_cast<int>(this->_internal_mpn().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord.mpn");
+    target = stream->WriteStringMaybeAliased(
+        8, this->_internal_mpn(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord)
+  return target;
+}
+
+size_t ComponentsFile_BomDescriptionRecord::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // repeated string descriptions = 4;
+  total_size += 1 *
+      ::PROTOBUF_NAMESPACE_ID::internal::FromIntSize(_impl_.descriptions_.size());
+  for (int i = 0, n = _impl_.descriptions_.size(); i < n; i++) {
+    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+      _impl_.descriptions_.Get(i));
+  }
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x0000007fu) {
+    // optional string cpn = 1;
+    if (cached_has_bits & 0x00000001u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_cpn());
+    }
+
+    // optional string pkg = 2;
+    if (cached_has_bits & 0x00000002u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_pkg());
+    }
+
+    // optional string ipn = 3;
+    if (cached_has_bits & 0x00000004u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_ipn());
+    }
+
+    // optional string vpl_vnd = 5;
+    if (cached_has_bits & 0x00000008u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_vpl_vnd());
+    }
+
+    // optional string vpl_mpn = 6;
+    if (cached_has_bits & 0x00000010u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_vpl_mpn());
+    }
+
+    // optional string vnd = 7;
+    if (cached_has_bits & 0x00000020u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_vnd());
+    }
+
+    // optional string mpn = 8;
+    if (cached_has_bits & 0x00000040u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_mpn());
+    }
+
+  }
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData ComponentsFile_BomDescriptionRecord::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    ComponentsFile_BomDescriptionRecord::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*ComponentsFile_BomDescriptionRecord::GetClassData() const { return &_class_data_; }
+
+
+void ComponentsFile_BomDescriptionRecord::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<ComponentsFile_BomDescriptionRecord*>(&to_msg);
+  auto& from = static_cast<const ComponentsFile_BomDescriptionRecord&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  _this->_impl_.descriptions_.MergeFrom(from._impl_.descriptions_);
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (cached_has_bits & 0x0000007fu) {
+    if (cached_has_bits & 0x00000001u) {
+      _this->_internal_set_cpn(from._internal_cpn());
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _this->_internal_set_pkg(from._internal_pkg());
+    }
+    if (cached_has_bits & 0x00000004u) {
+      _this->_internal_set_ipn(from._internal_ipn());
+    }
+    if (cached_has_bits & 0x00000008u) {
+      _this->_internal_set_vpl_vnd(from._internal_vpl_vnd());
+    }
+    if (cached_has_bits & 0x00000010u) {
+      _this->_internal_set_vpl_mpn(from._internal_vpl_mpn());
+    }
+    if (cached_has_bits & 0x00000020u) {
+      _this->_internal_set_vnd(from._internal_vnd());
+    }
+    if (cached_has_bits & 0x00000040u) {
+      _this->_internal_set_mpn(from._internal_mpn());
+    }
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void ComponentsFile_BomDescriptionRecord::CopyFrom(const ComponentsFile_BomDescriptionRecord& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool ComponentsFile_BomDescriptionRecord::IsInitialized() const {
+  return true;
+}
+
+void ComponentsFile_BomDescriptionRecord::InternalSwap(ComponentsFile_BomDescriptionRecord* other) {
+  using std::swap;
+  auto* lhs_arena = GetArenaForAllocation();
+  auto* rhs_arena = other->GetArenaForAllocation();
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  _impl_.descriptions_.InternalSwap(&other->_impl_.descriptions_);
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.cpn_, lhs_arena,
+      &other->_impl_.cpn_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.pkg_, lhs_arena,
+      &other->_impl_.pkg_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.ipn_, lhs_arena,
+      &other->_impl_.ipn_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.vpl_vnd_, lhs_arena,
+      &other->_impl_.vpl_vnd_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.vpl_mpn_, lhs_arena,
+      &other->_impl_.vpl_mpn_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.vnd_, lhs_arena,
+      &other->_impl_.vnd_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.mpn_, lhs_arena,
+      &other->_impl_.mpn_, rhs_arena
+  );
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata ComponentsFile_BomDescriptionRecord::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_componentsfile_2eproto_getter, &descriptor_table_componentsfile_2eproto_once,
+      file_level_metadata_componentsfile_2eproto[3]);
 }
 
 // ===================================================================
@@ -1286,7 +2169,7 @@ void ComponentsFile_ComponentRecordsByNameEntry_DoNotUse::MergeFrom(const Compon
 ::PROTOBUF_NAMESPACE_ID::Metadata ComponentsFile_ComponentRecordsByNameEntry_DoNotUse::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_componentsfile_2eproto_getter, &descriptor_table_componentsfile_2eproto_once,
-      file_level_metadata_componentsfile_2eproto[2]);
+      file_level_metadata_componentsfile_2eproto[4]);
 }
 
 // ===================================================================
@@ -1300,13 +2183,46 @@ void ComponentsFile_PropertyRecordsByNameEntry_DoNotUse::MergeFrom(const Compone
 ::PROTOBUF_NAMESPACE_ID::Metadata ComponentsFile_PropertyRecordsByNameEntry_DoNotUse::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_componentsfile_2eproto_getter, &descriptor_table_componentsfile_2eproto_once,
-      file_level_metadata_componentsfile_2eproto[3]);
+      file_level_metadata_componentsfile_2eproto[5]);
+}
+
+// ===================================================================
+
+ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUse::ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUse() {}
+ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUse::ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUse(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+    : SuperType(arena) {}
+void ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUse::MergeFrom(const ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUse& other) {
+  MergeFromInternal(other);
+}
+::PROTOBUF_NAMESPACE_ID::Metadata ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUse::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_componentsfile_2eproto_getter, &descriptor_table_componentsfile_2eproto_once,
+      file_level_metadata_componentsfile_2eproto[6]);
 }
 
 // ===================================================================
 
 class ComponentsFile::_Internal {
  public:
+  using HasBits = decltype(std::declval<ComponentsFile>()._impl_._has_bits_);
+  static void set_has_units(HasBits* has_bits) {
+    (*has_bits)[0] |= 1u;
+  }
+  static void set_has_id(HasBits* has_bits) {
+    (*has_bits)[0] |= 16u;
+  }
+  static void set_has_side(HasBits* has_bits) {
+    (*has_bits)[0] |= 32u;
+  }
+  static void set_has_layername(HasBits* has_bits) {
+    (*has_bits)[0] |= 2u;
+  }
+  static void set_has_path(HasBits* has_bits) {
+    (*has_bits)[0] |= 4u;
+  }
+  static void set_has_directory(HasBits* has_bits) {
+    (*has_bits)[0] |= 8u;
+  }
 };
 
 void ComponentsFile::clear_propertyrecords() {
@@ -1328,44 +2244,47 @@ ComponentsFile::ComponentsFile(const ComponentsFile& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
   ComponentsFile* const _this = this; (void)_this;
   new (&_impl_) Impl_{
-      decltype(_impl_.attributenames_){from._impl_.attributenames_}
+      decltype(_impl_._has_bits_){from._impl_._has_bits_}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.attributenames_){from._impl_.attributenames_}
     , decltype(_impl_.attributetextvalues_){from._impl_.attributetextvalues_}
     , decltype(_impl_.componentrecords_){from._impl_.componentrecords_}
     , /*decltype(_impl_.componentrecordsbyname_)*/{}
     , decltype(_impl_.propertyrecords_){from._impl_.propertyrecords_}
     , /*decltype(_impl_.propertyrecordsbyname_)*/{}
+    , /*decltype(_impl_.bomdescriptionrecordsbycpn_)*/{}
     , decltype(_impl_.units_){}
-    , decltype(_impl_.name_){}
+    , decltype(_impl_.layername_){}
     , decltype(_impl_.path_){}
     , decltype(_impl_.directory_){}
     , decltype(_impl_.id_){}
-    , decltype(_impl_.side_){}
-    , /*decltype(_impl_._cached_size_)*/{}};
+    , decltype(_impl_.side_){}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   _this->_impl_.componentrecordsbyname_.MergeFrom(from._impl_.componentrecordsbyname_);
   _this->_impl_.propertyrecordsbyname_.MergeFrom(from._impl_.propertyrecordsbyname_);
+  _this->_impl_.bomdescriptionrecordsbycpn_.MergeFrom(from._impl_.bomdescriptionrecordsbycpn_);
   _impl_.units_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
     _impl_.units_.Set("", GetArenaForAllocation());
   #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_units().empty()) {
+  if (from._internal_has_units()) {
     _this->_impl_.units_.Set(from._internal_units(), 
       _this->GetArenaForAllocation());
   }
-  _impl_.name_.InitDefault();
+  _impl_.layername_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.name_.Set("", GetArenaForAllocation());
+    _impl_.layername_.Set("", GetArenaForAllocation());
   #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_name().empty()) {
-    _this->_impl_.name_.Set(from._internal_name(), 
+  if (from._internal_has_layername()) {
+    _this->_impl_.layername_.Set(from._internal_layername(), 
       _this->GetArenaForAllocation());
   }
   _impl_.path_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
     _impl_.path_.Set("", GetArenaForAllocation());
   #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_path().empty()) {
+  if (from._internal_has_path()) {
     _this->_impl_.path_.Set(from._internal_path(), 
       _this->GetArenaForAllocation());
   }
@@ -1373,7 +2292,7 @@ ComponentsFile::ComponentsFile(const ComponentsFile& from)
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
     _impl_.directory_.Set("", GetArenaForAllocation());
   #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_directory().empty()) {
+  if (from._internal_has_directory()) {
     _this->_impl_.directory_.Set(from._internal_directory(), 
       _this->GetArenaForAllocation());
   }
@@ -1388,27 +2307,29 @@ inline void ComponentsFile::SharedCtor(
   (void)arena;
   (void)is_message_owned;
   new (&_impl_) Impl_{
-      decltype(_impl_.attributenames_){arena}
+      decltype(_impl_._has_bits_){}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.attributenames_){arena}
     , decltype(_impl_.attributetextvalues_){arena}
     , decltype(_impl_.componentrecords_){arena}
     , /*decltype(_impl_.componentrecordsbyname_)*/{::_pbi::ArenaInitialized(), arena}
     , decltype(_impl_.propertyrecords_){arena}
     , /*decltype(_impl_.propertyrecordsbyname_)*/{::_pbi::ArenaInitialized(), arena}
+    , /*decltype(_impl_.bomdescriptionrecordsbycpn_)*/{::_pbi::ArenaInitialized(), arena}
     , decltype(_impl_.units_){}
-    , decltype(_impl_.name_){}
+    , decltype(_impl_.layername_){}
     , decltype(_impl_.path_){}
     , decltype(_impl_.directory_){}
     , decltype(_impl_.id_){0u}
     , decltype(_impl_.side_){0}
-    , /*decltype(_impl_._cached_size_)*/{}
   };
   _impl_.units_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
     _impl_.units_.Set("", GetArenaForAllocation());
   #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.name_.InitDefault();
+  _impl_.layername_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.name_.Set("", GetArenaForAllocation());
+    _impl_.layername_.Set("", GetArenaForAllocation());
   #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
   _impl_.path_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
@@ -1440,8 +2361,10 @@ inline void ComponentsFile::SharedDtor() {
   _impl_.propertyrecords_.~RepeatedPtrField();
   _impl_.propertyrecordsbyname_.Destruct();
   _impl_.propertyrecordsbyname_.~MapField();
+  _impl_.bomdescriptionrecordsbycpn_.Destruct();
+  _impl_.bomdescriptionrecordsbycpn_.~MapField();
   _impl_.units_.Destroy();
-  _impl_.name_.Destroy();
+  _impl_.layername_.Destroy();
   _impl_.path_.Destroy();
   _impl_.directory_.Destroy();
 }
@@ -1450,6 +2373,7 @@ void ComponentsFile::ArenaDtor(void* object) {
   ComponentsFile* _this = reinterpret_cast< ComponentsFile* >(object);
   _this->_impl_.componentrecordsbyname_.Destruct();
   _this->_impl_.propertyrecordsbyname_.Destruct();
+  _this->_impl_.bomdescriptionrecordsbycpn_.Destruct();
 }
 void ComponentsFile::SetCachedSize(int size) const {
   _impl_._cached_size_.Set(size);
@@ -1467,23 +2391,39 @@ void ComponentsFile::Clear() {
   _impl_.componentrecordsbyname_.Clear();
   _impl_.propertyrecords_.Clear();
   _impl_.propertyrecordsbyname_.Clear();
-  _impl_.units_.ClearToEmpty();
-  _impl_.name_.ClearToEmpty();
-  _impl_.path_.ClearToEmpty();
-  _impl_.directory_.ClearToEmpty();
-  ::memset(&_impl_.id_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&_impl_.side_) -
-      reinterpret_cast<char*>(&_impl_.id_)) + sizeof(_impl_.side_));
+  _impl_.bomdescriptionrecordsbycpn_.Clear();
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x0000000fu) {
+    if (cached_has_bits & 0x00000001u) {
+      _impl_.units_.ClearNonDefaultToEmpty();
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _impl_.layername_.ClearNonDefaultToEmpty();
+    }
+    if (cached_has_bits & 0x00000004u) {
+      _impl_.path_.ClearNonDefaultToEmpty();
+    }
+    if (cached_has_bits & 0x00000008u) {
+      _impl_.directory_.ClearNonDefaultToEmpty();
+    }
+  }
+  if (cached_has_bits & 0x00000030u) {
+    ::memset(&_impl_.id_, 0, static_cast<size_t>(
+        reinterpret_cast<char*>(&_impl_.side_) -
+        reinterpret_cast<char*>(&_impl_.id_)) + sizeof(_impl_.side_));
+  }
+  _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 const char* ComponentsFile::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  _Internal::HasBits has_bits{};
   while (!ctx->Done(&ptr)) {
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // string units = 1;
+      // optional string units = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
           auto str = _internal_mutable_units();
@@ -1493,15 +2433,16 @@ const char* ComponentsFile::_InternalParse(const char* ptr, ::_pbi::ParseContext
         } else
           goto handle_unusual;
         continue;
-      // uint32 id = 2;
+      // optional uint32 id = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 16)) {
+          _Internal::set_has_id(&has_bits);
           _impl_.id_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
           CHK_(ptr);
         } else
           goto handle_unusual;
         continue;
-      // .Odb.Lib.Protobuf.BoardSide side = 3;
+      // optional .Odb.Lib.Protobuf.BoardSide side = 3;
       case 3:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 24)) {
           uint64_t val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
@@ -1510,17 +2451,17 @@ const char* ComponentsFile::_InternalParse(const char* ptr, ::_pbi::ParseContext
         } else
           goto handle_unusual;
         continue;
-      // string name = 4;
+      // optional string layerName = 4;
       case 4:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 34)) {
-          auto str = _internal_mutable_name();
+          auto str = _internal_mutable_layername();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "Odb.Lib.Protobuf.ComponentsFile.name"));
+          CHK_(::_pbi::VerifyUTF8(str, "Odb.Lib.Protobuf.ComponentsFile.layerName"));
         } else
           goto handle_unusual;
         continue;
-      // string path = 5;
+      // optional string path = 5;
       case 5:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 42)) {
           auto str = _internal_mutable_path();
@@ -1530,7 +2471,7 @@ const char* ComponentsFile::_InternalParse(const char* ptr, ::_pbi::ParseContext
         } else
           goto handle_unusual;
         continue;
-      // string directory = 6;
+      // optional string directory = 6;
       case 6:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 50)) {
           auto str = _internal_mutable_directory();
@@ -1622,6 +2563,19 @@ const char* ComponentsFile::_InternalParse(const char* ptr, ::_pbi::ParseContext
         } else
           goto handle_unusual;
         continue;
+      // map<string, .Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord> bomDescriptionRecordsByCpn = 13;
+      case 13:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 106)) {
+          ptr -= 1;
+          do {
+            ptr += 1;
+            ptr = ctx->ParseMessage(&_impl_.bomdescriptionrecordsbycpn_, ptr);
+            CHK_(ptr);
+            if (!ctx->DataAvailable(ptr)) break;
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<106>(ptr));
+        } else
+          goto handle_unusual;
+        continue;
       default:
         goto handle_unusual;
     }  // switch
@@ -1638,6 +2592,7 @@ const char* ComponentsFile::_InternalParse(const char* ptr, ::_pbi::ParseContext
     CHK_(ptr != nullptr);
   }  // while
 message_done:
+  _impl_._has_bits_.Or(has_bits);
   return ptr;
 failure:
   ptr = nullptr;
@@ -1651,8 +2606,8 @@ uint8_t* ComponentsFile::_InternalSerialize(
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // string units = 1;
-  if (!this->_internal_units().empty()) {
+  // optional string units = 1;
+  if (_internal_has_units()) {
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_units().data(), static_cast<int>(this->_internal_units().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
@@ -1661,31 +2616,31 @@ uint8_t* ComponentsFile::_InternalSerialize(
         1, this->_internal_units(), target);
   }
 
-  // uint32 id = 2;
-  if (this->_internal_id() != 0) {
+  // optional uint32 id = 2;
+  if (_internal_has_id()) {
     target = stream->EnsureSpace(target);
     target = ::_pbi::WireFormatLite::WriteUInt32ToArray(2, this->_internal_id(), target);
   }
 
-  // .Odb.Lib.Protobuf.BoardSide side = 3;
-  if (this->_internal_side() != 0) {
+  // optional .Odb.Lib.Protobuf.BoardSide side = 3;
+  if (_internal_has_side()) {
     target = stream->EnsureSpace(target);
     target = ::_pbi::WireFormatLite::WriteEnumToArray(
       3, this->_internal_side(), target);
   }
 
-  // string name = 4;
-  if (!this->_internal_name().empty()) {
+  // optional string layerName = 4;
+  if (_internal_has_layername()) {
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_name().data(), static_cast<int>(this->_internal_name().length()),
+      this->_internal_layername().data(), static_cast<int>(this->_internal_layername().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "Odb.Lib.Protobuf.ComponentsFile.name");
+      "Odb.Lib.Protobuf.ComponentsFile.layerName");
     target = stream->WriteStringMaybeAliased(
-        4, this->_internal_name(), target);
+        4, this->_internal_layername(), target);
   }
 
-  // string path = 5;
-  if (!this->_internal_path().empty()) {
+  // optional string path = 5;
+  if (_internal_has_path()) {
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_path().data(), static_cast<int>(this->_internal_path().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
@@ -1694,8 +2649,8 @@ uint8_t* ComponentsFile::_InternalSerialize(
         5, this->_internal_path(), target);
   }
 
-  // string directory = 6;
-  if (!this->_internal_directory().empty()) {
+  // optional string directory = 6;
+  if (_internal_has_directory()) {
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_directory().data(), static_cast<int>(this->_internal_directory().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
@@ -1792,6 +2747,32 @@ uint8_t* ComponentsFile::_InternalSerialize(
     }
   }
 
+  // map<string, .Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord> bomDescriptionRecordsByCpn = 13;
+  if (!this->_internal_bomdescriptionrecordsbycpn().empty()) {
+    using MapType = ::_pb::Map<std::string, ::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecord>;
+    using WireHelper = ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUse::Funcs;
+    const auto& map_field = this->_internal_bomdescriptionrecordsbycpn();
+    auto check_utf8 = [](const MapType::value_type& entry) {
+      (void)entry;
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+        entry.first.data(), static_cast<int>(entry.first.length()),
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+        "Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecordsByCpnEntry.key");
+    };
+
+    if (stream->IsSerializationDeterministic() && map_field.size() > 1) {
+      for (const auto& entry : ::_pbi::MapSorterPtr<MapType>(map_field)) {
+        target = WireHelper::InternalSerialize(13, entry.first, entry.second, target, stream);
+        check_utf8(entry);
+      }
+    } else {
+      for (const auto& entry : map_field) {
+        target = WireHelper::InternalSerialize(13, entry.first, entry.second, target, stream);
+        check_utf8(entry);
+      }
+    }
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -1856,45 +2837,57 @@ size_t ComponentsFile::ByteSizeLong() const {
     total_size += ComponentsFile_PropertyRecordsByNameEntry_DoNotUse::Funcs::ByteSizeLong(it->first, it->second);
   }
 
-  // string units = 1;
-  if (!this->_internal_units().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_units());
+  // map<string, .Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord> bomDescriptionRecordsByCpn = 13;
+  total_size += 1 *
+      ::PROTOBUF_NAMESPACE_ID::internal::FromIntSize(this->_internal_bomdescriptionrecordsbycpn_size());
+  for (::PROTOBUF_NAMESPACE_ID::Map< std::string, ::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecord >::const_iterator
+      it = this->_internal_bomdescriptionrecordsbycpn().begin();
+      it != this->_internal_bomdescriptionrecordsbycpn().end(); ++it) {
+    total_size += ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUse::Funcs::ByteSizeLong(it->first, it->second);
   }
 
-  // string name = 4;
-  if (!this->_internal_name().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_name());
-  }
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x0000003fu) {
+    // optional string units = 1;
+    if (cached_has_bits & 0x00000001u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_units());
+    }
 
-  // string path = 5;
-  if (!this->_internal_path().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_path());
-  }
+    // optional string layerName = 4;
+    if (cached_has_bits & 0x00000002u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_layername());
+    }
 
-  // string directory = 6;
-  if (!this->_internal_directory().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_directory());
-  }
+    // optional string path = 5;
+    if (cached_has_bits & 0x00000004u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_path());
+    }
 
-  // uint32 id = 2;
-  if (this->_internal_id() != 0) {
-    total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(this->_internal_id());
-  }
+    // optional string directory = 6;
+    if (cached_has_bits & 0x00000008u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_directory());
+    }
 
-  // .Odb.Lib.Protobuf.BoardSide side = 3;
-  if (this->_internal_side() != 0) {
-    total_size += 1 +
-      ::_pbi::WireFormatLite::EnumSize(this->_internal_side());
-  }
+    // optional uint32 id = 2;
+    if (cached_has_bits & 0x00000010u) {
+      total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(this->_internal_id());
+    }
 
+    // optional .Odb.Lib.Protobuf.BoardSide side = 3;
+    if (cached_has_bits & 0x00000020u) {
+      total_size += 1 +
+        ::_pbi::WireFormatLite::EnumSize(this->_internal_side());
+    }
+
+  }
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
 }
 
@@ -1919,23 +2912,28 @@ void ComponentsFile::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const :
   _this->_impl_.componentrecordsbyname_.MergeFrom(from._impl_.componentrecordsbyname_);
   _this->_impl_.propertyrecords_.MergeFrom(from._impl_.propertyrecords_);
   _this->_impl_.propertyrecordsbyname_.MergeFrom(from._impl_.propertyrecordsbyname_);
-  if (!from._internal_units().empty()) {
-    _this->_internal_set_units(from._internal_units());
-  }
-  if (!from._internal_name().empty()) {
-    _this->_internal_set_name(from._internal_name());
-  }
-  if (!from._internal_path().empty()) {
-    _this->_internal_set_path(from._internal_path());
-  }
-  if (!from._internal_directory().empty()) {
-    _this->_internal_set_directory(from._internal_directory());
-  }
-  if (from._internal_id() != 0) {
-    _this->_internal_set_id(from._internal_id());
-  }
-  if (from._internal_side() != 0) {
-    _this->_internal_set_side(from._internal_side());
+  _this->_impl_.bomdescriptionrecordsbycpn_.MergeFrom(from._impl_.bomdescriptionrecordsbycpn_);
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (cached_has_bits & 0x0000003fu) {
+    if (cached_has_bits & 0x00000001u) {
+      _this->_internal_set_units(from._internal_units());
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _this->_internal_set_layername(from._internal_layername());
+    }
+    if (cached_has_bits & 0x00000004u) {
+      _this->_internal_set_path(from._internal_path());
+    }
+    if (cached_has_bits & 0x00000008u) {
+      _this->_internal_set_directory(from._internal_directory());
+    }
+    if (cached_has_bits & 0x00000010u) {
+      _this->_impl_.id_ = from._impl_.id_;
+    }
+    if (cached_has_bits & 0x00000020u) {
+      _this->_impl_.side_ = from._impl_.side_;
+    }
+    _this->_impl_._has_bits_[0] |= cached_has_bits;
   }
   _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
 }
@@ -1956,19 +2954,21 @@ void ComponentsFile::InternalSwap(ComponentsFile* other) {
   auto* lhs_arena = GetArenaForAllocation();
   auto* rhs_arena = other->GetArenaForAllocation();
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
   _impl_.attributenames_.InternalSwap(&other->_impl_.attributenames_);
   _impl_.attributetextvalues_.InternalSwap(&other->_impl_.attributetextvalues_);
   _impl_.componentrecords_.InternalSwap(&other->_impl_.componentrecords_);
   _impl_.componentrecordsbyname_.InternalSwap(&other->_impl_.componentrecordsbyname_);
   _impl_.propertyrecords_.InternalSwap(&other->_impl_.propertyrecords_);
   _impl_.propertyrecordsbyname_.InternalSwap(&other->_impl_.propertyrecordsbyname_);
+  _impl_.bomdescriptionrecordsbycpn_.InternalSwap(&other->_impl_.bomdescriptionrecordsbycpn_);
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
       &_impl_.units_, lhs_arena,
       &other->_impl_.units_, rhs_arena
   );
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.name_, lhs_arena,
-      &other->_impl_.name_, rhs_arena
+      &_impl_.layername_, lhs_arena,
+      &other->_impl_.layername_, rhs_arena
   );
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
       &_impl_.path_, lhs_arena,
@@ -1989,7 +2989,7 @@ void ComponentsFile::InternalSwap(ComponentsFile* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata ComponentsFile::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_componentsfile_2eproto_getter, &descriptor_table_componentsfile_2eproto_once,
-      file_level_metadata_componentsfile_2eproto[4]);
+      file_level_metadata_componentsfile_2eproto[7]);
 }
 
 // @@protoc_insertion_point(namespace_scope)
@@ -2001,9 +3001,17 @@ template<> PROTOBUF_NOINLINE ::Odb::Lib::Protobuf::ComponentsFile_ComponentRecor
 Arena::CreateMaybeMessage< ::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord_ToeprintRecord >(Arena* arena) {
   return Arena::CreateMessageInternal< ::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord_ToeprintRecord >(arena);
 }
+template<> PROTOBUF_NOINLINE ::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse*
+Arena::CreateMaybeMessage< ::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse >(arena);
+}
 template<> PROTOBUF_NOINLINE ::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord*
 Arena::CreateMaybeMessage< ::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord >(Arena* arena) {
   return Arena::CreateMessageInternal< ::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord >(arena);
+}
+template<> PROTOBUF_NOINLINE ::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecord*
+Arena::CreateMaybeMessage< ::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecord >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecord >(arena);
 }
 template<> PROTOBUF_NOINLINE ::Odb::Lib::Protobuf::ComponentsFile_ComponentRecordsByNameEntry_DoNotUse*
 Arena::CreateMaybeMessage< ::Odb::Lib::Protobuf::ComponentsFile_ComponentRecordsByNameEntry_DoNotUse >(Arena* arena) {
@@ -2012,6 +3020,10 @@ Arena::CreateMaybeMessage< ::Odb::Lib::Protobuf::ComponentsFile_ComponentRecords
 template<> PROTOBUF_NOINLINE ::Odb::Lib::Protobuf::ComponentsFile_PropertyRecordsByNameEntry_DoNotUse*
 Arena::CreateMaybeMessage< ::Odb::Lib::Protobuf::ComponentsFile_PropertyRecordsByNameEntry_DoNotUse >(Arena* arena) {
   return Arena::CreateMessageInternal< ::Odb::Lib::Protobuf::ComponentsFile_PropertyRecordsByNameEntry_DoNotUse >(arena);
+}
+template<> PROTOBUF_NOINLINE ::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUse*
+Arena::CreateMaybeMessage< ::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUse >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::Odb::Lib::Protobuf::ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUse >(arena);
 }
 template<> PROTOBUF_NOINLINE ::Odb::Lib::Protobuf::ComponentsFile*
 Arena::CreateMaybeMessage< ::Odb::Lib::Protobuf::ComponentsFile >(Arena* arena) {

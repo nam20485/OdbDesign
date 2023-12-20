@@ -39,11 +39,47 @@ struct PropertyRecordDefaultTypeInternal {
   };
 };
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PropertyRecordDefaultTypeInternal _PropertyRecord_default_instance_;
+PROTOBUF_CONSTEXPR ContourPolygon_PolygonPart::ContourPolygon_PolygonPart(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_._has_bits_)*/{}
+  , /*decltype(_impl_._cached_size_)*/{}
+  , /*decltype(_impl_.type_)*/0
+  , /*decltype(_impl_.endx_)*/0
+  , /*decltype(_impl_.endy_)*/0
+  , /*decltype(_impl_.xcenter_)*/0
+  , /*decltype(_impl_.ycenter_)*/0
+  , /*decltype(_impl_.isclockwise_)*/false} {}
+struct ContourPolygon_PolygonPartDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR ContourPolygon_PolygonPartDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~ContourPolygon_PolygonPartDefaultTypeInternal() {}
+  union {
+    ContourPolygon_PolygonPart _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ContourPolygon_PolygonPartDefaultTypeInternal _ContourPolygon_PolygonPart_default_instance_;
+PROTOBUF_CONSTEXPR ContourPolygon::ContourPolygon(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_._has_bits_)*/{}
+  , /*decltype(_impl_._cached_size_)*/{}
+  , /*decltype(_impl_.polygonparts_)*/{}
+  , /*decltype(_impl_.type_)*/0
+  , /*decltype(_impl_.xstart_)*/0
+  , /*decltype(_impl_.ystart_)*/0} {}
+struct ContourPolygonDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR ContourPolygonDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~ContourPolygonDefaultTypeInternal() {}
+  union {
+    ContourPolygon _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ContourPolygonDefaultTypeInternal _ContourPolygon_default_instance_;
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
-static ::_pb::Metadata file_level_metadata_common_2eproto[1];
-static constexpr ::_pb::EnumDescriptor const** file_level_enum_descriptors_common_2eproto = nullptr;
+static ::_pb::Metadata file_level_metadata_common_2eproto[3];
+static const ::_pb::EnumDescriptor* file_level_enum_descriptors_common_2eproto[2];
 static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_common_2eproto = nullptr;
 
 const uint32_t TableStruct_common_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
@@ -59,26 +95,75 @@ const uint32_t TableStruct_common_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(p
   0,
   1,
   ~0u,
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ContourPolygon_PolygonPart, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ContourPolygon_PolygonPart, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ContourPolygon_PolygonPart, _impl_.type_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ContourPolygon_PolygonPart, _impl_.endx_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ContourPolygon_PolygonPart, _impl_.endy_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ContourPolygon_PolygonPart, _impl_.xcenter_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ContourPolygon_PolygonPart, _impl_.ycenter_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ContourPolygon_PolygonPart, _impl_.isclockwise_),
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ContourPolygon, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ContourPolygon, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ContourPolygon, _impl_.type_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ContourPolygon, _impl_.xstart_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ContourPolygon, _impl_.ystart_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ContourPolygon, _impl_.polygonparts_),
+  0,
+  1,
+  2,
+  ~0u,
 };
 static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, 9, -1, sizeof(::Odb::Lib::Protobuf::PropertyRecord)},
+  { 12, 24, -1, sizeof(::Odb::Lib::Protobuf::ContourPolygon_PolygonPart)},
+  { 30, 40, -1, sizeof(::Odb::Lib::Protobuf::ContourPolygon)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
   &::Odb::Lib::Protobuf::_PropertyRecord_default_instance_._instance,
+  &::Odb::Lib::Protobuf::_ContourPolygon_PolygonPart_default_instance_._instance,
+  &::Odb::Lib::Protobuf::_ContourPolygon_default_instance_._instance,
 };
 
 const char descriptor_table_protodef_common_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
   "\n\014common.proto\022\020Odb.Lib.Protobuf\"_\n\016Prop"
   "ertyRecord\022\021\n\004name\030\001 \001(\tH\000\210\001\001\022\022\n\005value\030\002"
   " \001(\tH\001\210\001\001\022\023\n\013floatValues\030\003 \003(\002B\007\n\005_nameB"
-  "\010\n\006_valueb\006proto3"
+  "\010\n\006_value\"\230\004\n\016ContourPolygon\0228\n\004type\030\001 \001"
+  "(\0162%.Odb.Lib.Protobuf.ContourPolygon.Typ"
+  "eH\000\210\001\001\022\023\n\006xStart\030\002 \001(\002H\001\210\001\001\022\023\n\006yStart\030\003 "
+  "\001(\002H\002\210\001\001\022B\n\014polygonParts\030\004 \003(\0132,.Odb.Lib"
+  ".Protobuf.ContourPolygon.PolygonPart\032\240\002\n"
+  "\013PolygonPart\022D\n\004type\030\001 \001(\01621.Odb.Lib.Pro"
+  "tobuf.ContourPolygon.PolygonPart.TypeH\000\210"
+  "\001\001\022\021\n\004endX\030\002 \001(\002H\001\210\001\001\022\021\n\004endY\030\003 \001(\002H\002\210\001\001"
+  "\022\024\n\007xCenter\030\004 \001(\002H\003\210\001\001\022\024\n\007yCenter\030\005 \001(\002H"
+  "\004\210\001\001\022\030\n\013isClockwise\030\006 \001(\010H\005\210\001\001\"\034\n\004Type\022\013"
+  "\n\007Segment\020\000\022\007\n\003Arc\020\001B\007\n\005_typeB\007\n\005_endXB\007"
+  "\n\005_endYB\n\n\010_xCenterB\n\n\010_yCenterB\016\n\014_isCl"
+  "ockwise\"\034\n\004Type\022\n\n\006Island\020\000\022\010\n\004Hole\020\001B\007\n"
+  "\005_typeB\t\n\007_xStartB\t\n\007_yStartb\006proto3"
   ;
 static ::_pbi::once_flag descriptor_table_common_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_common_2eproto = {
-    false, false, 137, descriptor_table_protodef_common_2eproto,
+    false, false, 676, descriptor_table_protodef_common_2eproto,
     "common.proto",
-    &descriptor_table_common_2eproto_once, nullptr, 0, 1,
+    &descriptor_table_common_2eproto_once, nullptr, 0, 3,
     schemas, file_default_instances, TableStruct_common_2eproto::offsets,
     file_level_metadata_common_2eproto, file_level_enum_descriptors_common_2eproto,
     file_level_service_descriptors_common_2eproto,
@@ -92,6 +177,48 @@ PROTOBUF_ATTRIBUTE_INIT_PRIORITY2 static ::_pbi::AddDescriptorsRunner dynamic_in
 namespace Odb {
 namespace Lib {
 namespace Protobuf {
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* ContourPolygon_PolygonPart_Type_descriptor() {
+  ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&descriptor_table_common_2eproto);
+  return file_level_enum_descriptors_common_2eproto[0];
+}
+bool ContourPolygon_PolygonPart_Type_IsValid(int value) {
+  switch (value) {
+    case 0:
+    case 1:
+      return true;
+    default:
+      return false;
+  }
+}
+
+#if (__cplusplus < 201703) && (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
+constexpr ContourPolygon_PolygonPart_Type ContourPolygon_PolygonPart::Segment;
+constexpr ContourPolygon_PolygonPart_Type ContourPolygon_PolygonPart::Arc;
+constexpr ContourPolygon_PolygonPart_Type ContourPolygon_PolygonPart::Type_MIN;
+constexpr ContourPolygon_PolygonPart_Type ContourPolygon_PolygonPart::Type_MAX;
+constexpr int ContourPolygon_PolygonPart::Type_ARRAYSIZE;
+#endif  // (__cplusplus < 201703) && (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* ContourPolygon_Type_descriptor() {
+  ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&descriptor_table_common_2eproto);
+  return file_level_enum_descriptors_common_2eproto[1];
+}
+bool ContourPolygon_Type_IsValid(int value) {
+  switch (value) {
+    case 0:
+    case 1:
+      return true;
+    default:
+      return false;
+  }
+}
+
+#if (__cplusplus < 201703) && (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
+constexpr ContourPolygon_Type ContourPolygon::Island;
+constexpr ContourPolygon_Type ContourPolygon::Hole;
+constexpr ContourPolygon_Type ContourPolygon::Type_MIN;
+constexpr ContourPolygon_Type ContourPolygon::Type_MAX;
+constexpr int ContourPolygon::Type_ARRAYSIZE;
+#endif  // (__cplusplus < 201703) && (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
 
 // ===================================================================
 
@@ -405,6 +532,656 @@ void PropertyRecord::InternalSwap(PropertyRecord* other) {
       file_level_metadata_common_2eproto[0]);
 }
 
+// ===================================================================
+
+class ContourPolygon_PolygonPart::_Internal {
+ public:
+  using HasBits = decltype(std::declval<ContourPolygon_PolygonPart>()._impl_._has_bits_);
+  static void set_has_type(HasBits* has_bits) {
+    (*has_bits)[0] |= 1u;
+  }
+  static void set_has_endx(HasBits* has_bits) {
+    (*has_bits)[0] |= 2u;
+  }
+  static void set_has_endy(HasBits* has_bits) {
+    (*has_bits)[0] |= 4u;
+  }
+  static void set_has_xcenter(HasBits* has_bits) {
+    (*has_bits)[0] |= 8u;
+  }
+  static void set_has_ycenter(HasBits* has_bits) {
+    (*has_bits)[0] |= 16u;
+  }
+  static void set_has_isclockwise(HasBits* has_bits) {
+    (*has_bits)[0] |= 32u;
+  }
+};
+
+ContourPolygon_PolygonPart::ContourPolygon_PolygonPart(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  // @@protoc_insertion_point(arena_constructor:Odb.Lib.Protobuf.ContourPolygon.PolygonPart)
+}
+ContourPolygon_PolygonPart::ContourPolygon_PolygonPart(const ContourPolygon_PolygonPart& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  ContourPolygon_PolygonPart* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){from._impl_._has_bits_}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.type_){}
+    , decltype(_impl_.endx_){}
+    , decltype(_impl_.endy_){}
+    , decltype(_impl_.xcenter_){}
+    , decltype(_impl_.ycenter_){}
+    , decltype(_impl_.isclockwise_){}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  ::memcpy(&_impl_.type_, &from._impl_.type_,
+    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.isclockwise_) -
+    reinterpret_cast<char*>(&_impl_.type_)) + sizeof(_impl_.isclockwise_));
+  // @@protoc_insertion_point(copy_constructor:Odb.Lib.Protobuf.ContourPolygon.PolygonPart)
+}
+
+inline void ContourPolygon_PolygonPart::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.type_){0}
+    , decltype(_impl_.endx_){0}
+    , decltype(_impl_.endy_){0}
+    , decltype(_impl_.xcenter_){0}
+    , decltype(_impl_.ycenter_){0}
+    , decltype(_impl_.isclockwise_){false}
+  };
+}
+
+ContourPolygon_PolygonPart::~ContourPolygon_PolygonPart() {
+  // @@protoc_insertion_point(destructor:Odb.Lib.Protobuf.ContourPolygon.PolygonPart)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void ContourPolygon_PolygonPart::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+}
+
+void ContourPolygon_PolygonPart::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void ContourPolygon_PolygonPart::Clear() {
+// @@protoc_insertion_point(message_clear_start:Odb.Lib.Protobuf.ContourPolygon.PolygonPart)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x0000003fu) {
+    ::memset(&_impl_.type_, 0, static_cast<size_t>(
+        reinterpret_cast<char*>(&_impl_.isclockwise_) -
+        reinterpret_cast<char*>(&_impl_.type_)) + sizeof(_impl_.isclockwise_));
+  }
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* ContourPolygon_PolygonPart::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  _Internal::HasBits has_bits{};
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // optional .Odb.Lib.Protobuf.ContourPolygon.PolygonPart.Type type = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
+          uint64_t val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+          _internal_set_type(static_cast<::Odb::Lib::Protobuf::ContourPolygon_PolygonPart_Type>(val));
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float endX = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 21)) {
+          _Internal::set_has_endx(&has_bits);
+          _impl_.endx_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float endY = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 29)) {
+          _Internal::set_has_endy(&has_bits);
+          _impl_.endy_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float xCenter = 4;
+      case 4:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 37)) {
+          _Internal::set_has_xcenter(&has_bits);
+          _impl_.xcenter_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float yCenter = 5;
+      case 5:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 45)) {
+          _Internal::set_has_ycenter(&has_bits);
+          _impl_.ycenter_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional bool isClockwise = 6;
+      case 6:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 48)) {
+          _Internal::set_has_isclockwise(&has_bits);
+          _impl_.isclockwise_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  _impl_._has_bits_.Or(has_bits);
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* ContourPolygon_PolygonPart::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:Odb.Lib.Protobuf.ContourPolygon.PolygonPart)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // optional .Odb.Lib.Protobuf.ContourPolygon.PolygonPart.Type type = 1;
+  if (_internal_has_type()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteEnumToArray(
+      1, this->_internal_type(), target);
+  }
+
+  // optional float endX = 2;
+  if (_internal_has_endx()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(2, this->_internal_endx(), target);
+  }
+
+  // optional float endY = 3;
+  if (_internal_has_endy()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(3, this->_internal_endy(), target);
+  }
+
+  // optional float xCenter = 4;
+  if (_internal_has_xcenter()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(4, this->_internal_xcenter(), target);
+  }
+
+  // optional float yCenter = 5;
+  if (_internal_has_ycenter()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(5, this->_internal_ycenter(), target);
+  }
+
+  // optional bool isClockwise = 6;
+  if (_internal_has_isclockwise()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteBoolToArray(6, this->_internal_isclockwise(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:Odb.Lib.Protobuf.ContourPolygon.PolygonPart)
+  return target;
+}
+
+size_t ContourPolygon_PolygonPart::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:Odb.Lib.Protobuf.ContourPolygon.PolygonPart)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x0000003fu) {
+    // optional .Odb.Lib.Protobuf.ContourPolygon.PolygonPart.Type type = 1;
+    if (cached_has_bits & 0x00000001u) {
+      total_size += 1 +
+        ::_pbi::WireFormatLite::EnumSize(this->_internal_type());
+    }
+
+    // optional float endX = 2;
+    if (cached_has_bits & 0x00000002u) {
+      total_size += 1 + 4;
+    }
+
+    // optional float endY = 3;
+    if (cached_has_bits & 0x00000004u) {
+      total_size += 1 + 4;
+    }
+
+    // optional float xCenter = 4;
+    if (cached_has_bits & 0x00000008u) {
+      total_size += 1 + 4;
+    }
+
+    // optional float yCenter = 5;
+    if (cached_has_bits & 0x00000010u) {
+      total_size += 1 + 4;
+    }
+
+    // optional bool isClockwise = 6;
+    if (cached_has_bits & 0x00000020u) {
+      total_size += 1 + 1;
+    }
+
+  }
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData ContourPolygon_PolygonPart::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    ContourPolygon_PolygonPart::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*ContourPolygon_PolygonPart::GetClassData() const { return &_class_data_; }
+
+
+void ContourPolygon_PolygonPart::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<ContourPolygon_PolygonPart*>(&to_msg);
+  auto& from = static_cast<const ContourPolygon_PolygonPart&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:Odb.Lib.Protobuf.ContourPolygon.PolygonPart)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (cached_has_bits & 0x0000003fu) {
+    if (cached_has_bits & 0x00000001u) {
+      _this->_impl_.type_ = from._impl_.type_;
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _this->_impl_.endx_ = from._impl_.endx_;
+    }
+    if (cached_has_bits & 0x00000004u) {
+      _this->_impl_.endy_ = from._impl_.endy_;
+    }
+    if (cached_has_bits & 0x00000008u) {
+      _this->_impl_.xcenter_ = from._impl_.xcenter_;
+    }
+    if (cached_has_bits & 0x00000010u) {
+      _this->_impl_.ycenter_ = from._impl_.ycenter_;
+    }
+    if (cached_has_bits & 0x00000020u) {
+      _this->_impl_.isclockwise_ = from._impl_.isclockwise_;
+    }
+    _this->_impl_._has_bits_[0] |= cached_has_bits;
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void ContourPolygon_PolygonPart::CopyFrom(const ContourPolygon_PolygonPart& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:Odb.Lib.Protobuf.ContourPolygon.PolygonPart)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool ContourPolygon_PolygonPart::IsInitialized() const {
+  return true;
+}
+
+void ContourPolygon_PolygonPart::InternalSwap(ContourPolygon_PolygonPart* other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(ContourPolygon_PolygonPart, _impl_.isclockwise_)
+      + sizeof(ContourPolygon_PolygonPart::_impl_.isclockwise_)
+      - PROTOBUF_FIELD_OFFSET(ContourPolygon_PolygonPart, _impl_.type_)>(
+          reinterpret_cast<char*>(&_impl_.type_),
+          reinterpret_cast<char*>(&other->_impl_.type_));
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata ContourPolygon_PolygonPart::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_common_2eproto_getter, &descriptor_table_common_2eproto_once,
+      file_level_metadata_common_2eproto[1]);
+}
+
+// ===================================================================
+
+class ContourPolygon::_Internal {
+ public:
+  using HasBits = decltype(std::declval<ContourPolygon>()._impl_._has_bits_);
+  static void set_has_type(HasBits* has_bits) {
+    (*has_bits)[0] |= 1u;
+  }
+  static void set_has_xstart(HasBits* has_bits) {
+    (*has_bits)[0] |= 2u;
+  }
+  static void set_has_ystart(HasBits* has_bits) {
+    (*has_bits)[0] |= 4u;
+  }
+};
+
+ContourPolygon::ContourPolygon(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  // @@protoc_insertion_point(arena_constructor:Odb.Lib.Protobuf.ContourPolygon)
+}
+ContourPolygon::ContourPolygon(const ContourPolygon& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  ContourPolygon* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){from._impl_._has_bits_}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.polygonparts_){from._impl_.polygonparts_}
+    , decltype(_impl_.type_){}
+    , decltype(_impl_.xstart_){}
+    , decltype(_impl_.ystart_){}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  ::memcpy(&_impl_.type_, &from._impl_.type_,
+    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.ystart_) -
+    reinterpret_cast<char*>(&_impl_.type_)) + sizeof(_impl_.ystart_));
+  // @@protoc_insertion_point(copy_constructor:Odb.Lib.Protobuf.ContourPolygon)
+}
+
+inline void ContourPolygon::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.polygonparts_){arena}
+    , decltype(_impl_.type_){0}
+    , decltype(_impl_.xstart_){0}
+    , decltype(_impl_.ystart_){0}
+  };
+}
+
+ContourPolygon::~ContourPolygon() {
+  // @@protoc_insertion_point(destructor:Odb.Lib.Protobuf.ContourPolygon)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void ContourPolygon::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  _impl_.polygonparts_.~RepeatedPtrField();
+}
+
+void ContourPolygon::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void ContourPolygon::Clear() {
+// @@protoc_insertion_point(message_clear_start:Odb.Lib.Protobuf.ContourPolygon)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  _impl_.polygonparts_.Clear();
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000007u) {
+    ::memset(&_impl_.type_, 0, static_cast<size_t>(
+        reinterpret_cast<char*>(&_impl_.ystart_) -
+        reinterpret_cast<char*>(&_impl_.type_)) + sizeof(_impl_.ystart_));
+  }
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* ContourPolygon::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  _Internal::HasBits has_bits{};
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // optional .Odb.Lib.Protobuf.ContourPolygon.Type type = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
+          uint64_t val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+          _internal_set_type(static_cast<::Odb::Lib::Protobuf::ContourPolygon_Type>(val));
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float xStart = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 21)) {
+          _Internal::set_has_xstart(&has_bits);
+          _impl_.xstart_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float yStart = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 29)) {
+          _Internal::set_has_ystart(&has_bits);
+          _impl_.ystart_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // repeated .Odb.Lib.Protobuf.ContourPolygon.PolygonPart polygonParts = 4;
+      case 4:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 34)) {
+          ptr -= 1;
+          do {
+            ptr += 1;
+            ptr = ctx->ParseMessage(_internal_add_polygonparts(), ptr);
+            CHK_(ptr);
+            if (!ctx->DataAvailable(ptr)) break;
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<34>(ptr));
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  _impl_._has_bits_.Or(has_bits);
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* ContourPolygon::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:Odb.Lib.Protobuf.ContourPolygon)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // optional .Odb.Lib.Protobuf.ContourPolygon.Type type = 1;
+  if (_internal_has_type()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteEnumToArray(
+      1, this->_internal_type(), target);
+  }
+
+  // optional float xStart = 2;
+  if (_internal_has_xstart()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(2, this->_internal_xstart(), target);
+  }
+
+  // optional float yStart = 3;
+  if (_internal_has_ystart()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(3, this->_internal_ystart(), target);
+  }
+
+  // repeated .Odb.Lib.Protobuf.ContourPolygon.PolygonPart polygonParts = 4;
+  for (unsigned i = 0,
+      n = static_cast<unsigned>(this->_internal_polygonparts_size()); i < n; i++) {
+    const auto& repfield = this->_internal_polygonparts(i);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+        InternalWriteMessage(4, repfield, repfield.GetCachedSize(), target, stream);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:Odb.Lib.Protobuf.ContourPolygon)
+  return target;
+}
+
+size_t ContourPolygon::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:Odb.Lib.Protobuf.ContourPolygon)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // repeated .Odb.Lib.Protobuf.ContourPolygon.PolygonPart polygonParts = 4;
+  total_size += 1UL * this->_internal_polygonparts_size();
+  for (const auto& msg : this->_impl_.polygonparts_) {
+    total_size +=
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(msg);
+  }
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000007u) {
+    // optional .Odb.Lib.Protobuf.ContourPolygon.Type type = 1;
+    if (cached_has_bits & 0x00000001u) {
+      total_size += 1 +
+        ::_pbi::WireFormatLite::EnumSize(this->_internal_type());
+    }
+
+    // optional float xStart = 2;
+    if (cached_has_bits & 0x00000002u) {
+      total_size += 1 + 4;
+    }
+
+    // optional float yStart = 3;
+    if (cached_has_bits & 0x00000004u) {
+      total_size += 1 + 4;
+    }
+
+  }
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData ContourPolygon::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    ContourPolygon::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*ContourPolygon::GetClassData() const { return &_class_data_; }
+
+
+void ContourPolygon::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<ContourPolygon*>(&to_msg);
+  auto& from = static_cast<const ContourPolygon&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:Odb.Lib.Protobuf.ContourPolygon)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  _this->_impl_.polygonparts_.MergeFrom(from._impl_.polygonparts_);
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000007u) {
+    if (cached_has_bits & 0x00000001u) {
+      _this->_impl_.type_ = from._impl_.type_;
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _this->_impl_.xstart_ = from._impl_.xstart_;
+    }
+    if (cached_has_bits & 0x00000004u) {
+      _this->_impl_.ystart_ = from._impl_.ystart_;
+    }
+    _this->_impl_._has_bits_[0] |= cached_has_bits;
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void ContourPolygon::CopyFrom(const ContourPolygon& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:Odb.Lib.Protobuf.ContourPolygon)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool ContourPolygon::IsInitialized() const {
+  return true;
+}
+
+void ContourPolygon::InternalSwap(ContourPolygon* other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  _impl_.polygonparts_.InternalSwap(&other->_impl_.polygonparts_);
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(ContourPolygon, _impl_.ystart_)
+      + sizeof(ContourPolygon::_impl_.ystart_)
+      - PROTOBUF_FIELD_OFFSET(ContourPolygon, _impl_.type_)>(
+          reinterpret_cast<char*>(&_impl_.type_),
+          reinterpret_cast<char*>(&other->_impl_.type_));
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata ContourPolygon::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_common_2eproto_getter, &descriptor_table_common_2eproto_once,
+      file_level_metadata_common_2eproto[2]);
+}
+
 // @@protoc_insertion_point(namespace_scope)
 }  // namespace Protobuf
 }  // namespace Lib
@@ -413,6 +1190,14 @@ PROTOBUF_NAMESPACE_OPEN
 template<> PROTOBUF_NOINLINE ::Odb::Lib::Protobuf::PropertyRecord*
 Arena::CreateMaybeMessage< ::Odb::Lib::Protobuf::PropertyRecord >(Arena* arena) {
   return Arena::CreateMessageInternal< ::Odb::Lib::Protobuf::PropertyRecord >(arena);
+}
+template<> PROTOBUF_NOINLINE ::Odb::Lib::Protobuf::ContourPolygon_PolygonPart*
+Arena::CreateMaybeMessage< ::Odb::Lib::Protobuf::ContourPolygon_PolygonPart >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::Odb::Lib::Protobuf::ContourPolygon_PolygonPart >(arena);
+}
+template<> PROTOBUF_NOINLINE ::Odb::Lib::Protobuf::ContourPolygon*
+Arena::CreateMaybeMessage< ::Odb::Lib::Protobuf::ContourPolygon >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::Odb::Lib::Protobuf::ContourPolygon >(arena);
 }
 PROTOBUF_NAMESPACE_CLOSE
 

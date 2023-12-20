@@ -18,5 +18,11 @@ namespace Odb::Lib::FileModel::Design
 
     void PropertyRecord::from_protobuf(const Odb::Lib::Protobuf::PropertyRecord& message)
     {
+        name = message.name();
+		value = message.value();
+        for (int i = 0; i < message.floatvalues_size(); ++i)
+        {
+			floatValues.push_back(message.floatvalues(i));
+		}
     }
 }

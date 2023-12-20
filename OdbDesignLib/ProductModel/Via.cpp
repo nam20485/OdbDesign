@@ -4,10 +4,8 @@
 namespace Odb::Lib::ProductModel
 {
 	Via::Via()
-	{
-	}
-
-	Via::~Via()
+		: m_name("")
+		, m_side(BoardSide::Top)
 	{
 	}
 
@@ -15,4 +13,10 @@ namespace Odb::Lib::ProductModel
 	{
 		return m_name;
 	}
+
+	BoardSide Via::GetSide() const
+	{
+		return m_side;
+	}
+
 } // namespace Odb::Lib::ProductModel

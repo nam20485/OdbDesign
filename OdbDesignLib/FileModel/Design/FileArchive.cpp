@@ -1,8 +1,4 @@
 #include "FileArchive.h"
-#include "FileArchive.h"
-#include "FileArchive.h"
-#include "FileArchive.h"
-#include "FileArchive.h"
 #include <filesystem>
 #include "ArchiveExtractor.h"
 #include "MiscInfoFile.h"
@@ -23,6 +19,8 @@ namespace Odb::Lib::FileModel::Design
 
 	FileArchive::~FileArchive()
 	{
+		m_stepsByName.clear();
+		m_symbolsDirectoriesByName.clear();
 	}
 
 	std::string FileArchive::GetRootDir() const
@@ -51,6 +49,11 @@ namespace Odb::Lib::FileModel::Design
 		return m_stepsByName;
 	}
 
+	const SymbolsDirectory::StringMap& FileArchive::GetSymbolsDirectoriesByName() const
+	{
+		return m_symbolsDirectoriesByName;
+	}
+
 	bool FileArchive::ParseFileModel()
 	{
 		//try
@@ -62,7 +65,11 @@ namespace Odb::Lib::FileModel::Design
 			if (is_regular_file(m_filePath))
 			{
 				std::filesystem::path extractedPath;
-				if (! ExtractDesignArchive(m_filePath, extractedPath)) return false;
+				if (!ExtractDesignArchive(m_filePath, extractedPath))
+				{
+					logerror("failed to extract archive: (" + m_filePath + ")");
+					return false;
+				}
 
 				m_rootDir = findRootDir(extractedPath);
 			}			
@@ -75,7 +82,7 @@ namespace Odb::Lib::FileModel::Design
 				{
 					timer.stop();					
 					auto s = timer.getElapsedSecondsString();
-					loginfo("Successfully parsed. (" + s + " s)");
+					loginfo("Successfully parsed. (" + s + "s)");
 
 					return true;
 				}
@@ -103,7 +110,11 @@ namespace Odb::Lib::FileModel::Design
 	{
 		loginfo("Extracting... ");
 
-		if (!Utils::ArchiveExtractor::IsArchiveTypeSupported(path)) return false;
+		if (!Utils::ArchiveExtractor::IsArchiveTypeSupported(path))
+		{
+			logerror("Unsupported archive type: (" + path.string() + ")");
+			return false;			
+		}
 
 		Utils::ArchiveExtractor extractor(path.string());
 		if (!extractor.Extract()) return false;
@@ -157,10 +168,17 @@ namespace Odb::Lib::FileModel::Design
 		std::unique_ptr<Odb::Lib::Protobuf::FileArchive> pFileArchiveMessage(new Odb::Lib::Protobuf::FileArchive);
 		pFileArchiveMessage->mutable_matrixfile()->CopyFrom(*m_matrixFile.to_protobuf());
 		pFileArchiveMessage->mutable_miscinfofile()->CopyFrom(*m_miscInfoFile.to_protobuf());
+		pFileArchiveMessage->mutable_standardfontsfile()->CopyFrom(*m_standardFontsFile.to_protobuf());
+		pFileArchiveMessage->mutable_miscattrlistfile()->CopyFrom(*m_miscAttrListFile.to_protobuf());
 		
 		for (const auto& kvStepDirectoryRecord : m_stepsByName)
 		{
 			(*pFileArchiveMessage->mutable_stepsbyname())[kvStepDirectoryRecord.first] = *kvStepDirectoryRecord.second->to_protobuf();
+		}
+
+		for (const auto& kvSymbolsDirectory : m_symbolsDirectoriesByName)
+		{
+			(*pFileArchiveMessage->mutable_symbolsdirectoriesbyname())[kvSymbolsDirectory.first] = *kvSymbolsDirectory.second->to_protobuf();
 		}
 
 		return pFileArchiveMessage;
@@ -168,6 +186,24 @@ namespace Odb::Lib::FileModel::Design
 
 	void FileArchive::from_protobuf(const Odb::Lib::Protobuf::FileArchive& message)
 	{
+		m_matrixFile.from_protobuf(message.matrixfile());
+		m_miscInfoFile.from_protobuf(message.miscinfofile());
+		m_standardFontsFile.from_protobuf(message.standardfontsfile());
+		m_miscAttrListFile.from_protobuf(message.miscattrlistfile());
+
+		for (const auto& kvStepDirectoryRecord : message.stepsbyname())
+		{
+			auto pStepDirectory = std::make_shared<StepDirectory>("");
+			pStepDirectory->from_protobuf(kvStepDirectoryRecord.second);
+			m_stepsByName[kvStepDirectoryRecord.first] = pStepDirectory;
+		}
+
+		for (const auto& kvSymbolsDirectory : message.symbolsdirectoriesbyname())
+		{
+			auto pSymbolsDirectory = std::make_shared<SymbolsDirectory>("");
+			pSymbolsDirectory->from_protobuf(kvSymbolsDirectory.second);
+			m_symbolsDirectoriesByName[kvSymbolsDirectory.first] = pSymbolsDirectory;
+		}
 	}
 
 	bool FileArchive::ParseDesignDirectory(const std::filesystem::path& path)
@@ -180,7 +216,9 @@ namespace Odb::Lib::FileModel::Design
 		if (! ParseStepDirectories(path)) return false;
         if (! ParseMiscInfoFile(path)) return false;
 		if (! ParseMatrixFile(path)) return false;
-		if (! ParseStandardFontsFile(path)) return false;		
+		if (! ParseStandardFontsFile(path)) return false;
+		if (! ParseSymbolsDirectories(path)) return false;
+		if (! ParseMiscAttrListFile(path)) return false;
 
 		return true;
 	}
@@ -227,6 +265,21 @@ namespace Odb::Lib::FileModel::Design
         return true;
     }
 
+	bool FileArchive::ParseMiscAttrListFile(const std::filesystem::path& path)
+	{
+		loginfo("Parsing misc/attrlist file...");
+
+		auto miscDirectory = path / "misc";
+		if (!exists(miscDirectory)) return false;
+		if (!is_directory(miscDirectory)) return false;
+
+		if (!m_miscAttrListFile.Parse(miscDirectory)) return false;
+
+		loginfo("Parsing misc/attrlist file complete");
+
+		return true;
+	}
+
 	bool FileArchive::ParseMatrixFile(const std::filesystem::path& path)
 	{
 		loginfo("Parsing matrix/matrix file...");
@@ -256,6 +309,47 @@ namespace Odb::Lib::FileModel::Design
 		return true;
 	}
 
+	bool FileArchive::ParseSymbolsDirectories(const std::filesystem::path& path)
+	{
+		loginfo("Parsing symbols root directory...");
+
+		auto symbolsDirectory = path / "symbols";
+
+		if (!std::filesystem::exists(symbolsDirectory))
+		{
+			logwarn("symbols root directory does not exist (" + symbolsDirectory.string() + ")");
+			return true;
+		}
+		else if (!std::filesystem::is_directory(symbolsDirectory))
+		{
+			logerror("symbols root directory exists but is a regular file/not a directory (" + symbolsDirectory.string() + ")");
+			return false;
+		}
+
+		for (auto& d : std::filesystem::directory_iterator(symbolsDirectory))
+		{
+			if (std::filesystem::is_directory(d))
+			{
+				auto pSymbolsDirectory = std::make_shared<SymbolsDirectory>(d.path());
+				if (pSymbolsDirectory->Parse())
+				{
+					//loginfo("Parsing symbols directory: " + pSymbolsDirectory->GetName() + " complete");
+
+					m_symbolsDirectoriesByName[pSymbolsDirectory->GetName()] = pSymbolsDirectory;
+				}
+				else
+				{
+					logerror("Parsing symbol directory: " + pSymbolsDirectory->GetName() + " failed");
+					return false;
+				}
+			}
+		}
+
+		loginfo("Parsing symbols root directory complete");
+
+		return true;
+	}	
+
     const MiscInfoFile &FileArchive::GetMiscInfoFile() const
     {
         return m_miscInfoFile;
@@ -271,28 +365,33 @@ namespace Odb::Lib::FileModel::Design
 		return m_standardFontsFile;
 	}
 
-    //const EdaDataFile& FileModel::GetStepEdaDataFile(std::string stepName) const
-	//{		
-	//	auto findIt = m_stepsByName.find(stepName);
-	//	if (findIt != m_stepsByName.end())
-	//	{
-	//		return findIt->second->GetEdaDataFile();
-	//	}
-	//	else
-	//	{
-	//		return EdaDataFile::EMPTY;
-	//	}		
-	//}
+	const AttrListFile& FileArchive::GetMiscAttrListFile() const
+	{
+		return m_miscAttrListFile;
+	}
 
-	//const EdaDataFile& FileModel::GetFirstStepEdaDataFile() const
-	//{
-	//	if (!m_stepsByName.empty())
-	//	{
-	//		return m_stepsByName.begin()->second->GetEdaDataFile();
-	//	}
-	//	else
-	//	{
-	//		return EdaDataFile::EMPTY;
-	//	}
-	//}
+	std::shared_ptr<StepDirectory> FileArchive::GetStepDirectory(const std::string& stepName /*= ""*/)
+	{
+		std::shared_ptr<FileModel::Design::StepDirectory> pStepDirectory;
+
+		const auto& steps = GetStepsByName();
+		if (!steps.empty())
+		{
+			if (stepName.empty())
+			{
+				// return first step
+				pStepDirectory = steps.begin()->second;
+			}
+			else
+			{
+				auto findIt = steps.find(stepName);
+				if (findIt != steps.end())
+				{
+					pStepDirectory = findIt->second;
+				}
+			}
+		}		
+
+		return pStepDirectory;
+	}
 }

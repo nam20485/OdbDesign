@@ -8,9 +8,10 @@
 #include "../../enums.h"
 #include "../../ProtoBuf/edadatafile.pb.h"
 #include "../../ProtoBuf/common.pb.h"
-#include "google/protobuf/message.h"
 #include "../../IProtoBuffable.h"
 #include "PropertyRecord.h"
+#include "ContourPolygon.h"
+#include "AttributeLookupTable.h"
 
 
 namespace Odb::Lib::FileModel::Design
@@ -48,7 +49,7 @@ namespace Odb::Lib::FileModel::Design
 			void from_protobuf(const Odb::Lib::Protobuf::EdaDataFile::FeatureIdRecord& message) override;
 		};
 
-		struct ODBDESIGN_EXPORT NetRecord : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::NetRecord>
+		struct ODBDESIGN_EXPORT NetRecord : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::NetRecord>, public AttributeLookupTable
 		{
 			struct ODBDESIGN_EXPORT SubnetRecord final : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::NetRecord::SubnetRecord>
 			{
@@ -113,7 +114,7 @@ namespace Odb::Lib::FileModel::Design
 			~NetRecord();
 
 			std::string name;
-			std::string attributesIdString;
+			//std::string attributesIdString;
 			// TODO: store index of records
 			unsigned int index;
 
@@ -126,61 +127,10 @@ namespace Odb::Lib::FileModel::Design
 
 		}; // NetRecord
 
-		struct ODBDESIGN_EXPORT PackageRecord : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::PackageRecord>
+		struct ODBDESIGN_EXPORT PackageRecord : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::PackageRecord>, public AttributeLookupTable
 		{
-			struct ODBDESIGN_EXPORT OutlineRecord
-			{
-				struct ODBDESIGN_EXPORT ContourPolygon
-				{
-					struct ODBDESIGN_EXPORT PolygonPart
-					{
-						enum class Type
-						{
-							Segment,
-							Arc
-						};
-
-						Type type;
-
-						// Segment/Arc
-						float endX, endY;
-
-						// Arc
-						float xCenter, yCenter;
-						bool isClockwise;
-
-						typedef std::vector<std::shared_ptr<PolygonPart>> Vector;
-
-						inline static const char* SEGMENT_RECORD_TOKEN = "OS";
-						inline static const char* ARC_RECORD_TOKEN = "OC";
-
-					}; // struct PolygonPart
-
-					enum class Type
-					{
-						Island,
-						Hole
-					};
-
-					~ContourPolygon()
-					{
-						m_polygonParts.clear();
-					}
-
-					Type type;
-					float xStart, yStart;
-
-					PolygonPart::Vector m_polygonParts;
-
-					typedef std::vector<std::shared_ptr<ContourPolygon>> Vector;
-
-					inline static const char* BEGIN_RECORD_TOKEN = "OB";
-					inline static const char* END_RECORD_TOKEN = "OE";
-					inline static const char* ISLAND_TYPE_TOKEN = "I";
-					inline static const char* HOLE_TYPE_TOKEN = "H";
-
-				}; // struct ContourPolygon
-
+			struct ODBDESIGN_EXPORT OutlineRecord : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::PackageRecord::OutlineRecord>
+			{				
 				enum class Type
 				{
 					Rectangle,
@@ -214,6 +164,10 @@ namespace Odb::Lib::FileModel::Design
 				float radius;
 
 				ContourPolygon::Vector m_contourPolygons;
+
+				// Inherited via IProtoBuffable
+				std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::PackageRecord::OutlineRecord> to_protobuf() const override;
+				void from_protobuf(const Odb::Lib::Protobuf::EdaDataFile::PackageRecord::OutlineRecord& message) override;
 
 				inline static const char* RECTANGLE_RECORD_TOKEN = "RC";
 				inline static const char* CIRCLE_RECORD_TOKEN = "CR";
@@ -292,7 +246,7 @@ namespace Odb::Lib::FileModel::Design
 			float pitch;
 			float xMin, yMin;
 			float xMax, yMax;
-			std::string attributesIdString;
+			//std::string attributesIdString;
 			unsigned int index;
 
 			OutlineRecord::Vector m_outlineRecords;
