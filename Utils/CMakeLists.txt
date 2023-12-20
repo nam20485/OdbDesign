@@ -10,6 +10,10 @@ target_include_directories(Utils
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
                            $<INSTALL_INTERFACE:include>)
 
+## PCH
+file (GLOB_RECURSE UTILS_HEADER_FILES "*.h")
+target_precompile_headers(Utils PRIVATE ${UTILS_HEADER_FILES})
+
 # Link to LibArchive
 find_package(LibArchive REQUIRED)
 target_link_libraries(Utils PRIVATE LibArchive::LibArchive)
