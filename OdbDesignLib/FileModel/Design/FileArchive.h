@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../../win.h"
 #include "../../odbdesign_export.h"
 #include <string>
 #include "StepDirectory.h"

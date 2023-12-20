@@ -6,7 +6,6 @@
 #include <filesystem>
 
 #include "../../odbdesign_export.h"
-#include "../../win.h"
 #include "LayerDirectory.h"
 #include "EdaDataFile.h"
 #include "NetlistFile.h"
