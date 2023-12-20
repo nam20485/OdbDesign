@@ -5,7 +5,7 @@
 
 #include "MatrixFile.h"
 #include <fstream>
-#include "str_trim.h"
+#include "str_utils.h"
 #include <string>
 #include "../../Constants.h"
 #include <sstream>

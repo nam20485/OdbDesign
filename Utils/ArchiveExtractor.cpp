@@ -4,7 +4,7 @@
 #include "Logger.h"
 #include <exception>
 #include "macros.h"
-#include "str_trim.h"
+#include "str_utils.h"
 
 using namespace std::filesystem;
 

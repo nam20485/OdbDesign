@@ -8,7 +8,7 @@
 #include "../parse_error.h"
 #include "../invalid_odb_error.h"
 #include "Logger.h"
-#include <str_trim.h>
+#include "str_utils.h"
 #include "../../Constants.h"
 #include <ArchiveExtractor.h>
 

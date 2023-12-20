@@ -2,7 +2,7 @@
 
 #include "Logger.h"
 #include <fstream>
-#include "str_trim.h"
+#include "str_utils.h"
 #include "../../Constants.h"
 #include "../parse_error.h"
 #include "../invalid_odb_error.h"

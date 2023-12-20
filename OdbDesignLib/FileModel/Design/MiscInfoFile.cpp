@@ -7,7 +7,7 @@
 #include "MiscInfoFile.h"
 #include <string>
 #include <sstream>
-#include "str_trim.h"
+#include "str_utils.h"
 #include "../../Constants.h"
 #include "timestamp.h"
 #include "Logger.h"

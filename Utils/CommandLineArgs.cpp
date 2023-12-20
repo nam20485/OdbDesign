@@ -11,7 +11,7 @@
 #include "CommandLineArgs.h"
 #include <exception>
 #include <stdexcept>
-#include "str_trim.h"
+#include "str_utils.h"
 #include <sstream>
 #include <iostream>
 #include <cstring>

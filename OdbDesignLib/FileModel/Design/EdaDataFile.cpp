@@ -1,7 +1,7 @@
 #include "EdaDataFile.h"
 #include <fstream>
 #include <sstream>
-#include "str_trim.h"
+#include "str_utils.h"
 #include "../../enums.h"
 #include "../../ProtoBuf/edadatafile.pb.h"
 #include "ArchiveExtractor.h"

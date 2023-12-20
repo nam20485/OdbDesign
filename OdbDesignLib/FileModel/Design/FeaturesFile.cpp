@@ -4,7 +4,7 @@
 #include <fstream>
 #include "Logger.h"
 #include "../invalid_odb_error.h"
-#include <str_trim.h>
+#include "str_utils.h"
 #include "../parse_error.h"
 #include "SymbolName.h"
 #include "equals_within.h"
