@@ -128,7 +128,7 @@ jobs:
       - name: Analyze for critical and high CVEs
         id: docker-scout-cves       
         # if: ${{ github.event_name != 'pull_request_target' }} 
-        uses: docker/scout-action@704685e6e6dc4462258fb11d36d3a14ca7bda1e6 # v1.1.0
+        uses: docker/scout-action@7c61653c2736d21969dd4593fde76c670d4a86cb # v1.2.0
         with:
           command: cves,recommendations
           image: ${{ steps.meta.outputs.tags }}
@@ -138,14 +138,14 @@ jobs:
         
       - name: Upload SARIF result
         id: upload-sarif
-        uses: github/codeql-action/upload-sarif@66b90a5db151a8042fa97405c6cf843bbe433f7b # v2.22.7
+        uses: github/codeql-action/upload-sarif@407ffafae6a767df3e0230c3df91b6443ae8df75 # v2.22.8
         with:
           sarif_file: sarif.output.json
       
       - name: Docker Scout Compare to Latest
         id: docker-scout
         if: ${{ github.event_name == 'pull_request' }}
-        uses: docker/scout-action@704685e6e6dc4462258fb11d36d3a14ca7bda1e6 # v1.1.0
+        uses: docker/scout-action@7c61653c2736d21969dd4593fde76c670d4a86cb # v1.2.0
         with:
           command: compare
           image: ${{ steps.meta.outputs.tags }}
