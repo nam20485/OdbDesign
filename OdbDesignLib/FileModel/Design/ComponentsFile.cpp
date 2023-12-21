@@ -23,7 +23,7 @@ namespace Odb::Lib::FileModel::Design
 {
 	ComponentsFile::ComponentsFile()
 		: m_id((unsigned int)-1)
-		, m_side(BoardSide::None)
+		, m_side(BoardSide::BsNone)
 	{
 	}
 
