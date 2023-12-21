@@ -119,26 +119,26 @@ message EdaDataFile {
         message PinRecord {                      
 
             enum Type {
-                THROUGH_HOLE = 0;
-                BLIND = 1;
-                SURFACE = 2;
+                ThroughHole = 0;
+                Blind = 1;
+                Surface = 2;
             };
 
             enum ElectricalType {
-                ELECTRICAL = 0;
-                NON_ELECTRICAL = 1;
-                UNDEFINED = 2;
+                Electrical = 0;
+                NonElectrical = 1;
+                Undefined = 2;
             };
 
             enum MountType {
-                SMT = 0;
-                RECOMMENDED_SMT_PAD = 1;
-                MT_THROUGH_HOLE = 2;
-                RECOMMENDED_THROUGH_HOLE = 3;
-                PRESSFIT = 4;
-                NON_BOARD = 5;
-                HOLE = 6;
-                MT_UNDEFINED = 7;  // default
+                Smt = 0;
+                RecommendedSmtPad = 1;
+                MT_ThroughHole = 2;
+                RecommendedThroughHole = 3;
+                PressFit = 4;
+                NonBoard = 5;
+                Hole = 6;
+                MT_Undefined = 7;  // default
             };
 
             optional string name = 1;

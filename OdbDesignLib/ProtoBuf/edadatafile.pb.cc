@@ -515,7 +515,7 @@ static const ::_pb::Message* const file_default_instances[] = {
 
 const char descriptor_table_protodef_edadatafile_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
   "\n\021edadatafile.proto\022\020Odb.Lib.Protobuf\032\014c"
-  "ommon.proto\032\013enums.proto\"\276#\n\013EdaDataFile"
+  "ommon.proto\032\013enums.proto\"\266#\n\013EdaDataFile"
   "\022\021\n\004path\030\001 \001(\tH\000\210\001\001\022\022\n\005units\030\002 \001(\tH\001\210\001\001\022"
   "\023\n\006source\030\003 \001(\tH\002\210\001\001\022\022\n\nlayerNames\030\004 \003(\t"
   "\022\026\n\016attributeNames\030\005 \003(\t\022\033\n\023attributeTex"
@@ -565,7 +565,7 @@ const char descriptor_table_protodef_edadatafile_2eproto[] PROTOBUF_SECTION_VARI
   "umberB\021\n\017_toeprintNumberB\010\n\006_index\032;\n\031At"
   "tributeLookupTableEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005"
   "value\030\002 \001(\t:\0028\001B\007\n\005_nameB\025\n\023_attributesI"
-  "dStringB\010\n\006_index\032\324\020\n\rPackageRecord\022\021\n\004n"
+  "dStringB\010\n\006_index\032\314\020\n\rPackageRecord\022\021\n\004n"
   "ame\030\001 \001(\tH\000\210\001\001\022\022\n\005pitch\030\002 \001(\002H\001\210\001\001\022\021\n\004xM"
   "in\030\003 \001(\002H\002\210\001\001\022\021\n\004yMin\030\004 \001(\002H\003\210\001\001\022\021\n\004xMax"
   "\030\005 \001(\002H\004\210\001\001\022\021\n\004yMax\030\006 \001(\002H\005\210\001\001\022\037\n\022attrib"
@@ -596,7 +596,7 @@ const char descriptor_table_protodef_edadatafile_2eproto[] PROTOBUF_SECTION_VARI
   "ctangle\020\000\022\n\n\006Circle\020\001\022\n\n\006Square\020\002\022\013\n\007Con"
   "tour\020\003B\007\n\005_typeB\r\n\013_lowerLeftXB\r\n\013_lower"
   "LeftYB\010\n\006_widthB\t\n\007_heightB\n\n\010_xCenterB\n"
-  "\n\010_yCenterB\013\n\t_halfSideB\t\n\007_radius\032\235\006\n\tP"
+  "\n\010_yCenterB\013\n\t_halfSideB\t\n\007_radius\032\225\006\n\tP"
   "inRecord\022\021\n\004name\030\001 \001(\tH\000\210\001\001\022M\n\004type\030\002 \001("
   "\0162:.Odb.Lib.Protobuf.EdaDataFile.Package"
   "Record.PinRecord.TypeH\001\210\001\001\022\024\n\007xCenter\030\003 "
@@ -607,29 +607,29 @@ const char descriptor_table_protodef_edadatafile_2eproto[] PROTOBUF_SECTION_VARI
   "\022W\n\tmountType\030\007 \001(\0162\?.Odb.Lib.Protobuf.E"
   "daDataFile.PackageRecord.PinRecord.Mount"
   "TypeH\006\210\001\001\022\017\n\002id\030\010 \001(\rH\007\210\001\001\022\022\n\005index\030\t \001("
-  "\rH\010\210\001\001\"0\n\004Type\022\020\n\014THROUGH_HOLE\020\000\022\t\n\005BLIN"
-  "D\020\001\022\013\n\007SURFACE\020\002\"C\n\016ElectricalType\022\016\n\nEL"
-  "ECTRICAL\020\000\022\022\n\016NON_ELECTRICAL\020\001\022\r\n\tUNDEFI"
-  "NED\020\002\"\231\001\n\tMountType\022\007\n\003SMT\020\000\022\027\n\023RECOMMEN"
-  "DED_SMT_PAD\020\001\022\023\n\017MT_THROUGH_HOLE\020\002\022\034\n\030RE"
-  "COMMENDED_THROUGH_HOLE\020\003\022\014\n\010PRESSFIT\020\004\022\r"
-  "\n\tNON_BOARD\020\005\022\010\n\004HOLE\020\006\022\020\n\014MT_UNDEFINED\020"
-  "\007B\007\n\005_nameB\007\n\005_typeB\n\n\010_xCenterB\n\n\010_yCen"
-  "terB\023\n\021_finishedHoleSizeB\021\n\017_electricalT"
-  "ypeB\014\n\n_mountTypeB\005\n\003_idB\010\n\006_indexB\007\n\005_n"
-  "ameB\010\n\006_pitchB\007\n\005_xMinB\007\n\005_yMinB\007\n\005_xMax"
-  "B\007\n\005_yMaxB\025\n\023_attributesIdString\032\264\001\n\022Fea"
-  "tureGroupRecord\022\021\n\004type\030\001 \001(\tH\000\210\001\001\0229\n\017pr"
-  "opertyRecords\030\002 \003(\0132 .Odb.Lib.Protobuf.P"
-  "ropertyRecord\022G\n\020featureIdRecords\030\003 \003(\0132"
-  "-.Odb.Lib.Protobuf.EdaDataFile.FeatureId"
-  "RecordB\007\n\005_type\032`\n\025NetRecordsByNameEntry"
-  "\022\013\n\003key\030\001 \001(\t\0226\n\005value\030\002 \001(\0132\'.Odb.Lib.P"
-  "rotobuf.EdaDataFile.NetRecord:\0028\001\032h\n\031Pac"
-  "kageRecordsByNameEntry\022\013\n\003key\030\001 \001(\t\022:\n\005v"
-  "alue\030\002 \001(\0132+.Odb.Lib.Protobuf.EdaDataFil"
-  "e.PackageRecord:\0028\001B\007\n\005_pathB\010\n\006_unitsB\t"
-  "\n\007_sourceb\006proto3"
+  "\rH\010\210\001\001\"/\n\004Type\022\017\n\013ThroughHole\020\000\022\t\n\005Blind"
+  "\020\001\022\013\n\007Surface\020\002\"B\n\016ElectricalType\022\016\n\nEle"
+  "ctrical\020\000\022\021\n\rNonElectrical\020\001\022\r\n\tUndefine"
+  "d\020\002\"\223\001\n\tMountType\022\007\n\003Smt\020\000\022\025\n\021Recommende"
+  "dSmtPad\020\001\022\022\n\016MT_ThroughHole\020\002\022\032\n\026Recomme"
+  "ndedThroughHole\020\003\022\014\n\010PressFit\020\004\022\014\n\010NonBo"
+  "ard\020\005\022\010\n\004Hole\020\006\022\020\n\014MT_Undefined\020\007B\007\n\005_na"
+  "meB\007\n\005_typeB\n\n\010_xCenterB\n\n\010_yCenterB\023\n\021_"
+  "finishedHoleSizeB\021\n\017_electricalTypeB\014\n\n_"
+  "mountTypeB\005\n\003_idB\010\n\006_indexB\007\n\005_nameB\010\n\006_"
+  "pitchB\007\n\005_xMinB\007\n\005_yMinB\007\n\005_xMaxB\007\n\005_yMa"
+  "xB\025\n\023_attributesIdString\032\264\001\n\022FeatureGrou"
+  "pRecord\022\021\n\004type\030\001 \001(\tH\000\210\001\001\0229\n\017propertyRe"
+  "cords\030\002 \003(\0132 .Odb.Lib.Protobuf.PropertyR"
+  "ecord\022G\n\020featureIdRecords\030\003 \003(\0132-.Odb.Li"
+  "b.Protobuf.EdaDataFile.FeatureIdRecordB\007"
+  "\n\005_type\032`\n\025NetRecordsByNameEntry\022\013\n\003key\030"
+  "\001 \001(\t\0226\n\005value\030\002 \001(\0132\'.Odb.Lib.Protobuf."
+  "EdaDataFile.NetRecord:\0028\001\032h\n\031PackageReco"
+  "rdsByNameEntry\022\013\n\003key\030\001 \001(\t\022:\n\005value\030\002 \001"
+  "(\0132+.Odb.Lib.Protobuf.EdaDataFile.Packag"
+  "eRecord:\0028\001B\007\n\005_pathB\010\n\006_unitsB\t\n\007_sourc"
+  "eb\006proto3"
   ;
 static const ::_pbi::DescriptorTable* const descriptor_table_edadatafile_2eproto_deps[2] = {
   &::descriptor_table_common_2eproto,
@@ -637,7 +637,7 @@ static const ::_pbi::DescriptorTable* const descriptor_table_edadatafile_2eproto
 };
 static ::_pbi::once_flag descriptor_table_edadatafile_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_edadatafile_2eproto = {
-    false, false, 4617, descriptor_table_protodef_edadatafile_2eproto,
+    false, false, 4609, descriptor_table_protodef_edadatafile_2eproto,
     "edadatafile.proto",
     &descriptor_table_edadatafile_2eproto_once, descriptor_table_edadatafile_2eproto_deps, 2, 13,
     schemas, file_default_instances, TableStruct_edadatafile_2eproto::offsets,
@@ -788,9 +788,9 @@ bool EdaDataFile_PackageRecord_PinRecord_Type_IsValid(int value) {
 }
 
 #if (__cplusplus < 201703) && (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
-constexpr EdaDataFile_PackageRecord_PinRecord_Type EdaDataFile_PackageRecord_PinRecord::THROUGH_HOLE;
-constexpr EdaDataFile_PackageRecord_PinRecord_Type EdaDataFile_PackageRecord_PinRecord::BLIND;
-constexpr EdaDataFile_PackageRecord_PinRecord_Type EdaDataFile_PackageRecord_PinRecord::SURFACE;
+constexpr EdaDataFile_PackageRecord_PinRecord_Type EdaDataFile_PackageRecord_PinRecord::ThroughHole;
+constexpr EdaDataFile_PackageRecord_PinRecord_Type EdaDataFile_PackageRecord_PinRecord::Blind;
+constexpr EdaDataFile_PackageRecord_PinRecord_Type EdaDataFile_PackageRecord_PinRecord::Surface;
 constexpr EdaDataFile_PackageRecord_PinRecord_Type EdaDataFile_PackageRecord_PinRecord::Type_MIN;
 constexpr EdaDataFile_PackageRecord_PinRecord_Type EdaDataFile_PackageRecord_PinRecord::Type_MAX;
 constexpr int EdaDataFile_PackageRecord_PinRecord::Type_ARRAYSIZE;
@@ -811,9 +811,9 @@ bool EdaDataFile_PackageRecord_PinRecord_ElectricalType_IsValid(int value) {
 }
 
 #if (__cplusplus < 201703) && (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
-constexpr EdaDataFile_PackageRecord_PinRecord_ElectricalType EdaDataFile_PackageRecord_PinRecord::ELECTRICAL;
-constexpr EdaDataFile_PackageRecord_PinRecord_ElectricalType EdaDataFile_PackageRecord_PinRecord::NON_ELECTRICAL;
-constexpr EdaDataFile_PackageRecord_PinRecord_ElectricalType EdaDataFile_PackageRecord_PinRecord::UNDEFINED;
+constexpr EdaDataFile_PackageRecord_PinRecord_ElectricalType EdaDataFile_PackageRecord_PinRecord::Electrical;
+constexpr EdaDataFile_PackageRecord_PinRecord_ElectricalType EdaDataFile_PackageRecord_PinRecord::NonElectrical;
+constexpr EdaDataFile_PackageRecord_PinRecord_ElectricalType EdaDataFile_PackageRecord_PinRecord::Undefined;
 constexpr EdaDataFile_PackageRecord_PinRecord_ElectricalType EdaDataFile_PackageRecord_PinRecord::ElectricalType_MIN;
 constexpr EdaDataFile_PackageRecord_PinRecord_ElectricalType EdaDataFile_PackageRecord_PinRecord::ElectricalType_MAX;
 constexpr int EdaDataFile_PackageRecord_PinRecord::ElectricalType_ARRAYSIZE;
@@ -839,14 +839,14 @@ bool EdaDataFile_PackageRecord_PinRecord_MountType_IsValid(int value) {
 }
 
 #if (__cplusplus < 201703) && (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
-constexpr EdaDataFile_PackageRecord_PinRecord_MountType EdaDataFile_PackageRecord_PinRecord::SMT;
-constexpr EdaDataFile_PackageRecord_PinRecord_MountType EdaDataFile_PackageRecord_PinRecord::RECOMMENDED_SMT_PAD;
-constexpr EdaDataFile_PackageRecord_PinRecord_MountType EdaDataFile_PackageRecord_PinRecord::MT_THROUGH_HOLE;
-constexpr EdaDataFile_PackageRecord_PinRecord_MountType EdaDataFile_PackageRecord_PinRecord::RECOMMENDED_THROUGH_HOLE;
-constexpr EdaDataFile_PackageRecord_PinRecord_MountType EdaDataFile_PackageRecord_PinRecord::PRESSFIT;
-constexpr EdaDataFile_PackageRecord_PinRecord_MountType EdaDataFile_PackageRecord_PinRecord::NON_BOARD;
-constexpr EdaDataFile_PackageRecord_PinRecord_MountType EdaDataFile_PackageRecord_PinRecord::HOLE;
-constexpr EdaDataFile_PackageRecord_PinRecord_MountType EdaDataFile_PackageRecord_PinRecord::MT_UNDEFINED;
+constexpr EdaDataFile_PackageRecord_PinRecord_MountType EdaDataFile_PackageRecord_PinRecord::Smt;
+constexpr EdaDataFile_PackageRecord_PinRecord_MountType EdaDataFile_PackageRecord_PinRecord::RecommendedSmtPad;
+constexpr EdaDataFile_PackageRecord_PinRecord_MountType EdaDataFile_PackageRecord_PinRecord::MT_ThroughHole;
+constexpr EdaDataFile_PackageRecord_PinRecord_MountType EdaDataFile_PackageRecord_PinRecord::RecommendedThroughHole;
+constexpr EdaDataFile_PackageRecord_PinRecord_MountType EdaDataFile_PackageRecord_PinRecord::PressFit;
+constexpr EdaDataFile_PackageRecord_PinRecord_MountType EdaDataFile_PackageRecord_PinRecord::NonBoard;
+constexpr EdaDataFile_PackageRecord_PinRecord_MountType EdaDataFile_PackageRecord_PinRecord::Hole;
+constexpr EdaDataFile_PackageRecord_PinRecord_MountType EdaDataFile_PackageRecord_PinRecord::MT_Undefined;
 constexpr EdaDataFile_PackageRecord_PinRecord_MountType EdaDataFile_PackageRecord_PinRecord::MountType_MIN;
 constexpr EdaDataFile_PackageRecord_PinRecord_MountType EdaDataFile_PackageRecord_PinRecord::MountType_MAX;
 constexpr int EdaDataFile_PackageRecord_PinRecord::MountType_ARRAYSIZE;
