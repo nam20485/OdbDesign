@@ -50,15 +50,15 @@ namespace Lib {
 namespace Protobuf {
 
 enum BoardSide : int {
-  Top = 0,
-  Bottom = 1,
-  Neither = 2,
+  BsNone = 0,
+  Top = 1,
+  Bottom = 2,
   BoardSide_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
   BoardSide_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
 bool BoardSide_IsValid(int value);
-constexpr BoardSide BoardSide_MIN = Top;
-constexpr BoardSide BoardSide_MAX = Neither;
+constexpr BoardSide BoardSide_MIN = BsNone;
+constexpr BoardSide BoardSide_MAX = Bottom;
 constexpr int BoardSide_ARRAYSIZE = BoardSide_MAX + 1;
 
 const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* BoardSide_descriptor();
