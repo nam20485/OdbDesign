@@ -1,4 +1,5 @@
 #include "OdbServerAppBase.h"
+#include "OdbServerAppBase.h"
 #include "Logger.h"
 
 using namespace Utils;
@@ -80,6 +81,11 @@ namespace Odb::Lib::App
 	crow::SimpleApp& OdbServerAppBase::crow_app()
 	{
 		return m_crowApp;
+	}
+
+	IHttpServer& OdbServerAppBase::http_server()
+	{
+		return m_httpServer;
 	}
 
 	void OdbServerAppBase::register_routes()
