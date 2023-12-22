@@ -114,7 +114,6 @@ namespace Odb::Lib::FileModel::Design
 			~NetRecord();
 
 			std::string name;
-			//std::string attributesIdString;
 			// TODO: store index of records
 			unsigned int index;
 
@@ -319,6 +318,7 @@ namespace Odb::Lib::FileModel::Design
 		PropertyRecord::Vector m_propertyRecords;
 
 		bool m_logAllLineParsing;
+		bool m_populateStringMapData;
 		
 		inline static const char* EDADATA_FILENAME = "data";
 		

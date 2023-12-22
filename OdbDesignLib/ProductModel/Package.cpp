@@ -7,6 +7,7 @@ namespace Odb::Lib::ProductModel
 	Package::Package(std::string name, unsigned int index)
 		: m_name(name)
 		, m_index(index)
+		, m_populateStringMapData(false)
 	{
 	}
 
@@ -36,7 +37,10 @@ namespace Odb::Lib::ProductModel
 		auto index = static_cast<unsigned int>(m_pins.size());
 		auto pPin = std::make_shared<Pin>(name, index);
 		m_pins.push_back(pPin);
-		m_pinsByName[pPin->GetName()] = pPin;
+		if (m_populateStringMapData)
+		{
+			m_pinsByName[pPin->GetName()] = pPin;
+		}
 	}
 
 	std::shared_ptr<Pin> Package::GetPin(std::string name) const

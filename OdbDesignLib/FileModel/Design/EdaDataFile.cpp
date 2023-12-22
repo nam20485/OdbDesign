@@ -17,6 +17,7 @@ namespace Odb::Lib::FileModel::Design
 {
     EdaDataFile::EdaDataFile(bool logAllLineParsing)
         : m_logAllLineParsing(logAllLineParsing)
+        , m_populateStringMapData(false)
     {
     }
    
@@ -619,7 +620,10 @@ namespace Odb::Lib::FileModel::Design
                             }
 
                             m_netRecords.push_back(pCurrentNetRecord);
-                            m_netRecordsByName[pCurrentNetRecord->name] = pCurrentNetRecord;
+                            if (m_populateStringMapData)
+                            {
+                                m_netRecordsByName[pCurrentNetRecord->name] = pCurrentNetRecord;
+                            }
                             pCurrentNetRecord.reset();
                         }
 
@@ -835,7 +839,10 @@ namespace Odb::Lib::FileModel::Design
                             }
 
                             m_netRecords.push_back(pCurrentNetRecord);
-                            m_netRecordsByName[pCurrentNetRecord->name] = pCurrentNetRecord;
+                            if (m_populateStringMapData)
+                            {
+                                m_netRecordsByName[pCurrentNetRecord->name] = pCurrentNetRecord;
+                            }
                             pCurrentNetRecord.reset();
                         }
                         else if (pCurrentPackageRecord != nullptr)
@@ -855,7 +862,10 @@ namespace Odb::Lib::FileModel::Design
 
                             // finish up any current (previous) package records
                             m_packageRecords.push_back(pCurrentPackageRecord);
-                            m_packageRecordsByName[pCurrentPackageRecord->name] = pCurrentPackageRecord;
+                            if (m_populateStringMapData)
+                            {
+                                m_packageRecordsByName[pCurrentPackageRecord->name] = pCurrentPackageRecord;
+                            }
                             pCurrentPackageRecord.reset();
                         }
 
@@ -1087,7 +1097,10 @@ namespace Odb::Lib::FileModel::Design
                             }
 
                             m_netRecords.push_back(pCurrentNetRecord);
-                            m_netRecordsByName[pCurrentNetRecord->name] = pCurrentNetRecord;
+                            if (m_populateStringMapData)
+                            {
+                                m_netRecordsByName[pCurrentNetRecord->name] = pCurrentNetRecord;
+                            }
                             pCurrentNetRecord.reset();
                         }
                         else if (pCurrentPackageRecord != nullptr)
@@ -1107,7 +1120,10 @@ namespace Odb::Lib::FileModel::Design
 
                             // finish up any current (previous) package records
                             m_packageRecords.push_back(pCurrentPackageRecord);
-                            m_packageRecordsByName[pCurrentPackageRecord->name] = pCurrentPackageRecord;
+                            if (m_populateStringMapData)
+                            {
+                                m_packageRecordsByName[pCurrentPackageRecord->name] = pCurrentPackageRecord;
+                            }
                             pCurrentPackageRecord.reset();
                         }                        
                         else if (pCurrentFeatureGroupRecord != nullptr)
@@ -1507,7 +1523,10 @@ namespace Odb::Lib::FileModel::Design
                 }
 
                 m_netRecords.push_back(pCurrentNetRecord);
-                m_netRecordsByName[pCurrentNetRecord->name] = pCurrentNetRecord;
+                if (m_populateStringMapData)
+                {
+                    m_netRecordsByName[pCurrentNetRecord->name] = pCurrentNetRecord;
+                }
                 pCurrentNetRecord.reset();
             }
             else if (pCurrentPackageRecord != nullptr)
@@ -1527,7 +1546,10 @@ namespace Odb::Lib::FileModel::Design
 
                 // finish up any current (previous) package records
                 m_packageRecords.push_back(pCurrentPackageRecord);
-                m_packageRecordsByName[pCurrentPackageRecord->name] = pCurrentPackageRecord;
+                if (m_populateStringMapData)
+                {
+                    m_packageRecordsByName[pCurrentPackageRecord->name] = pCurrentPackageRecord;
+                }
                 pCurrentPackageRecord.reset();
             }
             else if (pCurrentFeatureGroupRecord != nullptr)
@@ -1611,8 +1633,7 @@ namespace Odb::Lib::FileModel::Design
         {
 			auto pPinRecord = std::make_shared<PinRecord>();
 			pPinRecord->from_protobuf(pinRecordMessage);
-			m_pinRecords.push_back(pPinRecord);
-			m_pinRecordsByName[pPinRecord->name] = pPinRecord;
+			m_pinRecords.push_back(pPinRecord);			
 		}
 
         for (const auto& kvPinRecordMessage : message.pinrecordsbyname())

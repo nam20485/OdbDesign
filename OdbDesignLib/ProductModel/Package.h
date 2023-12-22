@@ -34,5 +34,7 @@ namespace Odb::Lib::ProductModel
 		Pin::StringMap m_pinsByName;
 		unsigned int m_index;
 
+		bool m_populateStringMapData;
+
 	};
 } // namespace Odb::Lib::ProductModel

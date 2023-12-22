@@ -107,6 +107,8 @@ namespace Odb::Lib::FileModel::Design
 		NetRecord::StringMap m_netRecordsByName;
 		NetPointRecord::Vector m_netPointRecords;		
 
+		bool m_populateStringMapData = false;
+
 		inline constexpr static const char* UNITS_TOKEN = "UNITS";
 		inline constexpr static const char* COMMENT_TOKEN = "#";
 		inline constexpr static const char* HEADER_TOKEN = "H";		

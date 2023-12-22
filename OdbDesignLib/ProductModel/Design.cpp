@@ -7,6 +7,7 @@
 namespace Odb::Lib::ProductModel
 {	
 	Design::Design()
+		: m_populateStringMapData(true)
 	{
 	}
 
@@ -74,10 +75,26 @@ namespace Odb::Lib::ProductModel
 
 	std::shared_ptr<Net> Design::GetNet(const std::string& name) const
 	{
-		auto findIt = m_netsByName.find(name);
-		if (findIt != m_netsByName.end())
+
+		if (m_populateStringMapData)
 		{
-			return findIt->second;
+			auto findIt = m_netsByName.find(name);
+			if (findIt != m_netsByName.end())
+			{
+				return findIt->second;
+			}			
+		}
+		else
+		{
+			auto findIt = std::find_if(m_nets.begin(), m_nets.end(),
+				[&](const auto& pNet)
+				{
+					return pNet->GetName() == name;
+				});
+			if (findIt != m_nets.end())
+			{
+				return *findIt;
+			}
 		}
 		return nullptr;
 	}
@@ -155,7 +172,10 @@ namespace Odb::Lib::ProductModel
 			auto pComponent = std::make_shared<Component>(pComponentRecord->compName, pComponentRecord->partName, pPackage, index, pComponentsFile->GetSide(), pPart);
 
 			m_components.push_back(pComponent);
-			m_componentsByName[pComponent->GetRefDes()] = pComponent;
+			if (m_populateStringMapData)
+			{
+				m_componentsByName[pComponent->GetRefDes()] = pComponent;
+			}
 		}
 
 		return true;
@@ -181,7 +201,10 @@ namespace Odb::Lib::ProductModel
 		{
 			auto pNet = std::make_shared<Net>(pNetRecord->name, pNetRecord->index);
 			m_nets.push_back(pNet);
-			m_netsByName[pNet->GetName()] = pNet;
+			if (m_populateStringMapData)
+			{
+				m_netsByName[pNet->GetName()] = pNet;
+			}
 		}	
 
 		return true;
@@ -210,7 +233,10 @@ namespace Odb::Lib::ProductModel
 			}
 
 			m_packages.push_back(pPackage);
-			m_packagesByName[pPackage->GetName()] = pPackage;
+			if (m_populateStringMapData)
+			{
+				m_packagesByName[pPackage->GetName()] = pPackage;
+			}
 		}		
 
 		return true;
@@ -247,7 +273,10 @@ namespace Odb::Lib::ProductModel
 			{
 				auto pPart = std::make_shared<Part>(partName);
 				m_parts.push_back(pPart);
-				m_partsByName[partName] = pPart;
+				if (m_populateStringMapData)
+				{
+					m_partsByName[partName] = pPart;
+				}
 			}
 		}
 
@@ -355,7 +384,10 @@ namespace Odb::Lib::ProductModel
 			auto pNewNet = std::make_shared<Net>(newNetName, -1);
 			pNewNet->AddPinConnection(pExistingPinConnection->GetComponent(), pExistingPinConnection->GetPin());
 			m_nets.push_back(pNewNet);
-			m_netsByName[pNewNet->GetName()] = pNewNet;
+			if (m_populateStringMapData)
+			{
+				m_netsByName[pNewNet->GetName()] = pNewNet;
+			}
 
 			pinConnections.pop_back();						
 		}			

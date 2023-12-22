@@ -64,6 +64,8 @@ namespace Odb::Lib::ProductModel
 		Part::Vector m_parts;
 		Part::StringMap m_partsByName;
 
+		bool m_populateStringMapData;
+
 		bool BuildNets();
 		bool BuildPackages();
 		bool BuildAllParts();
