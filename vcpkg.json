@@ -9,6 +9,9 @@
         "zlib"
       ]
     },
-    "openssl"
+    "openssl",
+    "oatpp",
+    "oatpp-swagger",
+    "oatpp-zlib"
   ]
 }

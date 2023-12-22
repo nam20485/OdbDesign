@@ -55,9 +55,9 @@ target_include_directories(OdbDesign
 file (GLOB_RECURSE ODBDESIGN_HEADER_FILES "*.h")
 target_precompile_headers(OdbDesign PRIVATE ${ODBDESIGN_HEADER_FILES})
 
-# link to zlib (required for Crow HTTP compression)
-find_package(ZLIB REQUIRED)
-target_link_libraries(OdbDesign PRIVATE ZLIB::ZLIB)
+# link to Crow
+find_package(Crow CONFIG REQUIRED)
+target_link_libraries(OdbDesign PUBLIC Crow::Crow)
 
 find_package(OpenSSL REQUIRED)
 target_link_libraries(OdbDesign PUBLIC OpenSSL::SSL OpenSSL::Crypto)
