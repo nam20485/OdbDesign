@@ -24,6 +24,7 @@ namespace Odb::Lib::App
 
 		// implement in subclasses to add route controllers
 		virtual void add_controllers() = 0;
+		//void add_controllers(const RouteController::Vector& controllers);
 
 	private:
 		crow::SimpleApp m_crowApp;

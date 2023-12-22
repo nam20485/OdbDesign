@@ -1,5 +1,4 @@
 #include "OdbServerAppBase.h"
-#include "OdbServerAppBase.h"
 #include "Logger.h"
 
 using namespace Utils;
@@ -87,6 +86,11 @@ namespace Odb::Lib::App
 	{
 		return m_httpServer;
 	}
+
+	//void OdbServerAppBase::add_controllers(const RouteController::Vector& controllers)
+	//{
+	//	m_vecControllers.insert(m_vecControllers.end(), controllers.begin(), controllers.end());
+	//}
 
 	void OdbServerAppBase::register_routes()
 	{
