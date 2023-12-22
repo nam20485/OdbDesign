@@ -79,11 +79,6 @@ target_link_libraries(OdbDesign PRIVATE protobuf::libprotobuf)
 # add the generated Protobuf C++ files to the target
 #target_sources(OdbDesign PRIVATE ${PROTO_SRCS} ${PROTO_HDRS})
 
-# workaround to remove error: "C++ command-line error: invalid macro definition: _CROW_ICD-NOTFOUND"
-# (see https://github.com/CrowCpp/Crow/issues/661#issuecomment-1702544225)
-list(REMOVE_ITEM _CROW_ICD "_CROW_ICD-NOTFOUND")
-set_target_properties(Crow::Crow PROPERTIES INTERFACE_COMPILE_DEFINITIONS "${_CROW_ICD}")
-
 # Python extension module build settings                           
 if (PYTHON_MODULE_BUILD)
  #   # run swig to generate wrapper file
@@ -116,3 +111,8 @@ if (PYTHON_MODULE_BUILD)
     #target_include_directories(OdbDesign PRIVATE ${Python3_INCLUDE_DIRS})    
     target_link_libraries(OdbDesign PRIVATE Python3::Python)
 endif()
+
+# workaround to remove error: "C++ command-line error: invalid macro definition: _CROW_ICD-NOTFOUND"
+# (see https://github.com/CrowCpp/Crow/issues/661#issuecomment-1702544225)
+list(REMOVE_ITEM _CROW_ICD "_CROW_ICD-NOTFOUND")
+set_target_properties(Crow::Crow PROPERTIES INTERFACE_COMPILE_DEFINITIONS "${_CROW_ICD}")
