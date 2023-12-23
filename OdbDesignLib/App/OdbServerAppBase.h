@@ -17,14 +17,15 @@ namespace Odb::Lib::App
 
 		Utils::ExitCode Run() override;		
 
-	protected:
-		crow::SimpleApp m_crowApp;
+	protected:		
 		RouteController::Vector m_vecControllers;
 
 		// implement in subclasses to add route controllers
 		virtual void add_controllers() = 0;
 
 	private:
+		crow::SimpleApp m_crowApp;
+
 		void register_routes();
 
 		static constexpr const char* SSL_CERT_FILE = "ssl.crt";
