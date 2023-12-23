@@ -6,7 +6,7 @@ using namespace Utils;
 namespace Odb::Lib::App
 {
     OdbAppBase::OdbAppBase(int argc, char* argv[])
-        : m_designCache("designs")
+        : m_designCache(DEFAULT_DESIGNS_DIR)
         , m_commandLineArgs(argc, argv)
     {        
         GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -34,14 +34,20 @@ namespace Odb::Lib::App
         Logger::instance()->logLevel(Logger::Level::Info);
         Logger::instance()->start();
 
+        // set designs dir if passed in
+        if (!args().designsDir().empty())
+        {
+			designs().setDirectory(args().designsDir());
+		}
+
         // load a design if specified via command line args
         if (!args().loadDesign().empty())
         {
             try
             {
                 auto pFileArchive = 
-                    //designs().GetDesign(args().loadDesign());
-                    designs().GetFileArchive(args().loadDesign());
+                    designs().GetDesign(args().loadDesign());
+                    //designs().GetFileArchive(args().loadDesign());
                 if (pFileArchive == nullptr)
                 {
                     logerror("Failed to load design specified in arguments \"" + args().loadDesign() + "\"");
@@ -54,6 +60,12 @@ namespace Odb::Lib::App
                 logerror("Failed to load design specified in arguments \"" + args().loadDesign() + "\"");
                 return Utils::ExitCode::FailedInitLoadDesign;
             }
+        }
+        
+        // load all designs from designs-dir if specified
+        if (args().loadAll())
+        {
+            designs().loadAllDesigns(false);
         }
 
         return Utils::ExitCode::Success;

@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+//// https://protobuf.dev/reference/cpp/cpp-generated/#message
+//option optimize_for = CODE_SIZE;
+
+package Odb.Lib.Protobuf;
+
+import "attrlistfile.proto";
+import "featuresfile.proto";
+
+//
+//  LayerDirectory.h
+//
+
+message SymbolsDirectory  {
+
+    optional string name = 1;
+    optional string path = 2;
+
+    optional AttrListFile attrlistFile = 3;
+    optional FeaturesFile featureFile = 4;
+} 

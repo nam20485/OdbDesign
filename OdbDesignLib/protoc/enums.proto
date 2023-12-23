@@ -23,3 +23,10 @@ enum Polarity
     Positive = 0;
     Negative = 1;
 };
+
+enum UnitType
+{
+	None = 0;
+	Metric = 1;
+	Imperial = 2;
+};

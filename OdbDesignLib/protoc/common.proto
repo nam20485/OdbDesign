@@ -11,3 +11,35 @@ message PropertyRecord {
     optional string value = 2;
     repeated float floatValues = 3;
 } 
+
+message ContourPolygon {
+
+    message PolygonPart {
+       
+        enum Type
+        {
+            Segment = 0;
+            Arc = 1;
+        };
+
+        optional Type type = 1;
+        optional float endX = 2;
+        optional float endY = 3;
+        optional float xCenter = 4;
+        optional float yCenter = 5;
+        optional bool isClockwise = 6;
+
+    }
+
+    enum Type
+    {
+        Island = 0;
+        Hole = 1;
+    };
+
+    optional Type type = 1;
+    optional float xStart = 2;
+    optional float yStart = 3;
+    
+    repeated PolygonPart polygonParts = 4;
+}

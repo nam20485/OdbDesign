@@ -21,7 +21,7 @@
 #include "ProductModel/Pin.h"
 #include "ProductModel/PinConnection.h"
 #include "FileModel/Design/StepDirectory.h"
-#include "str_trim.h"
+#include "str_utils.h"
 #include "ProductModel/Via.h"
 //#include "edadatafile.pb.h"
 

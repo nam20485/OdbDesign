@@ -1,4 +1,4 @@
-#include "str_trim.h"
+#include "str_utils.h"
 #include <iostream>
 #include <string>
 #include <algorithm>
@@ -65,43 +65,67 @@ namespace Utils
     }
 
     // trim from start (copying)
-    std::string str_ltrim_copy(std::string s)
+    std::string str_ltrim_copy(const std::string& s)
     {
         auto copy(s);
         return str_ltrim(copy);
     }
 
     // trim from end (copying)
-    std::string str_rtrim_copy(std::string s)
+    std::string str_rtrim_copy(const std::string& s)
     {
         auto copy(s);
         return str_rtrim(copy);
     }
 
     // trim from both ends (copying)
-    std::string str_trim_copy(std::string s)
+    std::string str_trim_copy(const std::string& s)
     {
         auto copy(s);
         return str_trim(copy);
     }
 
-    std::string str_ltrim_copy(std::string s, /*unsigned*/ char toRemove)
+    std::string str_ltrim_copy(const std::string& s, /*unsigned*/ char toRemove)
     {
         auto copy(s);
         return str_ltrim(copy, toRemove);
     }
 
     // trim from end (copying)
-    std::string str_rtrim_copy(std::string s, /*unsigned*/ char toRemove)
+    std::string str_rtrim_copy(const std::string& s, /*unsigned*/ char toRemove)
     {
         auto copy(s);
         return str_rtrim(copy, toRemove);
     }
 
     // trim from both ends (copying)
-    std::string str_trim_copy(std::string s, /*unsigned*/ char toRemove)
+    std::string str_trim_copy(const std::string& s, /*unsigned*/ char toRemove)
     {
         auto copy(s);
         return str_trim(copy, toRemove);
+    }
+
+    void str_to_lower(std::string& s)
+    {
+        std::transform(s.begin(), s.end(), s.begin(), [](unsigned char c) { return std::tolower(c); });
+    }
+
+    void str_to_upper(std::string& s)
+    {
+		std::transform(s.begin(), s.end(), s.begin(), [](unsigned char c) { return std::toupper(c); });
+	}   
+
+    std::string str_to_lower_copy(const std::string& s)
+    {
+        std::string copy = s;
+        std::transform(copy.begin(), copy.end(), copy.begin(), [](unsigned char c) { return std::tolower(c); });
+        return copy;
+    }
+
+    std::string str_to_upper_copy(const std::string& s)
+    {
+        std::string copy;
+        std::transform(copy.begin(), copy.end(), copy.begin(), [](unsigned char c) { return std::toupper(c); });
+        return copy;
     }
 }

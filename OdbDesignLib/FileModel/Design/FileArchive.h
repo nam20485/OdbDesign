@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../../win.h"
 #include "../../odbdesign_export.h"
 #include <string>
 #include "StepDirectory.h"
@@ -13,6 +12,8 @@
 #include <filesystem>
 #include "../../IProtoBuffable.h"
 #include "../../ProtoBuf/filearchive.pb.h"
+#include "SymbolsDirectory.h"
+#include "AttrListFile.h"
 
 
 namespace Odb::Lib::FileModel::Design
@@ -29,9 +30,13 @@ namespace Odb::Lib::FileModel::Design
 		std::string GetFilePath() const;
 
 		const StepDirectory::StringMap& GetStepsByName() const;
+		const SymbolsDirectory::StringMap& GetSymbolsDirectoriesByName() const;
         const MiscInfoFile& GetMiscInfoFile() const;
 		const MatrixFile& GetMatrixFile() const;
 		const StandardFontsFile& GetStandardFontsFile() const;
+		const AttrListFile& GetMiscAttrListFile() const;
+
+		std::shared_ptr<StepDirectory> GetStepDirectory(const std::string& stepName = "");
 
 		// TODO: fix these to use pointer return types
 		//const EdaDataFile& GetStepEdaDataFile(std::string stepName) const;
@@ -52,12 +57,16 @@ namespace Odb::Lib::FileModel::Design
         MiscInfoFile m_miscInfoFile;
 		MatrixFile m_matrixFile;
 		StandardFontsFile m_standardFontsFile;
+		SymbolsDirectory::StringMap m_symbolsDirectoriesByName;
+		AttrListFile m_miscAttrListFile;
 
 		bool ParseDesignDirectory(const std::filesystem::path& path);
 		bool ParseStepDirectories(const std::filesystem::path& path);
         bool ParseMiscInfoFile(const std::filesystem::path& path);
 		bool ParseMatrixFile(const std::filesystem::path& path);
-		bool ParseStandardFontsFile(const std::filesystem::path& path);
+		bool ParseStandardFontsFile(const std::filesystem::path& path);		
+		bool ParseSymbolsDirectories(const std::filesystem::path& path);
+		bool ParseMiscAttrListFile(const std::filesystem::path& path);
 
 		bool ExtractDesignArchive(const std::filesystem::path& path, std::filesystem::path& extractedPath);
 
@@ -96,6 +105,21 @@ namespace Odb::Lib::FileModel::Design
 		//The default units of measurement for the product model are as defined in the UNITS directive in
 		//the file misc / info of the product model.If the default is not defined for the product model, the
 		//default is imperial.
+
+
+		// Attriubute Lookup Tables spec pg. 30
+		//
+		//Symbol Feature / symbols / <symbol_name> / features
+		//	“<symbol_name> / features (Symbol Features)” on page 97
+
+		//Net / steps / <step_name> / eda / data
+		//	“eda / data(EDA Data)” on page 111
+
+		//Feature / steps / <step_name> / layers / <layer_name> / features
+		//	“<layer_name> / features(Graphic Features)” on page 172
+
+		//Component / steps / <step_name> / layers / //<layer_name> / components
+		//	“<layer_name> / components (Components)” on page 155
 
 	};
 }

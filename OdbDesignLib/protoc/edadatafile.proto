@@ -65,6 +65,7 @@ message EdaDataFile {
             optional BoardSide side = 6;
             optional uint32 componentNumber = 7;
             optional uint32 toeprintNumber = 8;
+            optional uint32 index = 9;
         };
 
         optional string name = 1;
@@ -73,6 +74,7 @@ message EdaDataFile {
 
         repeated SubnetRecord subnetRecords = 4;
         repeated PropertyRecord propertyRecords = 5;
+        map<string, string> attributeLookupTable = 6;  
     }
 
     message PackageRecord {    
@@ -88,6 +90,31 @@ message EdaDataFile {
         repeated PinRecord pinRecords = 8;
         map<string, PinRecord> pinRecordsByName = 9;
         repeated PropertyRecord propertyRecords = 10;
+        repeated OutlineRecord outlineRecords = 11;
+        map<string, string> attributeLookupTable = 12;  
+
+        message OutlineRecord {
+
+            enum Type
+            {
+                Rectangle = 0;
+                Circle = 1;
+                Square = 2;
+                Contour = 3;
+            };
+
+            optional Type type = 1;
+            optional float lowerLeftX = 2;
+            optional float lowerLeftY = 3;
+            optional float width = 4;
+            optional float height = 5;
+            optional float xCenter = 6;
+            optional float yCenter = 7;
+            optional float halfSide = 8;
+            optional float radius = 9;
+
+            repeated ContourPolygon contourPolygons = 10;
+        }
 
         message PinRecord {                      
 

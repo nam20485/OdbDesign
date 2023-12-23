@@ -12,13 +12,14 @@ on:
     branches: [ "main", "release", "development", "nam20485" ]
 
 permissions:
-  contents: read
+  contents: read  
 
 jobs:
   dependency-review:
     runs-on: ubuntu-latest
     permissions: 
       contents: write
+      pull-requests: write
     
     steps:
       - name: 'Checkout Repository'

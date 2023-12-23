@@ -6,17 +6,23 @@
 #include <memory>
 #include <filesystem>
 #include "../../odbdesign_export.h"
+#include "../../IProtoBuffable.h"
+#include "../../ProtoBuf/netlistfile.pb.h"
 
 
 namespace Odb::Lib::FileModel::Design
 {
-	class ODBDESIGN_EXPORT NetlistFile
+	class ODBDESIGN_EXPORT NetlistFile : public IProtoBuffable<Odb::Lib::Protobuf::NetlistFile>
 	{
 	public:
-		struct NetRecord
+		struct ODBDESIGN_EXPORT NetRecord : public IProtoBuffable<Odb::Lib::Protobuf::NetlistFile::NetRecord>
 		{
 			unsigned int serialNumber;
 			std::string netName;
+
+			// Inherited via IProtoBuffable
+			std::unique_ptr<Odb::Lib::Protobuf::NetlistFile::NetRecord> to_protobuf() const override;
+			void from_protobuf(const Odb::Lib::Protobuf::NetlistFile::NetRecord& message) override;
 
 			typedef std::vector<std::shared_ptr<NetRecord>> Vector;
 			typedef std::map<std::string, std::shared_ptr<NetRecord>> StringMap;
@@ -24,7 +30,7 @@ namespace Odb::Lib::FileModel::Design
 			inline constexpr static const char* FIELD_TOKEN = "$";
 		};
 
-		struct NetPointRecord
+		struct ODBDESIGN_EXPORT NetPointRecord : public IProtoBuffable<Odb::Lib::Protobuf::NetlistFile::NetPointRecord>
 		{
 			enum AccessSide
 			{
@@ -53,6 +59,10 @@ namespace Odb::Lib::FileModel::Design
 			// ...
 			char testExecutionSide;
 
+			// Inherited via IProtoBuffable
+			std::unique_ptr<Odb::Lib::Protobuf::NetlistFile::NetPointRecord> to_protobuf() const override;
+			void from_protobuf(const Odb::Lib::Protobuf::NetlistFile::NetPointRecord& message) override;
+
 			typedef std::vector<std::shared_ptr<NetPointRecord>> Vector;
 		};
 
@@ -79,6 +89,10 @@ namespace Odb::Lib::FileModel::Design
 
 		bool Parse();
 
+		// Inherited via IProtoBuffable
+		std::unique_ptr<Odb::Lib::Protobuf::NetlistFile> to_protobuf() const override;
+		void from_protobuf(const Odb::Lib::Protobuf::NetlistFile& message) override;
+
 		typedef std::vector<std::shared_ptr<NetlistFile>> Vector;
 		typedef std::map<std::string, std::shared_ptr<NetlistFile>> StringMap;
 
@@ -95,7 +109,7 @@ namespace Odb::Lib::FileModel::Design
 
 		inline constexpr static const char* UNITS_TOKEN = "UNITS";
 		inline constexpr static const char* COMMENT_TOKEN = "#";
-		inline constexpr static const char* HEADER_TOKEN = "H";
+		inline constexpr static const char* HEADER_TOKEN = "H";		
 
 	};
 }

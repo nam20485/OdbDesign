@@ -8,6 +8,7 @@
 #include "Pin.h"
 #include "Package.h"
 #include "../enums.h"
+#include "Part.h"
 
 
 namespace Odb::Lib::ProductModel
@@ -15,7 +16,7 @@ namespace Odb::Lib::ProductModel
 	class ODBDESIGN_EXPORT Component
 	{
 	public:
-		Component(std::string refDes, std::string partName, std::shared_ptr<Package> pPackage, unsigned int index, BoardSide side);
+		Component(std::string refDes, std::string partName, std::shared_ptr<Package> pPackage, unsigned int index, BoardSide side, std::shared_ptr<Part> pPart);
 		~Component();
 
 		std::string GetRefDes() const;
@@ -23,6 +24,7 @@ namespace Odb::Lib::ProductModel
 		std::shared_ptr<Package> GetPackage() const;
 		unsigned int GetIndex() const;
 		BoardSide GetSide() const;
+		std::shared_ptr<Part> GetPart() const;
 
 		typedef std::vector<std::shared_ptr<Component>> Vector;
 		typedef std::map<std::string, std::shared_ptr<Component>> StringMap;
@@ -33,5 +35,6 @@ namespace Odb::Lib::ProductModel
 		std::shared_ptr<Package> m_pPackage;
 		unsigned int m_index;
 		BoardSide m_side;
+		std::shared_ptr<Part> m_pPart;
 	};
 }

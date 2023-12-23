@@ -125,6 +125,32 @@ inline bool Polarity_Parse(
   return ::PROTOBUF_NAMESPACE_ID::internal::ParseNamedEnum<Polarity>(
     Polarity_descriptor(), name, value);
 }
+enum UnitType : int {
+  None = 0,
+  Metric = 1,
+  Imperial = 2,
+  UnitType_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
+  UnitType_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
+};
+bool UnitType_IsValid(int value);
+constexpr UnitType UnitType_MIN = None;
+constexpr UnitType UnitType_MAX = Imperial;
+constexpr int UnitType_ARRAYSIZE = UnitType_MAX + 1;
+
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* UnitType_descriptor();
+template<typename T>
+inline const std::string& UnitType_Name(T enum_t_value) {
+  static_assert(::std::is_same<T, UnitType>::value ||
+    ::std::is_integral<T>::value,
+    "Incorrect type passed to function UnitType_Name.");
+  return ::PROTOBUF_NAMESPACE_ID::internal::NameOfEnum(
+    UnitType_descriptor(), enum_t_value);
+}
+inline bool UnitType_Parse(
+    ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, UnitType* value) {
+  return ::PROTOBUF_NAMESPACE_ID::internal::ParseNamedEnum<UnitType>(
+    UnitType_descriptor(), name, value);
+}
 // ===================================================================
 
 
@@ -163,6 +189,11 @@ template <> struct is_proto_enum< ::Odb::Lib::Protobuf::Polarity> : ::std::true_
 template <>
 inline const EnumDescriptor* GetEnumDescriptor< ::Odb::Lib::Protobuf::Polarity>() {
   return ::Odb::Lib::Protobuf::Polarity_descriptor();
+}
+template <> struct is_proto_enum< ::Odb::Lib::Protobuf::UnitType> : ::std::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::Odb::Lib::Protobuf::UnitType>() {
+  return ::Odb::Lib::Protobuf::UnitType_descriptor();
 }
 
 PROTOBUF_NAMESPACE_CLOSE
