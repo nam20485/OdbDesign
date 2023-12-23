@@ -18,22 +18,26 @@ namespace Odb::App::Server
 	}
 
 	void StepsEdaDataController::register_routes()
-	{
-		//
-		//	/steps/edadata?design=sample_design&step=stepName
-		//		
-		// TODO: figure out why capture here is weird (i.e. how to capture pServerApp so it can be used in the member fxn handler)
-		CROW_ROUTE(m_serverApp.crow_app(), "/designs/<string>/steps/<string>/eda_data")
-			([&](const crow::request& req, std::string designName, std::string stepName)
-				{
-					return this->steps_edadata_route_handler(designName, stepName, req);
-				});
+	{		
+		m_serverApp.http_server().addRoute("/designs/<string>/steps/<string>/eda_data",
+											IHttpServer::HttpMethod::Get,
+											std::bind(&StepsEdaDataController::stepsEdadataHttpRouteHandler, this, std::placeholders::_1));
 
-		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>")
-			([&](const crow::request& req, std::string designName)
-				{
-					return this->designs_route_handler(designName, req);
-				});
+		////
+		////	/steps/edadata?design=sample_design&step=stepName
+		////		
+		//// TODO: figure out why capture here is weird (i.e. how to capture pServerApp so it can be used in the member fxn handler)
+		//CROW_ROUTE(m_serverApp.crow_app(), "/designs/<string>/steps/<string>/eda_data")
+		//	([&](const crow::request& req, std::string designName, std::string stepName)
+		//		{
+		//			return this->steps_edadata_route_handler(designName, stepName, req);
+		//		});
+
+		//CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>")
+		//	([&](const crow::request& req, std::string designName)
+		//		{
+		//			return this->designs_route_handler(designName, req);
+		//		});
 
 		//app.route_dynamic(url)
 
@@ -43,6 +47,8 @@ namespace Odb::App::Server
 			return steps_edadata_route_handler(req);
 		});*/
 	}	
+
+
 
 	crow::response StepsEdaDataController::steps_edadata_route_handler(const std::string& designName, 
 																	   const std::string& stepName,
@@ -99,5 +105,12 @@ namespace Odb::App::Server
 		}
 
 		return crow::response(JsonCrowReturnable(*pFileArchive));
+	}
+
+	Odb::Lib::App::HttpResponse StepsEdaDataController::stepsEdadataHttpRouteHandler(const Odb::Lib::App::HttpRequest& request)
+	{
+
+
+		return Odb::Lib::App::HttpResponse();
 	}
 }
