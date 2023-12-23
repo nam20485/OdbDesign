@@ -29,6 +29,9 @@
 #include <google/protobuf/message.h>
 #include <google/protobuf/repeated_field.h>  // IWYU pragma: export
 #include <google/protobuf/extension_set.h>  // IWYU pragma: export
+#include <google/protobuf/map.h>  // IWYU pragma: export
+#include <google/protobuf/map_entry.h>
+#include <google/protobuf/map_field_inl.h>
 #include <google/protobuf/generated_enum_reflection.h>
 #include <google/protobuf/unknown_field_set.h>
 // @@protoc_insertion_point(includes)
@@ -51,16 +54,55 @@ namespace Protobuf {
 class NetlistFile;
 struct NetlistFileDefaultTypeInternal;
 extern NetlistFileDefaultTypeInternal _NetlistFile_default_instance_;
+class NetlistFile_NetPointRecord;
+struct NetlistFile_NetPointRecordDefaultTypeInternal;
+extern NetlistFile_NetPointRecordDefaultTypeInternal _NetlistFile_NetPointRecord_default_instance_;
+class NetlistFile_NetRecord;
+struct NetlistFile_NetRecordDefaultTypeInternal;
+extern NetlistFile_NetRecordDefaultTypeInternal _NetlistFile_NetRecord_default_instance_;
+class NetlistFile_NetRecordsByNameEntry_DoNotUse;
+struct NetlistFile_NetRecordsByNameEntry_DoNotUseDefaultTypeInternal;
+extern NetlistFile_NetRecordsByNameEntry_DoNotUseDefaultTypeInternal _NetlistFile_NetRecordsByNameEntry_DoNotUse_default_instance_;
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
 PROTOBUF_NAMESPACE_OPEN
 template<> ::Odb::Lib::Protobuf::NetlistFile* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::NetlistFile>(Arena*);
+template<> ::Odb::Lib::Protobuf::NetlistFile_NetPointRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::NetlistFile_NetPointRecord>(Arena*);
+template<> ::Odb::Lib::Protobuf::NetlistFile_NetRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::NetlistFile_NetRecord>(Arena*);
+template<> ::Odb::Lib::Protobuf::NetlistFile_NetRecordsByNameEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::NetlistFile_NetRecordsByNameEntry_DoNotUse>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace Odb {
 namespace Lib {
 namespace Protobuf {
 
+enum NetlistFile_NetPointRecord_AccessSide : int {
+  NetlistFile_NetPointRecord_AccessSide_Top = 0,
+  NetlistFile_NetPointRecord_AccessSide_Down = 1,
+  NetlistFile_NetPointRecord_AccessSide_Both = 2,
+  NetlistFile_NetPointRecord_AccessSide_Inner = 3,
+  NetlistFile_NetPointRecord_AccessSide_NetlistFile_NetPointRecord_AccessSide_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
+  NetlistFile_NetPointRecord_AccessSide_NetlistFile_NetPointRecord_AccessSide_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
+};
+bool NetlistFile_NetPointRecord_AccessSide_IsValid(int value);
+constexpr NetlistFile_NetPointRecord_AccessSide NetlistFile_NetPointRecord_AccessSide_AccessSide_MIN = NetlistFile_NetPointRecord_AccessSide_Top;
+constexpr NetlistFile_NetPointRecord_AccessSide NetlistFile_NetPointRecord_AccessSide_AccessSide_MAX = NetlistFile_NetPointRecord_AccessSide_Inner;
+constexpr int NetlistFile_NetPointRecord_AccessSide_AccessSide_ARRAYSIZE = NetlistFile_NetPointRecord_AccessSide_AccessSide_MAX + 1;
+
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* NetlistFile_NetPointRecord_AccessSide_descriptor();
+template<typename T>
+inline const std::string& NetlistFile_NetPointRecord_AccessSide_Name(T enum_t_value) {
+  static_assert(::std::is_same<T, NetlistFile_NetPointRecord_AccessSide>::value ||
+    ::std::is_integral<T>::value,
+    "Incorrect type passed to function NetlistFile_NetPointRecord_AccessSide_Name.");
+  return ::PROTOBUF_NAMESPACE_ID::internal::NameOfEnum(
+    NetlistFile_NetPointRecord_AccessSide_descriptor(), enum_t_value);
+}
+inline bool NetlistFile_NetPointRecord_AccessSide_Parse(
+    ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, NetlistFile_NetPointRecord_AccessSide* value) {
+  return ::PROTOBUF_NAMESPACE_ID::internal::ParseNamedEnum<NetlistFile_NetPointRecord_AccessSide>(
+    NetlistFile_NetPointRecord_AccessSide_descriptor(), name, value);
+}
 enum NetlistFile_Staggered : int {
   NetlistFile_Staggered_Yes = 0,
   NetlistFile_Staggered_No = 1,
@@ -88,6 +130,647 @@ inline bool NetlistFile_Staggered_Parse(
     NetlistFile_Staggered_descriptor(), name, value);
 }
 // ===================================================================
+
+class NetlistFile_NetRecord final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.NetlistFile.NetRecord) */ {
+ public:
+  inline NetlistFile_NetRecord() : NetlistFile_NetRecord(nullptr) {}
+  ~NetlistFile_NetRecord() override;
+  explicit PROTOBUF_CONSTEXPR NetlistFile_NetRecord(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  NetlistFile_NetRecord(const NetlistFile_NetRecord& from);
+  NetlistFile_NetRecord(NetlistFile_NetRecord&& from) noexcept
+    : NetlistFile_NetRecord() {
+    *this = ::std::move(from);
+  }
+
+  inline NetlistFile_NetRecord& operator=(const NetlistFile_NetRecord& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline NetlistFile_NetRecord& operator=(NetlistFile_NetRecord&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const NetlistFile_NetRecord& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const NetlistFile_NetRecord* internal_default_instance() {
+    return reinterpret_cast<const NetlistFile_NetRecord*>(
+               &_NetlistFile_NetRecord_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    0;
+
+  friend void swap(NetlistFile_NetRecord& a, NetlistFile_NetRecord& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(NetlistFile_NetRecord* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(NetlistFile_NetRecord* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  NetlistFile_NetRecord* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<NetlistFile_NetRecord>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const NetlistFile_NetRecord& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const NetlistFile_NetRecord& from) {
+    NetlistFile_NetRecord::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(NetlistFile_NetRecord* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "Odb.Lib.Protobuf.NetlistFile.NetRecord";
+  }
+  protected:
+  explicit NetlistFile_NetRecord(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kNetNameFieldNumber = 2,
+    kSerialNumberFieldNumber = 1,
+  };
+  // optional string netName = 2;
+  bool has_netname() const;
+  private:
+  bool _internal_has_netname() const;
+  public:
+  void clear_netname();
+  const std::string& netname() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_netname(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_netname();
+  PROTOBUF_NODISCARD std::string* release_netname();
+  void set_allocated_netname(std::string* netname);
+  private:
+  const std::string& _internal_netname() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_netname(const std::string& value);
+  std::string* _internal_mutable_netname();
+  public:
+
+  // optional uint32 serialNumber = 1;
+  bool has_serialnumber() const;
+  private:
+  bool _internal_has_serialnumber() const;
+  public:
+  void clear_serialnumber();
+  uint32_t serialnumber() const;
+  void set_serialnumber(uint32_t value);
+  private:
+  uint32_t _internal_serialnumber() const;
+  void _internal_set_serialnumber(uint32_t value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:Odb.Lib.Protobuf.NetlistFile.NetRecord)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr netname_;
+    uint32_t serialnumber_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_netlistfile_2eproto;
+};
+// -------------------------------------------------------------------
+
+class NetlistFile_NetPointRecord final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.NetlistFile.NetPointRecord) */ {
+ public:
+  inline NetlistFile_NetPointRecord() : NetlistFile_NetPointRecord(nullptr) {}
+  ~NetlistFile_NetPointRecord() override;
+  explicit PROTOBUF_CONSTEXPR NetlistFile_NetPointRecord(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  NetlistFile_NetPointRecord(const NetlistFile_NetPointRecord& from);
+  NetlistFile_NetPointRecord(NetlistFile_NetPointRecord&& from) noexcept
+    : NetlistFile_NetPointRecord() {
+    *this = ::std::move(from);
+  }
+
+  inline NetlistFile_NetPointRecord& operator=(const NetlistFile_NetPointRecord& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline NetlistFile_NetPointRecord& operator=(NetlistFile_NetPointRecord&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const NetlistFile_NetPointRecord& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const NetlistFile_NetPointRecord* internal_default_instance() {
+    return reinterpret_cast<const NetlistFile_NetPointRecord*>(
+               &_NetlistFile_NetPointRecord_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    1;
+
+  friend void swap(NetlistFile_NetPointRecord& a, NetlistFile_NetPointRecord& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(NetlistFile_NetPointRecord* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(NetlistFile_NetPointRecord* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  NetlistFile_NetPointRecord* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<NetlistFile_NetPointRecord>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const NetlistFile_NetPointRecord& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const NetlistFile_NetPointRecord& from) {
+    NetlistFile_NetPointRecord::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(NetlistFile_NetPointRecord* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "Odb.Lib.Protobuf.NetlistFile.NetPointRecord";
+  }
+  protected:
+  explicit NetlistFile_NetPointRecord(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  typedef NetlistFile_NetPointRecord_AccessSide AccessSide;
+  static constexpr AccessSide Top =
+    NetlistFile_NetPointRecord_AccessSide_Top;
+  static constexpr AccessSide Down =
+    NetlistFile_NetPointRecord_AccessSide_Down;
+  static constexpr AccessSide Both =
+    NetlistFile_NetPointRecord_AccessSide_Both;
+  static constexpr AccessSide Inner =
+    NetlistFile_NetPointRecord_AccessSide_Inner;
+  static inline bool AccessSide_IsValid(int value) {
+    return NetlistFile_NetPointRecord_AccessSide_IsValid(value);
+  }
+  static constexpr AccessSide AccessSide_MIN =
+    NetlistFile_NetPointRecord_AccessSide_AccessSide_MIN;
+  static constexpr AccessSide AccessSide_MAX =
+    NetlistFile_NetPointRecord_AccessSide_AccessSide_MAX;
+  static constexpr int AccessSide_ARRAYSIZE =
+    NetlistFile_NetPointRecord_AccessSide_AccessSide_ARRAYSIZE;
+  static inline const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor*
+  AccessSide_descriptor() {
+    return NetlistFile_NetPointRecord_AccessSide_descriptor();
+  }
+  template<typename T>
+  static inline const std::string& AccessSide_Name(T enum_t_value) {
+    static_assert(::std::is_same<T, AccessSide>::value ||
+      ::std::is_integral<T>::value,
+      "Incorrect type passed to function AccessSide_Name.");
+    return NetlistFile_NetPointRecord_AccessSide_Name(enum_t_value);
+  }
+  static inline bool AccessSide_Parse(::PROTOBUF_NAMESPACE_ID::ConstStringParam name,
+      AccessSide* value) {
+    return NetlistFile_NetPointRecord_AccessSide_Parse(name, value);
+  }
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kEpointFieldNumber = 8,
+    kExpFieldNumber = 9,
+    kTestExecutionSideFieldNumber = 17,
+    kNetNumberFieldNumber = 1,
+    kRadiusFieldNumber = 2,
+    kXFieldNumber = 3,
+    kYFieldNumber = 4,
+    kSideFieldNumber = 5,
+    kWidthFieldNumber = 6,
+    kHeightFieldNumber = 7,
+    kCommentPointFieldNumber = 10,
+    kStaggeredXFieldNumber = 11,
+    kStaggeredYFieldNumber = 12,
+    kStaggeredRadiusFieldNumber = 13,
+    kViaPointFieldNumber = 14,
+    kFiducialPointFieldNumber = 15,
+    kTestPointFieldNumber = 16,
+  };
+  // optional string epoint = 8;
+  bool has_epoint() const;
+  private:
+  bool _internal_has_epoint() const;
+  public:
+  void clear_epoint();
+  const std::string& epoint() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_epoint(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_epoint();
+  PROTOBUF_NODISCARD std::string* release_epoint();
+  void set_allocated_epoint(std::string* epoint);
+  private:
+  const std::string& _internal_epoint() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_epoint(const std::string& value);
+  std::string* _internal_mutable_epoint();
+  public:
+
+  // optional string exp = 9;
+  bool has_exp() const;
+  private:
+  bool _internal_has_exp() const;
+  public:
+  void clear_exp();
+  const std::string& exp() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_exp(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_exp();
+  PROTOBUF_NODISCARD std::string* release_exp();
+  void set_allocated_exp(std::string* exp);
+  private:
+  const std::string& _internal_exp() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_exp(const std::string& value);
+  std::string* _internal_mutable_exp();
+  public:
+
+  // optional string testExecutionSide = 17;
+  bool has_testexecutionside() const;
+  private:
+  bool _internal_has_testexecutionside() const;
+  public:
+  void clear_testexecutionside();
+  const std::string& testexecutionside() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_testexecutionside(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_testexecutionside();
+  PROTOBUF_NODISCARD std::string* release_testexecutionside();
+  void set_allocated_testexecutionside(std::string* testexecutionside);
+  private:
+  const std::string& _internal_testexecutionside() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_testexecutionside(const std::string& value);
+  std::string* _internal_mutable_testexecutionside();
+  public:
+
+  // optional uint32 netNumber = 1;
+  bool has_netnumber() const;
+  private:
+  bool _internal_has_netnumber() const;
+  public:
+  void clear_netnumber();
+  uint32_t netnumber() const;
+  void set_netnumber(uint32_t value);
+  private:
+  uint32_t _internal_netnumber() const;
+  void _internal_set_netnumber(uint32_t value);
+  public:
+
+  // optional float radius = 2;
+  bool has_radius() const;
+  private:
+  bool _internal_has_radius() const;
+  public:
+  void clear_radius();
+  float radius() const;
+  void set_radius(float value);
+  private:
+  float _internal_radius() const;
+  void _internal_set_radius(float value);
+  public:
+
+  // optional float x = 3;
+  bool has_x() const;
+  private:
+  bool _internal_has_x() const;
+  public:
+  void clear_x();
+  float x() const;
+  void set_x(float value);
+  private:
+  float _internal_x() const;
+  void _internal_set_x(float value);
+  public:
+
+  // optional float y = 4;
+  bool has_y() const;
+  private:
+  bool _internal_has_y() const;
+  public:
+  void clear_y();
+  float y() const;
+  void set_y(float value);
+  private:
+  float _internal_y() const;
+  void _internal_set_y(float value);
+  public:
+
+  // optional .Odb.Lib.Protobuf.NetlistFile.NetPointRecord.AccessSide side = 5;
+  bool has_side() const;
+  private:
+  bool _internal_has_side() const;
+  public:
+  void clear_side();
+  ::Odb::Lib::Protobuf::NetlistFile_NetPointRecord_AccessSide side() const;
+  void set_side(::Odb::Lib::Protobuf::NetlistFile_NetPointRecord_AccessSide value);
+  private:
+  ::Odb::Lib::Protobuf::NetlistFile_NetPointRecord_AccessSide _internal_side() const;
+  void _internal_set_side(::Odb::Lib::Protobuf::NetlistFile_NetPointRecord_AccessSide value);
+  public:
+
+  // optional float width = 6;
+  bool has_width() const;
+  private:
+  bool _internal_has_width() const;
+  public:
+  void clear_width();
+  float width() const;
+  void set_width(float value);
+  private:
+  float _internal_width() const;
+  void _internal_set_width(float value);
+  public:
+
+  // optional float height = 7;
+  bool has_height() const;
+  private:
+  bool _internal_has_height() const;
+  public:
+  void clear_height();
+  float height() const;
+  void set_height(float value);
+  private:
+  float _internal_height() const;
+  void _internal_set_height(float value);
+  public:
+
+  // optional bool commentPoint = 10;
+  bool has_commentpoint() const;
+  private:
+  bool _internal_has_commentpoint() const;
+  public:
+  void clear_commentpoint();
+  bool commentpoint() const;
+  void set_commentpoint(bool value);
+  private:
+  bool _internal_commentpoint() const;
+  void _internal_set_commentpoint(bool value);
+  public:
+
+  // optional float staggeredX = 11;
+  bool has_staggeredx() const;
+  private:
+  bool _internal_has_staggeredx() const;
+  public:
+  void clear_staggeredx();
+  float staggeredx() const;
+  void set_staggeredx(float value);
+  private:
+  float _internal_staggeredx() const;
+  void _internal_set_staggeredx(float value);
+  public:
+
+  // optional float staggeredY = 12;
+  bool has_staggeredy() const;
+  private:
+  bool _internal_has_staggeredy() const;
+  public:
+  void clear_staggeredy();
+  float staggeredy() const;
+  void set_staggeredy(float value);
+  private:
+  float _internal_staggeredy() const;
+  void _internal_set_staggeredy(float value);
+  public:
+
+  // optional float staggeredRadius = 13;
+  bool has_staggeredradius() const;
+  private:
+  bool _internal_has_staggeredradius() const;
+  public:
+  void clear_staggeredradius();
+  float staggeredradius() const;
+  void set_staggeredradius(float value);
+  private:
+  float _internal_staggeredradius() const;
+  void _internal_set_staggeredradius(float value);
+  public:
+
+  // optional float viaPoint = 14;
+  bool has_viapoint() const;
+  private:
+  bool _internal_has_viapoint() const;
+  public:
+  void clear_viapoint();
+  float viapoint() const;
+  void set_viapoint(float value);
+  private:
+  float _internal_viapoint() const;
+  void _internal_set_viapoint(float value);
+  public:
+
+  // optional float fiducialPoint = 15;
+  bool has_fiducialpoint() const;
+  private:
+  bool _internal_has_fiducialpoint() const;
+  public:
+  void clear_fiducialpoint();
+  float fiducialpoint() const;
+  void set_fiducialpoint(float value);
+  private:
+  float _internal_fiducialpoint() const;
+  void _internal_set_fiducialpoint(float value);
+  public:
+
+  // optional float testPoint = 16;
+  bool has_testpoint() const;
+  private:
+  bool _internal_has_testpoint() const;
+  public:
+  void clear_testpoint();
+  float testpoint() const;
+  void set_testpoint(float value);
+  private:
+  float _internal_testpoint() const;
+  void _internal_set_testpoint(float value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:Odb.Lib.Protobuf.NetlistFile.NetPointRecord)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr epoint_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr exp_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr testexecutionside_;
+    uint32_t netnumber_;
+    float radius_;
+    float x_;
+    float y_;
+    int side_;
+    float width_;
+    float height_;
+    bool commentpoint_;
+    float staggeredx_;
+    float staggeredy_;
+    float staggeredradius_;
+    float viapoint_;
+    float fiducialpoint_;
+    float testpoint_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_netlistfile_2eproto;
+};
+// -------------------------------------------------------------------
+
+class NetlistFile_NetRecordsByNameEntry_DoNotUse : public ::PROTOBUF_NAMESPACE_ID::internal::MapEntry<NetlistFile_NetRecordsByNameEntry_DoNotUse, 
+    std::string, ::Odb::Lib::Protobuf::NetlistFile_NetRecord,
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING,
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_MESSAGE> {
+public:
+  typedef ::PROTOBUF_NAMESPACE_ID::internal::MapEntry<NetlistFile_NetRecordsByNameEntry_DoNotUse, 
+    std::string, ::Odb::Lib::Protobuf::NetlistFile_NetRecord,
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING,
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_MESSAGE> SuperType;
+  NetlistFile_NetRecordsByNameEntry_DoNotUse();
+  explicit PROTOBUF_CONSTEXPR NetlistFile_NetRecordsByNameEntry_DoNotUse(
+      ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+  explicit NetlistFile_NetRecordsByNameEntry_DoNotUse(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  void MergeFrom(const NetlistFile_NetRecordsByNameEntry_DoNotUse& other);
+  static const NetlistFile_NetRecordsByNameEntry_DoNotUse* internal_default_instance() { return reinterpret_cast<const NetlistFile_NetRecordsByNameEntry_DoNotUse*>(&_NetlistFile_NetRecordsByNameEntry_DoNotUse_default_instance_); }
+  static bool ValidateKey(std::string* s) {
+    return ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(s->data(), static_cast<int>(s->size()), ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::PARSE, "Odb.Lib.Protobuf.NetlistFile.NetRecordsByNameEntry.key");
+ }
+  static bool ValidateValue(void*) { return true; }
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+  friend struct ::TableStruct_netlistfile_2eproto;
+};
+
+// -------------------------------------------------------------------
 
 class NetlistFile final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.NetlistFile) */ {
@@ -137,7 +820,7 @@ class NetlistFile final :
                &_NetlistFile_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    0;
+    3;
 
   friend void swap(NetlistFile& a, NetlistFile& b) {
     a.Swap(&b);
@@ -198,6 +881,8 @@ class NetlistFile final :
   protected:
   explicit NetlistFile(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                        bool is_message_owned = false);
+  private:
+  static void ArenaDtor(void* object);
   public:
 
   static const ClassData _class_data_;
@@ -206,6 +891,9 @@ class NetlistFile final :
   ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
 
   // nested types ----------------------------------------------------
+
+  typedef NetlistFile_NetRecord NetRecord;
+  typedef NetlistFile_NetPointRecord NetPointRecord;
 
   typedef NetlistFile_Staggered Staggered;
   static constexpr Staggered Yes =
@@ -242,36 +930,67 @@ class NetlistFile final :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kNetNamesFieldNumber = 6,
+    kNetRecordssFieldNumber = 6,
+    kNetRecordsByNameFieldNumber = 7,
+    kNetPointRecordsFieldNumber = 8,
     kPathFieldNumber = 1,
     kNameFieldNumber = 2,
     kUnitsFieldNumber = 3,
     kOptimizedFieldNumber = 4,
     kStaggeredFieldNumber = 5,
   };
-  // repeated string netNames = 6;
-  int netnames_size() const;
+  // repeated .Odb.Lib.Protobuf.NetlistFile.NetRecord netRecordss = 6;
+  int netrecordss_size() const;
   private:
-  int _internal_netnames_size() const;
+  int _internal_netrecordss_size() const;
   public:
-  void clear_netnames();
-  const std::string& netnames(int index) const;
-  std::string* mutable_netnames(int index);
-  void set_netnames(int index, const std::string& value);
-  void set_netnames(int index, std::string&& value);
-  void set_netnames(int index, const char* value);
-  void set_netnames(int index, const char* value, size_t size);
-  std::string* add_netnames();
-  void add_netnames(const std::string& value);
-  void add_netnames(std::string&& value);
-  void add_netnames(const char* value);
-  void add_netnames(const char* value, size_t size);
-  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>& netnames() const;
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>* mutable_netnames();
+  void clear_netrecordss();
+  ::Odb::Lib::Protobuf::NetlistFile_NetRecord* mutable_netrecordss(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::NetlistFile_NetRecord >*
+      mutable_netrecordss();
   private:
-  const std::string& _internal_netnames(int index) const;
-  std::string* _internal_add_netnames();
+  const ::Odb::Lib::Protobuf::NetlistFile_NetRecord& _internal_netrecordss(int index) const;
+  ::Odb::Lib::Protobuf::NetlistFile_NetRecord* _internal_add_netrecordss();
   public:
+  const ::Odb::Lib::Protobuf::NetlistFile_NetRecord& netrecordss(int index) const;
+  ::Odb::Lib::Protobuf::NetlistFile_NetRecord* add_netrecordss();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::NetlistFile_NetRecord >&
+      netrecordss() const;
+
+  // map<string, .Odb.Lib.Protobuf.NetlistFile.NetRecord> netRecordsByName = 7;
+  int netrecordsbyname_size() const;
+  private:
+  int _internal_netrecordsbyname_size() const;
+  public:
+  void clear_netrecordsbyname();
+  private:
+  const ::PROTOBUF_NAMESPACE_ID::Map< std::string, ::Odb::Lib::Protobuf::NetlistFile_NetRecord >&
+      _internal_netrecordsbyname() const;
+  ::PROTOBUF_NAMESPACE_ID::Map< std::string, ::Odb::Lib::Protobuf::NetlistFile_NetRecord >*
+      _internal_mutable_netrecordsbyname();
+  public:
+  const ::PROTOBUF_NAMESPACE_ID::Map< std::string, ::Odb::Lib::Protobuf::NetlistFile_NetRecord >&
+      netrecordsbyname() const;
+  ::PROTOBUF_NAMESPACE_ID::Map< std::string, ::Odb::Lib::Protobuf::NetlistFile_NetRecord >*
+      mutable_netrecordsbyname();
+
+  // repeated .Odb.Lib.Protobuf.NetlistFile.NetPointRecord netPointRecords = 8;
+  int netpointrecords_size() const;
+  private:
+  int _internal_netpointrecords_size() const;
+  public:
+  void clear_netpointrecords();
+  ::Odb::Lib::Protobuf::NetlistFile_NetPointRecord* mutable_netpointrecords(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::NetlistFile_NetPointRecord >*
+      mutable_netpointrecords();
+  private:
+  const ::Odb::Lib::Protobuf::NetlistFile_NetPointRecord& _internal_netpointrecords(int index) const;
+  ::Odb::Lib::Protobuf::NetlistFile_NetPointRecord* _internal_add_netpointrecords();
+  public:
+  const ::Odb::Lib::Protobuf::NetlistFile_NetPointRecord& netpointrecords(int index) const;
+  ::Odb::Lib::Protobuf::NetlistFile_NetPointRecord* add_netpointrecords();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::NetlistFile_NetPointRecord >&
+      netpointrecords() const;
 
   // optional string path = 1;
   bool has_path() const;
@@ -363,7 +1082,13 @@ class NetlistFile final :
   struct Impl_ {
     ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
-    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string> netnames_;
+    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::NetlistFile_NetRecord > netrecordss_;
+    ::PROTOBUF_NAMESPACE_ID::internal::MapField<
+        NetlistFile_NetRecordsByNameEntry_DoNotUse,
+        std::string, ::Odb::Lib::Protobuf::NetlistFile_NetRecord,
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING,
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_MESSAGE> netrecordsbyname_;
+    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::NetlistFile_NetPointRecord > netpointrecords_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr path_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr name_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr units_;
@@ -382,6 +1107,708 @@ class NetlistFile final :
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif  // __GNUC__
+// NetlistFile_NetRecord
+
+// optional uint32 serialNumber = 1;
+inline bool NetlistFile_NetRecord::_internal_has_serialnumber() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
+  return value;
+}
+inline bool NetlistFile_NetRecord::has_serialnumber() const {
+  return _internal_has_serialnumber();
+}
+inline void NetlistFile_NetRecord::clear_serialnumber() {
+  _impl_.serialnumber_ = 0u;
+  _impl_._has_bits_[0] &= ~0x00000002u;
+}
+inline uint32_t NetlistFile_NetRecord::_internal_serialnumber() const {
+  return _impl_.serialnumber_;
+}
+inline uint32_t NetlistFile_NetRecord::serialnumber() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.NetlistFile.NetRecord.serialNumber)
+  return _internal_serialnumber();
+}
+inline void NetlistFile_NetRecord::_internal_set_serialnumber(uint32_t value) {
+  _impl_._has_bits_[0] |= 0x00000002u;
+  _impl_.serialnumber_ = value;
+}
+inline void NetlistFile_NetRecord::set_serialnumber(uint32_t value) {
+  _internal_set_serialnumber(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.NetlistFile.NetRecord.serialNumber)
+}
+
+// optional string netName = 2;
+inline bool NetlistFile_NetRecord::_internal_has_netname() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
+  return value;
+}
+inline bool NetlistFile_NetRecord::has_netname() const {
+  return _internal_has_netname();
+}
+inline void NetlistFile_NetRecord::clear_netname() {
+  _impl_.netname_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000001u;
+}
+inline const std::string& NetlistFile_NetRecord::netname() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.NetlistFile.NetRecord.netName)
+  return _internal_netname();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void NetlistFile_NetRecord::set_netname(ArgT0&& arg0, ArgT... args) {
+ _impl_._has_bits_[0] |= 0x00000001u;
+ _impl_.netname_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.NetlistFile.NetRecord.netName)
+}
+inline std::string* NetlistFile_NetRecord::mutable_netname() {
+  std::string* _s = _internal_mutable_netname();
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.NetlistFile.NetRecord.netName)
+  return _s;
+}
+inline const std::string& NetlistFile_NetRecord::_internal_netname() const {
+  return _impl_.netname_.Get();
+}
+inline void NetlistFile_NetRecord::_internal_set_netname(const std::string& value) {
+  _impl_._has_bits_[0] |= 0x00000001u;
+  _impl_.netname_.Set(value, GetArenaForAllocation());
+}
+inline std::string* NetlistFile_NetRecord::_internal_mutable_netname() {
+  _impl_._has_bits_[0] |= 0x00000001u;
+  return _impl_.netname_.Mutable(GetArenaForAllocation());
+}
+inline std::string* NetlistFile_NetRecord::release_netname() {
+  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.NetlistFile.NetRecord.netName)
+  if (!_internal_has_netname()) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000001u;
+  auto* p = _impl_.netname_.Release();
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.netname_.IsDefault()) {
+    _impl_.netname_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
+}
+inline void NetlistFile_NetRecord::set_allocated_netname(std::string* netname) {
+  if (netname != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000001u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000001u;
+  }
+  _impl_.netname_.SetAllocated(netname, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.netname_.IsDefault()) {
+    _impl_.netname_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.NetlistFile.NetRecord.netName)
+}
+
+// -------------------------------------------------------------------
+
+// NetlistFile_NetPointRecord
+
+// optional uint32 netNumber = 1;
+inline bool NetlistFile_NetPointRecord::_internal_has_netnumber() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000008u) != 0;
+  return value;
+}
+inline bool NetlistFile_NetPointRecord::has_netnumber() const {
+  return _internal_has_netnumber();
+}
+inline void NetlistFile_NetPointRecord::clear_netnumber() {
+  _impl_.netnumber_ = 0u;
+  _impl_._has_bits_[0] &= ~0x00000008u;
+}
+inline uint32_t NetlistFile_NetPointRecord::_internal_netnumber() const {
+  return _impl_.netnumber_;
+}
+inline uint32_t NetlistFile_NetPointRecord::netnumber() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.netNumber)
+  return _internal_netnumber();
+}
+inline void NetlistFile_NetPointRecord::_internal_set_netnumber(uint32_t value) {
+  _impl_._has_bits_[0] |= 0x00000008u;
+  _impl_.netnumber_ = value;
+}
+inline void NetlistFile_NetPointRecord::set_netnumber(uint32_t value) {
+  _internal_set_netnumber(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.netNumber)
+}
+
+// optional float radius = 2;
+inline bool NetlistFile_NetPointRecord::_internal_has_radius() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000010u) != 0;
+  return value;
+}
+inline bool NetlistFile_NetPointRecord::has_radius() const {
+  return _internal_has_radius();
+}
+inline void NetlistFile_NetPointRecord::clear_radius() {
+  _impl_.radius_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000010u;
+}
+inline float NetlistFile_NetPointRecord::_internal_radius() const {
+  return _impl_.radius_;
+}
+inline float NetlistFile_NetPointRecord::radius() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.radius)
+  return _internal_radius();
+}
+inline void NetlistFile_NetPointRecord::_internal_set_radius(float value) {
+  _impl_._has_bits_[0] |= 0x00000010u;
+  _impl_.radius_ = value;
+}
+inline void NetlistFile_NetPointRecord::set_radius(float value) {
+  _internal_set_radius(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.radius)
+}
+
+// optional float x = 3;
+inline bool NetlistFile_NetPointRecord::_internal_has_x() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000020u) != 0;
+  return value;
+}
+inline bool NetlistFile_NetPointRecord::has_x() const {
+  return _internal_has_x();
+}
+inline void NetlistFile_NetPointRecord::clear_x() {
+  _impl_.x_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000020u;
+}
+inline float NetlistFile_NetPointRecord::_internal_x() const {
+  return _impl_.x_;
+}
+inline float NetlistFile_NetPointRecord::x() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.x)
+  return _internal_x();
+}
+inline void NetlistFile_NetPointRecord::_internal_set_x(float value) {
+  _impl_._has_bits_[0] |= 0x00000020u;
+  _impl_.x_ = value;
+}
+inline void NetlistFile_NetPointRecord::set_x(float value) {
+  _internal_set_x(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.x)
+}
+
+// optional float y = 4;
+inline bool NetlistFile_NetPointRecord::_internal_has_y() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000040u) != 0;
+  return value;
+}
+inline bool NetlistFile_NetPointRecord::has_y() const {
+  return _internal_has_y();
+}
+inline void NetlistFile_NetPointRecord::clear_y() {
+  _impl_.y_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000040u;
+}
+inline float NetlistFile_NetPointRecord::_internal_y() const {
+  return _impl_.y_;
+}
+inline float NetlistFile_NetPointRecord::y() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.y)
+  return _internal_y();
+}
+inline void NetlistFile_NetPointRecord::_internal_set_y(float value) {
+  _impl_._has_bits_[0] |= 0x00000040u;
+  _impl_.y_ = value;
+}
+inline void NetlistFile_NetPointRecord::set_y(float value) {
+  _internal_set_y(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.y)
+}
+
+// optional .Odb.Lib.Protobuf.NetlistFile.NetPointRecord.AccessSide side = 5;
+inline bool NetlistFile_NetPointRecord::_internal_has_side() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000080u) != 0;
+  return value;
+}
+inline bool NetlistFile_NetPointRecord::has_side() const {
+  return _internal_has_side();
+}
+inline void NetlistFile_NetPointRecord::clear_side() {
+  _impl_.side_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000080u;
+}
+inline ::Odb::Lib::Protobuf::NetlistFile_NetPointRecord_AccessSide NetlistFile_NetPointRecord::_internal_side() const {
+  return static_cast< ::Odb::Lib::Protobuf::NetlistFile_NetPointRecord_AccessSide >(_impl_.side_);
+}
+inline ::Odb::Lib::Protobuf::NetlistFile_NetPointRecord_AccessSide NetlistFile_NetPointRecord::side() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.side)
+  return _internal_side();
+}
+inline void NetlistFile_NetPointRecord::_internal_set_side(::Odb::Lib::Protobuf::NetlistFile_NetPointRecord_AccessSide value) {
+  _impl_._has_bits_[0] |= 0x00000080u;
+  _impl_.side_ = value;
+}
+inline void NetlistFile_NetPointRecord::set_side(::Odb::Lib::Protobuf::NetlistFile_NetPointRecord_AccessSide value) {
+  _internal_set_side(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.side)
+}
+
+// optional float width = 6;
+inline bool NetlistFile_NetPointRecord::_internal_has_width() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000100u) != 0;
+  return value;
+}
+inline bool NetlistFile_NetPointRecord::has_width() const {
+  return _internal_has_width();
+}
+inline void NetlistFile_NetPointRecord::clear_width() {
+  _impl_.width_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000100u;
+}
+inline float NetlistFile_NetPointRecord::_internal_width() const {
+  return _impl_.width_;
+}
+inline float NetlistFile_NetPointRecord::width() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.width)
+  return _internal_width();
+}
+inline void NetlistFile_NetPointRecord::_internal_set_width(float value) {
+  _impl_._has_bits_[0] |= 0x00000100u;
+  _impl_.width_ = value;
+}
+inline void NetlistFile_NetPointRecord::set_width(float value) {
+  _internal_set_width(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.width)
+}
+
+// optional float height = 7;
+inline bool NetlistFile_NetPointRecord::_internal_has_height() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000200u) != 0;
+  return value;
+}
+inline bool NetlistFile_NetPointRecord::has_height() const {
+  return _internal_has_height();
+}
+inline void NetlistFile_NetPointRecord::clear_height() {
+  _impl_.height_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000200u;
+}
+inline float NetlistFile_NetPointRecord::_internal_height() const {
+  return _impl_.height_;
+}
+inline float NetlistFile_NetPointRecord::height() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.height)
+  return _internal_height();
+}
+inline void NetlistFile_NetPointRecord::_internal_set_height(float value) {
+  _impl_._has_bits_[0] |= 0x00000200u;
+  _impl_.height_ = value;
+}
+inline void NetlistFile_NetPointRecord::set_height(float value) {
+  _internal_set_height(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.height)
+}
+
+// optional string epoint = 8;
+inline bool NetlistFile_NetPointRecord::_internal_has_epoint() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
+  return value;
+}
+inline bool NetlistFile_NetPointRecord::has_epoint() const {
+  return _internal_has_epoint();
+}
+inline void NetlistFile_NetPointRecord::clear_epoint() {
+  _impl_.epoint_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000001u;
+}
+inline const std::string& NetlistFile_NetPointRecord::epoint() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.epoint)
+  return _internal_epoint();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void NetlistFile_NetPointRecord::set_epoint(ArgT0&& arg0, ArgT... args) {
+ _impl_._has_bits_[0] |= 0x00000001u;
+ _impl_.epoint_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.epoint)
+}
+inline std::string* NetlistFile_NetPointRecord::mutable_epoint() {
+  std::string* _s = _internal_mutable_epoint();
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.epoint)
+  return _s;
+}
+inline const std::string& NetlistFile_NetPointRecord::_internal_epoint() const {
+  return _impl_.epoint_.Get();
+}
+inline void NetlistFile_NetPointRecord::_internal_set_epoint(const std::string& value) {
+  _impl_._has_bits_[0] |= 0x00000001u;
+  _impl_.epoint_.Set(value, GetArenaForAllocation());
+}
+inline std::string* NetlistFile_NetPointRecord::_internal_mutable_epoint() {
+  _impl_._has_bits_[0] |= 0x00000001u;
+  return _impl_.epoint_.Mutable(GetArenaForAllocation());
+}
+inline std::string* NetlistFile_NetPointRecord::release_epoint() {
+  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.epoint)
+  if (!_internal_has_epoint()) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000001u;
+  auto* p = _impl_.epoint_.Release();
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.epoint_.IsDefault()) {
+    _impl_.epoint_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
+}
+inline void NetlistFile_NetPointRecord::set_allocated_epoint(std::string* epoint) {
+  if (epoint != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000001u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000001u;
+  }
+  _impl_.epoint_.SetAllocated(epoint, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.epoint_.IsDefault()) {
+    _impl_.epoint_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.epoint)
+}
+
+// optional string exp = 9;
+inline bool NetlistFile_NetPointRecord::_internal_has_exp() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
+  return value;
+}
+inline bool NetlistFile_NetPointRecord::has_exp() const {
+  return _internal_has_exp();
+}
+inline void NetlistFile_NetPointRecord::clear_exp() {
+  _impl_.exp_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000002u;
+}
+inline const std::string& NetlistFile_NetPointRecord::exp() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.exp)
+  return _internal_exp();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void NetlistFile_NetPointRecord::set_exp(ArgT0&& arg0, ArgT... args) {
+ _impl_._has_bits_[0] |= 0x00000002u;
+ _impl_.exp_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.exp)
+}
+inline std::string* NetlistFile_NetPointRecord::mutable_exp() {
+  std::string* _s = _internal_mutable_exp();
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.exp)
+  return _s;
+}
+inline const std::string& NetlistFile_NetPointRecord::_internal_exp() const {
+  return _impl_.exp_.Get();
+}
+inline void NetlistFile_NetPointRecord::_internal_set_exp(const std::string& value) {
+  _impl_._has_bits_[0] |= 0x00000002u;
+  _impl_.exp_.Set(value, GetArenaForAllocation());
+}
+inline std::string* NetlistFile_NetPointRecord::_internal_mutable_exp() {
+  _impl_._has_bits_[0] |= 0x00000002u;
+  return _impl_.exp_.Mutable(GetArenaForAllocation());
+}
+inline std::string* NetlistFile_NetPointRecord::release_exp() {
+  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.exp)
+  if (!_internal_has_exp()) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000002u;
+  auto* p = _impl_.exp_.Release();
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.exp_.IsDefault()) {
+    _impl_.exp_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
+}
+inline void NetlistFile_NetPointRecord::set_allocated_exp(std::string* exp) {
+  if (exp != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000002u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000002u;
+  }
+  _impl_.exp_.SetAllocated(exp, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.exp_.IsDefault()) {
+    _impl_.exp_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.exp)
+}
+
+// optional bool commentPoint = 10;
+inline bool NetlistFile_NetPointRecord::_internal_has_commentpoint() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000400u) != 0;
+  return value;
+}
+inline bool NetlistFile_NetPointRecord::has_commentpoint() const {
+  return _internal_has_commentpoint();
+}
+inline void NetlistFile_NetPointRecord::clear_commentpoint() {
+  _impl_.commentpoint_ = false;
+  _impl_._has_bits_[0] &= ~0x00000400u;
+}
+inline bool NetlistFile_NetPointRecord::_internal_commentpoint() const {
+  return _impl_.commentpoint_;
+}
+inline bool NetlistFile_NetPointRecord::commentpoint() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.commentPoint)
+  return _internal_commentpoint();
+}
+inline void NetlistFile_NetPointRecord::_internal_set_commentpoint(bool value) {
+  _impl_._has_bits_[0] |= 0x00000400u;
+  _impl_.commentpoint_ = value;
+}
+inline void NetlistFile_NetPointRecord::set_commentpoint(bool value) {
+  _internal_set_commentpoint(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.commentPoint)
+}
+
+// optional float staggeredX = 11;
+inline bool NetlistFile_NetPointRecord::_internal_has_staggeredx() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000800u) != 0;
+  return value;
+}
+inline bool NetlistFile_NetPointRecord::has_staggeredx() const {
+  return _internal_has_staggeredx();
+}
+inline void NetlistFile_NetPointRecord::clear_staggeredx() {
+  _impl_.staggeredx_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000800u;
+}
+inline float NetlistFile_NetPointRecord::_internal_staggeredx() const {
+  return _impl_.staggeredx_;
+}
+inline float NetlistFile_NetPointRecord::staggeredx() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.staggeredX)
+  return _internal_staggeredx();
+}
+inline void NetlistFile_NetPointRecord::_internal_set_staggeredx(float value) {
+  _impl_._has_bits_[0] |= 0x00000800u;
+  _impl_.staggeredx_ = value;
+}
+inline void NetlistFile_NetPointRecord::set_staggeredx(float value) {
+  _internal_set_staggeredx(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.staggeredX)
+}
+
+// optional float staggeredY = 12;
+inline bool NetlistFile_NetPointRecord::_internal_has_staggeredy() const {
+  bool value = (_impl_._has_bits_[0] & 0x00001000u) != 0;
+  return value;
+}
+inline bool NetlistFile_NetPointRecord::has_staggeredy() const {
+  return _internal_has_staggeredy();
+}
+inline void NetlistFile_NetPointRecord::clear_staggeredy() {
+  _impl_.staggeredy_ = 0;
+  _impl_._has_bits_[0] &= ~0x00001000u;
+}
+inline float NetlistFile_NetPointRecord::_internal_staggeredy() const {
+  return _impl_.staggeredy_;
+}
+inline float NetlistFile_NetPointRecord::staggeredy() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.staggeredY)
+  return _internal_staggeredy();
+}
+inline void NetlistFile_NetPointRecord::_internal_set_staggeredy(float value) {
+  _impl_._has_bits_[0] |= 0x00001000u;
+  _impl_.staggeredy_ = value;
+}
+inline void NetlistFile_NetPointRecord::set_staggeredy(float value) {
+  _internal_set_staggeredy(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.staggeredY)
+}
+
+// optional float staggeredRadius = 13;
+inline bool NetlistFile_NetPointRecord::_internal_has_staggeredradius() const {
+  bool value = (_impl_._has_bits_[0] & 0x00002000u) != 0;
+  return value;
+}
+inline bool NetlistFile_NetPointRecord::has_staggeredradius() const {
+  return _internal_has_staggeredradius();
+}
+inline void NetlistFile_NetPointRecord::clear_staggeredradius() {
+  _impl_.staggeredradius_ = 0;
+  _impl_._has_bits_[0] &= ~0x00002000u;
+}
+inline float NetlistFile_NetPointRecord::_internal_staggeredradius() const {
+  return _impl_.staggeredradius_;
+}
+inline float NetlistFile_NetPointRecord::staggeredradius() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.staggeredRadius)
+  return _internal_staggeredradius();
+}
+inline void NetlistFile_NetPointRecord::_internal_set_staggeredradius(float value) {
+  _impl_._has_bits_[0] |= 0x00002000u;
+  _impl_.staggeredradius_ = value;
+}
+inline void NetlistFile_NetPointRecord::set_staggeredradius(float value) {
+  _internal_set_staggeredradius(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.staggeredRadius)
+}
+
+// optional float viaPoint = 14;
+inline bool NetlistFile_NetPointRecord::_internal_has_viapoint() const {
+  bool value = (_impl_._has_bits_[0] & 0x00004000u) != 0;
+  return value;
+}
+inline bool NetlistFile_NetPointRecord::has_viapoint() const {
+  return _internal_has_viapoint();
+}
+inline void NetlistFile_NetPointRecord::clear_viapoint() {
+  _impl_.viapoint_ = 0;
+  _impl_._has_bits_[0] &= ~0x00004000u;
+}
+inline float NetlistFile_NetPointRecord::_internal_viapoint() const {
+  return _impl_.viapoint_;
+}
+inline float NetlistFile_NetPointRecord::viapoint() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.viaPoint)
+  return _internal_viapoint();
+}
+inline void NetlistFile_NetPointRecord::_internal_set_viapoint(float value) {
+  _impl_._has_bits_[0] |= 0x00004000u;
+  _impl_.viapoint_ = value;
+}
+inline void NetlistFile_NetPointRecord::set_viapoint(float value) {
+  _internal_set_viapoint(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.viaPoint)
+}
+
+// optional float fiducialPoint = 15;
+inline bool NetlistFile_NetPointRecord::_internal_has_fiducialpoint() const {
+  bool value = (_impl_._has_bits_[0] & 0x00008000u) != 0;
+  return value;
+}
+inline bool NetlistFile_NetPointRecord::has_fiducialpoint() const {
+  return _internal_has_fiducialpoint();
+}
+inline void NetlistFile_NetPointRecord::clear_fiducialpoint() {
+  _impl_.fiducialpoint_ = 0;
+  _impl_._has_bits_[0] &= ~0x00008000u;
+}
+inline float NetlistFile_NetPointRecord::_internal_fiducialpoint() const {
+  return _impl_.fiducialpoint_;
+}
+inline float NetlistFile_NetPointRecord::fiducialpoint() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.fiducialPoint)
+  return _internal_fiducialpoint();
+}
+inline void NetlistFile_NetPointRecord::_internal_set_fiducialpoint(float value) {
+  _impl_._has_bits_[0] |= 0x00008000u;
+  _impl_.fiducialpoint_ = value;
+}
+inline void NetlistFile_NetPointRecord::set_fiducialpoint(float value) {
+  _internal_set_fiducialpoint(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.fiducialPoint)
+}
+
+// optional float testPoint = 16;
+inline bool NetlistFile_NetPointRecord::_internal_has_testpoint() const {
+  bool value = (_impl_._has_bits_[0] & 0x00010000u) != 0;
+  return value;
+}
+inline bool NetlistFile_NetPointRecord::has_testpoint() const {
+  return _internal_has_testpoint();
+}
+inline void NetlistFile_NetPointRecord::clear_testpoint() {
+  _impl_.testpoint_ = 0;
+  _impl_._has_bits_[0] &= ~0x00010000u;
+}
+inline float NetlistFile_NetPointRecord::_internal_testpoint() const {
+  return _impl_.testpoint_;
+}
+inline float NetlistFile_NetPointRecord::testpoint() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.testPoint)
+  return _internal_testpoint();
+}
+inline void NetlistFile_NetPointRecord::_internal_set_testpoint(float value) {
+  _impl_._has_bits_[0] |= 0x00010000u;
+  _impl_.testpoint_ = value;
+}
+inline void NetlistFile_NetPointRecord::set_testpoint(float value) {
+  _internal_set_testpoint(value);
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.testPoint)
+}
+
+// optional string testExecutionSide = 17;
+inline bool NetlistFile_NetPointRecord::_internal_has_testexecutionside() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
+  return value;
+}
+inline bool NetlistFile_NetPointRecord::has_testexecutionside() const {
+  return _internal_has_testexecutionside();
+}
+inline void NetlistFile_NetPointRecord::clear_testexecutionside() {
+  _impl_.testexecutionside_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000004u;
+}
+inline const std::string& NetlistFile_NetPointRecord::testexecutionside() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.testExecutionSide)
+  return _internal_testexecutionside();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void NetlistFile_NetPointRecord::set_testexecutionside(ArgT0&& arg0, ArgT... args) {
+ _impl_._has_bits_[0] |= 0x00000004u;
+ _impl_.testexecutionside_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.testExecutionSide)
+}
+inline std::string* NetlistFile_NetPointRecord::mutable_testexecutionside() {
+  std::string* _s = _internal_mutable_testexecutionside();
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.testExecutionSide)
+  return _s;
+}
+inline const std::string& NetlistFile_NetPointRecord::_internal_testexecutionside() const {
+  return _impl_.testexecutionside_.Get();
+}
+inline void NetlistFile_NetPointRecord::_internal_set_testexecutionside(const std::string& value) {
+  _impl_._has_bits_[0] |= 0x00000004u;
+  _impl_.testexecutionside_.Set(value, GetArenaForAllocation());
+}
+inline std::string* NetlistFile_NetPointRecord::_internal_mutable_testexecutionside() {
+  _impl_._has_bits_[0] |= 0x00000004u;
+  return _impl_.testexecutionside_.Mutable(GetArenaForAllocation());
+}
+inline std::string* NetlistFile_NetPointRecord::release_testexecutionside() {
+  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.testExecutionSide)
+  if (!_internal_has_testexecutionside()) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000004u;
+  auto* p = _impl_.testexecutionside_.Release();
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.testexecutionside_.IsDefault()) {
+    _impl_.testexecutionside_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
+}
+inline void NetlistFile_NetPointRecord::set_allocated_testexecutionside(std::string* testexecutionside) {
+  if (testexecutionside != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000004u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000004u;
+  }
+  _impl_.testexecutionside_.SetAllocated(testexecutionside, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.testexecutionside_.IsDefault()) {
+    _impl_.testexecutionside_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.testExecutionSide)
+}
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 // NetlistFile
 
 // optional string path = 1;
@@ -644,84 +2071,124 @@ inline void NetlistFile::set_staggered(::Odb::Lib::Protobuf::NetlistFile_Stagger
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.NetlistFile.staggered)
 }
 
-// repeated string netNames = 6;
-inline int NetlistFile::_internal_netnames_size() const {
-  return _impl_.netnames_.size();
+// repeated .Odb.Lib.Protobuf.NetlistFile.NetRecord netRecordss = 6;
+inline int NetlistFile::_internal_netrecordss_size() const {
+  return _impl_.netrecordss_.size();
 }
-inline int NetlistFile::netnames_size() const {
-  return _internal_netnames_size();
+inline int NetlistFile::netrecordss_size() const {
+  return _internal_netrecordss_size();
 }
-inline void NetlistFile::clear_netnames() {
-  _impl_.netnames_.Clear();
+inline void NetlistFile::clear_netrecordss() {
+  _impl_.netrecordss_.Clear();
 }
-inline std::string* NetlistFile::add_netnames() {
-  std::string* _s = _internal_add_netnames();
-  // @@protoc_insertion_point(field_add_mutable:Odb.Lib.Protobuf.NetlistFile.netNames)
-  return _s;
+inline ::Odb::Lib::Protobuf::NetlistFile_NetRecord* NetlistFile::mutable_netrecordss(int index) {
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.NetlistFile.netRecordss)
+  return _impl_.netrecordss_.Mutable(index);
 }
-inline const std::string& NetlistFile::_internal_netnames(int index) const {
-  return _impl_.netnames_.Get(index);
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::NetlistFile_NetRecord >*
+NetlistFile::mutable_netrecordss() {
+  // @@protoc_insertion_point(field_mutable_list:Odb.Lib.Protobuf.NetlistFile.netRecordss)
+  return &_impl_.netrecordss_;
 }
-inline const std::string& NetlistFile::netnames(int index) const {
-  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.NetlistFile.netNames)
-  return _internal_netnames(index);
+inline const ::Odb::Lib::Protobuf::NetlistFile_NetRecord& NetlistFile::_internal_netrecordss(int index) const {
+  return _impl_.netrecordss_.Get(index);
 }
-inline std::string* NetlistFile::mutable_netnames(int index) {
-  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.NetlistFile.netNames)
-  return _impl_.netnames_.Mutable(index);
+inline const ::Odb::Lib::Protobuf::NetlistFile_NetRecord& NetlistFile::netrecordss(int index) const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.NetlistFile.netRecordss)
+  return _internal_netrecordss(index);
 }
-inline void NetlistFile::set_netnames(int index, const std::string& value) {
-  _impl_.netnames_.Mutable(index)->assign(value);
-  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.NetlistFile.netNames)
+inline ::Odb::Lib::Protobuf::NetlistFile_NetRecord* NetlistFile::_internal_add_netrecordss() {
+  return _impl_.netrecordss_.Add();
 }
-inline void NetlistFile::set_netnames(int index, std::string&& value) {
-  _impl_.netnames_.Mutable(index)->assign(std::move(value));
-  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.NetlistFile.netNames)
+inline ::Odb::Lib::Protobuf::NetlistFile_NetRecord* NetlistFile::add_netrecordss() {
+  ::Odb::Lib::Protobuf::NetlistFile_NetRecord* _add = _internal_add_netrecordss();
+  // @@protoc_insertion_point(field_add:Odb.Lib.Protobuf.NetlistFile.netRecordss)
+  return _add;
 }
-inline void NetlistFile::set_netnames(int index, const char* value) {
-  GOOGLE_DCHECK(value != nullptr);
-  _impl_.netnames_.Mutable(index)->assign(value);
-  // @@protoc_insertion_point(field_set_char:Odb.Lib.Protobuf.NetlistFile.netNames)
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::NetlistFile_NetRecord >&
+NetlistFile::netrecordss() const {
+  // @@protoc_insertion_point(field_list:Odb.Lib.Protobuf.NetlistFile.netRecordss)
+  return _impl_.netrecordss_;
 }
-inline void NetlistFile::set_netnames(int index, const char* value, size_t size) {
-  _impl_.netnames_.Mutable(index)->assign(
-    reinterpret_cast<const char*>(value), size);
-  // @@protoc_insertion_point(field_set_pointer:Odb.Lib.Protobuf.NetlistFile.netNames)
+
+// map<string, .Odb.Lib.Protobuf.NetlistFile.NetRecord> netRecordsByName = 7;
+inline int NetlistFile::_internal_netrecordsbyname_size() const {
+  return _impl_.netrecordsbyname_.size();
 }
-inline std::string* NetlistFile::_internal_add_netnames() {
-  return _impl_.netnames_.Add();
+inline int NetlistFile::netrecordsbyname_size() const {
+  return _internal_netrecordsbyname_size();
 }
-inline void NetlistFile::add_netnames(const std::string& value) {
-  _impl_.netnames_.Add()->assign(value);
-  // @@protoc_insertion_point(field_add:Odb.Lib.Protobuf.NetlistFile.netNames)
+inline void NetlistFile::clear_netrecordsbyname() {
+  _impl_.netrecordsbyname_.Clear();
 }
-inline void NetlistFile::add_netnames(std::string&& value) {
-  _impl_.netnames_.Add(std::move(value));
-  // @@protoc_insertion_point(field_add:Odb.Lib.Protobuf.NetlistFile.netNames)
+inline const ::PROTOBUF_NAMESPACE_ID::Map< std::string, ::Odb::Lib::Protobuf::NetlistFile_NetRecord >&
+NetlistFile::_internal_netrecordsbyname() const {
+  return _impl_.netrecordsbyname_.GetMap();
 }
-inline void NetlistFile::add_netnames(const char* value) {
-  GOOGLE_DCHECK(value != nullptr);
-  _impl_.netnames_.Add()->assign(value);
-  // @@protoc_insertion_point(field_add_char:Odb.Lib.Protobuf.NetlistFile.netNames)
+inline const ::PROTOBUF_NAMESPACE_ID::Map< std::string, ::Odb::Lib::Protobuf::NetlistFile_NetRecord >&
+NetlistFile::netrecordsbyname() const {
+  // @@protoc_insertion_point(field_map:Odb.Lib.Protobuf.NetlistFile.netRecordsByName)
+  return _internal_netrecordsbyname();
 }
-inline void NetlistFile::add_netnames(const char* value, size_t size) {
-  _impl_.netnames_.Add()->assign(reinterpret_cast<const char*>(value), size);
-  // @@protoc_insertion_point(field_add_pointer:Odb.Lib.Protobuf.NetlistFile.netNames)
+inline ::PROTOBUF_NAMESPACE_ID::Map< std::string, ::Odb::Lib::Protobuf::NetlistFile_NetRecord >*
+NetlistFile::_internal_mutable_netrecordsbyname() {
+  return _impl_.netrecordsbyname_.MutableMap();
 }
-inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>&
-NetlistFile::netnames() const {
-  // @@protoc_insertion_point(field_list:Odb.Lib.Protobuf.NetlistFile.netNames)
-  return _impl_.netnames_;
+inline ::PROTOBUF_NAMESPACE_ID::Map< std::string, ::Odb::Lib::Protobuf::NetlistFile_NetRecord >*
+NetlistFile::mutable_netrecordsbyname() {
+  // @@protoc_insertion_point(field_mutable_map:Odb.Lib.Protobuf.NetlistFile.netRecordsByName)
+  return _internal_mutable_netrecordsbyname();
 }
-inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>*
-NetlistFile::mutable_netnames() {
-  // @@protoc_insertion_point(field_mutable_list:Odb.Lib.Protobuf.NetlistFile.netNames)
-  return &_impl_.netnames_;
+
+// repeated .Odb.Lib.Protobuf.NetlistFile.NetPointRecord netPointRecords = 8;
+inline int NetlistFile::_internal_netpointrecords_size() const {
+  return _impl_.netpointrecords_.size();
+}
+inline int NetlistFile::netpointrecords_size() const {
+  return _internal_netpointrecords_size();
+}
+inline void NetlistFile::clear_netpointrecords() {
+  _impl_.netpointrecords_.Clear();
+}
+inline ::Odb::Lib::Protobuf::NetlistFile_NetPointRecord* NetlistFile::mutable_netpointrecords(int index) {
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.NetlistFile.netPointRecords)
+  return _impl_.netpointrecords_.Mutable(index);
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::NetlistFile_NetPointRecord >*
+NetlistFile::mutable_netpointrecords() {
+  // @@protoc_insertion_point(field_mutable_list:Odb.Lib.Protobuf.NetlistFile.netPointRecords)
+  return &_impl_.netpointrecords_;
+}
+inline const ::Odb::Lib::Protobuf::NetlistFile_NetPointRecord& NetlistFile::_internal_netpointrecords(int index) const {
+  return _impl_.netpointrecords_.Get(index);
+}
+inline const ::Odb::Lib::Protobuf::NetlistFile_NetPointRecord& NetlistFile::netpointrecords(int index) const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.NetlistFile.netPointRecords)
+  return _internal_netpointrecords(index);
+}
+inline ::Odb::Lib::Protobuf::NetlistFile_NetPointRecord* NetlistFile::_internal_add_netpointrecords() {
+  return _impl_.netpointrecords_.Add();
+}
+inline ::Odb::Lib::Protobuf::NetlistFile_NetPointRecord* NetlistFile::add_netpointrecords() {
+  ::Odb::Lib::Protobuf::NetlistFile_NetPointRecord* _add = _internal_add_netpointrecords();
+  // @@protoc_insertion_point(field_add:Odb.Lib.Protobuf.NetlistFile.netPointRecords)
+  return _add;
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Odb::Lib::Protobuf::NetlistFile_NetPointRecord >&
+NetlistFile::netpointrecords() const {
+  // @@protoc_insertion_point(field_list:Odb.Lib.Protobuf.NetlistFile.netPointRecords)
+  return _impl_.netpointrecords_;
 }
 
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 
 // @@protoc_insertion_point(namespace_scope)
 
@@ -731,6 +2198,11 @@ NetlistFile::mutable_netnames() {
 
 PROTOBUF_NAMESPACE_OPEN
 
+template <> struct is_proto_enum< ::Odb::Lib::Protobuf::NetlistFile_NetPointRecord_AccessSide> : ::std::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::Odb::Lib::Protobuf::NetlistFile_NetPointRecord_AccessSide>() {
+  return ::Odb::Lib::Protobuf::NetlistFile_NetPointRecord_AccessSide_descriptor();
+}
 template <> struct is_proto_enum< ::Odb::Lib::Protobuf::NetlistFile_Staggered> : ::std::true_type {};
 template <>
 inline const EnumDescriptor* GetEnumDescriptor< ::Odb::Lib::Protobuf::NetlistFile_Staggered>() {

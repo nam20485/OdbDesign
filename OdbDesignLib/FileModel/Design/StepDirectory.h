@@ -6,13 +6,14 @@
 #include <filesystem>
 
 #include "../../odbdesign_export.h"
-#include "../../win.h"
 #include "LayerDirectory.h"
 #include "EdaDataFile.h"
 #include "NetlistFile.h"
 #include "../../IProtoBuffable.h"
 #include "../../ProtoBuf/stepdirectory.pb.h"
 #include "ComponentsFile.h"
+#include "AttrListFile.h"
+#include "StepHdrFile.h"
 
 
 namespace Odb::Lib::FileModel::Design
@@ -29,6 +30,9 @@ namespace Odb::Lib::FileModel::Design
 		const EdaDataFile& GetEdaDataFile() const;
 		const LayerDirectory::StringMap& GetLayersByName() const;
 		const NetlistFile::StringMap& GetNetlistsByName() const;
+		const AttrListFile& GetAttrListFile() const;
+		const FeaturesFile& GetProfileFile() const;
+		const StepHdrFile& GetStepHdrFile() const;
 
 		const ComponentsFile* GetTopComponentsFile() const;
 		const ComponentsFile* GetBottomComponentsFile() const;
@@ -48,10 +52,18 @@ namespace Odb::Lib::FileModel::Design
 		LayerDirectory::StringMap m_layersByName;
 		NetlistFile::StringMap m_netlistsByName;
 		EdaDataFile m_edaData;
+		AttrListFile m_attrListFile;
+		FeaturesFile m_profileFile;
+		StepHdrFile m_stepHdrFile;
 
 		bool ParseLayerFiles(std::filesystem::path layersPath);
 		bool ParseNetlistFiles(std::filesystem::path netlistsPath);
 		bool ParseEdaDataFiles(std::filesystem::path edaPath);
+		bool ParseAttrListFile(std::filesystem::path attrListFileDirectory);
+		bool ParseProfileFile(std::filesystem::path profileFileDirectory);
+		bool ParseStepHdrFile(std::filesystem::path stepHdrFileDirectory);
+
+		constexpr inline static const char* PROFILE_FILENAME = "profile";
 		
 	};
 }

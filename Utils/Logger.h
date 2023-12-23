@@ -36,7 +36,7 @@ namespace Utils
 			None,
 			Debug,
 			Info,
-			Warning,
+			Warn,
 			Error,
 		};
 
