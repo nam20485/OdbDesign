@@ -42,7 +42,7 @@ namespace Odb::Lib::App
 		std::shared_ptr<ProductModel::Design> LoadDesign(const std::string& designName);
 		std::shared_ptr<FileModel::Design::FileArchive> LoadFileArchive(const std::string& designName);
 
-		constexpr inline static const char* DESIGN_EXTENSIONS[] = { "zip", "tgz", "tar.gz", "tar" };
+		constexpr inline static const char* DESIGN_EXTENSIONS[] = { "zip", "tgz", "tar.gz", "tar", "gzip" , "gz" };
 
 	};
 }
