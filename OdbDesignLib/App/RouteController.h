@@ -2,6 +2,8 @@
 
 #include "IOdbServerApp.h"
 #include "../odbdesign_export.h"
+#include "HttpRequest.h"
+#include "HttpResponse.h"
 
 namespace Odb::Lib::App
 {
@@ -19,6 +21,7 @@ namespace Odb::Lib::App
 		IOdbServerApp& m_serverApp;
 
 		typedef std::function<crow::response(const crow::request& req)> TRouteHandlerFunction;
+		//typedef std::function<HttpResponse(const HttpRequest& request)> TRouteHandlerFunction;
 
 		void register_route_handler(const std::string& route, TRouteHandlerFunction handler);	
 	};

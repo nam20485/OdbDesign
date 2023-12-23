@@ -14,7 +14,7 @@ namespace Odb::Lib::App
 		OdbServerAppBase(int argc, char* argv[]);
 		virtual ~OdbServerAppBase();
 
-		crow::SimpleApp& crow_app() override;
+		//crow::SimpleApp& crow_app() override;
 		IHttpServer& http_server() override;
 
 		Utils::ExitCode Run() override;		
@@ -27,8 +27,8 @@ namespace Odb::Lib::App
 		//void add_controllers(const RouteController::Vector& controllers);
 
 	private:
-		crow::SimpleApp m_crowApp;
-		IHttpServer m_httpServer;
+		//crow::SimpleApp m_crowApp;
+		std::unique_ptr<IHttpServer> m_pHttpServer;
 
 		void register_routes();
 

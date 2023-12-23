@@ -1,5 +1,7 @@
 #include "OdbServerAppBase.h"
 #include "Logger.h"
+#include "CrowHttpServer.h"
+#include <memory>
 
 using namespace Utils;
 using namespace std::filesystem;
@@ -8,6 +10,7 @@ namespace Odb::Lib::App
 {
 	OdbServerAppBase::OdbServerAppBase(int argc, char* argv[])
 		: OdbAppBase(argc, argv)
+		, m_pHttpServer(std::make_unique<CrowHttpServer>())
 	{
 	}
 
@@ -29,10 +32,12 @@ namespace Odb::Lib::App
 		if (ExitCode::Success != OdbAppBase::Run()) return ExitCode::FailedInit;
 
 		// set Crow's log level
-		m_crowApp.loglevel(crow::LogLevel::Info);
+		http_server().setLogLevel(IHttpServer::LogLevel::Info);
+		//m_crowApp.loglevel(crow::LogLevel::Info);
 
 		// enable HTTP compression
-		m_crowApp.use_compression(crow::compression::algorithm::GZIP);
+		http_server().useCompression(IHttpServer::CompressionType::GZip);
+		//m_crowApp.use_compression(crow::compression::algorithm::GZIP);
 
 		try
 		{
@@ -46,8 +51,10 @@ namespace Odb::Lib::App
 				}				
 
 				// enable SSL/HTTPS
-				m_crowApp.ssl_file((sslDirPath / SSL_CERT_FILE).string(),
-								   (sslDirPath / SSL_KEY_FILE).string());
+				http_server().setSslKeyFiles((sslDirPath / SSL_CERT_FILE).string(),
+											 (sslDirPath / SSL_KEY_FILE).string());
+				//m_crowApp.ssl_file((sslDirPath / SSL_CERT_FILE).string(),
+				//				   (sslDirPath / SSL_KEY_FILE).string());
 			}
 		}
 		catch (boost::wrapexcept<boost::system::system_error>& e)
@@ -65,26 +72,29 @@ namespace Odb::Lib::App
 		register_routes();
 
 		// set port to passed-in port or default if none supplied
-		m_crowApp.port(static_cast<unsigned short>(args().port()));
+		http_server().setPort(args().port());
+		//m_crowApp.port(static_cast<unsigned short>(args().port()));
 
 		// set server to use multiple threads
-		m_crowApp.multithreaded();
+		http_server().setMultithreaded(true);
+		//m_crowApp.multithreaded();
 
 		// run the Crow server
-		m_crowApp.run();
+		http_server().run();
+		//m_crowApp.run();
 
 		// success!
 		return ExitCode::Success;
 	}
 
-	crow::SimpleApp& OdbServerAppBase::crow_app()
-	{
-		return m_crowApp;
-	}
+	//crow::SimpleApp& OdbServerAppBase::crow_app()
+	//{
+	//	//return m_crowApp;
+	//}
 
 	IHttpServer& OdbServerAppBase::http_server()
 	{
-		return m_httpServer;
+		return *m_pHttpServer;
 	}
 
 	//void OdbServerAppBase::add_controllers(const RouteController::Vector& controllers)

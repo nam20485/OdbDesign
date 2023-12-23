@@ -11,7 +11,7 @@ namespace Odb::Lib::App
 	public:
 		virtual ~IOdbServerApp() {}
 
-		virtual crow::SimpleApp& crow_app() = 0;
+		//virtual crow::SimpleApp& crow_app() = 0;
 		virtual IHttpServer& http_server() = 0;
 
 	protected:
