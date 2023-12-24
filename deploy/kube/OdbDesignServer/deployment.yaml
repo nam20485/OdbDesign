@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
       - name: odbdesign-server
-        image: ghcr.io/nam20485/odbdesign:release-latest        
+        image: ghcr.io/nam20485/odbdesign:nam20485-latest        
         imagePullPolicy: Always
         ports:
           - containerPort: 8888
