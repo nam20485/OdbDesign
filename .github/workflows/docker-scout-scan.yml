@@ -83,7 +83,7 @@ jobs:
       # https://github.com/docker/metadata-action
       - name: Extract Docker metadata
         id: meta
-        uses: docker/metadata-action@96383f45573cb7f253c731d3b3ab81c87ef81934
+        uses: docker/metadata-action@9dc751fe249ad99385a2583ee0d084c400eee04e
         with:
           images: ${{ env.IMAGE_NAME }}
           tags: |
@@ -128,7 +128,7 @@ jobs:
       - name: Analyze for critical and high CVEs
         id: docker-scout-cves       
         # if: ${{ github.event_name != 'pull_request_target' }} 
-        uses: docker/scout-action@7c61653c2736d21969dd4593fde76c670d4a86cb # v1.2.0
+        uses: docker/scout-action@b7413c99043c2a9131c0fa39cedaece80f285788 # v1.2.2
         with:
           command: cves,recommendations
           image: ${{ steps.meta.outputs.tags }}
@@ -145,7 +145,7 @@ jobs:
       - name: Docker Scout Compare to Latest
         id: docker-scout
         if: ${{ github.event_name == 'pull_request' }}
-        uses: docker/scout-action@7c61653c2736d21969dd4593fde76c670d4a86cb # v1.2.0
+        uses: docker/scout-action@b7413c99043c2a9131c0fa39cedaece80f285788 # v1.2.2
         with:
           command: compare
           image: ${{ steps.meta.outputs.tags }}
