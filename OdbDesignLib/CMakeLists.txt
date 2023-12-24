@@ -65,6 +65,10 @@ target_link_libraries(OdbDesign PUBLIC OpenSSL::SSL OpenSSL::Crypto)
 target_compile_definitions(OdbDesign PUBLIC CROW_ENABLE_COMPRESSION)
 target_compile_definitions(OdbDesign PUBLIC CROW_ENABLE_SSL)
 
+# link to Crow
+find_package(Crow CONFIG REQUIRED)
+target_link_libraries(OdbDesign PRIVATE Crow::Crow)
+
 # Link to Protobuf
 find_package(Protobuf CONFIG REQUIRED)
 #protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS protoc/edadatafile.proto)
@@ -74,6 +78,11 @@ target_link_libraries(OdbDesign PRIVATE protobuf::libprotobuf)
 #set_source_files_properties(${PROTO_SRC} ${PROTO_HDRS} PROPERTIES GENERATED TRUE)
 # add the generated Protobuf C++ files to the target
 #target_sources(OdbDesign PRIVATE ${PROTO_SRCS} ${PROTO_HDRS})
+
+# workaround to remove error: "C++ command-line error: invalid macro definition: _CROW_ICD-NOTFOUND"
+# (see https://github.com/CrowCpp/Crow/issues/661#issuecomment-1702544225)
+list(REMOVE_ITEM _CROW_ICD "_CROW_ICD-NOTFOUND")
+set_target_properties(Crow::Crow PROPERTIES INTERFACE_COMPILE_DEFINITIONS "${_CROW_ICD}")
 
 # Python extension module build settings                           
 if (PYTHON_MODULE_BUILD)

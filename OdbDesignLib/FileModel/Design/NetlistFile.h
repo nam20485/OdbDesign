@@ -64,7 +64,7 @@ namespace Odb::Lib::FileModel::Design
 			void from_protobuf(const Odb::Lib::Protobuf::NetlistFile::NetPointRecord& message) override;
 
 			typedef std::vector<std::shared_ptr<NetPointRecord>> Vector;
-		};
+		};	// NetPointRecord
 
 		enum class Staggered
 		{
@@ -111,5 +111,5 @@ namespace Odb::Lib::FileModel::Design
 		inline constexpr static const char* COMMENT_TOKEN = "#";
 		inline constexpr static const char* HEADER_TOKEN = "H";		
 
-	};
+	};	// NetlistFile
 }

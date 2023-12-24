@@ -247,15 +247,15 @@ inline bool EdaDataFile_PackageRecord_OutlineRecord_Type_Parse(
     EdaDataFile_PackageRecord_OutlineRecord_Type_descriptor(), name, value);
 }
 enum EdaDataFile_PackageRecord_PinRecord_Type : int {
-  EdaDataFile_PackageRecord_PinRecord_Type_THROUGH_HOLE = 0,
-  EdaDataFile_PackageRecord_PinRecord_Type_BLIND = 1,
-  EdaDataFile_PackageRecord_PinRecord_Type_SURFACE = 2,
+  EdaDataFile_PackageRecord_PinRecord_Type_ThroughHole = 0,
+  EdaDataFile_PackageRecord_PinRecord_Type_Blind = 1,
+  EdaDataFile_PackageRecord_PinRecord_Type_Surface = 2,
   EdaDataFile_PackageRecord_PinRecord_Type_EdaDataFile_PackageRecord_PinRecord_Type_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
   EdaDataFile_PackageRecord_PinRecord_Type_EdaDataFile_PackageRecord_PinRecord_Type_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
 bool EdaDataFile_PackageRecord_PinRecord_Type_IsValid(int value);
-constexpr EdaDataFile_PackageRecord_PinRecord_Type EdaDataFile_PackageRecord_PinRecord_Type_Type_MIN = EdaDataFile_PackageRecord_PinRecord_Type_THROUGH_HOLE;
-constexpr EdaDataFile_PackageRecord_PinRecord_Type EdaDataFile_PackageRecord_PinRecord_Type_Type_MAX = EdaDataFile_PackageRecord_PinRecord_Type_SURFACE;
+constexpr EdaDataFile_PackageRecord_PinRecord_Type EdaDataFile_PackageRecord_PinRecord_Type_Type_MIN = EdaDataFile_PackageRecord_PinRecord_Type_ThroughHole;
+constexpr EdaDataFile_PackageRecord_PinRecord_Type EdaDataFile_PackageRecord_PinRecord_Type_Type_MAX = EdaDataFile_PackageRecord_PinRecord_Type_Surface;
 constexpr int EdaDataFile_PackageRecord_PinRecord_Type_Type_ARRAYSIZE = EdaDataFile_PackageRecord_PinRecord_Type_Type_MAX + 1;
 
 const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* EdaDataFile_PackageRecord_PinRecord_Type_descriptor();
@@ -273,15 +273,15 @@ inline bool EdaDataFile_PackageRecord_PinRecord_Type_Parse(
     EdaDataFile_PackageRecord_PinRecord_Type_descriptor(), name, value);
 }
 enum EdaDataFile_PackageRecord_PinRecord_ElectricalType : int {
-  EdaDataFile_PackageRecord_PinRecord_ElectricalType_ELECTRICAL = 0,
-  EdaDataFile_PackageRecord_PinRecord_ElectricalType_NON_ELECTRICAL = 1,
-  EdaDataFile_PackageRecord_PinRecord_ElectricalType_UNDEFINED = 2,
+  EdaDataFile_PackageRecord_PinRecord_ElectricalType_Electrical = 0,
+  EdaDataFile_PackageRecord_PinRecord_ElectricalType_NonElectrical = 1,
+  EdaDataFile_PackageRecord_PinRecord_ElectricalType_Undefined = 2,
   EdaDataFile_PackageRecord_PinRecord_ElectricalType_EdaDataFile_PackageRecord_PinRecord_ElectricalType_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
   EdaDataFile_PackageRecord_PinRecord_ElectricalType_EdaDataFile_PackageRecord_PinRecord_ElectricalType_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
 bool EdaDataFile_PackageRecord_PinRecord_ElectricalType_IsValid(int value);
-constexpr EdaDataFile_PackageRecord_PinRecord_ElectricalType EdaDataFile_PackageRecord_PinRecord_ElectricalType_ElectricalType_MIN = EdaDataFile_PackageRecord_PinRecord_ElectricalType_ELECTRICAL;
-constexpr EdaDataFile_PackageRecord_PinRecord_ElectricalType EdaDataFile_PackageRecord_PinRecord_ElectricalType_ElectricalType_MAX = EdaDataFile_PackageRecord_PinRecord_ElectricalType_UNDEFINED;
+constexpr EdaDataFile_PackageRecord_PinRecord_ElectricalType EdaDataFile_PackageRecord_PinRecord_ElectricalType_ElectricalType_MIN = EdaDataFile_PackageRecord_PinRecord_ElectricalType_Electrical;
+constexpr EdaDataFile_PackageRecord_PinRecord_ElectricalType EdaDataFile_PackageRecord_PinRecord_ElectricalType_ElectricalType_MAX = EdaDataFile_PackageRecord_PinRecord_ElectricalType_Undefined;
 constexpr int EdaDataFile_PackageRecord_PinRecord_ElectricalType_ElectricalType_ARRAYSIZE = EdaDataFile_PackageRecord_PinRecord_ElectricalType_ElectricalType_MAX + 1;
 
 const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* EdaDataFile_PackageRecord_PinRecord_ElectricalType_descriptor();
@@ -299,20 +299,20 @@ inline bool EdaDataFile_PackageRecord_PinRecord_ElectricalType_Parse(
     EdaDataFile_PackageRecord_PinRecord_ElectricalType_descriptor(), name, value);
 }
 enum EdaDataFile_PackageRecord_PinRecord_MountType : int {
-  EdaDataFile_PackageRecord_PinRecord_MountType_SMT = 0,
-  EdaDataFile_PackageRecord_PinRecord_MountType_RECOMMENDED_SMT_PAD = 1,
-  EdaDataFile_PackageRecord_PinRecord_MountType_MT_THROUGH_HOLE = 2,
-  EdaDataFile_PackageRecord_PinRecord_MountType_RECOMMENDED_THROUGH_HOLE = 3,
-  EdaDataFile_PackageRecord_PinRecord_MountType_PRESSFIT = 4,
-  EdaDataFile_PackageRecord_PinRecord_MountType_NON_BOARD = 5,
-  EdaDataFile_PackageRecord_PinRecord_MountType_HOLE = 6,
-  EdaDataFile_PackageRecord_PinRecord_MountType_MT_UNDEFINED = 7,
+  EdaDataFile_PackageRecord_PinRecord_MountType_Smt = 0,
+  EdaDataFile_PackageRecord_PinRecord_MountType_RecommendedSmtPad = 1,
+  EdaDataFile_PackageRecord_PinRecord_MountType_MT_ThroughHole = 2,
+  EdaDataFile_PackageRecord_PinRecord_MountType_RecommendedThroughHole = 3,
+  EdaDataFile_PackageRecord_PinRecord_MountType_PressFit = 4,
+  EdaDataFile_PackageRecord_PinRecord_MountType_NonBoard = 5,
+  EdaDataFile_PackageRecord_PinRecord_MountType_Hole = 6,
+  EdaDataFile_PackageRecord_PinRecord_MountType_MT_Undefined = 7,
   EdaDataFile_PackageRecord_PinRecord_MountType_EdaDataFile_PackageRecord_PinRecord_MountType_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
   EdaDataFile_PackageRecord_PinRecord_MountType_EdaDataFile_PackageRecord_PinRecord_MountType_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
 bool EdaDataFile_PackageRecord_PinRecord_MountType_IsValid(int value);
-constexpr EdaDataFile_PackageRecord_PinRecord_MountType EdaDataFile_PackageRecord_PinRecord_MountType_MountType_MIN = EdaDataFile_PackageRecord_PinRecord_MountType_SMT;
-constexpr EdaDataFile_PackageRecord_PinRecord_MountType EdaDataFile_PackageRecord_PinRecord_MountType_MountType_MAX = EdaDataFile_PackageRecord_PinRecord_MountType_MT_UNDEFINED;
+constexpr EdaDataFile_PackageRecord_PinRecord_MountType EdaDataFile_PackageRecord_PinRecord_MountType_MountType_MIN = EdaDataFile_PackageRecord_PinRecord_MountType_Smt;
+constexpr EdaDataFile_PackageRecord_PinRecord_MountType EdaDataFile_PackageRecord_PinRecord_MountType_MountType_MAX = EdaDataFile_PackageRecord_PinRecord_MountType_MT_Undefined;
 constexpr int EdaDataFile_PackageRecord_PinRecord_MountType_MountType_ARRAYSIZE = EdaDataFile_PackageRecord_PinRecord_MountType_MountType_MAX + 1;
 
 const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* EdaDataFile_PackageRecord_PinRecord_MountType_descriptor();
@@ -1710,12 +1710,12 @@ class EdaDataFile_PackageRecord_PinRecord final :
   // nested types ----------------------------------------------------
 
   typedef EdaDataFile_PackageRecord_PinRecord_Type Type;
-  static constexpr Type THROUGH_HOLE =
-    EdaDataFile_PackageRecord_PinRecord_Type_THROUGH_HOLE;
-  static constexpr Type BLIND =
-    EdaDataFile_PackageRecord_PinRecord_Type_BLIND;
-  static constexpr Type SURFACE =
-    EdaDataFile_PackageRecord_PinRecord_Type_SURFACE;
+  static constexpr Type ThroughHole =
+    EdaDataFile_PackageRecord_PinRecord_Type_ThroughHole;
+  static constexpr Type Blind =
+    EdaDataFile_PackageRecord_PinRecord_Type_Blind;
+  static constexpr Type Surface =
+    EdaDataFile_PackageRecord_PinRecord_Type_Surface;
   static inline bool Type_IsValid(int value) {
     return EdaDataFile_PackageRecord_PinRecord_Type_IsValid(value);
   }
@@ -1742,12 +1742,12 @@ class EdaDataFile_PackageRecord_PinRecord final :
   }
 
   typedef EdaDataFile_PackageRecord_PinRecord_ElectricalType ElectricalType;
-  static constexpr ElectricalType ELECTRICAL =
-    EdaDataFile_PackageRecord_PinRecord_ElectricalType_ELECTRICAL;
-  static constexpr ElectricalType NON_ELECTRICAL =
-    EdaDataFile_PackageRecord_PinRecord_ElectricalType_NON_ELECTRICAL;
-  static constexpr ElectricalType UNDEFINED =
-    EdaDataFile_PackageRecord_PinRecord_ElectricalType_UNDEFINED;
+  static constexpr ElectricalType Electrical =
+    EdaDataFile_PackageRecord_PinRecord_ElectricalType_Electrical;
+  static constexpr ElectricalType NonElectrical =
+    EdaDataFile_PackageRecord_PinRecord_ElectricalType_NonElectrical;
+  static constexpr ElectricalType Undefined =
+    EdaDataFile_PackageRecord_PinRecord_ElectricalType_Undefined;
   static inline bool ElectricalType_IsValid(int value) {
     return EdaDataFile_PackageRecord_PinRecord_ElectricalType_IsValid(value);
   }
@@ -1774,22 +1774,22 @@ class EdaDataFile_PackageRecord_PinRecord final :
   }
 
   typedef EdaDataFile_PackageRecord_PinRecord_MountType MountType;
-  static constexpr MountType SMT =
-    EdaDataFile_PackageRecord_PinRecord_MountType_SMT;
-  static constexpr MountType RECOMMENDED_SMT_PAD =
-    EdaDataFile_PackageRecord_PinRecord_MountType_RECOMMENDED_SMT_PAD;
-  static constexpr MountType MT_THROUGH_HOLE =
-    EdaDataFile_PackageRecord_PinRecord_MountType_MT_THROUGH_HOLE;
-  static constexpr MountType RECOMMENDED_THROUGH_HOLE =
-    EdaDataFile_PackageRecord_PinRecord_MountType_RECOMMENDED_THROUGH_HOLE;
-  static constexpr MountType PRESSFIT =
-    EdaDataFile_PackageRecord_PinRecord_MountType_PRESSFIT;
-  static constexpr MountType NON_BOARD =
-    EdaDataFile_PackageRecord_PinRecord_MountType_NON_BOARD;
-  static constexpr MountType HOLE =
-    EdaDataFile_PackageRecord_PinRecord_MountType_HOLE;
-  static constexpr MountType MT_UNDEFINED =
-    EdaDataFile_PackageRecord_PinRecord_MountType_MT_UNDEFINED;
+  static constexpr MountType Smt =
+    EdaDataFile_PackageRecord_PinRecord_MountType_Smt;
+  static constexpr MountType RecommendedSmtPad =
+    EdaDataFile_PackageRecord_PinRecord_MountType_RecommendedSmtPad;
+  static constexpr MountType MT_ThroughHole =
+    EdaDataFile_PackageRecord_PinRecord_MountType_MT_ThroughHole;
+  static constexpr MountType RecommendedThroughHole =
+    EdaDataFile_PackageRecord_PinRecord_MountType_RecommendedThroughHole;
+  static constexpr MountType PressFit =
+    EdaDataFile_PackageRecord_PinRecord_MountType_PressFit;
+  static constexpr MountType NonBoard =
+    EdaDataFile_PackageRecord_PinRecord_MountType_NonBoard;
+  static constexpr MountType Hole =
+    EdaDataFile_PackageRecord_PinRecord_MountType_Hole;
+  static constexpr MountType MT_Undefined =
+    EdaDataFile_PackageRecord_PinRecord_MountType_MT_Undefined;
   static inline bool MountType_IsValid(int value) {
     return EdaDataFile_PackageRecord_PinRecord_MountType_IsValid(value);
   }

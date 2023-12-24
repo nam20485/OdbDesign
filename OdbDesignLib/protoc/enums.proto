@@ -7,9 +7,9 @@ package Odb.Lib.Protobuf;
 
 enum BoardSide
 {
-    Top = 0;
-    Bottom = 1;
-    Neither = 2;
+    BsNone = 0;
+    Top = 1;
+    Bottom = 2;   
 };
 
 enum LineShape

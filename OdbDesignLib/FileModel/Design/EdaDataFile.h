@@ -113,9 +113,7 @@ namespace Odb::Lib::FileModel::Design
 
 			~NetRecord();
 
-			std::string name;
-			//std::string attributesIdString;
-			// TODO: store index of records
+			std::string name;			
 			unsigned int index;
 
 			SubnetRecord::Vector m_subnetRecords;
@@ -245,8 +243,7 @@ namespace Odb::Lib::FileModel::Design
 			std::string name;
 			float pitch;
 			float xMin, yMin;
-			float xMax, yMax;
-			//std::string attributesIdString;
+			float xMax, yMax;			
 			unsigned int index;
 
 			OutlineRecord::Vector m_outlineRecords;

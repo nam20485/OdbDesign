@@ -1,8 +1,8 @@
 #include "OdbDesignServerApp.h"
 #include "OdbDesign.h"
 #include "Controllers/HelloWorldController.h"
-#include "Controllers/StepsEdaDataController.h"
 #include "Controllers/FileUploadController.h"
+#include "Controllers/FileModelController.h"
 
 
 namespace Odb::App::Server
@@ -31,8 +31,8 @@ namespace Odb::App::Server
 
 	void OdbDesignServerApp::add_controllers()
 	{
-		m_vecControllers.push_back(std::make_shared<HelloWorldController>(*this));
-		m_vecControllers.push_back(std::make_shared<StepsEdaDataController>(*this));
+		m_vecControllers.push_back(std::make_shared<HelloWorldController>(*this));		
 		m_vecControllers.push_back(std::make_shared<FileUploadController>(*this));
+		m_vecControllers.push_back(std::make_shared<FileModelController>(*this));
 	}	
 }

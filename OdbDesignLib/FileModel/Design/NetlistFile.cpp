@@ -16,7 +16,9 @@
 namespace Odb::Lib::FileModel::Design
 {
 	NetlistFile::NetlistFile(std::filesystem::path path)
-		: m_path(path), m_optimized(false), m_staggered(Staggered::Unknown)
+		: m_path(path)
+		, m_optimized(false)
+		, m_staggered(Staggered::Unknown)
 	{
 	}
 
@@ -219,7 +221,7 @@ namespace Odb::Lib::FileModel::Design
 						pNetRecord->serialNumber = unSerialNumber;
 						pNetRecord->netName = netName;
 						m_netRecords.push_back(pNetRecord);
-						m_netRecordsByName[pNetRecord->netName] = pNetRecord;						
+						//m_netRecordsByName[pNetRecord->netName] = pNetRecord;						
 					}
 					else // NetPointRecord (starts with an unsigned int, netNumber)
 					{

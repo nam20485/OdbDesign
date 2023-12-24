@@ -4,6 +4,7 @@ namespace Odb::Lib
 {
 	enum class BoardSide
 	{
+		BsNone,
 		Top,
 		Bottom		
 	};

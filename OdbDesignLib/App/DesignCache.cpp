@@ -114,30 +114,26 @@ namespace Odb::Lib::App
         for (const auto& entry : directory_iterator(m_directory))
         {
             if (entry.is_regular_file())
-            {                
-                //for (const auto& designExt : DESIGN_EXTENSIONS)
-                //{
-                    //if (entry.path().extension() == designExt)
-                    if (ArchiveExtractor::IsArchiveTypeSupported(entry.path().filename()))
+            {
+                if (ArchiveExtractor::IsArchiveTypeSupported(entry.path().filename()))
+                {
+                    try
                     {
-                        try
+                        auto pFileArchive = LoadFileArchive(entry.path().stem().string());
+                        if (pFileArchive != nullptr)
                         {
-                            auto pFileArchive = LoadFileArchive(entry.path().stem().string());
-                            if (pFileArchive != nullptr)
-                            {
-                                loaded++;
-                            }
+                            loaded++;
                         }
-                        catch (std::exception& e)
-                        {
-                            // continue if we encounter an error loading one
-                            logexception(e);
-                            if (stopOnError) throw e;
-                        }                                    
                     }
-                //}
+                    catch (std::exception& e)
+                    {
+                        // continue if we encounter an error loading one
+                        logexception(e);
+                        if (stopOnError) throw e;
+                    }
+                }
             }
-        }
+       }
 
         return loaded;
     }
@@ -150,30 +146,25 @@ namespace Odb::Lib::App
         {
             if (entry.is_regular_file())
             {
-                //for (const auto& designExt : DESIGN_EXTENSIONS)                
-                //{
-                    //auto ext = entry.path().extension().string();
-                    //if (ext == designExt)
-                    if (ArchiveExtractor::IsArchiveTypeSupported(entry.path().filename()))
+                if (ArchiveExtractor::IsArchiveTypeSupported(entry.path().filename()))
+                {
+                    try
                     {
-                        try
+                        auto pDesign = LoadDesign(entry.path().stem().string());
+                        if (pDesign != nullptr)
                         {
-                            auto pDesign = LoadDesign(entry.path().stem().string());
-                            if (pDesign != nullptr)
-                            {
-                                loaded++;
-                            }
-                        }
-                        catch (std::exception& e)
-                        {
-                            logexception(e);
-                            if (stopOnError)
-                            {
-                                throw e;
-                            }
+                            loaded++;
                         }
                     }
-                //}
+                    catch (std::exception& e)
+                    {
+                        logexception(e);
+                        if (stopOnError)
+                        {
+                            throw e;
+                        }
+                    }
+                }
             }
         }
 

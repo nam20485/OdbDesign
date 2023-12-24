@@ -53,7 +53,7 @@ namespace Odb::Lib::FileModel::Design
 			}
 
 			std::filesystem::path featuresFilePath;
-			for (const std::string featuresFilename : filenames)
+			for (const std::string& featuresFilename : filenames)
 			{
 				loginfo("trying features file: [" + featuresFilename + "]...");
 
