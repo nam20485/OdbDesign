@@ -44,7 +44,7 @@ namespace Odb::Lib::FileModel::Design
 			loginfo("checking for extraction...");
 
 			std::filesystem::path featuresFilePath;
-			for (const std::string featuresFilename : ATTRLIST_FILENAMES)
+			for (const std::string& featuresFilename : ATTRLIST_FILENAMES)
 			{
 				loginfo("trying attrlist file: [" + featuresFilename + "]...");
 
