@@ -1,7 +1,7 @@
 ﻿# CMakeList.txt : CMake project for OdbDesignServer
 #
 
-add_executable(OdbDesignServer "main.cpp"   "Controllers/HelloWorldController.h" "Controllers/HelloWorldController.cpp"     "OdbDesignServerApp.h" "OdbDesignServerApp.cpp" "Controllers/StepsEdaDataController.cpp" "Controllers/StepsEdaDataController.h" "OdbDesignServer.h"      "Controllers/FileUploadController.h" "Controllers/FileUploadController.cpp")
+add_executable(OdbDesignServer "main.cpp"   "Controllers/HelloWorldController.h" "Controllers/HelloWorldController.cpp"     "OdbDesignServerApp.h" "OdbDesignServerApp.cpp" "OdbDesignServer.h"      "Controllers/FileUploadController.h" "Controllers/FileUploadController.cpp" "Controllers/FileModelController.h" "Controllers/FileModelController.cpp")
 
 ## PCH
 file (GLOB_RECURSE ODBDESIGN_SERVER_HEADER_FILES "*.h")
