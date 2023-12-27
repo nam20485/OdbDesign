@@ -9,11 +9,16 @@ metadata:
     app: odbdesign-server
     service: odbdesign-server
 spec:
-  type: NodePort
+  # type: NodePort
+  # ports:
+  #   - port: 80
+  #     targetPort: ods-dep-port
+  #     nodePort: 30888
+  #     name: ods-svc-port
   ports:
     - port: 80
-      targetPort: ods-dep-port
-      nodePort: 30888
       name: ods-svc-port
+      targetPort: ods-dep-port
   selector:
     app: odbdesign-server
+
