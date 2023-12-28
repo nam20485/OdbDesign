@@ -27,18 +27,18 @@ if ($DeleteClusterFirst) {
         Exit 1
     }
     else {
-        Write-Host "Deleting cluster $ClusterName..."
-        k3d cluster clusterNameInput$clusterNameInput $ClusterName
-        Write-Host "Cluster $ClusterName deleted."
+        Write-Host "Deleting cluster '$ClusterName'..."
+        k3d cluster delete $ClusterName
+        Write-Host "Cluster '$ClusterName' deleted."
     }
 }
 
-Write-Host "Creating cluster $ClusterName..."
+Write-Host "Creating cluster '$ClusterName'..."
 
 k3d cluster create $ClusterName `
     --agents $NumAgents `
-    --k3s-arg="--tls-san=$hostIp@server:0" `
+    --k3s-arg="--tls-san=${hostIp}@server:0" `
     --k3s-arg="--tls-san=precision5820@server:0" `
     -p "${IngressHostPort}:80@loadbalancer"
 
-Write-Host "Cluster $ClusterName created."
+Write-Host "Cluster '$ClusterName' created."
