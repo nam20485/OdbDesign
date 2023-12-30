@@ -19,9 +19,9 @@ namespace Odb::App::Server
 		//	}
 		//);
 
-		register_route_handler("/health_check/live", std::bind(&HealthCheckController::health_check_live, this, std::placeholders::_1));
-		register_route_handler("/health_check/ready", std::bind(&HealthCheckController::health_check_ready, this, std::placeholders::_1));
-		register_route_handler("/health_check/started", std::bind(&HealthCheckController::health_check_started, this, std::placeholders::_1));
+		register_route_handler("/healthz/live", std::bind(&HealthCheckController::health_check_live, this, std::placeholders::_1));
+		register_route_handler("/healthz/ready", std::bind(&HealthCheckController::health_check_ready, this, std::placeholders::_1));
+		register_route_handler("/healthz/started", std::bind(&HealthCheckController::health_check_started, this, std::placeholders::_1));
 	}
 
 	crow::response HealthCheckController::health_check_live(const crow::request& req)
