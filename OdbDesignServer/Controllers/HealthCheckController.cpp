@@ -13,15 +13,29 @@ namespace Odb::App::Server
 	{
 		//register_route_handler("/health_check", std::bind(&HealthCheckController::health_check, this, std::placeholders::_1));
 		
-		register_route_handler("/health_check", [&](const crow::request& req) /*-> crow::response*/
-			{
-				return crow::response(crow::status::OK, "healthy");
-			}
-		);
+		//register_route_handler("/health_check", [&](const crow::request& req) /*-> crow::response*/
+		//	{
+		//		return crow::response(crow::status::OK, "healthy");
+		//	}
+		//);
+
+		register_route_handler("/health_check/live", std::bind(&HealthCheckController::health_check_live, this, std::placeholders::_1));
+		register_route_handler("/health_check/ready", std::bind(&HealthCheckController::health_check_ready, this, std::placeholders::_1));
+		register_route_handler("/health_check/started", std::bind(&HealthCheckController::health_check_started, this, std::placeholders::_1));
 	}
 
-	crow::response HealthCheckController::health_check(const crow::request& req)
+	crow::response HealthCheckController::health_check_live(const crow::request& req)
 	{
-		return crow::response(crow::status::OK, "healthy");
+		return crow::response(crow::status::OK, "healthy: live");
+	}
+
+	crow::response HealthCheckController::health_check_ready(const crow::request& req)
+	{
+		return crow::response(crow::status::OK, "healthy: ready");
+	}
+
+	crow::response HealthCheckController::health_check_started(const crow::request& req)
+	{
+		return crow::response(crow::status::OK, "healthy: started");
 	}
 }

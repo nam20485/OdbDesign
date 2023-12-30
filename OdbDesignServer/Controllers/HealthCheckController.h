@@ -15,7 +15,9 @@ namespace Odb::App::Server
 		virtual void register_routes() override;
 
 	private:
-		crow::response health_check(const crow::request& req);
+		crow::response health_check_live(const crow::request& req);
+		crow::response health_check_ready(const crow::request& req);
+		crow::response health_check_started(const crow::request& req);
 
 	};
 }
