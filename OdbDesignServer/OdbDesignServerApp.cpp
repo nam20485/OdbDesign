@@ -12,9 +12,9 @@ namespace Odb::App::Server
 	{		
 	}
 
-	OdbDesignServerApp::~OdbDesignServerApp()
-	{					
-	}
+	//OdbDesignServerApp::~OdbDesignServerApp()
+	//{					
+	//}
 
 	//Utils::ExitCode OdbDesignServerApp::Run()
 	//{
