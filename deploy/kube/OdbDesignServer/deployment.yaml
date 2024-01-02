@@ -21,16 +21,36 @@ spec:
         version: v1
     spec:
       containers:
-      - name: odbdesign-server
-        image: ghcr.io/nam20485/odbdesign:nam20485-latest        
-        imagePullPolicy: Always
-        ports:
-          - containerPort: 8888
-            name: ods-dep-port
-        resources:
-          limits:
-            cpu: "2"
-            memory: 2Gi
-          requests:
-            cpu: "2"
-            memory: 2Gi        
+        - name: odbdesign-server
+          image: ghcr.io/nam20485/odbdesign:nam20485-latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8888
+              name: ods-dep-port
+          resources:
+            limits:
+              cpu: "2"
+              memory: 2Gi
+            requests:
+              cpu: "1"
+              memory: 1Gi
+          livenessProbe:
+            httpGet:
+              path: /healthz/live
+              port: ods-dep-port
+            failureThreshold: 3
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /healthz/ready
+              port: ods-dep-port
+            failureThreshold: 3
+            periodSeconds: 5
+          startupProbe:
+            httpGet:
+              path: /healthz/started
+              port: ods-dep-port
+            failureThreshold: 10
+            periodSeconds: 1
+            #initialDelaySeconds: 1          
+            
