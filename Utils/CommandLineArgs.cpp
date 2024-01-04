@@ -11,7 +11,7 @@
 #include "CommandLineArgs.h"
 #include <exception>
 #include <stdexcept>
-#include "str_trim.h"
+#include "str_utils.h"
 #include <sstream>
 #include <iostream>
 #include <cstring>
@@ -21,11 +21,8 @@ namespace Utils
 {
 	CommandLineArgs::CommandLineArgs(int argc, char* argv[])
 	{
-		// save arguments in std::string vector
-		for (int i = 0; i < argc; i++)
-		{
-			m_vecArguments.push_back(argv[i]);
-		}
+		// save arguments in std::string vector		
+		std::copy(argv, argv + argc, std::back_inserter(m_vecArguments));
 		parse();
 	}
 
@@ -96,7 +93,8 @@ namespace Utils
 	bool CommandLineArgs::isWindows() const
 	{
 		auto pos = executableName().find(EXE_EXTENSION);
-		return (pos >= 0 && pos == executableName().length()-strlen(EXE_EXTENSION));
+		return (pos != std::string::npos && 
+				pos == executableName().length()-strlen(EXE_EXTENSION));
 	}
 
 	bool CommandLineArgs::isLinux() const

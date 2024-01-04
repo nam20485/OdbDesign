@@ -2,13 +2,20 @@
 
 #include "Logger.h"
 #include <fstream>
-#include "str_trim.h"
+#include "str_utils.h"
 #include "../../Constants.h"
 #include "../parse_error.h"
 #include "../invalid_odb_error.h"
+#include "../../ProtoBuf/enums.pb.h"
+
 
 namespace Odb::Lib::FileModel::Design
 {
+    StandardFontsFile::~StandardFontsFile()
+    {
+        m_characterBlocks.clear();
+    }
+
     bool StandardFontsFile::Parse(std::filesystem::path path)
     {
         std::ifstream standardFile;
@@ -273,4 +280,83 @@ namespace Odb::Lib::FileModel::Design
 
 		return true;
 	}
+
+    std::unique_ptr<Odb::Lib::Protobuf::StandardFontsFile> StandardFontsFile::to_protobuf() const
+    {
+        auto pStandardFontsFileMessage = std::make_unique<Odb::Lib::Protobuf::StandardFontsFile>();
+        pStandardFontsFileMessage->set_xsize(m_xSize);
+        pStandardFontsFileMessage->set_ysize(m_ySize);
+        pStandardFontsFileMessage->set_offset(m_offset);
+        for (const auto& characterBlock : m_characterBlocks)
+        {
+            pStandardFontsFileMessage->add_m_characterblocks()->CopyFrom(*characterBlock->to_protobuf());
+        }
+        return pStandardFontsFileMessage;        
+    }
+
+    void StandardFontsFile::from_protobuf(const Odb::Lib::Protobuf::StandardFontsFile& message)
+    {
+        m_xSize = message.xsize();
+        m_ySize = message.ysize();
+        m_offset = message.offset();
+        for (const auto& characterBlockMessage : message.m_characterblocks())
+        {
+            auto pCharacterBlock = std::make_shared<CharacterBlock>();
+            pCharacterBlock->from_protobuf(characterBlockMessage);
+            m_characterBlocks.push_back(pCharacterBlock);
+        }
+    }
+
+    StandardFontsFile::CharacterBlock::~CharacterBlock()
+    {
+        m_lineRecords.clear();
+    }
+
+    std::unique_ptr<Odb::Lib::Protobuf::StandardFontsFile::CharacterBlock> StandardFontsFile::CharacterBlock::to_protobuf() const
+    {
+        std::unique_ptr<Odb::Lib::Protobuf::StandardFontsFile::CharacterBlock> pCharacterBlockMessage(new Odb::Lib::Protobuf::StandardFontsFile::CharacterBlock);
+        pCharacterBlockMessage->set_character(std::string(1, character));
+        for (const auto& lineRecord : m_lineRecords)
+        {
+            pCharacterBlockMessage->add_m_linerecords()->CopyFrom(*lineRecord->to_protobuf());
+        }
+        return pCharacterBlockMessage;
+    }
+
+    void StandardFontsFile::CharacterBlock::from_protobuf(const Odb::Lib::Protobuf::StandardFontsFile::CharacterBlock& message)
+    {
+        if (! message.character().empty())  character = message.character()[0];
+
+        for (const auto& lineRecordMessage : message.m_linerecords())
+        {
+            auto pLineRecord = std::make_shared<LineRecord>();
+            pLineRecord->from_protobuf(lineRecordMessage);
+            m_lineRecords.push_back(pLineRecord);
+        }
+    }
+
+    std::unique_ptr<Odb::Lib::Protobuf::StandardFontsFile::CharacterBlock::LineRecord> StandardFontsFile::CharacterBlock::LineRecord::to_protobuf() const
+    {
+        std::unique_ptr<Odb::Lib::Protobuf::StandardFontsFile::CharacterBlock::LineRecord> pLineRecordMessage(new Odb::Lib::Protobuf::StandardFontsFile::CharacterBlock::LineRecord);
+        pLineRecordMessage->set_xstart(xStart);
+        pLineRecordMessage->set_ystart(yStart);
+        pLineRecordMessage->set_xend(xEnd);
+        pLineRecordMessage->set_yend(yEnd);
+        pLineRecordMessage->set_polarity(static_cast<Odb::Lib::Protobuf::Polarity>(polarity));
+        pLineRecordMessage->set_shape(static_cast<Odb::Lib::Protobuf::LineShape>(shape));
+        pLineRecordMessage->set_width(width);
+        return pLineRecordMessage;
+    }
+
+    void StandardFontsFile::CharacterBlock::LineRecord::from_protobuf(const Odb::Lib::Protobuf::StandardFontsFile::CharacterBlock::LineRecord& message)
+    {
+        xStart = message.xstart();
+        yStart = message.ystart();
+        xEnd = message.xend();
+        yEnd = message.yend();
+        polarity = static_cast<Odb::Lib::Polarity>(message.polarity());
+        shape = static_cast<LineShape>(message.shape());
+        width = message.width();
+    }
+  
 }

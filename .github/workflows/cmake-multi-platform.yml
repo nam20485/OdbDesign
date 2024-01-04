@@ -103,7 +103,7 @@ jobs:
     #   os == windows-2022
     #
     - name: Setup VC Tools
-      uses: ilammy/msvc-dev-cmd@cec98b9d092141f74527d0afa6feb2af698cfe89 # v1.12.1
+      uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
       if: matrix.os == 'windows-2022'
       
     - name: Patch vcpkg
@@ -190,7 +190,7 @@ jobs:
         Compress-Archive -Path "${{env.ARTIFACTS_DIR_WIN}}\*.dll","${{env.ARTIFACTS_DIR_WIN}}\*.exe"  -DestinationPath "${{env.ARTIFACTS_DIR_WIN}}\artifacts-${{matrix.os}}.zip" -Verbose -Force
 
     - name: Upload Artifacts
-      uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3.1.3
+      uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0
       with:
         name: ${{ matrix.os }}-artifacts
         path: ${{ env.ARTIFACTS_DIR }}/artifacts-${{matrix.os}}.zip
@@ -216,7 +216,7 @@ jobs:
 
       # download the artifacts
       - name: "Download artifacts"
-        uses: "actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a" # v3.0.2
+        uses: "actions/download-artifact@f44cd7b40bfd40b6aa1cc1b9b5b7bf03d3c67110" # v4.1.0
         with:
           path: ${{ github.workspace }}/artifacts     
 
@@ -235,7 +235,7 @@ jobs:
           sha256sum OdbDesign-MacOS-x64.zip > OdbDesign-MacOS-x64.zip.sha256sum          
 
       - name: Import GPG Key
-        uses: crazy-max/ghaction-import-gpg@82a020f1f7f605c65dd2449b392a52c3fcfef7ef # v6.0.0
+        uses: crazy-max/ghaction-import-gpg@01dd5d3ca463c7f10f7f4f7b4f177225ac661ee4 # v6.1.0
         with:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
           passphrase: ${{ secrets.PASSPHRASE }}

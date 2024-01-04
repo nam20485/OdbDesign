@@ -26,22 +26,23 @@ namespace Protobuf {
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
-static const ::_pb::EnumDescriptor* file_level_enum_descriptors_enums_2eproto[3];
+static const ::_pb::EnumDescriptor* file_level_enum_descriptors_enums_2eproto[4];
 static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_enums_2eproto = nullptr;
 const uint32_t TableStruct_enums_2eproto::offsets[1] = {};
 static constexpr ::_pbi::MigrationSchema* schemas = nullptr;
 static constexpr ::_pb::Message* const* file_default_instances = nullptr;
 
 const char descriptor_table_protodef_enums_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
-  "\n\013enums.proto\022\020Odb.Lib.Protobuf*-\n\tBoard"
-  "Side\022\007\n\003Top\020\000\022\n\n\006Bottom\020\001\022\013\n\007Neither\020\002*\""
-  "\n\tLineShape\022\n\n\006Square\020\000\022\t\n\005Round\020\001*&\n\010Po"
-  "larity\022\014\n\010Positive\020\000\022\014\n\010Negative\020\001b\006prot"
-  "o3"
+  "\n\013enums.proto\022\020Odb.Lib.Protobuf*,\n\tBoard"
+  "Side\022\n\n\006BsNone\020\000\022\007\n\003Top\020\001\022\n\n\006Bottom\020\002*\"\n"
+  "\tLineShape\022\n\n\006Square\020\000\022\t\n\005Round\020\001*&\n\010Pol"
+  "arity\022\014\n\010Positive\020\000\022\014\n\010Negative\020\001*.\n\010Uni"
+  "tType\022\010\n\004None\020\000\022\n\n\006Metric\020\001\022\014\n\010Imperial\020"
+  "\002b\006proto3"
   ;
 static ::_pbi::once_flag descriptor_table_enums_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_enums_2eproto = {
-    false, false, 162, descriptor_table_protodef_enums_2eproto,
+    false, false, 209, descriptor_table_protodef_enums_2eproto,
     "enums.proto",
     &descriptor_table_enums_2eproto_once, nullptr, 0, 0,
     schemas, file_default_instances, TableStruct_enums_2eproto::offsets,
@@ -94,6 +95,21 @@ bool Polarity_IsValid(int value) {
   switch (value) {
     case 0:
     case 1:
+      return true;
+    default:
+      return false;
+  }
+}
+
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* UnitType_descriptor() {
+  ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&descriptor_table_enums_2eproto);
+  return file_level_enum_descriptors_enums_2eproto[3];
+}
+bool UnitType_IsValid(int value) {
+  switch (value) {
+    case 0:
+    case 1:
+    case 2:
       return true;
     default:
       return false;

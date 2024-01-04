@@ -1,4 +1,10 @@
 #include "ComponentsFile.h"
+#include "ComponentsFile.h"
+#include "ComponentsFile.h"
+#include "ComponentsFile.h"
+#include "ComponentsFile.h"
+#include "ComponentsFile.h"
+#include "ComponentsFile.h"
 #include <fstream>
 #include <sstream>
 #include <filesystem>
@@ -6,7 +12,7 @@
 #include "../parse_error.h"
 #include <Logger.h>
 #include <exception>
-#include <str_trim.h>
+#include "str_utils.h"
 #include "../invalid_odb_error.h"
 #include <climits>
 
@@ -17,7 +23,7 @@ namespace Odb::Lib::FileModel::Design
 {
 	ComponentsFile::ComponentsFile()
 		: m_id((unsigned int)-1)
-		, m_side(BoardSide::Neither)
+		, m_side(BoardSide::BsNone)
 	{
 	}
 
@@ -27,6 +33,7 @@ namespace Odb::Lib::FileModel::Design
 		m_attributeTextValues.clear();
 		m_componentRecords.clear();
 		m_componentRecordsByName.clear();
+		m_bomDescriptionRecordsByCpn.clear();
 	}
 
 	std::string ComponentsFile::GetUnits() const
@@ -49,6 +56,11 @@ namespace Odb::Lib::FileModel::Design
 		return m_directory;
 	}
 
+	std::string ComponentsFile::GetLayerName() const
+	{
+		return m_layerName;
+	}
+
 	const ComponentsFile::ComponentRecord::Vector& ComponentsFile::GetComponentRecords() const
 	{
 		return m_componentRecords;
@@ -69,10 +81,207 @@ namespace Odb::Lib::FileModel::Design
 		return m_attributeTextValues;
 	}
 
+	const ComponentsFile::BomDescriptionRecord::StringMap& ComponentsFile::GetBomDescriptionRecordsByCpn() const
+	{
+		return m_bomDescriptionRecordsByCpn;
+	}
+
+	std::unique_ptr<Odb::Lib::Protobuf::ComponentsFile> ComponentsFile::to_protobuf() const
+	{
+		std::unique_ptr<Odb::Lib::Protobuf::ComponentsFile> pComponentsFileMessage(new Odb::Lib::Protobuf::ComponentsFile);
+		pComponentsFileMessage->set_units(m_units);
+		pComponentsFileMessage->set_id(m_id);
+		pComponentsFileMessage->set_side(static_cast<Odb::Lib::Protobuf::BoardSide>(m_side));
+		pComponentsFileMessage->set_layername(m_layerName);
+		pComponentsFileMessage->set_path(m_path.string());
+		pComponentsFileMessage->set_directory(m_directory.string());
+
+		for (const auto& attributeName : m_attributeNames)
+		{
+			pComponentsFileMessage->add_attributenames(attributeName);
+		}
+
+		for (const auto& attributeTextValue : m_attributeTextValues)
+		{
+			pComponentsFileMessage->add_attributetextvalues(attributeTextValue);
+		}
+
+		for (const auto& pComponentRecord : m_componentRecords)
+		{
+			auto pComponentRecordMessage = pComponentRecord->to_protobuf();
+			pComponentsFileMessage->add_componentrecords()->CopyFrom(*pComponentRecordMessage);
+		}
+
+		for (const auto& kvBomDescriptionRecord : m_bomDescriptionRecordsByCpn)
+		{
+			auto pBomDescriptionRecordMessage = kvBomDescriptionRecord.second->to_protobuf();
+			(*pComponentsFileMessage->mutable_bomdescriptionrecordsbycpn())[kvBomDescriptionRecord.first] = *pBomDescriptionRecordMessage;
+		}
+
+		return pComponentsFileMessage;		
+	}
+
+	void ComponentsFile::from_protobuf(const Odb::Lib::Protobuf::ComponentsFile& message)
+	{
+		m_units = message.units();
+		m_id = message.id();
+		m_side = static_cast<BoardSide>(message.side());
+		m_layerName = message.layername();
+		m_path = message.path();
+		m_directory = message.directory();
+
+		for (const auto& attributeName : message.attributenames())
+		{
+			m_attributeNames.push_back(attributeName);
+		}
+
+		for (const auto& attributeTextValue : message.attributetextvalues())
+		{
+			m_attributeTextValues.push_back(attributeTextValue);
+		}
+
+		for (const auto& componentRecordMessage : message.componentrecords())
+		{
+			auto pComponentRecord = std::make_shared<ComponentRecord>();
+			pComponentRecord->from_protobuf(componentRecordMessage);
+			m_componentRecords.push_back(pComponentRecord);
+		}
+
+		for (const auto& kvBomDescriptionRecord : message.bomdescriptionrecordsbycpn())
+		{
+			auto pBomDescriptionRecord = std::make_shared<BomDescriptionRecord>();
+			pBomDescriptionRecord->from_protobuf(kvBomDescriptionRecord.second);
+			m_bomDescriptionRecordsByCpn[kvBomDescriptionRecord.first] = pBomDescriptionRecord;
+		}
+	}
+
+	std::unique_ptr<Odb::Lib::Protobuf::ComponentsFile::BomDescriptionRecord> ComponentsFile::BomDescriptionRecord::to_protobuf() const
+	{
+		std::unique_ptr<Odb::Lib::Protobuf::ComponentsFile::BomDescriptionRecord> pBomDescriptionRecordMessage(new Odb::Lib::Protobuf::ComponentsFile::BomDescriptionRecord);
+		pBomDescriptionRecordMessage->set_cpn(cpn);
+		pBomDescriptionRecordMessage->set_pkg(pkg);
+		pBomDescriptionRecordMessage->set_ipn(ipn);
+		for (const auto& description : descriptions)
+		{			
+			pBomDescriptionRecordMessage->add_descriptions()->assign(description);
+		}
+		pBomDescriptionRecordMessage->set_vpl_vnd(vpl_vnd);
+		pBomDescriptionRecordMessage->set_vpl_mpn(vpl_mpn);
+		pBomDescriptionRecordMessage->set_vnd(vnd);
+		pBomDescriptionRecordMessage->set_mpn(mpn);
+		return pBomDescriptionRecordMessage;
+	}
+
+	void ComponentsFile::BomDescriptionRecord::from_protobuf(const Odb::Lib::Protobuf::ComponentsFile::BomDescriptionRecord& message)
+	{
+		cpn = message.cpn();
+		pkg = message.pkg();
+		ipn = message.ipn();
+		for (const auto& description : message.descriptions())
+		{
+			descriptions.push_back(description);
+		}
+		vpl_vnd = message.vpl_vnd();
+		vpl_mpn = message.vpl_mpn();
+		vnd = message.vnd();
+		mpn = message.mpn();
+	}
+
 	ComponentsFile::ComponentRecord::~ComponentRecord()
 	{
 		m_toeprintRecords.clear();
 		m_propertyRecords.clear();
+	}
+
+	std::unique_ptr<Odb::Lib::Protobuf::ComponentsFile::ComponentRecord> ComponentsFile::ComponentRecord::to_protobuf() const
+	{
+		std::unique_ptr<Odb::Lib::Protobuf::ComponentsFile::ComponentRecord> pComponentRecordMessage(new Odb::Lib::Protobuf::ComponentsFile::ComponentRecord);
+		pComponentRecordMessage->set_pkgref(pkgRef);
+		pComponentRecordMessage->set_locationx(locationX);
+		pComponentRecordMessage->set_locationy(locationY);
+		pComponentRecordMessage->set_rotation(rotation);
+		pComponentRecordMessage->set_mirror(mirror);
+		pComponentRecordMessage->set_compname(compName);
+		pComponentRecordMessage->set_partname(partName);
+		//pComponentRecordMessage->set_attributes(attributes);
+		pComponentRecordMessage->set_index(index);
+
+		for (const auto& pPropertyRecord : m_propertyRecords)
+		{
+			auto pPropertyRecordMessage = pPropertyRecord->to_protobuf();
+			pComponentRecordMessage->add_propertyrecords()->CopyFrom(*pPropertyRecordMessage);
+		}
+
+		for (const auto& pToeprintRecord : m_toeprintRecords)
+		{
+			auto pToeprintRecordMessage = pToeprintRecord->to_protobuf();
+			pComponentRecordMessage->add_toeprintrecords()->CopyFrom(*pToeprintRecordMessage);
+		}
+
+		for (const auto& kvAttributeAssignment : m_attributeLookupTable)
+		{
+			(*pComponentRecordMessage->mutable_attributelookuptable())[kvAttributeAssignment.first] = kvAttributeAssignment.second;
+		}
+
+		return pComponentRecordMessage;
+	}
+
+	void ComponentsFile::ComponentRecord::from_protobuf(const Odb::Lib::Protobuf::ComponentsFile::ComponentRecord& message)
+	{
+		pkgRef = message.pkgref();
+		locationX = message.locationx();
+		locationY = message.locationy();
+		rotation = message.rotation();
+		mirror = message.mirror();
+		compName = message.compname();
+		partName = message.partname();
+		//attributes = message.attributes();
+		index = message.index();
+
+		for (const auto& propertyRecordMessage : message.propertyrecords())
+		{
+			auto pPropertyRecord = std::make_shared<PropertyRecord>();
+			pPropertyRecord->from_protobuf(propertyRecordMessage);
+			m_propertyRecords.push_back(pPropertyRecord);
+		}
+
+		for (const auto& toeprintRecordMessage : message.toeprintrecords())
+		{
+			auto pToeprintRecord = std::make_shared<ToeprintRecord>();
+			pToeprintRecord->from_protobuf(toeprintRecordMessage);
+			m_toeprintRecords.push_back(pToeprintRecord);
+		}
+
+		for (const auto& kvAttributeAssignment : message.attributelookuptable())
+		{
+			m_attributeLookupTable[kvAttributeAssignment.first] = kvAttributeAssignment.second;
+		}
+	}
+
+	std::unique_ptr<Odb::Lib::Protobuf::ComponentsFile::ComponentRecord::ToeprintRecord> ComponentsFile::ComponentRecord::ToeprintRecord::to_protobuf() const
+	{
+		std::unique_ptr<Odb::Lib::Protobuf::ComponentsFile::ComponentRecord::ToeprintRecord> pToeprintRecordMessage(new Odb::Lib::Protobuf::ComponentsFile::ComponentRecord::ToeprintRecord);
+		pToeprintRecordMessage->set_pinnumber(pinNumber);
+		pToeprintRecordMessage->set_locationx(locationX);
+		pToeprintRecordMessage->set_locationy(locationY);
+		pToeprintRecordMessage->set_rotation(rotation);
+		pToeprintRecordMessage->set_mirror(mirror);
+		pToeprintRecordMessage->set_netnumber(netNumber);
+		pToeprintRecordMessage->set_subnetnumber(subnetNumber);
+		pToeprintRecordMessage->set_name(name);
+		return pToeprintRecordMessage;		
+	}
+
+	void ComponentsFile::ComponentRecord::ToeprintRecord::from_protobuf(const Odb::Lib::Protobuf::ComponentsFile::ComponentRecord::ToeprintRecord& message)
+	{
+		pinNumber = message.pinnumber();
+		locationX = message.locationx();
+		locationY = message.locationy();
+		rotation = message.rotation();
+		mirror = message.mirror();
+		netNumber = message.netnumber();
+		subnetNumber = message.subnetnumber();
+		name = message.name();
 	}
 
 	bool ComponentsFile::Parse(std::filesystem::path directory)
@@ -85,16 +294,15 @@ namespace Odb::Lib::FileModel::Design
 		{
 			m_directory = directory;
 
-			auto layerName = m_directory.filename().string();
-			if (layerName == TOP_COMPONENTS_LAYER_NAME ||
-				layerName == BOTTOM_COMPONENTS_LAYER_NAME)
+			m_layerName = m_directory.filename().string();
+			if (m_layerName == TOP_COMPONENTS_LAYER_NAME ||
+				m_layerName == BOTTOM_COMPONENTS_LAYER_NAME)
 			{
-				m_side = layerName == TOP_COMPONENTS_LAYER_NAME ?
+				m_side = m_layerName == TOP_COMPONENTS_LAYER_NAME ?
 					BoardSide::Top :
 					BoardSide::Bottom;
 			}
-
-			if (m_side == BoardSide::Neither)
+			else
 			{
 				// not a components layer
 				return true;
@@ -103,7 +311,7 @@ namespace Odb::Lib::FileModel::Design
 			loginfo("checking for extraction...");
 
 			std::filesystem::path componentsFilePath;
-			for (const std::string componentsFilename : COMPONENTS_FILENAMES)
+			for (const std::string& componentsFilename : COMPONENTS_FILENAMES)
 			{
 				loginfo("trying components file: [" + componentsFilename + "]...");
 
@@ -138,6 +346,7 @@ namespace Odb::Lib::FileModel::Design
 			}
 
 			std::shared_ptr<ComponentRecord> pCurrentComponentRecord;
+			std::shared_ptr<BomDescriptionRecord> pCurrentBomDescriptionRecord;
 			
 			while (std::getline(componentsFile, line))
 			{
@@ -222,6 +431,13 @@ namespace Odb::Lib::FileModel::Design
 							throw_parse_error(m_path, line, token, lineNumber);
 						}
 
+						if (pCurrentBomDescriptionRecord != nullptr)
+						{
+							// BomDescriptionRecord end (i.e. MPN) line
+							m_bomDescriptionRecordsByCpn[pCurrentBomDescriptionRecord->cpn] = pCurrentBomDescriptionRecord;
+							pCurrentBomDescriptionRecord.reset();
+						}
+
 						// do we have a current component record?
 						if (pCurrentComponentRecord != nullptr)
 						{
@@ -244,7 +460,7 @@ namespace Odb::Lib::FileModel::Design
 
 						lineStream >> pCurrentComponentRecord->compName;
 						lineStream >> pCurrentComponentRecord->partName;
-						lineStream >> pCurrentComponentRecord->attributes;
+						//lineStream >> pCurrentComponentRecord->attributes;
 
 						if (m_componentRecords.size() > UINT_MAX)
 						{
@@ -253,14 +469,13 @@ namespace Odb::Lib::FileModel::Design
 						
 						pCurrentComponentRecord->index = static_cast<unsigned int>(m_componentRecords.size());
 
-						// TODO: parse attributes and id string
-						//std::string strId;
-						//lineStream >> strId;
-						//std::stringstream idStream(strId);
-						//if (!std::getline(idStream, token, '=')) return false;
-						//else if (!std::getline(idStream, token, '=')) return false;
-						//pCurrentComponentRecord->id = std::stoul(token);
+						std::string attrIdString;
+						lineStream >> attrIdString;
 
+						if (!pCurrentComponentRecord->ParseAttributeLookupTable(attrIdString))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}						
 					}
 					else if (line.find(PropertyRecord::RECORD_TOKEN) == 0)
 					{
@@ -350,7 +565,7 @@ namespace Odb::Lib::FileModel::Design
 						{
 							// netNumber == -1
 							parse_info pi(m_path, line, lineNumber);
-							logwarn(pi.toString("Component Toeprint record with netNumber = -1"));
+							logdebug(pi.toString("Component Toeprint record with netNumber = -1"));
 
 							if (!m_allowToepintNetNumbersOfNegative1)
 							{
@@ -363,7 +578,7 @@ namespace Odb::Lib::FileModel::Design
 						{
 							// subnetNumber == -1
 							parse_info pi(m_path, line, lineNumber);
-							logwarn(pi.toString("Component Toeprint record with subnetNumber = -1"));
+							logdebug(pi.toString("Component Toeprint record with subnetNumber = -1"));
 
 							if (!m_allowToepintNetNumbersOfNegative1)
 							{
@@ -375,7 +590,155 @@ namespace Odb::Lib::FileModel::Design
 
 						pCurrentComponentRecord->m_toeprintRecords.push_back(pToeprintRecord);
 					}
+					else if (line.find(ComponentsFile::BomDescriptionRecord::CPN_RECORD_TOKEN) == 0)
+					{
+						// BomDescriptionRecord start (i.e. CPN) line
+
+						std::string token;
+						lineStream >> token;
+						if (token != ComponentsFile::BomDescriptionRecord::CPN_RECORD_TOKEN)
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (pCurrentBomDescriptionRecord != nullptr)
+						{
+							m_bomDescriptionRecordsByCpn[pCurrentBomDescriptionRecord->cpn] = pCurrentBomDescriptionRecord;
+							pCurrentBomDescriptionRecord.reset();
+						}
+
+						pCurrentBomDescriptionRecord = std::make_shared<ComponentsFile::BomDescriptionRecord>();										
+					}
+					else if (line.find(ComponentsFile::BomDescriptionRecord::IPN_RECORD_TOKEN) == 0)
+					{
+						std::string token;
+						lineStream >> token;
+						if (token != ComponentsFile::BomDescriptionRecord::IPN_RECORD_TOKEN)
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (pCurrentBomDescriptionRecord == nullptr)
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (!(lineStream >> pCurrentBomDescriptionRecord->ipn))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+					}
+					else if (line.find(ComponentsFile::BomDescriptionRecord::DSC_RECORD_TOKEN) == 0)
+					{
+						std::string token;
+						lineStream >> token;
+						if (token != ComponentsFile::BomDescriptionRecord::DSC_RECORD_TOKEN)
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (pCurrentBomDescriptionRecord == nullptr)
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						std::string description;
+
+						if (!(lineStream >> description))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						pCurrentBomDescriptionRecord->descriptions.push_back(description);
+					}
+					else if (line.find(ComponentsFile::BomDescriptionRecord::VPL_VND_RECORD_TOKEN) == 0)
+					{
+						std::string token;
+						lineStream >> token;
+						if (token != ComponentsFile::BomDescriptionRecord::VPL_VND_RECORD_TOKEN)
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (pCurrentBomDescriptionRecord == nullptr)
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (!(lineStream >> pCurrentBomDescriptionRecord->vpl_vnd))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+					}
+					else if (line.find(ComponentsFile::BomDescriptionRecord::VPL_MPN_RECORD_TOKEN) == 0)
+					{
+						std::string token;
+						lineStream >> token;
+						if (token != ComponentsFile::BomDescriptionRecord::VPL_MPN_RECORD_TOKEN)
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (pCurrentBomDescriptionRecord == nullptr)
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (!(lineStream >> pCurrentBomDescriptionRecord->vpl_mpn))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+					}
+					else if (line.find(ComponentsFile::BomDescriptionRecord::VND_RECORD_TOKEN) == 0)
+					{
+						std::string token;
+						lineStream >> token;
+						if (token != ComponentsFile::BomDescriptionRecord::VND_RECORD_TOKEN)
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (pCurrentBomDescriptionRecord == nullptr)
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (!(lineStream >> pCurrentBomDescriptionRecord->vnd))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+					}
+					else if (line.find(ComponentsFile::BomDescriptionRecord::MPN_RECORD_TOKEN) == 0)
+					{
+						std::string token;
+						lineStream >> token;
+						if (token != ComponentsFile::BomDescriptionRecord::MPN_RECORD_TOKEN)
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (pCurrentBomDescriptionRecord == nullptr)
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						if (!(lineStream >> pCurrentBomDescriptionRecord->mpn))
+						{
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
+
+						// BomDescriptionRecord end (i.e. MPN) line
+						//m_bomDescriptionRecordsByCpn[pCurrentBomDescriptionRecord->cpn] = pCurrentBomDescriptionRecord;
+						//pCurrentBomDescriptionRecord.reset();
+					}					
 				}
+			}
+
+			if (pCurrentBomDescriptionRecord != nullptr)
+			{
+				// BomDescriptionRecord end (i.e. MPN) line
+				m_bomDescriptionRecordsByCpn[pCurrentBomDescriptionRecord->cpn] = pCurrentBomDescriptionRecord;
+				pCurrentBomDescriptionRecord.reset();
 			}
 
 			// do we have a current component record? (finish up the last record in the file- i.e. ran out of file)

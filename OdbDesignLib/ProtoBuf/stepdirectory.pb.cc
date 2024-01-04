@@ -53,7 +53,10 @@ PROTOBUF_CONSTEXPR StepDirectory::StepDirectory(
   , /*decltype(_impl_.netlistsbyname_)*/{::_pbi::ConstantInitialized()}
   , /*decltype(_impl_.name_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.path_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.edadatafile_)*/nullptr} {}
+  , /*decltype(_impl_.edadatafile_)*/nullptr
+  , /*decltype(_impl_.attrlistfile_)*/nullptr
+  , /*decltype(_impl_.profilefile_)*/nullptr
+  , /*decltype(_impl_.stephdrfile_)*/nullptr} {}
 struct StepDirectoryDefaultTypeInternal {
   PROTOBUF_CONSTEXPR StepDirectoryDefaultTypeInternal()
       : _instance(::_pbi::ConstantInitialized{}) {}
@@ -102,16 +105,22 @@ const uint32_t TableStruct_stepdirectory_2eproto::offsets[] PROTOBUF_SECTION_VAR
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StepDirectory, _impl_.layersbyname_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StepDirectory, _impl_.netlistsbyname_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StepDirectory, _impl_.edadatafile_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StepDirectory, _impl_.attrlistfile_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StepDirectory, _impl_.profilefile_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StepDirectory, _impl_.stephdrfile_),
   0,
   1,
   ~0u,
   ~0u,
   2,
+  3,
+  4,
+  5,
 };
 static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, 8, -1, sizeof(::Odb::Lib::Protobuf::StepDirectory_LayersByNameEntry_DoNotUse)},
   { 10, 18, -1, sizeof(::Odb::Lib::Protobuf::StepDirectory_NetlistsByNameEntry_DoNotUse)},
-  { 20, 31, -1, sizeof(::Odb::Lib::Protobuf::StepDirectory)},
+  { 20, 34, -1, sizeof(::Odb::Lib::Protobuf::StepDirectory)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
@@ -123,30 +132,40 @@ static const ::_pb::Message* const file_default_instances[] = {
 const char descriptor_table_protodef_stepdirectory_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
   "\n\023stepdirectory.proto\022\020Odb.Lib.Protobuf\032"
   "\021edadatafile.proto\032\021netlistfile.proto\032\024l"
-  "ayerdirectory.proto\"\323\003\n\rStepDirectory\022\021\n"
-  "\004name\030\001 \001(\tH\000\210\001\001\022\021\n\004path\030\002 \001(\tH\001\210\001\001\022G\n\014l"
-  "ayersByName\030\003 \003(\01321.Odb.Lib.Protobuf.Ste"
-  "pDirectory.LayersByNameEntry\022K\n\016netlists"
-  "ByName\030\004 \003(\01323.Odb.Lib.Protobuf.StepDire"
-  "ctory.NetlistsByNameEntry\0227\n\013edadatafile"
-  "\030\005 \001(\0132\035.Odb.Lib.Protobuf.EdaDataFileH\002\210"
-  "\001\001\032U\n\021LayersByNameEntry\022\013\n\003key\030\001 \001(\t\022/\n\005"
-  "value\030\002 \001(\0132 .Odb.Lib.Protobuf.LayerDire"
-  "ctory:\0028\001\032T\n\023NetlistsByNameEntry\022\013\n\003key\030"
-  "\001 \001(\t\022,\n\005value\030\002 \001(\0132\035.Odb.Lib.Protobuf."
-  "NetlistFile:\0028\001B\007\n\005_nameB\007\n\005_pathB\016\n\014_ed"
-  "adatafileb\006proto3"
+  "ayerdirectory.proto\032\022attrlistfile.proto\032"
+  "\022featuresfile.proto\032\021stephdrfile.proto\"\262"
+  "\005\n\rStepDirectory\022\021\n\004name\030\001 \001(\tH\000\210\001\001\022\021\n\004p"
+  "ath\030\002 \001(\tH\001\210\001\001\022G\n\014layersByName\030\003 \003(\01321.O"
+  "db.Lib.Protobuf.StepDirectory.LayersByNa"
+  "meEntry\022K\n\016netlistsByName\030\004 \003(\01323.Odb.Li"
+  "b.Protobuf.StepDirectory.NetlistsByNameE"
+  "ntry\0227\n\013edadatafile\030\005 \001(\0132\035.Odb.Lib.Prot"
+  "obuf.EdaDataFileH\002\210\001\001\0229\n\014attrlistfile\030\006 "
+  "\001(\0132\036.Odb.Lib.Protobuf.AttrListFileH\003\210\001\001"
+  "\0228\n\013profilefile\030\007 \001(\0132\036.Odb.Lib.Protobuf"
+  ".FeaturesFileH\004\210\001\001\0227\n\013stephdrfile\030\010 \001(\0132"
+  "\035.Odb.Lib.Protobuf.StepHdrFileH\005\210\001\001\032U\n\021L"
+  "ayersByNameEntry\022\013\n\003key\030\001 \001(\t\022/\n\005value\030\002"
+  " \001(\0132 .Odb.Lib.Protobuf.LayerDirectory:\002"
+  "8\001\032T\n\023NetlistsByNameEntry\022\013\n\003key\030\001 \001(\t\022,"
+  "\n\005value\030\002 \001(\0132\035.Odb.Lib.Protobuf.Netlist"
+  "File:\0028\001B\007\n\005_nameB\007\n\005_pathB\016\n\014_edadatafi"
+  "leB\017\n\r_attrlistfileB\016\n\014_profilefileB\016\n\014_"
+  "stephdrfileb\006proto3"
   ;
-static const ::_pbi::DescriptorTable* const descriptor_table_stepdirectory_2eproto_deps[3] = {
+static const ::_pbi::DescriptorTable* const descriptor_table_stepdirectory_2eproto_deps[6] = {
+  &::descriptor_table_attrlistfile_2eproto,
   &::descriptor_table_edadatafile_2eproto,
+  &::descriptor_table_featuresfile_2eproto,
   &::descriptor_table_layerdirectory_2eproto,
   &::descriptor_table_netlistfile_2eproto,
+  &::descriptor_table_stephdrfile_2eproto,
 };
 static ::_pbi::once_flag descriptor_table_stepdirectory_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_stepdirectory_2eproto = {
-    false, false, 577, descriptor_table_protodef_stepdirectory_2eproto,
+    false, false, 859, descriptor_table_protodef_stepdirectory_2eproto,
     "stepdirectory.proto",
-    &descriptor_table_stepdirectory_2eproto_once, descriptor_table_stepdirectory_2eproto_deps, 3, 3,
+    &descriptor_table_stepdirectory_2eproto_once, descriptor_table_stepdirectory_2eproto_deps, 6, 3,
     schemas, file_default_instances, TableStruct_stepdirectory_2eproto::offsets,
     file_level_metadata_stepdirectory_2eproto, file_level_enum_descriptors_stepdirectory_2eproto,
     file_level_service_descriptors_stepdirectory_2eproto,
@@ -204,11 +223,35 @@ class StepDirectory::_Internal {
   static void set_has_edadatafile(HasBits* has_bits) {
     (*has_bits)[0] |= 4u;
   }
+  static const ::Odb::Lib::Protobuf::AttrListFile& attrlistfile(const StepDirectory* msg);
+  static void set_has_attrlistfile(HasBits* has_bits) {
+    (*has_bits)[0] |= 8u;
+  }
+  static const ::Odb::Lib::Protobuf::FeaturesFile& profilefile(const StepDirectory* msg);
+  static void set_has_profilefile(HasBits* has_bits) {
+    (*has_bits)[0] |= 16u;
+  }
+  static const ::Odb::Lib::Protobuf::StepHdrFile& stephdrfile(const StepDirectory* msg);
+  static void set_has_stephdrfile(HasBits* has_bits) {
+    (*has_bits)[0] |= 32u;
+  }
 };
 
 const ::Odb::Lib::Protobuf::EdaDataFile&
 StepDirectory::_Internal::edadatafile(const StepDirectory* msg) {
   return *msg->_impl_.edadatafile_;
+}
+const ::Odb::Lib::Protobuf::AttrListFile&
+StepDirectory::_Internal::attrlistfile(const StepDirectory* msg) {
+  return *msg->_impl_.attrlistfile_;
+}
+const ::Odb::Lib::Protobuf::FeaturesFile&
+StepDirectory::_Internal::profilefile(const StepDirectory* msg) {
+  return *msg->_impl_.profilefile_;
+}
+const ::Odb::Lib::Protobuf::StepHdrFile&
+StepDirectory::_Internal::stephdrfile(const StepDirectory* msg) {
+  return *msg->_impl_.stephdrfile_;
 }
 void StepDirectory::clear_layersbyname() {
   _impl_.layersbyname_.Clear();
@@ -219,6 +262,18 @@ void StepDirectory::clear_netlistsbyname() {
 void StepDirectory::clear_edadatafile() {
   if (_impl_.edadatafile_ != nullptr) _impl_.edadatafile_->Clear();
   _impl_._has_bits_[0] &= ~0x00000004u;
+}
+void StepDirectory::clear_attrlistfile() {
+  if (_impl_.attrlistfile_ != nullptr) _impl_.attrlistfile_->Clear();
+  _impl_._has_bits_[0] &= ~0x00000008u;
+}
+void StepDirectory::clear_profilefile() {
+  if (_impl_.profilefile_ != nullptr) _impl_.profilefile_->Clear();
+  _impl_._has_bits_[0] &= ~0x00000010u;
+}
+void StepDirectory::clear_stephdrfile() {
+  if (_impl_.stephdrfile_ != nullptr) _impl_.stephdrfile_->Clear();
+  _impl_._has_bits_[0] &= ~0x00000020u;
 }
 StepDirectory::StepDirectory(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                          bool is_message_owned)
@@ -239,7 +294,10 @@ StepDirectory::StepDirectory(const StepDirectory& from)
     , /*decltype(_impl_.netlistsbyname_)*/{}
     , decltype(_impl_.name_){}
     , decltype(_impl_.path_){}
-    , decltype(_impl_.edadatafile_){nullptr}};
+    , decltype(_impl_.edadatafile_){nullptr}
+    , decltype(_impl_.attrlistfile_){nullptr}
+    , decltype(_impl_.profilefile_){nullptr}
+    , decltype(_impl_.stephdrfile_){nullptr}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   _this->_impl_.layersbyname_.MergeFrom(from._impl_.layersbyname_);
@@ -263,6 +321,15 @@ StepDirectory::StepDirectory(const StepDirectory& from)
   if (from._internal_has_edadatafile()) {
     _this->_impl_.edadatafile_ = new ::Odb::Lib::Protobuf::EdaDataFile(*from._impl_.edadatafile_);
   }
+  if (from._internal_has_attrlistfile()) {
+    _this->_impl_.attrlistfile_ = new ::Odb::Lib::Protobuf::AttrListFile(*from._impl_.attrlistfile_);
+  }
+  if (from._internal_has_profilefile()) {
+    _this->_impl_.profilefile_ = new ::Odb::Lib::Protobuf::FeaturesFile(*from._impl_.profilefile_);
+  }
+  if (from._internal_has_stephdrfile()) {
+    _this->_impl_.stephdrfile_ = new ::Odb::Lib::Protobuf::StepHdrFile(*from._impl_.stephdrfile_);
+  }
   // @@protoc_insertion_point(copy_constructor:Odb.Lib.Protobuf.StepDirectory)
 }
 
@@ -278,6 +345,9 @@ inline void StepDirectory::SharedCtor(
     , decltype(_impl_.name_){}
     , decltype(_impl_.path_){}
     , decltype(_impl_.edadatafile_){nullptr}
+    , decltype(_impl_.attrlistfile_){nullptr}
+    , decltype(_impl_.profilefile_){nullptr}
+    , decltype(_impl_.stephdrfile_){nullptr}
   };
   _impl_.name_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
@@ -308,6 +378,9 @@ inline void StepDirectory::SharedDtor() {
   _impl_.name_.Destroy();
   _impl_.path_.Destroy();
   if (this != internal_default_instance()) delete _impl_.edadatafile_;
+  if (this != internal_default_instance()) delete _impl_.attrlistfile_;
+  if (this != internal_default_instance()) delete _impl_.profilefile_;
+  if (this != internal_default_instance()) delete _impl_.stephdrfile_;
 }
 
 void StepDirectory::ArenaDtor(void* object) {
@@ -328,7 +401,7 @@ void StepDirectory::Clear() {
   _impl_.layersbyname_.Clear();
   _impl_.netlistsbyname_.Clear();
   cached_has_bits = _impl_._has_bits_[0];
-  if (cached_has_bits & 0x00000007u) {
+  if (cached_has_bits & 0x0000003fu) {
     if (cached_has_bits & 0x00000001u) {
       _impl_.name_.ClearNonDefaultToEmpty();
     }
@@ -338,6 +411,18 @@ void StepDirectory::Clear() {
     if (cached_has_bits & 0x00000004u) {
       GOOGLE_DCHECK(_impl_.edadatafile_ != nullptr);
       _impl_.edadatafile_->Clear();
+    }
+    if (cached_has_bits & 0x00000008u) {
+      GOOGLE_DCHECK(_impl_.attrlistfile_ != nullptr);
+      _impl_.attrlistfile_->Clear();
+    }
+    if (cached_has_bits & 0x00000010u) {
+      GOOGLE_DCHECK(_impl_.profilefile_ != nullptr);
+      _impl_.profilefile_->Clear();
+    }
+    if (cached_has_bits & 0x00000020u) {
+      GOOGLE_DCHECK(_impl_.stephdrfile_ != nullptr);
+      _impl_.stephdrfile_->Clear();
     }
   }
   _impl_._has_bits_.Clear();
@@ -401,6 +486,30 @@ const char* StepDirectory::_InternalParse(const char* ptr, ::_pbi::ParseContext*
       case 5:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 42)) {
           ptr = ctx->ParseMessage(_internal_mutable_edadatafile(), ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional .Odb.Lib.Protobuf.AttrListFile attrlistfile = 6;
+      case 6:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 50)) {
+          ptr = ctx->ParseMessage(_internal_mutable_attrlistfile(), ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional .Odb.Lib.Protobuf.FeaturesFile profilefile = 7;
+      case 7:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 58)) {
+          ptr = ctx->ParseMessage(_internal_mutable_profilefile(), ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional .Odb.Lib.Protobuf.StepHdrFile stephdrfile = 8;
+      case 8:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 66)) {
+          ptr = ctx->ParseMessage(_internal_mutable_stephdrfile(), ptr);
           CHK_(ptr);
         } else
           goto handle_unusual;
@@ -514,6 +623,27 @@ uint8_t* StepDirectory::_InternalSerialize(
         _Internal::edadatafile(this).GetCachedSize(), target, stream);
   }
 
+  // optional .Odb.Lib.Protobuf.AttrListFile attrlistfile = 6;
+  if (_internal_has_attrlistfile()) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(6, _Internal::attrlistfile(this),
+        _Internal::attrlistfile(this).GetCachedSize(), target, stream);
+  }
+
+  // optional .Odb.Lib.Protobuf.FeaturesFile profilefile = 7;
+  if (_internal_has_profilefile()) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(7, _Internal::profilefile(this),
+        _Internal::profilefile(this).GetCachedSize(), target, stream);
+  }
+
+  // optional .Odb.Lib.Protobuf.StepHdrFile stephdrfile = 8;
+  if (_internal_has_stephdrfile()) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(8, _Internal::stephdrfile(this),
+        _Internal::stephdrfile(this).GetCachedSize(), target, stream);
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -549,7 +679,7 @@ size_t StepDirectory::ByteSizeLong() const {
   }
 
   cached_has_bits = _impl_._has_bits_[0];
-  if (cached_has_bits & 0x00000007u) {
+  if (cached_has_bits & 0x0000003fu) {
     // optional string name = 1;
     if (cached_has_bits & 0x00000001u) {
       total_size += 1 +
@@ -569,6 +699,27 @@ size_t StepDirectory::ByteSizeLong() const {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
           *_impl_.edadatafile_);
+    }
+
+    // optional .Odb.Lib.Protobuf.AttrListFile attrlistfile = 6;
+    if (cached_has_bits & 0x00000008u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+          *_impl_.attrlistfile_);
+    }
+
+    // optional .Odb.Lib.Protobuf.FeaturesFile profilefile = 7;
+    if (cached_has_bits & 0x00000010u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+          *_impl_.profilefile_);
+    }
+
+    // optional .Odb.Lib.Protobuf.StepHdrFile stephdrfile = 8;
+    if (cached_has_bits & 0x00000020u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+          *_impl_.stephdrfile_);
     }
 
   }
@@ -593,7 +744,7 @@ void StepDirectory::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::
   _this->_impl_.layersbyname_.MergeFrom(from._impl_.layersbyname_);
   _this->_impl_.netlistsbyname_.MergeFrom(from._impl_.netlistsbyname_);
   cached_has_bits = from._impl_._has_bits_[0];
-  if (cached_has_bits & 0x00000007u) {
+  if (cached_has_bits & 0x0000003fu) {
     if (cached_has_bits & 0x00000001u) {
       _this->_internal_set_name(from._internal_name());
     }
@@ -603,6 +754,18 @@ void StepDirectory::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::
     if (cached_has_bits & 0x00000004u) {
       _this->_internal_mutable_edadatafile()->::Odb::Lib::Protobuf::EdaDataFile::MergeFrom(
           from._internal_edadatafile());
+    }
+    if (cached_has_bits & 0x00000008u) {
+      _this->_internal_mutable_attrlistfile()->::Odb::Lib::Protobuf::AttrListFile::MergeFrom(
+          from._internal_attrlistfile());
+    }
+    if (cached_has_bits & 0x00000010u) {
+      _this->_internal_mutable_profilefile()->::Odb::Lib::Protobuf::FeaturesFile::MergeFrom(
+          from._internal_profilefile());
+    }
+    if (cached_has_bits & 0x00000020u) {
+      _this->_internal_mutable_stephdrfile()->::Odb::Lib::Protobuf::StepHdrFile::MergeFrom(
+          from._internal_stephdrfile());
     }
   }
   _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
@@ -635,7 +798,12 @@ void StepDirectory::InternalSwap(StepDirectory* other) {
       &_impl_.path_, lhs_arena,
       &other->_impl_.path_, rhs_arena
   );
-  swap(_impl_.edadatafile_, other->_impl_.edadatafile_);
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(StepDirectory, _impl_.stephdrfile_)
+      + sizeof(StepDirectory::_impl_.stephdrfile_)
+      - PROTOBUF_FIELD_OFFSET(StepDirectory, _impl_.edadatafile_)>(
+          reinterpret_cast<char*>(&_impl_.edadatafile_),
+          reinterpret_cast<char*>(&other->_impl_.edadatafile_));
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata StepDirectory::GetMetadata() const {

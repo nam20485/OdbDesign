@@ -11,6 +11,11 @@ set(CXX_STANDARD ${MY_CXX_STANDARD})
 set(CMAKE_CXX_STANDARD ${MY_CXX_STANDARD})
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+# only use ccache locally, i.e. not in CI
+if (NOT DEFINED ENV{CI})
+    set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_EXE}")
+endif()
+
 # required for SWIG python wrapper
 #set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 

@@ -8,20 +8,40 @@ package Odb.Lib.Protobuf;
 
 message NetlistFile {
 
-    // enum class Staggered
-    // {
-    //     Yes,
-    //     No,
-    //     Unknown
-    // };
+    message NetRecord {
 
-    // std::filesystem::path m_path;
-    // std::string m_name;
-    // std::string m_units;
-    // bool m_optimized;
-    // Staggered m_staggered;
+        optional uint32 serialNumber = 1;
+        optional string netName = 2;
 
-    // std::vector<std::string> m_netNames;
+    }
+
+    message NetPointRecord  {       
+
+        enum AccessSide {
+            Top = 0;
+            Down = 1;
+            Both = 2;
+            Inner = 3;
+        }
+
+        optional uint32 netNumber = 1;
+        optional float radius = 2;
+        optional float x = 3;
+        optional float y = 4;
+        optional AccessSide side = 5;
+        optional float width = 6;
+        optional float height = 7;
+        optional string epoint = 8;
+        optional string exp = 9;
+        optional bool commentPoint = 10;
+        optional float staggeredX = 11;
+        optional float staggeredY = 12;
+        optional float staggeredRadius = 13;
+        optional float viaPoint = 14;
+        optional float fiducialPoint = 15;
+        optional float testPoint = 16;
+        optional string testExecutionSide = 17;
+    }
 
     enum Staggered {
         Yes = 0;
@@ -35,5 +55,7 @@ message NetlistFile {
     optional bool optimized = 4;
     optional Staggered staggered = 5;
 
-    repeated string netNames = 6;
+    repeated NetRecord netRecordss = 6;
+    map<string, NetRecord> netRecordsByName = 7;
+    repeated NetPointRecord netPointRecords = 8;
 }

@@ -23,11 +23,69 @@ namespace _pbi = _pb::internal;
 namespace Odb {
 namespace Lib {
 namespace Protobuf {
+PROTOBUF_CONSTEXPR NetlistFile_NetRecord::NetlistFile_NetRecord(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_._has_bits_)*/{}
+  , /*decltype(_impl_._cached_size_)*/{}
+  , /*decltype(_impl_.netname_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.serialnumber_)*/0u} {}
+struct NetlistFile_NetRecordDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR NetlistFile_NetRecordDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~NetlistFile_NetRecordDefaultTypeInternal() {}
+  union {
+    NetlistFile_NetRecord _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 NetlistFile_NetRecordDefaultTypeInternal _NetlistFile_NetRecord_default_instance_;
+PROTOBUF_CONSTEXPR NetlistFile_NetPointRecord::NetlistFile_NetPointRecord(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_._has_bits_)*/{}
+  , /*decltype(_impl_._cached_size_)*/{}
+  , /*decltype(_impl_.epoint_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.exp_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.testexecutionside_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.netnumber_)*/0u
+  , /*decltype(_impl_.radius_)*/0
+  , /*decltype(_impl_.x_)*/0
+  , /*decltype(_impl_.y_)*/0
+  , /*decltype(_impl_.side_)*/0
+  , /*decltype(_impl_.width_)*/0
+  , /*decltype(_impl_.height_)*/0
+  , /*decltype(_impl_.commentpoint_)*/false
+  , /*decltype(_impl_.staggeredx_)*/0
+  , /*decltype(_impl_.staggeredy_)*/0
+  , /*decltype(_impl_.staggeredradius_)*/0
+  , /*decltype(_impl_.viapoint_)*/0
+  , /*decltype(_impl_.fiducialpoint_)*/0
+  , /*decltype(_impl_.testpoint_)*/0} {}
+struct NetlistFile_NetPointRecordDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR NetlistFile_NetPointRecordDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~NetlistFile_NetPointRecordDefaultTypeInternal() {}
+  union {
+    NetlistFile_NetPointRecord _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 NetlistFile_NetPointRecordDefaultTypeInternal _NetlistFile_NetPointRecord_default_instance_;
+PROTOBUF_CONSTEXPR NetlistFile_NetRecordsByNameEntry_DoNotUse::NetlistFile_NetRecordsByNameEntry_DoNotUse(
+    ::_pbi::ConstantInitialized) {}
+struct NetlistFile_NetRecordsByNameEntry_DoNotUseDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR NetlistFile_NetRecordsByNameEntry_DoNotUseDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~NetlistFile_NetRecordsByNameEntry_DoNotUseDefaultTypeInternal() {}
+  union {
+    NetlistFile_NetRecordsByNameEntry_DoNotUse _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 NetlistFile_NetRecordsByNameEntry_DoNotUseDefaultTypeInternal _NetlistFile_NetRecordsByNameEntry_DoNotUse_default_instance_;
 PROTOBUF_CONSTEXPR NetlistFile::NetlistFile(
     ::_pbi::ConstantInitialized): _impl_{
     /*decltype(_impl_._has_bits_)*/{}
   , /*decltype(_impl_._cached_size_)*/{}
-  , /*decltype(_impl_.netnames_)*/{}
+  , /*decltype(_impl_.netrecordss_)*/{}
+  , /*decltype(_impl_.netrecordsbyname_)*/{::_pbi::ConstantInitialized()}
+  , /*decltype(_impl_.netpointrecords_)*/{}
   , /*decltype(_impl_.path_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.name_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.units_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
@@ -45,11 +103,71 @@ PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORIT
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
-static ::_pb::Metadata file_level_metadata_netlistfile_2eproto[1];
-static const ::_pb::EnumDescriptor* file_level_enum_descriptors_netlistfile_2eproto[1];
+static ::_pb::Metadata file_level_metadata_netlistfile_2eproto[4];
+static const ::_pb::EnumDescriptor* file_level_enum_descriptors_netlistfile_2eproto[2];
 static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_netlistfile_2eproto = nullptr;
 
 const uint32_t TableStruct_netlistfile_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::NetlistFile_NetRecord, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::NetlistFile_NetRecord, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::NetlistFile_NetRecord, _impl_.serialnumber_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::NetlistFile_NetRecord, _impl_.netname_),
+  1,
+  0,
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::NetlistFile_NetPointRecord, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::NetlistFile_NetPointRecord, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::NetlistFile_NetPointRecord, _impl_.netnumber_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::NetlistFile_NetPointRecord, _impl_.radius_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::NetlistFile_NetPointRecord, _impl_.x_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::NetlistFile_NetPointRecord, _impl_.y_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::NetlistFile_NetPointRecord, _impl_.side_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::NetlistFile_NetPointRecord, _impl_.width_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::NetlistFile_NetPointRecord, _impl_.height_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::NetlistFile_NetPointRecord, _impl_.epoint_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::NetlistFile_NetPointRecord, _impl_.exp_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::NetlistFile_NetPointRecord, _impl_.commentpoint_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::NetlistFile_NetPointRecord, _impl_.staggeredx_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::NetlistFile_NetPointRecord, _impl_.staggeredy_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::NetlistFile_NetPointRecord, _impl_.staggeredradius_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::NetlistFile_NetPointRecord, _impl_.viapoint_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::NetlistFile_NetPointRecord, _impl_.fiducialpoint_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::NetlistFile_NetPointRecord, _impl_.testpoint_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::NetlistFile_NetPointRecord, _impl_.testexecutionside_),
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  0,
+  1,
+  10,
+  11,
+  12,
+  13,
+  14,
+  15,
+  16,
+  2,
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::NetlistFile_NetRecordsByNameEntry_DoNotUse, _has_bits_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::NetlistFile_NetRecordsByNameEntry_DoNotUse, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::NetlistFile_NetRecordsByNameEntry_DoNotUse, key_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::NetlistFile_NetRecordsByNameEntry_DoNotUse, value_),
+  0,
+  1,
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::NetlistFile, _impl_._has_bits_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::NetlistFile, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -61,38 +179,76 @@ const uint32_t TableStruct_netlistfile_2eproto::offsets[] PROTOBUF_SECTION_VARIA
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::NetlistFile, _impl_.units_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::NetlistFile, _impl_.optimized_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::NetlistFile, _impl_.staggered_),
-  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::NetlistFile, _impl_.netnames_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::NetlistFile, _impl_.netrecordss_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::NetlistFile, _impl_.netrecordsbyname_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::NetlistFile, _impl_.netpointrecords_),
   0,
   1,
   2,
   3,
   4,
   ~0u,
+  ~0u,
+  ~0u,
 };
 static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  { 0, 12, -1, sizeof(::Odb::Lib::Protobuf::NetlistFile)},
+  { 0, 8, -1, sizeof(::Odb::Lib::Protobuf::NetlistFile_NetRecord)},
+  { 10, 33, -1, sizeof(::Odb::Lib::Protobuf::NetlistFile_NetPointRecord)},
+  { 50, 58, -1, sizeof(::Odb::Lib::Protobuf::NetlistFile_NetRecordsByNameEntry_DoNotUse)},
+  { 60, 74, -1, sizeof(::Odb::Lib::Protobuf::NetlistFile)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
+  &::Odb::Lib::Protobuf::_NetlistFile_NetRecord_default_instance_._instance,
+  &::Odb::Lib::Protobuf::_NetlistFile_NetPointRecord_default_instance_._instance,
+  &::Odb::Lib::Protobuf::_NetlistFile_NetRecordsByNameEntry_DoNotUse_default_instance_._instance,
   &::Odb::Lib::Protobuf::_NetlistFile_default_instance_._instance,
 };
 
 const char descriptor_table_protodef_netlistfile_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
-  "\n\021netlistfile.proto\022\020Odb.Lib.Protobuf\"\225\002"
+  "\n\021netlistfile.proto\022\020Odb.Lib.Protobuf\"\370\n"
   "\n\013NetlistFile\022\021\n\004path\030\001 \001(\tH\000\210\001\001\022\021\n\004name"
   "\030\002 \001(\tH\001\210\001\001\022\022\n\005units\030\003 \001(\tH\002\210\001\001\022\026\n\toptim"
   "ized\030\004 \001(\010H\003\210\001\001\022\?\n\tstaggered\030\005 \001(\0162\'.Odb"
   ".Lib.Protobuf.NetlistFile.StaggeredH\004\210\001\001"
-  "\022\020\n\010netNames\030\006 \003(\t\")\n\tStaggered\022\007\n\003Yes\020\000"
-  "\022\006\n\002No\020\001\022\013\n\007Unknown\020\002B\007\n\005_pathB\007\n\005_nameB"
-  "\010\n\006_unitsB\014\n\n_optimizedB\014\n\n_staggeredb\006p"
-  "roto3"
+  "\022<\n\013netRecordss\030\006 \003(\0132\'.Odb.Lib.Protobuf"
+  ".NetlistFile.NetRecord\022M\n\020netRecordsByNa"
+  "me\030\007 \003(\01323.Odb.Lib.Protobuf.NetlistFile."
+  "NetRecordsByNameEntry\022E\n\017netPointRecords"
+  "\030\010 \003(\0132,.Odb.Lib.Protobuf.NetlistFile.Ne"
+  "tPointRecord\032Y\n\tNetRecord\022\031\n\014serialNumbe"
+  "r\030\001 \001(\rH\000\210\001\001\022\024\n\007netName\030\002 \001(\tH\001\210\001\001B\017\n\r_s"
+  "erialNumberB\n\n\010_netName\032\341\005\n\016NetPointReco"
+  "rd\022\026\n\tnetNumber\030\001 \001(\rH\000\210\001\001\022\023\n\006radius\030\002 \001"
+  "(\002H\001\210\001\001\022\016\n\001x\030\003 \001(\002H\002\210\001\001\022\016\n\001y\030\004 \001(\002H\003\210\001\001\022"
+  "J\n\004side\030\005 \001(\01627.Odb.Lib.Protobuf.Netlist"
+  "File.NetPointRecord.AccessSideH\004\210\001\001\022\022\n\005w"
+  "idth\030\006 \001(\002H\005\210\001\001\022\023\n\006height\030\007 \001(\002H\006\210\001\001\022\023\n\006"
+  "epoint\030\010 \001(\tH\007\210\001\001\022\020\n\003exp\030\t \001(\tH\010\210\001\001\022\031\n\014c"
+  "ommentPoint\030\n \001(\010H\t\210\001\001\022\027\n\nstaggeredX\030\013 \001"
+  "(\002H\n\210\001\001\022\027\n\nstaggeredY\030\014 \001(\002H\013\210\001\001\022\034\n\017stag"
+  "geredRadius\030\r \001(\002H\014\210\001\001\022\025\n\010viaPoint\030\016 \001(\002"
+  "H\r\210\001\001\022\032\n\rfiducialPoint\030\017 \001(\002H\016\210\001\001\022\026\n\ttes"
+  "tPoint\030\020 \001(\002H\017\210\001\001\022\036\n\021testExecutionSide\030\021"
+  " \001(\tH\020\210\001\001\"4\n\nAccessSide\022\007\n\003Top\020\000\022\010\n\004Down"
+  "\020\001\022\010\n\004Both\020\002\022\t\n\005Inner\020\003B\014\n\n_netNumberB\t\n"
+  "\007_radiusB\004\n\002_xB\004\n\002_yB\007\n\005_sideB\010\n\006_widthB"
+  "\t\n\007_heightB\t\n\007_epointB\006\n\004_expB\017\n\r_commen"
+  "tPointB\r\n\013_staggeredXB\r\n\013_staggeredYB\022\n\020"
+  "_staggeredRadiusB\013\n\t_viaPointB\020\n\016_fiduci"
+  "alPointB\014\n\n_testPointB\024\n\022_testExecutionS"
+  "ide\032`\n\025NetRecordsByNameEntry\022\013\n\003key\030\001 \001("
+  "\t\0226\n\005value\030\002 \001(\0132\'.Odb.Lib.Protobuf.Netl"
+  "istFile.NetRecord:\0028\001\")\n\tStaggered\022\007\n\003Ye"
+  "s\020\000\022\006\n\002No\020\001\022\013\n\007Unknown\020\002B\007\n\005_pathB\007\n\005_na"
+  "meB\010\n\006_unitsB\014\n\n_optimizedB\014\n\n_staggered"
+  "b\006proto3"
   ;
 static ::_pbi::once_flag descriptor_table_netlistfile_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_netlistfile_2eproto = {
-    false, false, 325, descriptor_table_protodef_netlistfile_2eproto,
+    false, false, 1448, descriptor_table_protodef_netlistfile_2eproto,
     "netlistfile.proto",
-    &descriptor_table_netlistfile_2eproto_once, nullptr, 0, 1,
+    &descriptor_table_netlistfile_2eproto_once, nullptr, 0, 4,
     schemas, file_default_instances, TableStruct_netlistfile_2eproto::offsets,
     file_level_metadata_netlistfile_2eproto, file_level_enum_descriptors_netlistfile_2eproto,
     file_level_service_descriptors_netlistfile_2eproto,
@@ -106,9 +262,34 @@ PROTOBUF_ATTRIBUTE_INIT_PRIORITY2 static ::_pbi::AddDescriptorsRunner dynamic_in
 namespace Odb {
 namespace Lib {
 namespace Protobuf {
-const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* NetlistFile_Staggered_descriptor() {
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* NetlistFile_NetPointRecord_AccessSide_descriptor() {
   ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&descriptor_table_netlistfile_2eproto);
   return file_level_enum_descriptors_netlistfile_2eproto[0];
+}
+bool NetlistFile_NetPointRecord_AccessSide_IsValid(int value) {
+  switch (value) {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+      return true;
+    default:
+      return false;
+  }
+}
+
+#if (__cplusplus < 201703) && (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
+constexpr NetlistFile_NetPointRecord_AccessSide NetlistFile_NetPointRecord::Top;
+constexpr NetlistFile_NetPointRecord_AccessSide NetlistFile_NetPointRecord::Down;
+constexpr NetlistFile_NetPointRecord_AccessSide NetlistFile_NetPointRecord::Both;
+constexpr NetlistFile_NetPointRecord_AccessSide NetlistFile_NetPointRecord::Inner;
+constexpr NetlistFile_NetPointRecord_AccessSide NetlistFile_NetPointRecord::AccessSide_MIN;
+constexpr NetlistFile_NetPointRecord_AccessSide NetlistFile_NetPointRecord::AccessSide_MAX;
+constexpr int NetlistFile_NetPointRecord::AccessSide_ARRAYSIZE;
+#endif  // (__cplusplus < 201703) && (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* NetlistFile_Staggered_descriptor() {
+  ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&descriptor_table_netlistfile_2eproto);
+  return file_level_enum_descriptors_netlistfile_2eproto[1];
 }
 bool NetlistFile_Staggered_IsValid(int value) {
   switch (value) {
@@ -129,6 +310,1028 @@ constexpr NetlistFile_Staggered NetlistFile::Staggered_MIN;
 constexpr NetlistFile_Staggered NetlistFile::Staggered_MAX;
 constexpr int NetlistFile::Staggered_ARRAYSIZE;
 #endif  // (__cplusplus < 201703) && (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
+
+// ===================================================================
+
+class NetlistFile_NetRecord::_Internal {
+ public:
+  using HasBits = decltype(std::declval<NetlistFile_NetRecord>()._impl_._has_bits_);
+  static void set_has_serialnumber(HasBits* has_bits) {
+    (*has_bits)[0] |= 2u;
+  }
+  static void set_has_netname(HasBits* has_bits) {
+    (*has_bits)[0] |= 1u;
+  }
+};
+
+NetlistFile_NetRecord::NetlistFile_NetRecord(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  // @@protoc_insertion_point(arena_constructor:Odb.Lib.Protobuf.NetlistFile.NetRecord)
+}
+NetlistFile_NetRecord::NetlistFile_NetRecord(const NetlistFile_NetRecord& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  NetlistFile_NetRecord* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){from._impl_._has_bits_}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.netname_){}
+    , decltype(_impl_.serialnumber_){}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _impl_.netname_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.netname_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (from._internal_has_netname()) {
+    _this->_impl_.netname_.Set(from._internal_netname(), 
+      _this->GetArenaForAllocation());
+  }
+  _this->_impl_.serialnumber_ = from._impl_.serialnumber_;
+  // @@protoc_insertion_point(copy_constructor:Odb.Lib.Protobuf.NetlistFile.NetRecord)
+}
+
+inline void NetlistFile_NetRecord::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.netname_){}
+    , decltype(_impl_.serialnumber_){0u}
+  };
+  _impl_.netname_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.netname_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+}
+
+NetlistFile_NetRecord::~NetlistFile_NetRecord() {
+  // @@protoc_insertion_point(destructor:Odb.Lib.Protobuf.NetlistFile.NetRecord)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void NetlistFile_NetRecord::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  _impl_.netname_.Destroy();
+}
+
+void NetlistFile_NetRecord::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void NetlistFile_NetRecord::Clear() {
+// @@protoc_insertion_point(message_clear_start:Odb.Lib.Protobuf.NetlistFile.NetRecord)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000001u) {
+    _impl_.netname_.ClearNonDefaultToEmpty();
+  }
+  _impl_.serialnumber_ = 0u;
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* NetlistFile_NetRecord::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  _Internal::HasBits has_bits{};
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // optional uint32 serialNumber = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
+          _Internal::set_has_serialnumber(&has_bits);
+          _impl_.serialnumber_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional string netName = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
+          auto str = _internal_mutable_netname();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "Odb.Lib.Protobuf.NetlistFile.NetRecord.netName"));
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  _impl_._has_bits_.Or(has_bits);
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* NetlistFile_NetRecord::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:Odb.Lib.Protobuf.NetlistFile.NetRecord)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // optional uint32 serialNumber = 1;
+  if (_internal_has_serialnumber()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteUInt32ToArray(1, this->_internal_serialnumber(), target);
+  }
+
+  // optional string netName = 2;
+  if (_internal_has_netname()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_netname().data(), static_cast<int>(this->_internal_netname().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "Odb.Lib.Protobuf.NetlistFile.NetRecord.netName");
+    target = stream->WriteStringMaybeAliased(
+        2, this->_internal_netname(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:Odb.Lib.Protobuf.NetlistFile.NetRecord)
+  return target;
+}
+
+size_t NetlistFile_NetRecord::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:Odb.Lib.Protobuf.NetlistFile.NetRecord)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000003u) {
+    // optional string netName = 2;
+    if (cached_has_bits & 0x00000001u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_netname());
+    }
+
+    // optional uint32 serialNumber = 1;
+    if (cached_has_bits & 0x00000002u) {
+      total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(this->_internal_serialnumber());
+    }
+
+  }
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData NetlistFile_NetRecord::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    NetlistFile_NetRecord::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*NetlistFile_NetRecord::GetClassData() const { return &_class_data_; }
+
+
+void NetlistFile_NetRecord::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<NetlistFile_NetRecord*>(&to_msg);
+  auto& from = static_cast<const NetlistFile_NetRecord&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:Odb.Lib.Protobuf.NetlistFile.NetRecord)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000003u) {
+    if (cached_has_bits & 0x00000001u) {
+      _this->_internal_set_netname(from._internal_netname());
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _this->_impl_.serialnumber_ = from._impl_.serialnumber_;
+    }
+    _this->_impl_._has_bits_[0] |= cached_has_bits;
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void NetlistFile_NetRecord::CopyFrom(const NetlistFile_NetRecord& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:Odb.Lib.Protobuf.NetlistFile.NetRecord)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool NetlistFile_NetRecord::IsInitialized() const {
+  return true;
+}
+
+void NetlistFile_NetRecord::InternalSwap(NetlistFile_NetRecord* other) {
+  using std::swap;
+  auto* lhs_arena = GetArenaForAllocation();
+  auto* rhs_arena = other->GetArenaForAllocation();
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.netname_, lhs_arena,
+      &other->_impl_.netname_, rhs_arena
+  );
+  swap(_impl_.serialnumber_, other->_impl_.serialnumber_);
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata NetlistFile_NetRecord::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_netlistfile_2eproto_getter, &descriptor_table_netlistfile_2eproto_once,
+      file_level_metadata_netlistfile_2eproto[0]);
+}
+
+// ===================================================================
+
+class NetlistFile_NetPointRecord::_Internal {
+ public:
+  using HasBits = decltype(std::declval<NetlistFile_NetPointRecord>()._impl_._has_bits_);
+  static void set_has_netnumber(HasBits* has_bits) {
+    (*has_bits)[0] |= 8u;
+  }
+  static void set_has_radius(HasBits* has_bits) {
+    (*has_bits)[0] |= 16u;
+  }
+  static void set_has_x(HasBits* has_bits) {
+    (*has_bits)[0] |= 32u;
+  }
+  static void set_has_y(HasBits* has_bits) {
+    (*has_bits)[0] |= 64u;
+  }
+  static void set_has_side(HasBits* has_bits) {
+    (*has_bits)[0] |= 128u;
+  }
+  static void set_has_width(HasBits* has_bits) {
+    (*has_bits)[0] |= 256u;
+  }
+  static void set_has_height(HasBits* has_bits) {
+    (*has_bits)[0] |= 512u;
+  }
+  static void set_has_epoint(HasBits* has_bits) {
+    (*has_bits)[0] |= 1u;
+  }
+  static void set_has_exp(HasBits* has_bits) {
+    (*has_bits)[0] |= 2u;
+  }
+  static void set_has_commentpoint(HasBits* has_bits) {
+    (*has_bits)[0] |= 1024u;
+  }
+  static void set_has_staggeredx(HasBits* has_bits) {
+    (*has_bits)[0] |= 2048u;
+  }
+  static void set_has_staggeredy(HasBits* has_bits) {
+    (*has_bits)[0] |= 4096u;
+  }
+  static void set_has_staggeredradius(HasBits* has_bits) {
+    (*has_bits)[0] |= 8192u;
+  }
+  static void set_has_viapoint(HasBits* has_bits) {
+    (*has_bits)[0] |= 16384u;
+  }
+  static void set_has_fiducialpoint(HasBits* has_bits) {
+    (*has_bits)[0] |= 32768u;
+  }
+  static void set_has_testpoint(HasBits* has_bits) {
+    (*has_bits)[0] |= 65536u;
+  }
+  static void set_has_testexecutionside(HasBits* has_bits) {
+    (*has_bits)[0] |= 4u;
+  }
+};
+
+NetlistFile_NetPointRecord::NetlistFile_NetPointRecord(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  // @@protoc_insertion_point(arena_constructor:Odb.Lib.Protobuf.NetlistFile.NetPointRecord)
+}
+NetlistFile_NetPointRecord::NetlistFile_NetPointRecord(const NetlistFile_NetPointRecord& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  NetlistFile_NetPointRecord* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){from._impl_._has_bits_}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.epoint_){}
+    , decltype(_impl_.exp_){}
+    , decltype(_impl_.testexecutionside_){}
+    , decltype(_impl_.netnumber_){}
+    , decltype(_impl_.radius_){}
+    , decltype(_impl_.x_){}
+    , decltype(_impl_.y_){}
+    , decltype(_impl_.side_){}
+    , decltype(_impl_.width_){}
+    , decltype(_impl_.height_){}
+    , decltype(_impl_.commentpoint_){}
+    , decltype(_impl_.staggeredx_){}
+    , decltype(_impl_.staggeredy_){}
+    , decltype(_impl_.staggeredradius_){}
+    , decltype(_impl_.viapoint_){}
+    , decltype(_impl_.fiducialpoint_){}
+    , decltype(_impl_.testpoint_){}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _impl_.epoint_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.epoint_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (from._internal_has_epoint()) {
+    _this->_impl_.epoint_.Set(from._internal_epoint(), 
+      _this->GetArenaForAllocation());
+  }
+  _impl_.exp_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.exp_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (from._internal_has_exp()) {
+    _this->_impl_.exp_.Set(from._internal_exp(), 
+      _this->GetArenaForAllocation());
+  }
+  _impl_.testexecutionside_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.testexecutionside_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (from._internal_has_testexecutionside()) {
+    _this->_impl_.testexecutionside_.Set(from._internal_testexecutionside(), 
+      _this->GetArenaForAllocation());
+  }
+  ::memcpy(&_impl_.netnumber_, &from._impl_.netnumber_,
+    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.testpoint_) -
+    reinterpret_cast<char*>(&_impl_.netnumber_)) + sizeof(_impl_.testpoint_));
+  // @@protoc_insertion_point(copy_constructor:Odb.Lib.Protobuf.NetlistFile.NetPointRecord)
+}
+
+inline void NetlistFile_NetPointRecord::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.epoint_){}
+    , decltype(_impl_.exp_){}
+    , decltype(_impl_.testexecutionside_){}
+    , decltype(_impl_.netnumber_){0u}
+    , decltype(_impl_.radius_){0}
+    , decltype(_impl_.x_){0}
+    , decltype(_impl_.y_){0}
+    , decltype(_impl_.side_){0}
+    , decltype(_impl_.width_){0}
+    , decltype(_impl_.height_){0}
+    , decltype(_impl_.commentpoint_){false}
+    , decltype(_impl_.staggeredx_){0}
+    , decltype(_impl_.staggeredy_){0}
+    , decltype(_impl_.staggeredradius_){0}
+    , decltype(_impl_.viapoint_){0}
+    , decltype(_impl_.fiducialpoint_){0}
+    , decltype(_impl_.testpoint_){0}
+  };
+  _impl_.epoint_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.epoint_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.exp_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.exp_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.testexecutionside_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.testexecutionside_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+}
+
+NetlistFile_NetPointRecord::~NetlistFile_NetPointRecord() {
+  // @@protoc_insertion_point(destructor:Odb.Lib.Protobuf.NetlistFile.NetPointRecord)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void NetlistFile_NetPointRecord::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  _impl_.epoint_.Destroy();
+  _impl_.exp_.Destroy();
+  _impl_.testexecutionside_.Destroy();
+}
+
+void NetlistFile_NetPointRecord::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void NetlistFile_NetPointRecord::Clear() {
+// @@protoc_insertion_point(message_clear_start:Odb.Lib.Protobuf.NetlistFile.NetPointRecord)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000007u) {
+    if (cached_has_bits & 0x00000001u) {
+      _impl_.epoint_.ClearNonDefaultToEmpty();
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _impl_.exp_.ClearNonDefaultToEmpty();
+    }
+    if (cached_has_bits & 0x00000004u) {
+      _impl_.testexecutionside_.ClearNonDefaultToEmpty();
+    }
+  }
+  if (cached_has_bits & 0x000000f8u) {
+    ::memset(&_impl_.netnumber_, 0, static_cast<size_t>(
+        reinterpret_cast<char*>(&_impl_.side_) -
+        reinterpret_cast<char*>(&_impl_.netnumber_)) + sizeof(_impl_.side_));
+  }
+  if (cached_has_bits & 0x0000ff00u) {
+    ::memset(&_impl_.width_, 0, static_cast<size_t>(
+        reinterpret_cast<char*>(&_impl_.fiducialpoint_) -
+        reinterpret_cast<char*>(&_impl_.width_)) + sizeof(_impl_.fiducialpoint_));
+  }
+  _impl_.testpoint_ = 0;
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* NetlistFile_NetPointRecord::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  _Internal::HasBits has_bits{};
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // optional uint32 netNumber = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
+          _Internal::set_has_netnumber(&has_bits);
+          _impl_.netnumber_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float radius = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 21)) {
+          _Internal::set_has_radius(&has_bits);
+          _impl_.radius_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float x = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 29)) {
+          _Internal::set_has_x(&has_bits);
+          _impl_.x_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float y = 4;
+      case 4:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 37)) {
+          _Internal::set_has_y(&has_bits);
+          _impl_.y_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional .Odb.Lib.Protobuf.NetlistFile.NetPointRecord.AccessSide side = 5;
+      case 5:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 40)) {
+          uint64_t val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+          _internal_set_side(static_cast<::Odb::Lib::Protobuf::NetlistFile_NetPointRecord_AccessSide>(val));
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float width = 6;
+      case 6:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 53)) {
+          _Internal::set_has_width(&has_bits);
+          _impl_.width_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float height = 7;
+      case 7:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 61)) {
+          _Internal::set_has_height(&has_bits);
+          _impl_.height_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional string epoint = 8;
+      case 8:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 66)) {
+          auto str = _internal_mutable_epoint();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "Odb.Lib.Protobuf.NetlistFile.NetPointRecord.epoint"));
+        } else
+          goto handle_unusual;
+        continue;
+      // optional string exp = 9;
+      case 9:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 74)) {
+          auto str = _internal_mutable_exp();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "Odb.Lib.Protobuf.NetlistFile.NetPointRecord.exp"));
+        } else
+          goto handle_unusual;
+        continue;
+      // optional bool commentPoint = 10;
+      case 10:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 80)) {
+          _Internal::set_has_commentpoint(&has_bits);
+          _impl_.commentpoint_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float staggeredX = 11;
+      case 11:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 93)) {
+          _Internal::set_has_staggeredx(&has_bits);
+          _impl_.staggeredx_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float staggeredY = 12;
+      case 12:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 101)) {
+          _Internal::set_has_staggeredy(&has_bits);
+          _impl_.staggeredy_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float staggeredRadius = 13;
+      case 13:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 109)) {
+          _Internal::set_has_staggeredradius(&has_bits);
+          _impl_.staggeredradius_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float viaPoint = 14;
+      case 14:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 117)) {
+          _Internal::set_has_viapoint(&has_bits);
+          _impl_.viapoint_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float fiducialPoint = 15;
+      case 15:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 125)) {
+          _Internal::set_has_fiducialpoint(&has_bits);
+          _impl_.fiducialpoint_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float testPoint = 16;
+      case 16:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 133)) {
+          _Internal::set_has_testpoint(&has_bits);
+          _impl_.testpoint_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional string testExecutionSide = 17;
+      case 17:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 138)) {
+          auto str = _internal_mutable_testexecutionside();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "Odb.Lib.Protobuf.NetlistFile.NetPointRecord.testExecutionSide"));
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  _impl_._has_bits_.Or(has_bits);
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* NetlistFile_NetPointRecord::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:Odb.Lib.Protobuf.NetlistFile.NetPointRecord)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // optional uint32 netNumber = 1;
+  if (_internal_has_netnumber()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteUInt32ToArray(1, this->_internal_netnumber(), target);
+  }
+
+  // optional float radius = 2;
+  if (_internal_has_radius()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(2, this->_internal_radius(), target);
+  }
+
+  // optional float x = 3;
+  if (_internal_has_x()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(3, this->_internal_x(), target);
+  }
+
+  // optional float y = 4;
+  if (_internal_has_y()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(4, this->_internal_y(), target);
+  }
+
+  // optional .Odb.Lib.Protobuf.NetlistFile.NetPointRecord.AccessSide side = 5;
+  if (_internal_has_side()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteEnumToArray(
+      5, this->_internal_side(), target);
+  }
+
+  // optional float width = 6;
+  if (_internal_has_width()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(6, this->_internal_width(), target);
+  }
+
+  // optional float height = 7;
+  if (_internal_has_height()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(7, this->_internal_height(), target);
+  }
+
+  // optional string epoint = 8;
+  if (_internal_has_epoint()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_epoint().data(), static_cast<int>(this->_internal_epoint().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "Odb.Lib.Protobuf.NetlistFile.NetPointRecord.epoint");
+    target = stream->WriteStringMaybeAliased(
+        8, this->_internal_epoint(), target);
+  }
+
+  // optional string exp = 9;
+  if (_internal_has_exp()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_exp().data(), static_cast<int>(this->_internal_exp().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "Odb.Lib.Protobuf.NetlistFile.NetPointRecord.exp");
+    target = stream->WriteStringMaybeAliased(
+        9, this->_internal_exp(), target);
+  }
+
+  // optional bool commentPoint = 10;
+  if (_internal_has_commentpoint()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteBoolToArray(10, this->_internal_commentpoint(), target);
+  }
+
+  // optional float staggeredX = 11;
+  if (_internal_has_staggeredx()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(11, this->_internal_staggeredx(), target);
+  }
+
+  // optional float staggeredY = 12;
+  if (_internal_has_staggeredy()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(12, this->_internal_staggeredy(), target);
+  }
+
+  // optional float staggeredRadius = 13;
+  if (_internal_has_staggeredradius()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(13, this->_internal_staggeredradius(), target);
+  }
+
+  // optional float viaPoint = 14;
+  if (_internal_has_viapoint()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(14, this->_internal_viapoint(), target);
+  }
+
+  // optional float fiducialPoint = 15;
+  if (_internal_has_fiducialpoint()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(15, this->_internal_fiducialpoint(), target);
+  }
+
+  // optional float testPoint = 16;
+  if (_internal_has_testpoint()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(16, this->_internal_testpoint(), target);
+  }
+
+  // optional string testExecutionSide = 17;
+  if (_internal_has_testexecutionside()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_testexecutionside().data(), static_cast<int>(this->_internal_testexecutionside().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "Odb.Lib.Protobuf.NetlistFile.NetPointRecord.testExecutionSide");
+    target = stream->WriteStringMaybeAliased(
+        17, this->_internal_testexecutionside(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:Odb.Lib.Protobuf.NetlistFile.NetPointRecord)
+  return target;
+}
+
+size_t NetlistFile_NetPointRecord::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:Odb.Lib.Protobuf.NetlistFile.NetPointRecord)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x000000ffu) {
+    // optional string epoint = 8;
+    if (cached_has_bits & 0x00000001u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_epoint());
+    }
+
+    // optional string exp = 9;
+    if (cached_has_bits & 0x00000002u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_exp());
+    }
+
+    // optional string testExecutionSide = 17;
+    if (cached_has_bits & 0x00000004u) {
+      total_size += 2 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_testexecutionside());
+    }
+
+    // optional uint32 netNumber = 1;
+    if (cached_has_bits & 0x00000008u) {
+      total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(this->_internal_netnumber());
+    }
+
+    // optional float radius = 2;
+    if (cached_has_bits & 0x00000010u) {
+      total_size += 1 + 4;
+    }
+
+    // optional float x = 3;
+    if (cached_has_bits & 0x00000020u) {
+      total_size += 1 + 4;
+    }
+
+    // optional float y = 4;
+    if (cached_has_bits & 0x00000040u) {
+      total_size += 1 + 4;
+    }
+
+    // optional .Odb.Lib.Protobuf.NetlistFile.NetPointRecord.AccessSide side = 5;
+    if (cached_has_bits & 0x00000080u) {
+      total_size += 1 +
+        ::_pbi::WireFormatLite::EnumSize(this->_internal_side());
+    }
+
+  }
+  if (cached_has_bits & 0x0000ff00u) {
+    // optional float width = 6;
+    if (cached_has_bits & 0x00000100u) {
+      total_size += 1 + 4;
+    }
+
+    // optional float height = 7;
+    if (cached_has_bits & 0x00000200u) {
+      total_size += 1 + 4;
+    }
+
+    // optional bool commentPoint = 10;
+    if (cached_has_bits & 0x00000400u) {
+      total_size += 1 + 1;
+    }
+
+    // optional float staggeredX = 11;
+    if (cached_has_bits & 0x00000800u) {
+      total_size += 1 + 4;
+    }
+
+    // optional float staggeredY = 12;
+    if (cached_has_bits & 0x00001000u) {
+      total_size += 1 + 4;
+    }
+
+    // optional float staggeredRadius = 13;
+    if (cached_has_bits & 0x00002000u) {
+      total_size += 1 + 4;
+    }
+
+    // optional float viaPoint = 14;
+    if (cached_has_bits & 0x00004000u) {
+      total_size += 1 + 4;
+    }
+
+    // optional float fiducialPoint = 15;
+    if (cached_has_bits & 0x00008000u) {
+      total_size += 1 + 4;
+    }
+
+  }
+  // optional float testPoint = 16;
+  if (cached_has_bits & 0x00010000u) {
+    total_size += 2 + 4;
+  }
+
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData NetlistFile_NetPointRecord::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    NetlistFile_NetPointRecord::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*NetlistFile_NetPointRecord::GetClassData() const { return &_class_data_; }
+
+
+void NetlistFile_NetPointRecord::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<NetlistFile_NetPointRecord*>(&to_msg);
+  auto& from = static_cast<const NetlistFile_NetPointRecord&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:Odb.Lib.Protobuf.NetlistFile.NetPointRecord)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (cached_has_bits & 0x000000ffu) {
+    if (cached_has_bits & 0x00000001u) {
+      _this->_internal_set_epoint(from._internal_epoint());
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _this->_internal_set_exp(from._internal_exp());
+    }
+    if (cached_has_bits & 0x00000004u) {
+      _this->_internal_set_testexecutionside(from._internal_testexecutionside());
+    }
+    if (cached_has_bits & 0x00000008u) {
+      _this->_impl_.netnumber_ = from._impl_.netnumber_;
+    }
+    if (cached_has_bits & 0x00000010u) {
+      _this->_impl_.radius_ = from._impl_.radius_;
+    }
+    if (cached_has_bits & 0x00000020u) {
+      _this->_impl_.x_ = from._impl_.x_;
+    }
+    if (cached_has_bits & 0x00000040u) {
+      _this->_impl_.y_ = from._impl_.y_;
+    }
+    if (cached_has_bits & 0x00000080u) {
+      _this->_impl_.side_ = from._impl_.side_;
+    }
+    _this->_impl_._has_bits_[0] |= cached_has_bits;
+  }
+  if (cached_has_bits & 0x0000ff00u) {
+    if (cached_has_bits & 0x00000100u) {
+      _this->_impl_.width_ = from._impl_.width_;
+    }
+    if (cached_has_bits & 0x00000200u) {
+      _this->_impl_.height_ = from._impl_.height_;
+    }
+    if (cached_has_bits & 0x00000400u) {
+      _this->_impl_.commentpoint_ = from._impl_.commentpoint_;
+    }
+    if (cached_has_bits & 0x00000800u) {
+      _this->_impl_.staggeredx_ = from._impl_.staggeredx_;
+    }
+    if (cached_has_bits & 0x00001000u) {
+      _this->_impl_.staggeredy_ = from._impl_.staggeredy_;
+    }
+    if (cached_has_bits & 0x00002000u) {
+      _this->_impl_.staggeredradius_ = from._impl_.staggeredradius_;
+    }
+    if (cached_has_bits & 0x00004000u) {
+      _this->_impl_.viapoint_ = from._impl_.viapoint_;
+    }
+    if (cached_has_bits & 0x00008000u) {
+      _this->_impl_.fiducialpoint_ = from._impl_.fiducialpoint_;
+    }
+    _this->_impl_._has_bits_[0] |= cached_has_bits;
+  }
+  if (cached_has_bits & 0x00010000u) {
+    _this->_internal_set_testpoint(from._internal_testpoint());
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void NetlistFile_NetPointRecord::CopyFrom(const NetlistFile_NetPointRecord& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:Odb.Lib.Protobuf.NetlistFile.NetPointRecord)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool NetlistFile_NetPointRecord::IsInitialized() const {
+  return true;
+}
+
+void NetlistFile_NetPointRecord::InternalSwap(NetlistFile_NetPointRecord* other) {
+  using std::swap;
+  auto* lhs_arena = GetArenaForAllocation();
+  auto* rhs_arena = other->GetArenaForAllocation();
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.epoint_, lhs_arena,
+      &other->_impl_.epoint_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.exp_, lhs_arena,
+      &other->_impl_.exp_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.testexecutionside_, lhs_arena,
+      &other->_impl_.testexecutionside_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.testpoint_)
+      + sizeof(NetlistFile_NetPointRecord::_impl_.testpoint_)
+      - PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.netnumber_)>(
+          reinterpret_cast<char*>(&_impl_.netnumber_),
+          reinterpret_cast<char*>(&other->_impl_.netnumber_));
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata NetlistFile_NetPointRecord::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_netlistfile_2eproto_getter, &descriptor_table_netlistfile_2eproto_once,
+      file_level_metadata_netlistfile_2eproto[1]);
+}
+
+// ===================================================================
+
+NetlistFile_NetRecordsByNameEntry_DoNotUse::NetlistFile_NetRecordsByNameEntry_DoNotUse() {}
+NetlistFile_NetRecordsByNameEntry_DoNotUse::NetlistFile_NetRecordsByNameEntry_DoNotUse(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+    : SuperType(arena) {}
+void NetlistFile_NetRecordsByNameEntry_DoNotUse::MergeFrom(const NetlistFile_NetRecordsByNameEntry_DoNotUse& other) {
+  MergeFromInternal(other);
+}
+::PROTOBUF_NAMESPACE_ID::Metadata NetlistFile_NetRecordsByNameEntry_DoNotUse::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_netlistfile_2eproto_getter, &descriptor_table_netlistfile_2eproto_once,
+      file_level_metadata_netlistfile_2eproto[2]);
+}
 
 // ===================================================================
 
@@ -156,6 +1359,9 @@ NetlistFile::NetlistFile(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
+  if (arena != nullptr && !is_message_owned) {
+    arena->OwnCustomDestructor(this, &NetlistFile::ArenaDtor);
+  }
   // @@protoc_insertion_point(arena_constructor:Odb.Lib.Protobuf.NetlistFile)
 }
 NetlistFile::NetlistFile(const NetlistFile& from)
@@ -164,7 +1370,9 @@ NetlistFile::NetlistFile(const NetlistFile& from)
   new (&_impl_) Impl_{
       decltype(_impl_._has_bits_){from._impl_._has_bits_}
     , /*decltype(_impl_._cached_size_)*/{}
-    , decltype(_impl_.netnames_){from._impl_.netnames_}
+    , decltype(_impl_.netrecordss_){from._impl_.netrecordss_}
+    , /*decltype(_impl_.netrecordsbyname_)*/{}
+    , decltype(_impl_.netpointrecords_){from._impl_.netpointrecords_}
     , decltype(_impl_.path_){}
     , decltype(_impl_.name_){}
     , decltype(_impl_.units_){}
@@ -172,6 +1380,7 @@ NetlistFile::NetlistFile(const NetlistFile& from)
     , decltype(_impl_.staggered_){}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _this->_impl_.netrecordsbyname_.MergeFrom(from._impl_.netrecordsbyname_);
   _impl_.path_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
     _impl_.path_.Set("", GetArenaForAllocation());
@@ -209,7 +1418,9 @@ inline void NetlistFile::SharedCtor(
   new (&_impl_) Impl_{
       decltype(_impl_._has_bits_){}
     , /*decltype(_impl_._cached_size_)*/{}
-    , decltype(_impl_.netnames_){arena}
+    , decltype(_impl_.netrecordss_){arena}
+    , /*decltype(_impl_.netrecordsbyname_)*/{::_pbi::ArenaInitialized(), arena}
+    , decltype(_impl_.netpointrecords_){arena}
     , decltype(_impl_.path_){}
     , decltype(_impl_.name_){}
     , decltype(_impl_.units_){}
@@ -234,6 +1445,7 @@ NetlistFile::~NetlistFile() {
   // @@protoc_insertion_point(destructor:Odb.Lib.Protobuf.NetlistFile)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
+    ArenaDtor(this);
     return;
   }
   SharedDtor();
@@ -241,12 +1453,19 @@ NetlistFile::~NetlistFile() {
 
 inline void NetlistFile::SharedDtor() {
   GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
-  _impl_.netnames_.~RepeatedPtrField();
+  _impl_.netrecordss_.~RepeatedPtrField();
+  _impl_.netrecordsbyname_.Destruct();
+  _impl_.netrecordsbyname_.~MapField();
+  _impl_.netpointrecords_.~RepeatedPtrField();
   _impl_.path_.Destroy();
   _impl_.name_.Destroy();
   _impl_.units_.Destroy();
 }
 
+void NetlistFile::ArenaDtor(void* object) {
+  NetlistFile* _this = reinterpret_cast< NetlistFile* >(object);
+  _this->_impl_.netrecordsbyname_.Destruct();
+}
 void NetlistFile::SetCachedSize(int size) const {
   _impl_._cached_size_.Set(size);
 }
@@ -257,7 +1476,9 @@ void NetlistFile::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  _impl_.netnames_.Clear();
+  _impl_.netrecordss_.Clear();
+  _impl_.netrecordsbyname_.Clear();
+  _impl_.netpointrecords_.Clear();
   cached_has_bits = _impl_._has_bits_[0];
   if (cached_has_bits & 0x00000007u) {
     if (cached_has_bits & 0x00000001u) {
@@ -334,18 +1555,42 @@ const char* NetlistFile::_InternalParse(const char* ptr, ::_pbi::ParseContext* c
         } else
           goto handle_unusual;
         continue;
-      // repeated string netNames = 6;
+      // repeated .Odb.Lib.Protobuf.NetlistFile.NetRecord netRecordss = 6;
       case 6:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 50)) {
           ptr -= 1;
           do {
             ptr += 1;
-            auto str = _internal_add_netnames();
-            ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+            ptr = ctx->ParseMessage(_internal_add_netrecordss(), ptr);
             CHK_(ptr);
-            CHK_(::_pbi::VerifyUTF8(str, "Odb.Lib.Protobuf.NetlistFile.netNames"));
             if (!ctx->DataAvailable(ptr)) break;
           } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<50>(ptr));
+        } else
+          goto handle_unusual;
+        continue;
+      // map<string, .Odb.Lib.Protobuf.NetlistFile.NetRecord> netRecordsByName = 7;
+      case 7:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 58)) {
+          ptr -= 1;
+          do {
+            ptr += 1;
+            ptr = ctx->ParseMessage(&_impl_.netrecordsbyname_, ptr);
+            CHK_(ptr);
+            if (!ctx->DataAvailable(ptr)) break;
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<58>(ptr));
+        } else
+          goto handle_unusual;
+        continue;
+      // repeated .Odb.Lib.Protobuf.NetlistFile.NetPointRecord netPointRecords = 8;
+      case 8:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 66)) {
+          ptr -= 1;
+          do {
+            ptr += 1;
+            ptr = ctx->ParseMessage(_internal_add_netpointrecords(), ptr);
+            CHK_(ptr);
+            if (!ctx->DataAvailable(ptr)) break;
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<66>(ptr));
         } else
           goto handle_unusual;
         continue;
@@ -422,14 +1667,46 @@ uint8_t* NetlistFile::_InternalSerialize(
       5, this->_internal_staggered(), target);
   }
 
-  // repeated string netNames = 6;
-  for (int i = 0, n = this->_internal_netnames_size(); i < n; i++) {
-    const auto& s = this->_internal_netnames(i);
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      s.data(), static_cast<int>(s.length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "Odb.Lib.Protobuf.NetlistFile.netNames");
-    target = stream->WriteString(6, s, target);
+  // repeated .Odb.Lib.Protobuf.NetlistFile.NetRecord netRecordss = 6;
+  for (unsigned i = 0,
+      n = static_cast<unsigned>(this->_internal_netrecordss_size()); i < n; i++) {
+    const auto& repfield = this->_internal_netrecordss(i);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+        InternalWriteMessage(6, repfield, repfield.GetCachedSize(), target, stream);
+  }
+
+  // map<string, .Odb.Lib.Protobuf.NetlistFile.NetRecord> netRecordsByName = 7;
+  if (!this->_internal_netrecordsbyname().empty()) {
+    using MapType = ::_pb::Map<std::string, ::Odb::Lib::Protobuf::NetlistFile_NetRecord>;
+    using WireHelper = NetlistFile_NetRecordsByNameEntry_DoNotUse::Funcs;
+    const auto& map_field = this->_internal_netrecordsbyname();
+    auto check_utf8 = [](const MapType::value_type& entry) {
+      (void)entry;
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+        entry.first.data(), static_cast<int>(entry.first.length()),
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+        "Odb.Lib.Protobuf.NetlistFile.NetRecordsByNameEntry.key");
+    };
+
+    if (stream->IsSerializationDeterministic() && map_field.size() > 1) {
+      for (const auto& entry : ::_pbi::MapSorterPtr<MapType>(map_field)) {
+        target = WireHelper::InternalSerialize(7, entry.first, entry.second, target, stream);
+        check_utf8(entry);
+      }
+    } else {
+      for (const auto& entry : map_field) {
+        target = WireHelper::InternalSerialize(7, entry.first, entry.second, target, stream);
+        check_utf8(entry);
+      }
+    }
+  }
+
+  // repeated .Odb.Lib.Protobuf.NetlistFile.NetPointRecord netPointRecords = 8;
+  for (unsigned i = 0,
+      n = static_cast<unsigned>(this->_internal_netpointrecords_size()); i < n; i++) {
+    const auto& repfield = this->_internal_netpointrecords(i);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+        InternalWriteMessage(8, repfield, repfield.GetCachedSize(), target, stream);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -448,12 +1725,27 @@ size_t NetlistFile::ByteSizeLong() const {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  // repeated string netNames = 6;
+  // repeated .Odb.Lib.Protobuf.NetlistFile.NetRecord netRecordss = 6;
+  total_size += 1UL * this->_internal_netrecordss_size();
+  for (const auto& msg : this->_impl_.netrecordss_) {
+    total_size +=
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(msg);
+  }
+
+  // map<string, .Odb.Lib.Protobuf.NetlistFile.NetRecord> netRecordsByName = 7;
   total_size += 1 *
-      ::PROTOBUF_NAMESPACE_ID::internal::FromIntSize(_impl_.netnames_.size());
-  for (int i = 0, n = _impl_.netnames_.size(); i < n; i++) {
-    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-      _impl_.netnames_.Get(i));
+      ::PROTOBUF_NAMESPACE_ID::internal::FromIntSize(this->_internal_netrecordsbyname_size());
+  for (::PROTOBUF_NAMESPACE_ID::Map< std::string, ::Odb::Lib::Protobuf::NetlistFile_NetRecord >::const_iterator
+      it = this->_internal_netrecordsbyname().begin();
+      it != this->_internal_netrecordsbyname().end(); ++it) {
+    total_size += NetlistFile_NetRecordsByNameEntry_DoNotUse::Funcs::ByteSizeLong(it->first, it->second);
+  }
+
+  // repeated .Odb.Lib.Protobuf.NetlistFile.NetPointRecord netPointRecords = 8;
+  total_size += 1UL * this->_internal_netpointrecords_size();
+  for (const auto& msg : this->_impl_.netpointrecords_) {
+    total_size +=
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(msg);
   }
 
   cached_has_bits = _impl_._has_bits_[0];
@@ -509,7 +1801,9 @@ void NetlistFile::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PR
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  _this->_impl_.netnames_.MergeFrom(from._impl_.netnames_);
+  _this->_impl_.netrecordss_.MergeFrom(from._impl_.netrecordss_);
+  _this->_impl_.netrecordsbyname_.MergeFrom(from._impl_.netrecordsbyname_);
+  _this->_impl_.netpointrecords_.MergeFrom(from._impl_.netpointrecords_);
   cached_has_bits = from._impl_._has_bits_[0];
   if (cached_has_bits & 0x0000001fu) {
     if (cached_has_bits & 0x00000001u) {
@@ -549,7 +1843,9 @@ void NetlistFile::InternalSwap(NetlistFile* other) {
   auto* rhs_arena = other->GetArenaForAllocation();
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
-  _impl_.netnames_.InternalSwap(&other->_impl_.netnames_);
+  _impl_.netrecordss_.InternalSwap(&other->_impl_.netrecordss_);
+  _impl_.netrecordsbyname_.InternalSwap(&other->_impl_.netrecordsbyname_);
+  _impl_.netpointrecords_.InternalSwap(&other->_impl_.netpointrecords_);
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
       &_impl_.path_, lhs_arena,
       &other->_impl_.path_, rhs_arena
@@ -573,7 +1869,7 @@ void NetlistFile::InternalSwap(NetlistFile* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata NetlistFile::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_netlistfile_2eproto_getter, &descriptor_table_netlistfile_2eproto_once,
-      file_level_metadata_netlistfile_2eproto[0]);
+      file_level_metadata_netlistfile_2eproto[3]);
 }
 
 // @@protoc_insertion_point(namespace_scope)
@@ -581,6 +1877,18 @@ void NetlistFile::InternalSwap(NetlistFile* other) {
 }  // namespace Lib
 }  // namespace Odb
 PROTOBUF_NAMESPACE_OPEN
+template<> PROTOBUF_NOINLINE ::Odb::Lib::Protobuf::NetlistFile_NetRecord*
+Arena::CreateMaybeMessage< ::Odb::Lib::Protobuf::NetlistFile_NetRecord >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::Odb::Lib::Protobuf::NetlistFile_NetRecord >(arena);
+}
+template<> PROTOBUF_NOINLINE ::Odb::Lib::Protobuf::NetlistFile_NetPointRecord*
+Arena::CreateMaybeMessage< ::Odb::Lib::Protobuf::NetlistFile_NetPointRecord >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::Odb::Lib::Protobuf::NetlistFile_NetPointRecord >(arena);
+}
+template<> PROTOBUF_NOINLINE ::Odb::Lib::Protobuf::NetlistFile_NetRecordsByNameEntry_DoNotUse*
+Arena::CreateMaybeMessage< ::Odb::Lib::Protobuf::NetlistFile_NetRecordsByNameEntry_DoNotUse >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::Odb::Lib::Protobuf::NetlistFile_NetRecordsByNameEntry_DoNotUse >(arena);
+}
 template<> PROTOBUF_NOINLINE ::Odb::Lib::Protobuf::NetlistFile*
 Arena::CreateMaybeMessage< ::Odb::Lib::Protobuf::NetlistFile >(Arena* arena) {
   return Arena::CreateMessageInternal< ::Odb::Lib::Protobuf::NetlistFile >(arena);

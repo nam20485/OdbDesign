@@ -15,7 +15,7 @@ namespace Odb::Lib::FileModel::Design
     class MiscInfoFile : public OdbFile, public IProtoBuffable<Odb::Lib::Protobuf::MiscInfoFile>
     {
     public:
-        MiscInfoFile() = default;
+        MiscInfoFile();
         ~MiscInfoFile() = default;
 
         std::string GetProductModelName() const;

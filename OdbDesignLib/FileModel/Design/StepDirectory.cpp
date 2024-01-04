@@ -18,6 +18,7 @@ namespace Odb::Lib::FileModel::Design
     StepDirectory::~StepDirectory()
     {
         m_layersByName.clear();
+        m_netlistsByName.clear();
     }
 
     std::string StepDirectory::GetName()
@@ -33,6 +34,21 @@ namespace Odb::Lib::FileModel::Design
     const EdaDataFile& StepDirectory::GetEdaDataFile() const { return m_edaData; }
     const LayerDirectory::StringMap& StepDirectory::GetLayersByName() const { return m_layersByName; }
     const NetlistFile::StringMap& StepDirectory::GetNetlistsByName() const { return m_netlistsByName; }
+
+    const AttrListFile& StepDirectory::GetAttrListFile() const
+    {
+        return m_attrListFile;
+    }
+
+    const FeaturesFile& StepDirectory::GetProfileFile() const
+    {
+        return m_profileFile;
+    }
+
+    const StepHdrFile& StepDirectory::GetStepHdrFile() const
+    {
+        return m_stepHdrFile;
+    }
 
     bool StepDirectory::Parse()
     {
@@ -51,6 +67,15 @@ namespace Odb::Lib::FileModel::Design
 
         auto edaPath = m_path / "eda";
         if (!ParseEdaDataFiles(edaPath)) return false;
+
+        auto attrListPath = m_path;
+        if (!ParseAttrListFile(attrListPath)) return false;
+
+        auto profilePath = m_path;
+        if (!ParseProfileFile(profilePath)) return false;
+
+        auto stepHdrPath = m_path;
+        if (!ParseStepHdrFile(stepHdrPath)) return false;
 
         loginfo("Parsing step directory: " + m_name + " complete");
 
@@ -102,24 +127,96 @@ namespace Odb::Lib::FileModel::Design
         return success;
     }
 
+    bool StepDirectory::ParseAttrListFile(std::filesystem::path attrListFileDirectory)
+    {
+        loginfo("Parsing attrlist file...");
+
+        if (!std::filesystem::exists(attrListFileDirectory)) return false;
+        if (!std::filesystem::is_directory(attrListFileDirectory)) return false;
+
+        // parse nets and packages definitions      
+        auto success = m_attrListFile.Parse(attrListFileDirectory);
+
+        loginfo("Parsing attrlist file complete");
+
+        return success;        
+    }
+
+    bool StepDirectory::ParseProfileFile(std::filesystem::path profileFileDirectory)
+    {
+        loginfo("Parsing profile file...");
+
+        if (!std::filesystem::exists(profileFileDirectory)) return false;
+        if (!std::filesystem::is_directory(profileFileDirectory)) return false;
+
+        // parse nets and packages definitions      
+        auto success = m_profileFile.Parse(profileFileDirectory, PROFILE_FILENAME);
+
+        loginfo("Parsing profile file complete");
+
+        return success;
+    }
+
+    bool StepDirectory::ParseStepHdrFile(std::filesystem::path stepHdrFileDirectory)
+    {
+        loginfo("Parsing stephdr file...");
+
+        if (!std::filesystem::exists(stepHdrFileDirectory)) return false;
+        if (!std::filesystem::is_directory(stepHdrFileDirectory)) return false;
+
+        // parse nets and packages definitions      
+        auto success = m_stepHdrFile.Parse(stepHdrFileDirectory);
+
+        loginfo("Parsing stephdr file complete");
+
+        return success;
+    }
+
     std::unique_ptr<Odb::Lib::Protobuf::StepDirectory> StepDirectory::to_protobuf() const
     {
         std::unique_ptr<Odb::Lib::Protobuf::StepDirectory> pStepDirectoryMessage(new Odb::Lib::Protobuf::StepDirectory);
         pStepDirectoryMessage->set_name(m_name);
         pStepDirectoryMessage->set_path(m_path.string());
         pStepDirectoryMessage->mutable_edadatafile()->CopyFrom(*m_edaData.to_protobuf());
+        pStepDirectoryMessage->mutable_attrlistfile()->CopyFrom(*m_attrListFile.to_protobuf());
+        pStepDirectoryMessage->mutable_profilefile()->CopyFrom(*m_profileFile.to_protobuf());
+        pStepDirectoryMessage->mutable_stephdrfile()->CopyFrom(*m_stepHdrFile.to_protobuf());
 
-        // TODO: netlistfiles
-        //m_netlistsByName
+        for (const auto& kvNetlistFile : m_netlistsByName)
+        {
+            (*pStepDirectoryMessage->mutable_netlistsbyname())[kvNetlistFile.first] = *kvNetlistFile.second->to_protobuf();
+        }        
 
-        // TODO: layer directories
-        //m_layersByName
+        for (const auto& kvLayerDirectoryRecord : m_layersByName)
+        {
+            (*pStepDirectoryMessage->mutable_layersbyname())[kvLayerDirectoryRecord.first] = *kvLayerDirectoryRecord.second->to_protobuf();
+        }
         
         return pStepDirectoryMessage;
     }
 
     void StepDirectory::from_protobuf(const Odb::Lib::Protobuf::StepDirectory& message)
     {
+        m_name = message.name();
+		m_path = message.path();
+		m_edaData.from_protobuf(message.edadatafile());
+        m_attrListFile.from_protobuf(message.attrlistfile());
+        m_profileFile.from_protobuf(message.profilefile());
+        m_stepHdrFile.from_protobuf(message.stephdrfile());
+
+        for (const auto& kvNetlistFile : message.netlistsbyname())
+        {
+            auto pNetlistFile = std::make_shared<NetlistFile>(std::filesystem::path(kvNetlistFile.second.path()));
+            pNetlistFile->from_protobuf(kvNetlistFile.second);
+            m_netlistsByName[kvNetlistFile.first] = pNetlistFile;
+        }
+
+        for (const auto& kvLayerDirectoryRecord : message.layersbyname())
+        {
+			auto pLayerDirectory = std::make_shared<LayerDirectory>(std::filesystem::path(kvLayerDirectoryRecord.second.path()));
+			pLayerDirectory->from_protobuf(kvLayerDirectoryRecord.second);
+			m_layersByName[kvLayerDirectoryRecord.first] = pLayerDirectory;
+		}
     }
 
     bool StepDirectory::ParseNetlistFiles(std::filesystem::path netlistsPath)

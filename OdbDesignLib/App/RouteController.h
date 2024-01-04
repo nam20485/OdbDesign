@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../crow_win.h"
 #include "IOdbServerApp.h"
 #include "../odbdesign_export.h"
 
@@ -21,7 +20,7 @@ namespace Odb::Lib::App
 
 		typedef std::function<crow::response(const crow::request& req)> TRouteHandlerFunction;
 
-		void register_route_handler(const std::string& route, TRouteHandlerFunction handler);	
+		void register_route_handler(std::string route, TRouteHandlerFunction handler);	
 	};
 }
 

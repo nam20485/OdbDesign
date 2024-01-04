@@ -24,7 +24,14 @@ namespace Odb {
 namespace Lib {
 namespace Protobuf {
 PROTOBUF_CONSTEXPR LayerDirectory::LayerDirectory(
-    ::_pbi::ConstantInitialized) {}
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_._has_bits_)*/{}
+  , /*decltype(_impl_._cached_size_)*/{}
+  , /*decltype(_impl_.name_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.path_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.components_)*/nullptr
+  , /*decltype(_impl_.attrlistfile_)*/nullptr
+  , /*decltype(_impl_.featurefile_)*/nullptr} {}
 struct LayerDirectoryDefaultTypeInternal {
   PROTOBUF_CONSTEXPR LayerDirectoryDefaultTypeInternal()
       : _instance(::_pbi::ConstantInitialized{}) {}
@@ -42,15 +49,25 @@ static constexpr ::_pb::EnumDescriptor const** file_level_enum_descriptors_layer
 static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_layerdirectory_2eproto = nullptr;
 
 const uint32_t TableStruct_layerdirectory_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::LayerDirectory, _impl_._has_bits_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::LayerDirectory, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::LayerDirectory, _impl_.name_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::LayerDirectory, _impl_.path_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::LayerDirectory, _impl_.components_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::LayerDirectory, _impl_.attrlistfile_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::LayerDirectory, _impl_.featurefile_),
+  0,
+  1,
+  2,
+  3,
+  4,
 };
 static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  { 0, -1, -1, sizeof(::Odb::Lib::Protobuf::LayerDirectory)},
+  { 0, 11, -1, sizeof(::Odb::Lib::Protobuf::LayerDirectory)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
@@ -59,13 +76,27 @@ static const ::_pb::Message* const file_default_instances[] = {
 
 const char descriptor_table_protodef_layerdirectory_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
   "\n\024layerdirectory.proto\022\020Odb.Lib.Protobuf"
-  "\"\020\n\016LayerDirectoryb\006proto3"
+  "\032\024componentsfile.proto\032\022attrlistfile.pro"
+  "to\032\022featuresfile.proto\"\250\002\n\016LayerDirector"
+  "y\022\021\n\004name\030\001 \001(\tH\000\210\001\001\022\021\n\004path\030\002 \001(\tH\001\210\001\001\022"
+  "9\n\ncomponents\030\003 \001(\0132 .Odb.Lib.Protobuf.C"
+  "omponentsFileH\002\210\001\001\0229\n\014attrlistFile\030\004 \001(\013"
+  "2\036.Odb.Lib.Protobuf.AttrListFileH\003\210\001\001\0228\n"
+  "\013featureFile\030\005 \001(\0132\036.Odb.Lib.Protobuf.Fe"
+  "aturesFileH\004\210\001\001B\007\n\005_nameB\007\n\005_pathB\r\n\013_co"
+  "mponentsB\017\n\r_attrlistFileB\016\n\014_featureFil"
+  "eb\006proto3"
   ;
+static const ::_pbi::DescriptorTable* const descriptor_table_layerdirectory_2eproto_deps[3] = {
+  &::descriptor_table_attrlistfile_2eproto,
+  &::descriptor_table_componentsfile_2eproto,
+  &::descriptor_table_featuresfile_2eproto,
+};
 static ::_pbi::once_flag descriptor_table_layerdirectory_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_layerdirectory_2eproto = {
-    false, false, 66, descriptor_table_protodef_layerdirectory_2eproto,
+    false, false, 409, descriptor_table_protodef_layerdirectory_2eproto,
     "layerdirectory.proto",
-    &descriptor_table_layerdirectory_2eproto_once, nullptr, 0, 1,
+    &descriptor_table_layerdirectory_2eproto_once, descriptor_table_layerdirectory_2eproto_deps, 3, 1,
     schemas, file_default_instances, TableStruct_layerdirectory_2eproto::offsets,
     file_level_metadata_layerdirectory_2eproto, file_level_enum_descriptors_layerdirectory_2eproto,
     file_level_service_descriptors_layerdirectory_2eproto,
@@ -84,35 +115,424 @@ namespace Protobuf {
 
 class LayerDirectory::_Internal {
  public:
+  using HasBits = decltype(std::declval<LayerDirectory>()._impl_._has_bits_);
+  static void set_has_name(HasBits* has_bits) {
+    (*has_bits)[0] |= 1u;
+  }
+  static void set_has_path(HasBits* has_bits) {
+    (*has_bits)[0] |= 2u;
+  }
+  static const ::Odb::Lib::Protobuf::ComponentsFile& components(const LayerDirectory* msg);
+  static void set_has_components(HasBits* has_bits) {
+    (*has_bits)[0] |= 4u;
+  }
+  static const ::Odb::Lib::Protobuf::AttrListFile& attrlistfile(const LayerDirectory* msg);
+  static void set_has_attrlistfile(HasBits* has_bits) {
+    (*has_bits)[0] |= 8u;
+  }
+  static const ::Odb::Lib::Protobuf::FeaturesFile& featurefile(const LayerDirectory* msg);
+  static void set_has_featurefile(HasBits* has_bits) {
+    (*has_bits)[0] |= 16u;
+  }
 };
 
+const ::Odb::Lib::Protobuf::ComponentsFile&
+LayerDirectory::_Internal::components(const LayerDirectory* msg) {
+  return *msg->_impl_.components_;
+}
+const ::Odb::Lib::Protobuf::AttrListFile&
+LayerDirectory::_Internal::attrlistfile(const LayerDirectory* msg) {
+  return *msg->_impl_.attrlistfile_;
+}
+const ::Odb::Lib::Protobuf::FeaturesFile&
+LayerDirectory::_Internal::featurefile(const LayerDirectory* msg) {
+  return *msg->_impl_.featurefile_;
+}
+void LayerDirectory::clear_components() {
+  if (_impl_.components_ != nullptr) _impl_.components_->Clear();
+  _impl_._has_bits_[0] &= ~0x00000004u;
+}
+void LayerDirectory::clear_attrlistfile() {
+  if (_impl_.attrlistfile_ != nullptr) _impl_.attrlistfile_->Clear();
+  _impl_._has_bits_[0] &= ~0x00000008u;
+}
+void LayerDirectory::clear_featurefile() {
+  if (_impl_.featurefile_ != nullptr) _impl_.featurefile_->Clear();
+  _impl_._has_bits_[0] &= ~0x00000010u;
+}
 LayerDirectory::LayerDirectory(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                          bool is_message_owned)
-  : ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase(arena, is_message_owned) {
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
   // @@protoc_insertion_point(arena_constructor:Odb.Lib.Protobuf.LayerDirectory)
 }
 LayerDirectory::LayerDirectory(const LayerDirectory& from)
-  : ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase() {
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
   LayerDirectory* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){from._impl_._has_bits_}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.name_){}
+    , decltype(_impl_.path_){}
+    , decltype(_impl_.components_){nullptr}
+    , decltype(_impl_.attrlistfile_){nullptr}
+    , decltype(_impl_.featurefile_){nullptr}};
+
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _impl_.name_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.name_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (from._internal_has_name()) {
+    _this->_impl_.name_.Set(from._internal_name(), 
+      _this->GetArenaForAllocation());
+  }
+  _impl_.path_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.path_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (from._internal_has_path()) {
+    _this->_impl_.path_.Set(from._internal_path(), 
+      _this->GetArenaForAllocation());
+  }
+  if (from._internal_has_components()) {
+    _this->_impl_.components_ = new ::Odb::Lib::Protobuf::ComponentsFile(*from._impl_.components_);
+  }
+  if (from._internal_has_attrlistfile()) {
+    _this->_impl_.attrlistfile_ = new ::Odb::Lib::Protobuf::AttrListFile(*from._impl_.attrlistfile_);
+  }
+  if (from._internal_has_featurefile()) {
+    _this->_impl_.featurefile_ = new ::Odb::Lib::Protobuf::FeaturesFile(*from._impl_.featurefile_);
+  }
   // @@protoc_insertion_point(copy_constructor:Odb.Lib.Protobuf.LayerDirectory)
 }
 
+inline void LayerDirectory::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.name_){}
+    , decltype(_impl_.path_){}
+    , decltype(_impl_.components_){nullptr}
+    , decltype(_impl_.attrlistfile_){nullptr}
+    , decltype(_impl_.featurefile_){nullptr}
+  };
+  _impl_.name_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.name_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.path_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.path_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+}
 
+LayerDirectory::~LayerDirectory() {
+  // @@protoc_insertion_point(destructor:Odb.Lib.Protobuf.LayerDirectory)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
 
+inline void LayerDirectory::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  _impl_.name_.Destroy();
+  _impl_.path_.Destroy();
+  if (this != internal_default_instance()) delete _impl_.components_;
+  if (this != internal_default_instance()) delete _impl_.attrlistfile_;
+  if (this != internal_default_instance()) delete _impl_.featurefile_;
+}
 
+void LayerDirectory::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void LayerDirectory::Clear() {
+// @@protoc_insertion_point(message_clear_start:Odb.Lib.Protobuf.LayerDirectory)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x0000001fu) {
+    if (cached_has_bits & 0x00000001u) {
+      _impl_.name_.ClearNonDefaultToEmpty();
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _impl_.path_.ClearNonDefaultToEmpty();
+    }
+    if (cached_has_bits & 0x00000004u) {
+      GOOGLE_DCHECK(_impl_.components_ != nullptr);
+      _impl_.components_->Clear();
+    }
+    if (cached_has_bits & 0x00000008u) {
+      GOOGLE_DCHECK(_impl_.attrlistfile_ != nullptr);
+      _impl_.attrlistfile_->Clear();
+    }
+    if (cached_has_bits & 0x00000010u) {
+      GOOGLE_DCHECK(_impl_.featurefile_ != nullptr);
+      _impl_.featurefile_->Clear();
+    }
+  }
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* LayerDirectory::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  _Internal::HasBits has_bits{};
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // optional string name = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
+          auto str = _internal_mutable_name();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "Odb.Lib.Protobuf.LayerDirectory.name"));
+        } else
+          goto handle_unusual;
+        continue;
+      // optional string path = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
+          auto str = _internal_mutable_path();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "Odb.Lib.Protobuf.LayerDirectory.path"));
+        } else
+          goto handle_unusual;
+        continue;
+      // optional .Odb.Lib.Protobuf.ComponentsFile components = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 26)) {
+          ptr = ctx->ParseMessage(_internal_mutable_components(), ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional .Odb.Lib.Protobuf.AttrListFile attrlistFile = 4;
+      case 4:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 34)) {
+          ptr = ctx->ParseMessage(_internal_mutable_attrlistfile(), ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional .Odb.Lib.Protobuf.FeaturesFile featureFile = 5;
+      case 5:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 42)) {
+          ptr = ctx->ParseMessage(_internal_mutable_featurefile(), ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  _impl_._has_bits_.Or(has_bits);
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* LayerDirectory::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:Odb.Lib.Protobuf.LayerDirectory)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // optional string name = 1;
+  if (_internal_has_name()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_name().data(), static_cast<int>(this->_internal_name().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "Odb.Lib.Protobuf.LayerDirectory.name");
+    target = stream->WriteStringMaybeAliased(
+        1, this->_internal_name(), target);
+  }
+
+  // optional string path = 2;
+  if (_internal_has_path()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_path().data(), static_cast<int>(this->_internal_path().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "Odb.Lib.Protobuf.LayerDirectory.path");
+    target = stream->WriteStringMaybeAliased(
+        2, this->_internal_path(), target);
+  }
+
+  // optional .Odb.Lib.Protobuf.ComponentsFile components = 3;
+  if (_internal_has_components()) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(3, _Internal::components(this),
+        _Internal::components(this).GetCachedSize(), target, stream);
+  }
+
+  // optional .Odb.Lib.Protobuf.AttrListFile attrlistFile = 4;
+  if (_internal_has_attrlistfile()) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(4, _Internal::attrlistfile(this),
+        _Internal::attrlistfile(this).GetCachedSize(), target, stream);
+  }
+
+  // optional .Odb.Lib.Protobuf.FeaturesFile featureFile = 5;
+  if (_internal_has_featurefile()) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(5, _Internal::featurefile(this),
+        _Internal::featurefile(this).GetCachedSize(), target, stream);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:Odb.Lib.Protobuf.LayerDirectory)
+  return target;
+}
+
+size_t LayerDirectory::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:Odb.Lib.Protobuf.LayerDirectory)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x0000001fu) {
+    // optional string name = 1;
+    if (cached_has_bits & 0x00000001u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_name());
+    }
+
+    // optional string path = 2;
+    if (cached_has_bits & 0x00000002u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_path());
+    }
+
+    // optional .Odb.Lib.Protobuf.ComponentsFile components = 3;
+    if (cached_has_bits & 0x00000004u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+          *_impl_.components_);
+    }
+
+    // optional .Odb.Lib.Protobuf.AttrListFile attrlistFile = 4;
+    if (cached_has_bits & 0x00000008u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+          *_impl_.attrlistfile_);
+    }
+
+    // optional .Odb.Lib.Protobuf.FeaturesFile featureFile = 5;
+    if (cached_has_bits & 0x00000010u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+          *_impl_.featurefile_);
+    }
+
+  }
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
 
 const ::PROTOBUF_NAMESPACE_ID::Message::ClassData LayerDirectory::_class_data_ = {
-    ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase::CopyImpl,
-    ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase::MergeImpl,
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    LayerDirectory::MergeImpl
 };
 const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*LayerDirectory::GetClassData() const { return &_class_data_; }
 
 
+void LayerDirectory::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<LayerDirectory*>(&to_msg);
+  auto& from = static_cast<const LayerDirectory&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:Odb.Lib.Protobuf.LayerDirectory)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
 
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (cached_has_bits & 0x0000001fu) {
+    if (cached_has_bits & 0x00000001u) {
+      _this->_internal_set_name(from._internal_name());
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _this->_internal_set_path(from._internal_path());
+    }
+    if (cached_has_bits & 0x00000004u) {
+      _this->_internal_mutable_components()->::Odb::Lib::Protobuf::ComponentsFile::MergeFrom(
+          from._internal_components());
+    }
+    if (cached_has_bits & 0x00000008u) {
+      _this->_internal_mutable_attrlistfile()->::Odb::Lib::Protobuf::AttrListFile::MergeFrom(
+          from._internal_attrlistfile());
+    }
+    if (cached_has_bits & 0x00000010u) {
+      _this->_internal_mutable_featurefile()->::Odb::Lib::Protobuf::FeaturesFile::MergeFrom(
+          from._internal_featurefile());
+    }
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
 
+void LayerDirectory::CopyFrom(const LayerDirectory& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:Odb.Lib.Protobuf.LayerDirectory)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
 
+bool LayerDirectory::IsInitialized() const {
+  return true;
+}
 
+void LayerDirectory::InternalSwap(LayerDirectory* other) {
+  using std::swap;
+  auto* lhs_arena = GetArenaForAllocation();
+  auto* rhs_arena = other->GetArenaForAllocation();
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.name_, lhs_arena,
+      &other->_impl_.name_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.path_, lhs_arena,
+      &other->_impl_.path_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(LayerDirectory, _impl_.featurefile_)
+      + sizeof(LayerDirectory::_impl_.featurefile_)
+      - PROTOBUF_FIELD_OFFSET(LayerDirectory, _impl_.components_)>(
+          reinterpret_cast<char*>(&_impl_.components_),
+          reinterpret_cast<char*>(&other->_impl_.components_));
+}
 
 ::PROTOBUF_NAMESPACE_ID::Metadata LayerDirectory::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
