@@ -10,8 +10,7 @@ namespace Odb::Lib::App
 {
 	class ODBDESIGN_EXPORT DesignCache
 	{
-	public:
-		DesignCache();
+	public:		
 		DesignCache(std::string directory);
 		~DesignCache();
 		
@@ -27,9 +26,12 @@ namespace Odb::Lib::App
 		int loadFileArchives(const Utils::StringVector& names);
 		int loadDesigns(const Utils::StringVector& names);
 
+		void setDirectory(const std::string& directory);
+		const std::string& getDirectory() const;
+
 		//bool isQueryValid(const std::string& query) const;
 
-		void Clear();
+		void Clear();		
 		
 	private:
 		std::string m_directory;
@@ -40,7 +42,7 @@ namespace Odb::Lib::App
 		std::shared_ptr<ProductModel::Design> LoadDesign(const std::string& designName);
 		std::shared_ptr<FileModel::Design::FileArchive> LoadFileArchive(const std::string& designName);
 
-		constexpr inline static const char* DESIGN_EXTENSIONS[] = { "zip", "tgz", "tar.gz", "tar" };
+		constexpr inline static const char* DESIGN_EXTENSIONS[] = { "zip", "tgz", "tar.gz", "tar", "gzip" , "gz" };
 
 	};
 }

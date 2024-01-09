@@ -33,4 +33,14 @@ testlog.txt
 testlog.txt.tmp*
 testlog.xml
 /OdbDesignTests/FileArchiveLoadTests_Local.cpp
-/OdbDesignTests/DesignNameTests.cpp
+/OdbDesignTests/CMakeLists_Local.txt
+/OdbDesignTests/DesignNameTests_Local.cpp
+/output
+OdbDesignServer/api/__pycache__/
+OdbDesignServer/api/migrations/__pycache__/
+OdbDesignServer/OdbDesignServer/__pycache__/
+OdbDesignServer/PyOdbDesignLib/__pycache__/
+OdbDesignServer/PyOdbDesignLib/PyOdbDesignLib.py
+OdbDesignServer/db.sqlite3
+OdbDesignServer/PyOdbDesignLib/_PyOdbDesignLib.pyd
+/TEST_DATA.zip

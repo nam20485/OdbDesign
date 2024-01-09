@@ -10,7 +10,7 @@ namespace Odb::App::Server
 	{
 	public:
 		OdbDesignServerApp(int argc, char* argv[]);
-		~OdbDesignServerApp();	
+		//~OdbDesignServerApp();	
 				
 		//ExitCode Run() override;		
 

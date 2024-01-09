@@ -18,6 +18,8 @@ namespace Odb::Lib::App
 
 		virtual Utils::ExitCode Run() override;
 
+		inline static const char* DEFAULT_DESIGNS_DIR = "designs";
+
 	protected:
 		DesignCache m_designCache;		
 		const OdbDesignArgs m_commandLineArgs;

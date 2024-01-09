@@ -19,9 +19,9 @@ namespace Odb::Lib::ProductModel
 		~Net();
 
 		std::string GetName() const;
-		const PinConnection::Vector& GetPinConnections() const;
+		PinConnection::Vector& GetPinConnections();
 		unsigned int GetIndex() const;
-		bool AddPinConnection(std::shared_ptr<Component> pComponent, std::shared_ptr<Pin> pPin, std::string name);
+		bool AddPinConnection(std::shared_ptr<Component> pComponent, std::shared_ptr<Pin> pPin);
 
 		typedef std::vector<std::shared_ptr<Net>> Vector;
 		typedef std::map<std::string, std::shared_ptr<Net>> StringMap;

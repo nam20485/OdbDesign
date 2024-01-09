@@ -1,13 +1,13 @@
+#include "MiscInfoFile.h"
 //
 // Created by nmill on 10/13/2023.
 //
 
-#include "../../crow_win.h"
 #include <fstream>
 #include "MiscInfoFile.h"
 #include <string>
 #include <sstream>
-#include "str_trim.h"
+#include "str_utils.h"
 #include "../../Constants.h"
 #include "timestamp.h"
 #include "Logger.h"
@@ -226,6 +226,23 @@ namespace Odb::Lib::FileModel::Design
     }
 
     void MiscInfoFile::from_protobuf(const Odb::Lib::Protobuf::MiscInfoFile& message)
+    {
+        m_jobName = message.jobname();
+		m_productModelName = message.productmodelname();
+		m_odbVersionMajor = message.odbversionmajor();
+		m_odbVersionMinor = message.odbversionminor();
+		m_odbSource = message.odbsource();
+		//m_creationDateDate = system_clock::from_time_t(message.creationdatedate().seconds());        
+        m_creationDateDate = std::chrono::system_clock::time_point(std::chrono::seconds(message.creationdatedate().seconds()));
+		m_saveDate = std::chrono::system_clock::time_point(std::chrono::seconds(message.savedate().seconds()));
+		m_saveApp = message.saveapp();
+		m_saveUser = message.saveuser();
+		m_units = message.units();
+		m_maxUniqueId = message.maxuniqueid();
+    }
+
+    MiscInfoFile::MiscInfoFile()
+        : m_maxUniqueId((unsigned int)-1)
     {
     }
 

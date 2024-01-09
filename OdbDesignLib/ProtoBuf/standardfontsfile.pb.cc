@@ -23,8 +23,49 @@ namespace _pbi = _pb::internal;
 namespace Odb {
 namespace Lib {
 namespace Protobuf {
+PROTOBUF_CONSTEXPR StandardFontsFile_CharacterBlock_LineRecord::StandardFontsFile_CharacterBlock_LineRecord(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_._has_bits_)*/{}
+  , /*decltype(_impl_._cached_size_)*/{}
+  , /*decltype(_impl_.xstart_)*/0
+  , /*decltype(_impl_.ystart_)*/0
+  , /*decltype(_impl_.xend_)*/0
+  , /*decltype(_impl_.yend_)*/0
+  , /*decltype(_impl_.polarity_)*/0
+  , /*decltype(_impl_.shape_)*/0
+  , /*decltype(_impl_.width_)*/0} {}
+struct StandardFontsFile_CharacterBlock_LineRecordDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR StandardFontsFile_CharacterBlock_LineRecordDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~StandardFontsFile_CharacterBlock_LineRecordDefaultTypeInternal() {}
+  union {
+    StandardFontsFile_CharacterBlock_LineRecord _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 StandardFontsFile_CharacterBlock_LineRecordDefaultTypeInternal _StandardFontsFile_CharacterBlock_LineRecord_default_instance_;
+PROTOBUF_CONSTEXPR StandardFontsFile_CharacterBlock::StandardFontsFile_CharacterBlock(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_._has_bits_)*/{}
+  , /*decltype(_impl_._cached_size_)*/{}
+  , /*decltype(_impl_.m_linerecords_)*/{}
+  , /*decltype(_impl_.character_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}} {}
+struct StandardFontsFile_CharacterBlockDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR StandardFontsFile_CharacterBlockDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~StandardFontsFile_CharacterBlockDefaultTypeInternal() {}
+  union {
+    StandardFontsFile_CharacterBlock _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 StandardFontsFile_CharacterBlockDefaultTypeInternal _StandardFontsFile_CharacterBlock_default_instance_;
 PROTOBUF_CONSTEXPR StandardFontsFile::StandardFontsFile(
-    ::_pbi::ConstantInitialized) {}
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_._has_bits_)*/{}
+  , /*decltype(_impl_._cached_size_)*/{}
+  , /*decltype(_impl_.m_characterblocks_)*/{}
+  , /*decltype(_impl_.xsize_)*/0
+  , /*decltype(_impl_.ysize_)*/0
+  , /*decltype(_impl_.offset_)*/0} {}
 struct StandardFontsFileDefaultTypeInternal {
   PROTOBUF_CONSTEXPR StandardFontsFileDefaultTypeInternal()
       : _instance(::_pbi::ConstantInitialized{}) {}
@@ -37,35 +78,96 @@ PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORIT
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
-static ::_pb::Metadata file_level_metadata_standardfontsfile_2eproto[1];
+static ::_pb::Metadata file_level_metadata_standardfontsfile_2eproto[3];
 static constexpr ::_pb::EnumDescriptor const** file_level_enum_descriptors_standardfontsfile_2eproto = nullptr;
 static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_standardfontsfile_2eproto = nullptr;
 
 const uint32_t TableStruct_standardfontsfile_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StandardFontsFile_CharacterBlock_LineRecord, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StandardFontsFile_CharacterBlock_LineRecord, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StandardFontsFile_CharacterBlock_LineRecord, _impl_.xstart_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StandardFontsFile_CharacterBlock_LineRecord, _impl_.ystart_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StandardFontsFile_CharacterBlock_LineRecord, _impl_.xend_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StandardFontsFile_CharacterBlock_LineRecord, _impl_.yend_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StandardFontsFile_CharacterBlock_LineRecord, _impl_.polarity_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StandardFontsFile_CharacterBlock_LineRecord, _impl_.shape_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StandardFontsFile_CharacterBlock_LineRecord, _impl_.width_),
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StandardFontsFile_CharacterBlock, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StandardFontsFile_CharacterBlock, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StandardFontsFile_CharacterBlock, _impl_.character_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StandardFontsFile_CharacterBlock, _impl_.m_linerecords_),
+  0,
+  ~0u,
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StandardFontsFile, _impl_._has_bits_),
   PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StandardFontsFile, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StandardFontsFile, _impl_.xsize_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StandardFontsFile, _impl_.ysize_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StandardFontsFile, _impl_.offset_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StandardFontsFile, _impl_.m_characterblocks_),
+  0,
+  1,
+  2,
+  ~0u,
 };
 static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  { 0, -1, -1, sizeof(::Odb::Lib::Protobuf::StandardFontsFile)},
+  { 0, 13, -1, sizeof(::Odb::Lib::Protobuf::StandardFontsFile_CharacterBlock_LineRecord)},
+  { 20, 28, -1, sizeof(::Odb::Lib::Protobuf::StandardFontsFile_CharacterBlock)},
+  { 30, 40, -1, sizeof(::Odb::Lib::Protobuf::StandardFontsFile)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
+  &::Odb::Lib::Protobuf::_StandardFontsFile_CharacterBlock_LineRecord_default_instance_._instance,
+  &::Odb::Lib::Protobuf::_StandardFontsFile_CharacterBlock_default_instance_._instance,
   &::Odb::Lib::Protobuf::_StandardFontsFile_default_instance_._instance,
 };
 
 const char descriptor_table_protodef_standardfontsfile_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
   "\n\027standardfontsfile.proto\022\020Odb.Lib.Proto"
-  "buf\"\023\n\021StandardFontsFileb\006proto3"
+  "buf\032\013enums.proto\"\355\004\n\021StandardFontsFile\022\022"
+  "\n\005xSize\030\001 \001(\002H\000\210\001\001\022\022\n\005ySize\030\002 \001(\002H\001\210\001\001\022\023"
+  "\n\006offset\030\003 \001(\002H\002\210\001\001\022M\n\021m_characterBlocks"
+  "\030\004 \003(\01322.Odb.Lib.Protobuf.StandardFontsF"
+  "ile.CharacterBlock\032\254\003\n\016CharacterBlock\022\026\n"
+  "\tcharacter\030\001 \001(\tH\000\210\001\001\022T\n\rm_lineRecords\030\002"
+  " \003(\0132=.Odb.Lib.Protobuf.StandardFontsFil"
+  "e.CharacterBlock.LineRecord\032\235\002\n\nLineReco"
+  "rd\022\023\n\006xStart\030\001 \001(\002H\000\210\001\001\022\023\n\006yStart\030\002 \001(\002H"
+  "\001\210\001\001\022\021\n\004xEnd\030\003 \001(\002H\002\210\001\001\022\021\n\004yEnd\030\004 \001(\002H\003\210"
+  "\001\001\0221\n\010polarity\030\005 \001(\0162\032.Odb.Lib.Protobuf."
+  "PolarityH\004\210\001\001\022/\n\005shape\030\006 \001(\0162\033.Odb.Lib.P"
+  "rotobuf.LineShapeH\005\210\001\001\022\022\n\005width\030\007 \001(\002H\006\210"
+  "\001\001B\t\n\007_xStartB\t\n\007_yStartB\007\n\005_xEndB\007\n\005_yE"
+  "ndB\013\n\t_polarityB\010\n\006_shapeB\010\n\006_widthB\014\n\n_"
+  "characterB\010\n\006_xSizeB\010\n\006_ySizeB\t\n\007_offset"
+  "b\006proto3"
   ;
+static const ::_pbi::DescriptorTable* const descriptor_table_standardfontsfile_2eproto_deps[1] = {
+  &::descriptor_table_enums_2eproto,
+};
 static ::_pbi::once_flag descriptor_table_standardfontsfile_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_standardfontsfile_2eproto = {
-    false, false, 72, descriptor_table_protodef_standardfontsfile_2eproto,
+    false, false, 688, descriptor_table_protodef_standardfontsfile_2eproto,
     "standardfontsfile.proto",
-    &descriptor_table_standardfontsfile_2eproto_once, nullptr, 0, 1,
+    &descriptor_table_standardfontsfile_2eproto_once, descriptor_table_standardfontsfile_2eproto_deps, 1, 3,
     schemas, file_default_instances, TableStruct_standardfontsfile_2eproto::offsets,
     file_level_metadata_standardfontsfile_2eproto, file_level_enum_descriptors_standardfontsfile_2eproto,
     file_level_service_descriptors_standardfontsfile_2eproto,
@@ -82,42 +184,931 @@ namespace Protobuf {
 
 // ===================================================================
 
+class StandardFontsFile_CharacterBlock_LineRecord::_Internal {
+ public:
+  using HasBits = decltype(std::declval<StandardFontsFile_CharacterBlock_LineRecord>()._impl_._has_bits_);
+  static void set_has_xstart(HasBits* has_bits) {
+    (*has_bits)[0] |= 1u;
+  }
+  static void set_has_ystart(HasBits* has_bits) {
+    (*has_bits)[0] |= 2u;
+  }
+  static void set_has_xend(HasBits* has_bits) {
+    (*has_bits)[0] |= 4u;
+  }
+  static void set_has_yend(HasBits* has_bits) {
+    (*has_bits)[0] |= 8u;
+  }
+  static void set_has_polarity(HasBits* has_bits) {
+    (*has_bits)[0] |= 16u;
+  }
+  static void set_has_shape(HasBits* has_bits) {
+    (*has_bits)[0] |= 32u;
+  }
+  static void set_has_width(HasBits* has_bits) {
+    (*has_bits)[0] |= 64u;
+  }
+};
+
+StandardFontsFile_CharacterBlock_LineRecord::StandardFontsFile_CharacterBlock_LineRecord(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  // @@protoc_insertion_point(arena_constructor:Odb.Lib.Protobuf.StandardFontsFile.CharacterBlock.LineRecord)
+}
+StandardFontsFile_CharacterBlock_LineRecord::StandardFontsFile_CharacterBlock_LineRecord(const StandardFontsFile_CharacterBlock_LineRecord& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  StandardFontsFile_CharacterBlock_LineRecord* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){from._impl_._has_bits_}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.xstart_){}
+    , decltype(_impl_.ystart_){}
+    , decltype(_impl_.xend_){}
+    , decltype(_impl_.yend_){}
+    , decltype(_impl_.polarity_){}
+    , decltype(_impl_.shape_){}
+    , decltype(_impl_.width_){}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  ::memcpy(&_impl_.xstart_, &from._impl_.xstart_,
+    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.width_) -
+    reinterpret_cast<char*>(&_impl_.xstart_)) + sizeof(_impl_.width_));
+  // @@protoc_insertion_point(copy_constructor:Odb.Lib.Protobuf.StandardFontsFile.CharacterBlock.LineRecord)
+}
+
+inline void StandardFontsFile_CharacterBlock_LineRecord::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.xstart_){0}
+    , decltype(_impl_.ystart_){0}
+    , decltype(_impl_.xend_){0}
+    , decltype(_impl_.yend_){0}
+    , decltype(_impl_.polarity_){0}
+    , decltype(_impl_.shape_){0}
+    , decltype(_impl_.width_){0}
+  };
+}
+
+StandardFontsFile_CharacterBlock_LineRecord::~StandardFontsFile_CharacterBlock_LineRecord() {
+  // @@protoc_insertion_point(destructor:Odb.Lib.Protobuf.StandardFontsFile.CharacterBlock.LineRecord)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void StandardFontsFile_CharacterBlock_LineRecord::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+}
+
+void StandardFontsFile_CharacterBlock_LineRecord::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void StandardFontsFile_CharacterBlock_LineRecord::Clear() {
+// @@protoc_insertion_point(message_clear_start:Odb.Lib.Protobuf.StandardFontsFile.CharacterBlock.LineRecord)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x0000007fu) {
+    ::memset(&_impl_.xstart_, 0, static_cast<size_t>(
+        reinterpret_cast<char*>(&_impl_.width_) -
+        reinterpret_cast<char*>(&_impl_.xstart_)) + sizeof(_impl_.width_));
+  }
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* StandardFontsFile_CharacterBlock_LineRecord::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  _Internal::HasBits has_bits{};
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // optional float xStart = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 13)) {
+          _Internal::set_has_xstart(&has_bits);
+          _impl_.xstart_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float yStart = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 21)) {
+          _Internal::set_has_ystart(&has_bits);
+          _impl_.ystart_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float xEnd = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 29)) {
+          _Internal::set_has_xend(&has_bits);
+          _impl_.xend_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float yEnd = 4;
+      case 4:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 37)) {
+          _Internal::set_has_yend(&has_bits);
+          _impl_.yend_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional .Odb.Lib.Protobuf.Polarity polarity = 5;
+      case 5:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 40)) {
+          uint64_t val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+          _internal_set_polarity(static_cast<::Odb::Lib::Protobuf::Polarity>(val));
+        } else
+          goto handle_unusual;
+        continue;
+      // optional .Odb.Lib.Protobuf.LineShape shape = 6;
+      case 6:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 48)) {
+          uint64_t val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+          _internal_set_shape(static_cast<::Odb::Lib::Protobuf::LineShape>(val));
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float width = 7;
+      case 7:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 61)) {
+          _Internal::set_has_width(&has_bits);
+          _impl_.width_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  _impl_._has_bits_.Or(has_bits);
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* StandardFontsFile_CharacterBlock_LineRecord::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:Odb.Lib.Protobuf.StandardFontsFile.CharacterBlock.LineRecord)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // optional float xStart = 1;
+  if (_internal_has_xstart()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(1, this->_internal_xstart(), target);
+  }
+
+  // optional float yStart = 2;
+  if (_internal_has_ystart()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(2, this->_internal_ystart(), target);
+  }
+
+  // optional float xEnd = 3;
+  if (_internal_has_xend()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(3, this->_internal_xend(), target);
+  }
+
+  // optional float yEnd = 4;
+  if (_internal_has_yend()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(4, this->_internal_yend(), target);
+  }
+
+  // optional .Odb.Lib.Protobuf.Polarity polarity = 5;
+  if (_internal_has_polarity()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteEnumToArray(
+      5, this->_internal_polarity(), target);
+  }
+
+  // optional .Odb.Lib.Protobuf.LineShape shape = 6;
+  if (_internal_has_shape()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteEnumToArray(
+      6, this->_internal_shape(), target);
+  }
+
+  // optional float width = 7;
+  if (_internal_has_width()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(7, this->_internal_width(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:Odb.Lib.Protobuf.StandardFontsFile.CharacterBlock.LineRecord)
+  return target;
+}
+
+size_t StandardFontsFile_CharacterBlock_LineRecord::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:Odb.Lib.Protobuf.StandardFontsFile.CharacterBlock.LineRecord)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x0000007fu) {
+    // optional float xStart = 1;
+    if (cached_has_bits & 0x00000001u) {
+      total_size += 1 + 4;
+    }
+
+    // optional float yStart = 2;
+    if (cached_has_bits & 0x00000002u) {
+      total_size += 1 + 4;
+    }
+
+    // optional float xEnd = 3;
+    if (cached_has_bits & 0x00000004u) {
+      total_size += 1 + 4;
+    }
+
+    // optional float yEnd = 4;
+    if (cached_has_bits & 0x00000008u) {
+      total_size += 1 + 4;
+    }
+
+    // optional .Odb.Lib.Protobuf.Polarity polarity = 5;
+    if (cached_has_bits & 0x00000010u) {
+      total_size += 1 +
+        ::_pbi::WireFormatLite::EnumSize(this->_internal_polarity());
+    }
+
+    // optional .Odb.Lib.Protobuf.LineShape shape = 6;
+    if (cached_has_bits & 0x00000020u) {
+      total_size += 1 +
+        ::_pbi::WireFormatLite::EnumSize(this->_internal_shape());
+    }
+
+    // optional float width = 7;
+    if (cached_has_bits & 0x00000040u) {
+      total_size += 1 + 4;
+    }
+
+  }
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData StandardFontsFile_CharacterBlock_LineRecord::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    StandardFontsFile_CharacterBlock_LineRecord::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*StandardFontsFile_CharacterBlock_LineRecord::GetClassData() const { return &_class_data_; }
+
+
+void StandardFontsFile_CharacterBlock_LineRecord::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<StandardFontsFile_CharacterBlock_LineRecord*>(&to_msg);
+  auto& from = static_cast<const StandardFontsFile_CharacterBlock_LineRecord&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:Odb.Lib.Protobuf.StandardFontsFile.CharacterBlock.LineRecord)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (cached_has_bits & 0x0000007fu) {
+    if (cached_has_bits & 0x00000001u) {
+      _this->_impl_.xstart_ = from._impl_.xstart_;
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _this->_impl_.ystart_ = from._impl_.ystart_;
+    }
+    if (cached_has_bits & 0x00000004u) {
+      _this->_impl_.xend_ = from._impl_.xend_;
+    }
+    if (cached_has_bits & 0x00000008u) {
+      _this->_impl_.yend_ = from._impl_.yend_;
+    }
+    if (cached_has_bits & 0x00000010u) {
+      _this->_impl_.polarity_ = from._impl_.polarity_;
+    }
+    if (cached_has_bits & 0x00000020u) {
+      _this->_impl_.shape_ = from._impl_.shape_;
+    }
+    if (cached_has_bits & 0x00000040u) {
+      _this->_impl_.width_ = from._impl_.width_;
+    }
+    _this->_impl_._has_bits_[0] |= cached_has_bits;
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void StandardFontsFile_CharacterBlock_LineRecord::CopyFrom(const StandardFontsFile_CharacterBlock_LineRecord& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:Odb.Lib.Protobuf.StandardFontsFile.CharacterBlock.LineRecord)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool StandardFontsFile_CharacterBlock_LineRecord::IsInitialized() const {
+  return true;
+}
+
+void StandardFontsFile_CharacterBlock_LineRecord::InternalSwap(StandardFontsFile_CharacterBlock_LineRecord* other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(StandardFontsFile_CharacterBlock_LineRecord, _impl_.width_)
+      + sizeof(StandardFontsFile_CharacterBlock_LineRecord::_impl_.width_)
+      - PROTOBUF_FIELD_OFFSET(StandardFontsFile_CharacterBlock_LineRecord, _impl_.xstart_)>(
+          reinterpret_cast<char*>(&_impl_.xstart_),
+          reinterpret_cast<char*>(&other->_impl_.xstart_));
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata StandardFontsFile_CharacterBlock_LineRecord::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_standardfontsfile_2eproto_getter, &descriptor_table_standardfontsfile_2eproto_once,
+      file_level_metadata_standardfontsfile_2eproto[0]);
+}
+
+// ===================================================================
+
+class StandardFontsFile_CharacterBlock::_Internal {
+ public:
+  using HasBits = decltype(std::declval<StandardFontsFile_CharacterBlock>()._impl_._has_bits_);
+  static void set_has_character(HasBits* has_bits) {
+    (*has_bits)[0] |= 1u;
+  }
+};
+
+StandardFontsFile_CharacterBlock::StandardFontsFile_CharacterBlock(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  // @@protoc_insertion_point(arena_constructor:Odb.Lib.Protobuf.StandardFontsFile.CharacterBlock)
+}
+StandardFontsFile_CharacterBlock::StandardFontsFile_CharacterBlock(const StandardFontsFile_CharacterBlock& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  StandardFontsFile_CharacterBlock* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){from._impl_._has_bits_}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.m_linerecords_){from._impl_.m_linerecords_}
+    , decltype(_impl_.character_){}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _impl_.character_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.character_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (from._internal_has_character()) {
+    _this->_impl_.character_.Set(from._internal_character(), 
+      _this->GetArenaForAllocation());
+  }
+  // @@protoc_insertion_point(copy_constructor:Odb.Lib.Protobuf.StandardFontsFile.CharacterBlock)
+}
+
+inline void StandardFontsFile_CharacterBlock::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.m_linerecords_){arena}
+    , decltype(_impl_.character_){}
+  };
+  _impl_.character_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.character_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+}
+
+StandardFontsFile_CharacterBlock::~StandardFontsFile_CharacterBlock() {
+  // @@protoc_insertion_point(destructor:Odb.Lib.Protobuf.StandardFontsFile.CharacterBlock)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void StandardFontsFile_CharacterBlock::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  _impl_.m_linerecords_.~RepeatedPtrField();
+  _impl_.character_.Destroy();
+}
+
+void StandardFontsFile_CharacterBlock::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void StandardFontsFile_CharacterBlock::Clear() {
+// @@protoc_insertion_point(message_clear_start:Odb.Lib.Protobuf.StandardFontsFile.CharacterBlock)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  _impl_.m_linerecords_.Clear();
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000001u) {
+    _impl_.character_.ClearNonDefaultToEmpty();
+  }
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* StandardFontsFile_CharacterBlock::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  _Internal::HasBits has_bits{};
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // optional string character = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
+          auto str = _internal_mutable_character();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "Odb.Lib.Protobuf.StandardFontsFile.CharacterBlock.character"));
+        } else
+          goto handle_unusual;
+        continue;
+      // repeated .Odb.Lib.Protobuf.StandardFontsFile.CharacterBlock.LineRecord m_lineRecords = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
+          ptr -= 1;
+          do {
+            ptr += 1;
+            ptr = ctx->ParseMessage(_internal_add_m_linerecords(), ptr);
+            CHK_(ptr);
+            if (!ctx->DataAvailable(ptr)) break;
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<18>(ptr));
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  _impl_._has_bits_.Or(has_bits);
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* StandardFontsFile_CharacterBlock::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:Odb.Lib.Protobuf.StandardFontsFile.CharacterBlock)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // optional string character = 1;
+  if (_internal_has_character()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_character().data(), static_cast<int>(this->_internal_character().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "Odb.Lib.Protobuf.StandardFontsFile.CharacterBlock.character");
+    target = stream->WriteStringMaybeAliased(
+        1, this->_internal_character(), target);
+  }
+
+  // repeated .Odb.Lib.Protobuf.StandardFontsFile.CharacterBlock.LineRecord m_lineRecords = 2;
+  for (unsigned i = 0,
+      n = static_cast<unsigned>(this->_internal_m_linerecords_size()); i < n; i++) {
+    const auto& repfield = this->_internal_m_linerecords(i);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+        InternalWriteMessage(2, repfield, repfield.GetCachedSize(), target, stream);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:Odb.Lib.Protobuf.StandardFontsFile.CharacterBlock)
+  return target;
+}
+
+size_t StandardFontsFile_CharacterBlock::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:Odb.Lib.Protobuf.StandardFontsFile.CharacterBlock)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // repeated .Odb.Lib.Protobuf.StandardFontsFile.CharacterBlock.LineRecord m_lineRecords = 2;
+  total_size += 1UL * this->_internal_m_linerecords_size();
+  for (const auto& msg : this->_impl_.m_linerecords_) {
+    total_size +=
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(msg);
+  }
+
+  // optional string character = 1;
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000001u) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_character());
+  }
+
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData StandardFontsFile_CharacterBlock::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    StandardFontsFile_CharacterBlock::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*StandardFontsFile_CharacterBlock::GetClassData() const { return &_class_data_; }
+
+
+void StandardFontsFile_CharacterBlock::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<StandardFontsFile_CharacterBlock*>(&to_msg);
+  auto& from = static_cast<const StandardFontsFile_CharacterBlock&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:Odb.Lib.Protobuf.StandardFontsFile.CharacterBlock)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  _this->_impl_.m_linerecords_.MergeFrom(from._impl_.m_linerecords_);
+  if (from._internal_has_character()) {
+    _this->_internal_set_character(from._internal_character());
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void StandardFontsFile_CharacterBlock::CopyFrom(const StandardFontsFile_CharacterBlock& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:Odb.Lib.Protobuf.StandardFontsFile.CharacterBlock)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool StandardFontsFile_CharacterBlock::IsInitialized() const {
+  return true;
+}
+
+void StandardFontsFile_CharacterBlock::InternalSwap(StandardFontsFile_CharacterBlock* other) {
+  using std::swap;
+  auto* lhs_arena = GetArenaForAllocation();
+  auto* rhs_arena = other->GetArenaForAllocation();
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  _impl_.m_linerecords_.InternalSwap(&other->_impl_.m_linerecords_);
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.character_, lhs_arena,
+      &other->_impl_.character_, rhs_arena
+  );
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata StandardFontsFile_CharacterBlock::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_standardfontsfile_2eproto_getter, &descriptor_table_standardfontsfile_2eproto_once,
+      file_level_metadata_standardfontsfile_2eproto[1]);
+}
+
+// ===================================================================
+
 class StandardFontsFile::_Internal {
  public:
+  using HasBits = decltype(std::declval<StandardFontsFile>()._impl_._has_bits_);
+  static void set_has_xsize(HasBits* has_bits) {
+    (*has_bits)[0] |= 1u;
+  }
+  static void set_has_ysize(HasBits* has_bits) {
+    (*has_bits)[0] |= 2u;
+  }
+  static void set_has_offset(HasBits* has_bits) {
+    (*has_bits)[0] |= 4u;
+  }
 };
 
 StandardFontsFile::StandardFontsFile(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                          bool is_message_owned)
-  : ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase(arena, is_message_owned) {
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
   // @@protoc_insertion_point(arena_constructor:Odb.Lib.Protobuf.StandardFontsFile)
 }
 StandardFontsFile::StandardFontsFile(const StandardFontsFile& from)
-  : ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase() {
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
   StandardFontsFile* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){from._impl_._has_bits_}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.m_characterblocks_){from._impl_.m_characterblocks_}
+    , decltype(_impl_.xsize_){}
+    , decltype(_impl_.ysize_){}
+    , decltype(_impl_.offset_){}};
+
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  ::memcpy(&_impl_.xsize_, &from._impl_.xsize_,
+    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.offset_) -
+    reinterpret_cast<char*>(&_impl_.xsize_)) + sizeof(_impl_.offset_));
   // @@protoc_insertion_point(copy_constructor:Odb.Lib.Protobuf.StandardFontsFile)
 }
 
+inline void StandardFontsFile::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.m_characterblocks_){arena}
+    , decltype(_impl_.xsize_){0}
+    , decltype(_impl_.ysize_){0}
+    , decltype(_impl_.offset_){0}
+  };
+}
 
+StandardFontsFile::~StandardFontsFile() {
+  // @@protoc_insertion_point(destructor:Odb.Lib.Protobuf.StandardFontsFile)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
 
+inline void StandardFontsFile::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  _impl_.m_characterblocks_.~RepeatedPtrField();
+}
 
+void StandardFontsFile::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void StandardFontsFile::Clear() {
+// @@protoc_insertion_point(message_clear_start:Odb.Lib.Protobuf.StandardFontsFile)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  _impl_.m_characterblocks_.Clear();
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000007u) {
+    ::memset(&_impl_.xsize_, 0, static_cast<size_t>(
+        reinterpret_cast<char*>(&_impl_.offset_) -
+        reinterpret_cast<char*>(&_impl_.xsize_)) + sizeof(_impl_.offset_));
+  }
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* StandardFontsFile::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  _Internal::HasBits has_bits{};
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // optional float xSize = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 13)) {
+          _Internal::set_has_xsize(&has_bits);
+          _impl_.xsize_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float ySize = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 21)) {
+          _Internal::set_has_ysize(&has_bits);
+          _impl_.ysize_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional float offset = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 29)) {
+          _Internal::set_has_offset(&has_bits);
+          _impl_.offset_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // repeated .Odb.Lib.Protobuf.StandardFontsFile.CharacterBlock m_characterBlocks = 4;
+      case 4:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 34)) {
+          ptr -= 1;
+          do {
+            ptr += 1;
+            ptr = ctx->ParseMessage(_internal_add_m_characterblocks(), ptr);
+            CHK_(ptr);
+            if (!ctx->DataAvailable(ptr)) break;
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<34>(ptr));
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  _impl_._has_bits_.Or(has_bits);
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* StandardFontsFile::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:Odb.Lib.Protobuf.StandardFontsFile)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // optional float xSize = 1;
+  if (_internal_has_xsize()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(1, this->_internal_xsize(), target);
+  }
+
+  // optional float ySize = 2;
+  if (_internal_has_ysize()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(2, this->_internal_ysize(), target);
+  }
+
+  // optional float offset = 3;
+  if (_internal_has_offset()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(3, this->_internal_offset(), target);
+  }
+
+  // repeated .Odb.Lib.Protobuf.StandardFontsFile.CharacterBlock m_characterBlocks = 4;
+  for (unsigned i = 0,
+      n = static_cast<unsigned>(this->_internal_m_characterblocks_size()); i < n; i++) {
+    const auto& repfield = this->_internal_m_characterblocks(i);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+        InternalWriteMessage(4, repfield, repfield.GetCachedSize(), target, stream);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:Odb.Lib.Protobuf.StandardFontsFile)
+  return target;
+}
+
+size_t StandardFontsFile::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:Odb.Lib.Protobuf.StandardFontsFile)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // repeated .Odb.Lib.Protobuf.StandardFontsFile.CharacterBlock m_characterBlocks = 4;
+  total_size += 1UL * this->_internal_m_characterblocks_size();
+  for (const auto& msg : this->_impl_.m_characterblocks_) {
+    total_size +=
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(msg);
+  }
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000007u) {
+    // optional float xSize = 1;
+    if (cached_has_bits & 0x00000001u) {
+      total_size += 1 + 4;
+    }
+
+    // optional float ySize = 2;
+    if (cached_has_bits & 0x00000002u) {
+      total_size += 1 + 4;
+    }
+
+    // optional float offset = 3;
+    if (cached_has_bits & 0x00000004u) {
+      total_size += 1 + 4;
+    }
+
+  }
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
 
 const ::PROTOBUF_NAMESPACE_ID::Message::ClassData StandardFontsFile::_class_data_ = {
-    ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase::CopyImpl,
-    ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase::MergeImpl,
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    StandardFontsFile::MergeImpl
 };
 const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*StandardFontsFile::GetClassData() const { return &_class_data_; }
 
 
+void StandardFontsFile::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<StandardFontsFile*>(&to_msg);
+  auto& from = static_cast<const StandardFontsFile&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:Odb.Lib.Protobuf.StandardFontsFile)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
 
+  _this->_impl_.m_characterblocks_.MergeFrom(from._impl_.m_characterblocks_);
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000007u) {
+    if (cached_has_bits & 0x00000001u) {
+      _this->_impl_.xsize_ = from._impl_.xsize_;
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _this->_impl_.ysize_ = from._impl_.ysize_;
+    }
+    if (cached_has_bits & 0x00000004u) {
+      _this->_impl_.offset_ = from._impl_.offset_;
+    }
+    _this->_impl_._has_bits_[0] |= cached_has_bits;
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
 
+void StandardFontsFile::CopyFrom(const StandardFontsFile& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:Odb.Lib.Protobuf.StandardFontsFile)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
 
+bool StandardFontsFile::IsInitialized() const {
+  return true;
+}
 
+void StandardFontsFile::InternalSwap(StandardFontsFile* other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  _impl_.m_characterblocks_.InternalSwap(&other->_impl_.m_characterblocks_);
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(StandardFontsFile, _impl_.offset_)
+      + sizeof(StandardFontsFile::_impl_.offset_)
+      - PROTOBUF_FIELD_OFFSET(StandardFontsFile, _impl_.xsize_)>(
+          reinterpret_cast<char*>(&_impl_.xsize_),
+          reinterpret_cast<char*>(&other->_impl_.xsize_));
+}
 
 ::PROTOBUF_NAMESPACE_ID::Metadata StandardFontsFile::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_standardfontsfile_2eproto_getter, &descriptor_table_standardfontsfile_2eproto_once,
-      file_level_metadata_standardfontsfile_2eproto[0]);
+      file_level_metadata_standardfontsfile_2eproto[2]);
 }
 
 // @@protoc_insertion_point(namespace_scope)
@@ -125,6 +1116,14 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*StandardFontsFile::GetClassDat
 }  // namespace Lib
 }  // namespace Odb
 PROTOBUF_NAMESPACE_OPEN
+template<> PROTOBUF_NOINLINE ::Odb::Lib::Protobuf::StandardFontsFile_CharacterBlock_LineRecord*
+Arena::CreateMaybeMessage< ::Odb::Lib::Protobuf::StandardFontsFile_CharacterBlock_LineRecord >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::Odb::Lib::Protobuf::StandardFontsFile_CharacterBlock_LineRecord >(arena);
+}
+template<> PROTOBUF_NOINLINE ::Odb::Lib::Protobuf::StandardFontsFile_CharacterBlock*
+Arena::CreateMaybeMessage< ::Odb::Lib::Protobuf::StandardFontsFile_CharacterBlock >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::Odb::Lib::Protobuf::StandardFontsFile_CharacterBlock >(arena);
+}
 template<> PROTOBUF_NOINLINE ::Odb::Lib::Protobuf::StandardFontsFile*
 Arena::CreateMaybeMessage< ::Odb::Lib::Protobuf::StandardFontsFile >(Arena* arena) {
   return Arena::CreateMessageInternal< ::Odb::Lib::Protobuf::StandardFontsFile >(arena);

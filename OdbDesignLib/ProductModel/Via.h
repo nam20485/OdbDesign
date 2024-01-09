@@ -5,6 +5,7 @@
 #include <vector>
 #include <map>
 #include <memory>
+#include "../enums.h"
 
 
 namespace Odb::Lib::ProductModel
@@ -13,15 +14,16 @@ namespace Odb::Lib::ProductModel
 	{
 	public:
 		Via();
-		~Via();
 
 		std::string GetName() const;
+		BoardSide GetSide() const;
 
 		typedef std::vector<std::shared_ptr<Via>> Vector;
 		typedef std::map<std::string, std::shared_ptr<Via>> StringMap;
 
 	private:
 		std::string m_name;
+		BoardSide m_side;
 
 	};
 } // namespace Odb::Lib::ProductModel

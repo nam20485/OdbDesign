@@ -43,6 +43,11 @@ namespace Odb::Lib::App
 		return stringArg("load-design", DEFAULT_LOAD_DESIGN);
 	}
 
+	bool OdbDesignArgs::loadAll() const
+	{
+		return boolArg("load-all", DEFAULT_LOAD_ALL);
+	}
+
 	std::string OdbDesignArgs::getUsageString() const
 	{
 		std::stringstream ss;
@@ -54,6 +59,7 @@ namespace Odb::Lib::App
 		ss << "  --designs-dir <dir>      Directory containing design files (default: " << DEFAULT_DESIGNS_DIR << ")\n";
 		ss << "  --templates-dir <dir>    Directory containing template files (default: " << DEFAULT_TEMPLATES_DIR << ")\n";
 		ss << "  --load-design <design>   Design to load on startup (default: " << DEFAULT_LOAD_DESIGN << ")\n";
+		ss << "  --load-all               Load all designs on startup (default: " << (DEFAULT_LOAD_ALL ? "true" : "false") << ")\n";
 		ss << "  --help                   Print this help message\n";
 		return ss.str();		
 	}	
