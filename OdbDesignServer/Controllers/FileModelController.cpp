@@ -28,8 +28,8 @@ namespace Odb::App::Server
 			////StepHdrFile m_stepHdrFile;
 		
 		////SymbolsDirectory::StringMap m_symbolsDirectoriesByName;	*
-			// AttrList file
-			// features file
+			//// AttrList file
+			//// features file
 	
 		////MiscInfoFile m_miscInfoFile;
 		////MatrixFile m_matrixFile;
@@ -110,6 +110,18 @@ namespace Odb::App::Server
 			([&](const crow::request& req, std::string designName, std::string symbolName)
 				{
 					return this->symbols_route_handler(designName, symbolName, req);
+				});
+
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/symbols/<string>")
+			([&](const crow::request& req, std::string designName, std::string symbolName)
+				{
+					return this->symbols_features_route_handler(designName, symbolName, req);
+				});
+
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/symbols/<string>")
+			([&](const crow::request& req, std::string designName, std::string symbolName)
+				{
+					return this->symbols_attrlist_route_handler(designName, symbolName, req);
 				});
 
 		//register_route_handler("/filemodel/misc/attrlist", std::bind(&FileModelController::misc_attrlist_route_handler, this, std::placeholders::_1));
@@ -613,6 +625,78 @@ namespace Odb::App::Server
 
 		auto& symbol = findIt->second;		
 		return crow::response(JsonCrowReturnable(*symbol));
+	}
+
+	crow::response FileModelController::symbols_features_route_handler(const std::string& designName, const std::string& symbolName, const crow::request& req)
+	{
+		auto designNameDecoded = UrlEncoding::decode(designName);
+		if (designNameDecoded.empty())
+		{
+			return crow::response(crow::status::BAD_REQUEST, "design name not specified");
+		}
+
+		auto symbolNameDecoded = UrlEncoding::decode(symbolName);
+		if (symbolNameDecoded.empty())
+		{
+			return crow::response(crow::status::BAD_REQUEST, "step name not specified");
+		}
+
+		auto pFileArchive = m_serverApp.designs().GetFileArchive(designNameDecoded);
+		if (pFileArchive == nullptr)
+		{
+			std::stringstream ss;
+			ss << "design: \"" << designNameDecoded << "\" not found";
+			return crow::response(crow::status::NOT_FOUND, ss.str());
+		}
+
+		auto& symbolsByName = pFileArchive->GetSymbolsDirectoriesByName();
+		auto findIt = symbolsByName.find(symbolNameDecoded);
+		if (findIt == symbolsByName.end())
+		{
+			std::stringstream ss;
+			ss << "(design: \"" << designNameDecoded << "\")" << " symbol: \"" << symbolNameDecoded << "\" not found";
+			return crow::response(crow::status::NOT_FOUND, ss.str());
+		}
+		auto& symbol = findIt->second;
+
+		auto& featuresFile = symbol->GetFeaturesFile();
+		return crow::response(JsonCrowReturnable(featuresFile));
+	}
+
+	crow::response FileModelController::symbols_attrlist_route_handler(const std::string& designName, const std::string& symbolName, const crow::request& req)
+	{
+		auto designNameDecoded = UrlEncoding::decode(designName);
+		if (designNameDecoded.empty())
+		{
+			return crow::response(crow::status::BAD_REQUEST, "design name not specified");
+		}
+
+		auto symbolNameDecoded = UrlEncoding::decode(symbolName);
+		if (symbolNameDecoded.empty())
+		{
+			return crow::response(crow::status::BAD_REQUEST, "step name not specified");
+		}
+
+		auto pFileArchive = m_serverApp.designs().GetFileArchive(designNameDecoded);
+		if (pFileArchive == nullptr)
+		{
+			std::stringstream ss;
+			ss << "design: \"" << designNameDecoded << "\" not found";
+			return crow::response(crow::status::NOT_FOUND, ss.str());
+		}
+
+		auto& symbolsByName = pFileArchive->GetSymbolsDirectoriesByName();
+		auto findIt = symbolsByName.find(symbolNameDecoded);
+		if (findIt == symbolsByName.end())
+		{
+			std::stringstream ss;
+			ss << "(design: \"" << designNameDecoded << "\")" << " symbol: \"" << symbolNameDecoded << "\" not found";
+			return crow::response(crow::status::NOT_FOUND, ss.str());
+		}
+		auto& symbol = findIt->second;
+
+		auto& attrlistFile = symbol->GetAttrListFile();
+		return crow::response(JsonCrowReturnable(attrlistFile));
 	}
 
 	crow::response FileModelController::designs_route_handler(const std::string& designName, const crow::request& req)
