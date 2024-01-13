@@ -14,20 +14,20 @@ namespace Odb::App::Server
 	{
 	}
 
-	//FileArchive	*
-		//StepDirectory::StringMap m_stepsByName;	*
-			//LayerDirectory::StringMap m_layersByName;	*
-			//	ComponentsFile m_componentsFile;
-			//	FeaturesFile m_featuresFile;
-			//	AttrListFile m_attrListFile;
-			//Netlist//File::StringMap m_netlistsByName;	*
+	////FileArchive	*
+		////StepDirectory::StringMap m_stepsByName;	*
+			////LayerDirectory::StringMap m_layersByName;	*
+			////	ComponentsFile m_componentsFile;
+			////	FeaturesFile m_featuresFile;
+			////	AttrListFile m_attrListFile;
+			////Netlist//File::StringMap m_netlistsByName;	*
 				
 			////EdaDataFile m_edaData;
 			////AttrListFile m_attrListFile;
 			////FeaturesFile m_profileFile;
 			////StepHdrFile m_stepHdrFile;
 		
-		//SymbolsDirectory::StringMap m_symbolsDirectoriesByName;	*
+		////SymbolsDirectory::StringMap m_symbolsDirectoriesByName;	*
 			// AttrList file
 			// features file
 	
@@ -81,6 +81,30 @@ namespace Odb::App::Server
 				{
 					return this->steps_netlist_route_handler(designName, stepName, netlistName, req);
 				});
+
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/steps/<string>/layer/<string>")
+			([&](const crow::request& req, std::string designName, std::string stepName, std::string layerName)
+				{
+					return this->steps_layer_route_handler(designName, stepName, layerName, req);
+				});
+
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/steps/<string>/layer/<string>/components")
+			([&](const crow::request& req, std::string designName, std::string stepName, std::string layerName)
+				{
+					return this->steps_layer_components_route_handler(designName, stepName, layerName, req);
+				});
+
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/steps/<string>/layer/<string>/features")
+			([&](const crow::request& req, std::string designName, std::string stepName, std::string layerName)
+				{
+					return this->steps_layer_features_route_handler(designName, stepName, layerName, req);
+				});
+
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/steps/<string>/layer/<string>/attrlist")
+			([&](const crow::request& req, std::string designName, std::string stepName, std::string layerName)
+				{
+					return this->steps_layer_attrlist_route_handler(designName, stepName, layerName, req);
+				});	
 
 		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/symbols/<string>")
 			([&](const crow::request& req, std::string designName, std::string symbolName)
@@ -312,6 +336,213 @@ namespace Odb::App::Server
 		auto& netlist = findIt2->second;
 		
 		return crow::response(JsonCrowReturnable(*netlist));
+	}
+
+	crow::response FileModelController::steps_layer_route_handler(const std::string& designName, const std::string& stepName, const std::string& layerName, const crow::request& req)
+	{
+		auto designNameDecoded = UrlEncoding::decode(designName);
+		if (designNameDecoded.empty())
+		{
+			return crow::response(crow::status::BAD_REQUEST, "design name not specified");
+		}
+
+		auto stepNameDecoded = UrlEncoding::decode(stepName);
+		if (stepNameDecoded.empty())
+		{
+			return crow::response(crow::status::BAD_REQUEST, "step name not specified");
+		}
+
+		auto layerNameDecoded = UrlEncoding::decode(layerName);
+		if (layerNameDecoded.empty())
+		{
+			return crow::response(crow::status::BAD_REQUEST, "layer name not specified");
+		}
+
+		auto pFileArchive = m_serverApp.designs().GetFileArchive(designNameDecoded);
+		if (pFileArchive == nullptr)
+		{
+			std::stringstream ss;
+			ss << "design: \"" << designNameDecoded << "\" not found";
+			return crow::response(crow::status::NOT_FOUND, ss.str());
+		}
+
+		auto& stepsByName = pFileArchive->GetStepsByName();
+		auto findIt = stepsByName.find(stepNameDecoded);
+		if (findIt == stepsByName.end())
+		{
+			std::stringstream ss;
+			ss << "(design: \"" << designNameDecoded << "\")" << " step: \"" << stepNameDecoded << "\" not found";
+			return crow::response(crow::status::NOT_FOUND, ss.str());
+		}
+		auto& step = findIt->second;
+
+		auto& layersByName = step->GetLayersByName();
+		auto findIt2 = layersByName.find(layerNameDecoded);
+		if (findIt2 == layersByName.end())
+		{
+			std::stringstream ss;
+			ss << "(design: \"" << designNameDecoded << "\")" << " step: \"" << stepNameDecoded << "\"" << " layer: \"" << layerNameDecoded << "\"" << " not found";
+			return crow::response(crow::status::NOT_FOUND, ss.str());
+		}
+		auto& layer = findIt2->second;
+
+		return crow::response(JsonCrowReturnable(*layer));
+	}
+
+	crow::response FileModelController::steps_layer_components_route_handler(const std::string& designName, const std::string& stepName, const std::string& layerName, const crow::request& req)
+	{
+		auto designNameDecoded = UrlEncoding::decode(designName);
+		if (designNameDecoded.empty())
+		{
+			return crow::response(crow::status::BAD_REQUEST, "design name not specified");
+		}
+
+		auto stepNameDecoded = UrlEncoding::decode(stepName);
+		if (stepNameDecoded.empty())
+		{
+			return crow::response(crow::status::BAD_REQUEST, "step name not specified");
+		}
+
+		auto layerNameDecoded = UrlEncoding::decode(layerName);
+		if (layerNameDecoded.empty())
+		{
+			return crow::response(crow::status::BAD_REQUEST, "layer name not specified");
+		}
+
+		auto pFileArchive = m_serverApp.designs().GetFileArchive(designNameDecoded);
+		if (pFileArchive == nullptr)
+		{
+			std::stringstream ss;
+			ss << "design: \"" << designNameDecoded << "\" not found";
+			return crow::response(crow::status::NOT_FOUND, ss.str());
+		}
+
+		auto& stepsByName = pFileArchive->GetStepsByName();
+		auto findIt = stepsByName.find(stepNameDecoded);
+		if (findIt == stepsByName.end())
+		{
+			std::stringstream ss;
+			ss << "(design: \"" << designNameDecoded << "\")" << " step: \"" << stepNameDecoded << "\" not found";
+			return crow::response(crow::status::NOT_FOUND, ss.str());
+		}
+		auto& step = findIt->second;
+
+		auto& layersByName = step->GetLayersByName();
+		auto findIt2 = layersByName.find(layerNameDecoded);
+		if (findIt2 == layersByName.end())
+		{
+			std::stringstream ss;
+			ss << "(design: \"" << designNameDecoded << "\")" << " step: \"" << stepNameDecoded << "\"" << " layer: \"" << layerNameDecoded << "\"" << " not found";
+			return crow::response(crow::status::NOT_FOUND, ss.str());
+		}
+		auto& layer = findIt2->second;
+
+		auto& componentsFile = layer->GetComponentsFile();
+		return crow::response(JsonCrowReturnable(componentsFile));
+	}
+
+	crow::response FileModelController::steps_layer_features_route_handler(const std::string& designName, const std::string& stepName, const std::string& layerName, const crow::request& req)
+	{
+		auto designNameDecoded = UrlEncoding::decode(designName);
+		if (designNameDecoded.empty())
+		{
+			return crow::response(crow::status::BAD_REQUEST, "design name not specified");
+		}
+
+		auto stepNameDecoded = UrlEncoding::decode(stepName);
+		if (stepNameDecoded.empty())
+		{
+			return crow::response(crow::status::BAD_REQUEST, "step name not specified");
+		}
+
+		auto layerNameDecoded = UrlEncoding::decode(layerName);
+		if (layerNameDecoded.empty())
+		{
+			return crow::response(crow::status::BAD_REQUEST, "layer name not specified");
+		}
+
+		auto pFileArchive = m_serverApp.designs().GetFileArchive(designNameDecoded);
+		if (pFileArchive == nullptr)
+		{
+			std::stringstream ss;
+			ss << "design: \"" << designNameDecoded << "\" not found";
+			return crow::response(crow::status::NOT_FOUND, ss.str());
+		}
+
+		auto& stepsByName = pFileArchive->GetStepsByName();
+		auto findIt = stepsByName.find(stepNameDecoded);
+		if (findIt == stepsByName.end())
+		{
+			std::stringstream ss;
+			ss << "(design: \"" << designNameDecoded << "\")" << " step: \"" << stepNameDecoded << "\" not found";
+			return crow::response(crow::status::NOT_FOUND, ss.str());
+		}
+		auto& step = findIt->second;
+
+		auto& layersByName = step->GetLayersByName();
+		auto findIt2 = layersByName.find(layerNameDecoded);
+		if (findIt2 == layersByName.end())
+		{
+			std::stringstream ss;
+			ss << "(design: \"" << designNameDecoded << "\")" << " step: \"" << stepNameDecoded << "\"" << " layer: \"" << layerNameDecoded << "\"" << " not found";
+			return crow::response(crow::status::NOT_FOUND, ss.str());
+		}
+		auto& layer = findIt2->second;
+
+		auto& featuresFile = layer->GetFeaturesFile();
+		return crow::response(JsonCrowReturnable(featuresFile));
+	}
+
+	crow::response FileModelController::steps_layer_attrlist_route_handler(const std::string& designName, const std::string& stepName, const std::string& layerName, const crow::request& req)
+	{
+		auto designNameDecoded = UrlEncoding::decode(designName);
+		if (designNameDecoded.empty())
+		{
+			return crow::response(crow::status::BAD_REQUEST, "design name not specified");
+		}
+
+		auto stepNameDecoded = UrlEncoding::decode(stepName);
+		if (stepNameDecoded.empty())
+		{
+			return crow::response(crow::status::BAD_REQUEST, "step name not specified");
+		}
+
+		auto layerNameDecoded = UrlEncoding::decode(layerName);
+		if (layerNameDecoded.empty())
+		{
+			return crow::response(crow::status::BAD_REQUEST, "layer name not specified");
+		}
+
+		auto pFileArchive = m_serverApp.designs().GetFileArchive(designNameDecoded);
+		if (pFileArchive == nullptr)
+		{
+			std::stringstream ss;
+			ss << "design: \"" << designNameDecoded << "\" not found";
+			return crow::response(crow::status::NOT_FOUND, ss.str());
+		}
+
+		auto& stepsByName = pFileArchive->GetStepsByName();
+		auto findIt = stepsByName.find(stepNameDecoded);
+		if (findIt == stepsByName.end())
+		{
+			std::stringstream ss;
+			ss << "(design: \"" << designNameDecoded << "\")" << " step: \"" << stepNameDecoded << "\" not found";
+			return crow::response(crow::status::NOT_FOUND, ss.str());
+		}
+		auto& step = findIt->second;
+
+		auto& layersByName = step->GetLayersByName();
+		auto findIt2 = layersByName.find(layerNameDecoded);
+		if (findIt2 == layersByName.end())
+		{
+			std::stringstream ss;
+			ss << "(design: \"" << designNameDecoded << "\")" << " step: \"" << stepNameDecoded << "\"" << " layer: \"" << layerNameDecoded << "\"" << " not found";
+			return crow::response(crow::status::NOT_FOUND, ss.str());
+		}
+		auto& layer = findIt2->second;
+
+		auto& attrlistFile = layer->GetAttrListFile();
+		return crow::response(JsonCrowReturnable(attrlistFile));
 	}
 
 	crow::response FileModelController::steps_route_handler(const std::string& designName, const std::string& stepName, const crow::request& req)
