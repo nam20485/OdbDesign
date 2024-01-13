@@ -41,7 +41,7 @@ It is built using the latest available version of the C++ standard and is compil
 
 The diagram describes the current state of parser implementation and data availability. Green color describes areas of the ODB++ archive file that are implemented and have their data available for use. Red color describes areas that are not parsed so their data is not yet available.
 
-![image](https://github.com/nam20485/OdbDesign/assets/1829396/d55d0ea8-6ad9-446a-8659-9157636e1c9f)
+![ODB++ file hierarchy implementation state diagram](<odb++ file hierarchy (implemented).png>)
 
 ### CI/CD Build
 
