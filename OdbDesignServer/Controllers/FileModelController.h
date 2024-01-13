@@ -16,9 +16,11 @@ namespace Odb::App::Server
 	private:
 		crow::response designs_route_handler(const std::string& designName, const crow::request& req);
 
-		crow::response steps_edadata_route_handler(const std::string& designName, const std::string& stepName, const crow::request& req);
-
-		crow::response steps_route_handler(const std::string& designName, const std::string& stepName, const crow::request& req);		
+		crow::response steps_route_handler(const std::string& designName, const std::string& stepName, const crow::request& req);
+		crow::response steps_edadata_route_handler(const std::string& designName, const std::string& stepName, const crow::request& req);		
+		crow::response steps_attrlist_route_handler(const std::string& designName, const std::string& stepName, const crow::request& req);
+		crow::response steps_profile_route_handler(const std::string& designName, const std::string& stepName, const crow::request& req);
+		crow::response steps_stephdr_route_handler(const std::string& designName, const std::string& stepName, const crow::request& req);
 
 		crow::response symbols_route_handler(const std::string& designName, const std::string& symbolName, const crow::request& req);
 

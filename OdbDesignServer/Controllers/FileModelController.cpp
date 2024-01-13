@@ -14,13 +14,23 @@ namespace Odb::App::Server
 	{
 	}
 
-	//StepDirectory::StringMap m_stepsByName;
-	//SymbolsDirectory::StringMap m_symbolsDirectoriesByName;
+	//FileArchive
+		//StepDirectory::StringMap m_stepsByName;
+			//LayerDirectory::StringMap m_layersByName;
+			//NetlistFile::StringMap m_netlistsByName;
+			////EdaDataFile m_edaData;
+			////AttrListFile m_attrListFile;
+			////FeaturesFile m_profileFile;
+			////StepHdrFile m_stepHdrFile;
+		
+		//SymbolsDirectory::StringMap m_symbolsDirectoriesByName;
+			// AttrList file
+			// features file
 	
-	////MiscInfoFile m_miscInfoFile;
-	////MatrixFile m_matrixFile;
-	////StandardFontsFile m_standardFontsFile;	
-	////AttrListFile m_miscAttrListFile;
+		////MiscInfoFile m_miscInfoFile;
+		////MatrixFile m_matrixFile;
+		////StandardFontsFile m_standardFontsFile;	
+		////AttrListFile m_miscAttrListFile;
 
 	void FileModelController::register_routes()
 	{
@@ -40,6 +50,24 @@ namespace Odb::App::Server
 			([&](const crow::request& req, std::string designName, std::string stepName)
 				{
 					return this->steps_edadata_route_handler(designName, stepName, req);
+				});
+
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/steps/<string>/attrlist")
+			([&](const crow::request& req, std::string designName, std::string stepName)
+				{
+					return this->steps_attrlist_route_handler(designName, stepName, req);
+				});
+
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/steps/<string>/profile")
+			([&](const crow::request& req, std::string designName, std::string stepName)
+				{
+					return this->steps_profile_route_handler(designName, stepName, req);
+				});
+
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/steps/<string>/stephdr")
+			([&](const crow::request& req, std::string designName, std::string stepName)
+				{
+					return this->steps_stephdr_route_handler(designName, stepName, req);
 				});
 
 		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/symbols/<string>")
@@ -113,6 +141,114 @@ namespace Odb::App::Server
 		auto& step = findIt->second;
 		auto& edaDataFile = step->GetEdaDataFile();
 		return crow::response(JsonCrowReturnable(edaDataFile));
+	}
+
+	crow::response FileModelController::steps_attrlist_route_handler(const std::string& designName, const std::string& stepName, const crow::request& req)
+	{
+		auto designNameDecoded = UrlEncoding::decode(designName);
+		if (designNameDecoded.empty())
+		{
+			return crow::response(crow::status::BAD_REQUEST, "design name not specified");
+		}
+
+		auto stepNameDecoded = UrlEncoding::decode(stepName);
+		if (stepNameDecoded.empty())
+		{
+			return crow::response(crow::status::BAD_REQUEST, "step name not specified");
+		}
+
+		auto pFileArchive = m_serverApp.designs().GetFileArchive(designNameDecoded);
+		if (pFileArchive == nullptr)
+		{
+			std::stringstream ss;
+			ss << "design: \"" << designNameDecoded << "\" not found";
+			return crow::response(crow::status::NOT_FOUND, ss.str());
+		}
+
+		auto& stepsByName = pFileArchive->GetStepsByName();
+		auto findIt = stepsByName.find(stepNameDecoded);
+		if (findIt == stepsByName.end())
+		{
+			std::stringstream ss;
+			ss << "(design: \"" << designNameDecoded << "\")" << " step: \"" << stepNameDecoded << "\" not found";
+			return crow::response(crow::status::NOT_FOUND, ss.str());
+		}
+
+		auto& step = findIt->second;
+		auto& attrListFile = step->GetAttrListFile();
+		return crow::response(JsonCrowReturnable(attrListFile));
+	}
+
+	crow::response FileModelController::steps_profile_route_handler(const std::string& designName, const std::string& stepName, const crow::request& req)
+	{
+		auto designNameDecoded = UrlEncoding::decode(designName);
+		if (designNameDecoded.empty())
+		{
+			return crow::response(crow::status::BAD_REQUEST, "design name not specified");
+		}
+
+		auto stepNameDecoded = UrlEncoding::decode(stepName);
+		if (stepNameDecoded.empty())
+		{
+			return crow::response(crow::status::BAD_REQUEST, "step name not specified");
+		}
+
+		auto pFileArchive = m_serverApp.designs().GetFileArchive(designNameDecoded);
+		if (pFileArchive == nullptr)
+		{
+			std::stringstream ss;
+			ss << "design: \"" << designNameDecoded << "\" not found";
+			return crow::response(crow::status::NOT_FOUND, ss.str());
+		}
+
+		auto& stepsByName = pFileArchive->GetStepsByName();
+		auto findIt = stepsByName.find(stepNameDecoded);
+		if (findIt == stepsByName.end())
+		{
+			std::stringstream ss;
+			ss << "(design: \"" << designNameDecoded << "\")" << " step: \"" << stepNameDecoded << "\" not found";
+			return crow::response(crow::status::NOT_FOUND, ss.str());
+		}
+
+		auto& step = findIt->second;
+		auto& profileFile = step->GetProfileFile();
+		return crow::response(JsonCrowReturnable(profileFile));
+	}
+
+	crow::response FileModelController::steps_stephdr_route_handler(const std::string& designName, const std::string& stepName, const crow::request& req)
+	{
+		auto designNameDecoded = UrlEncoding::decode(designName);
+		if (designNameDecoded.empty())
+		{
+			return crow::response(crow::status::BAD_REQUEST, "design name not specified");
+		}
+
+		auto stepNameDecoded = UrlEncoding::decode(stepName);
+		if (stepNameDecoded.empty())
+		{
+			return crow::response(crow::status::BAD_REQUEST, "step name not specified");
+		}
+
+		auto pFileArchive = m_serverApp.designs().GetFileArchive(designNameDecoded);
+		if (pFileArchive == nullptr)
+		{
+			std::stringstream ss;
+			ss << "design: \"" << designNameDecoded << "\" not found";
+			return crow::response(crow::status::NOT_FOUND, ss.str());
+		}
+
+		auto& stepsByName = pFileArchive->GetStepsByName();
+		auto findIt = stepsByName.find(stepNameDecoded);
+		if (findIt == stepsByName.end())
+		{
+			std::stringstream ss;
+			ss << "(design: \"" << designNameDecoded << "\")" << " step: \"" << stepNameDecoded << "\" not found";
+			return crow::response(crow::status::NOT_FOUND, ss.str());
+		}
+
+		auto& step = findIt->second;
+		auto& stepHdrFile = step->GetStepHdrFile();
+		return crow::response(JsonCrowReturnable(stepHdrFile));
 	}
 
 	crow::response FileModelController::steps_route_handler(const std::string& designName, const std::string& stepName, const crow::request& req)
