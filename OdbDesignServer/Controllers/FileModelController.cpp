@@ -15,19 +15,19 @@ namespace Odb::App::Server
 	}
 
 	////FileArchive	*
-		////StepDirectory::StringMap m_stepsByName;	*
-			////LayerDirectory::StringMap m_layersByName;	*
+		////StepDirectory::StringMap m_stepsByName;	//*
+			////LayerDirectory::StringMap m_layersByName;	//*
 			////	ComponentsFile m_componentsFile;
 			////	FeaturesFile m_featuresFile;
 			////	AttrListFile m_attrListFile;
-			////Netlist//File::StringMap m_netlistsByName;	*
+			////Netlist//File::StringMap m_netlistsByName;	//*
 				
 			////EdaDataFile m_edaData;
 			////AttrListFile m_attrListFile;
 			////FeaturesFile m_profileFile;
 			////StepHdrFile m_stepHdrFile;
 		
-		////SymbolsDirectory::StringMap m_symbolsDirectoriesByName;	*
+		////SymbolsDirectory::StringMap m_symbolsDirectoriesByName;	//*
 			//// AttrList file
 			//// features file
 	
@@ -40,6 +40,12 @@ namespace Odb::App::Server
 
 	void FileModelController::register_routes()
 	{
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodels")
+			([&](const crow::request& req)
+				{
+					return this->designs_list_route_handler(req);
+				});
+
 		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>")
 			([&](const crow::request& req, std::string designName)
 				{
@@ -50,6 +56,12 @@ namespace Odb::App::Server
 			([&](const crow::request& req, std::string designName, std::string stepName)
 				{
 					return this->steps_route_handler(designName, stepName, req);
+				});
+
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/steps")
+			([&](const crow::request& req, std::string designName)
+				{
+					return this->steps_list_route_handler(designName, req);
 				});
 
 		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/steps/<string>/eda_data")
@@ -76,34 +88,46 @@ namespace Odb::App::Server
 					return this->steps_stephdr_route_handler(designName, stepName, req);
 				});
 
-		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/steps/<string>/netlist/<string>")
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/steps/<string>/netlists/<string>")
 			([&](const crow::request& req, std::string designName, std::string stepName, std::string netlistName)
 				{
-					return this->steps_netlist_route_handler(designName, stepName, netlistName, req);
+					return this->steps_netlists_route_handler(designName, stepName, netlistName, req);
 				});
 
-		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/steps/<string>/layer/<string>")
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/steps/<string>/netlists")
+			([&](const crow::request& req, std::string designName, std::string stepName)
+				{
+					return this->steps_netlists_list_route_handler(designName, stepName, req);
+				});
+
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/steps/<string>/layers/<string>")
 			([&](const crow::request& req, std::string designName, std::string stepName, std::string layerName)
 				{
-					return this->steps_layer_route_handler(designName, stepName, layerName, req);
+					return this->steps_layers_route_handler(designName, stepName, layerName, req);
+				});
+
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/steps/<string>/layers")
+			([&](const crow::request& req, std::string designName, std::string stepName)
+				{
+					return this->steps_layers_list_route_handler(designName, stepName, req);
 				});
 
 		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/steps/<string>/layer/<string>/components")
 			([&](const crow::request& req, std::string designName, std::string stepName, std::string layerName)
 				{
-					return this->steps_layer_components_route_handler(designName, stepName, layerName, req);
+					return this->steps_layers_components_route_handler(designName, stepName, layerName, req);
 				});
 
-		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/steps/<string>/layer/<string>/features")
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/steps/<string>/layers/<string>/features")
 			([&](const crow::request& req, std::string designName, std::string stepName, std::string layerName)
 				{
-					return this->steps_layer_features_route_handler(designName, stepName, layerName, req);
+					return this->steps_layers_features_route_handler(designName, stepName, layerName, req);
 				});
 
-		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/steps/<string>/layer/<string>/attrlist")
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/steps/<string>/layers/<string>/attrlist")
 			([&](const crow::request& req, std::string designName, std::string stepName, std::string layerName)
 				{
-					return this->steps_layer_attrlist_route_handler(designName, stepName, layerName, req);
+					return this->steps_layers_attrlist_route_handler(designName, stepName, layerName, req);
 				});	
 
 		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/symbols/<string>")
@@ -112,16 +136,22 @@ namespace Odb::App::Server
 					return this->symbols_route_handler(designName, symbolName, req);
 				});
 
-		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/symbols/<string>")
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/symbols/<string>/features")
 			([&](const crow::request& req, std::string designName, std::string symbolName)
 				{
 					return this->symbols_features_route_handler(designName, symbolName, req);
 				});
 
-		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/symbols/<string>")
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/symbols/<string>/attrlist")
 			([&](const crow::request& req, std::string designName, std::string symbolName)
 				{
 					return this->symbols_attrlist_route_handler(designName, symbolName, req);
+				});
+
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/symbols")
+			([&](const crow::request& req, std::string designName)
+				{
+					return this->symbols_list_route_handler(designName, req);
 				});
 
 		//register_route_handler("/filemodel/misc/attrlist", std::bind(&FileModelController::misc_attrlist_route_handler, this, std::placeholders::_1));
@@ -299,7 +329,7 @@ namespace Odb::App::Server
 		return crow::response(JsonCrowReturnable(stepHdrFile));
 	}
 
-	crow::response FileModelController::steps_netlist_route_handler(const std::string& designName, const std::string& stepName, const std::string& netlistName, const crow::request& req)
+	crow::response FileModelController::steps_netlists_route_handler(const std::string& designName, const std::string& stepName, const std::string& netlistName, const crow::request& req)
 	{
 		auto designNameDecoded = UrlEncoding::decode(designName);
 		if (designNameDecoded.empty())
@@ -350,7 +380,79 @@ namespace Odb::App::Server
 		return crow::response(JsonCrowReturnable(*netlist));
 	}
 
-	crow::response FileModelController::steps_layer_route_handler(const std::string& designName, const std::string& stepName, const std::string& layerName, const crow::request& req)
+	crow::response FileModelController::steps_netlists_list_route_handler(const std::string& designName, const std::string& stepName, const crow::request& req)
+	{
+		auto designNameDecoded = UrlEncoding::decode(designName);
+		if (designNameDecoded.empty())
+		{
+			return crow::response(crow::status::BAD_REQUEST, "design name not specified");
+		}
+
+		auto stepNameDecoded = UrlEncoding::decode(stepName);
+		if (stepNameDecoded.empty())
+		{
+			return crow::response(crow::status::BAD_REQUEST, "step name not specified");
+		}
+
+		auto pFileArchive = m_serverApp.designs().GetFileArchive(designNameDecoded);
+		if (pFileArchive == nullptr)
+		{
+			std::stringstream ss;
+			ss << "design: \"" << designNameDecoded << "\" not found";
+			return crow::response(crow::status::NOT_FOUND, ss.str());
+		}
+
+		auto& stepsByName = pFileArchive->GetStepsByName();
+		auto findIt = stepsByName.find(stepNameDecoded);
+		if (findIt == stepsByName.end())
+		{
+			std::stringstream ss;
+			ss << "(design: \"" << designNameDecoded << "\")" << " step: \"" << stepNameDecoded << "\" not found";
+			return crow::response(crow::status::NOT_FOUND, ss.str());
+		}
+		auto& step = findIt->second;
+
+		auto& netlistsByName = step->GetNetlistsByName();
+		crow::json::wvalue::list netlistNames;
+		for (const auto& kvNetlists : netlistsByName)
+		{
+			netlistNames.push_back(kvNetlists.first);
+		}
+
+		crow::json::wvalue jsonResponse;
+		jsonResponse["netlists"] = std::move(netlistNames);
+		return crow::response(jsonResponse);
+	}
+
+	crow::response FileModelController::steps_list_route_handler(const std::string& designName, const crow::request& req)
+	{
+		auto designNameDecoded = UrlEncoding::decode(designName);
+		if (designNameDecoded.empty())
+		{
+			return crow::response(crow::status::BAD_REQUEST, "design name not specified");
+		}
+
+		auto pFileArchive = m_serverApp.designs().GetFileArchive(designNameDecoded);
+		if (pFileArchive == nullptr)
+		{
+			std::stringstream ss;
+			ss << "design: \"" << designNameDecoded << "\" not found";
+			return crow::response(crow::status::NOT_FOUND, ss.str());
+		}
+
+		auto& stepsByName = pFileArchive->GetStepsByName();
+		crow::json::wvalue::list stepNames;
+		for (const auto& kvSteps : stepsByName)
+		{
+			stepNames.push_back(kvSteps.first);
+		}
+
+		crow::json::wvalue jsonResponse;
+		jsonResponse["steps"] = std::move(stepNames);
+		return crow::response(jsonResponse);
+	}
+
+	crow::response FileModelController::steps_layers_route_handler(const std::string& designName, const std::string& stepName, const std::string& layerName, const crow::request& req)
 	{
 		auto designNameDecoded = UrlEncoding::decode(designName);
 		if (designNameDecoded.empty())
@@ -401,7 +503,7 @@ namespace Odb::App::Server
 		return crow::response(JsonCrowReturnable(*layer));
 	}
 
-	crow::response FileModelController::steps_layer_components_route_handler(const std::string& designName, const std::string& stepName, const std::string& layerName, const crow::request& req)
+	crow::response FileModelController::steps_layers_components_route_handler(const std::string& designName, const std::string& stepName, const std::string& layerName, const crow::request& req)
 	{
 		auto designNameDecoded = UrlEncoding::decode(designName);
 		if (designNameDecoded.empty())
@@ -453,7 +555,7 @@ namespace Odb::App::Server
 		return crow::response(JsonCrowReturnable(componentsFile));
 	}
 
-	crow::response FileModelController::steps_layer_features_route_handler(const std::string& designName, const std::string& stepName, const std::string& layerName, const crow::request& req)
+	crow::response FileModelController::steps_layers_features_route_handler(const std::string& designName, const std::string& stepName, const std::string& layerName, const crow::request& req)
 	{
 		auto designNameDecoded = UrlEncoding::decode(designName);
 		if (designNameDecoded.empty())
@@ -505,7 +607,7 @@ namespace Odb::App::Server
 		return crow::response(JsonCrowReturnable(featuresFile));
 	}
 
-	crow::response FileModelController::steps_layer_attrlist_route_handler(const std::string& designName, const std::string& stepName, const std::string& layerName, const crow::request& req)
+	crow::response FileModelController::steps_layers_attrlist_route_handler(const std::string& designName, const std::string& stepName, const std::string& layerName, const crow::request& req)
 	{
 		auto designNameDecoded = UrlEncoding::decode(designName);
 		if (designNameDecoded.empty())
@@ -555,6 +657,50 @@ namespace Odb::App::Server
 
 		auto& attrlistFile = layer->GetAttrListFile();
 		return crow::response(JsonCrowReturnable(attrlistFile));
+	}
+
+	crow::response FileModelController::steps_layers_list_route_handler(const std::string& designName, const std::string& stepName, const crow::request& req)
+	{
+		auto designNameDecoded = UrlEncoding::decode(designName);
+		if (designNameDecoded.empty())
+		{
+			return crow::response(crow::status::BAD_REQUEST, "design name not specified");
+		}
+
+		auto stepNameDecoded = UrlEncoding::decode(stepName);
+		if (stepNameDecoded.empty())
+		{
+			return crow::response(crow::status::BAD_REQUEST, "step name not specified");
+		}
+
+		auto pFileArchive = m_serverApp.designs().GetFileArchive(designNameDecoded);
+		if (pFileArchive == nullptr)
+		{
+			std::stringstream ss;
+			ss << "design: \"" << designNameDecoded << "\" not found";
+			return crow::response(crow::status::NOT_FOUND, ss.str());
+		}
+
+		auto& stepsByName = pFileArchive->GetStepsByName();
+		auto findIt = stepsByName.find(stepNameDecoded);
+		if (findIt == stepsByName.end())
+		{
+			std::stringstream ss;
+			ss << "(design: \"" << designNameDecoded << "\")" << " step: \"" << stepNameDecoded << "\" not found";
+			return crow::response(crow::status::NOT_FOUND, ss.str());
+		}
+		auto& step = findIt->second;
+
+		auto& layersByName = step->GetLayersByName();
+		crow::json::wvalue::list layerNames;
+		for (const auto& kvLayers : layersByName)
+		{
+			layerNames.push_back(kvLayers.first);
+		}	
+
+		crow::json::wvalue jsonResponse;
+		jsonResponse["layers"] = std::move(layerNames);
+		return crow::response(jsonResponse);
 	}
 
 	crow::response FileModelController::steps_route_handler(const std::string& designName, const std::string& stepName, const crow::request& req)
@@ -699,6 +845,34 @@ namespace Odb::App::Server
 		return crow::response(JsonCrowReturnable(attrlistFile));
 	}
 
+	crow::response FileModelController::symbols_list_route_handler(const std::string& designName, const crow::request& req)
+	{
+		auto designNameDecoded = UrlEncoding::decode(designName);
+		if (designNameDecoded.empty())
+		{
+			return crow::response(crow::status::BAD_REQUEST, "design name not specified");
+		}
+
+		auto pFileArchive = m_serverApp.designs().GetFileArchive(designNameDecoded);
+		if (pFileArchive == nullptr)
+		{
+			std::stringstream ss;
+			ss << "design: \"" << designNameDecoded << "\" not found";
+			return crow::response(crow::status::NOT_FOUND, ss.str());
+		}		
+
+		auto& symbolsByName = pFileArchive->GetSymbolsDirectoriesByName();
+		crow::json::wvalue::list symbolNames;
+		for (const auto& kvSymbols : symbolsByName)
+		{
+			symbolNames.push_back(kvSymbols.first);
+		}
+
+		crow::json::wvalue jsonResponse;
+		jsonResponse["symbols"] = std::move(symbolNames);
+		return crow::response(jsonResponse);
+	}
+
 	crow::response FileModelController::designs_route_handler(const std::string& designName, const crow::request& req)
 	{
 		auto designNameDecoded = UrlEncoding::decode(designName);
@@ -716,6 +890,21 @@ namespace Odb::App::Server
 		}
 
 		return crow::response(JsonCrowReturnable(*pFileArchive));
+	}
+
+	crow::response FileModelController::designs_list_route_handler(const crow::request& req)
+	{
+		const auto& fileArchives = m_serverApp.designs().getUnloadedDesignNames();
+		
+		crow::json::wvalue::list designNames;
+		for (const auto& designName : fileArchives)
+		{
+			designNames.push_back(designName);
+		}
+
+		crow::json::wvalue jsonResponse;
+		jsonResponse["designs"] = std::move(designNames);
+		return crow::response(jsonResponse);
 	}
 
 	crow::response FileModelController::misc_attrlist_route_handler(const std::string& designName, const crow::request& req)
