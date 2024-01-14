@@ -1,13 +1,21 @@
+param(
+    # Cluster name
+    [Parameter(Mandatory=$true)]    
+    [string]$ClusterName,
+    # Deployment name
+    [Parameter(Mandatory=$true)]
+    [string]$DeploymentName
+)
 
-$clusterName = "k3d-k3dcluster"
-$deploymentName = "odbdesign-server-v1"
+#$clusterName = "k3d-k3dcluster"
+#$deploymentName = "odbdesign-server-v1"
 #$serviceName = "odbdesign-server-service"
 #$ingressName = "odbdesign-server-ingress"
 #$image = "ghcr.io/nam20485/odbdesign:nam20485-latest"
 
 # set kubeconfig
 
-kubectl config use-context $clusterName
+kubectl config use-context $ClusterName
 if ($LASTEXITCODE -ne 0) {
     Exit 1    
 }
@@ -30,7 +38,7 @@ if ($LASTEXITCODE -ne 0) {
 # kubectl set image deployment/$deploymentName odbdesign-server=$image
 
 # initiate rolling update
-kubectl rollout restart deployment/$deploymentName
+kubectl rollout restart deployment/$DeploymentName
 
 # wait for kubectl deployment to finish
-kubectl rollout status deployment/$deploymentName
+kubectl rollout status deployment/$DeploymentName

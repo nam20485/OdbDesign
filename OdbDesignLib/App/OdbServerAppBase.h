@@ -13,7 +13,7 @@ namespace Odb::Lib::App
 		OdbServerAppBase(int argc, char* argv[]);
 		virtual ~OdbServerAppBase();
 
-		crow::SimpleApp& crow_app() override;
+		CrowApp& crow_app() override;
 
 		Utils::ExitCode Run() override;		
 
@@ -24,7 +24,8 @@ namespace Odb::Lib::App
 		virtual void add_controllers() = 0;
 
 	private:
-		crow::SimpleApp m_crowApp;
+		CrowApp m_crowApp;
+		//crow::SimpleApp m_crowApp;
 
 		void register_routes();
 
