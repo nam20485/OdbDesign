@@ -31,6 +31,8 @@ The maintainer has well over a decade of experience in the PCB Manufacturing and
 
 All code, dependency packages, and Docker images are scanned for security vulnerabilities, using extended security scanning rule profiles (these are more secure than the default base scanning rule profiles).
 
+>The project has earned a high scores on the open source security scorecard. Details can be seen in the [Project Security](#project-security) section below.
+
 It is built using the latest available version of the C++ standard and is compiled with the latest available compiler versions. The parser is also built using the latest available versions of all of its dependencies and is regularly updated to use the latest versions of those dependencies as they are released.
 
 >These checks are run against all branches starting with development, so there is no chance of a security vulnerability being introduced into the main and release branches. Docker's Scout Suite is used to scan the Docker image for security vulnerabilities, and GitHub's CodeQL is used to scan the code for security vulnerabilities.
@@ -43,7 +45,7 @@ The diagram describes the current state of parser implementation and data availa
 
 ![ODB++ file hierarchy implementation state diagram](<odb++ file hierarchy (implemented).png>)
 
-### CI/CD Build
+### Project Security
 
 #### OpenSSF Security Scorecard
 
@@ -52,6 +54,8 @@ The diagram describes the current state of parser implementation and data availa
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/nam20485/OdbDesign/badge)](https://securityscorecards.dev/viewer/?uri=github.com/nam20485/OdbDesign)
 
 >90% of tested projects have a score of less than 4.0/10, so OdbDesign's 7.2 score represents a remarkably high level of security.
+
+### CI/CD Build
 
 #### Branches
 
@@ -185,6 +189,12 @@ SWIG is used to create a Python interface to the C++ library. The interface is e
 Data objects returned from the parser library support serialization to and from [Google Protobuf protocol buffers](https://protobuf.dev/). This allows the data to be easily shared with other applications and programming languages that support protocol buffers. Google Protobuf is a highly optimized binary encoding so it is fast and small.
 
 >The protocol buffer definitions are included in the library so they can be used to generate code for other languages - currently C++ bindings are built and used in the library.
+
+## Contributing
+
+The project is happy to accept pull requests if you would like to contribute. Please open an issue to discuss your proposed changes before submitting a pull request. Pull requests are accepted against the `development` branch. Please make sure your pull request is up to date with the latest changes in the `development` branch before submitting it.
+
+All contributed code must be covered by accompanying test cases. Please make sure your changes are covered by test cases before submitting a pull request.
 
 ## License
 
