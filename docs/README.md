@@ -31,7 +31,7 @@ The maintainer has well over a decade of experience in the PCB Manufacturing and
 
 All code, dependency packages, and Docker images are scanned for security vulnerabilities, using extended security scanning rule profiles (these are more secure than the default base scanning rule profiles).
 
->The project has earned a high scores on the open source security scorecard. Details can be seen in the [Project Security](#project-security) section below.
+>The project has earned a high score on the [OpenSSF Security Scorecard](https://securityscorecards.dev/#what-is-openssf-scorecard). Details can be seen in the [Project Security](#project-security) section below.
 
 It is built using the latest available version of the C++ standard and is compiled with the latest available compiler versions. The parser is also built using the latest available versions of all of its dependencies and is regularly updated to use the latest versions of those dependencies as they are released.
 
@@ -41,7 +41,7 @@ It is built using the latest available version of the C++ standard and is compil
 
 ### Current Implementation State
 
-The diagram describes the current state of parser implementation and data availability. Green color describes areas of the ODB++ archive file that are implemented and have their data available for use. Red color describes areas that are not parsed so their data is not yet available.
+The diagram describes the current state of parser implementation and data availability. Green color describes areas of the ODB++ archive file that are implemented and have their data available for use. ~~Red color describes areas that are not parsed so their data is not yet available.~~ **All areas of the file are now parsed, and have their data available for use.**
 
 ![ODB++ file hierarchy implementation state diagram](<odb++ file hierarchy (implemented).png>)
 
@@ -53,7 +53,7 @@ The diagram describes the current state of parser implementation and data availa
 
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/nam20485/OdbDesign/badge)](https://securityscorecards.dev/viewer/?uri=github.com/nam20485/OdbDesign)
 
->90% of tested projects have a score of less than 4.0/10, so OdbDesign's 7.2 score represents a remarkably high level of security.
+>The majority of tested projects have a muc lower score, so OdbDesign's 7.8 score represents a remarkably high level of security.
 
 ### CI/CD Build
 
