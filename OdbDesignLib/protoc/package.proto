@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+//// https://protobuf.dev/reference/cpp/cpp-generated/#message
+//option optimize_for = CODE_SIZE;
+
+import "pin.proto";
+
+package Odb.Lib.Protobuf.ProductModel;
+
+//
+//  Package.h
+//
+
+message Package {
+
+  	// std::string m_name;
+	// Pin::Vector m_pins;		
+	// Pin::StringMap m_pinsByName;
+	// unsigned int m_index;
+
+    optional string name = 1;
+    repeated Pin pins = 2;
+    map<string, Pin> pinsByName = 3;
+    optional uint32 index = 4;    
+}

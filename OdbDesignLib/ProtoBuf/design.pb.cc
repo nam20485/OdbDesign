@@ -23,11 +23,66 @@ namespace _pbi = _pb::internal;
 namespace Odb {
 namespace Lib {
 namespace Protobuf {
+namespace ProductModel {
+PROTOBUF_CONSTEXPR Design_NetsByNameEntry_DoNotUse::Design_NetsByNameEntry_DoNotUse(
+    ::_pbi::ConstantInitialized) {}
+struct Design_NetsByNameEntry_DoNotUseDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR Design_NetsByNameEntry_DoNotUseDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~Design_NetsByNameEntry_DoNotUseDefaultTypeInternal() {}
+  union {
+    Design_NetsByNameEntry_DoNotUse _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 Design_NetsByNameEntry_DoNotUseDefaultTypeInternal _Design_NetsByNameEntry_DoNotUse_default_instance_;
+PROTOBUF_CONSTEXPR Design_PackagesByNameEntry_DoNotUse::Design_PackagesByNameEntry_DoNotUse(
+    ::_pbi::ConstantInitialized) {}
+struct Design_PackagesByNameEntry_DoNotUseDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR Design_PackagesByNameEntry_DoNotUseDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~Design_PackagesByNameEntry_DoNotUseDefaultTypeInternal() {}
+  union {
+    Design_PackagesByNameEntry_DoNotUse _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 Design_PackagesByNameEntry_DoNotUseDefaultTypeInternal _Design_PackagesByNameEntry_DoNotUse_default_instance_;
+PROTOBUF_CONSTEXPR Design_ComponentsByNameEntry_DoNotUse::Design_ComponentsByNameEntry_DoNotUse(
+    ::_pbi::ConstantInitialized) {}
+struct Design_ComponentsByNameEntry_DoNotUseDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR Design_ComponentsByNameEntry_DoNotUseDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~Design_ComponentsByNameEntry_DoNotUseDefaultTypeInternal() {}
+  union {
+    Design_ComponentsByNameEntry_DoNotUse _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 Design_ComponentsByNameEntry_DoNotUseDefaultTypeInternal _Design_ComponentsByNameEntry_DoNotUse_default_instance_;
+PROTOBUF_CONSTEXPR Design_PartsByNameEntry_DoNotUse::Design_PartsByNameEntry_DoNotUse(
+    ::_pbi::ConstantInitialized) {}
+struct Design_PartsByNameEntry_DoNotUseDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR Design_PartsByNameEntry_DoNotUseDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~Design_PartsByNameEntry_DoNotUseDefaultTypeInternal() {}
+  union {
+    Design_PartsByNameEntry_DoNotUse _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 Design_PartsByNameEntry_DoNotUseDefaultTypeInternal _Design_PartsByNameEntry_DoNotUse_default_instance_;
 PROTOBUF_CONSTEXPR Design::Design(
     ::_pbi::ConstantInitialized): _impl_{
     /*decltype(_impl_._has_bits_)*/{}
   , /*decltype(_impl_._cached_size_)*/{}
-  , /*decltype(_impl_.filearchive_)*/nullptr} {}
+  , /*decltype(_impl_.nets_)*/{}
+  , /*decltype(_impl_.netsbyname_)*/{::_pbi::ConstantInitialized()}
+  , /*decltype(_impl_.packages_)*/{}
+  , /*decltype(_impl_.packagesbyname_)*/{::_pbi::ConstantInitialized()}
+  , /*decltype(_impl_.components_)*/{}
+  , /*decltype(_impl_.componentsbyname_)*/{::_pbi::ConstantInitialized()}
+  , /*decltype(_impl_.parts_)*/{}
+  , /*decltype(_impl_.partsbyname_)*/{::_pbi::ConstantInitialized()}
+  , /*decltype(_impl_.productmodel_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.name_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.filemodel_)*/nullptr} {}
 struct DesignDefaultTypeInternal {
   PROTOBUF_CONSTEXPR DesignDefaultTypeInternal()
       : _instance(::_pbi::ConstantInitialized{}) {}
@@ -37,45 +92,144 @@ struct DesignDefaultTypeInternal {
   };
 };
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 DesignDefaultTypeInternal _Design_default_instance_;
+}  // namespace ProductModel
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
-static ::_pb::Metadata file_level_metadata_design_2eproto[1];
+static ::_pb::Metadata file_level_metadata_design_2eproto[5];
 static constexpr ::_pb::EnumDescriptor const** file_level_enum_descriptors_design_2eproto = nullptr;
 static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_design_2eproto = nullptr;
 
 const uint32_t TableStruct_design_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::Design, _impl_._has_bits_),
-  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::Design, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ProductModel::Design_NetsByNameEntry_DoNotUse, _has_bits_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ProductModel::Design_NetsByNameEntry_DoNotUse, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::Design, _impl_.filearchive_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ProductModel::Design_NetsByNameEntry_DoNotUse, key_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ProductModel::Design_NetsByNameEntry_DoNotUse, value_),
   0,
+  1,
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ProductModel::Design_PackagesByNameEntry_DoNotUse, _has_bits_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ProductModel::Design_PackagesByNameEntry_DoNotUse, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ProductModel::Design_PackagesByNameEntry_DoNotUse, key_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ProductModel::Design_PackagesByNameEntry_DoNotUse, value_),
+  0,
+  1,
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ProductModel::Design_ComponentsByNameEntry_DoNotUse, _has_bits_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ProductModel::Design_ComponentsByNameEntry_DoNotUse, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ProductModel::Design_ComponentsByNameEntry_DoNotUse, key_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ProductModel::Design_ComponentsByNameEntry_DoNotUse, value_),
+  0,
+  1,
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ProductModel::Design_PartsByNameEntry_DoNotUse, _has_bits_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ProductModel::Design_PartsByNameEntry_DoNotUse, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ProductModel::Design_PartsByNameEntry_DoNotUse, key_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ProductModel::Design_PartsByNameEntry_DoNotUse, value_),
+  0,
+  1,
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ProductModel::Design, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ProductModel::Design, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ProductModel::Design, _impl_.productmodel_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ProductModel::Design, _impl_.name_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ProductModel::Design, _impl_.filemodel_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ProductModel::Design, _impl_.nets_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ProductModel::Design, _impl_.netsbyname_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ProductModel::Design, _impl_.packages_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ProductModel::Design, _impl_.packagesbyname_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ProductModel::Design, _impl_.components_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ProductModel::Design, _impl_.componentsbyname_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ProductModel::Design, _impl_.parts_),
+  PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ProductModel::Design, _impl_.partsbyname_),
+  0,
+  1,
+  2,
+  ~0u,
+  ~0u,
+  ~0u,
+  ~0u,
+  ~0u,
+  ~0u,
+  ~0u,
+  ~0u,
 };
 static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  { 0, 7, -1, sizeof(::Odb::Lib::Protobuf::Design)},
+  { 0, 8, -1, sizeof(::Odb::Lib::Protobuf::ProductModel::Design_NetsByNameEntry_DoNotUse)},
+  { 10, 18, -1, sizeof(::Odb::Lib::Protobuf::ProductModel::Design_PackagesByNameEntry_DoNotUse)},
+  { 20, 28, -1, sizeof(::Odb::Lib::Protobuf::ProductModel::Design_ComponentsByNameEntry_DoNotUse)},
+  { 30, 38, -1, sizeof(::Odb::Lib::Protobuf::ProductModel::Design_PartsByNameEntry_DoNotUse)},
+  { 40, 57, -1, sizeof(::Odb::Lib::Protobuf::ProductModel::Design)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
-  &::Odb::Lib::Protobuf::_Design_default_instance_._instance,
+  &::Odb::Lib::Protobuf::ProductModel::_Design_NetsByNameEntry_DoNotUse_default_instance_._instance,
+  &::Odb::Lib::Protobuf::ProductModel::_Design_PackagesByNameEntry_DoNotUse_default_instance_._instance,
+  &::Odb::Lib::Protobuf::ProductModel::_Design_ComponentsByNameEntry_DoNotUse_default_instance_._instance,
+  &::Odb::Lib::Protobuf::ProductModel::_Design_PartsByNameEntry_DoNotUse_default_instance_._instance,
+  &::Odb::Lib::Protobuf::ProductModel::_Design_default_instance_._instance,
 };
 
 const char descriptor_table_protodef_design_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
-  "\n\014design.proto\022\020Odb.Lib.Protobuf\032\021filear"
-  "chive.proto\"Q\n\006Design\0227\n\013fileArchive\030\001 \001"
-  "(\0132\035.Odb.Lib.Protobuf.FileArchiveH\000\210\001\001B\016"
-  "\n\014_fileArchiveb\006proto3"
+  "\n\014design.proto\022\035Odb.Lib.Protobuf.Product"
+  "Model\032\021filearchive.proto\032\tnet.proto\032\rpac"
+  "kage.proto\032\017component.proto\032\npart.proto\""
+  "\247\010\n\006Design\022\031\n\014productModel\030\001 \001(\tH\000\210\001\001\022\021\n"
+  "\004name\030\002 \001(\tH\001\210\001\001\0225\n\tfileModel\030\003 \001(\0132\035.Od"
+  "b.Lib.Protobuf.FileArchiveH\002\210\001\001\0220\n\004nets\030"
+  "\004 \003(\0132\".Odb.Lib.Protobuf.ProductModel.Ne"
+  "t\022I\n\nnetsByName\030\005 \003(\01325.Odb.Lib.Protobuf"
+  ".ProductModel.Design.NetsByNameEntry\0228\n\010"
+  "packages\030\006 \003(\0132&.Odb.Lib.Protobuf.Produc"
+  "tModel.Package\022Q\n\016packagesByName\030\007 \003(\01329"
+  ".Odb.Lib.Protobuf.ProductModel.Design.Pa"
+  "ckagesByNameEntry\022<\n\ncomponents\030\010 \003(\0132(."
+  "Odb.Lib.Protobuf.ProductModel.Component\022"
+  "U\n\020componentsByName\030\t \003(\0132;.Odb.Lib.Prot"
+  "obuf.ProductModel.Design.ComponentsByNam"
+  "eEntry\0222\n\005parts\030\n \003(\0132#.Odb.Lib.Protobuf"
+  ".ProductModel.Part\022K\n\013partsByName\030\013 \003(\0132"
+  "6.Odb.Lib.Protobuf.ProductModel.Design.P"
+  "artsByNameEntry\032U\n\017NetsByNameEntry\022\013\n\003ke"
+  "y\030\001 \001(\t\0221\n\005value\030\002 \001(\0132\".Odb.Lib.Protobu"
+  "f.ProductModel.Net:\0028\001\032]\n\023PackagesByName"
+  "Entry\022\013\n\003key\030\001 \001(\t\0225\n\005value\030\002 \001(\0132&.Odb."
+  "Lib.Protobuf.ProductModel.Package:\0028\001\032a\n"
+  "\025ComponentsByNameEntry\022\013\n\003key\030\001 \001(\t\0227\n\005v"
+  "alue\030\002 \001(\0132(.Odb.Lib.Protobuf.ProductMod"
+  "el.Component:\0028\001\032W\n\020PartsByNameEntry\022\013\n\003"
+  "key\030\001 \001(\t\0222\n\005value\030\002 \001(\0132#.Odb.Lib.Proto"
+  "buf.ProductModel.Part:\0028\001B\017\n\r_productMod"
+  "elB\007\n\005_nameB\014\n\n_fileModelb\006proto3"
   ;
-static const ::_pbi::DescriptorTable* const descriptor_table_design_2eproto_deps[1] = {
+static const ::_pbi::DescriptorTable* const descriptor_table_design_2eproto_deps[5] = {
+  &::descriptor_table_component_2eproto,
   &::descriptor_table_filearchive_2eproto,
+  &::descriptor_table_net_2eproto,
+  &::descriptor_table_package_2eproto,
+  &::descriptor_table_part_2eproto,
 };
 static ::_pbi::once_flag descriptor_table_design_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_design_2eproto = {
-    false, false, 142, descriptor_table_protodef_design_2eproto,
+    false, false, 1193, descriptor_table_protodef_design_2eproto,
     "design.proto",
-    &descriptor_table_design_2eproto_once, descriptor_table_design_2eproto_deps, 1, 1,
+    &descriptor_table_design_2eproto_once, descriptor_table_design_2eproto_deps, 5, 5,
     schemas, file_default_instances, TableStruct_design_2eproto::offsets,
     file_level_metadata_design_2eproto, file_level_enum_descriptors_design_2eproto,
     file_level_service_descriptors_design_2eproto,
@@ -89,31 +243,121 @@ PROTOBUF_ATTRIBUTE_INIT_PRIORITY2 static ::_pbi::AddDescriptorsRunner dynamic_in
 namespace Odb {
 namespace Lib {
 namespace Protobuf {
+namespace ProductModel {
+
+// ===================================================================
+
+Design_NetsByNameEntry_DoNotUse::Design_NetsByNameEntry_DoNotUse() {}
+Design_NetsByNameEntry_DoNotUse::Design_NetsByNameEntry_DoNotUse(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+    : SuperType(arena) {}
+void Design_NetsByNameEntry_DoNotUse::MergeFrom(const Design_NetsByNameEntry_DoNotUse& other) {
+  MergeFromInternal(other);
+}
+::PROTOBUF_NAMESPACE_ID::Metadata Design_NetsByNameEntry_DoNotUse::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_design_2eproto_getter, &descriptor_table_design_2eproto_once,
+      file_level_metadata_design_2eproto[0]);
+}
+
+// ===================================================================
+
+Design_PackagesByNameEntry_DoNotUse::Design_PackagesByNameEntry_DoNotUse() {}
+Design_PackagesByNameEntry_DoNotUse::Design_PackagesByNameEntry_DoNotUse(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+    : SuperType(arena) {}
+void Design_PackagesByNameEntry_DoNotUse::MergeFrom(const Design_PackagesByNameEntry_DoNotUse& other) {
+  MergeFromInternal(other);
+}
+::PROTOBUF_NAMESPACE_ID::Metadata Design_PackagesByNameEntry_DoNotUse::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_design_2eproto_getter, &descriptor_table_design_2eproto_once,
+      file_level_metadata_design_2eproto[1]);
+}
+
+// ===================================================================
+
+Design_ComponentsByNameEntry_DoNotUse::Design_ComponentsByNameEntry_DoNotUse() {}
+Design_ComponentsByNameEntry_DoNotUse::Design_ComponentsByNameEntry_DoNotUse(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+    : SuperType(arena) {}
+void Design_ComponentsByNameEntry_DoNotUse::MergeFrom(const Design_ComponentsByNameEntry_DoNotUse& other) {
+  MergeFromInternal(other);
+}
+::PROTOBUF_NAMESPACE_ID::Metadata Design_ComponentsByNameEntry_DoNotUse::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_design_2eproto_getter, &descriptor_table_design_2eproto_once,
+      file_level_metadata_design_2eproto[2]);
+}
+
+// ===================================================================
+
+Design_PartsByNameEntry_DoNotUse::Design_PartsByNameEntry_DoNotUse() {}
+Design_PartsByNameEntry_DoNotUse::Design_PartsByNameEntry_DoNotUse(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+    : SuperType(arena) {}
+void Design_PartsByNameEntry_DoNotUse::MergeFrom(const Design_PartsByNameEntry_DoNotUse& other) {
+  MergeFromInternal(other);
+}
+::PROTOBUF_NAMESPACE_ID::Metadata Design_PartsByNameEntry_DoNotUse::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_design_2eproto_getter, &descriptor_table_design_2eproto_once,
+      file_level_metadata_design_2eproto[3]);
+}
 
 // ===================================================================
 
 class Design::_Internal {
  public:
   using HasBits = decltype(std::declval<Design>()._impl_._has_bits_);
-  static const ::Odb::Lib::Protobuf::FileArchive& filearchive(const Design* msg);
-  static void set_has_filearchive(HasBits* has_bits) {
+  static void set_has_productmodel(HasBits* has_bits) {
     (*has_bits)[0] |= 1u;
+  }
+  static void set_has_name(HasBits* has_bits) {
+    (*has_bits)[0] |= 2u;
+  }
+  static const ::Odb::Lib::Protobuf::FileArchive& filemodel(const Design* msg);
+  static void set_has_filemodel(HasBits* has_bits) {
+    (*has_bits)[0] |= 4u;
   }
 };
 
 const ::Odb::Lib::Protobuf::FileArchive&
-Design::_Internal::filearchive(const Design* msg) {
-  return *msg->_impl_.filearchive_;
+Design::_Internal::filemodel(const Design* msg) {
+  return *msg->_impl_.filemodel_;
 }
-void Design::clear_filearchive() {
-  if (_impl_.filearchive_ != nullptr) _impl_.filearchive_->Clear();
-  _impl_._has_bits_[0] &= ~0x00000001u;
+void Design::clear_filemodel() {
+  if (_impl_.filemodel_ != nullptr) _impl_.filemodel_->Clear();
+  _impl_._has_bits_[0] &= ~0x00000004u;
+}
+void Design::clear_nets() {
+  _impl_.nets_.Clear();
+}
+void Design::clear_netsbyname() {
+  _impl_.netsbyname_.Clear();
+}
+void Design::clear_packages() {
+  _impl_.packages_.Clear();
+}
+void Design::clear_packagesbyname() {
+  _impl_.packagesbyname_.Clear();
+}
+void Design::clear_components() {
+  _impl_.components_.Clear();
+}
+void Design::clear_componentsbyname() {
+  _impl_.componentsbyname_.Clear();
+}
+void Design::clear_parts() {
+  _impl_.parts_.Clear();
+}
+void Design::clear_partsbyname() {
+  _impl_.partsbyname_.Clear();
 }
 Design::Design(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:Odb.Lib.Protobuf.Design)
+  if (arena != nullptr && !is_message_owned) {
+    arena->OwnCustomDestructor(this, &Design::ArenaDtor);
+  }
+  // @@protoc_insertion_point(arena_constructor:Odb.Lib.Protobuf.ProductModel.Design)
 }
 Design::Design(const Design& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -121,13 +365,43 @@ Design::Design(const Design& from)
   new (&_impl_) Impl_{
       decltype(_impl_._has_bits_){from._impl_._has_bits_}
     , /*decltype(_impl_._cached_size_)*/{}
-    , decltype(_impl_.filearchive_){nullptr}};
+    , decltype(_impl_.nets_){from._impl_.nets_}
+    , /*decltype(_impl_.netsbyname_)*/{}
+    , decltype(_impl_.packages_){from._impl_.packages_}
+    , /*decltype(_impl_.packagesbyname_)*/{}
+    , decltype(_impl_.components_){from._impl_.components_}
+    , /*decltype(_impl_.componentsbyname_)*/{}
+    , decltype(_impl_.parts_){from._impl_.parts_}
+    , /*decltype(_impl_.partsbyname_)*/{}
+    , decltype(_impl_.productmodel_){}
+    , decltype(_impl_.name_){}
+    , decltype(_impl_.filemodel_){nullptr}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  if (from._internal_has_filearchive()) {
-    _this->_impl_.filearchive_ = new ::Odb::Lib::Protobuf::FileArchive(*from._impl_.filearchive_);
+  _this->_impl_.netsbyname_.MergeFrom(from._impl_.netsbyname_);
+  _this->_impl_.packagesbyname_.MergeFrom(from._impl_.packagesbyname_);
+  _this->_impl_.componentsbyname_.MergeFrom(from._impl_.componentsbyname_);
+  _this->_impl_.partsbyname_.MergeFrom(from._impl_.partsbyname_);
+  _impl_.productmodel_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.productmodel_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (from._internal_has_productmodel()) {
+    _this->_impl_.productmodel_.Set(from._internal_productmodel(), 
+      _this->GetArenaForAllocation());
   }
-  // @@protoc_insertion_point(copy_constructor:Odb.Lib.Protobuf.Design)
+  _impl_.name_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.name_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (from._internal_has_name()) {
+    _this->_impl_.name_.Set(from._internal_name(), 
+      _this->GetArenaForAllocation());
+  }
+  if (from._internal_has_filemodel()) {
+    _this->_impl_.filemodel_ = new ::Odb::Lib::Protobuf::FileArchive(*from._impl_.filemodel_);
+  }
+  // @@protoc_insertion_point(copy_constructor:Odb.Lib.Protobuf.ProductModel.Design)
 }
 
 inline void Design::SharedCtor(
@@ -137,14 +411,33 @@ inline void Design::SharedCtor(
   new (&_impl_) Impl_{
       decltype(_impl_._has_bits_){}
     , /*decltype(_impl_._cached_size_)*/{}
-    , decltype(_impl_.filearchive_){nullptr}
+    , decltype(_impl_.nets_){arena}
+    , /*decltype(_impl_.netsbyname_)*/{::_pbi::ArenaInitialized(), arena}
+    , decltype(_impl_.packages_){arena}
+    , /*decltype(_impl_.packagesbyname_)*/{::_pbi::ArenaInitialized(), arena}
+    , decltype(_impl_.components_){arena}
+    , /*decltype(_impl_.componentsbyname_)*/{::_pbi::ArenaInitialized(), arena}
+    , decltype(_impl_.parts_){arena}
+    , /*decltype(_impl_.partsbyname_)*/{::_pbi::ArenaInitialized(), arena}
+    , decltype(_impl_.productmodel_){}
+    , decltype(_impl_.name_){}
+    , decltype(_impl_.filemodel_){nullptr}
   };
+  _impl_.productmodel_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.productmodel_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.name_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.name_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
 }
 
 Design::~Design() {
-  // @@protoc_insertion_point(destructor:Odb.Lib.Protobuf.Design)
+  // @@protoc_insertion_point(destructor:Odb.Lib.Protobuf.ProductModel.Design)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
+    ArenaDtor(this);
     return;
   }
   SharedDtor();
@@ -152,23 +445,60 @@ Design::~Design() {
 
 inline void Design::SharedDtor() {
   GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
-  if (this != internal_default_instance()) delete _impl_.filearchive_;
+  _impl_.nets_.~RepeatedPtrField();
+  _impl_.netsbyname_.Destruct();
+  _impl_.netsbyname_.~MapField();
+  _impl_.packages_.~RepeatedPtrField();
+  _impl_.packagesbyname_.Destruct();
+  _impl_.packagesbyname_.~MapField();
+  _impl_.components_.~RepeatedPtrField();
+  _impl_.componentsbyname_.Destruct();
+  _impl_.componentsbyname_.~MapField();
+  _impl_.parts_.~RepeatedPtrField();
+  _impl_.partsbyname_.Destruct();
+  _impl_.partsbyname_.~MapField();
+  _impl_.productmodel_.Destroy();
+  _impl_.name_.Destroy();
+  if (this != internal_default_instance()) delete _impl_.filemodel_;
 }
 
+void Design::ArenaDtor(void* object) {
+  Design* _this = reinterpret_cast< Design* >(object);
+  _this->_impl_.netsbyname_.Destruct();
+  _this->_impl_.packagesbyname_.Destruct();
+  _this->_impl_.componentsbyname_.Destruct();
+  _this->_impl_.partsbyname_.Destruct();
+}
 void Design::SetCachedSize(int size) const {
   _impl_._cached_size_.Set(size);
 }
 
 void Design::Clear() {
-// @@protoc_insertion_point(message_clear_start:Odb.Lib.Protobuf.Design)
+// @@protoc_insertion_point(message_clear_start:Odb.Lib.Protobuf.ProductModel.Design)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
+  _impl_.nets_.Clear();
+  _impl_.netsbyname_.Clear();
+  _impl_.packages_.Clear();
+  _impl_.packagesbyname_.Clear();
+  _impl_.components_.Clear();
+  _impl_.componentsbyname_.Clear();
+  _impl_.parts_.Clear();
+  _impl_.partsbyname_.Clear();
   cached_has_bits = _impl_._has_bits_[0];
-  if (cached_has_bits & 0x00000001u) {
-    GOOGLE_DCHECK(_impl_.filearchive_ != nullptr);
-    _impl_.filearchive_->Clear();
+  if (cached_has_bits & 0x00000007u) {
+    if (cached_has_bits & 0x00000001u) {
+      _impl_.productmodel_.ClearNonDefaultToEmpty();
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _impl_.name_.ClearNonDefaultToEmpty();
+    }
+    if (cached_has_bits & 0x00000004u) {
+      GOOGLE_DCHECK(_impl_.filemodel_ != nullptr);
+      _impl_.filemodel_->Clear();
+    }
   }
   _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
@@ -181,11 +511,135 @@ const char* Design::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // optional .Odb.Lib.Protobuf.FileArchive fileArchive = 1;
+      // optional string productModel = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
-          ptr = ctx->ParseMessage(_internal_mutable_filearchive(), ptr);
+          auto str = _internal_mutable_productmodel();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "Odb.Lib.Protobuf.ProductModel.Design.productModel"));
+        } else
+          goto handle_unusual;
+        continue;
+      // optional string name = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
+          auto str = _internal_mutable_name();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "Odb.Lib.Protobuf.ProductModel.Design.name"));
+        } else
+          goto handle_unusual;
+        continue;
+      // optional .Odb.Lib.Protobuf.FileArchive fileModel = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 26)) {
+          ptr = ctx->ParseMessage(_internal_mutable_filemodel(), ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // repeated .Odb.Lib.Protobuf.ProductModel.Net nets = 4;
+      case 4:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 34)) {
+          ptr -= 1;
+          do {
+            ptr += 1;
+            ptr = ctx->ParseMessage(_internal_add_nets(), ptr);
+            CHK_(ptr);
+            if (!ctx->DataAvailable(ptr)) break;
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<34>(ptr));
+        } else
+          goto handle_unusual;
+        continue;
+      // map<string, .Odb.Lib.Protobuf.ProductModel.Net> netsByName = 5;
+      case 5:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 42)) {
+          ptr -= 1;
+          do {
+            ptr += 1;
+            ptr = ctx->ParseMessage(&_impl_.netsbyname_, ptr);
+            CHK_(ptr);
+            if (!ctx->DataAvailable(ptr)) break;
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<42>(ptr));
+        } else
+          goto handle_unusual;
+        continue;
+      // repeated .Odb.Lib.Protobuf.ProductModel.Package packages = 6;
+      case 6:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 50)) {
+          ptr -= 1;
+          do {
+            ptr += 1;
+            ptr = ctx->ParseMessage(_internal_add_packages(), ptr);
+            CHK_(ptr);
+            if (!ctx->DataAvailable(ptr)) break;
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<50>(ptr));
+        } else
+          goto handle_unusual;
+        continue;
+      // map<string, .Odb.Lib.Protobuf.ProductModel.Package> packagesByName = 7;
+      case 7:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 58)) {
+          ptr -= 1;
+          do {
+            ptr += 1;
+            ptr = ctx->ParseMessage(&_impl_.packagesbyname_, ptr);
+            CHK_(ptr);
+            if (!ctx->DataAvailable(ptr)) break;
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<58>(ptr));
+        } else
+          goto handle_unusual;
+        continue;
+      // repeated .Odb.Lib.Protobuf.ProductModel.Component components = 8;
+      case 8:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 66)) {
+          ptr -= 1;
+          do {
+            ptr += 1;
+            ptr = ctx->ParseMessage(_internal_add_components(), ptr);
+            CHK_(ptr);
+            if (!ctx->DataAvailable(ptr)) break;
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<66>(ptr));
+        } else
+          goto handle_unusual;
+        continue;
+      // map<string, .Odb.Lib.Protobuf.ProductModel.Component> componentsByName = 9;
+      case 9:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 74)) {
+          ptr -= 1;
+          do {
+            ptr += 1;
+            ptr = ctx->ParseMessage(&_impl_.componentsbyname_, ptr);
+            CHK_(ptr);
+            if (!ctx->DataAvailable(ptr)) break;
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<74>(ptr));
+        } else
+          goto handle_unusual;
+        continue;
+      // repeated .Odb.Lib.Protobuf.ProductModel.Part parts = 10;
+      case 10:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 82)) {
+          ptr -= 1;
+          do {
+            ptr += 1;
+            ptr = ctx->ParseMessage(_internal_add_parts(), ptr);
+            CHK_(ptr);
+            if (!ctx->DataAvailable(ptr)) break;
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<82>(ptr));
+        } else
+          goto handle_unusual;
+        continue;
+      // map<string, .Odb.Lib.Protobuf.ProductModel.Part> partsByName = 11;
+      case 11:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 90)) {
+          ptr -= 1;
+          do {
+            ptr += 1;
+            ptr = ctx->ParseMessage(&_impl_.partsbyname_, ptr);
+            CHK_(ptr);
+            if (!ctx->DataAvailable(ptr)) break;
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<90>(ptr));
         } else
           goto handle_unusual;
         continue;
@@ -215,41 +669,277 @@ failure:
 
 uint8_t* Design::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:Odb.Lib.Protobuf.Design)
+  // @@protoc_insertion_point(serialize_to_array_start:Odb.Lib.Protobuf.ProductModel.Design)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // optional .Odb.Lib.Protobuf.FileArchive fileArchive = 1;
-  if (_internal_has_filearchive()) {
+  // optional string productModel = 1;
+  if (_internal_has_productmodel()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_productmodel().data(), static_cast<int>(this->_internal_productmodel().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "Odb.Lib.Protobuf.ProductModel.Design.productModel");
+    target = stream->WriteStringMaybeAliased(
+        1, this->_internal_productmodel(), target);
+  }
+
+  // optional string name = 2;
+  if (_internal_has_name()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_name().data(), static_cast<int>(this->_internal_name().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "Odb.Lib.Protobuf.ProductModel.Design.name");
+    target = stream->WriteStringMaybeAliased(
+        2, this->_internal_name(), target);
+  }
+
+  // optional .Odb.Lib.Protobuf.FileArchive fileModel = 3;
+  if (_internal_has_filemodel()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
-      InternalWriteMessage(1, _Internal::filearchive(this),
-        _Internal::filearchive(this).GetCachedSize(), target, stream);
+      InternalWriteMessage(3, _Internal::filemodel(this),
+        _Internal::filemodel(this).GetCachedSize(), target, stream);
+  }
+
+  // repeated .Odb.Lib.Protobuf.ProductModel.Net nets = 4;
+  for (unsigned i = 0,
+      n = static_cast<unsigned>(this->_internal_nets_size()); i < n; i++) {
+    const auto& repfield = this->_internal_nets(i);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+        InternalWriteMessage(4, repfield, repfield.GetCachedSize(), target, stream);
+  }
+
+  // map<string, .Odb.Lib.Protobuf.ProductModel.Net> netsByName = 5;
+  if (!this->_internal_netsbyname().empty()) {
+    using MapType = ::_pb::Map<std::string, ::Odb::Lib::Protobuf::ProductModel::Net>;
+    using WireHelper = Design_NetsByNameEntry_DoNotUse::Funcs;
+    const auto& map_field = this->_internal_netsbyname();
+    auto check_utf8 = [](const MapType::value_type& entry) {
+      (void)entry;
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+        entry.first.data(), static_cast<int>(entry.first.length()),
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+        "Odb.Lib.Protobuf.ProductModel.Design.NetsByNameEntry.key");
+    };
+
+    if (stream->IsSerializationDeterministic() && map_field.size() > 1) {
+      for (const auto& entry : ::_pbi::MapSorterPtr<MapType>(map_field)) {
+        target = WireHelper::InternalSerialize(5, entry.first, entry.second, target, stream);
+        check_utf8(entry);
+      }
+    } else {
+      for (const auto& entry : map_field) {
+        target = WireHelper::InternalSerialize(5, entry.first, entry.second, target, stream);
+        check_utf8(entry);
+      }
+    }
+  }
+
+  // repeated .Odb.Lib.Protobuf.ProductModel.Package packages = 6;
+  for (unsigned i = 0,
+      n = static_cast<unsigned>(this->_internal_packages_size()); i < n; i++) {
+    const auto& repfield = this->_internal_packages(i);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+        InternalWriteMessage(6, repfield, repfield.GetCachedSize(), target, stream);
+  }
+
+  // map<string, .Odb.Lib.Protobuf.ProductModel.Package> packagesByName = 7;
+  if (!this->_internal_packagesbyname().empty()) {
+    using MapType = ::_pb::Map<std::string, ::Odb::Lib::Protobuf::ProductModel::Package>;
+    using WireHelper = Design_PackagesByNameEntry_DoNotUse::Funcs;
+    const auto& map_field = this->_internal_packagesbyname();
+    auto check_utf8 = [](const MapType::value_type& entry) {
+      (void)entry;
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+        entry.first.data(), static_cast<int>(entry.first.length()),
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+        "Odb.Lib.Protobuf.ProductModel.Design.PackagesByNameEntry.key");
+    };
+
+    if (stream->IsSerializationDeterministic() && map_field.size() > 1) {
+      for (const auto& entry : ::_pbi::MapSorterPtr<MapType>(map_field)) {
+        target = WireHelper::InternalSerialize(7, entry.first, entry.second, target, stream);
+        check_utf8(entry);
+      }
+    } else {
+      for (const auto& entry : map_field) {
+        target = WireHelper::InternalSerialize(7, entry.first, entry.second, target, stream);
+        check_utf8(entry);
+      }
+    }
+  }
+
+  // repeated .Odb.Lib.Protobuf.ProductModel.Component components = 8;
+  for (unsigned i = 0,
+      n = static_cast<unsigned>(this->_internal_components_size()); i < n; i++) {
+    const auto& repfield = this->_internal_components(i);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+        InternalWriteMessage(8, repfield, repfield.GetCachedSize(), target, stream);
+  }
+
+  // map<string, .Odb.Lib.Protobuf.ProductModel.Component> componentsByName = 9;
+  if (!this->_internal_componentsbyname().empty()) {
+    using MapType = ::_pb::Map<std::string, ::Odb::Lib::Protobuf::ProductModel::Component>;
+    using WireHelper = Design_ComponentsByNameEntry_DoNotUse::Funcs;
+    const auto& map_field = this->_internal_componentsbyname();
+    auto check_utf8 = [](const MapType::value_type& entry) {
+      (void)entry;
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+        entry.first.data(), static_cast<int>(entry.first.length()),
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+        "Odb.Lib.Protobuf.ProductModel.Design.ComponentsByNameEntry.key");
+    };
+
+    if (stream->IsSerializationDeterministic() && map_field.size() > 1) {
+      for (const auto& entry : ::_pbi::MapSorterPtr<MapType>(map_field)) {
+        target = WireHelper::InternalSerialize(9, entry.first, entry.second, target, stream);
+        check_utf8(entry);
+      }
+    } else {
+      for (const auto& entry : map_field) {
+        target = WireHelper::InternalSerialize(9, entry.first, entry.second, target, stream);
+        check_utf8(entry);
+      }
+    }
+  }
+
+  // repeated .Odb.Lib.Protobuf.ProductModel.Part parts = 10;
+  for (unsigned i = 0,
+      n = static_cast<unsigned>(this->_internal_parts_size()); i < n; i++) {
+    const auto& repfield = this->_internal_parts(i);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+        InternalWriteMessage(10, repfield, repfield.GetCachedSize(), target, stream);
+  }
+
+  // map<string, .Odb.Lib.Protobuf.ProductModel.Part> partsByName = 11;
+  if (!this->_internal_partsbyname().empty()) {
+    using MapType = ::_pb::Map<std::string, ::Odb::Lib::Protobuf::ProductModel::Part>;
+    using WireHelper = Design_PartsByNameEntry_DoNotUse::Funcs;
+    const auto& map_field = this->_internal_partsbyname();
+    auto check_utf8 = [](const MapType::value_type& entry) {
+      (void)entry;
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+        entry.first.data(), static_cast<int>(entry.first.length()),
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+        "Odb.Lib.Protobuf.ProductModel.Design.PartsByNameEntry.key");
+    };
+
+    if (stream->IsSerializationDeterministic() && map_field.size() > 1) {
+      for (const auto& entry : ::_pbi::MapSorterPtr<MapType>(map_field)) {
+        target = WireHelper::InternalSerialize(11, entry.first, entry.second, target, stream);
+        check_utf8(entry);
+      }
+    } else {
+      for (const auto& entry : map_field) {
+        target = WireHelper::InternalSerialize(11, entry.first, entry.second, target, stream);
+        check_utf8(entry);
+      }
+    }
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:Odb.Lib.Protobuf.Design)
+  // @@protoc_insertion_point(serialize_to_array_end:Odb.Lib.Protobuf.ProductModel.Design)
   return target;
 }
 
 size_t Design::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:Odb.Lib.Protobuf.Design)
+// @@protoc_insertion_point(message_byte_size_start:Odb.Lib.Protobuf.ProductModel.Design)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  // optional .Odb.Lib.Protobuf.FileArchive fileArchive = 1;
-  cached_has_bits = _impl_._has_bits_[0];
-  if (cached_has_bits & 0x00000001u) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
-        *_impl_.filearchive_);
+  // repeated .Odb.Lib.Protobuf.ProductModel.Net nets = 4;
+  total_size += 1UL * this->_internal_nets_size();
+  for (const auto& msg : this->_impl_.nets_) {
+    total_size +=
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(msg);
   }
 
+  // map<string, .Odb.Lib.Protobuf.ProductModel.Net> netsByName = 5;
+  total_size += 1 *
+      ::PROTOBUF_NAMESPACE_ID::internal::FromIntSize(this->_internal_netsbyname_size());
+  for (::PROTOBUF_NAMESPACE_ID::Map< std::string, ::Odb::Lib::Protobuf::ProductModel::Net >::const_iterator
+      it = this->_internal_netsbyname().begin();
+      it != this->_internal_netsbyname().end(); ++it) {
+    total_size += Design_NetsByNameEntry_DoNotUse::Funcs::ByteSizeLong(it->first, it->second);
+  }
+
+  // repeated .Odb.Lib.Protobuf.ProductModel.Package packages = 6;
+  total_size += 1UL * this->_internal_packages_size();
+  for (const auto& msg : this->_impl_.packages_) {
+    total_size +=
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(msg);
+  }
+
+  // map<string, .Odb.Lib.Protobuf.ProductModel.Package> packagesByName = 7;
+  total_size += 1 *
+      ::PROTOBUF_NAMESPACE_ID::internal::FromIntSize(this->_internal_packagesbyname_size());
+  for (::PROTOBUF_NAMESPACE_ID::Map< std::string, ::Odb::Lib::Protobuf::ProductModel::Package >::const_iterator
+      it = this->_internal_packagesbyname().begin();
+      it != this->_internal_packagesbyname().end(); ++it) {
+    total_size += Design_PackagesByNameEntry_DoNotUse::Funcs::ByteSizeLong(it->first, it->second);
+  }
+
+  // repeated .Odb.Lib.Protobuf.ProductModel.Component components = 8;
+  total_size += 1UL * this->_internal_components_size();
+  for (const auto& msg : this->_impl_.components_) {
+    total_size +=
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(msg);
+  }
+
+  // map<string, .Odb.Lib.Protobuf.ProductModel.Component> componentsByName = 9;
+  total_size += 1 *
+      ::PROTOBUF_NAMESPACE_ID::internal::FromIntSize(this->_internal_componentsbyname_size());
+  for (::PROTOBUF_NAMESPACE_ID::Map< std::string, ::Odb::Lib::Protobuf::ProductModel::Component >::const_iterator
+      it = this->_internal_componentsbyname().begin();
+      it != this->_internal_componentsbyname().end(); ++it) {
+    total_size += Design_ComponentsByNameEntry_DoNotUse::Funcs::ByteSizeLong(it->first, it->second);
+  }
+
+  // repeated .Odb.Lib.Protobuf.ProductModel.Part parts = 10;
+  total_size += 1UL * this->_internal_parts_size();
+  for (const auto& msg : this->_impl_.parts_) {
+    total_size +=
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(msg);
+  }
+
+  // map<string, .Odb.Lib.Protobuf.ProductModel.Part> partsByName = 11;
+  total_size += 1 *
+      ::PROTOBUF_NAMESPACE_ID::internal::FromIntSize(this->_internal_partsbyname_size());
+  for (::PROTOBUF_NAMESPACE_ID::Map< std::string, ::Odb::Lib::Protobuf::ProductModel::Part >::const_iterator
+      it = this->_internal_partsbyname().begin();
+      it != this->_internal_partsbyname().end(); ++it) {
+    total_size += Design_PartsByNameEntry_DoNotUse::Funcs::ByteSizeLong(it->first, it->second);
+  }
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000007u) {
+    // optional string productModel = 1;
+    if (cached_has_bits & 0x00000001u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_productmodel());
+    }
+
+    // optional string name = 2;
+    if (cached_has_bits & 0x00000002u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_name());
+    }
+
+    // optional .Odb.Lib.Protobuf.FileArchive fileModel = 3;
+    if (cached_has_bits & 0x00000004u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+          *_impl_.filemodel_);
+    }
+
+  }
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
 }
 
@@ -263,20 +953,37 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*Design::GetClassData() const {
 void Design::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<Design*>(&to_msg);
   auto& from = static_cast<const Design&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:Odb.Lib.Protobuf.Design)
+  // @@protoc_insertion_point(class_specific_merge_from_start:Odb.Lib.Protobuf.ProductModel.Design)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (from._internal_has_filearchive()) {
-    _this->_internal_mutable_filearchive()->::Odb::Lib::Protobuf::FileArchive::MergeFrom(
-        from._internal_filearchive());
+  _this->_impl_.nets_.MergeFrom(from._impl_.nets_);
+  _this->_impl_.netsbyname_.MergeFrom(from._impl_.netsbyname_);
+  _this->_impl_.packages_.MergeFrom(from._impl_.packages_);
+  _this->_impl_.packagesbyname_.MergeFrom(from._impl_.packagesbyname_);
+  _this->_impl_.components_.MergeFrom(from._impl_.components_);
+  _this->_impl_.componentsbyname_.MergeFrom(from._impl_.componentsbyname_);
+  _this->_impl_.parts_.MergeFrom(from._impl_.parts_);
+  _this->_impl_.partsbyname_.MergeFrom(from._impl_.partsbyname_);
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000007u) {
+    if (cached_has_bits & 0x00000001u) {
+      _this->_internal_set_productmodel(from._internal_productmodel());
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _this->_internal_set_name(from._internal_name());
+    }
+    if (cached_has_bits & 0x00000004u) {
+      _this->_internal_mutable_filemodel()->::Odb::Lib::Protobuf::FileArchive::MergeFrom(
+          from._internal_filemodel());
+    }
   }
   _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
 }
 
 void Design::CopyFrom(const Design& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:Odb.Lib.Protobuf.Design)
+// @@protoc_insertion_point(class_specific_copy_from_start:Odb.Lib.Protobuf.ProductModel.Design)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -288,25 +995,60 @@ bool Design::IsInitialized() const {
 
 void Design::InternalSwap(Design* other) {
   using std::swap;
+  auto* lhs_arena = GetArenaForAllocation();
+  auto* rhs_arena = other->GetArenaForAllocation();
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
-  swap(_impl_.filearchive_, other->_impl_.filearchive_);
+  _impl_.nets_.InternalSwap(&other->_impl_.nets_);
+  _impl_.netsbyname_.InternalSwap(&other->_impl_.netsbyname_);
+  _impl_.packages_.InternalSwap(&other->_impl_.packages_);
+  _impl_.packagesbyname_.InternalSwap(&other->_impl_.packagesbyname_);
+  _impl_.components_.InternalSwap(&other->_impl_.components_);
+  _impl_.componentsbyname_.InternalSwap(&other->_impl_.componentsbyname_);
+  _impl_.parts_.InternalSwap(&other->_impl_.parts_);
+  _impl_.partsbyname_.InternalSwap(&other->_impl_.partsbyname_);
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.productmodel_, lhs_arena,
+      &other->_impl_.productmodel_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.name_, lhs_arena,
+      &other->_impl_.name_, rhs_arena
+  );
+  swap(_impl_.filemodel_, other->_impl_.filemodel_);
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata Design::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_design_2eproto_getter, &descriptor_table_design_2eproto_once,
-      file_level_metadata_design_2eproto[0]);
+      file_level_metadata_design_2eproto[4]);
 }
 
 // @@protoc_insertion_point(namespace_scope)
+}  // namespace ProductModel
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
 PROTOBUF_NAMESPACE_OPEN
-template<> PROTOBUF_NOINLINE ::Odb::Lib::Protobuf::Design*
-Arena::CreateMaybeMessage< ::Odb::Lib::Protobuf::Design >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::Odb::Lib::Protobuf::Design >(arena);
+template<> PROTOBUF_NOINLINE ::Odb::Lib::Protobuf::ProductModel::Design_NetsByNameEntry_DoNotUse*
+Arena::CreateMaybeMessage< ::Odb::Lib::Protobuf::ProductModel::Design_NetsByNameEntry_DoNotUse >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::Odb::Lib::Protobuf::ProductModel::Design_NetsByNameEntry_DoNotUse >(arena);
+}
+template<> PROTOBUF_NOINLINE ::Odb::Lib::Protobuf::ProductModel::Design_PackagesByNameEntry_DoNotUse*
+Arena::CreateMaybeMessage< ::Odb::Lib::Protobuf::ProductModel::Design_PackagesByNameEntry_DoNotUse >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::Odb::Lib::Protobuf::ProductModel::Design_PackagesByNameEntry_DoNotUse >(arena);
+}
+template<> PROTOBUF_NOINLINE ::Odb::Lib::Protobuf::ProductModel::Design_ComponentsByNameEntry_DoNotUse*
+Arena::CreateMaybeMessage< ::Odb::Lib::Protobuf::ProductModel::Design_ComponentsByNameEntry_DoNotUse >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::Odb::Lib::Protobuf::ProductModel::Design_ComponentsByNameEntry_DoNotUse >(arena);
+}
+template<> PROTOBUF_NOINLINE ::Odb::Lib::Protobuf::ProductModel::Design_PartsByNameEntry_DoNotUse*
+Arena::CreateMaybeMessage< ::Odb::Lib::Protobuf::ProductModel::Design_PartsByNameEntry_DoNotUse >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::Odb::Lib::Protobuf::ProductModel::Design_PartsByNameEntry_DoNotUse >(arena);
+}
+template<> PROTOBUF_NOINLINE ::Odb::Lib::Protobuf::ProductModel::Design*
+Arena::CreateMaybeMessage< ::Odb::Lib::Protobuf::ProductModel::Design >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::Odb::Lib::Protobuf::ProductModel::Design >(arena);
 }
 PROTOBUF_NAMESPACE_CLOSE
 
