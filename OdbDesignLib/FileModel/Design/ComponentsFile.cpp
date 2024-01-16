@@ -311,7 +311,7 @@ namespace Odb::Lib::FileModel::Design
 			loginfo("checking for extraction...");
 
 			std::filesystem::path componentsFilePath;
-			for (const std::string& componentsFilename : COMPONENTS_FILENAMES)
+			for (const std::string componentsFilename : COMPONENTS_FILENAMES)
 			{
 				loginfo("trying components file: [" + componentsFilename + "]...");
 

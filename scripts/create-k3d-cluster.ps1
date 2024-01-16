@@ -1,9 +1,16 @@
-# When set to true, the cluster will be deleted first
-param(    
-    [string]$ClusterName = "k3dcluster",    
+param(
+    # Cluster name
+    [Parameter(Mandatory=$true)]    
+    [string]$ClusterName = "k3dcluster",
+    # Number of agents to create
+    [Parameter(Mandatory=$true)]    
     [int]$NumAgents = 3,
+    # Ingress host port
+    [Parameter(Mandatory=$true)]
     [int]$IngressHostPort = 8081,
+    # When set to true, the cluster will be deleted first
     [switch]$DeleteClusterFirst = $false,
+    # When set to true, the cluster will be deleted without asking for confirmation
     [switch]$ForceDelete = $false
 )
 

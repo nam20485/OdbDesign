@@ -10,7 +10,7 @@ namespace Odb::Lib::App
 	public:
 		virtual ~IOdbServerApp() {}
 
-		virtual crow::SimpleApp& crow_app() = 0;
+		virtual CrowApp& crow_app() = 0;
 
 	protected:
 		IOdbServerApp() = default;
