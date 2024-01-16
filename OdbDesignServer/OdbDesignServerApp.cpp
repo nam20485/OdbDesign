@@ -4,6 +4,7 @@
 #include "Controllers/FileUploadController.h"
 #include "Controllers/FileModelController.h"
 #include "Controllers/HealthCheckController.h"
+#include "macros.h"
 
 
 namespace Odb::App::Server
@@ -17,18 +18,35 @@ namespace Odb::App::Server
 	//{					
 	//}
 
-	//Utils::ExitCode OdbDesignServerApp::Run()
-	//{
-	//	//
-	//	// do any initialization here
-	//	//
+	Utils::ExitCode OdbDesignServerApp::Run()
+	{
+		//
+		// do any initialization here
+		//
 
-	//	return OdbServerAppBase::Run();
+		// CORS
+		auto& cors = crow_app().get_middleware<crow::CORSHandler>();
+		if (Utils::IsProduction())
+		{
+			cors.global().headers("*");
+			//cors.global().methods(crow::HTTPMethod::Get, crow::HTTPMethod::Post);
+			cors.global().origin("*");
+			//cors.global().origin("73.157.184.219");			
+		}
+		else
+		{
+			cors.global().headers("*");
+			//cors.global().methods(crow::HTTPMethod::Get);
+			cors.global().origin("*");
+			//cors.global().origin("73.157.184.219");
+		}
 
-	//	//
-	//	// do any cleanup here
-	//	//
-	//}
+		return OdbServerAppBase::Run();
+
+		//
+		// do any cleanup here
+		//
+	}
 
 	void OdbDesignServerApp::add_controllers()
 	{

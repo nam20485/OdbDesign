@@ -77,7 +77,7 @@ namespace Odb::Lib::App
 		return ExitCode::Success;
 	}
 
-	crow::SimpleApp& OdbServerAppBase::crow_app()
+	CrowApp& OdbServerAppBase::crow_app()
 	{
 		return m_crowApp;
 	}
