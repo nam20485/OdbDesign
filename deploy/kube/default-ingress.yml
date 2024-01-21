@@ -20,3 +20,10 @@ spec:
                 name: odbdesign-server-service
                 port:
                   name: ods-svc-port
+          - path: /swagger
+            pathType: Prefix
+            backend:
+              service:
+                name: odbdesign-server-swaggerui-service
+                port:
+                  name: oss-svc-port
