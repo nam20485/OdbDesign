@@ -12,7 +12,8 @@ namespace Odb::App::Server
 
 	void FileUploadController::register_routes()
 	{
-		CROW_ROUTE(m_serverApp.crow_app(), "/designs/upload/<string>").methods(crow::HTTPMethod::POST)
+		CROW_ROUTE(m_serverApp.crow_app(), "/designs/upload/<string>")
+            .methods(crow::HTTPMethod::POST)
 			([&](const crow::request& req, std::string filename)
 				{
                     // authenticate request before sending to handler
@@ -31,7 +32,8 @@ namespace Odb::App::Server
                     return handleOctetStreamUpload(filename, req);
 				});
 
-        CROW_ROUTE(m_serverApp.crow_app(), "/designs/upload").methods(crow::HTTPMethod::POST)
+        CROW_ROUTE(m_serverApp.crow_app(), "/designs/upload")
+            .methods(crow::HTTPMethod::POST)
             ([&](const crow::request& req)
                 {
                     // authenticate request before sending to handler
@@ -42,15 +44,17 @@ namespace Odb::App::Server
                     }
 
                     const auto& contentType = req.get_header_value("Content-Type");
-                    if (contentType != "multipart/form-upload")
+                    if (contentType.find("multipart/form-data") != 0)
                     {
-                        return crow::response(crow::status::BAD_REQUEST, "unsupported content type: this endpoint only accepts 'multipart/form-upload'");                        
+                        // "Content-Type" header doesn't start with "multipart/form-data"
+                        return crow::response(crow::status::BAD_REQUEST, "unsupported content type: this endpoint only accepts 'multipart/form-data'");                        
                     }
                     
                     return handleMultipartFormUpload(req);
                 });
 
-        CROW_ROUTE(m_serverApp.crow_app(), "/designs/list").methods(crow::HTTPMethod::GET)
+        CROW_ROUTE(m_serverApp.crow_app(), "/designs/list")
+            .methods(crow::HTTPMethod::GET)
             ([&](const crow::request& req)
                 {
                     // authenticate request before sending to handler
