@@ -10,6 +10,8 @@ namespace Utils
 		FailedInitSsl = 2,
 		FailedInitSslDirDoesNotExist = 3,
 		FailedInitLoadDesign = 4,
-		UnknownError
+		PreServerRunFailed = 5,
+		PostServerRunFailed = 6,
+		UnknownError = 7
 	};
 }
