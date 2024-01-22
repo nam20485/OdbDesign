@@ -1,4 +1,5 @@
 #include "OdbServerAppBase.h"
+#include "OdbServerAppBase.h"
 #include "Logger.h"
 
 using namespace Utils;
@@ -8,6 +9,7 @@ namespace Odb::Lib::App
 {
 	OdbServerAppBase::OdbServerAppBase(int argc, char* argv[])
 		: OdbAppBase(argc, argv)
+		, m_pRequestAuthentication(std::make_unique<BasicRequestAuthentication>())
 	{
 	}
 
@@ -80,6 +82,11 @@ namespace Odb::Lib::App
 	CrowApp& OdbServerAppBase::crow_app()
 	{
 		return m_crowApp;
+	}
+
+	IRequestAuthentication& OdbServerAppBase::request_auth()
+	{
+		return *m_pRequestAuthentication;
 	}
 
 	void OdbServerAppBase::register_routes()

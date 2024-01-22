@@ -4,6 +4,8 @@
 #include "OdbAppBase.h"
 #include "RouteController.h"
 #include "../odbdesign_export.h"
+#include "IRequestAuthentication.h"
+#include "BasicRequestAuthentication.h"
 
 namespace Odb::Lib::App
 {
@@ -14,6 +16,7 @@ namespace Odb::Lib::App
 		virtual ~OdbServerAppBase();
 
 		CrowApp& crow_app() override;
+		IRequestAuthentication& request_auth() override;
 
 		Utils::ExitCode Run() override;		
 
@@ -26,6 +29,7 @@ namespace Odb::Lib::App
 	private:
 		CrowApp m_crowApp;
 		//crow::SimpleApp m_crowApp;
+		std::unique_ptr<IRequestAuthentication> m_pRequestAuthentication;
 
 		void register_routes();
 
