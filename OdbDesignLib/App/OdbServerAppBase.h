@@ -11,8 +11,7 @@ namespace Odb::Lib::App
 {
 	class ODBDESIGN_EXPORT OdbServerAppBase : public OdbAppBase, public IOdbServerApp
 	{
-	public:
-		OdbServerAppBase(int argc, char* argv[]);
+	public:		
 		virtual ~OdbServerAppBase();
 
 		CrowApp& crow_app() override;
@@ -21,6 +20,8 @@ namespace Odb::Lib::App
 		Utils::ExitCode Run() override;		
 
 	protected:		
+		OdbServerAppBase(int argc, char* argv[]);
+
 		RouteController::Vector m_vecControllers;
 
 		// implement in subclasses to add route controllers
