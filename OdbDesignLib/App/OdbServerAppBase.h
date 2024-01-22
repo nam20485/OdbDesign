@@ -15,7 +15,9 @@ namespace Odb::Lib::App
 		virtual ~OdbServerAppBase();
 
 		CrowApp& crow_app() override;
+
 		IRequestAuthentication& request_auth() override;
+		void request_auth(std::unique_ptr<IRequestAuthentication> pRequestAuthentication) override;
 
 		Utils::ExitCode Run() override;		
 

@@ -13,6 +13,7 @@ namespace Odb::Lib::App
 
 		virtual CrowApp& crow_app() = 0;
 		virtual IRequestAuthentication& request_auth() = 0;
+		virtual void request_auth(std::unique_ptr<IRequestAuthentication> requestAuthentication) = 0;
 
 	protected:
 		IOdbServerApp() = default;

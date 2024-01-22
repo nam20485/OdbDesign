@@ -104,6 +104,11 @@ namespace Odb::Lib::App
 		return *m_pRequestAuthentication;
 	}
 
+	void OdbServerAppBase::request_auth(std::unique_ptr<IRequestAuthentication> pRequestAuthentication)
+	{
+		m_pRequestAuthentication = std::move(pRequestAuthentication);
+	}
+
 	void OdbServerAppBase::register_routes()
 	{
 		for (const auto& pController : m_vecControllers)
