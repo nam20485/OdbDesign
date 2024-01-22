@@ -1,10 +1,11 @@
 #pragma once
 
 #include "IRequestAuthentication.h"
+#include "../odbdesign_export.h"
 
 namespace Odb::Lib::App
 {
-	class BasicRequestAuthentication : public IRequestAuthentication
+	class ODBDESIGN_EXPORT BasicRequestAuthentication : public IRequestAuthentication
 	{
 	public:
 		//BasicRequestAuthentication()
