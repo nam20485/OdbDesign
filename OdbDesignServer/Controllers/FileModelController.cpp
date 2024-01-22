@@ -43,144 +43,324 @@ namespace Odb::App::Server
 		CROW_ROUTE(m_serverApp.crow_app(), "/filemodels")
 			([&](const crow::request& req)
 				{
-					return this->designs_list_route_handler(req);
+					// authenticate request before sending to handler
+					auto authResp = m_serverApp.request_auth().AuthenticateRequest(req);
+					if (authResp.code != crow::status::OK)
+					{
+						return authResp;
+					}
+
+					return this->filemodels_list_route_handler(req);
 				});
 
-		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>")
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodels/<string>")
 			([&](const crow::request& req, std::string designName)
 				{
-					return this->designs_route_handler(designName, req);
+					// authenticate request before sending to handler
+					auto authResp = m_serverApp.request_auth().AuthenticateRequest(req);
+					if (authResp.code != crow::status::OK)
+					{
+						return authResp;
+					}
+
+					return this->filemodels_route_handler(designName, req);
 				});
 
-		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/steps/<string>")
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodels/<string>/steps/<string>")
 			([&](const crow::request& req, std::string designName, std::string stepName)
 				{
+					// authenticate request before sending to handler
+					auto authResp = m_serverApp.request_auth().AuthenticateRequest(req);
+					if (authResp.code != crow::status::OK)
+					{
+						return authResp;
+					}
+
 					return this->steps_route_handler(designName, stepName, req);
 				});
 
-		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/steps")
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodels/<string>/steps")
 			([&](const crow::request& req, std::string designName)
 				{
+					// authenticate request before sending to handler
+					auto authResp = m_serverApp.request_auth().AuthenticateRequest(req);
+					if (authResp.code != crow::status::OK)
+					{
+						return authResp;
+					}
+
 					return this->steps_list_route_handler(designName, req);
 				});
 
-		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/steps/<string>/eda_data")
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodels/<string>/steps/<string>/eda_data")
 			([&](const crow::request& req, std::string designName, std::string stepName)
 				{
+					// authenticate request before sending to handler
+					auto authResp = m_serverApp.request_auth().AuthenticateRequest(req);
+					if (authResp.code != crow::status::OK)
+					{
+						return authResp;
+					}
+
 					return this->steps_edadata_route_handler(designName, stepName, req);
 				});
 
-		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/steps/<string>/attrlist")
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodels/<string>/steps/<string>/attrlist")
 			([&](const crow::request& req, std::string designName, std::string stepName)
 				{
+					// authenticate request before sending to handler
+					auto authResp = m_serverApp.request_auth().AuthenticateRequest(req);
+					if (authResp.code != crow::status::OK)
+					{
+						return authResp;
+					}
+
 					return this->steps_attrlist_route_handler(designName, stepName, req);
 				});
 
-		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/steps/<string>/profile")
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodels/<string>/steps/<string>/profile")
 			([&](const crow::request& req, std::string designName, std::string stepName)
 				{
+					// authenticate request before sending to handler
+					auto authResp = m_serverApp.request_auth().AuthenticateRequest(req);
+					if (authResp.code != crow::status::OK)
+					{
+						return authResp;
+					}
+
 					return this->steps_profile_route_handler(designName, stepName, req);
 				});
 
-		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/steps/<string>/stephdr")
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodels/<string>/steps/<string>/stephdr")
 			([&](const crow::request& req, std::string designName, std::string stepName)
 				{
+					// authenticate request before sending to handler
+					auto authResp = m_serverApp.request_auth().AuthenticateRequest(req);
+					if (authResp.code != crow::status::OK)
+					{
+						return authResp;
+					}
+
 					return this->steps_stephdr_route_handler(designName, stepName, req);
 				});
 
-		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/steps/<string>/netlists/<string>")
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodels/<string>/steps/<string>/netlists/<string>")
 			([&](const crow::request& req, std::string designName, std::string stepName, std::string netlistName)
 				{
+					// authenticate request before sending to handler
+					auto authResp = m_serverApp.request_auth().AuthenticateRequest(req);
+					if (authResp.code != crow::status::OK)
+					{
+						return authResp;
+					}
+
 					return this->steps_netlists_route_handler(designName, stepName, netlistName, req);
 				});
 
-		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/steps/<string>/netlists")
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodels/<string>/steps/<string>/netlists")
 			([&](const crow::request& req, std::string designName, std::string stepName)
 				{
+					// authenticate request before sending to handler
+					auto authResp = m_serverApp.request_auth().AuthenticateRequest(req);
+					if (authResp.code != crow::status::OK)
+					{
+						return authResp;
+					}
+
 					return this->steps_netlists_list_route_handler(designName, stepName, req);
 				});
 
-		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/steps/<string>/layers/<string>")
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodels/<string>/steps/<string>/layers/<string>")
 			([&](const crow::request& req, std::string designName, std::string stepName, std::string layerName)
 				{
+					// authenticate request before sending to handler
+					auto authResp = m_serverApp.request_auth().AuthenticateRequest(req);
+					if (authResp.code != crow::status::OK)
+					{
+						return authResp;
+					}
+
 					return this->steps_layers_route_handler(designName, stepName, layerName, req);
 				});
 
-		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/steps/<string>/layers")
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodels/<string>/steps/<string>/layers")
 			([&](const crow::request& req, std::string designName, std::string stepName)
 				{
+					// authenticate request before sending to handler
+					auto authResp = m_serverApp.request_auth().AuthenticateRequest(req);
+					if (authResp.code != crow::status::OK)
+					{
+						return authResp;
+					}
+
 					return this->steps_layers_list_route_handler(designName, stepName, req);
 				});
 
-		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/steps/<string>/layer/<string>/components")
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodels/<string>/steps/<string>/layer/<string>/components")
 			([&](const crow::request& req, std::string designName, std::string stepName, std::string layerName)
 				{
+					// authenticate request before sending to handler
+					auto authResp = m_serverApp.request_auth().AuthenticateRequest(req);
+					if (authResp.code != crow::status::OK)
+					{
+						return authResp;
+					}
+
 					return this->steps_layers_components_route_handler(designName, stepName, layerName, req);
 				});
 
-		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/steps/<string>/layers/<string>/features")
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodels/<string>/steps/<string>/layers/<string>/features")
 			([&](const crow::request& req, std::string designName, std::string stepName, std::string layerName)
 				{
+					// authenticate request before sending to handler
+					auto authResp = m_serverApp.request_auth().AuthenticateRequest(req);
+					if (authResp.code != crow::status::OK)
+					{
+						return authResp;
+					}
+
 					return this->steps_layers_features_route_handler(designName, stepName, layerName, req);
 				});
 
-		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/steps/<string>/layers/<string>/attrlist")
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodels/<string>/steps/<string>/layers/<string>/attrlist")
 			([&](const crow::request& req, std::string designName, std::string stepName, std::string layerName)
 				{
+					// authenticate request before sending to handler
+					auto authResp = m_serverApp.request_auth().AuthenticateRequest(req);
+					if (authResp.code != crow::status::OK)
+					{
+						return authResp;
+					}
+
 					return this->steps_layers_attrlist_route_handler(designName, stepName, layerName, req);
 				});	
 
-		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/symbols/<string>")
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodels/<string>/symbols/<string>")
 			([&](const crow::request& req, std::string designName, std::string symbolName)
 				{
+					// authenticate request before sending to handler
+					auto authResp = m_serverApp.request_auth().AuthenticateRequest(req);
+					if (authResp.code != crow::status::OK)
+					{
+						return authResp;
+					}
+
 					return this->symbols_route_handler(designName, symbolName, req);
 				});
 
-		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/symbols/<string>/features")
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodels/<string>/symbols/<string>/features")
 			([&](const crow::request& req, std::string designName, std::string symbolName)
 				{
+					// authenticate request before sending to handler
+					auto authResp = m_serverApp.request_auth().AuthenticateRequest(req);
+					if (authResp.code != crow::status::OK)
+					{
+						return authResp;
+					}
+
 					return this->symbols_features_route_handler(designName, symbolName, req);
 				});
 
-		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/symbols/<string>/attrlist")
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodels/<string>/symbols/<string>/attrlist")
 			([&](const crow::request& req, std::string designName, std::string symbolName)
 				{
+					// authenticate request before sending to handler
+					auto authResp = m_serverApp.request_auth().AuthenticateRequest(req);
+					if (authResp.code != crow::status::OK)
+					{
+						return authResp;
+					}
+
 					return this->symbols_attrlist_route_handler(designName, symbolName, req);
 				});
 
-		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/symbols")
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodels/<string>/symbols")
 			([&](const crow::request& req, std::string designName)
 				{
+					// authenticate request before sending to handler
+					auto authResp = m_serverApp.request_auth().AuthenticateRequest(req);
+					if (authResp.code != crow::status::OK)
+					{
+						return authResp;
+					}
+
 					return this->symbols_list_route_handler(designName, req);
 				});
 
-		//register_route_handler("/filemodel/misc/attrlist", std::bind(&FileModelController::misc_attrlist_route_handler, this, std::placeholders::_1));
-		//register_route_handler("/filemodel/matrix/matrix", std::bind(&FileModelController::matrix_matrix_route_handler, this, std::placeholders::_1));
-		//register_route_handler("/filemodel/misc/info", std::bind(&FileModelController::misc_info_route_handler, this, std::placeholders::_1));
+		//register_route_handler("/filemodels/misc/attrlist", std::bind(&FileModelController::misc_attrlist_route_handler, this, std::placeholders::_1));
+		//register_route_handler("/filemodels/matrix/matrix", std::bind(&FileModelController::matrix_matrix_route_handler, this, std::placeholders::_1));
+		//register_route_handler("/filemodels/misc/info", std::bind(&FileModelController::misc_info_route_handler, this, std::placeholders::_1));
 
-		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/misc/attrlist")
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodels/<string>/misc/attrlist")
 			([&](const crow::request& req, std::string designName)
 				{
+					// authenticate request before sending to handler
+					auto authResp = m_serverApp.request_auth().AuthenticateRequest(req);
+					if (authResp.code != crow::status::OK)
+					{
+						return authResp;
+					}
+
 					return this->misc_attrlist_route_handler(designName, req);
 				});
 
-		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/matrix/matrix")
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodels/<string>/matrix/matrix")
 			([&](const crow::request& req, std::string designName)
 				{
+					// authenticate request before sending to handler
+					auto authResp = m_serverApp.request_auth().AuthenticateRequest(req);
+					if (authResp.code != crow::status::OK)
+					{
+						return authResp;
+					}
+
 					return this->matrix_matrix_route_handler(designName, req);
 				});
 
-		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/misc/info")
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodels/<string>/misc/info")
 			([&](const crow::request& req, std::string designName)
 				{
+					// authenticate request before sending to handler
+					auto authResp = m_serverApp.request_auth().AuthenticateRequest(req);
+					if (authResp.code != crow::status::OK)
+					{
+						return authResp;
+					}
+
 					return this->misc_info_route_handler(designName, req);
 				});
 
-		CROW_ROUTE(m_serverApp.crow_app(), "/filemodel/<string>/fonts/standard")
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodels/<string>/fonts/standard")
 			([&](const crow::request& req, std::string designName)
 				{
+					// authenticate request before sending to handler
+					auto authResp = m_serverApp.request_auth().AuthenticateRequest(req);
+					if (authResp.code != crow::status::OK)
+					{
+						return authResp;
+					}
+
 					return this->fonts_standard_route_handler(designName, req);
 				});
+	}
+
+	crow::response FileModelController::filemodels_route_handler(const std::string& designName, const crow::request& req)
+	{
+		auto designNameDecoded = UrlEncoding::decode(designName);
+		if (designNameDecoded.empty())
+		{
+			return crow::response(crow::status::BAD_REQUEST, "design name not specified");
+		}
+
+		auto pFileArchive = m_serverApp.designs().GetFileArchive(designNameDecoded);
+		if (pFileArchive == nullptr)
+		{
+			std::stringstream ss;
+			ss << "design: \"" << designNameDecoded << "\" not found";
+			return crow::response(crow::status::NOT_FOUND, ss.str());
+		}
+
+		return crow::response(JsonCrowReturnable(*pFileArchive));
 	}
 
 	crow::response FileModelController::steps_edadata_route_handler(const std::string& designName,
@@ -871,28 +1051,9 @@ namespace Odb::App::Server
 		crow::json::wvalue jsonResponse;
 		jsonResponse["symbols"] = std::move(symbolNames);
 		return crow::response(jsonResponse);
-	}
+	}	
 
-	crow::response FileModelController::designs_route_handler(const std::string& designName, const crow::request& req)
-	{
-		auto designNameDecoded = UrlEncoding::decode(designName);
-		if (designNameDecoded.empty())
-		{
-			return crow::response(crow::status::BAD_REQUEST, "design name not specified");
-		}
-
-		auto pFileArchive = m_serverApp.designs().GetFileArchive(designNameDecoded);
-		if (pFileArchive == nullptr)
-		{
-			std::stringstream ss;
-			ss << "design: \"" << designNameDecoded << "\" not found";
-			return crow::response(crow::status::NOT_FOUND, ss.str());
-		}
-
-		return crow::response(JsonCrowReturnable(*pFileArchive));
-	}
-
-	crow::response FileModelController::designs_list_route_handler(const crow::request& req)
+	crow::response FileModelController::filemodels_list_route_handler(const crow::request& req)
 	{
 		const auto& fileArchives = m_serverApp.designs().getUnloadedDesignNames();
 		

@@ -15,6 +15,13 @@ namespace Odb::App::Server
 		CROW_ROUTE(m_serverApp.crow_app(), "/designs/upload/<string>").methods(crow::HTTPMethod::POST)
 			([&](const crow::request& req, std::string filename)
 				{
+                    // authenticate request before sending to handler
+                    auto authResp = m_serverApp.request_auth().AuthenticateRequest(req);
+                    if (authResp.code != crow::status::OK)
+                    {
+                        return authResp;
+                    }
+
 					const auto& contentType = req.get_header_value("Content-Type");
 					if (contentType != "application/octet-stream")
 					{
@@ -27,6 +34,13 @@ namespace Odb::App::Server
         CROW_ROUTE(m_serverApp.crow_app(), "/designs/upload").methods(crow::HTTPMethod::POST)
             ([&](const crow::request& req)
                 {
+                    // authenticate request before sending to handler
+                    auto authResp = m_serverApp.request_auth().AuthenticateRequest(req);
+                    if (authResp.code != crow::status::OK)
+                    {
+                        return authResp;
+                    }
+
                     const auto& contentType = req.get_header_value("Content-Type");
                     if (contentType != "multipart/form-upload")
                     {
@@ -38,7 +52,14 @@ namespace Odb::App::Server
 
         CROW_ROUTE(m_serverApp.crow_app(), "/designs/list").methods(crow::HTTPMethod::GET)
             ([&](const crow::request& req)
-                {              
+                {
+                    // authenticate request before sending to handler
+                    auto authResp = m_serverApp.request_auth().AuthenticateRequest(req);
+                    if (authResp.code != crow::status::OK)
+                    {
+                        return authResp;
+                    }
+
                     return makeLoadedDesignsResponse();
                 });
 
