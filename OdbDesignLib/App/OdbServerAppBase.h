@@ -27,6 +27,9 @@ namespace Odb::Lib::App
 		// implement in subclasses to add route controllers
 		virtual void add_controllers() = 0;
 
+		virtual bool preServerRun();
+		virtual bool postServerRun();
+
 	private:
 		CrowApp m_crowApp;
 		//crow::SimpleApp m_crowApp;

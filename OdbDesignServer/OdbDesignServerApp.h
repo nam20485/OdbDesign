@@ -12,10 +12,15 @@ namespace Odb::App::Server
 		OdbDesignServerApp(int argc, char* argv[]);
 		//~OdbDesignServerApp();	
 				
-		Utils::ExitCode Run() override;		
+		//Utils::ExitCode Run() override;		
 
 	protected:												
 		void add_controllers() override;
+
+
+		// Inherited via OdbServerAppBase
+		bool preServerRun() override;
+		//bool postServerRun() override;
 
 	};
 }

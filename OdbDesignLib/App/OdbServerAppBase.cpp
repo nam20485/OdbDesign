@@ -8,9 +8,20 @@ using namespace std::filesystem;
 namespace Odb::Lib::App
 {
 	OdbServerAppBase::OdbServerAppBase(int argc, char* argv[])
-		: OdbAppBase(argc, argv)
-		, m_pRequestAuthentication(std::make_unique<BasicRequestAuthentication>())
+		: OdbAppBase(argc, argv)		
 	{
+	}
+
+	bool OdbServerAppBase::preServerRun()
+	{
+		// override in extended class to configure server or run custom code
+		return true;
+	}
+
+	bool OdbServerAppBase::postServerRun()
+	{
+		// override in extended class to cleanup server or run custom code
+		return true;
 	}
 
 	OdbServerAppBase::~OdbServerAppBase()
@@ -72,8 +83,12 @@ namespace Odb::Lib::App
 		// set server to use multiple threads
 		m_crowApp.multithreaded();
 
+		if (!preServerRun()) return ExitCode::PreServerRunFailed;
+
 		// run the Crow server
 		m_crowApp.run();
+
+		if (!postServerRun()) return ExitCode::PostServerRunFailed;
 
 		// success!
 		return ExitCode::Success;
