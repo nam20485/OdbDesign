@@ -126,6 +126,10 @@ namespace Odb::App::Server
                 CROW_LOG_DEBUG << " Value: " << part_value.body << '\n';
                 continue;
             }
+            else
+            {
+                CROW_LOG_ERROR << "multipart/form-data POST failed! Part name was: [" << part_name << "], which is not supported. Part name should be [" << MULTIPART_FORMDATA_PART_NAME << "].";
+            }
 
             // Extract the file name
             auto headers_it = part_value.headers.find("Content-Disposition");
