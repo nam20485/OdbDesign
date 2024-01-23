@@ -40,8 +40,8 @@ spec:
                   key: ODBDESIGN_SERVER_REQUEST_PASSWORD           
           resources:
             limits:
-              cpu: "2"
-              memory: 2Gi
+              cpu: "1"
+              memory: 1Gi
             requests:
               cpu: "1"
               memory: 1Gi
