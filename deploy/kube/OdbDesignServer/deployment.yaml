@@ -27,6 +27,17 @@ spec:
           ports:
             - containerPort: 8888
               name: ods-dep-port
+          env:
+            - name: ODBDESIGN_SERVER_REQUEST_USERNAME
+              valueFrom: 
+                secretKeyRef:
+                  name: odbdesign-server-request-secret
+                  key: ODBDESIGN_SERVER_REQUEST_USERNAME
+            - name: ODBDESIGN_SERVER_REQUEST_PASSWORD
+              valueFrom: 
+                secretKeyRef:
+                  name: odbdesign-server-request-secret
+                  key: ODBDESIGN_SERVER_REQUEST_PASSWORD           
           resources:
             limits:
               cpu: "2"
