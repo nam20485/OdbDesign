@@ -120,7 +120,7 @@ namespace Odb::App::Server
             const auto& part_value = part.second;
 
             CROW_LOG_DEBUG << "Part: " << part_name;
-            if ("InputFile" != part_name)
+            if (MULTIPART_FORMDATA_PART_NAME != part_name)
             {
                 // log to debug and skip rest of the loop
                 CROW_LOG_DEBUG << " Value: " << part_value.body << '\n';
