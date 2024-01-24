@@ -142,21 +142,21 @@ jobs:
     - name: CMake Build          
       run: cmake --build --preset ${{matrix.preset}} 
 
-    # - name: CMake Test
-    #   id: cmake-test      
-    #   run: ctest --test-dir ./out/build/${{matrix.preset}}/OdbDesignTests --output-log ${{github.workspace}}/testlog.txt --output-junit ${{github.workspace}}/testlog.xml -V
-    #   # let the report step fail the job if it finds failed tests
-    #   continue-on-error: true
+    - name: CMake Test
+      id: cmake-test      
+      run: ctest --test-dir ./out/build/${{matrix.preset}}/OdbDesignTests --output-log ${{github.workspace}}/testlog.txt --output-junit ${{github.workspace}}/testlog.xml -V
+      # let the report step fail the job if it finds failed tests
+      continue-on-error: true
 
-    # # report test results
-    # - name: Report Test Results
-    #   uses: dorny/test-reporter@v1.7.0
-    #   if: ${{steps.cmake-test.outcome}} == 'success' || ${{steps.cmake-test.outcome}} == 'failure'      
-    #   with:
-    #     name: ${{ matrix.os }}_test-results
-    #     path: ${{github.workspace}}/testlog.xml
-    #     reporter: java-junit
-    #     fail-on-error: true
+    # report test results
+    - name: Report Test Results
+      uses: dorny/test-reporter@v1.7.0
+      if: ${{steps.cmake-test.outcome}} == 'success' || ${{steps.cmake-test.outcome}} == 'failure'      
+      with:
+        name: ${{ matrix.os }}_test-results
+        path: ${{github.workspace}}/testlog.xml
+        reporter: java-junit
+        fail-on-error: true
 
     #
     #   Artifacts
