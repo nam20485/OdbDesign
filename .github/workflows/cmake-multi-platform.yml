@@ -155,7 +155,7 @@ jobs:
 
     - name: CMake Test
       id: cmake-test      
-      run: ctest --test-dir ./out/build/${{matrix.preset}}/OdbDesignTests --output-log ${{github.workspace}}/testlog.txt --output-junit ${{github.workspace}}/testlog.xml -V
+      run: ctest --test-dir ./out/build/${{matrix.preset}}/OdbDesignTests --output-log ${{github.workspace}}/testlog.txt --output-junit ${{github.workspace}}/testlog.xml --output-on-failure
       # let the report step fail the job if it finds failed tests...
       continue-on-error: true
 
