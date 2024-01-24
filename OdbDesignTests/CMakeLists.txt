@@ -8,8 +8,8 @@ add_executable(OdbDesignTests
     "Fixtures/FileArchiveLoadFixture.cpp"     
     "TestTests.cpp"
     "DesignLoadTests.cpp"
-    "Fixtures/DesignNameValueParamTest.h"
-    "FileArchiveLoadTests.cpp"
+    "Fixtures/DesignNameValueParamTest.h"   
+    "FileArchiveTests.cpp"
 )
 
 target_link_libraries(OdbDesignTests PRIVATE GTest::gtest_main)
