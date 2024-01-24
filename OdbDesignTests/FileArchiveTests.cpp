@@ -8,7 +8,7 @@ using namespace Odb::Test::Fixtures;
 
 namespace Odb::Test
 {
-	TEST_F(FileArchiveLoadFixture, Test_RigidFlexDesign_Can_Has_Data)
+	TEST_F(FileArchiveLoadFixture, Test_DesignOdb_RigidFlexDesign_Can_Has_Data)
 	{
         auto rigidFlexDesignPath = getDesignPath("designodb_rigidflex.tgz");
 
@@ -107,7 +107,7 @@ namespace Odb::Test
         auto& pSubnetRecord = pNetRecord->m_subnetRecords[44];
 
         auto subnetType = pSubnetRecord->type;
-        ASSERT_EQ(subnetType, Odb::Lib::FileModel::Design::EdaDataFile::NetRecord::SubnetRecord::Type::Toeprint);
+        ASSERT_EQ(subnetType, Odb::Lib::FileModel::Design::EdaDataFile::NetRecord::SubnetRecord::Type::Trace);
         //auto pToeprintSubnetRecord = pSubnetRecord;
         //auto viaType = pToeprintSubnetRecord->type;
         //if (viaType == Odb::Lib::FileModel::Design::EdaDataFile::NetRecord::ToeprintSubnetRecord::Type::Via)
