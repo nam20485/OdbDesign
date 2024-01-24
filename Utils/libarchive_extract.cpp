@@ -12,6 +12,8 @@ namespace Utils
     int copy_data(struct archive* ar, struct archive* aw);
 
     const bool SECURE_EXTRACTION = true;
+    const size_t BYTES_PER_KB = 1024UL;
+    const size_t READ_OPEN_BLOCK_SIZE = BYTES_PER_KB * 10UL;
 
     bool extract(const char* filename, const char* destDir)
     {
@@ -32,9 +34,7 @@ namespace Utils
             flags |= ARCHIVE_EXTRACT_SECURE_SYMLINKS;
             flags |= ARCHIVE_EXTRACT_SECURE_NODOTDOT;
             flags |= ARCHIVE_EXTRACT_SECURE_NOABSOLUTEPATHS;
-        }
-
-        const size_t READ_OPEN_BLOCK_SIZE = 1024 * 10;
+        }        
 
         a = archive_read_new();
         archive_read_support_format_all(a);

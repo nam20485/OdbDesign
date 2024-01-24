@@ -370,7 +370,7 @@ namespace Odb::Lib::FileModel::Design
 		return m_miscAttrListFile;
 	}
 
-	std::shared_ptr<StepDirectory> FileArchive::GetStepDirectory(const std::string& stepName /*= ""*/)
+	std::shared_ptr<StepDirectory> FileArchive::GetStepDirectory(const std::string& stepName /*= ""*/) const
 	{
 		std::shared_ptr<FileModel::Design::StepDirectory> pStepDirectory;
 
