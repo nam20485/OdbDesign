@@ -7,7 +7,7 @@ add_executable(OdbDesignTests
     "Fixtures/FileArchiveLoadFixture.h" 
     "Fixtures/FileArchiveLoadFixture.cpp"     
     "TestTests.cpp"
-    "DesignLoadTests.cpp"
+    "DesignCacheLoadTests.cpp"
     "Fixtures/DesignNameValueParamTest.h"   
     "FileArchiveTests.cpp"
 )
