@@ -1,21 +1,24 @@
 #include "FileArchiveLoadFixture.h"
 #include <string>
+#include "Logger.h"
 
 using namespace std::filesystem;
 //using namespace Odb::Lib;
 using namespace Odb::Lib::App;
+using namespace Utils;
 
 namespace Odb::Test::Fixtures
 {
 	FileArchiveLoadFixture::FileArchiveLoadFixture()
 		: m_testDataDir()
 		, m_pDesignCache(nullptr)
-
 	{		
 	}
 
 	void FileArchiveLoadFixture::SetUp()
-	{				
+	{		
+		Logger::instance()->start();
+
 		ASSERT_FALSE(getTestDataDir().empty());
 				
 		m_testDataDir = getTestDataDir();
@@ -49,6 +52,8 @@ namespace Odb::Test::Fixtures
 				}
 			}
 		}
+
+		Logger::instance()->stop();		
 	}
 
 	path FileArchiveLoadFixture::getDesignPath(const std::string& filename) const
