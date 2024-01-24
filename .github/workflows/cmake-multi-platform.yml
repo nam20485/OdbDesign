@@ -148,15 +148,14 @@ jobs:
         repository: 'nam20485/OdbDesignTestData'
         path: 'OdbDesignTestData'
         ref: 'main'
+        token: ${{ secrets.ODBDESIGN_TESTDATA_ACCESS_TOKEN }}
         
     - name : Export ODB_TEST_DATA_DIR   
       run: echo "ODB_TEST_DATA_DIR=${{github.workspace}}/OdbDesignTestData/TEST_DATA" >> $GITHUB_ENV
 
     - name: CMake Test
       id: cmake-test      
-      run: |
-        echo ODB_TEST_DATA_DIR=${{env.ODB_TEST_DATA_DIR}}
-        ctest --test-dir ./out/build/${{matrix.preset}}/OdbDesignTests --output-log ${{github.workspace}}/testlog.txt --output-junit ${{github.workspace}}/testlog.xml -V
+      run: ctest --test-dir ./out/build/${{matrix.preset}}/OdbDesignTests --output-log ${{github.workspace}}/testlog.txt --output-junit ${{github.workspace}}/testlog.xml -V
       # let the report step fail the job if it finds failed tests...
       continue-on-error: true
 
