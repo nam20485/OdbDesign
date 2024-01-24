@@ -8,7 +8,7 @@ using namespace Odb::Test::Fixtures;
 
 namespace Odb::Test
 {
-	TEST_F(FileArchiveLoadFixture, Test_DesignOdb_RigidFlexDesign_Can_Has_Data)
+	TEST_F(FileArchiveLoadFixture, Test_DesignOdb_RigidFlexDesign_CanHasCorrectData)
 	{
         auto rigidFlexDesignPath = getDesignPath("designodb_rigidflex.tgz");
 
@@ -81,7 +81,7 @@ namespace Odb::Test
         //}    
 	}
 
-    TEST_F(FileArchiveLoadFixture, Test_SampleDesign_Can_Has_Data)
+    TEST_F(FileArchiveLoadFixture, Test_SampleDesign_CanHasCorrectData)
     {
         auto rigidFlexDesignPath = getDesignPath("sample_design.tgz");
 
