@@ -11,7 +11,7 @@ using namespace Odb::Test::Fixtures;
 bool TestRigidFlexDesign()
 {
     std::string rigidFlexDesignPath;
-    if (Odb::Lib::IsMsvc())
+    if (Utils::IsMsvc())
     {
         rigidFlexDesignPath = R"(C:\Users\nmill\OneDrive\Documents\ODB++\Samples\designodb_rigidflex.tgz)";
     }
