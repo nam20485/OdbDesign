@@ -19,3 +19,7 @@ target_link_libraries(OdbDesignTests PRIVATE OdbDesign)
 
 include(GoogleTest)
 gtest_discover_tests(OdbDesignTests)
+
+## PCH
+file (GLOB_RECURSE OdbDesignTests_HEADER_FILES "*.h")
+target_precompile_headers(OdbDesignTests PRIVATE ${OdbDesignTests_HEADER_FILES})
