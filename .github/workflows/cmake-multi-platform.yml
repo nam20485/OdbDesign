@@ -145,7 +145,7 @@ jobs:
     - name: CMake Test
       id: cmake-test      
       run: ctest --test-dir ./out/build/${{matrix.preset}}/OdbDesignTests --output-log ${{github.workspace}}/testlog.txt --output-junit ${{github.workspace}}/testlog.xml -V
-      # let the report step fail the job if it finds failed tests
+      # let the report step fail the job if it finds failed tests...
       continue-on-error: true
 
     # report test results
@@ -156,6 +156,7 @@ jobs:
         name: ${{ matrix.os }}_test-results
         path: ${{github.workspace}}/testlog.xml
         reporter: java-junit
+        # fail job based on report results
         fail-on-error: true
 
     #
