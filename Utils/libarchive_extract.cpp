@@ -8,6 +8,8 @@
 
 // from: https://github.com/libarchive/libarchive/wiki/Examples#user-content-A_Complete_Extractor
 
+using namespace std::filesystem;
+
 namespace Utils
 {
     int copy_data(struct archive* ar, struct archive* aw);
@@ -34,7 +36,7 @@ namespace Utils
         {
             flags |= ARCHIVE_EXTRACT_SECURE_SYMLINKS;
             flags |= ARCHIVE_EXTRACT_SECURE_NODOTDOT;
-            flags |= ARCHIVE_EXTRACT_SECURE_NOABSOLUTEPATHS;
+            //flags |= ARCHIVE_EXTRACT_SECURE_NOABSOLUTEPATHS;
         }        
 
         a = archive_read_new();
@@ -67,12 +69,15 @@ namespace Utils
             // prepend destPath to beginning of entry to extract it in the destination path
             std::string entryPathname = archive_entry_pathname(entry);
             std::filesystem::path entryDestinationPathname(destDir);
-            entryDestinationPathname /= entryPathname;
-            archive_entry_set_pathname(entry, entryDestinationPathname.string().c_str());
+            entryDestinationPathname /= entryPathname;  
+            //auto relativeEntryDestinationPathname = relative(entryDestinationPathname, current_path());
 
             loginfo("Extracting, destination dir: [" + std::string(destDir) + "]");
             loginfo("Extracting, entry path name: [" + entryPathname + "]");
             loginfo("Extracting, destination path name: [" + entryDestinationPathname.string() + "]");
+            //loginfo("Extracting, relative destination path name: [" + relativeEntryDestinationPathname.string() + "]");
+
+            archive_entry_set_pathname(entry, entryDestinationPathname.string().c_str());
 
             r = archive_write_header(ext, entry);
             if (r < ARCHIVE_OK)
