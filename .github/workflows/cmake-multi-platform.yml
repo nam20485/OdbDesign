@@ -142,16 +142,16 @@ jobs:
     - name: CMake Build          
       run: cmake --build --preset ${{matrix.preset}}
 
-    - name: Checkout OdbDesign Test Data Repository
-      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1      
-      with:
-        repository: 'nam20485/OdbDesignTestData'
-        path: 'OdbDesignTestData'
-        ref: 'main'
-        token: ${{ secrets.ODBDESIGN_TESTDATA_ACCESS_TOKEN }}
+    # - name: Checkout OdbDesign Test Data Repository
+    #   uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1      
+    #   with:
+    #     repository: 'nam20485/OdbDesignTestData'
+    #     path: 'OdbDesignTestData'
+    #     ref: 'main'
+    #     token: ${{ secrets.ODBDESIGN_TESTDATA_ACCESS_TOKEN }}
         
     - name : Export ODB_TEST_DATA_DIR   
-      run: echo "ODB_TEST_DATA_DIR=./OdbDesignTestData/TEST_DATA" >> $GITHUB_ENV
+      run: echo "ODB_TEST_DATA_DIR=${{github.workspace}}/OdbDesignServer/designs" >> $GITHUB_ENV
 
     - name: CMake Test
       id: cmake-test      
