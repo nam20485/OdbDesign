@@ -151,7 +151,7 @@ jobs:
         token: ${{ secrets.ODBDESIGN_TESTDATA_ACCESS_TOKEN }}
         
     - name : Export ODB_TEST_DATA_DIR   
-      run: echo "ODB_TEST_DATA_DIR=${{github.workspace}}/OdbDesignTestData/TEST_DATA" >> $GITHUB_ENV
+      run: echo "ODB_TEST_DATA_DIR=./OdbDesignTestData/TEST_DATA" >> $GITHUB_ENV
 
     - name: CMake Test
       id: cmake-test      
