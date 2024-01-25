@@ -3,6 +3,7 @@
 #include <archive_entry.h>
 #include <iostream>
 #include <filesystem>
+#include "Logger.h"
 
 
 // from: https://github.com/libarchive/libarchive/wiki/Examples#user-content-A_Complete_Extractor
@@ -64,14 +65,18 @@ namespace Utils
             }
 
             // prepend destPath to beginning of entry to extract it in the destination path
-            auto entryPathname = archive_entry_pathname(entry);
+            std::string entryPathname = archive_entry_pathname(entry);
             std::filesystem::path entryDestinationPathname(destDir);
             entryDestinationPathname /= entryPathname;
             archive_entry_set_pathname(entry, entryDestinationPathname.string().c_str());
 
+            loginfo("Extracting, destination dir: [" + std::string(destDir) + "]");
+            loginfo("Extracting, entry path name: [" + entryPathname + "]");
+            loginfo("Extracting, destination path name: [" + entryDestinationPathname.string() + "]");
+
             r = archive_write_header(ext, entry);
             if (r < ARCHIVE_OK)
-                fprintf(stderr, "%s\n", archive_error_string(ext));
+                fprintf(stderr, "archive_write_header failed: %s\n", archive_error_string(ext));
             else if (archive_entry_size(entry) > 0) {
                 r = copy_data(a, ext);
                 if (r < ARCHIVE_OK)
