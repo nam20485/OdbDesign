@@ -22,6 +22,7 @@ namespace Odb::Test::Fixtures
 		ASSERT_FALSE(getTestDataDir().empty());
 				
 		m_testDataDir = getTestDataDir();
+		m_testDataDir = m_testDataDir.make_preferred();
 		ASSERT_TRUE(exists(m_testDataDir));
 
 		m_pDesignCache = std::unique_ptr<DesignCache>(new DesignCache(m_testDataDir.string()));
