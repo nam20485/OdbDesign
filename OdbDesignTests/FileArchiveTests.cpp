@@ -45,7 +45,7 @@ namespace Odb::Test
         ASSERT_GT(packageRecords.size(), 0);
         auto& pPackageRecord = packageRecords[0];
         const auto& packageName = pPackageRecord->name;
-        // assert package name
+        ASSERT_STREQ(packageName.c_str(), "BYX101471_B1");
 
         // layers
         auto& layersByName = pStep->GetLayersByName();
@@ -56,7 +56,7 @@ namespace Odb::Test
         auto& pLayer = layerFind->second;
         ASSERT_NE(pLayer, nullptr);
         auto layerName = pLayer->GetName();    
-        // assert layer name
+        ASSERT_STREQ(layerName.c_str(), "comp_+_top");
 
         // netlist
         const auto& netlistsByName = pStep->GetNetlistsByName();
@@ -68,7 +68,7 @@ namespace Odb::Test
         ASSERT_NE(pNetlist, nullptr);
 
         auto netlistName = pNetlist->GetName();
-        // assert netlist name
+        ASSERT_STREQ(netlistName.c_str(), "cadnet");
 
         auto& netListNetRecords = pNetlist->GetNetRecords();
         ASSERT_GT(netListNetRecords.size(), 0);
@@ -118,7 +118,7 @@ namespace Odb::Test
         ASSERT_GT(packageRecords.size(), 0);
         auto& pPackageRecord = packageRecords[0];
         const auto& packageName = pPackageRecord->name;
-        // assert package name
+        ASSERT_STREQ(packageName.c_str(), "MH_188NP");
 
         // layers
         auto& layersByName = pStep->GetLayersByName();
@@ -129,7 +129,7 @@ namespace Odb::Test
         auto& pLayer = layerFind->second;
         ASSERT_NE(pLayer, nullptr);
         auto layerName = pLayer->GetName();
-        // assert layer name
+        ASSERT_STREQ(layerName.c_str(), "comp_+_top");
 
         // netlist
         const auto& netlistsByName = pStep->GetNetlistsByName();
@@ -141,7 +141,7 @@ namespace Odb::Test
         ASSERT_NE(pNetlist, nullptr);
 
         auto netlistName = pNetlist->GetName();
-        // assert netlist name
+        ASSERT_STREQ(netlistName.c_str(), "cadnet");
 
         auto& netListNetRecords = pNetlist->GetNetRecords();
         ASSERT_GT(netListNetRecords.size(), 0);
