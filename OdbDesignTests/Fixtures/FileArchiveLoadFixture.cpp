@@ -17,7 +17,7 @@ namespace Odb::Test::Fixtures
 
 	void FileArchiveLoadFixture::SetUp()
 	{		
-		Logger::instance()->start();
+		//Logger::instance()->start();
 
 		ASSERT_FALSE(getTestDataDir().empty());
 				
@@ -53,7 +53,7 @@ namespace Odb::Test::Fixtures
 			}
 		}
 
-		Logger::instance()->stop();		
+		//Logger::instance()->stop();		
 	}
 
 	path FileArchiveLoadFixture::getDesignPath(const std::string& filename) const
