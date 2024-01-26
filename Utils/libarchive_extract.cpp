@@ -72,9 +72,9 @@ namespace Utils
             entryDestinationPathname /= entryPathname;  
             //auto relativeEntryDestinationPathname = relative(entryDestinationPathname, current_path());
 
-            loginfo("Extracting, destination dir: [" + std::string(destDir) + "]");
-            loginfo("Extracting, entry path name: [" + entryPathname + "]");
-            loginfo("Extracting, destination path name: [" + entryDestinationPathname.string() + "]");
+            logdebug("Extracting, destination dir: [" + std::string(destDir) + "]");
+            logdebug("Extracting, entry path name: [" + entryPathname + "]");
+            logdebug("Extracting, destination path name: [" + entryDestinationPathname.string() + "]");
             //loginfo("Extracting, relative destination path name: [" + relativeEntryDestinationPathname.string() + "]");
 
             archive_entry_set_pathname(entry, entryDestinationPathname.string().c_str());
