@@ -13,11 +13,12 @@ namespace Utils
 		: m_level(Level::Info)
 		, m_logFilename(DEFAULT_LOG_FILENAME)
 		, m_outputTypes(OutputTypes::StdOut | OutputTypes::File)
+		, m_enableInternalLogging(true)
 		//, m_logFileStream(m_logFilename, std::ios::out | std::ios::app)
 		, m_logMessageLoop([&](Message& message)
 			{
 				return this->logMessage(message);
-			})
+			}, m_enableInternalLogging)
 	{		
 	}
 
@@ -190,7 +191,7 @@ namespace Utils
 
 		if (m_outputTypes & OutputTypes::File)
 		{
-			std::cout << "opening log file stream (" << m_logFilename << ")..." << std::endl;
+			std::cout << "Logger::logMessage() - opening log file stream (" << m_logFilename << ")..." << std::endl;
 
 			m_logFileStream.open(m_logFilename, std::ios::out | std::ios::app);
 			if (m_logFileStream)
