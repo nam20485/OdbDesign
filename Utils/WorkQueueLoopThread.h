@@ -19,7 +19,7 @@ namespace Utils
         typedef std::function<bool(TWorkItem&)> processWorkItemFunc;
 
         WorkQueueLoopThread();
-        explicit WorkQueueLoopThread(processWorkItemFunc processWorkItemProc, bool enableInternalLogging);
+        explicit WorkQueueLoopThread(processWorkItemFunc processWorkItemProc/*, bool enableInternalLogging*/);
 
         void addWorkItem(TWorkItem&& workItem);
         //void addWorkItem(TWorkItem& workItem);
@@ -56,10 +56,10 @@ namespace Utils
     }
 
     template<typename TWorkItem>
-    WorkQueueLoopThread<TWorkItem>::WorkQueueLoopThread(WorkQueueLoopThread::processWorkItemFunc processWorkItemProc, bool enableInternalLogging)
+    WorkQueueLoopThread<TWorkItem>::WorkQueueLoopThread(WorkQueueLoopThread::processWorkItemFunc processWorkItemProc/*, bool enableInternalLogging*/)
         : _stopProcessingWorkItemsFlag(false)
         , _processWorkItemProc(processWorkItemProc)
-        , _enableInternalLogging(enableInternalLogging)
+        //, _enableInternalLogging(enableInternalLogging)
     {
         if (_enableInternalLogging)
         {
