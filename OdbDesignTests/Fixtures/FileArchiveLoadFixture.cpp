@@ -17,6 +17,8 @@ namespace Odb::Test::Fixtures
 
 	void FileArchiveLoadFixture::SetUp()
 	{		
+		std::cout << "starting logger...";
+
 		Logger::instance()->start();
 
 		loginfo("logger started, checking for empty()...");
