@@ -159,7 +159,9 @@ jobs:
       id: cmake-test
       env:
         ODB_TEST_DATA_DIR: ${{github.workspace}}/OdbDesignTestData/TEST_DATA
-      run: ctest --test-dir ./out/build/${{matrix.preset}}/OdbDesignTests --output-log ${{github.workspace}}/testlog.txt --output-junit ${{github.workspace}}/testlog.xml --output-on-failure
+      run: | 
+        ctest --test-dir ./out/build/${{matrix.preset}}/OdbDesignTests --output-log ${{github.workspace}}/testlog.txt --output-junit ${{github.workspace}}/testlog.xml --output-on-failure
+        dir ${{github.workspace}}        
       # let the report step fail the job if it finds failed tests...
       continue-on-error: true
 
