@@ -10,7 +10,7 @@ add_executable(OdbDesignTests
     "DesignCacheLoadTests.cpp"
     "Fixtures/DesignNameValueParamTest.h"   
     "FileArchiveTests.cpp"
-)
+ "DesignTests.cpp" "ProtobufSerializationTests.cpp")
 
 target_link_libraries(OdbDesignTests PRIVATE GTest::gtest_main)
 
