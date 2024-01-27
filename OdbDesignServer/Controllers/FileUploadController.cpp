@@ -12,9 +12,17 @@ namespace Odb::App::Server
 
 	void FileUploadController::register_routes()
 	{
-		CROW_ROUTE(m_serverApp.crow_app(), "/designs/upload/<string>").methods(crow::HTTPMethod::POST)
+		CROW_ROUTE(m_serverApp.crow_app(), "/files/upload/<string>")
+            .methods(crow::HTTPMethod::POST)
 			([&](const crow::request& req, std::string filename)
 				{
+                    // authenticate request before sending to handler
+                    auto authResp = m_serverApp.request_auth().AuthenticateRequest(req);
+                    if (authResp.code != crow::status::OK)
+                    {
+                        return authResp;
+                    }
+
 					const auto& contentType = req.get_header_value("Content-Type");
 					if (contentType != "application/octet-stream")
 					{
@@ -24,21 +32,38 @@ namespace Odb::App::Server
                     return handleOctetStreamUpload(filename, req);
 				});
 
-        CROW_ROUTE(m_serverApp.crow_app(), "/designs/upload").methods(crow::HTTPMethod::POST)
+        CROW_ROUTE(m_serverApp.crow_app(), "/files/upload")
+            .methods(crow::HTTPMethod::POST)
             ([&](const crow::request& req)
                 {
-                    const auto& contentType = req.get_header_value("Content-Type");
-                    if (contentType != "multipart/form-upload")
+                    // authenticate request before sending to handler
+                    auto authResp = m_serverApp.request_auth().AuthenticateRequest(req);
+                    if (authResp.code != crow::status::OK)
                     {
-                        return crow::response(crow::status::BAD_REQUEST, "unsupported content type: this endpoint only accepts 'multipart/form-upload'");                        
+                        return authResp;
+                    }
+
+                    const auto& contentType = req.get_header_value("Content-Type");
+                    if (contentType.find("multipart/form-data") != 0)
+                    {
+                        // "Content-Type" header doesn't start with "multipart/form-data"
+                        return crow::response(crow::status::BAD_REQUEST, "unsupported content type: this endpoint only accepts 'multipart/form-data'");                        
                     }
                     
                     return handleMultipartFormUpload(req);
                 });
 
-        CROW_ROUTE(m_serverApp.crow_app(), "/designs/list").methods(crow::HTTPMethod::GET)
+        CROW_ROUTE(m_serverApp.crow_app(), "/files/list")
+            .methods(crow::HTTPMethod::GET)
             ([&](const crow::request& req)
-                {              
+                {
+                    // authenticate request before sending to handler
+                    auto authResp = m_serverApp.request_auth().AuthenticateRequest(req);
+                    if (authResp.code != crow::status::OK)
+                    {
+                        return authResp;
+                    }
+
                     return makeLoadedDesignsResponse();
                 });
 
@@ -95,11 +120,15 @@ namespace Odb::App::Server
             const auto& part_value = part.second;
 
             CROW_LOG_DEBUG << "Part: " << part_name;
-            if ("InputFile" != part_name)
+            if (MULTIPART_FORMDATA_PART_NAME != part_name)
             {
                 // log to debug and skip rest of the loop
                 CROW_LOG_DEBUG << " Value: " << part_value.body << '\n';
                 continue;
+            }
+            else
+            {
+                CROW_LOG_ERROR << "multipart/form-data POST failed! Part name was: [" << part_name << "], which is not supported. Part name should be [" << MULTIPART_FORMDATA_PART_NAME << "].";
             }
 
             // Extract the file name

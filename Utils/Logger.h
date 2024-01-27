@@ -105,6 +105,8 @@ namespace Utils
 
 		WorkQueueLoopThread<struct Message> m_logMessageLoop;
 
+		//bool m_enableInternalLogging = false;
+
 		//bool processWorkItem(struct LogMessage& logMessage) override;		
 		bool logMessage(const struct Message& logMessage);
 

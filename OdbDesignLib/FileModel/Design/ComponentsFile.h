@@ -91,8 +91,7 @@ namespace Odb::Lib::FileModel::Design
 			std::string cpn;
 			std::string pkg;
 			std::string ipn;
-			std::vector<std::string> descriptions;
-			std::string dsc;
+			std::vector<std::string> descriptions;			
 			std::string vpl_vnd;
 			std::string vpl_mpn;
 			std::string vnd;

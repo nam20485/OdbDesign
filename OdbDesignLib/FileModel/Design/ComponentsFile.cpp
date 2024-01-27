@@ -625,7 +625,8 @@ namespace Odb::Lib::FileModel::Design
 
 						if (!(lineStream >> pCurrentBomDescriptionRecord->ipn))
 						{
-							throw_parse_error(m_path, line, token, lineNumber);
+							// blank/ no IPN value allowed
+							//throw_parse_error(m_path, line, token, lineNumber);
 						}
 					}
 					else if (line.find(ComponentsFile::BomDescriptionRecord::DSC_RECORD_TOKEN) == 0)

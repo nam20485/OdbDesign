@@ -1,4 +1,5 @@
 #include "OdbServerAppBase.h"
+#include "OdbServerAppBase.h"
 #include "Logger.h"
 
 using namespace Utils;
@@ -7,8 +8,20 @@ using namespace std::filesystem;
 namespace Odb::Lib::App
 {
 	OdbServerAppBase::OdbServerAppBase(int argc, char* argv[])
-		: OdbAppBase(argc, argv)
+		: OdbAppBase(argc, argv)		
 	{
+	}
+
+	bool OdbServerAppBase::preServerRun()
+	{
+		// override in extended class to configure server or run custom code
+		return true;
+	}
+
+	bool OdbServerAppBase::postServerRun()
+	{
+		// override in extended class to cleanup server or run custom code
+		return true;
 	}
 
 	OdbServerAppBase::~OdbServerAppBase()
@@ -70,8 +83,12 @@ namespace Odb::Lib::App
 		// set server to use multiple threads
 		m_crowApp.multithreaded();
 
+		if (!preServerRun()) return ExitCode::PreServerRunFailed;
+
 		// run the Crow server
 		m_crowApp.run();
+
+		if (!postServerRun()) return ExitCode::PostServerRunFailed;
 
 		// success!
 		return ExitCode::Success;
@@ -80,6 +97,16 @@ namespace Odb::Lib::App
 	CrowApp& OdbServerAppBase::crow_app()
 	{
 		return m_crowApp;
+	}
+
+	IRequestAuthentication& OdbServerAppBase::request_auth()
+	{
+		return *m_pRequestAuthentication;
+	}
+
+	void OdbServerAppBase::request_auth(std::unique_ptr<IRequestAuthentication> pRequestAuthentication)
+	{
+		m_pRequestAuthentication = std::move(pRequestAuthentication);
 	}
 
 	void OdbServerAppBase::register_routes()

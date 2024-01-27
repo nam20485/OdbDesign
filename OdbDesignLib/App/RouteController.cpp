@@ -11,8 +11,15 @@ namespace Odb::Lib::App
 	void RouteController::register_route_handler(std::string route, TRouteHandlerFunction handler)
 	{				
 		m_serverApp.crow_app().route_dynamic(std::move(route))
-			([handler](const crow::request& req)
+			([/*&,*/ handler](const crow::request& req)
 				{
+					//// authenticate request before sending to handler
+					//auto authResp = m_serverApp.request_auth().AuthenticateRequest(req);
+					//if (authResp.code != crow::status::OK)
+					//{
+					//	return authResp;
+					//}
+
 					return handler(req);
 				});
 

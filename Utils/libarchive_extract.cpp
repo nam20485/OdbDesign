@@ -3,15 +3,20 @@
 #include <archive_entry.h>
 #include <iostream>
 #include <filesystem>
+#include "Logger.h"
 
 
 // from: https://github.com/libarchive/libarchive/wiki/Examples#user-content-A_Complete_Extractor
+
+using namespace std::filesystem;
 
 namespace Utils
 {
     int copy_data(struct archive* ar, struct archive* aw);
 
     const bool SECURE_EXTRACTION = true;
+    const size_t BYTES_PER_KB = 1024UL;
+    const size_t READ_OPEN_BLOCK_SIZE = BYTES_PER_KB * 10UL;
 
     bool extract(const char* filename, const char* destDir)
     {
@@ -31,10 +36,8 @@ namespace Utils
         {
             flags |= ARCHIVE_EXTRACT_SECURE_SYMLINKS;
             flags |= ARCHIVE_EXTRACT_SECURE_NODOTDOT;
-            flags |= ARCHIVE_EXTRACT_SECURE_NOABSOLUTEPATHS;
-        }
-
-        const size_t READ_OPEN_BLOCK_SIZE = 1024 * 10;
+            //flags |= ARCHIVE_EXTRACT_SECURE_NOABSOLUTEPATHS;
+        }        
 
         a = archive_read_new();
         archive_read_support_format_all(a);
@@ -64,14 +67,21 @@ namespace Utils
             }
 
             // prepend destPath to beginning of entry to extract it in the destination path
-            auto entryPathname = archive_entry_pathname(entry);
+            std::string entryPathname = archive_entry_pathname(entry);
             std::filesystem::path entryDestinationPathname(destDir);
-            entryDestinationPathname /= entryPathname;
+            entryDestinationPathname /= entryPathname;  
+            //auto relativeEntryDestinationPathname = relative(entryDestinationPathname, current_path());
+
+            logdebug("Extracting, destination dir: [" + std::string(destDir) + "]");
+            logdebug("Extracting, entry path name: [" + entryPathname + "]");
+            logdebug("Extracting, destination path name: [" + entryDestinationPathname.string() + "]");
+            //loginfo("Extracting, relative destination path name: [" + relativeEntryDestinationPathname.string() + "]");
+
             archive_entry_set_pathname(entry, entryDestinationPathname.string().c_str());
 
             r = archive_write_header(ext, entry);
             if (r < ARCHIVE_OK)
-                fprintf(stderr, "%s\n", archive_error_string(ext));
+                fprintf(stderr, "archive_write_header failed: %s\n", archive_error_string(ext));
             else if (archive_entry_size(entry) > 0) {
                 r = copy_data(a, ext);
                 if (r < ARCHIVE_OK)
