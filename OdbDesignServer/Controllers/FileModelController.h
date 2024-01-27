@@ -11,7 +11,7 @@ namespace Odb::App::Server
 		FileModelController(Odb::Lib::App::IOdbServerApp& serverApp);
 		//virtual ~FileModelController() = default;
 
-		virtual void register_routes() override;
+		void register_routes() override;
 
 	private:
 		crow::response filemodels_route_handler(const std::string& designName, const crow::request& req);
