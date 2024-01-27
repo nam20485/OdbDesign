@@ -12,7 +12,7 @@ namespace Odb::App::Server
 
 	void FileUploadController::register_routes()
 	{
-		CROW_ROUTE(m_serverApp.crow_app(), "/designs/upload/<string>")
+		CROW_ROUTE(m_serverApp.crow_app(), "/files/upload/<string>")
             .methods(crow::HTTPMethod::POST)
 			([&](const crow::request& req, std::string filename)
 				{
@@ -32,7 +32,7 @@ namespace Odb::App::Server
                     return handleOctetStreamUpload(filename, req);
 				});
 
-        CROW_ROUTE(m_serverApp.crow_app(), "/designs/upload")
+        CROW_ROUTE(m_serverApp.crow_app(), "/files/upload")
             .methods(crow::HTTPMethod::POST)
             ([&](const crow::request& req)
                 {
@@ -53,7 +53,7 @@ namespace Odb::App::Server
                     return handleMultipartFormUpload(req);
                 });
 
-        CROW_ROUTE(m_serverApp.crow_app(), "/designs/list")
+        CROW_ROUTE(m_serverApp.crow_app(), "/files/list")
             .methods(crow::HTTPMethod::GET)
             ([&](const crow::request& req)
                 {
