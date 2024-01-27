@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+//// https://protobuf.dev/reference/cpp/cpp-generated/#message
+//option optimize_for = CODE_SIZE;
+
+import "component.proto";
+import "pin.proto";
+
+package Odb.Lib.Protobuf.ProductModel;
+
+//
+//  PinConnection.h
+//
+
+message PinConnection {
+
+    //     std::string m_name;
+    // std::shared_ptr<Component> m_pComponent;
+    // std::shared_ptr<Pin> m_pPin;
+
+    optional string name = 1;
+    optional Component component = 2;
+    optional Pin pin = 3;
+    
+}

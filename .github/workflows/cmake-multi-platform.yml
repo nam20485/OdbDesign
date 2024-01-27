@@ -140,23 +140,40 @@ jobs:
       run: cmake --preset ${{matrix.preset}}    
 
     - name: CMake Build          
-      run: cmake --build --preset ${{matrix.preset}} 
+      run: cmake --build --preset ${{matrix.preset}}
 
-    # - name: CMake Test
-    #   id: cmake-test      
-    #   run: ctest --test-dir ./out/build/${{matrix.preset}}/OdbDesignTests --output-log ${{github.workspace}}/testlog.txt --output-junit ${{github.workspace}}/testlog.xml -V
-    #   # let the report step fail the job if it finds failed tests
-    #   continue-on-error: true
+    - name: Checkout OdbDesign Test Data Repository
+      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1      
+      with:
+        repository: 'nam20485/OdbDesignTestData'
+        path: 'OdbDesignTestData'
+        ref: 'main'
+        token: ${{ secrets.ODBDESIGN_TESTDATA_ACCESS_TOKEN }}
+        
+    - name : Export ODB_TEST_DATA_DIR    
+      uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+      with:
+        script: core.exportVariable('ODB_TEST_DATA_DIR', "${{github.workspace}}/OdbDesignTestData/TEST_DATA" || '');                
 
-    # # report test results
-    # - name: Report Test Results
-    #   uses: dorny/test-reporter@v1.7.0
-    #   if: ${{steps.cmake-test.outcome}} == 'success' || ${{steps.cmake-test.outcome}} == 'failure'      
-    #   with:
-    #     name: ${{ matrix.os }}_test-results
-    #     path: ${{github.workspace}}/testlog.xml
-    #     reporter: java-junit
-    #     fail-on-error: true
+    - name: CMake Test
+      id: cmake-test
+      env:
+        ODB_TEST_DATA_DIR: ${{github.workspace}}/OdbDesignTestData/TEST_DATA
+      run: ctest --test-dir ./out/build/${{matrix.preset}}/OdbDesignTests --output-log ${{github.workspace}}/testlog.txt --output-junit ${{github.workspace}}/testlog.xml --output-on-failure      
+      # let the report step fail the job if it finds failed tests...
+      continue-on-error: true
+           
+    # report test results
+    - name: Report Test Results
+      uses: dorny/test-reporter@v1.7.0
+      if: steps.cmake-test.outcome == 'success' || steps.cmake-test.outcome == 'failure'
+      with:
+        name: ${{ matrix.os }}_test-results
+        path: ${{github.workspace}}/testlog.xml
+        reporter: java-junit
+        path-replace-backslashes: true
+        # fail job based on report results
+        fail-on-error: true     
 
     #
     #   Artifacts

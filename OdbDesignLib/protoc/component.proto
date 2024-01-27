@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+//// https://protobuf.dev/reference/cpp/cpp-generated/#message
+//option optimize_for = CODE_SIZE;
+
+import "enums.proto";
+import "part.proto";
+import "package.proto";
+
+package Odb.Lib.Protobuf.ProductModel;
+
+//
+//  Component.h
+//
+
+message Component {
+
+    // std::string m_refDes;
+    // std::string m_partName;		
+    // std::shared_ptr<Package> m_pPackage;
+    // unsigned int m_index;
+    // BoardSide m_side;
+    // std::shared_ptr<Part> m_pPart;
+
+    optional string refDes = 1;
+    optional string partName = 2;
+    optional Package package = 3;
+    optional uint32 index = 4;
+    optional BoardSide side = 5;
+    optional Part part = 6;
+    
+}

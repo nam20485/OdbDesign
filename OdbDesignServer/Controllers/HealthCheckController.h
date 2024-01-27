@@ -12,7 +12,7 @@ namespace Odb::App::Server
 	public:
 		HealthCheckController(Odb::Lib::App::IOdbServerApp& serverApp);
 
-		virtual void register_routes() override;
+		void register_routes() override;
 
 	private:
 		crow::response health_check_live(const crow::request& req);
