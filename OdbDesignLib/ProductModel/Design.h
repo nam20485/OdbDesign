@@ -9,12 +9,14 @@
 #include "Via.h"
 #include "Package.h"
 #include "Part.h"
-#include "../FileModel/Design/StepDirectory.h"
+//#include "../FileModel/Design/StepDirectory.h"
+#include "../ProtoBuf/design.pb.h"
+#include "../IProtoBuffable.h"	
 
 
 namespace Odb::Lib::ProductModel
 {
-	class ODBDESIGN_EXPORT Design
+	class ODBDESIGN_EXPORT Design : IProtoBuffable<Odb::Lib::Protobuf::ProductModel::Design>
 	{
 	public:	
 		Design();
@@ -42,6 +44,10 @@ namespace Odb::Lib::ProductModel
 		bool Build(std::shared_ptr<FileModel::Design::FileArchive> pFileModel);	
 
 		std::shared_ptr<FileModel::Design::FileArchive> GetFileModel() const;
+
+		// Inherited via IProtoBuffable
+		std::unique_ptr<Odb::Lib::Protobuf::ProductModel::Design> to_protobuf() const override;
+		void from_protobuf(const Odb::Lib::Protobuf::ProductModel::Design& message) override;
 
 		typedef std::vector<std::shared_ptr<Design>> Vector;
 		typedef std::map<std::string, std::shared_ptr<Design>> StringMap;

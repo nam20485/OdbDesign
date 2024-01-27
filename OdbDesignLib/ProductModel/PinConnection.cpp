@@ -1,6 +1,8 @@
 #include "PinConnection.h"
 #include "PinConnection.h"
 #include "PinConnection.h"
+#include "PinConnection.h"
+#include "PinConnection.h"
 
 
 namespace Odb::Lib::ProductModel
@@ -34,6 +36,22 @@ namespace Odb::Lib::ProductModel
 	std::shared_ptr<Component> PinConnection::GetComponent() const
 	{
 		return m_pComponent;
+	}
+
+	std::unique_ptr<Odb::Lib::Protobuf::ProductModel::PinConnection> PinConnection::to_protobuf() const
+	{
+		auto pPinConnectionMsg = std::unique_ptr<Odb::Lib::Protobuf::ProductModel::PinConnection>();
+		pPinConnectionMsg->set_name(m_name);
+		pPinConnectionMsg->set_allocated_component(m_pComponent->to_protobuf().release());
+		pPinConnectionMsg->set_allocated_pin(m_pPin->to_protobuf().release());
+		return pPinConnectionMsg;
+	}
+
+	void PinConnection::from_protobuf(const Odb::Lib::Protobuf::ProductModel::PinConnection& message)
+	{
+		m_name = message.name();
+		m_pComponent->from_protobuf(message.component());
+		m_pPin->from_protobuf(message.pin());
 	}
 
 } // namespace Odb::Lib::ProductModel

@@ -1,6 +1,8 @@
 #include "Package.h"
 #include "Package.h"
 #include "Package.h"
+#include "Package.h"
+#include "Package.h"
 
 namespace Odb::Lib::ProductModel
 {
@@ -24,6 +26,41 @@ namespace Odb::Lib::ProductModel
 	const Pin::Vector& Package::GetPins() const
 	{
 		return m_pins;
+	}
+
+	std::unique_ptr<Odb::Lib::Protobuf::ProductModel::Package> Package::to_protobuf() const
+	{
+		auto pPackageMsg = std::unique_ptr<Odb::Lib::Protobuf::ProductModel::Package>();
+		pPackageMsg->set_name(m_name);
+		pPackageMsg->set_index(m_index);
+		for (const auto& pPin : m_pins)
+		{
+			auto pPinMsg = pPin->to_protobuf();
+			pPackageMsg->add_pins()->CopyFrom(*pPinMsg);
+		}
+		for (const auto& kvPin : m_pinsByName)
+		{
+			(*pPackageMsg->mutable_pinsbyname())[kvPin.first] = *kvPin.second->to_protobuf();
+		}
+		return pPackageMsg;
+	}
+
+	void Package::from_protobuf(const Odb::Lib::Protobuf::ProductModel::Package& message)
+	{
+		m_name = message.name();
+		m_index = message.index();
+		for (const auto& pinMsg : message.pins())
+		{
+			auto pPin = std::make_shared<Pin>("", 0);
+			pPin->from_protobuf(pinMsg);
+			m_pins.push_back(pPin);
+		}
+		for (const auto& kvPinMsg : message.pinsbyname())
+		{
+			auto pPin = std::make_shared<Pin>("", 0);
+			pPin->from_protobuf(kvPinMsg.second);
+			m_pinsByName[kvPinMsg.first] = pPin;
+		}
 	}
 
 	unsigned int Package::GetIndex() const

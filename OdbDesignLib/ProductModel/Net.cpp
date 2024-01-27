@@ -1,4 +1,6 @@
 #include "Net.h"
+#include "Net.h"
+#include "Net.h"
 
 
 namespace Odb::Lib::ProductModel
@@ -33,5 +35,30 @@ namespace Odb::Lib::ProductModel
 	{
 		m_pinConnections.push_back(std::make_shared<PinConnection>(pComponent, pPin));
 		return true;
+	}
+
+	std::unique_ptr<Odb::Lib::Protobuf::ProductModel::Net> Odb::Lib::ProductModel::Net::to_protobuf() const
+	{
+		auto pNetMsg = std::unique_ptr<Odb::Lib::Protobuf::ProductModel::Net>();
+		pNetMsg->set_name(m_name);
+		pNetMsg->set_index(m_index);
+		for (auto& pPinConnection : m_pinConnections)
+		{
+			auto pPinConnectionMsg = pPinConnection->to_protobuf();
+			pNetMsg->add_pinconnections()->CopyFrom(*pPinConnectionMsg);
+		}
+		return pNetMsg;
+	}
+
+	void Odb::Lib::ProductModel::Net::from_protobuf(const Odb::Lib::Protobuf::ProductModel::Net& message)
+	{
+		m_name = message.name();
+		m_index = message.index();
+		for (auto& pinConnectionMsg : message.pinconnections())
+		{
+			auto pPinConnection = std::make_shared<PinConnection>(nullptr, nullptr);
+			pPinConnection->from_protobuf(pinConnectionMsg);
+			m_pinConnections.push_back(pPinConnection);
+		}
 	}
 }

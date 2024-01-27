@@ -7,11 +7,13 @@
 #include <memory>
 #include "Component.h"
 #include "Pin.h"
+#include "../ProtoBuf/pinconnection.pb.h"
+#include "../IProtoBuffable.h"	
 
 
 namespace Odb::Lib::ProductModel
 {
-	class ODBDESIGN_EXPORT PinConnection
+	class ODBDESIGN_EXPORT PinConnection : IProtoBuffable<Odb::Lib::Protobuf::ProductModel::PinConnection>
 	{
 	public:
 		PinConnection(std::shared_ptr<Component> pComponent, std::shared_ptr<Pin> pPin);
@@ -21,6 +23,10 @@ namespace Odb::Lib::ProductModel
 
 		std::shared_ptr<Pin> GetPin() const;
 		std::shared_ptr<Component> GetComponent() const;
+
+		// Inherited via IProtoBuffable
+		std::unique_ptr<Odb::Lib::Protobuf::ProductModel::PinConnection> to_protobuf() const override;
+		void from_protobuf(const Odb::Lib::Protobuf::ProductModel::PinConnection& message) override;
 
 		typedef std::vector<std::shared_ptr<PinConnection>> Vector;
 		typedef std::map<std::string, std::shared_ptr<PinConnection>> StringMap;
