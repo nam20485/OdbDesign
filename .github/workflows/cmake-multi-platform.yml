@@ -181,6 +181,7 @@ jobs:
         name: ${{ matrix.os }}_test-results
         path: ${{github.workspace}}/testlog.xml
         reporter: java-junit
+        path-replace-backslashes: true
         # fail job based on report results
         fail-on-error: true     
 
