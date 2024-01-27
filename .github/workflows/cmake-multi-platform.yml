@@ -162,7 +162,8 @@ jobs:
       run: | 
         ctest --test-dir ./out/build/${{matrix.preset}}/OdbDesignTests --output-log ${{github.workspace}}/testlog.txt --output-junit ${{github.workspace}}/testlog.xml --output-on-failure
         dir ${{github.workspace}}
-        cat ${{github.workspace}}/testlog.txt     
+        cat ${{github.workspace}}/testlog.xml
+        dir  ${{github.workspace}}/testlog.xml
       # let the report step fail the job if it finds failed tests...
       continue-on-error: true
            
@@ -172,7 +173,7 @@ jobs:
       if: steps.cmake-test.outcome == 'success' || steps.cmake-test.outcome == 'failure'
       with:
         name: ${{ matrix.os }}_test-results
-        path: ${{github.workspace}}/testlog.xml
+        path: ${{github.workspace}}\testlog.xml
         reporter: java-junit
         # fail job based on report results
         fail-on-error: true     
