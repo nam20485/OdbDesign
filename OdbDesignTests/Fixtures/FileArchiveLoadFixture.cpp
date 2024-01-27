@@ -17,35 +17,22 @@ namespace Odb::Test::Fixtures
 
 	void FileArchiveLoadFixture::SetUp()
 	{
-		////std::cout << "starting logger...";
+		//Logger::instance()->start();
+		
+		ASSERT_FALSE(getTestDataDir().empty());		
+		m_testDataDir = getTestDataDir();		
+		m_testDataDir = m_testDataDir.make_preferred();
 
-		////Logger::instance()->start();
+		ASSERT_TRUE(exists(m_testDataDir));
 
-		//loginfo("logger started, checking for empty()...");
-
-		//ASSERT_FALSE(getTestDataDir().empty());
-
-		//loginfo("test data dir not empty");
-
-		//m_testDataDir = getTestDataDir();
-
-		//loginfo("test data dir: " + m_testDataDir.string());
-
-		//m_testDataDir = m_testDataDir.make_preferred();
-
-		//loginfo("test data dir after make_preferred(): " + m_testDataDir.string());
-
-		//ASSERT_TRUE(exists(m_testDataDir));
-
-		//loginfo("test data dir exists, creating DeisgnCache");
-
-		//m_pDesignCache = std::unique_ptr<DesignCache>(new DesignCache(m_testDataDir.string()));
-		//ASSERT_NE(m_pDesignCache, nullptr);
+		m_pDesignCache = std::unique_ptr<DesignCache>(new DesignCache(m_testDataDir.string()));
+		ASSERT_NE(m_pDesignCache, nullptr);
 	}
 
 	std::string FileArchiveLoadFixture::getTestDataDir()
 	{
 		auto szTestDataDir = std::getenv(ODB_TEST_DATA_DIR_ENV_NAME);
+		if (szTestDataDir == nullptr) szTestDataDir = "";
 		//if (szTestDataDir == nullptr) throw std::runtime_error("ODB_TEST_DATA_DIR environment variable is not set");				
 		//if (!exists(szTestDataDir)) throw std::runtime_error("ODB_TEST_DATA_DIR environment variable is set to a non-existent directory");
 		return szTestDataDir;
