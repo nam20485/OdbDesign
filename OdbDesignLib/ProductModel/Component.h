@@ -15,7 +15,7 @@
 
 namespace Odb::Lib::ProductModel
 {
-	class ODBDESIGN_EXPORT Component : IProtoBuffable<Odb::Lib::Protobuf::ProductModel::Component>
+	class ODBDESIGN_EXPORT Component : public IProtoBuffable<Odb::Lib::Protobuf::ProductModel::Component>
 	{
 	public:
 		Component(std::string refDes, std::string partName, std::shared_ptr<Package> pPackage, unsigned int index, BoardSide side, std::shared_ptr<Part> pPart);

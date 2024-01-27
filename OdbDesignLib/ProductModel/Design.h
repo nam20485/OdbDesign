@@ -16,7 +16,7 @@
 
 namespace Odb::Lib::ProductModel
 {
-	class ODBDESIGN_EXPORT Design : IProtoBuffable<Odb::Lib::Protobuf::ProductModel::Design>
+	class ODBDESIGN_EXPORT Design : public IProtoBuffable<Odb::Lib::Protobuf::ProductModel::Design>
 	{
 	public:	
 		Design();

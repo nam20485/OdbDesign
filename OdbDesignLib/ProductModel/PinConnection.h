@@ -13,7 +13,7 @@
 
 namespace Odb::Lib::ProductModel
 {
-	class ODBDESIGN_EXPORT PinConnection : IProtoBuffable<Odb::Lib::Protobuf::ProductModel::PinConnection>
+	class ODBDESIGN_EXPORT PinConnection : public IProtoBuffable<Odb::Lib::Protobuf::ProductModel::PinConnection>
 	{
 	public:
 		PinConnection(std::shared_ptr<Component> pComponent, std::shared_ptr<Pin> pPin);

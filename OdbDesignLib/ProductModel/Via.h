@@ -12,7 +12,7 @@
 
 namespace Odb::Lib::ProductModel
 {
-	class ODBDESIGN_EXPORT Via : IProtoBuffable<Odb::Lib::Protobuf::ProductModel::Via>
+	class ODBDESIGN_EXPORT Via : public IProtoBuffable<Odb::Lib::Protobuf::ProductModel::Via>
 	{
 	public:
 		Via();

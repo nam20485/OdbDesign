@@ -12,7 +12,7 @@
 
 namespace Odb::Lib::ProductModel
 {
-	class ODBDESIGN_EXPORT Package : IProtoBuffable<Odb::Lib::Protobuf::ProductModel::Package>
+	class ODBDESIGN_EXPORT Package : public IProtoBuffable<Odb::Lib::Protobuf::ProductModel::Package>
 	{
 	public:
 		Package(std::string name, unsigned int index);

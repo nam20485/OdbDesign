@@ -14,7 +14,7 @@
 
 namespace Odb::Lib::ProductModel
 {
-	class ODBDESIGN_EXPORT Net : IProtoBuffable<Odb::Lib::Protobuf::ProductModel::Net>
+	class ODBDESIGN_EXPORT Net : public IProtoBuffable<Odb::Lib::Protobuf::ProductModel::Net>
 	{
 	public:
 		Net(std::string name, unsigned int index);
