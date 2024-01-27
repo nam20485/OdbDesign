@@ -4,8 +4,10 @@
 #include "Controllers/FileUploadController.h"
 #include "Controllers/FileModelController.h"
 #include "Controllers/HealthCheckController.h"
+#include "Controllers/DesignsController.h"
 #include "macros.h"
 
+using namespace Odb::Lib::App;
 
 namespace Odb::App::Server
 {
@@ -18,12 +20,32 @@ namespace Odb::App::Server
 	//{					
 	//}
 
-	Utils::ExitCode OdbDesignServerApp::Run()
-	{
-		//
-		// do any initialization here
-		//
+	//Utils::ExitCode OdbDesignServerApp::Run()
+	//{
+	//	//
+	//	// do any initialization here
+	//	//		
 
+	//	auto result = OdbServerAppBase::Run();
+
+	//	//
+	//	// do any cleanup here
+	//	//
+
+	//	return result;
+	//}
+
+	void OdbDesignServerApp::add_controllers()
+	{
+		m_vecControllers.push_back(std::make_shared<HelloWorldController>(*this));		
+		m_vecControllers.push_back(std::make_shared<FileUploadController>(*this));
+		m_vecControllers.push_back(std::make_shared<FileModelController>(*this));
+		m_vecControllers.push_back(std::make_shared<HealthCheckController>(*this));
+		m_vecControllers.push_back(std::make_shared<DesignsController>(*this));
+	}
+
+	bool OdbDesignServerApp::preServerRun()
+	{
 		// CORS
 		auto& cors = crow_app().get_middleware<crow::CORSHandler>();
 		if (Utils::IsProduction())
@@ -41,18 +63,10 @@ namespace Odb::App::Server
 			//cors.global().origin("73.157.184.219");
 		}
 
-		return OdbServerAppBase::Run();
+		// add authentication
+		auto basicRequestAuth = std::make_unique<BasicRequestAuthentication>(BasicRequestAuthentication());
+		request_auth(std::move(basicRequestAuth));
 
-		//
-		// do any cleanup here
-		//
+		return true;
 	}
-
-	void OdbDesignServerApp::add_controllers()
-	{
-		m_vecControllers.push_back(std::make_shared<HelloWorldController>(*this));		
-		m_vecControllers.push_back(std::make_shared<FileUploadController>(*this));
-		m_vecControllers.push_back(std::make_shared<FileModelController>(*this));
-		m_vecControllers.push_back(std::make_shared<HealthCheckController>(*this));
-	}	
 }

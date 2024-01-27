@@ -7,38 +7,36 @@ param(
     [string]$DeploymentName
 )
 
-#$clusterName = "k3d-k3dcluster"
-#$deploymentName = "odbdesign-server-v1"
-#$serviceName = "odbdesign-server-service"
-#$ingressName = "odbdesign-server-ingress"
-#$image = "ghcr.io/nam20485/odbdesign:nam20485-latest"
-
 # set kubeconfig
-
 kubectl config use-context $ClusterName
 if ($LASTEXITCODE -ne 0) {
     Exit 1    
 }
 
-#kubectl get deployment $deploymentName
-#if ($LASTEXITCODE -ne 0) {
-    kubectl apply -f deploy/kube/OdbDesignServer/deployment.yaml
-#}
+#
+# odbdesign-server-v1 
+#
 
-#kubectl get svc $serviceName
-#if ($LASTEXITCODE -ne 0) {
-    kubectl apply -f deploy/kube/OdbDesignServer/service.yaml
-#}
+# apply manifests
+kubectl apply -f deploy/kube/OdbDesignServer/deployment.yaml
+kubectl apply -f deploy/kube/OdbDesignServer/service.yaml
 
-#kubectl get ingress$ingressName
-#if ($LASTEXITCODE -ne 0) {
-    kubectl apply -f deploy/kube/OdbDesignServer/ingress.yaml
-#}
-
-# kubectl set image deployment/$deploymentName odbdesign-server=$image
-
-# initiate rolling update
+# restart deployment
 kubectl rollout restart deployment/$DeploymentName
-
-# wait for kubectl deployment to finish
 kubectl rollout status deployment/$DeploymentName
+
+
+#
+# Swagger UI
+#
+
+# apply manifests
+kubectl apply -f deploy/kube/OdbDesignServer-SwaggerUI/deployment.yaml
+kubectl apply -f deploy/kube/OdbDesignServer-SwaggerUI/service.yaml
+
+# restart deployment
+kubectl rollout restart deployment/odbdesign-server-swaggerui-v1
+kubectl rollout status deployment/odbdesign-server-swaggerui-v1
+
+# apply ingress manifest
+kubectl apply -f deploy/kube/default-ingress.yaml

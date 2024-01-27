@@ -1,24 +1,28 @@
 #include "FileArchiveLoadFixture.h"
 #include <string>
+#include "Logger.h"
 
 using namespace std::filesystem;
 //using namespace Odb::Lib;
 using namespace Odb::Lib::App;
+using namespace Utils;
 
 namespace Odb::Test::Fixtures
 {
 	FileArchiveLoadFixture::FileArchiveLoadFixture()
 		: m_testDataDir()
 		, m_pDesignCache(nullptr)
-
 	{		
 	}
 
 	void FileArchiveLoadFixture::SetUp()
-	{				
-		ASSERT_FALSE(getTestDataDir().empty());
-				
-		m_testDataDir = getTestDataDir();
+	{
+		//Logger::instance()->start();
+		
+		ASSERT_FALSE(getTestDataDir().empty());		
+		m_testDataDir = getTestDataDir();		
+		m_testDataDir = m_testDataDir.make_preferred();
+
 		ASSERT_TRUE(exists(m_testDataDir));
 
 		m_pDesignCache = std::unique_ptr<DesignCache>(new DesignCache(m_testDataDir.string()));
@@ -27,7 +31,8 @@ namespace Odb::Test::Fixtures
 
 	std::string FileArchiveLoadFixture::getTestDataDir()
 	{
-		auto szTestDataDir = std::getenv("ODB_TEST_DATA_DIR");
+		auto szTestDataDir = std::getenv(ODB_TEST_DATA_DIR_ENV_NAME);
+		if (szTestDataDir == nullptr) szTestDataDir = "";
 		//if (szTestDataDir == nullptr) throw std::runtime_error("ODB_TEST_DATA_DIR environment variable is not set");				
 		//if (!exists(szTestDataDir)) throw std::runtime_error("ODB_TEST_DATA_DIR environment variable is set to a non-existent directory");
 		return szTestDataDir;
@@ -49,6 +54,8 @@ namespace Odb::Test::Fixtures
 				}
 			}
 		}
+
+		//Logger::instance()->stop();		
 	}
 
 	path FileArchiveLoadFixture::getDesignPath(const std::string& filename) const

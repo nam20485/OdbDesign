@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+//// https://protobuf.dev/reference/cpp/cpp-generated/#message
+//option optimize_for = CODE_SIZE;
+
+import "pinconnection.proto";
+
+package Odb.Lib.Protobuf.ProductModel;
+
+//
+//  Net.h
+//
+
+message Net {
+
+    // std::string m_name;
+    // PinConnection::Vector m_pinConnections;
+    // unsigned int m_index;
+
+    optional string name = 1;
+    repeated PinConnection pinConnections = 2;
+    optional uint32 index = 3;
+
+}

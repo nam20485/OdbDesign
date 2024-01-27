@@ -18,7 +18,11 @@ namespace Odb::App::Server
 
 		crow::response makeLoadedDesignsResponse() const;
 
+		// TODO: actually implement sanitizeFilename()
 		std::string sanitizeFilename(const std::string& filename) const;
+
+		constexpr static const inline char MULTIPART_FORMDATA_PART_NAME[] = "file";
+		//constexpr static const inline char MULTIPART_FORMDATA_PART_NAME[] = "InputFile"
 	
 	};
 }

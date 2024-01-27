@@ -17,6 +17,7 @@ spec:
   #     nodePort: 30888
   #     name: ods-svc-port
   ## ClusterIP/regular ingress-style access
+  # type: ClusterIP
   ports:
     - port: 80
       name: ods-svc-port
