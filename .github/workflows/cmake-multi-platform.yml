@@ -166,6 +166,12 @@ jobs:
         dir  ${{github.workspace}}/testlog.xml
       # let the report step fail the job if it finds failed tests...
       continue-on-error: true
+
+    - name: Debug testlogxml
+      run: |
+        dir ${{github.workspace}}
+        cat ${{github.workspace}}/testlog.xml
+        dir  ${{github.workspace}}/testlog.xml
            
     # report test results
     - name: Report Test Results
@@ -173,7 +179,7 @@ jobs:
       if: steps.cmake-test.outcome == 'success' || steps.cmake-test.outcome == 'failure'
       with:
         name: ${{ matrix.os }}_test-results
-        path: ${{github.workspace}}\testlog.xml
+        path: ${{github.workspace}}/testlog.xml
         reporter: java-junit
         # fail job based on report results
         fail-on-error: true     
