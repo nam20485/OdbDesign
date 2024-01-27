@@ -153,13 +153,12 @@ jobs:
     - name : Export ODB_TEST_DATA_DIR    
       uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
       with:
-        script: |
-          core.exportVariable('ODB_TEST_DATA_DIR', "${{github.workspace}}/OdbDesignTestData/TEST_DATA" || '');          
-      #run: echo "ODB_TEST_DATA_DIR=${{github.workspace}}/OdbDesignServer/designs" >> $GITHUB_ENV
-      #run: echo "ODB_TEST_DATA_DIR=${{github.workspace}}/OdbDesignTestData/TEST_DATA" >> $GITHUB_ENV
+        script: core.exportVariable('ODB_TEST_DATA_DIR', "${{github.workspace}}/OdbDesignTestData/TEST_DATA" || '');                
 
     - name: CMake Test
-      id: cmake-test      
+      id: cmake-test
+      env:
+        ODB_TEST_DATA_DIR: ${{github.workspace}}/OdbDesignTestData/TEST_DATA
       run: ctest --test-dir ./out/build/${{matrix.preset}}/OdbDesignTests --output-log ${{github.workspace}}/testlog.txt --output-junit ${{github.workspace}}/testlog.xml --output-on-failure
       # let the report step fail the job if it finds failed tests...
       continue-on-error: true

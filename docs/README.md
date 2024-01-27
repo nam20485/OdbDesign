@@ -53,7 +53,7 @@ The diagram describes the current state of parser implementation and data availa
 
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/nam20485/OdbDesign/badge)](https://securityscorecards.dev/viewer/?uri=github.com/nam20485/OdbDesign)
 
->The majority of tested projects have a muc lower score, so OdbDesign's 7.8 score represents a remarkably high level of security.
+>The majority of tested projects have a much lower score, so OdbDesign's 7.8 score represents a remarkably high level of security.
 
 ### CI/CD Build
 
