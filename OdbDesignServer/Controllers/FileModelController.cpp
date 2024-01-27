@@ -1064,7 +1064,7 @@ namespace Odb::App::Server
 		}
 
 		crow::json::wvalue jsonResponse;
-		jsonResponse["designs"] = std::move(designNames);
+		jsonResponse["file archives"] = std::move(designNames);
 		return crow::response(jsonResponse);
 	}
 
