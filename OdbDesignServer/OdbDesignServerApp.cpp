@@ -4,6 +4,7 @@
 #include "Controllers/FileUploadController.h"
 #include "Controllers/FileModelController.h"
 #include "Controllers/HealthCheckController.h"
+#include "Controllers/DesignsController.h"
 #include "macros.h"
 
 using namespace Odb::Lib::App;
@@ -40,6 +41,7 @@ namespace Odb::App::Server
 		m_vecControllers.push_back(std::make_shared<FileUploadController>(*this));
 		m_vecControllers.push_back(std::make_shared<FileModelController>(*this));
 		m_vecControllers.push_back(std::make_shared<HealthCheckController>(*this));
+		m_vecControllers.push_back(std::make_shared<DesignsController>(*this));
 	}
 
 	bool OdbDesignServerApp::preServerRun()
