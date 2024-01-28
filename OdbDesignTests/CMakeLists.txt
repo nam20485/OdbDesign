@@ -12,7 +12,7 @@ add_executable(OdbDesignTests
     "FileArchiveTests.cpp"
  "DesignTests.cpp" "ProtobufSerializationTests.cpp")
 
-target_link_libraries(OdbDesignTests PRIVATE GTest::gtest_main)
+target_link_libraries(OdbDesignTests PRIVATE GTest::gtest_main GTest::gmock_main)
 
 # link to OdbDesign library
 target_link_libraries(OdbDesignTests PRIVATE OdbDesign)
