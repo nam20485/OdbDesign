@@ -53,7 +53,7 @@ namespace Odb::Lib::ProductModel
 		m_index = message.index();
 		for (auto& pinConnectionMsg : message.pinconnections())
 		{
-			auto pPinConnection = std::make_shared<PinConnection>(nullptr, nullptr);
+			auto pPinConnection = std::make_shared<PinConnection>(nullptr, nullptr, "");
 			pPinConnection->from_protobuf(pinConnectionMsg);
 			m_pinConnections.push_back(pPinConnection);
 		}
