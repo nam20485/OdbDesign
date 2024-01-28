@@ -1,6 +1,4 @@
 #include "Part.h"
-#include "Part.h"
-#include "Part.h"
 
 namespace Odb::Lib::ProductModel
 {
