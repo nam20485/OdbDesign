@@ -54,8 +54,8 @@ namespace Odb::Lib::ProductModel
 		pComponentMsg->set_partname(m_partName);
 		pComponentMsg->set_index(m_index);
 		pComponentMsg->set_side(static_cast<Odb::Lib::Protobuf::BoardSide>(m_side));
-		pComponentMsg->set_allocated_package(m_pPackage->to_protobuf().release());
-		pComponentMsg->set_allocated_part(m_pPart->to_protobuf().release());
+		pComponentMsg->mutable_package()->CopyFrom(*m_pPackage->to_protobuf());		
+		pComponentMsg->mutable_part()->CopyFrom(*m_pPart->to_protobuf());
 		return pComponentMsg;
 	}
 
@@ -65,7 +65,9 @@ namespace Odb::Lib::ProductModel
 		m_partName = message.partname();
 		m_index = message.index();
 		m_side = static_cast<BoardSide>(message.side());
+		m_pPackage = std::make_shared<Package>("", -1);
 		m_pPackage->from_protobuf(message.package());
+		m_pPart = std::make_shared<Part>("");
 		m_pPart->from_protobuf(message.part());
 	}
 

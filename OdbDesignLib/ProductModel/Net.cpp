@@ -42,8 +42,7 @@ namespace Odb::Lib::ProductModel
 		pNetMsg->set_index(m_index);
 		for (auto& pPinConnection : m_pinConnections)
 		{
-			auto pPinConnectionMsg = pPinConnection->to_protobuf();
-			pNetMsg->add_pinconnections()->CopyFrom(*pPinConnectionMsg);
+			pNetMsg->add_pinconnections()->CopyFrom(*pPinConnection->to_protobuf());
 		}
 		return pNetMsg;
 	}

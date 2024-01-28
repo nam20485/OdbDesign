@@ -141,7 +141,7 @@ namespace Odb::Lib::ProductModel
 		pDesignMsg->set_name(m_name);
 		pDesignMsg->set_productmodel(m_productModel);
 
-		pDesignMsg->set_allocated_filemodel(m_pFileModel->to_protobuf().release());
+		pDesignMsg->mutable_filemodel()->CopyFrom(*m_pFileModel->to_protobuf());
 
 		for (const auto& pNet : m_nets)
 		{

@@ -38,15 +38,17 @@ namespace Odb::Lib::ProductModel
 	{
 		auto pPinConnectionMsg = std::make_unique<Odb::Lib::Protobuf::ProductModel::PinConnection>();
 		pPinConnectionMsg->set_name(m_name);
-		pPinConnectionMsg->set_allocated_component(m_pComponent->to_protobuf().release());
-		pPinConnectionMsg->set_allocated_pin(m_pPin->to_protobuf().release());
+		pPinConnectionMsg->mutable_component()->CopyFrom(*m_pComponent->to_protobuf());
+		pPinConnectionMsg->mutable_pin()->CopyFrom(*m_pPin->to_protobuf());
 		return pPinConnectionMsg;
 	}
 
 	void PinConnection::from_protobuf(const Odb::Lib::Protobuf::ProductModel::PinConnection& message)
 	{
 		m_name = message.name();
+		m_pComponent = std::shared_ptr<Component>(Component::MakeEmpty());
 		m_pComponent->from_protobuf(message.component());
+		m_pPin = std::make_shared<Pin>("", -1);
 		m_pPin->from_protobuf(message.pin());
 	}
 

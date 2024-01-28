@@ -31,8 +31,7 @@ namespace Odb::Lib::ProductModel
 		pPackageMsg->set_index(m_index);
 		for (const auto& pPin : m_pins)
 		{
-			auto pPinMsg = pPin->to_protobuf();
-			pPackageMsg->add_pins()->CopyFrom(*pPinMsg);
+			pPackageMsg->add_pins()->CopyFrom(*pPin->to_protobuf());
 		}
 		for (const auto& kvPin : m_pinsByName)
 		{
