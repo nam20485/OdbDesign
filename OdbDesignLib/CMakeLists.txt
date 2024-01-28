@@ -80,7 +80,7 @@ target_link_libraries(OdbDesign PRIVATE Crow::Crow)
 find_package(Protobuf CONFIG REQUIRED)
 #protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS protoc/edadatafile.proto)
 #target_link_libraries(OdbDesign PUBLIC protobuf::libprotoc protobuf::libprotobuf protobuf::libprotobuf-lite)
-target_link_libraries(OdbDesign PRIVATE protobuf::libprotobuf)
+target_link_libraries(OdbDesign PUBLIC protobuf::libprotobuf)
 # mark the generated Protofbuf C++ files as generated
 #set_source_files_properties(${PROTO_SRC} ${PROTO_HDRS} PROPERTIES GENERATED TRUE)
 # add the generated Protobuf C++ files to the target
