@@ -33,6 +33,7 @@ namespace Odb::Lib::ProductModel
 
 		const Component::Vector& GetComponents() const;
 		const Component::StringMap& GetComponentsByName() const;
+		std::shared_ptr<Component> GetComponent(const std::string& refDes) const;
 
 		const Part::Vector& GetParts() const;
 		const Part::StringMap& GetPartsByName() const;

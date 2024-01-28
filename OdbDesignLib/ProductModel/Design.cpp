@@ -1,5 +1,3 @@
-#include "Design.h"
-#include "Design.h"
 #include <vector>
 #include "Design.h"
 #include "Package.h"
@@ -62,6 +60,17 @@ namespace Odb::Lib::ProductModel
 	const Component::StringMap& Design::GetComponentsByName() const
 	{
 		return m_componentsByName;
+	}
+
+	std::shared_ptr<Component> Design::GetComponent(const std::string& refDes) const
+	{
+		auto findIt = m_componentsByName.find(refDes);
+		if (findIt != m_componentsByName.end())
+		{
+			return findIt->second;
+		}
+
+		return nullptr;
 	}
 
 	const Part::Vector& Design::GetParts() const
