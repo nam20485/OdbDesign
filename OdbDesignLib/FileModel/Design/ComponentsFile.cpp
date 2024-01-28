@@ -647,7 +647,8 @@ namespace Odb::Lib::FileModel::Design
 
 						if (!(lineStream >> description))
 						{
-							throw_parse_error(m_path, line, token, lineNumber);
+							// allow blank/no description value
+							//throw_parse_error(m_path, line, token, lineNumber);
 						}
 
 						pCurrentBomDescriptionRecord->descriptions.push_back(description);
