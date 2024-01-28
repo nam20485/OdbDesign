@@ -72,4 +72,9 @@ namespace Odb::Lib::ProductModel
 		m_pPart->from_protobuf(message.part());
 	}
 
+	Component* Component::MakeEmpty()
+	{
+		return new Component();
+	}
+
 } // namespace Odb::Lib::ProductModel

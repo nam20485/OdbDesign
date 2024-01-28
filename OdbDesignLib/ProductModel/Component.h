@@ -32,10 +32,14 @@ namespace Odb::Lib::ProductModel
 		std::unique_ptr<Odb::Lib::Protobuf::ProductModel::Component> to_protobuf() const override;
 		void from_protobuf(const Odb::Lib::Protobuf::ProductModel::Component& message) override;
 
+		static Component* MakeEmpty();
+
 		typedef std::vector<std::shared_ptr<Component>> Vector;
 		typedef std::map<std::string, std::shared_ptr<Component>> StringMap;
 
 	private:
+		Component() = default;
+
 		std::string m_refDes;
 		std::string m_partName;		
 		std::shared_ptr<Package> m_pPackage;
