@@ -41,7 +41,7 @@
 #include "attrlistfile.pb.h"
 // @@protoc_insertion_point(includes)
 #include <google/protobuf/port_def.inc>
-#define PROTOBUF_INTERNAL_EXPORT_filearchive_2eproto
+#define PROTOBUF_INTERNAL_EXPORT_filearchive_2eproto ODBDESIGN_EXPORT
 PROTOBUF_NAMESPACE_OPEN
 namespace internal {
 class AnyMetadata;
@@ -49,29 +49,29 @@ class AnyMetadata;
 PROTOBUF_NAMESPACE_CLOSE
 
 // Internal implementation detail -- do not use these members.
-struct TableStruct_filearchive_2eproto {
+struct ODBDESIGN_EXPORT TableStruct_filearchive_2eproto {
   static const uint32_t offsets[];
 };
-extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_filearchive_2eproto;
+ODBDESIGN_EXPORT extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_filearchive_2eproto;
 namespace Odb {
 namespace Lib {
 namespace Protobuf {
 class FileArchive;
 struct FileArchiveDefaultTypeInternal;
-extern FileArchiveDefaultTypeInternal _FileArchive_default_instance_;
+ODBDESIGN_EXPORT extern FileArchiveDefaultTypeInternal _FileArchive_default_instance_;
 class FileArchive_StepsByNameEntry_DoNotUse;
 struct FileArchive_StepsByNameEntry_DoNotUseDefaultTypeInternal;
-extern FileArchive_StepsByNameEntry_DoNotUseDefaultTypeInternal _FileArchive_StepsByNameEntry_DoNotUse_default_instance_;
+ODBDESIGN_EXPORT extern FileArchive_StepsByNameEntry_DoNotUseDefaultTypeInternal _FileArchive_StepsByNameEntry_DoNotUse_default_instance_;
 class FileArchive_SymbolsDirectoriesByNameEntry_DoNotUse;
 struct FileArchive_SymbolsDirectoriesByNameEntry_DoNotUseDefaultTypeInternal;
-extern FileArchive_SymbolsDirectoriesByNameEntry_DoNotUseDefaultTypeInternal _FileArchive_SymbolsDirectoriesByNameEntry_DoNotUse_default_instance_;
+ODBDESIGN_EXPORT extern FileArchive_SymbolsDirectoriesByNameEntry_DoNotUseDefaultTypeInternal _FileArchive_SymbolsDirectoriesByNameEntry_DoNotUse_default_instance_;
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
 PROTOBUF_NAMESPACE_OPEN
-template<> ::Odb::Lib::Protobuf::FileArchive* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::FileArchive>(Arena*);
-template<> ::Odb::Lib::Protobuf::FileArchive_StepsByNameEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::FileArchive_StepsByNameEntry_DoNotUse>(Arena*);
-template<> ::Odb::Lib::Protobuf::FileArchive_SymbolsDirectoriesByNameEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::FileArchive_SymbolsDirectoriesByNameEntry_DoNotUse>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::FileArchive* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::FileArchive>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::FileArchive_StepsByNameEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::FileArchive_StepsByNameEntry_DoNotUse>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::FileArchive_SymbolsDirectoriesByNameEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::FileArchive_SymbolsDirectoriesByNameEntry_DoNotUse>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace Odb {
 namespace Lib {
@@ -131,7 +131,7 @@ public:
 
 // -------------------------------------------------------------------
 
-class FileArchive final :
+class ODBDESIGN_EXPORT FileArchive final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.FileArchive) */ {
  public:
   inline FileArchive() : FileArchive(nullptr) {}

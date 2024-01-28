@@ -33,7 +33,7 @@
 #include <google/protobuf/unknown_field_set.h>
 // @@protoc_insertion_point(includes)
 #include <google/protobuf/port_def.inc>
-#define PROTOBUF_INTERNAL_EXPORT_common_2eproto
+#define PROTOBUF_INTERNAL_EXPORT_common_2eproto ODBDESIGN_EXPORT
 PROTOBUF_NAMESPACE_OPEN
 namespace internal {
 class AnyMetadata;
@@ -41,29 +41,29 @@ class AnyMetadata;
 PROTOBUF_NAMESPACE_CLOSE
 
 // Internal implementation detail -- do not use these members.
-struct TableStruct_common_2eproto {
+struct ODBDESIGN_EXPORT TableStruct_common_2eproto {
   static const uint32_t offsets[];
 };
-extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_common_2eproto;
+ODBDESIGN_EXPORT extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_common_2eproto;
 namespace Odb {
 namespace Lib {
 namespace Protobuf {
 class ContourPolygon;
 struct ContourPolygonDefaultTypeInternal;
-extern ContourPolygonDefaultTypeInternal _ContourPolygon_default_instance_;
+ODBDESIGN_EXPORT extern ContourPolygonDefaultTypeInternal _ContourPolygon_default_instance_;
 class ContourPolygon_PolygonPart;
 struct ContourPolygon_PolygonPartDefaultTypeInternal;
-extern ContourPolygon_PolygonPartDefaultTypeInternal _ContourPolygon_PolygonPart_default_instance_;
+ODBDESIGN_EXPORT extern ContourPolygon_PolygonPartDefaultTypeInternal _ContourPolygon_PolygonPart_default_instance_;
 class PropertyRecord;
 struct PropertyRecordDefaultTypeInternal;
-extern PropertyRecordDefaultTypeInternal _PropertyRecord_default_instance_;
+ODBDESIGN_EXPORT extern PropertyRecordDefaultTypeInternal _PropertyRecord_default_instance_;
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
 PROTOBUF_NAMESPACE_OPEN
-template<> ::Odb::Lib::Protobuf::ContourPolygon* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::ContourPolygon>(Arena*);
-template<> ::Odb::Lib::Protobuf::ContourPolygon_PolygonPart* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::ContourPolygon_PolygonPart>(Arena*);
-template<> ::Odb::Lib::Protobuf::PropertyRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::PropertyRecord>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::ContourPolygon* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::ContourPolygon>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::ContourPolygon_PolygonPart* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::ContourPolygon_PolygonPart>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::PropertyRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::PropertyRecord>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace Odb {
 namespace Lib {
@@ -75,12 +75,12 @@ enum ContourPolygon_PolygonPart_Type : int {
   ContourPolygon_PolygonPart_Type_ContourPolygon_PolygonPart_Type_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
   ContourPolygon_PolygonPart_Type_ContourPolygon_PolygonPart_Type_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
-bool ContourPolygon_PolygonPart_Type_IsValid(int value);
+ODBDESIGN_EXPORT bool ContourPolygon_PolygonPart_Type_IsValid(int value);
 constexpr ContourPolygon_PolygonPart_Type ContourPolygon_PolygonPart_Type_Type_MIN = ContourPolygon_PolygonPart_Type_Segment;
 constexpr ContourPolygon_PolygonPart_Type ContourPolygon_PolygonPart_Type_Type_MAX = ContourPolygon_PolygonPart_Type_Arc;
 constexpr int ContourPolygon_PolygonPart_Type_Type_ARRAYSIZE = ContourPolygon_PolygonPart_Type_Type_MAX + 1;
 
-const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* ContourPolygon_PolygonPart_Type_descriptor();
+ODBDESIGN_EXPORT const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* ContourPolygon_PolygonPart_Type_descriptor();
 template<typename T>
 inline const std::string& ContourPolygon_PolygonPart_Type_Name(T enum_t_value) {
   static_assert(::std::is_same<T, ContourPolygon_PolygonPart_Type>::value ||
@@ -100,12 +100,12 @@ enum ContourPolygon_Type : int {
   ContourPolygon_Type_ContourPolygon_Type_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
   ContourPolygon_Type_ContourPolygon_Type_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
-bool ContourPolygon_Type_IsValid(int value);
+ODBDESIGN_EXPORT bool ContourPolygon_Type_IsValid(int value);
 constexpr ContourPolygon_Type ContourPolygon_Type_Type_MIN = ContourPolygon_Type_Island;
 constexpr ContourPolygon_Type ContourPolygon_Type_Type_MAX = ContourPolygon_Type_Hole;
 constexpr int ContourPolygon_Type_Type_ARRAYSIZE = ContourPolygon_Type_Type_MAX + 1;
 
-const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* ContourPolygon_Type_descriptor();
+ODBDESIGN_EXPORT const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* ContourPolygon_Type_descriptor();
 template<typename T>
 inline const std::string& ContourPolygon_Type_Name(T enum_t_value) {
   static_assert(::std::is_same<T, ContourPolygon_Type>::value ||
@@ -121,7 +121,7 @@ inline bool ContourPolygon_Type_Parse(
 }
 // ===================================================================
 
-class PropertyRecord final :
+class ODBDESIGN_EXPORT PropertyRecord final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.PropertyRecord) */ {
  public:
   inline PropertyRecord() : PropertyRecord(nullptr) {}
@@ -323,7 +323,7 @@ class PropertyRecord final :
 };
 // -------------------------------------------------------------------
 
-class ContourPolygon_PolygonPart final :
+class ODBDESIGN_EXPORT ContourPolygon_PolygonPart final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.ContourPolygon.PolygonPart) */ {
  public:
   inline ContourPolygon_PolygonPart() : ContourPolygon_PolygonPart(nullptr) {}
@@ -581,7 +581,7 @@ class ContourPolygon_PolygonPart final :
 };
 // -------------------------------------------------------------------
 
-class ContourPolygon final :
+class ODBDESIGN_EXPORT ContourPolygon final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.ContourPolygon) */ {
  public:
   inline ContourPolygon() : ContourPolygon(nullptr) {}
