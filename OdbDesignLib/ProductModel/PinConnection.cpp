@@ -40,7 +40,7 @@ namespace Odb::Lib::ProductModel
 
 	std::unique_ptr<Odb::Lib::Protobuf::ProductModel::PinConnection> PinConnection::to_protobuf() const
 	{
-		auto pPinConnectionMsg = std::unique_ptr<Odb::Lib::Protobuf::ProductModel::PinConnection>();
+		auto pPinConnectionMsg = std::make_unique<Odb::Lib::Protobuf::ProductModel::PinConnection>();
 		pPinConnectionMsg->set_name(m_name);
 		pPinConnectionMsg->set_allocated_component(m_pComponent->to_protobuf().release());
 		pPinConnectionMsg->set_allocated_pin(m_pPin->to_protobuf().release());

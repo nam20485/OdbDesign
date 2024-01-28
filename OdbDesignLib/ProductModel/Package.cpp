@@ -30,7 +30,7 @@ namespace Odb::Lib::ProductModel
 
 	std::unique_ptr<Odb::Lib::Protobuf::ProductModel::Package> Package::to_protobuf() const
 	{
-		auto pPackageMsg = std::unique_ptr<Odb::Lib::Protobuf::ProductModel::Package>();
+		auto pPackageMsg = std::make_unique<Odb::Lib::Protobuf::ProductModel::Package>();
 		pPackageMsg->set_name(m_name);
 		pPackageMsg->set_index(m_index);
 		for (const auto& pPin : m_pins)

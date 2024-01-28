@@ -16,7 +16,7 @@ namespace Odb::Lib::ProductModel
 
 	std::unique_ptr<Odb::Lib::Protobuf::ProductModel::Part> Odb::Lib::ProductModel::Part::to_protobuf() const
 	{
-		auto pPartMsg = std::unique_ptr<Odb::Lib::Protobuf::ProductModel::Part>();
+		auto pPartMsg = std::make_unique<Odb::Lib::Protobuf::ProductModel::Part>();
 		pPartMsg->set_name(m_name);
 		return pPartMsg;
 	}

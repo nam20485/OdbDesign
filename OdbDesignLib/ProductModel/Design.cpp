@@ -137,7 +137,7 @@ namespace Odb::Lib::ProductModel
 
 	std::unique_ptr<Odb::Lib::Protobuf::ProductModel::Design> Design::to_protobuf() const
 	{
-		auto pDesignMsg = std::unique_ptr<Odb::Lib::Protobuf::ProductModel::Design>();
+		auto pDesignMsg = std::make_unique<Odb::Lib::Protobuf::ProductModel::Design>();
 		pDesignMsg->set_name(m_name);
 		pDesignMsg->set_productmodel(m_productModel);
 

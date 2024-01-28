@@ -39,7 +39,7 @@ namespace Odb::Lib::ProductModel
 
 	std::unique_ptr<Odb::Lib::Protobuf::ProductModel::Net> Odb::Lib::ProductModel::Net::to_protobuf() const
 	{
-		auto pNetMsg = std::unique_ptr<Odb::Lib::Protobuf::ProductModel::Net>();
+		auto pNetMsg = std::make_unique<Odb::Lib::Protobuf::ProductModel::Net>();
 		pNetMsg->set_name(m_name);
 		pNetMsg->set_index(m_index);
 		for (auto& pPinConnection : m_pinConnections)

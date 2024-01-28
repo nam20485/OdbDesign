@@ -1,7 +1,4 @@
 #include "Component.h"
-#include "Component.h"
-#include "Component.h"
-#include "Component.h"
 
 
 namespace Odb::Lib::ProductModel
@@ -52,7 +49,7 @@ namespace Odb::Lib::ProductModel
 
 	std::unique_ptr<Odb::Lib::Protobuf::ProductModel::Component> Component::to_protobuf() const
 	{
-		auto pComponentMsg = std::unique_ptr<Odb::Lib::Protobuf::ProductModel::Component>();
+		auto pComponentMsg = std::make_unique<Odb::Lib::Protobuf::ProductModel::Component>();
 		pComponentMsg->set_refdes(m_refDes);
 		pComponentMsg->set_partname(m_partName);
 		pComponentMsg->set_index(m_index);
