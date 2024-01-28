@@ -20,7 +20,8 @@ namespace Odb::Lib::ProductModel
 	}
 
 	std::string PinConnection::MakeName(std::shared_ptr<Odb::Lib::ProductModel::Component>& pComponent, std::shared_ptr<Odb::Lib::ProductModel::Pin>& pPin)
-	{
+	{		
+		if (pComponent == nullptr || pPin == nullptr) return "Pin::MakeName() FAILED";
 		return pComponent->GetRefDes() + "-" + pPin->GetName();
 	}
 
