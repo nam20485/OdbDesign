@@ -8,7 +8,7 @@
 
 namespace Odb::Test::Fixtures
 {
-	class FileArchiveLoadFixture : public ::testing::Test
+	class FileArchiveLoadFixture : public testing::Test
 	{
 	public:		
 		FileArchiveLoadFixture();
