@@ -15,8 +15,7 @@ using namespace Odb::Lib::ProductModel;
 namespace Odb::Test
 {
 	TEST_F(FileArchiveLoadFixture, Component_ProtoBuf_RoundTrip_sample_design_Succeeds)
-	{
-		//ASSERT_TRUE(exists(getDesignPath("sample_design.tgz")));
+	{		
 		auto pDesign = m_pDesignCache->GetDesign("sample_design");
 		ASSERT_THAT(pDesign, NotNull());
 
@@ -38,7 +37,6 @@ namespace Odb::Test
 	
 	TEST_F(FileArchiveLoadFixture, Design_ProtoBuf_RoundTrip_sample_design_Succeeds)
 	{
-		//ASSERT_TRUE(exists(getDesignPath("sample_design.tgz")));
 		auto pDesign = m_pDesignCache->GetDesign("sample_design");
 		ASSERT_THAT(pDesign, NotNull());
 
@@ -56,7 +54,6 @@ namespace Odb::Test
 
 	TEST_F(FileArchiveLoadFixture, FileArchive_ProtoBuf_RoundTrip_sample_design_Succeeds)
 	{
-		//ASSERT_TRUE(exists(getDesignPath("sample_design.tgz")));
 		auto pFileArchive = m_pDesignCache->GetFileArchive("sample_design");
 		ASSERT_THAT(pFileArchive, NotNull());
 
@@ -74,7 +71,6 @@ namespace Odb::Test
 
 	TEST_F(FileArchiveLoadFixture, Component_ProtoBuf_RoundTrip_designodb_rigidflex_Succeeds)
 	{
-		//ASSERT_TRUE(exists(getDesignPath("sample_design.tgz")));
 		auto pDesign = m_pDesignCache->GetDesign("designodb_rigidflex");
 		ASSERT_THAT(pDesign, NotNull());
 
@@ -96,7 +92,6 @@ namespace Odb::Test
 
 	TEST_F(FileArchiveLoadFixture, Design_ProtoBuf_RoundTrip_designodb_rigidflex_Succeeds)
 	{
-		//ASSERT_TRUE(exists(getDesignPath("sample_design.tgz")));
 		auto pDesign = m_pDesignCache->GetDesign("designodb_rigidflex");
 		ASSERT_THAT(pDesign, NotNull());
 
@@ -114,7 +109,6 @@ namespace Odb::Test
 
 	TEST_F(FileArchiveLoadFixture, FileArchive_ProtoBuf_RoundTrip_designodb_rigidflex_Succeeds)
 	{
-		//ASSERT_TRUE(exists(getDesignPath("sample_design.tgz")));
 		auto pFileArchive = m_pDesignCache->GetFileArchive("designodb_rigidflex");
 		ASSERT_THAT(pFileArchive, NotNull());
 
