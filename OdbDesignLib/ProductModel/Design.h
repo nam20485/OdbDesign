@@ -27,6 +27,7 @@ namespace Odb::Lib::ProductModel
 		
 		const Net::Vector& GetNets() const;
 		const Net::StringMap GetNetsByName() const;
+		std::shared_ptr<Net> GetNet(const std::string& name) const;
 
 		const Package::Vector& GetPackages() const;
 		const Package::StringMap& GetPackagesByName() const;
@@ -37,8 +38,7 @@ namespace Odb::Lib::ProductModel
 
 		const Part::Vector& GetParts() const;
 		const Part::StringMap& GetPartsByName() const;
-
-		std::shared_ptr<Net> GetNet(const std::string& name) const;
+		
 		std::shared_ptr<Net> GetNoneNet() const;
 
 		bool Build(std::string path);
