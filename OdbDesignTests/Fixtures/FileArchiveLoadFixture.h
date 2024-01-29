@@ -22,7 +22,7 @@ namespace Odb::Test::Fixtures
 		void SetUp() override;
 		void TearDown() override;
 
-		std::string getTestDataDir();				
+		static std::string getTestDataDir();				
 		std::filesystem::path getDesignPath(const std::string& filename) const;
 
 		constexpr const static inline char ODB_TEST_DATA_DIR_ENV_NAME[] = "ODB_TEST_DATA_DIR";

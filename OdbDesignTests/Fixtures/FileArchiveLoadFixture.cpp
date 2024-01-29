@@ -29,7 +29,7 @@ namespace Odb::Test::Fixtures
 		ASSERT_NE(m_pDesignCache, nullptr);
 	}
 
-	std::string FileArchiveLoadFixture::getTestDataDir()
+	/*static*/ std::string FileArchiveLoadFixture::getTestDataDir()
 	{
 		auto szTestDataDir = std::getenv(ODB_TEST_DATA_DIR_ENV_NAME);
 		if (szTestDataDir == nullptr) return "";
