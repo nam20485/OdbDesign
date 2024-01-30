@@ -3,7 +3,8 @@ name: CMake Build Multi-Platform
 
 on:
   push:
-    branches: [ "development", "main", "release", "nam20485" ]
+    #branches: [ "development", "main", "release", "nam20485" ]
+    branches: [ "release" ]
   pull_request:
     branches: [ "development", "main", "release", "nam20485" ]  
 
