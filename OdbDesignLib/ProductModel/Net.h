@@ -8,11 +8,13 @@
 #include "PinConnection.h"
 #include "Component.h"
 #include "Pin.h"
+#include "../ProtoBuf/net.pb.h"
+#include "../IProtoBuffable.h"	
 
 
 namespace Odb::Lib::ProductModel
 {
-	class ODBDESIGN_EXPORT Net
+	class ODBDESIGN_EXPORT Net : public IProtoBuffable<Odb::Lib::Protobuf::ProductModel::Net>
 	{
 	public:
 		Net(std::string name, unsigned int index);
@@ -22,6 +24,10 @@ namespace Odb::Lib::ProductModel
 		PinConnection::Vector& GetPinConnections();
 		unsigned int GetIndex() const;
 		bool AddPinConnection(std::shared_ptr<Component> pComponent, std::shared_ptr<Pin> pPin);
+
+		// Inherited via IProtoBuffable
+		std::unique_ptr<Odb::Lib::Protobuf::ProductModel::Net> to_protobuf() const override;
+		void from_protobuf(const Odb::Lib::Protobuf::ProductModel::Net& message) override;
 
 		typedef std::vector<std::shared_ptr<Net>> Vector;
 		typedef std::map<std::string, std::shared_ptr<Net>> StringMap;

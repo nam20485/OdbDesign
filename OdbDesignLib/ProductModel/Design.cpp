@@ -62,6 +62,17 @@ namespace Odb::Lib::ProductModel
 		return m_componentsByName;
 	}
 
+	std::shared_ptr<Component> Design::GetComponent(const std::string& refDes) const
+	{
+		auto findIt = m_componentsByName.find(refDes);
+		if (findIt != m_componentsByName.end())
+		{
+			return findIt->second;
+		}
+
+		return nullptr;
+	}
+
 	const Part::Vector& Design::GetParts() const
 	{
 		return m_parts;
@@ -122,6 +133,122 @@ namespace Odb::Lib::ProductModel
 	std::shared_ptr<FileModel::Design::FileArchive> Design::GetFileModel() const
 	{
 		return m_pFileModel;
+	}
+
+	std::unique_ptr<Odb::Lib::Protobuf::ProductModel::Design> Design::to_protobuf() const
+	{
+		auto pDesignMsg = std::make_unique<Odb::Lib::Protobuf::ProductModel::Design>();
+		pDesignMsg->set_name(m_name);
+		pDesignMsg->set_productmodel(m_productModel);
+
+		pDesignMsg->mutable_filemodel()->CopyFrom(*m_pFileModel->to_protobuf());
+
+		for (const auto& pNet : m_nets)
+		{
+			pDesignMsg->add_nets()->CopyFrom(*pNet->to_protobuf());
+		}
+
+		for (const auto& kvNet : m_netsByName)
+		{
+			(*pDesignMsg->mutable_netsbyname())[kvNet.first] = *kvNet.second->to_protobuf();
+		}
+
+		for (const auto& pPackage : m_packages)
+		{
+			pDesignMsg->add_packages()->CopyFrom(*pPackage->to_protobuf());
+		}
+
+		for (const auto& kvPackage : m_packagesByName)
+		{
+			(*pDesignMsg->mutable_packagesbyname())[kvPackage.first] = *kvPackage.second->to_protobuf();
+		}
+
+		for (const auto& pComponent : m_components)
+		{
+			pDesignMsg->add_components()->CopyFrom(*pComponent->to_protobuf());
+		}
+
+		for (const auto& kvComponent : m_componentsByName)
+		{
+			(*pDesignMsg->mutable_componentsbyname())[kvComponent.first] = *kvComponent.second->to_protobuf();
+		}
+
+		for (const auto& pPart : m_parts)
+		{
+			pDesignMsg->add_parts()->CopyFrom(*pPart->to_protobuf());
+		}
+
+		for (const auto& kvPart : m_partsByName)
+		{
+			(*pDesignMsg->mutable_partsbyname())[kvPart.first] = *kvPart.second->to_protobuf();
+		}		
+
+		return pDesignMsg;
+	}
+
+	void Design::from_protobuf(const Odb::Lib::Protobuf::ProductModel::Design& message)
+	{
+		m_name = message.name();
+		m_productModel = message.productmodel();
+
+		m_pFileModel = std::make_shared<FileModel::Design::FileArchive>("");
+		m_pFileModel->from_protobuf(message.filemodel());
+
+		for (const auto& pNetMsg : message.nets())
+		{
+			auto pNet = std::make_shared<Net>("", -1);
+			pNet->from_protobuf(pNetMsg);
+			m_nets.push_back(pNet);
+		}
+
+		for (const auto& kvNetMsg : message.netsbyname())
+		{
+			auto pNet = std::make_shared<Net>("", -1);
+			pNet->from_protobuf(kvNetMsg.second);
+			m_netsByName[kvNetMsg.first] = pNet;
+		}
+
+		for (const auto& pPackageMsg : message.packages())
+		{
+			auto pPackage = std::make_shared<Package>("", -1);
+			pPackage->from_protobuf(pPackageMsg);
+			m_packages.push_back(pPackage);
+		}
+
+		for (const auto& kvPackageMsg : message.packagesbyname())
+		{
+			auto pPackage = std::make_shared<Package>("", -1);
+			pPackage->from_protobuf(kvPackageMsg.second);
+			m_packagesByName[kvPackageMsg.first] = pPackage;
+		}
+
+		for (const auto& pComponentMsg : message.components())
+		{
+			auto pComponent = std::make_shared<Component>("", "", nullptr, -1, BoardSide::BsNone, nullptr);
+			pComponent->from_protobuf(pComponentMsg);
+			m_components.push_back(pComponent);
+		}
+
+		for (const auto& kvComponentMsg : message.componentsbyname())
+		{
+			auto pComponent = std::make_shared<Component>("", "", nullptr, -1, BoardSide::BsNone, nullptr);
+			pComponent->from_protobuf(kvComponentMsg.second);
+			m_componentsByName[kvComponentMsg.first] = pComponent;
+		}
+
+		for (const auto& pPartMsg : message.parts())
+		{
+			auto pPart = std::make_shared<Part>("");
+			pPart->from_protobuf(pPartMsg);
+			m_parts.push_back(pPart);
+		}
+
+		for (const auto& kvPartMsg : message.partsbyname())
+		{
+			auto pPart = std::make_shared<Part>("");
+			pPart->from_protobuf(kvPartMsg.second);
+			m_partsByName[kvPartMsg.first] = pPart;
+		}
 	}
 
 	bool Design::BuildAllComponents()

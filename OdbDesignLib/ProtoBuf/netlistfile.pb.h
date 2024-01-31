@@ -36,7 +36,7 @@
 #include <google/protobuf/unknown_field_set.h>
 // @@protoc_insertion_point(includes)
 #include <google/protobuf/port_def.inc>
-#define PROTOBUF_INTERNAL_EXPORT_netlistfile_2eproto
+#define PROTOBUF_INTERNAL_EXPORT_netlistfile_2eproto ODBDESIGN_EXPORT
 PROTOBUF_NAMESPACE_OPEN
 namespace internal {
 class AnyMetadata;
@@ -44,33 +44,33 @@ class AnyMetadata;
 PROTOBUF_NAMESPACE_CLOSE
 
 // Internal implementation detail -- do not use these members.
-struct TableStruct_netlistfile_2eproto {
+struct ODBDESIGN_EXPORT TableStruct_netlistfile_2eproto {
   static const uint32_t offsets[];
 };
-extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_netlistfile_2eproto;
+ODBDESIGN_EXPORT extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_netlistfile_2eproto;
 namespace Odb {
 namespace Lib {
 namespace Protobuf {
 class NetlistFile;
 struct NetlistFileDefaultTypeInternal;
-extern NetlistFileDefaultTypeInternal _NetlistFile_default_instance_;
+ODBDESIGN_EXPORT extern NetlistFileDefaultTypeInternal _NetlistFile_default_instance_;
 class NetlistFile_NetPointRecord;
 struct NetlistFile_NetPointRecordDefaultTypeInternal;
-extern NetlistFile_NetPointRecordDefaultTypeInternal _NetlistFile_NetPointRecord_default_instance_;
+ODBDESIGN_EXPORT extern NetlistFile_NetPointRecordDefaultTypeInternal _NetlistFile_NetPointRecord_default_instance_;
 class NetlistFile_NetRecord;
 struct NetlistFile_NetRecordDefaultTypeInternal;
-extern NetlistFile_NetRecordDefaultTypeInternal _NetlistFile_NetRecord_default_instance_;
+ODBDESIGN_EXPORT extern NetlistFile_NetRecordDefaultTypeInternal _NetlistFile_NetRecord_default_instance_;
 class NetlistFile_NetRecordsByNameEntry_DoNotUse;
 struct NetlistFile_NetRecordsByNameEntry_DoNotUseDefaultTypeInternal;
-extern NetlistFile_NetRecordsByNameEntry_DoNotUseDefaultTypeInternal _NetlistFile_NetRecordsByNameEntry_DoNotUse_default_instance_;
+ODBDESIGN_EXPORT extern NetlistFile_NetRecordsByNameEntry_DoNotUseDefaultTypeInternal _NetlistFile_NetRecordsByNameEntry_DoNotUse_default_instance_;
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
 PROTOBUF_NAMESPACE_OPEN
-template<> ::Odb::Lib::Protobuf::NetlistFile* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::NetlistFile>(Arena*);
-template<> ::Odb::Lib::Protobuf::NetlistFile_NetPointRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::NetlistFile_NetPointRecord>(Arena*);
-template<> ::Odb::Lib::Protobuf::NetlistFile_NetRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::NetlistFile_NetRecord>(Arena*);
-template<> ::Odb::Lib::Protobuf::NetlistFile_NetRecordsByNameEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::NetlistFile_NetRecordsByNameEntry_DoNotUse>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::NetlistFile* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::NetlistFile>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::NetlistFile_NetPointRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::NetlistFile_NetPointRecord>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::NetlistFile_NetRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::NetlistFile_NetRecord>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::NetlistFile_NetRecordsByNameEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::NetlistFile_NetRecordsByNameEntry_DoNotUse>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace Odb {
 namespace Lib {
@@ -84,12 +84,12 @@ enum NetlistFile_NetPointRecord_AccessSide : int {
   NetlistFile_NetPointRecord_AccessSide_NetlistFile_NetPointRecord_AccessSide_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
   NetlistFile_NetPointRecord_AccessSide_NetlistFile_NetPointRecord_AccessSide_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
-bool NetlistFile_NetPointRecord_AccessSide_IsValid(int value);
+ODBDESIGN_EXPORT bool NetlistFile_NetPointRecord_AccessSide_IsValid(int value);
 constexpr NetlistFile_NetPointRecord_AccessSide NetlistFile_NetPointRecord_AccessSide_AccessSide_MIN = NetlistFile_NetPointRecord_AccessSide_Top;
 constexpr NetlistFile_NetPointRecord_AccessSide NetlistFile_NetPointRecord_AccessSide_AccessSide_MAX = NetlistFile_NetPointRecord_AccessSide_Inner;
 constexpr int NetlistFile_NetPointRecord_AccessSide_AccessSide_ARRAYSIZE = NetlistFile_NetPointRecord_AccessSide_AccessSide_MAX + 1;
 
-const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* NetlistFile_NetPointRecord_AccessSide_descriptor();
+ODBDESIGN_EXPORT const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* NetlistFile_NetPointRecord_AccessSide_descriptor();
 template<typename T>
 inline const std::string& NetlistFile_NetPointRecord_AccessSide_Name(T enum_t_value) {
   static_assert(::std::is_same<T, NetlistFile_NetPointRecord_AccessSide>::value ||
@@ -110,12 +110,12 @@ enum NetlistFile_Staggered : int {
   NetlistFile_Staggered_NetlistFile_Staggered_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
   NetlistFile_Staggered_NetlistFile_Staggered_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
-bool NetlistFile_Staggered_IsValid(int value);
+ODBDESIGN_EXPORT bool NetlistFile_Staggered_IsValid(int value);
 constexpr NetlistFile_Staggered NetlistFile_Staggered_Staggered_MIN = NetlistFile_Staggered_Yes;
 constexpr NetlistFile_Staggered NetlistFile_Staggered_Staggered_MAX = NetlistFile_Staggered_Unknown;
 constexpr int NetlistFile_Staggered_Staggered_ARRAYSIZE = NetlistFile_Staggered_Staggered_MAX + 1;
 
-const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* NetlistFile_Staggered_descriptor();
+ODBDESIGN_EXPORT const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* NetlistFile_Staggered_descriptor();
 template<typename T>
 inline const std::string& NetlistFile_Staggered_Name(T enum_t_value) {
   static_assert(::std::is_same<T, NetlistFile_Staggered>::value ||
@@ -131,7 +131,7 @@ inline bool NetlistFile_Staggered_Parse(
 }
 // ===================================================================
 
-class NetlistFile_NetRecord final :
+class ODBDESIGN_EXPORT NetlistFile_NetRecord final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.NetlistFile.NetRecord) */ {
  public:
   inline NetlistFile_NetRecord() : NetlistFile_NetRecord(nullptr) {}
@@ -304,7 +304,7 @@ class NetlistFile_NetRecord final :
 };
 // -------------------------------------------------------------------
 
-class NetlistFile_NetPointRecord final :
+class ODBDESIGN_EXPORT NetlistFile_NetPointRecord final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.NetlistFile.NetPointRecord) */ {
  public:
   inline NetlistFile_NetPointRecord() : NetlistFile_NetPointRecord(nullptr) {}
@@ -772,7 +772,7 @@ public:
 
 // -------------------------------------------------------------------
 
-class NetlistFile final :
+class ODBDESIGN_EXPORT NetlistFile final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.NetlistFile) */ {
  public:
   inline NetlistFile() : NetlistFile(nullptr) {}

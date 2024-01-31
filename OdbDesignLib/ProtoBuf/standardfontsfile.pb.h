@@ -33,7 +33,7 @@
 #include "enums.pb.h"
 // @@protoc_insertion_point(includes)
 #include <google/protobuf/port_def.inc>
-#define PROTOBUF_INTERNAL_EXPORT_standardfontsfile_2eproto
+#define PROTOBUF_INTERNAL_EXPORT_standardfontsfile_2eproto ODBDESIGN_EXPORT
 PROTOBUF_NAMESPACE_OPEN
 namespace internal {
 class AnyMetadata;
@@ -41,29 +41,29 @@ class AnyMetadata;
 PROTOBUF_NAMESPACE_CLOSE
 
 // Internal implementation detail -- do not use these members.
-struct TableStruct_standardfontsfile_2eproto {
+struct ODBDESIGN_EXPORT TableStruct_standardfontsfile_2eproto {
   static const uint32_t offsets[];
 };
-extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_standardfontsfile_2eproto;
+ODBDESIGN_EXPORT extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_standardfontsfile_2eproto;
 namespace Odb {
 namespace Lib {
 namespace Protobuf {
 class StandardFontsFile;
 struct StandardFontsFileDefaultTypeInternal;
-extern StandardFontsFileDefaultTypeInternal _StandardFontsFile_default_instance_;
+ODBDESIGN_EXPORT extern StandardFontsFileDefaultTypeInternal _StandardFontsFile_default_instance_;
 class StandardFontsFile_CharacterBlock;
 struct StandardFontsFile_CharacterBlockDefaultTypeInternal;
-extern StandardFontsFile_CharacterBlockDefaultTypeInternal _StandardFontsFile_CharacterBlock_default_instance_;
+ODBDESIGN_EXPORT extern StandardFontsFile_CharacterBlockDefaultTypeInternal _StandardFontsFile_CharacterBlock_default_instance_;
 class StandardFontsFile_CharacterBlock_LineRecord;
 struct StandardFontsFile_CharacterBlock_LineRecordDefaultTypeInternal;
-extern StandardFontsFile_CharacterBlock_LineRecordDefaultTypeInternal _StandardFontsFile_CharacterBlock_LineRecord_default_instance_;
+ODBDESIGN_EXPORT extern StandardFontsFile_CharacterBlock_LineRecordDefaultTypeInternal _StandardFontsFile_CharacterBlock_LineRecord_default_instance_;
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
 PROTOBUF_NAMESPACE_OPEN
-template<> ::Odb::Lib::Protobuf::StandardFontsFile* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::StandardFontsFile>(Arena*);
-template<> ::Odb::Lib::Protobuf::StandardFontsFile_CharacterBlock* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::StandardFontsFile_CharacterBlock>(Arena*);
-template<> ::Odb::Lib::Protobuf::StandardFontsFile_CharacterBlock_LineRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::StandardFontsFile_CharacterBlock_LineRecord>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::StandardFontsFile* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::StandardFontsFile>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::StandardFontsFile_CharacterBlock* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::StandardFontsFile_CharacterBlock>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::StandardFontsFile_CharacterBlock_LineRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::StandardFontsFile_CharacterBlock_LineRecord>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace Odb {
 namespace Lib {
@@ -71,7 +71,7 @@ namespace Protobuf {
 
 // ===================================================================
 
-class StandardFontsFile_CharacterBlock_LineRecord final :
+class ODBDESIGN_EXPORT StandardFontsFile_CharacterBlock_LineRecord final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.StandardFontsFile.CharacterBlock.LineRecord) */ {
  public:
   inline StandardFontsFile_CharacterBlock_LineRecord() : StandardFontsFile_CharacterBlock_LineRecord(nullptr) {}
@@ -314,7 +314,7 @@ class StandardFontsFile_CharacterBlock_LineRecord final :
 };
 // -------------------------------------------------------------------
 
-class StandardFontsFile_CharacterBlock final :
+class ODBDESIGN_EXPORT StandardFontsFile_CharacterBlock final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.StandardFontsFile.CharacterBlock) */ {
  public:
   inline StandardFontsFile_CharacterBlock() : StandardFontsFile_CharacterBlock(nullptr) {}
@@ -494,7 +494,7 @@ class StandardFontsFile_CharacterBlock final :
 };
 // -------------------------------------------------------------------
 
-class StandardFontsFile final :
+class ODBDESIGN_EXPORT StandardFontsFile final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.StandardFontsFile) */ {
  public:
   inline StandardFontsFile() : StandardFontsFile(nullptr) {}

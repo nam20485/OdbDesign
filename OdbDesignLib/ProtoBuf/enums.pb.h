@@ -31,7 +31,7 @@
 #include <google/protobuf/generated_enum_reflection.h>
 // @@protoc_insertion_point(includes)
 #include <google/protobuf/port_def.inc>
-#define PROTOBUF_INTERNAL_EXPORT_enums_2eproto
+#define PROTOBUF_INTERNAL_EXPORT_enums_2eproto ODBDESIGN_EXPORT
 PROTOBUF_NAMESPACE_OPEN
 namespace internal {
 class AnyMetadata;
@@ -39,10 +39,10 @@ class AnyMetadata;
 PROTOBUF_NAMESPACE_CLOSE
 
 // Internal implementation detail -- do not use these members.
-struct TableStruct_enums_2eproto {
+struct ODBDESIGN_EXPORT TableStruct_enums_2eproto {
   static const uint32_t offsets[];
 };
-extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_enums_2eproto;
+ODBDESIGN_EXPORT extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_enums_2eproto;
 PROTOBUF_NAMESPACE_OPEN
 PROTOBUF_NAMESPACE_CLOSE
 namespace Odb {
@@ -56,12 +56,12 @@ enum BoardSide : int {
   BoardSide_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
   BoardSide_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
-bool BoardSide_IsValid(int value);
+ODBDESIGN_EXPORT bool BoardSide_IsValid(int value);
 constexpr BoardSide BoardSide_MIN = BsNone;
 constexpr BoardSide BoardSide_MAX = Bottom;
 constexpr int BoardSide_ARRAYSIZE = BoardSide_MAX + 1;
 
-const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* BoardSide_descriptor();
+ODBDESIGN_EXPORT const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* BoardSide_descriptor();
 template<typename T>
 inline const std::string& BoardSide_Name(T enum_t_value) {
   static_assert(::std::is_same<T, BoardSide>::value ||
@@ -81,12 +81,12 @@ enum LineShape : int {
   LineShape_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
   LineShape_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
-bool LineShape_IsValid(int value);
+ODBDESIGN_EXPORT bool LineShape_IsValid(int value);
 constexpr LineShape LineShape_MIN = Square;
 constexpr LineShape LineShape_MAX = Round;
 constexpr int LineShape_ARRAYSIZE = LineShape_MAX + 1;
 
-const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* LineShape_descriptor();
+ODBDESIGN_EXPORT const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* LineShape_descriptor();
 template<typename T>
 inline const std::string& LineShape_Name(T enum_t_value) {
   static_assert(::std::is_same<T, LineShape>::value ||
@@ -106,12 +106,12 @@ enum Polarity : int {
   Polarity_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
   Polarity_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
-bool Polarity_IsValid(int value);
+ODBDESIGN_EXPORT bool Polarity_IsValid(int value);
 constexpr Polarity Polarity_MIN = Positive;
 constexpr Polarity Polarity_MAX = Negative;
 constexpr int Polarity_ARRAYSIZE = Polarity_MAX + 1;
 
-const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* Polarity_descriptor();
+ODBDESIGN_EXPORT const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* Polarity_descriptor();
 template<typename T>
 inline const std::string& Polarity_Name(T enum_t_value) {
   static_assert(::std::is_same<T, Polarity>::value ||
@@ -132,12 +132,12 @@ enum UnitType : int {
   UnitType_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
   UnitType_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
-bool UnitType_IsValid(int value);
+ODBDESIGN_EXPORT bool UnitType_IsValid(int value);
 constexpr UnitType UnitType_MIN = None;
 constexpr UnitType UnitType_MAX = Imperial;
 constexpr int UnitType_ARRAYSIZE = UnitType_MAX + 1;
 
-const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* UnitType_descriptor();
+ODBDESIGN_EXPORT const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* UnitType_descriptor();
 template<typename T>
 inline const std::string& UnitType_Name(T enum_t_value) {
   static_assert(::std::is_same<T, UnitType>::value ||
