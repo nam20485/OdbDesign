@@ -35,7 +35,7 @@
 #include <google/protobuf/unknown_field_set.h>
 // @@protoc_insertion_point(includes)
 #include <google/protobuf/port_def.inc>
-#define PROTOBUF_INTERNAL_EXPORT_attrlistfile_2eproto
+#define PROTOBUF_INTERNAL_EXPORT_attrlistfile_2eproto ODBDESIGN_EXPORT
 PROTOBUF_NAMESPACE_OPEN
 namespace internal {
 class AnyMetadata;
@@ -43,25 +43,25 @@ class AnyMetadata;
 PROTOBUF_NAMESPACE_CLOSE
 
 // Internal implementation detail -- do not use these members.
-struct TableStruct_attrlistfile_2eproto {
+struct ODBDESIGN_EXPORT TableStruct_attrlistfile_2eproto {
   static const uint32_t offsets[];
 };
-extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_attrlistfile_2eproto;
+ODBDESIGN_EXPORT extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_attrlistfile_2eproto;
 namespace Odb {
 namespace Lib {
 namespace Protobuf {
 class AttrListFile;
 struct AttrListFileDefaultTypeInternal;
-extern AttrListFileDefaultTypeInternal _AttrListFile_default_instance_;
+ODBDESIGN_EXPORT extern AttrListFileDefaultTypeInternal _AttrListFile_default_instance_;
 class AttrListFile_AttributesByNameEntry_DoNotUse;
 struct AttrListFile_AttributesByNameEntry_DoNotUseDefaultTypeInternal;
-extern AttrListFile_AttributesByNameEntry_DoNotUseDefaultTypeInternal _AttrListFile_AttributesByNameEntry_DoNotUse_default_instance_;
+ODBDESIGN_EXPORT extern AttrListFile_AttributesByNameEntry_DoNotUseDefaultTypeInternal _AttrListFile_AttributesByNameEntry_DoNotUse_default_instance_;
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
 PROTOBUF_NAMESPACE_OPEN
-template<> ::Odb::Lib::Protobuf::AttrListFile* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::AttrListFile>(Arena*);
-template<> ::Odb::Lib::Protobuf::AttrListFile_AttributesByNameEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::AttrListFile_AttributesByNameEntry_DoNotUse>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::AttrListFile* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::AttrListFile>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::AttrListFile_AttributesByNameEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::AttrListFile_AttributesByNameEntry_DoNotUse>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace Odb {
 namespace Lib {
@@ -97,7 +97,7 @@ public:
 
 // -------------------------------------------------------------------
 
-class AttrListFile final :
+class ODBDESIGN_EXPORT AttrListFile final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.AttrListFile) */ {
  public:
   inline AttrListFile() : AttrListFile(nullptr) {}

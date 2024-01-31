@@ -19,6 +19,7 @@ tags:
   - name: "steps"
   - name: "layers"
   - name: "symbols"
+  - name: "designs"
 paths:
   /files/list:
     get:
@@ -476,6 +477,84 @@ paths:
           schema:
             type: string
         - name: symbol
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      security:
+        - BasicAuth: []
+  /designs:
+    get:
+      tags: ["designs"]
+      responses:
+        "200":
+          description: ""
+      security:
+        - BasicAuth: []
+  /designs/{name}:
+    get:
+      tags: ["designs"]
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      security:
+        - BasicAuth: []
+  /designs/{name}/components:
+    get:
+      tags: ["designs"]
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      security:
+        - BasicAuth: []
+  /designs/{name}/nets:
+    get:
+      tags: ["designs"]
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      security:
+        - BasicAuth: []
+  /designs/{name}/parts:
+    get:
+      tags: ["designs"]
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      security:
+        - BasicAuth: []
+  /designs/{name}/packages:
+    get:
+      tags: ["designs"]
+      parameters:
+        - name: name
           in: path
           required: true
           schema:

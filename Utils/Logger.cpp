@@ -170,11 +170,11 @@ namespace Utils
 
 	bool Logger::logMessage(const Message& logMessage)
 	{
-		std::cout << "[Logger::logMessage] enter, formatting message" << std::endl;
+		//std::cout << "[Logger::logMessage] enter, formatting message" << std::endl;
 
 		auto message = formatLogMessage(logMessage);
 
-		std::cout << "[Logger::logMessage] message formatted, writing to cout and cerr" << std::endl;
+		//std::cout << "[Logger::logMessage] message formatted, writing to cout and cerr" << std::endl;
 
 		if (logMessage.level >= m_level)
 		{
@@ -188,26 +188,26 @@ namespace Utils
 		//	if (m_outputTypes & OutputTypes::StdErr) std::cerr << message << std::flush;
 		//}
 
-		std::cout << "[Logger::logMessage] wrote to cout and cerr, writing to file..." << std::endl;
+		//std::cout << "[Logger::logMessage] wrote to cout and cerr, writing to file..." << std::endl;
 
 		if (m_outputTypes & OutputTypes::File)
 		{
-			std::cout << "[Logger::logMessage] opening log file stream (" << m_logFilename << ")..." << std::endl;
+			//std::cout << "[Logger::logMessage] opening log file stream (" << m_logFilename << ")..." << std::endl;
 
 			m_logFileStream.open(m_logFilename, std::ios::out | std::ios::app);
 			if (m_logFileStream)
 			{
-				std::cout << "[Logger::logMessage] file stream opened, writing to file..." << std::endl;
+				//std::cout << "[Logger::logMessage] file stream opened, writing to file..." << std::endl;
 
 				m_logFileStream << message << std::flush;
 				//m_logFileStream.flush();
 				m_logFileStream.close();
 
-				std::cout << "[Logger::logMessage] wrote to file and closed stream" << std::endl;
+				//std::cout << "[Logger::logMessage] wrote to file and closed stream" << std::endl;
 			}
 		}
 
-		std::cout << "[Logger::logMessage] exit" << std::endl;
+		//std::cout << "[Logger::logMessage] exit" << std::endl;
 
 		return true;
 	}

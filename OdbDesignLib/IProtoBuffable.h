@@ -32,8 +32,7 @@ namespace Odb::Lib
 				
 	protected:
 		// abstract class
-		IProtoBuffable()		
-		{}
+		IProtoBuffable() = default;
 
 		// TMessage MUST derive from Message (must use this until template type contraints support is added)
 		static_assert(std::is_base_of<google::protobuf::Message, TPbMessage>::value, "template parameter type TPbMessage must derive from Protobuf Message class");

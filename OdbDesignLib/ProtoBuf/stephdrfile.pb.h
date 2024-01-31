@@ -35,7 +35,7 @@
 #include <google/protobuf/unknown_field_set.h>
 // @@protoc_insertion_point(includes)
 #include <google/protobuf/port_def.inc>
-#define PROTOBUF_INTERNAL_EXPORT_stephdrfile_2eproto
+#define PROTOBUF_INTERNAL_EXPORT_stephdrfile_2eproto ODBDESIGN_EXPORT
 PROTOBUF_NAMESPACE_OPEN
 namespace internal {
 class AnyMetadata;
@@ -43,29 +43,29 @@ class AnyMetadata;
 PROTOBUF_NAMESPACE_CLOSE
 
 // Internal implementation detail -- do not use these members.
-struct TableStruct_stephdrfile_2eproto {
+struct ODBDESIGN_EXPORT TableStruct_stephdrfile_2eproto {
   static const uint32_t offsets[];
 };
-extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_stephdrfile_2eproto;
+ODBDESIGN_EXPORT extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_stephdrfile_2eproto;
 namespace Odb {
 namespace Lib {
 namespace Protobuf {
 class StepHdrFile;
 struct StepHdrFileDefaultTypeInternal;
-extern StepHdrFileDefaultTypeInternal _StepHdrFile_default_instance_;
+ODBDESIGN_EXPORT extern StepHdrFileDefaultTypeInternal _StepHdrFile_default_instance_;
 class StepHdrFile_OnlineValuesEntry_DoNotUse;
 struct StepHdrFile_OnlineValuesEntry_DoNotUseDefaultTypeInternal;
-extern StepHdrFile_OnlineValuesEntry_DoNotUseDefaultTypeInternal _StepHdrFile_OnlineValuesEntry_DoNotUse_default_instance_;
+ODBDESIGN_EXPORT extern StepHdrFile_OnlineValuesEntry_DoNotUseDefaultTypeInternal _StepHdrFile_OnlineValuesEntry_DoNotUse_default_instance_;
 class StepHdrFile_StepRepeatRecord;
 struct StepHdrFile_StepRepeatRecordDefaultTypeInternal;
-extern StepHdrFile_StepRepeatRecordDefaultTypeInternal _StepHdrFile_StepRepeatRecord_default_instance_;
+ODBDESIGN_EXPORT extern StepHdrFile_StepRepeatRecordDefaultTypeInternal _StepHdrFile_StepRepeatRecord_default_instance_;
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
 PROTOBUF_NAMESPACE_OPEN
-template<> ::Odb::Lib::Protobuf::StepHdrFile* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::StepHdrFile>(Arena*);
-template<> ::Odb::Lib::Protobuf::StepHdrFile_OnlineValuesEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::StepHdrFile_OnlineValuesEntry_DoNotUse>(Arena*);
-template<> ::Odb::Lib::Protobuf::StepHdrFile_StepRepeatRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::StepHdrFile_StepRepeatRecord>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::StepHdrFile* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::StepHdrFile>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::StepHdrFile_OnlineValuesEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::StepHdrFile_OnlineValuesEntry_DoNotUse>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::StepHdrFile_StepRepeatRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::StepHdrFile_StepRepeatRecord>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace Odb {
 namespace Lib {
@@ -73,7 +73,7 @@ namespace Protobuf {
 
 // ===================================================================
 
-class StepHdrFile_StepRepeatRecord final :
+class ODBDESIGN_EXPORT StepHdrFile_StepRepeatRecord final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.StepHdrFile.StepRepeatRecord) */ {
  public:
   inline StepHdrFile_StepRepeatRecord() : StepHdrFile_StepRepeatRecord(nullptr) {}
@@ -394,7 +394,7 @@ public:
 
 // -------------------------------------------------------------------
 
-class StepHdrFile final :
+class ODBDESIGN_EXPORT StepHdrFile final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.StepHdrFile) */ {
  public:
   inline StepHdrFile() : StepHdrFile(nullptr) {}

@@ -33,7 +33,7 @@
 #include "enums.pb.h"
 // @@protoc_insertion_point(includes)
 #include <google/protobuf/port_def.inc>
-#define PROTOBUF_INTERNAL_EXPORT_via_2eproto
+#define PROTOBUF_INTERNAL_EXPORT_via_2eproto ODBDESIGN_EXPORT
 PROTOBUF_NAMESPACE_OPEN
 namespace internal {
 class AnyMetadata;
@@ -41,23 +41,23 @@ class AnyMetadata;
 PROTOBUF_NAMESPACE_CLOSE
 
 // Internal implementation detail -- do not use these members.
-struct TableStruct_via_2eproto {
+struct ODBDESIGN_EXPORT TableStruct_via_2eproto {
   static const uint32_t offsets[];
 };
-extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_via_2eproto;
+ODBDESIGN_EXPORT extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_via_2eproto;
 namespace Odb {
 namespace Lib {
 namespace Protobuf {
 namespace ProductModel {
 class Via;
 struct ViaDefaultTypeInternal;
-extern ViaDefaultTypeInternal _Via_default_instance_;
+ODBDESIGN_EXPORT extern ViaDefaultTypeInternal _Via_default_instance_;
 }  // namespace ProductModel
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
 PROTOBUF_NAMESPACE_OPEN
-template<> ::Odb::Lib::Protobuf::ProductModel::Via* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::ProductModel::Via>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::ProductModel::Via* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::ProductModel::Via>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace Odb {
 namespace Lib {
@@ -66,7 +66,7 @@ namespace ProductModel {
 
 // ===================================================================
 
-class Via final :
+class ODBDESIGN_EXPORT Via final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.ProductModel.Via) */ {
  public:
   inline Via() : Via(nullptr) {}

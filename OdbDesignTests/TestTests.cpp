@@ -1,9 +1,11 @@
 #include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include "Fixtures/FileArchiveLoadFixture.h"
 #include <filesystem>
 
 using namespace std::filesystem;
 using namespace Odb::Test::Fixtures;
+using namespace testing;
 
 namespace Odb::Test
 {
@@ -26,12 +28,19 @@ namespace Odb::Test
 
 	TEST_F(FileArchiveLoadFixture, TestDataDirEnvironmentVariablesExists)
 	{
-		ASSERT_FALSE(getTestDataDir().empty());
+		//ASSERT_FALSE(getTestDataDir().empty());
+		EXPECT_THAT(getTestDataDir(), Not(IsEmpty()));
 	}
 
 	TEST_F(FileArchiveLoadFixture, TestDataDirDirectoryExists)
 	{
 		ASSERT_FALSE(getTestDataDir().empty());
 		EXPECT_TRUE(exists(getTestDataDir()));
+	}
+
+	TEST_F(FileArchiveLoadFixture, TestDataDesignsExist)
+	{
+		ASSERT_TRUE(exists(getDesignPath("sample_design.tgz")));
+		ASSERT_TRUE(exists(getDesignPath("designodb_rigidflex.tgz")));
 	}
 }

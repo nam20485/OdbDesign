@@ -39,7 +39,7 @@
 #include "symbolname.pb.h"
 // @@protoc_insertion_point(includes)
 #include <google/protobuf/port_def.inc>
-#define PROTOBUF_INTERNAL_EXPORT_featuresfile_2eproto
+#define PROTOBUF_INTERNAL_EXPORT_featuresfile_2eproto ODBDESIGN_EXPORT
 PROTOBUF_NAMESPACE_OPEN
 namespace internal {
 class AnyMetadata;
@@ -47,33 +47,33 @@ class AnyMetadata;
 PROTOBUF_NAMESPACE_CLOSE
 
 // Internal implementation detail -- do not use these members.
-struct TableStruct_featuresfile_2eproto {
+struct ODBDESIGN_EXPORT TableStruct_featuresfile_2eproto {
   static const uint32_t offsets[];
 };
-extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_featuresfile_2eproto;
+ODBDESIGN_EXPORT extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_featuresfile_2eproto;
 namespace Odb {
 namespace Lib {
 namespace Protobuf {
 class FeaturesFile;
 struct FeaturesFileDefaultTypeInternal;
-extern FeaturesFileDefaultTypeInternal _FeaturesFile_default_instance_;
+ODBDESIGN_EXPORT extern FeaturesFileDefaultTypeInternal _FeaturesFile_default_instance_;
 class FeaturesFile_FeatureRecord;
 struct FeaturesFile_FeatureRecordDefaultTypeInternal;
-extern FeaturesFile_FeatureRecordDefaultTypeInternal _FeaturesFile_FeatureRecord_default_instance_;
+ODBDESIGN_EXPORT extern FeaturesFile_FeatureRecordDefaultTypeInternal _FeaturesFile_FeatureRecord_default_instance_;
 class FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse;
 struct FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeInternal;
-extern FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeInternal _FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse_default_instance_;
+ODBDESIGN_EXPORT extern FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeInternal _FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse_default_instance_;
 class FeaturesFile_SymbolNamesByNameEntry_DoNotUse;
 struct FeaturesFile_SymbolNamesByNameEntry_DoNotUseDefaultTypeInternal;
-extern FeaturesFile_SymbolNamesByNameEntry_DoNotUseDefaultTypeInternal _FeaturesFile_SymbolNamesByNameEntry_DoNotUse_default_instance_;
+ODBDESIGN_EXPORT extern FeaturesFile_SymbolNamesByNameEntry_DoNotUseDefaultTypeInternal _FeaturesFile_SymbolNamesByNameEntry_DoNotUse_default_instance_;
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
 PROTOBUF_NAMESPACE_OPEN
-template<> ::Odb::Lib::Protobuf::FeaturesFile* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::FeaturesFile>(Arena*);
-template<> ::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord>(Arena*);
-template<> ::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse>(Arena*);
-template<> ::Odb::Lib::Protobuf::FeaturesFile_SymbolNamesByNameEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::FeaturesFile_SymbolNamesByNameEntry_DoNotUse>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::FeaturesFile* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::FeaturesFile>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::FeaturesFile_SymbolNamesByNameEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::FeaturesFile_SymbolNamesByNameEntry_DoNotUse>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace Odb {
 namespace Lib {
@@ -89,12 +89,12 @@ enum FeaturesFile_FeatureRecord_Type : int {
   FeaturesFile_FeatureRecord_Type_FeaturesFile_FeatureRecord_Type_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
   FeaturesFile_FeatureRecord_Type_FeaturesFile_FeatureRecord_Type_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
-bool FeaturesFile_FeatureRecord_Type_IsValid(int value);
+ODBDESIGN_EXPORT bool FeaturesFile_FeatureRecord_Type_IsValid(int value);
 constexpr FeaturesFile_FeatureRecord_Type FeaturesFile_FeatureRecord_Type_Type_MIN = FeaturesFile_FeatureRecord_Type_Arc;
 constexpr FeaturesFile_FeatureRecord_Type FeaturesFile_FeatureRecord_Type_Type_MAX = FeaturesFile_FeatureRecord_Type_Line;
 constexpr int FeaturesFile_FeatureRecord_Type_Type_ARRAYSIZE = FeaturesFile_FeatureRecord_Type_Type_MAX + 1;
 
-const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* FeaturesFile_FeatureRecord_Type_descriptor();
+ODBDESIGN_EXPORT const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* FeaturesFile_FeatureRecord_Type_descriptor();
 template<typename T>
 inline const std::string& FeaturesFile_FeatureRecord_Type_Name(T enum_t_value) {
   static_assert(::std::is_same<T, FeaturesFile_FeatureRecord_Type>::value ||
@@ -138,7 +138,7 @@ public:
 
 // -------------------------------------------------------------------
 
-class FeaturesFile_FeatureRecord final :
+class ODBDESIGN_EXPORT FeaturesFile_FeatureRecord final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord) */ {
  public:
   inline FeaturesFile_FeatureRecord() : FeaturesFile_FeatureRecord(nullptr) {}
@@ -806,7 +806,7 @@ public:
 
 // -------------------------------------------------------------------
 
-class FeaturesFile final :
+class ODBDESIGN_EXPORT FeaturesFile final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.FeaturesFile) */ {
  public:
   inline FeaturesFile() : FeaturesFile(nullptr) {}

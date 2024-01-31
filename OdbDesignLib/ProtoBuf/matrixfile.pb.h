@@ -34,7 +34,7 @@
 #include "enums.pb.h"
 // @@protoc_insertion_point(includes)
 #include <google/protobuf/port_def.inc>
-#define PROTOBUF_INTERNAL_EXPORT_matrixfile_2eproto
+#define PROTOBUF_INTERNAL_EXPORT_matrixfile_2eproto ODBDESIGN_EXPORT
 PROTOBUF_NAMESPACE_OPEN
 namespace internal {
 class AnyMetadata;
@@ -42,29 +42,29 @@ class AnyMetadata;
 PROTOBUF_NAMESPACE_CLOSE
 
 // Internal implementation detail -- do not use these members.
-struct TableStruct_matrixfile_2eproto {
+struct ODBDESIGN_EXPORT TableStruct_matrixfile_2eproto {
   static const uint32_t offsets[];
 };
-extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_matrixfile_2eproto;
+ODBDESIGN_EXPORT extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_matrixfile_2eproto;
 namespace Odb {
 namespace Lib {
 namespace Protobuf {
 class MatrixFile;
 struct MatrixFileDefaultTypeInternal;
-extern MatrixFileDefaultTypeInternal _MatrixFile_default_instance_;
+ODBDESIGN_EXPORT extern MatrixFileDefaultTypeInternal _MatrixFile_default_instance_;
 class MatrixFile_LayerRecord;
 struct MatrixFile_LayerRecordDefaultTypeInternal;
-extern MatrixFile_LayerRecordDefaultTypeInternal _MatrixFile_LayerRecord_default_instance_;
+ODBDESIGN_EXPORT extern MatrixFile_LayerRecordDefaultTypeInternal _MatrixFile_LayerRecord_default_instance_;
 class MatrixFile_StepRecord;
 struct MatrixFile_StepRecordDefaultTypeInternal;
-extern MatrixFile_StepRecordDefaultTypeInternal _MatrixFile_StepRecord_default_instance_;
+ODBDESIGN_EXPORT extern MatrixFile_StepRecordDefaultTypeInternal _MatrixFile_StepRecord_default_instance_;
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
 PROTOBUF_NAMESPACE_OPEN
-template<> ::Odb::Lib::Protobuf::MatrixFile* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::MatrixFile>(Arena*);
-template<> ::Odb::Lib::Protobuf::MatrixFile_LayerRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::MatrixFile_LayerRecord>(Arena*);
-template<> ::Odb::Lib::Protobuf::MatrixFile_StepRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::MatrixFile_StepRecord>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::MatrixFile* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::MatrixFile>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::MatrixFile_LayerRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::MatrixFile_LayerRecord>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::MatrixFile_StepRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::MatrixFile_StepRecord>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace Odb {
 namespace Lib {
@@ -87,12 +87,12 @@ enum MatrixFile_LayerRecord_Type : int {
   MatrixFile_LayerRecord_Type_MatrixFile_LayerRecord_Type_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
   MatrixFile_LayerRecord_Type_MatrixFile_LayerRecord_Type_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
-bool MatrixFile_LayerRecord_Type_IsValid(int value);
+ODBDESIGN_EXPORT bool MatrixFile_LayerRecord_Type_IsValid(int value);
 constexpr MatrixFile_LayerRecord_Type MatrixFile_LayerRecord_Type_Type_MIN = MatrixFile_LayerRecord_Type_Signal;
 constexpr MatrixFile_LayerRecord_Type MatrixFile_LayerRecord_Type_Type_MAX = MatrixFile_LayerRecord_Type_ConductivePaste;
 constexpr int MatrixFile_LayerRecord_Type_Type_ARRAYSIZE = MatrixFile_LayerRecord_Type_Type_MAX + 1;
 
-const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* MatrixFile_LayerRecord_Type_descriptor();
+ODBDESIGN_EXPORT const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* MatrixFile_LayerRecord_Type_descriptor();
 template<typename T>
 inline const std::string& MatrixFile_LayerRecord_Type_Name(T enum_t_value) {
   static_assert(::std::is_same<T, MatrixFile_LayerRecord_Type>::value ||
@@ -112,12 +112,12 @@ enum MatrixFile_LayerRecord_Context : int {
   MatrixFile_LayerRecord_Context_MatrixFile_LayerRecord_Context_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
   MatrixFile_LayerRecord_Context_MatrixFile_LayerRecord_Context_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
-bool MatrixFile_LayerRecord_Context_IsValid(int value);
+ODBDESIGN_EXPORT bool MatrixFile_LayerRecord_Context_IsValid(int value);
 constexpr MatrixFile_LayerRecord_Context MatrixFile_LayerRecord_Context_Context_MIN = MatrixFile_LayerRecord_Context_Board;
 constexpr MatrixFile_LayerRecord_Context MatrixFile_LayerRecord_Context_Context_MAX = MatrixFile_LayerRecord_Context_Misc;
 constexpr int MatrixFile_LayerRecord_Context_Context_ARRAYSIZE = MatrixFile_LayerRecord_Context_Context_MAX + 1;
 
-const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* MatrixFile_LayerRecord_Context_descriptor();
+ODBDESIGN_EXPORT const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* MatrixFile_LayerRecord_Context_descriptor();
 template<typename T>
 inline const std::string& MatrixFile_LayerRecord_Context_Name(T enum_t_value) {
   static_assert(::std::is_same<T, MatrixFile_LayerRecord_Context>::value ||
@@ -138,12 +138,12 @@ enum MatrixFile_LayerRecord_DielectricType : int {
   MatrixFile_LayerRecord_DielectricType_MatrixFile_LayerRecord_DielectricType_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
   MatrixFile_LayerRecord_DielectricType_MatrixFile_LayerRecord_DielectricType_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
-bool MatrixFile_LayerRecord_DielectricType_IsValid(int value);
+ODBDESIGN_EXPORT bool MatrixFile_LayerRecord_DielectricType_IsValid(int value);
 constexpr MatrixFile_LayerRecord_DielectricType MatrixFile_LayerRecord_DielectricType_DielectricType_MIN = MatrixFile_LayerRecord_DielectricType_None;
 constexpr MatrixFile_LayerRecord_DielectricType MatrixFile_LayerRecord_DielectricType_DielectricType_MAX = MatrixFile_LayerRecord_DielectricType_Core;
 constexpr int MatrixFile_LayerRecord_DielectricType_DielectricType_ARRAYSIZE = MatrixFile_LayerRecord_DielectricType_DielectricType_MAX + 1;
 
-const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* MatrixFile_LayerRecord_DielectricType_descriptor();
+ODBDESIGN_EXPORT const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* MatrixFile_LayerRecord_DielectricType_descriptor();
 template<typename T>
 inline const std::string& MatrixFile_LayerRecord_DielectricType_Name(T enum_t_value) {
   static_assert(::std::is_same<T, MatrixFile_LayerRecord_DielectricType>::value ||
@@ -163,12 +163,12 @@ enum MatrixFile_LayerRecord_Form : int {
   MatrixFile_LayerRecord_Form_MatrixFile_LayerRecord_Form_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
   MatrixFile_LayerRecord_Form_MatrixFile_LayerRecord_Form_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
-bool MatrixFile_LayerRecord_Form_IsValid(int value);
+ODBDESIGN_EXPORT bool MatrixFile_LayerRecord_Form_IsValid(int value);
 constexpr MatrixFile_LayerRecord_Form MatrixFile_LayerRecord_Form_Form_MIN = MatrixFile_LayerRecord_Form_Rigid;
 constexpr MatrixFile_LayerRecord_Form MatrixFile_LayerRecord_Form_Form_MAX = MatrixFile_LayerRecord_Form_Flex;
 constexpr int MatrixFile_LayerRecord_Form_Form_ARRAYSIZE = MatrixFile_LayerRecord_Form_Form_MAX + 1;
 
-const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* MatrixFile_LayerRecord_Form_descriptor();
+ODBDESIGN_EXPORT const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* MatrixFile_LayerRecord_Form_descriptor();
 template<typename T>
 inline const std::string& MatrixFile_LayerRecord_Form_Name(T enum_t_value) {
   static_assert(::std::is_same<T, MatrixFile_LayerRecord_Form>::value ||
@@ -184,7 +184,7 @@ inline bool MatrixFile_LayerRecord_Form_Parse(
 }
 // ===================================================================
 
-class MatrixFile_StepRecord final :
+class ODBDESIGN_EXPORT MatrixFile_StepRecord final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.MatrixFile.StepRecord) */ {
  public:
   inline MatrixFile_StepRecord() : MatrixFile_StepRecord(nullptr) {}
@@ -359,7 +359,7 @@ class MatrixFile_StepRecord final :
 };
 // -------------------------------------------------------------------
 
-class MatrixFile_LayerRecord final :
+class ODBDESIGN_EXPORT MatrixFile_LayerRecord final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.MatrixFile.LayerRecord) */ {
  public:
   inline MatrixFile_LayerRecord() : MatrixFile_LayerRecord(nullptr) {}
@@ -846,7 +846,7 @@ class MatrixFile_LayerRecord final :
 };
 // -------------------------------------------------------------------
 
-class MatrixFile final :
+class ODBDESIGN_EXPORT MatrixFile final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.MatrixFile) */ {
  public:
   inline MatrixFile() : MatrixFile(nullptr) {}

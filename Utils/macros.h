@@ -33,11 +33,16 @@ namespace Utils
 
 	static inline bool IsEnvironment(const std::string& environmentName)
 	{
-		auto envValue = std::getenv("ENVIRONMENT_VARIABLE");
+		auto envValue = std::getenv(ENVIRONMENT_VARIABLE);
 		if (envValue == nullptr) return false;
 
 		return Utils::str_to_lower_copy(envValue) == 
 			   Utils::str_to_lower_copy(environmentName);
+	}
+
+	static inline bool IsLocal()
+	{
+		return IsEnvironment("Local");
 	}
 
 	static inline bool IsDevelopment()

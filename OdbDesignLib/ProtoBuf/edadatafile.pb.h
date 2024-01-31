@@ -38,7 +38,7 @@
 #include "enums.pb.h"
 // @@protoc_insertion_point(includes)
 #include <google/protobuf/port_def.inc>
-#define PROTOBUF_INTERNAL_EXPORT_edadatafile_2eproto
+#define PROTOBUF_INTERNAL_EXPORT_edadatafile_2eproto ODBDESIGN_EXPORT
 PROTOBUF_NAMESPACE_OPEN
 namespace internal {
 class AnyMetadata;
@@ -46,69 +46,69 @@ class AnyMetadata;
 PROTOBUF_NAMESPACE_CLOSE
 
 // Internal implementation detail -- do not use these members.
-struct TableStruct_edadatafile_2eproto {
+struct ODBDESIGN_EXPORT TableStruct_edadatafile_2eproto {
   static const uint32_t offsets[];
 };
-extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_edadatafile_2eproto;
+ODBDESIGN_EXPORT extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_edadatafile_2eproto;
 namespace Odb {
 namespace Lib {
 namespace Protobuf {
 class EdaDataFile;
 struct EdaDataFileDefaultTypeInternal;
-extern EdaDataFileDefaultTypeInternal _EdaDataFile_default_instance_;
+ODBDESIGN_EXPORT extern EdaDataFileDefaultTypeInternal _EdaDataFile_default_instance_;
 class EdaDataFile_FeatureGroupRecord;
 struct EdaDataFile_FeatureGroupRecordDefaultTypeInternal;
-extern EdaDataFile_FeatureGroupRecordDefaultTypeInternal _EdaDataFile_FeatureGroupRecord_default_instance_;
+ODBDESIGN_EXPORT extern EdaDataFile_FeatureGroupRecordDefaultTypeInternal _EdaDataFile_FeatureGroupRecord_default_instance_;
 class EdaDataFile_FeatureIdRecord;
 struct EdaDataFile_FeatureIdRecordDefaultTypeInternal;
-extern EdaDataFile_FeatureIdRecordDefaultTypeInternal _EdaDataFile_FeatureIdRecord_default_instance_;
+ODBDESIGN_EXPORT extern EdaDataFile_FeatureIdRecordDefaultTypeInternal _EdaDataFile_FeatureIdRecord_default_instance_;
 class EdaDataFile_NetRecord;
 struct EdaDataFile_NetRecordDefaultTypeInternal;
-extern EdaDataFile_NetRecordDefaultTypeInternal _EdaDataFile_NetRecord_default_instance_;
+ODBDESIGN_EXPORT extern EdaDataFile_NetRecordDefaultTypeInternal _EdaDataFile_NetRecord_default_instance_;
 class EdaDataFile_NetRecord_AttributeLookupTableEntry_DoNotUse;
 struct EdaDataFile_NetRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeInternal;
-extern EdaDataFile_NetRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeInternal _EdaDataFile_NetRecord_AttributeLookupTableEntry_DoNotUse_default_instance_;
+ODBDESIGN_EXPORT extern EdaDataFile_NetRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeInternal _EdaDataFile_NetRecord_AttributeLookupTableEntry_DoNotUse_default_instance_;
 class EdaDataFile_NetRecord_SubnetRecord;
 struct EdaDataFile_NetRecord_SubnetRecordDefaultTypeInternal;
-extern EdaDataFile_NetRecord_SubnetRecordDefaultTypeInternal _EdaDataFile_NetRecord_SubnetRecord_default_instance_;
+ODBDESIGN_EXPORT extern EdaDataFile_NetRecord_SubnetRecordDefaultTypeInternal _EdaDataFile_NetRecord_SubnetRecord_default_instance_;
 class EdaDataFile_NetRecordsByNameEntry_DoNotUse;
 struct EdaDataFile_NetRecordsByNameEntry_DoNotUseDefaultTypeInternal;
-extern EdaDataFile_NetRecordsByNameEntry_DoNotUseDefaultTypeInternal _EdaDataFile_NetRecordsByNameEntry_DoNotUse_default_instance_;
+ODBDESIGN_EXPORT extern EdaDataFile_NetRecordsByNameEntry_DoNotUseDefaultTypeInternal _EdaDataFile_NetRecordsByNameEntry_DoNotUse_default_instance_;
 class EdaDataFile_PackageRecord;
 struct EdaDataFile_PackageRecordDefaultTypeInternal;
-extern EdaDataFile_PackageRecordDefaultTypeInternal _EdaDataFile_PackageRecord_default_instance_;
+ODBDESIGN_EXPORT extern EdaDataFile_PackageRecordDefaultTypeInternal _EdaDataFile_PackageRecord_default_instance_;
 class EdaDataFile_PackageRecord_AttributeLookupTableEntry_DoNotUse;
 struct EdaDataFile_PackageRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeInternal;
-extern EdaDataFile_PackageRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeInternal _EdaDataFile_PackageRecord_AttributeLookupTableEntry_DoNotUse_default_instance_;
+ODBDESIGN_EXPORT extern EdaDataFile_PackageRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeInternal _EdaDataFile_PackageRecord_AttributeLookupTableEntry_DoNotUse_default_instance_;
 class EdaDataFile_PackageRecord_OutlineRecord;
 struct EdaDataFile_PackageRecord_OutlineRecordDefaultTypeInternal;
-extern EdaDataFile_PackageRecord_OutlineRecordDefaultTypeInternal _EdaDataFile_PackageRecord_OutlineRecord_default_instance_;
+ODBDESIGN_EXPORT extern EdaDataFile_PackageRecord_OutlineRecordDefaultTypeInternal _EdaDataFile_PackageRecord_OutlineRecord_default_instance_;
 class EdaDataFile_PackageRecord_PinRecord;
 struct EdaDataFile_PackageRecord_PinRecordDefaultTypeInternal;
-extern EdaDataFile_PackageRecord_PinRecordDefaultTypeInternal _EdaDataFile_PackageRecord_PinRecord_default_instance_;
+ODBDESIGN_EXPORT extern EdaDataFile_PackageRecord_PinRecordDefaultTypeInternal _EdaDataFile_PackageRecord_PinRecord_default_instance_;
 class EdaDataFile_PackageRecord_PinRecordsByNameEntry_DoNotUse;
 struct EdaDataFile_PackageRecord_PinRecordsByNameEntry_DoNotUseDefaultTypeInternal;
-extern EdaDataFile_PackageRecord_PinRecordsByNameEntry_DoNotUseDefaultTypeInternal _EdaDataFile_PackageRecord_PinRecordsByNameEntry_DoNotUse_default_instance_;
+ODBDESIGN_EXPORT extern EdaDataFile_PackageRecord_PinRecordsByNameEntry_DoNotUseDefaultTypeInternal _EdaDataFile_PackageRecord_PinRecordsByNameEntry_DoNotUse_default_instance_;
 class EdaDataFile_PackageRecordsByNameEntry_DoNotUse;
 struct EdaDataFile_PackageRecordsByNameEntry_DoNotUseDefaultTypeInternal;
-extern EdaDataFile_PackageRecordsByNameEntry_DoNotUseDefaultTypeInternal _EdaDataFile_PackageRecordsByNameEntry_DoNotUse_default_instance_;
+ODBDESIGN_EXPORT extern EdaDataFile_PackageRecordsByNameEntry_DoNotUseDefaultTypeInternal _EdaDataFile_PackageRecordsByNameEntry_DoNotUse_default_instance_;
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
 PROTOBUF_NAMESPACE_OPEN
-template<> ::Odb::Lib::Protobuf::EdaDataFile* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::EdaDataFile>(Arena*);
-template<> ::Odb::Lib::Protobuf::EdaDataFile_FeatureGroupRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::EdaDataFile_FeatureGroupRecord>(Arena*);
-template<> ::Odb::Lib::Protobuf::EdaDataFile_FeatureIdRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::EdaDataFile_FeatureIdRecord>(Arena*);
-template<> ::Odb::Lib::Protobuf::EdaDataFile_NetRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::EdaDataFile_NetRecord>(Arena*);
-template<> ::Odb::Lib::Protobuf::EdaDataFile_NetRecord_AttributeLookupTableEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::EdaDataFile_NetRecord_AttributeLookupTableEntry_DoNotUse>(Arena*);
-template<> ::Odb::Lib::Protobuf::EdaDataFile_NetRecord_SubnetRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::EdaDataFile_NetRecord_SubnetRecord>(Arena*);
-template<> ::Odb::Lib::Protobuf::EdaDataFile_NetRecordsByNameEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::EdaDataFile_NetRecordsByNameEntry_DoNotUse>(Arena*);
-template<> ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::EdaDataFile_PackageRecord>(Arena*);
-template<> ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_AttributeLookupTableEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_AttributeLookupTableEntry_DoNotUse>(Arena*);
-template<> ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord>(Arena*);
-template<> ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_PinRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_PinRecord>(Arena*);
-template<> ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_PinRecordsByNameEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_PinRecordsByNameEntry_DoNotUse>(Arena*);
-template<> ::Odb::Lib::Protobuf::EdaDataFile_PackageRecordsByNameEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::EdaDataFile_PackageRecordsByNameEntry_DoNotUse>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::EdaDataFile* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::EdaDataFile>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::EdaDataFile_FeatureGroupRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::EdaDataFile_FeatureGroupRecord>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::EdaDataFile_FeatureIdRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::EdaDataFile_FeatureIdRecord>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::EdaDataFile_NetRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::EdaDataFile_NetRecord>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::EdaDataFile_NetRecord_AttributeLookupTableEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::EdaDataFile_NetRecord_AttributeLookupTableEntry_DoNotUse>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::EdaDataFile_NetRecord_SubnetRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::EdaDataFile_NetRecord_SubnetRecord>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::EdaDataFile_NetRecordsByNameEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::EdaDataFile_NetRecordsByNameEntry_DoNotUse>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::EdaDataFile_PackageRecord>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_AttributeLookupTableEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_AttributeLookupTableEntry_DoNotUse>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_PinRecord* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_PinRecord>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_PinRecordsByNameEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_PinRecordsByNameEntry_DoNotUse>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::EdaDataFile_PackageRecordsByNameEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::EdaDataFile_PackageRecordsByNameEntry_DoNotUse>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace Odb {
 namespace Lib {
@@ -121,12 +121,12 @@ enum EdaDataFile_FeatureIdRecord_Type : int {
   EdaDataFile_FeatureIdRecord_Type_EdaDataFile_FeatureIdRecord_Type_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
   EdaDataFile_FeatureIdRecord_Type_EdaDataFile_FeatureIdRecord_Type_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
-bool EdaDataFile_FeatureIdRecord_Type_IsValid(int value);
+ODBDESIGN_EXPORT bool EdaDataFile_FeatureIdRecord_Type_IsValid(int value);
 constexpr EdaDataFile_FeatureIdRecord_Type EdaDataFile_FeatureIdRecord_Type_Type_MIN = EdaDataFile_FeatureIdRecord_Type_COPPER;
 constexpr EdaDataFile_FeatureIdRecord_Type EdaDataFile_FeatureIdRecord_Type_Type_MAX = EdaDataFile_FeatureIdRecord_Type_HOLE;
 constexpr int EdaDataFile_FeatureIdRecord_Type_Type_ARRAYSIZE = EdaDataFile_FeatureIdRecord_Type_Type_MAX + 1;
 
-const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* EdaDataFile_FeatureIdRecord_Type_descriptor();
+ODBDESIGN_EXPORT const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* EdaDataFile_FeatureIdRecord_Type_descriptor();
 template<typename T>
 inline const std::string& EdaDataFile_FeatureIdRecord_Type_Name(T enum_t_value) {
   static_assert(::std::is_same<T, EdaDataFile_FeatureIdRecord_Type>::value ||
@@ -148,12 +148,12 @@ enum EdaDataFile_NetRecord_SubnetRecord_Type : int {
   EdaDataFile_NetRecord_SubnetRecord_Type_EdaDataFile_NetRecord_SubnetRecord_Type_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
   EdaDataFile_NetRecord_SubnetRecord_Type_EdaDataFile_NetRecord_SubnetRecord_Type_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
-bool EdaDataFile_NetRecord_SubnetRecord_Type_IsValid(int value);
+ODBDESIGN_EXPORT bool EdaDataFile_NetRecord_SubnetRecord_Type_IsValid(int value);
 constexpr EdaDataFile_NetRecord_SubnetRecord_Type EdaDataFile_NetRecord_SubnetRecord_Type_Type_MIN = EdaDataFile_NetRecord_SubnetRecord_Type_VIA;
 constexpr EdaDataFile_NetRecord_SubnetRecord_Type EdaDataFile_NetRecord_SubnetRecord_Type_Type_MAX = EdaDataFile_NetRecord_SubnetRecord_Type_TOEPRINT;
 constexpr int EdaDataFile_NetRecord_SubnetRecord_Type_Type_ARRAYSIZE = EdaDataFile_NetRecord_SubnetRecord_Type_Type_MAX + 1;
 
-const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* EdaDataFile_NetRecord_SubnetRecord_Type_descriptor();
+ODBDESIGN_EXPORT const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* EdaDataFile_NetRecord_SubnetRecord_Type_descriptor();
 template<typename T>
 inline const std::string& EdaDataFile_NetRecord_SubnetRecord_Type_Name(T enum_t_value) {
   static_assert(::std::is_same<T, EdaDataFile_NetRecord_SubnetRecord_Type>::value ||
@@ -173,12 +173,12 @@ enum EdaDataFile_NetRecord_SubnetRecord_FillType : int {
   EdaDataFile_NetRecord_SubnetRecord_FillType_EdaDataFile_NetRecord_SubnetRecord_FillType_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
   EdaDataFile_NetRecord_SubnetRecord_FillType_EdaDataFile_NetRecord_SubnetRecord_FillType_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
-bool EdaDataFile_NetRecord_SubnetRecord_FillType_IsValid(int value);
+ODBDESIGN_EXPORT bool EdaDataFile_NetRecord_SubnetRecord_FillType_IsValid(int value);
 constexpr EdaDataFile_NetRecord_SubnetRecord_FillType EdaDataFile_NetRecord_SubnetRecord_FillType_FillType_MIN = EdaDataFile_NetRecord_SubnetRecord_FillType_SOLID;
 constexpr EdaDataFile_NetRecord_SubnetRecord_FillType EdaDataFile_NetRecord_SubnetRecord_FillType_FillType_MAX = EdaDataFile_NetRecord_SubnetRecord_FillType_OUTLINE;
 constexpr int EdaDataFile_NetRecord_SubnetRecord_FillType_FillType_ARRAYSIZE = EdaDataFile_NetRecord_SubnetRecord_FillType_FillType_MAX + 1;
 
-const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* EdaDataFile_NetRecord_SubnetRecord_FillType_descriptor();
+ODBDESIGN_EXPORT const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* EdaDataFile_NetRecord_SubnetRecord_FillType_descriptor();
 template<typename T>
 inline const std::string& EdaDataFile_NetRecord_SubnetRecord_FillType_Name(T enum_t_value) {
   static_assert(::std::is_same<T, EdaDataFile_NetRecord_SubnetRecord_FillType>::value ||
@@ -200,12 +200,12 @@ enum EdaDataFile_NetRecord_SubnetRecord_CutoutType : int {
   EdaDataFile_NetRecord_SubnetRecord_CutoutType_EdaDataFile_NetRecord_SubnetRecord_CutoutType_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
   EdaDataFile_NetRecord_SubnetRecord_CutoutType_EdaDataFile_NetRecord_SubnetRecord_CutoutType_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
-bool EdaDataFile_NetRecord_SubnetRecord_CutoutType_IsValid(int value);
+ODBDESIGN_EXPORT bool EdaDataFile_NetRecord_SubnetRecord_CutoutType_IsValid(int value);
 constexpr EdaDataFile_NetRecord_SubnetRecord_CutoutType EdaDataFile_NetRecord_SubnetRecord_CutoutType_CutoutType_MIN = EdaDataFile_NetRecord_SubnetRecord_CutoutType_CIRCLE;
 constexpr EdaDataFile_NetRecord_SubnetRecord_CutoutType EdaDataFile_NetRecord_SubnetRecord_CutoutType_CutoutType_MAX = EdaDataFile_NetRecord_SubnetRecord_CutoutType_EXACT;
 constexpr int EdaDataFile_NetRecord_SubnetRecord_CutoutType_CutoutType_ARRAYSIZE = EdaDataFile_NetRecord_SubnetRecord_CutoutType_CutoutType_MAX + 1;
 
-const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* EdaDataFile_NetRecord_SubnetRecord_CutoutType_descriptor();
+ODBDESIGN_EXPORT const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* EdaDataFile_NetRecord_SubnetRecord_CutoutType_descriptor();
 template<typename T>
 inline const std::string& EdaDataFile_NetRecord_SubnetRecord_CutoutType_Name(T enum_t_value) {
   static_assert(::std::is_same<T, EdaDataFile_NetRecord_SubnetRecord_CutoutType>::value ||
@@ -227,12 +227,12 @@ enum EdaDataFile_PackageRecord_OutlineRecord_Type : int {
   EdaDataFile_PackageRecord_OutlineRecord_Type_EdaDataFile_PackageRecord_OutlineRecord_Type_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
   EdaDataFile_PackageRecord_OutlineRecord_Type_EdaDataFile_PackageRecord_OutlineRecord_Type_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
-bool EdaDataFile_PackageRecord_OutlineRecord_Type_IsValid(int value);
+ODBDESIGN_EXPORT bool EdaDataFile_PackageRecord_OutlineRecord_Type_IsValid(int value);
 constexpr EdaDataFile_PackageRecord_OutlineRecord_Type EdaDataFile_PackageRecord_OutlineRecord_Type_Type_MIN = EdaDataFile_PackageRecord_OutlineRecord_Type_Rectangle;
 constexpr EdaDataFile_PackageRecord_OutlineRecord_Type EdaDataFile_PackageRecord_OutlineRecord_Type_Type_MAX = EdaDataFile_PackageRecord_OutlineRecord_Type_Contour;
 constexpr int EdaDataFile_PackageRecord_OutlineRecord_Type_Type_ARRAYSIZE = EdaDataFile_PackageRecord_OutlineRecord_Type_Type_MAX + 1;
 
-const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* EdaDataFile_PackageRecord_OutlineRecord_Type_descriptor();
+ODBDESIGN_EXPORT const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* EdaDataFile_PackageRecord_OutlineRecord_Type_descriptor();
 template<typename T>
 inline const std::string& EdaDataFile_PackageRecord_OutlineRecord_Type_Name(T enum_t_value) {
   static_assert(::std::is_same<T, EdaDataFile_PackageRecord_OutlineRecord_Type>::value ||
@@ -253,12 +253,12 @@ enum EdaDataFile_PackageRecord_PinRecord_Type : int {
   EdaDataFile_PackageRecord_PinRecord_Type_EdaDataFile_PackageRecord_PinRecord_Type_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
   EdaDataFile_PackageRecord_PinRecord_Type_EdaDataFile_PackageRecord_PinRecord_Type_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
-bool EdaDataFile_PackageRecord_PinRecord_Type_IsValid(int value);
+ODBDESIGN_EXPORT bool EdaDataFile_PackageRecord_PinRecord_Type_IsValid(int value);
 constexpr EdaDataFile_PackageRecord_PinRecord_Type EdaDataFile_PackageRecord_PinRecord_Type_Type_MIN = EdaDataFile_PackageRecord_PinRecord_Type_ThroughHole;
 constexpr EdaDataFile_PackageRecord_PinRecord_Type EdaDataFile_PackageRecord_PinRecord_Type_Type_MAX = EdaDataFile_PackageRecord_PinRecord_Type_Surface;
 constexpr int EdaDataFile_PackageRecord_PinRecord_Type_Type_ARRAYSIZE = EdaDataFile_PackageRecord_PinRecord_Type_Type_MAX + 1;
 
-const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* EdaDataFile_PackageRecord_PinRecord_Type_descriptor();
+ODBDESIGN_EXPORT const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* EdaDataFile_PackageRecord_PinRecord_Type_descriptor();
 template<typename T>
 inline const std::string& EdaDataFile_PackageRecord_PinRecord_Type_Name(T enum_t_value) {
   static_assert(::std::is_same<T, EdaDataFile_PackageRecord_PinRecord_Type>::value ||
@@ -279,12 +279,12 @@ enum EdaDataFile_PackageRecord_PinRecord_ElectricalType : int {
   EdaDataFile_PackageRecord_PinRecord_ElectricalType_EdaDataFile_PackageRecord_PinRecord_ElectricalType_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
   EdaDataFile_PackageRecord_PinRecord_ElectricalType_EdaDataFile_PackageRecord_PinRecord_ElectricalType_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
-bool EdaDataFile_PackageRecord_PinRecord_ElectricalType_IsValid(int value);
+ODBDESIGN_EXPORT bool EdaDataFile_PackageRecord_PinRecord_ElectricalType_IsValid(int value);
 constexpr EdaDataFile_PackageRecord_PinRecord_ElectricalType EdaDataFile_PackageRecord_PinRecord_ElectricalType_ElectricalType_MIN = EdaDataFile_PackageRecord_PinRecord_ElectricalType_Electrical;
 constexpr EdaDataFile_PackageRecord_PinRecord_ElectricalType EdaDataFile_PackageRecord_PinRecord_ElectricalType_ElectricalType_MAX = EdaDataFile_PackageRecord_PinRecord_ElectricalType_Undefined;
 constexpr int EdaDataFile_PackageRecord_PinRecord_ElectricalType_ElectricalType_ARRAYSIZE = EdaDataFile_PackageRecord_PinRecord_ElectricalType_ElectricalType_MAX + 1;
 
-const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* EdaDataFile_PackageRecord_PinRecord_ElectricalType_descriptor();
+ODBDESIGN_EXPORT const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* EdaDataFile_PackageRecord_PinRecord_ElectricalType_descriptor();
 template<typename T>
 inline const std::string& EdaDataFile_PackageRecord_PinRecord_ElectricalType_Name(T enum_t_value) {
   static_assert(::std::is_same<T, EdaDataFile_PackageRecord_PinRecord_ElectricalType>::value ||
@@ -310,12 +310,12 @@ enum EdaDataFile_PackageRecord_PinRecord_MountType : int {
   EdaDataFile_PackageRecord_PinRecord_MountType_EdaDataFile_PackageRecord_PinRecord_MountType_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
   EdaDataFile_PackageRecord_PinRecord_MountType_EdaDataFile_PackageRecord_PinRecord_MountType_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
-bool EdaDataFile_PackageRecord_PinRecord_MountType_IsValid(int value);
+ODBDESIGN_EXPORT bool EdaDataFile_PackageRecord_PinRecord_MountType_IsValid(int value);
 constexpr EdaDataFile_PackageRecord_PinRecord_MountType EdaDataFile_PackageRecord_PinRecord_MountType_MountType_MIN = EdaDataFile_PackageRecord_PinRecord_MountType_Smt;
 constexpr EdaDataFile_PackageRecord_PinRecord_MountType EdaDataFile_PackageRecord_PinRecord_MountType_MountType_MAX = EdaDataFile_PackageRecord_PinRecord_MountType_MT_Undefined;
 constexpr int EdaDataFile_PackageRecord_PinRecord_MountType_MountType_ARRAYSIZE = EdaDataFile_PackageRecord_PinRecord_MountType_MountType_MAX + 1;
 
-const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* EdaDataFile_PackageRecord_PinRecord_MountType_descriptor();
+ODBDESIGN_EXPORT const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* EdaDataFile_PackageRecord_PinRecord_MountType_descriptor();
 template<typename T>
 inline const std::string& EdaDataFile_PackageRecord_PinRecord_MountType_Name(T enum_t_value) {
   static_assert(::std::is_same<T, EdaDataFile_PackageRecord_PinRecord_MountType>::value ||
@@ -331,7 +331,7 @@ inline bool EdaDataFile_PackageRecord_PinRecord_MountType_Parse(
 }
 // ===================================================================
 
-class EdaDataFile_FeatureIdRecord final :
+class ODBDESIGN_EXPORT EdaDataFile_FeatureIdRecord final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.EdaDataFile.FeatureIdRecord) */ {
  public:
   inline EdaDataFile_FeatureIdRecord() : EdaDataFile_FeatureIdRecord(nullptr) {}
@@ -546,7 +546,7 @@ class EdaDataFile_FeatureIdRecord final :
 };
 // -------------------------------------------------------------------
 
-class EdaDataFile_NetRecord_SubnetRecord final :
+class ODBDESIGN_EXPORT EdaDataFile_NetRecord_SubnetRecord final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.EdaDataFile.NetRecord.SubnetRecord) */ {
  public:
   inline EdaDataFile_NetRecord_SubnetRecord() : EdaDataFile_NetRecord_SubnetRecord(nullptr) {}
@@ -950,7 +950,7 @@ public:
 
 // -------------------------------------------------------------------
 
-class EdaDataFile_NetRecord final :
+class ODBDESIGN_EXPORT EdaDataFile_NetRecord final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.EdaDataFile.NetRecord) */ {
  public:
   inline EdaDataFile_NetRecord() : EdaDataFile_NetRecord(nullptr) {}
@@ -1264,7 +1264,7 @@ public:
 
 // -------------------------------------------------------------------
 
-class EdaDataFile_PackageRecord_OutlineRecord final :
+class ODBDESIGN_EXPORT EdaDataFile_PackageRecord_OutlineRecord final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord) */ {
  public:
   inline EdaDataFile_PackageRecord_OutlineRecord() : EdaDataFile_PackageRecord_OutlineRecord(nullptr) {}
@@ -1591,7 +1591,7 @@ class EdaDataFile_PackageRecord_OutlineRecord final :
 };
 // -------------------------------------------------------------------
 
-class EdaDataFile_PackageRecord_PinRecord final :
+class ODBDESIGN_EXPORT EdaDataFile_PackageRecord_PinRecord final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.PinRecord) */ {
  public:
   inline EdaDataFile_PackageRecord_PinRecord() : EdaDataFile_PackageRecord_PinRecord(nullptr) {}
@@ -1975,7 +1975,7 @@ class EdaDataFile_PackageRecord_PinRecord final :
 };
 // -------------------------------------------------------------------
 
-class EdaDataFile_PackageRecord final :
+class ODBDESIGN_EXPORT EdaDataFile_PackageRecord final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.EdaDataFile.PackageRecord) */ {
  public:
   inline EdaDataFile_PackageRecord() : EdaDataFile_PackageRecord(nullptr) {}
@@ -2339,7 +2339,7 @@ class EdaDataFile_PackageRecord final :
 };
 // -------------------------------------------------------------------
 
-class EdaDataFile_FeatureGroupRecord final :
+class ODBDESIGN_EXPORT EdaDataFile_FeatureGroupRecord final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.EdaDataFile.FeatureGroupRecord) */ {
  public:
   inline EdaDataFile_FeatureGroupRecord() : EdaDataFile_FeatureGroupRecord(nullptr) {}
@@ -2589,7 +2589,7 @@ public:
 
 // -------------------------------------------------------------------
 
-class EdaDataFile final :
+class ODBDESIGN_EXPORT EdaDataFile final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.EdaDataFile) */ {
  public:
   inline EdaDataFile() : EdaDataFile(nullptr) {}

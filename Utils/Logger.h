@@ -103,9 +103,9 @@ namespace Utils
 		int m_outputTypes;
 		std::ofstream m_logFileStream;
 
-		WorkQueueLoopThread<struct Message> m_logMessageLoop;
-
 		//bool m_enableInternalLogging = false;
+
+		WorkQueueLoopThread<struct Message> m_logMessageLoop;		
 
 		//bool processWorkItem(struct LogMessage& logMessage) override;		
 		bool logMessage(const struct Message& logMessage);

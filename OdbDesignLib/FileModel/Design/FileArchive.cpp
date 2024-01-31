@@ -166,6 +166,8 @@ namespace Odb::Lib::FileModel::Design
 	std::unique_ptr<Odb::Lib::Protobuf::FileArchive> FileArchive::to_protobuf() const
 	{
 		std::unique_ptr<Odb::Lib::Protobuf::FileArchive> pFileArchiveMessage(new Odb::Lib::Protobuf::FileArchive);
+		pFileArchiveMessage->set_productname(m_productName);
+		pFileArchiveMessage->set_filename(m_filename);
 		pFileArchiveMessage->mutable_matrixfile()->CopyFrom(*m_matrixFile.to_protobuf());
 		pFileArchiveMessage->mutable_miscinfofile()->CopyFrom(*m_miscInfoFile.to_protobuf());
 		pFileArchiveMessage->mutable_standardfontsfile()->CopyFrom(*m_standardFontsFile.to_protobuf());
@@ -186,6 +188,8 @@ namespace Odb::Lib::FileModel::Design
 
 	void FileArchive::from_protobuf(const Odb::Lib::Protobuf::FileArchive& message)
 	{
+		m_productName = message.productname();
+		m_filename = message.filename();
 		m_matrixFile.from_protobuf(message.matrixfile());
 		m_miscInfoFile.from_protobuf(message.miscinfofile());
 		m_standardFontsFile.from_protobuf(message.standardfontsfile());

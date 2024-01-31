@@ -32,7 +32,7 @@
 #include <google/protobuf/unknown_field_set.h>
 // @@protoc_insertion_point(includes)
 #include <google/protobuf/port_def.inc>
-#define PROTOBUF_INTERNAL_EXPORT_pin_2eproto
+#define PROTOBUF_INTERNAL_EXPORT_pin_2eproto ODBDESIGN_EXPORT
 PROTOBUF_NAMESPACE_OPEN
 namespace internal {
 class AnyMetadata;
@@ -40,23 +40,23 @@ class AnyMetadata;
 PROTOBUF_NAMESPACE_CLOSE
 
 // Internal implementation detail -- do not use these members.
-struct TableStruct_pin_2eproto {
+struct ODBDESIGN_EXPORT TableStruct_pin_2eproto {
   static const uint32_t offsets[];
 };
-extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_pin_2eproto;
+ODBDESIGN_EXPORT extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_pin_2eproto;
 namespace Odb {
 namespace Lib {
 namespace Protobuf {
 namespace ProductModel {
 class Pin;
 struct PinDefaultTypeInternal;
-extern PinDefaultTypeInternal _Pin_default_instance_;
+ODBDESIGN_EXPORT extern PinDefaultTypeInternal _Pin_default_instance_;
 }  // namespace ProductModel
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
 PROTOBUF_NAMESPACE_OPEN
-template<> ::Odb::Lib::Protobuf::ProductModel::Pin* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::ProductModel::Pin>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::ProductModel::Pin* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::ProductModel::Pin>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace Odb {
 namespace Lib {
@@ -65,7 +65,7 @@ namespace ProductModel {
 
 // ===================================================================
 
-class Pin final :
+class ODBDESIGN_EXPORT Pin final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.ProductModel.Pin) */ {
  public:
   inline Pin() : Pin(nullptr) {}
