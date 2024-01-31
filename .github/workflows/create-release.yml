@@ -29,11 +29,18 @@ jobs:
           - name: Checkout Repository
             uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
     
-          # download the artifacts
-          - name: "Download artifacts"
-            uses: "actions/download-artifact@6b208ae046db98c579e8a3aa621ab581ff575935" # v4.1.1
+        #   # download the artifacts
+        #   - name: "Download artifacts"
+        #     uses: "actions/download-artifact@6b208ae046db98c579e8a3aa621ab581ff575935" # v4.1.1
+        #     with:
+        #       path: ${{ github.workspace }}/artifacts     
+
+          - name: Download Artifacts
+            uses: dawidd6/action-download-artifact@v3.0.0
             with:
-              path: ${{ github.workspace }}/artifacts     
+              workflow: cmake-multi-platform.yml
+              workflow_conclusion: success
+              path: ${{ github.workspace }}/artifacts              
     
           - name: Rename Artifacts
             run: |
