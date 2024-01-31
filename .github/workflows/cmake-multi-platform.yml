@@ -211,4 +211,4 @@ jobs:
       with:
         name: ${{ matrix.os }}-artifacts
         path: ${{ env.ARTIFACTS_DIR }}/artifacts-${{matrix.os}}.zip
-        retention-days: 1
+        retention-days: 365 # 1 year
