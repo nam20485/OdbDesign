@@ -41,7 +41,7 @@
 #include "attrlistfile.pb.h"
 // @@protoc_insertion_point(includes)
 #include <google/protobuf/port_def.inc>
-#define PROTOBUF_INTERNAL_EXPORT_filearchive_2eproto
+#define PROTOBUF_INTERNAL_EXPORT_filearchive_2eproto ODBDESIGN_EXPORT
 PROTOBUF_NAMESPACE_OPEN
 namespace internal {
 class AnyMetadata;
@@ -49,29 +49,29 @@ class AnyMetadata;
 PROTOBUF_NAMESPACE_CLOSE
 
 // Internal implementation detail -- do not use these members.
-struct TableStruct_filearchive_2eproto {
+struct ODBDESIGN_EXPORT TableStruct_filearchive_2eproto {
   static const uint32_t offsets[];
 };
-extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_filearchive_2eproto;
+ODBDESIGN_EXPORT extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_filearchive_2eproto;
 namespace Odb {
 namespace Lib {
 namespace Protobuf {
 class FileArchive;
 struct FileArchiveDefaultTypeInternal;
-extern FileArchiveDefaultTypeInternal _FileArchive_default_instance_;
+ODBDESIGN_EXPORT extern FileArchiveDefaultTypeInternal _FileArchive_default_instance_;
 class FileArchive_StepsByNameEntry_DoNotUse;
 struct FileArchive_StepsByNameEntry_DoNotUseDefaultTypeInternal;
-extern FileArchive_StepsByNameEntry_DoNotUseDefaultTypeInternal _FileArchive_StepsByNameEntry_DoNotUse_default_instance_;
+ODBDESIGN_EXPORT extern FileArchive_StepsByNameEntry_DoNotUseDefaultTypeInternal _FileArchive_StepsByNameEntry_DoNotUse_default_instance_;
 class FileArchive_SymbolsDirectoriesByNameEntry_DoNotUse;
 struct FileArchive_SymbolsDirectoriesByNameEntry_DoNotUseDefaultTypeInternal;
-extern FileArchive_SymbolsDirectoriesByNameEntry_DoNotUseDefaultTypeInternal _FileArchive_SymbolsDirectoriesByNameEntry_DoNotUse_default_instance_;
+ODBDESIGN_EXPORT extern FileArchive_SymbolsDirectoriesByNameEntry_DoNotUseDefaultTypeInternal _FileArchive_SymbolsDirectoriesByNameEntry_DoNotUse_default_instance_;
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
 PROTOBUF_NAMESPACE_OPEN
-template<> ::Odb::Lib::Protobuf::FileArchive* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::FileArchive>(Arena*);
-template<> ::Odb::Lib::Protobuf::FileArchive_StepsByNameEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::FileArchive_StepsByNameEntry_DoNotUse>(Arena*);
-template<> ::Odb::Lib::Protobuf::FileArchive_SymbolsDirectoriesByNameEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::FileArchive_SymbolsDirectoriesByNameEntry_DoNotUse>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::FileArchive* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::FileArchive>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::FileArchive_StepsByNameEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::FileArchive_StepsByNameEntry_DoNotUse>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::FileArchive_SymbolsDirectoriesByNameEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::FileArchive_SymbolsDirectoriesByNameEntry_DoNotUse>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace Odb {
 namespace Lib {
@@ -131,7 +131,7 @@ public:
 
 // -------------------------------------------------------------------
 
-class FileArchive final :
+class ODBDESIGN_EXPORT FileArchive final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.FileArchive) */ {
  public:
   inline FileArchive() : FileArchive(nullptr) {}
@@ -257,6 +257,8 @@ class FileArchive final :
   enum : int {
     kStepsByNameFieldNumber = 1,
     kSymbolsDirectoriesByNameFieldNumber = 5,
+    kProductNameFieldNumber = 7,
+    kFileNameFieldNumber = 8,
     kMiscInfoFileFieldNumber = 2,
     kMatrixFileFieldNumber = 3,
     kStandardFontsFileFieldNumber = 4,
@@ -295,6 +297,42 @@ class FileArchive final :
       symbolsdirectoriesbyname() const;
   ::PROTOBUF_NAMESPACE_ID::Map< std::string, ::Odb::Lib::Protobuf::SymbolsDirectory >*
       mutable_symbolsdirectoriesbyname();
+
+  // optional string productName = 7;
+  bool has_productname() const;
+  private:
+  bool _internal_has_productname() const;
+  public:
+  void clear_productname();
+  const std::string& productname() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_productname(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_productname();
+  PROTOBUF_NODISCARD std::string* release_productname();
+  void set_allocated_productname(std::string* productname);
+  private:
+  const std::string& _internal_productname() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_productname(const std::string& value);
+  std::string* _internal_mutable_productname();
+  public:
+
+  // optional string fileName = 8;
+  bool has_filename() const;
+  private:
+  bool _internal_has_filename() const;
+  public:
+  void clear_filename();
+  const std::string& filename() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_filename(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_filename();
+  PROTOBUF_NODISCARD std::string* release_filename();
+  void set_allocated_filename(std::string* filename);
+  private:
+  const std::string& _internal_filename() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_filename(const std::string& value);
+  std::string* _internal_mutable_filename();
+  public:
 
   // optional .Odb.Lib.Protobuf.MiscInfoFile miscInfoFile = 2;
   bool has_miscinfofile() const;
@@ -388,6 +426,8 @@ class FileArchive final :
         std::string, ::Odb::Lib::Protobuf::SymbolsDirectory,
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING,
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_MESSAGE> symbolsdirectoriesbyname_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr productname_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr filename_;
     ::Odb::Lib::Protobuf::MiscInfoFile* miscinfofile_;
     ::Odb::Lib::Protobuf::MatrixFile* matrixfile_;
     ::Odb::Lib::Protobuf::StandardFontsFile* standardfontsfile_;
@@ -439,7 +479,7 @@ FileArchive::mutable_stepsbyname() {
 
 // optional .Odb.Lib.Protobuf.MiscInfoFile miscInfoFile = 2;
 inline bool FileArchive::_internal_has_miscinfofile() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
   PROTOBUF_ASSUME(!value || _impl_.miscinfofile_ != nullptr);
   return value;
 }
@@ -462,14 +502,14 @@ inline void FileArchive::unsafe_arena_set_allocated_miscinfofile(
   }
   _impl_.miscinfofile_ = miscinfofile;
   if (miscinfofile) {
-    _impl_._has_bits_[0] |= 0x00000001u;
+    _impl_._has_bits_[0] |= 0x00000004u;
   } else {
-    _impl_._has_bits_[0] &= ~0x00000001u;
+    _impl_._has_bits_[0] &= ~0x00000004u;
   }
   // @@protoc_insertion_point(field_unsafe_arena_set_allocated:Odb.Lib.Protobuf.FileArchive.miscInfoFile)
 }
 inline ::Odb::Lib::Protobuf::MiscInfoFile* FileArchive::release_miscinfofile() {
-  _impl_._has_bits_[0] &= ~0x00000001u;
+  _impl_._has_bits_[0] &= ~0x00000004u;
   ::Odb::Lib::Protobuf::MiscInfoFile* temp = _impl_.miscinfofile_;
   _impl_.miscinfofile_ = nullptr;
 #ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
@@ -485,13 +525,13 @@ inline ::Odb::Lib::Protobuf::MiscInfoFile* FileArchive::release_miscinfofile() {
 }
 inline ::Odb::Lib::Protobuf::MiscInfoFile* FileArchive::unsafe_arena_release_miscinfofile() {
   // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.FileArchive.miscInfoFile)
-  _impl_._has_bits_[0] &= ~0x00000001u;
+  _impl_._has_bits_[0] &= ~0x00000004u;
   ::Odb::Lib::Protobuf::MiscInfoFile* temp = _impl_.miscinfofile_;
   _impl_.miscinfofile_ = nullptr;
   return temp;
 }
 inline ::Odb::Lib::Protobuf::MiscInfoFile* FileArchive::_internal_mutable_miscinfofile() {
-  _impl_._has_bits_[0] |= 0x00000001u;
+  _impl_._has_bits_[0] |= 0x00000004u;
   if (_impl_.miscinfofile_ == nullptr) {
     auto* p = CreateMaybeMessage<::Odb::Lib::Protobuf::MiscInfoFile>(GetArenaForAllocation());
     _impl_.miscinfofile_ = p;
@@ -516,9 +556,9 @@ inline void FileArchive::set_allocated_miscinfofile(::Odb::Lib::Protobuf::MiscIn
       miscinfofile = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
           message_arena, miscinfofile, submessage_arena);
     }
-    _impl_._has_bits_[0] |= 0x00000001u;
+    _impl_._has_bits_[0] |= 0x00000004u;
   } else {
-    _impl_._has_bits_[0] &= ~0x00000001u;
+    _impl_._has_bits_[0] &= ~0x00000004u;
   }
   _impl_.miscinfofile_ = miscinfofile;
   // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.FileArchive.miscInfoFile)
@@ -526,7 +566,7 @@ inline void FileArchive::set_allocated_miscinfofile(::Odb::Lib::Protobuf::MiscIn
 
 // optional .Odb.Lib.Protobuf.MatrixFile matrixFile = 3;
 inline bool FileArchive::_internal_has_matrixfile() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000008u) != 0;
   PROTOBUF_ASSUME(!value || _impl_.matrixfile_ != nullptr);
   return value;
 }
@@ -549,14 +589,14 @@ inline void FileArchive::unsafe_arena_set_allocated_matrixfile(
   }
   _impl_.matrixfile_ = matrixfile;
   if (matrixfile) {
-    _impl_._has_bits_[0] |= 0x00000002u;
+    _impl_._has_bits_[0] |= 0x00000008u;
   } else {
-    _impl_._has_bits_[0] &= ~0x00000002u;
+    _impl_._has_bits_[0] &= ~0x00000008u;
   }
   // @@protoc_insertion_point(field_unsafe_arena_set_allocated:Odb.Lib.Protobuf.FileArchive.matrixFile)
 }
 inline ::Odb::Lib::Protobuf::MatrixFile* FileArchive::release_matrixfile() {
-  _impl_._has_bits_[0] &= ~0x00000002u;
+  _impl_._has_bits_[0] &= ~0x00000008u;
   ::Odb::Lib::Protobuf::MatrixFile* temp = _impl_.matrixfile_;
   _impl_.matrixfile_ = nullptr;
 #ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
@@ -572,13 +612,13 @@ inline ::Odb::Lib::Protobuf::MatrixFile* FileArchive::release_matrixfile() {
 }
 inline ::Odb::Lib::Protobuf::MatrixFile* FileArchive::unsafe_arena_release_matrixfile() {
   // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.FileArchive.matrixFile)
-  _impl_._has_bits_[0] &= ~0x00000002u;
+  _impl_._has_bits_[0] &= ~0x00000008u;
   ::Odb::Lib::Protobuf::MatrixFile* temp = _impl_.matrixfile_;
   _impl_.matrixfile_ = nullptr;
   return temp;
 }
 inline ::Odb::Lib::Protobuf::MatrixFile* FileArchive::_internal_mutable_matrixfile() {
-  _impl_._has_bits_[0] |= 0x00000002u;
+  _impl_._has_bits_[0] |= 0x00000008u;
   if (_impl_.matrixfile_ == nullptr) {
     auto* p = CreateMaybeMessage<::Odb::Lib::Protobuf::MatrixFile>(GetArenaForAllocation());
     _impl_.matrixfile_ = p;
@@ -603,9 +643,9 @@ inline void FileArchive::set_allocated_matrixfile(::Odb::Lib::Protobuf::MatrixFi
       matrixfile = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
           message_arena, matrixfile, submessage_arena);
     }
-    _impl_._has_bits_[0] |= 0x00000002u;
+    _impl_._has_bits_[0] |= 0x00000008u;
   } else {
-    _impl_._has_bits_[0] &= ~0x00000002u;
+    _impl_._has_bits_[0] &= ~0x00000008u;
   }
   _impl_.matrixfile_ = matrixfile;
   // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.FileArchive.matrixFile)
@@ -613,7 +653,7 @@ inline void FileArchive::set_allocated_matrixfile(::Odb::Lib::Protobuf::MatrixFi
 
 // optional .Odb.Lib.Protobuf.StandardFontsFile standardFontsFile = 4;
 inline bool FileArchive::_internal_has_standardfontsfile() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000010u) != 0;
   PROTOBUF_ASSUME(!value || _impl_.standardfontsfile_ != nullptr);
   return value;
 }
@@ -636,14 +676,14 @@ inline void FileArchive::unsafe_arena_set_allocated_standardfontsfile(
   }
   _impl_.standardfontsfile_ = standardfontsfile;
   if (standardfontsfile) {
-    _impl_._has_bits_[0] |= 0x00000004u;
+    _impl_._has_bits_[0] |= 0x00000010u;
   } else {
-    _impl_._has_bits_[0] &= ~0x00000004u;
+    _impl_._has_bits_[0] &= ~0x00000010u;
   }
   // @@protoc_insertion_point(field_unsafe_arena_set_allocated:Odb.Lib.Protobuf.FileArchive.standardFontsFile)
 }
 inline ::Odb::Lib::Protobuf::StandardFontsFile* FileArchive::release_standardfontsfile() {
-  _impl_._has_bits_[0] &= ~0x00000004u;
+  _impl_._has_bits_[0] &= ~0x00000010u;
   ::Odb::Lib::Protobuf::StandardFontsFile* temp = _impl_.standardfontsfile_;
   _impl_.standardfontsfile_ = nullptr;
 #ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
@@ -659,13 +699,13 @@ inline ::Odb::Lib::Protobuf::StandardFontsFile* FileArchive::release_standardfon
 }
 inline ::Odb::Lib::Protobuf::StandardFontsFile* FileArchive::unsafe_arena_release_standardfontsfile() {
   // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.FileArchive.standardFontsFile)
-  _impl_._has_bits_[0] &= ~0x00000004u;
+  _impl_._has_bits_[0] &= ~0x00000010u;
   ::Odb::Lib::Protobuf::StandardFontsFile* temp = _impl_.standardfontsfile_;
   _impl_.standardfontsfile_ = nullptr;
   return temp;
 }
 inline ::Odb::Lib::Protobuf::StandardFontsFile* FileArchive::_internal_mutable_standardfontsfile() {
-  _impl_._has_bits_[0] |= 0x00000004u;
+  _impl_._has_bits_[0] |= 0x00000010u;
   if (_impl_.standardfontsfile_ == nullptr) {
     auto* p = CreateMaybeMessage<::Odb::Lib::Protobuf::StandardFontsFile>(GetArenaForAllocation());
     _impl_.standardfontsfile_ = p;
@@ -690,9 +730,9 @@ inline void FileArchive::set_allocated_standardfontsfile(::Odb::Lib::Protobuf::S
       standardfontsfile = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
           message_arena, standardfontsfile, submessage_arena);
     }
-    _impl_._has_bits_[0] |= 0x00000004u;
+    _impl_._has_bits_[0] |= 0x00000010u;
   } else {
-    _impl_._has_bits_[0] &= ~0x00000004u;
+    _impl_._has_bits_[0] &= ~0x00000010u;
   }
   _impl_.standardfontsfile_ = standardfontsfile;
   // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.FileArchive.standardFontsFile)
@@ -726,7 +766,7 @@ FileArchive::mutable_symbolsdirectoriesbyname() {
 
 // optional .Odb.Lib.Protobuf.AttrListFile miscAttrListFile = 6;
 inline bool FileArchive::_internal_has_miscattrlistfile() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000008u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000020u) != 0;
   PROTOBUF_ASSUME(!value || _impl_.miscattrlistfile_ != nullptr);
   return value;
 }
@@ -749,14 +789,14 @@ inline void FileArchive::unsafe_arena_set_allocated_miscattrlistfile(
   }
   _impl_.miscattrlistfile_ = miscattrlistfile;
   if (miscattrlistfile) {
-    _impl_._has_bits_[0] |= 0x00000008u;
+    _impl_._has_bits_[0] |= 0x00000020u;
   } else {
-    _impl_._has_bits_[0] &= ~0x00000008u;
+    _impl_._has_bits_[0] &= ~0x00000020u;
   }
   // @@protoc_insertion_point(field_unsafe_arena_set_allocated:Odb.Lib.Protobuf.FileArchive.miscAttrListFile)
 }
 inline ::Odb::Lib::Protobuf::AttrListFile* FileArchive::release_miscattrlistfile() {
-  _impl_._has_bits_[0] &= ~0x00000008u;
+  _impl_._has_bits_[0] &= ~0x00000020u;
   ::Odb::Lib::Protobuf::AttrListFile* temp = _impl_.miscattrlistfile_;
   _impl_.miscattrlistfile_ = nullptr;
 #ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
@@ -772,13 +812,13 @@ inline ::Odb::Lib::Protobuf::AttrListFile* FileArchive::release_miscattrlistfile
 }
 inline ::Odb::Lib::Protobuf::AttrListFile* FileArchive::unsafe_arena_release_miscattrlistfile() {
   // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.FileArchive.miscAttrListFile)
-  _impl_._has_bits_[0] &= ~0x00000008u;
+  _impl_._has_bits_[0] &= ~0x00000020u;
   ::Odb::Lib::Protobuf::AttrListFile* temp = _impl_.miscattrlistfile_;
   _impl_.miscattrlistfile_ = nullptr;
   return temp;
 }
 inline ::Odb::Lib::Protobuf::AttrListFile* FileArchive::_internal_mutable_miscattrlistfile() {
-  _impl_._has_bits_[0] |= 0x00000008u;
+  _impl_._has_bits_[0] |= 0x00000020u;
   if (_impl_.miscattrlistfile_ == nullptr) {
     auto* p = CreateMaybeMessage<::Odb::Lib::Protobuf::AttrListFile>(GetArenaForAllocation());
     _impl_.miscattrlistfile_ = p;
@@ -803,12 +843,148 @@ inline void FileArchive::set_allocated_miscattrlistfile(::Odb::Lib::Protobuf::At
       miscattrlistfile = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
           message_arena, miscattrlistfile, submessage_arena);
     }
-    _impl_._has_bits_[0] |= 0x00000008u;
+    _impl_._has_bits_[0] |= 0x00000020u;
   } else {
-    _impl_._has_bits_[0] &= ~0x00000008u;
+    _impl_._has_bits_[0] &= ~0x00000020u;
   }
   _impl_.miscattrlistfile_ = miscattrlistfile;
   // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.FileArchive.miscAttrListFile)
+}
+
+// optional string productName = 7;
+inline bool FileArchive::_internal_has_productname() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
+  return value;
+}
+inline bool FileArchive::has_productname() const {
+  return _internal_has_productname();
+}
+inline void FileArchive::clear_productname() {
+  _impl_.productname_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000001u;
+}
+inline const std::string& FileArchive::productname() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FileArchive.productName)
+  return _internal_productname();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void FileArchive::set_productname(ArgT0&& arg0, ArgT... args) {
+ _impl_._has_bits_[0] |= 0x00000001u;
+ _impl_.productname_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FileArchive.productName)
+}
+inline std::string* FileArchive::mutable_productname() {
+  std::string* _s = _internal_mutable_productname();
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.FileArchive.productName)
+  return _s;
+}
+inline const std::string& FileArchive::_internal_productname() const {
+  return _impl_.productname_.Get();
+}
+inline void FileArchive::_internal_set_productname(const std::string& value) {
+  _impl_._has_bits_[0] |= 0x00000001u;
+  _impl_.productname_.Set(value, GetArenaForAllocation());
+}
+inline std::string* FileArchive::_internal_mutable_productname() {
+  _impl_._has_bits_[0] |= 0x00000001u;
+  return _impl_.productname_.Mutable(GetArenaForAllocation());
+}
+inline std::string* FileArchive::release_productname() {
+  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.FileArchive.productName)
+  if (!_internal_has_productname()) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000001u;
+  auto* p = _impl_.productname_.Release();
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.productname_.IsDefault()) {
+    _impl_.productname_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
+}
+inline void FileArchive::set_allocated_productname(std::string* productname) {
+  if (productname != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000001u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000001u;
+  }
+  _impl_.productname_.SetAllocated(productname, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.productname_.IsDefault()) {
+    _impl_.productname_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.FileArchive.productName)
+}
+
+// optional string fileName = 8;
+inline bool FileArchive::_internal_has_filename() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
+  return value;
+}
+inline bool FileArchive::has_filename() const {
+  return _internal_has_filename();
+}
+inline void FileArchive::clear_filename() {
+  _impl_.filename_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000002u;
+}
+inline const std::string& FileArchive::filename() const {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FileArchive.fileName)
+  return _internal_filename();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void FileArchive::set_filename(ArgT0&& arg0, ArgT... args) {
+ _impl_._has_bits_[0] |= 0x00000002u;
+ _impl_.filename_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FileArchive.fileName)
+}
+inline std::string* FileArchive::mutable_filename() {
+  std::string* _s = _internal_mutable_filename();
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.FileArchive.fileName)
+  return _s;
+}
+inline const std::string& FileArchive::_internal_filename() const {
+  return _impl_.filename_.Get();
+}
+inline void FileArchive::_internal_set_filename(const std::string& value) {
+  _impl_._has_bits_[0] |= 0x00000002u;
+  _impl_.filename_.Set(value, GetArenaForAllocation());
+}
+inline std::string* FileArchive::_internal_mutable_filename() {
+  _impl_._has_bits_[0] |= 0x00000002u;
+  return _impl_.filename_.Mutable(GetArenaForAllocation());
+}
+inline std::string* FileArchive::release_filename() {
+  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.FileArchive.fileName)
+  if (!_internal_has_filename()) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000002u;
+  auto* p = _impl_.filename_.Release();
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.filename_.IsDefault()) {
+    _impl_.filename_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
+}
+inline void FileArchive::set_allocated_filename(std::string* filename) {
+  if (filename != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000002u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000002u;
+  }
+  _impl_.filename_.SetAllocated(filename, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.filename_.IsDefault()) {
+    _impl_.filename_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.FileArchive.fileName)
 }
 
 #ifdef __GNUC__

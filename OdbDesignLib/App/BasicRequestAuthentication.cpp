@@ -1,10 +1,20 @@
 #include "BasicRequestAuthentication.h"
 #include <string>
+#include "macros.h"
+
+using namespace Utils;
 
 namespace Odb::Lib::App
 {
 	crow::response BasicRequestAuthentication::AuthenticateRequest(const crow::request& req)
 	{
+		// if running debug build AND in Local environment, bypass authentication
+		if (IsDebug() && IsLocal())
+		{
+			// 200 Authorized!
+			return crow::response(200, "Authorized");
+		}
+
 		const auto& authHeader = req.get_header_value("Authorization");
 		if (authHeader.empty()) return crow::response(401, "Unauthorized");
 
@@ -29,10 +39,10 @@ namespace Odb::Lib::App
 	{
 		// 500 - Internal Server Error
 		auto validUsername = std::getenv(USERNAME_ENV_NAME);
-		if (validUsername == nullptr) return crow::response(500, "Server failed retrieving credentials");
+		if (validUsername == nullptr) return crow::response(500, "Failed retrieving credentials");
 
 		auto validPassword = std::getenv(PASSWORD_ENV_NAME);
-		if (validPassword == nullptr) return crow::response(500, "Server failed retrieving credentials");
+		if (validPassword == nullptr) return crow::response(500, "Failed retrieving credentials");
 		
 		// 403 - Forbidden
 		if (username != validUsername ||

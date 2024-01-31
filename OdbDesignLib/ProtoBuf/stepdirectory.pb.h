@@ -41,7 +41,7 @@
 #include "stephdrfile.pb.h"
 // @@protoc_insertion_point(includes)
 #include <google/protobuf/port_def.inc>
-#define PROTOBUF_INTERNAL_EXPORT_stepdirectory_2eproto
+#define PROTOBUF_INTERNAL_EXPORT_stepdirectory_2eproto ODBDESIGN_EXPORT
 PROTOBUF_NAMESPACE_OPEN
 namespace internal {
 class AnyMetadata;
@@ -49,29 +49,29 @@ class AnyMetadata;
 PROTOBUF_NAMESPACE_CLOSE
 
 // Internal implementation detail -- do not use these members.
-struct TableStruct_stepdirectory_2eproto {
+struct ODBDESIGN_EXPORT TableStruct_stepdirectory_2eproto {
   static const uint32_t offsets[];
 };
-extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_stepdirectory_2eproto;
+ODBDESIGN_EXPORT extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_stepdirectory_2eproto;
 namespace Odb {
 namespace Lib {
 namespace Protobuf {
 class StepDirectory;
 struct StepDirectoryDefaultTypeInternal;
-extern StepDirectoryDefaultTypeInternal _StepDirectory_default_instance_;
+ODBDESIGN_EXPORT extern StepDirectoryDefaultTypeInternal _StepDirectory_default_instance_;
 class StepDirectory_LayersByNameEntry_DoNotUse;
 struct StepDirectory_LayersByNameEntry_DoNotUseDefaultTypeInternal;
-extern StepDirectory_LayersByNameEntry_DoNotUseDefaultTypeInternal _StepDirectory_LayersByNameEntry_DoNotUse_default_instance_;
+ODBDESIGN_EXPORT extern StepDirectory_LayersByNameEntry_DoNotUseDefaultTypeInternal _StepDirectory_LayersByNameEntry_DoNotUse_default_instance_;
 class StepDirectory_NetlistsByNameEntry_DoNotUse;
 struct StepDirectory_NetlistsByNameEntry_DoNotUseDefaultTypeInternal;
-extern StepDirectory_NetlistsByNameEntry_DoNotUseDefaultTypeInternal _StepDirectory_NetlistsByNameEntry_DoNotUse_default_instance_;
+ODBDESIGN_EXPORT extern StepDirectory_NetlistsByNameEntry_DoNotUseDefaultTypeInternal _StepDirectory_NetlistsByNameEntry_DoNotUse_default_instance_;
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
 PROTOBUF_NAMESPACE_OPEN
-template<> ::Odb::Lib::Protobuf::StepDirectory* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::StepDirectory>(Arena*);
-template<> ::Odb::Lib::Protobuf::StepDirectory_LayersByNameEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::StepDirectory_LayersByNameEntry_DoNotUse>(Arena*);
-template<> ::Odb::Lib::Protobuf::StepDirectory_NetlistsByNameEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::StepDirectory_NetlistsByNameEntry_DoNotUse>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::StepDirectory* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::StepDirectory>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::StepDirectory_LayersByNameEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::StepDirectory_LayersByNameEntry_DoNotUse>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::StepDirectory_NetlistsByNameEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::StepDirectory_NetlistsByNameEntry_DoNotUse>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace Odb {
 namespace Lib {
@@ -131,7 +131,7 @@ public:
 
 // -------------------------------------------------------------------
 
-class StepDirectory final :
+class ODBDESIGN_EXPORT StepDirectory final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.StepDirectory) */ {
  public:
   inline StepDirectory() : StepDirectory(nullptr) {}

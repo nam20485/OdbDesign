@@ -33,7 +33,7 @@
 #include <google/protobuf/timestamp.pb.h>
 // @@protoc_insertion_point(includes)
 #include <google/protobuf/port_def.inc>
-#define PROTOBUF_INTERNAL_EXPORT_miscinfofile_2eproto
+#define PROTOBUF_INTERNAL_EXPORT_miscinfofile_2eproto ODBDESIGN_EXPORT
 PROTOBUF_NAMESPACE_OPEN
 namespace internal {
 class AnyMetadata;
@@ -41,21 +41,21 @@ class AnyMetadata;
 PROTOBUF_NAMESPACE_CLOSE
 
 // Internal implementation detail -- do not use these members.
-struct TableStruct_miscinfofile_2eproto {
+struct ODBDESIGN_EXPORT TableStruct_miscinfofile_2eproto {
   static const uint32_t offsets[];
 };
-extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_miscinfofile_2eproto;
+ODBDESIGN_EXPORT extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_miscinfofile_2eproto;
 namespace Odb {
 namespace Lib {
 namespace Protobuf {
 class MiscInfoFile;
 struct MiscInfoFileDefaultTypeInternal;
-extern MiscInfoFileDefaultTypeInternal _MiscInfoFile_default_instance_;
+ODBDESIGN_EXPORT extern MiscInfoFileDefaultTypeInternal _MiscInfoFile_default_instance_;
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
 PROTOBUF_NAMESPACE_OPEN
-template<> ::Odb::Lib::Protobuf::MiscInfoFile* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::MiscInfoFile>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::MiscInfoFile* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::MiscInfoFile>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace Odb {
 namespace Lib {
@@ -63,7 +63,7 @@ namespace Protobuf {
 
 // ===================================================================
 
-class MiscInfoFile final :
+class ODBDESIGN_EXPORT MiscInfoFile final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.MiscInfoFile) */ {
  public:
   inline MiscInfoFile() : MiscInfoFile(nullptr) {}

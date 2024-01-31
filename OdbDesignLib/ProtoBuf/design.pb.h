@@ -40,7 +40,7 @@
 #include "part.pb.h"
 // @@protoc_insertion_point(includes)
 #include <google/protobuf/port_def.inc>
-#define PROTOBUF_INTERNAL_EXPORT_design_2eproto
+#define PROTOBUF_INTERNAL_EXPORT_design_2eproto ODBDESIGN_EXPORT
 PROTOBUF_NAMESPACE_OPEN
 namespace internal {
 class AnyMetadata;
@@ -48,39 +48,39 @@ class AnyMetadata;
 PROTOBUF_NAMESPACE_CLOSE
 
 // Internal implementation detail -- do not use these members.
-struct TableStruct_design_2eproto {
+struct ODBDESIGN_EXPORT TableStruct_design_2eproto {
   static const uint32_t offsets[];
 };
-extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_design_2eproto;
+ODBDESIGN_EXPORT extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_design_2eproto;
 namespace Odb {
 namespace Lib {
 namespace Protobuf {
 namespace ProductModel {
 class Design;
 struct DesignDefaultTypeInternal;
-extern DesignDefaultTypeInternal _Design_default_instance_;
+ODBDESIGN_EXPORT extern DesignDefaultTypeInternal _Design_default_instance_;
 class Design_ComponentsByNameEntry_DoNotUse;
 struct Design_ComponentsByNameEntry_DoNotUseDefaultTypeInternal;
-extern Design_ComponentsByNameEntry_DoNotUseDefaultTypeInternal _Design_ComponentsByNameEntry_DoNotUse_default_instance_;
+ODBDESIGN_EXPORT extern Design_ComponentsByNameEntry_DoNotUseDefaultTypeInternal _Design_ComponentsByNameEntry_DoNotUse_default_instance_;
 class Design_NetsByNameEntry_DoNotUse;
 struct Design_NetsByNameEntry_DoNotUseDefaultTypeInternal;
-extern Design_NetsByNameEntry_DoNotUseDefaultTypeInternal _Design_NetsByNameEntry_DoNotUse_default_instance_;
+ODBDESIGN_EXPORT extern Design_NetsByNameEntry_DoNotUseDefaultTypeInternal _Design_NetsByNameEntry_DoNotUse_default_instance_;
 class Design_PackagesByNameEntry_DoNotUse;
 struct Design_PackagesByNameEntry_DoNotUseDefaultTypeInternal;
-extern Design_PackagesByNameEntry_DoNotUseDefaultTypeInternal _Design_PackagesByNameEntry_DoNotUse_default_instance_;
+ODBDESIGN_EXPORT extern Design_PackagesByNameEntry_DoNotUseDefaultTypeInternal _Design_PackagesByNameEntry_DoNotUse_default_instance_;
 class Design_PartsByNameEntry_DoNotUse;
 struct Design_PartsByNameEntry_DoNotUseDefaultTypeInternal;
-extern Design_PartsByNameEntry_DoNotUseDefaultTypeInternal _Design_PartsByNameEntry_DoNotUse_default_instance_;
+ODBDESIGN_EXPORT extern Design_PartsByNameEntry_DoNotUseDefaultTypeInternal _Design_PartsByNameEntry_DoNotUse_default_instance_;
 }  // namespace ProductModel
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
 PROTOBUF_NAMESPACE_OPEN
-template<> ::Odb::Lib::Protobuf::ProductModel::Design* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::ProductModel::Design>(Arena*);
-template<> ::Odb::Lib::Protobuf::ProductModel::Design_ComponentsByNameEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::ProductModel::Design_ComponentsByNameEntry_DoNotUse>(Arena*);
-template<> ::Odb::Lib::Protobuf::ProductModel::Design_NetsByNameEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::ProductModel::Design_NetsByNameEntry_DoNotUse>(Arena*);
-template<> ::Odb::Lib::Protobuf::ProductModel::Design_PackagesByNameEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::ProductModel::Design_PackagesByNameEntry_DoNotUse>(Arena*);
-template<> ::Odb::Lib::Protobuf::ProductModel::Design_PartsByNameEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::ProductModel::Design_PartsByNameEntry_DoNotUse>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::ProductModel::Design* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::ProductModel::Design>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::ProductModel::Design_ComponentsByNameEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::ProductModel::Design_ComponentsByNameEntry_DoNotUse>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::ProductModel::Design_NetsByNameEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::ProductModel::Design_NetsByNameEntry_DoNotUse>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::ProductModel::Design_PackagesByNameEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::ProductModel::Design_PackagesByNameEntry_DoNotUse>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::ProductModel::Design_PartsByNameEntry_DoNotUse* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::ProductModel::Design_PartsByNameEntry_DoNotUse>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace Odb {
 namespace Lib {
@@ -193,7 +193,7 @@ public:
 
 // -------------------------------------------------------------------
 
-class Design final :
+class ODBDESIGN_EXPORT Design final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.ProductModel.Design) */ {
  public:
   inline Design() : Design(nullptr) {}

@@ -44,6 +44,10 @@ namespace Odb::Lib::FileModel::Design
 
 		bool ParseFileModel();
 
+		// Inherited via IProtoBuffable
+		std::unique_ptr<Odb::Lib::Protobuf::FileArchive> to_protobuf() const override;
+		void from_protobuf(const Odb::Lib::Protobuf::FileArchive& message) override;
+
 		typedef std::vector<std::shared_ptr<FileArchive>> Vector;
 		typedef std::map<std::string, std::shared_ptr<FileArchive>> StringMap;
 
@@ -72,10 +76,6 @@ namespace Odb::Lib::FileModel::Design
 
 		static std::string findRootDir(const std::filesystem::path& extractedPath);
 		static bool pathContainsTopLevelDesignDirs(const std::filesystem::path& path);
-
-		// Inherited via IProtoBuffable
-		std::unique_ptr<Odb::Lib::Protobuf::FileArchive> to_protobuf() const override;
-		void from_protobuf(const Odb::Lib::Protobuf::FileArchive& message) override;
 
 		static inline constexpr const char* TOPLEVEL_DESIGN_DIR_NAMES[] =
 		{ 

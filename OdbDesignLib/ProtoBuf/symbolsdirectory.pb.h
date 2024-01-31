@@ -34,7 +34,7 @@
 #include "featuresfile.pb.h"
 // @@protoc_insertion_point(includes)
 #include <google/protobuf/port_def.inc>
-#define PROTOBUF_INTERNAL_EXPORT_symbolsdirectory_2eproto
+#define PROTOBUF_INTERNAL_EXPORT_symbolsdirectory_2eproto ODBDESIGN_EXPORT
 PROTOBUF_NAMESPACE_OPEN
 namespace internal {
 class AnyMetadata;
@@ -42,21 +42,21 @@ class AnyMetadata;
 PROTOBUF_NAMESPACE_CLOSE
 
 // Internal implementation detail -- do not use these members.
-struct TableStruct_symbolsdirectory_2eproto {
+struct ODBDESIGN_EXPORT TableStruct_symbolsdirectory_2eproto {
   static const uint32_t offsets[];
 };
-extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_symbolsdirectory_2eproto;
+ODBDESIGN_EXPORT extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_symbolsdirectory_2eproto;
 namespace Odb {
 namespace Lib {
 namespace Protobuf {
 class SymbolsDirectory;
 struct SymbolsDirectoryDefaultTypeInternal;
-extern SymbolsDirectoryDefaultTypeInternal _SymbolsDirectory_default_instance_;
+ODBDESIGN_EXPORT extern SymbolsDirectoryDefaultTypeInternal _SymbolsDirectory_default_instance_;
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
 PROTOBUF_NAMESPACE_OPEN
-template<> ::Odb::Lib::Protobuf::SymbolsDirectory* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::SymbolsDirectory>(Arena*);
+template<> ODBDESIGN_EXPORT ::Odb::Lib::Protobuf::SymbolsDirectory* Arena::CreateMaybeMessage<::Odb::Lib::Protobuf::SymbolsDirectory>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace Odb {
 namespace Lib {
@@ -64,7 +64,7 @@ namespace Protobuf {
 
 // ===================================================================
 
-class SymbolsDirectory final :
+class ODBDESIGN_EXPORT SymbolsDirectory final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.SymbolsDirectory) */ {
  public:
   inline SymbolsDirectory() : SymbolsDirectory(nullptr) {}

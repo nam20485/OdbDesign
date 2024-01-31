@@ -9,12 +9,14 @@
 #include "Via.h"
 #include "Package.h"
 #include "Part.h"
-#include "../FileModel/Design/StepDirectory.h"
+//#include "../FileModel/Design/StepDirectory.h"
+#include "../ProtoBuf/design.pb.h"
+#include "../IProtoBuffable.h"	
 
 
 namespace Odb::Lib::ProductModel
 {
-	class ODBDESIGN_EXPORT Design
+	class ODBDESIGN_EXPORT Design : public IProtoBuffable<Odb::Lib::Protobuf::ProductModel::Design>
 	{
 	public:	
 		Design();
@@ -25,23 +27,28 @@ namespace Odb::Lib::ProductModel
 		
 		const Net::Vector& GetNets() const;
 		const Net::StringMap GetNetsByName() const;
+		std::shared_ptr<Net> GetNet(const std::string& name) const;
 
 		const Package::Vector& GetPackages() const;
 		const Package::StringMap& GetPackagesByName() const;
 
 		const Component::Vector& GetComponents() const;
 		const Component::StringMap& GetComponentsByName() const;
+		std::shared_ptr<Component> GetComponent(const std::string& refDes) const;
 
 		const Part::Vector& GetParts() const;
 		const Part::StringMap& GetPartsByName() const;
-
-		std::shared_ptr<Net> GetNet(const std::string& name) const;
+		
 		std::shared_ptr<Net> GetNoneNet() const;
 
 		bool Build(std::string path);
 		bool Build(std::shared_ptr<FileModel::Design::FileArchive> pFileModel);	
 
 		std::shared_ptr<FileModel::Design::FileArchive> GetFileModel() const;
+
+		// Inherited via IProtoBuffable
+		std::unique_ptr<Odb::Lib::Protobuf::ProductModel::Design> to_protobuf() const override;
+		void from_protobuf(const Odb::Lib::Protobuf::ProductModel::Design& message) override;
 
 		typedef std::vector<std::shared_ptr<Design>> Vector;
 		typedef std::map<std::string, std::shared_ptr<Design>> StringMap;
