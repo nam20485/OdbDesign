@@ -6,8 +6,8 @@ name: Docker Scout Scan
 # documentation.
 
 on:
-  #push:
-  #  branches: [ "development", "main", "release", "nam20485" ]
+  push:
+    branches: [ "nam20485" ]
   pull_request:
     branches: [ "development", "main", "release", "nam20485" ]
    
