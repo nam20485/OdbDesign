@@ -27,8 +27,10 @@
 name: Deploy to Amazon EKS
 
 on:
-  push:
-    branches: [ "release" ]
+  #push:
+  #  branches: [ "release" ]
+  repository_dispatch:
+    types: [ "trigger_deploy_release_event" ]
 
 env:
   AWS_REGION: us-west-2                   # set this to your preferred AWS region, e.g. us-west-1\                                             # file, e.g. .aws/task-definition.json
@@ -45,6 +47,16 @@ jobs:
     environment: production
 
     steps:
+
+    - name: Check Dispatch ID
+      run: |
+        if [[ "${{ github.event.client_payload.dispatch_id }}" == "${{ secrets.DISPATCH_ID }}" ]]; then
+          echo "Dispatch ID is correct"
+        else
+          echo "Dispatch ID is not correct"
+          exit 1
+        fi
+
     - name: Checkout
       uses: actions/checkout@v3
 

@@ -101,3 +101,11 @@ jobs:
         # This step uses the identity token to provision an ephemeral certificate
         # against the sigstore community Fulcio instance.
         run: echo "${{ steps.meta.outputs.tags }}" | xargs -I {} cosign sign --yes {}@${{ steps.build-and-push.outputs.digest }}
+
+      - name: Trigger Deploy and Release Workflows
+        if: github.ref_name == 'release' && github.event_name == 'push' 
+        uses: peter-evans/repository-dispatch@v3.0.0
+        with:
+          repository: ${{ github.repository }}
+          event-type: trigger_deploy_release_event
+          client-payload: '{"ref": "${{ github.ref_name }}", "dispatch_id": "${{ secrets.DISPATCH_ID }}"}'
