@@ -1,9 +1,12 @@
 # run CMake build on Windows and Linux
 name: Create Release
 
+
 on:
-  push:
-    branches: [ "release" ]  
+  #push:
+  #  branches: [ "release" ]
+  repository_dispatch:
+    types: [ "trigger_deploy_release_event" ]
 
 permissions:
   contents: read  
@@ -19,22 +22,25 @@ jobs:
     # only on pushes to the release branch
     name: Create Release
     #needs: build
-    if: ${{ (github.ref_name == 'release') && github.event_name == 'push' }}       
+    #if: ${{ (github.ref_name == 'release') && github.event_name == 'push' }}
     runs-on: ubuntu-22.04
     permissions: 
         contents: write
     
     steps:
+
+          - name: Check Dispatch ID
+            run: |
+              if [[ "${{ github.event.client_payload.dispatch_id }}" == "${{ secrets.DISPATCH_ID }}" ]]; then
+                echo "Dispatch ID is correct"
+              else
+                echo "Dispatch ID is not correct"
+                exit 1
+              fi
     
           - name: Checkout Repository
             uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-    
-        #   # download the artifacts
-        #   - name: "Download artifacts"
-        #     uses: "actions/download-artifact@6b208ae046db98c579e8a3aa621ab581ff575935" # v4.1.1
-        #     with:
-        #       path: ${{ github.workspace }}/artifacts     
-
+       
           - name: Download Artifacts
             uses: dawidd6/action-download-artifact@v3.0.0
             with:
