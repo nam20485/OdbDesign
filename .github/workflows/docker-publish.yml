@@ -27,8 +27,10 @@ jobs:
 
     runs-on: ubuntu-latest
     permissions:
-      contents: read
-      packages: write
+      # write required for sending repository dispatch event
+      contents: write
+      # write required for uploading docker image to packages   
+      packages: write   
       # This is used to complete the identity challenge
       # with sigstore/fulcio when running outside of PRs.
       id-token: write
