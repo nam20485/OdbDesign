@@ -47,11 +47,12 @@ jobs:
     #     KUBE_CONFIG: ${{ secrets.KUBECONFIG }}
 
     - name: Configure kubectl via Secret Env
-      env: 
-        KUBE_CONFIG: ${{ secrets.KUBECONFIG }}
       run: | 
-        echo $KUBE_CONFIG > ${{ github.workspace  }}/kubeconfig
-        export KUBECONFIG=${{ github.workspace  }}/kubeconfig
+        echo ${{ secrets.KUBECONFIG }} > ${{ github.workspace }}/kubeconfig
+        export KUBECONFIG=${{ github.workspace }}/kubeconfig
+        echo $KUBECONFIG
+        cat $KUBECONFIG
+        kubectl config view
         kubectl config get-contexts
         kubectl config use-context eks-uswest2-cluster
         kubectl version
