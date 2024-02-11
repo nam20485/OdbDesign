@@ -33,18 +33,20 @@ jobs:
 
     - name: Checkout
       uses: actions/checkout@v3
+    
+    - name: Install AWS CLI
+      run: |
+        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+        unzip awscliv2.zip
+        sudo ./aws/install
+        aws --version
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4.0.1
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ env.AWS_REGION }}   
-
-    # - name: Configure kubectl using Action
-    #   uses: actions-hub/kubectl@master
-    #   env: 
-    #     KUBE_CONFIG: ${{ secrets.KUBECONFIG }}
+        aws-region: ${{ env.AWS_REGION }}  
 
     - name: Configure kubectl via Secret Env
       run: | 
@@ -55,14 +57,7 @@ jobs:
         kubectl config view
         kubectl config get-contexts
         kubectl config use-context eks-uswest2-cluster
-        kubectl version
-
-    - name: Install AWS CLI
-      run: |
-        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-        unzip awscliv2.zip
-        sudo ./aws/install
-        aws --version
+        kubectl version   
     
     - name: Deploy to EKS
       shell: pwsh
