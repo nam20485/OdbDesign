@@ -1,0 +1,30 @@
+name: SBOM Generate and Submit
+
+on:
+  push:
+    branches: [ "release" ]
+  workflow_dispatch:
+
+permissions:
+    contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    permissions: read-all
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: SBOM Generate
+        uses: advanced-security/sbom-generator-action@v0.0.1
+        id: sbom-generate
+        env: 
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: SBOM Upload 
+        uses: advanced-security/spdx-dependency-submission-action@v0.0.1
+        with:
+            filePath: ${{steps.sbom-generate.outputs.fileName }}
+     
