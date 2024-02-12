@@ -18,7 +18,9 @@ jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-22.04
-    environment: production
+    environment: 
+      name: ${{ github.event.client_payload.ref_name }}
+      url: http://default-ingress-1165108808.us-west-2.elb.amazonaws.com/swagger
 
     steps:
 
