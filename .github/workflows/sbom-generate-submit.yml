@@ -2,7 +2,7 @@ name: SBOM Generate and Submit
 
 on:
   push:
-    branches: [ "development", "release" ]
+    branches: [ "main", "release", "development", "nam20485" ]
   workflow_dispatch:
 
 permissions:
@@ -11,7 +11,9 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-22.04
-    permissions: read-all
+    permissions: 
+        id-token: write
+        contents: write
 
     steps:
       - name: Checkout Code
@@ -26,5 +28,5 @@ jobs:
       - name: SBOM Upload 
         uses: advanced-security/spdx-dependency-submission-action@v0.0.1
         with:
-            filePath: ${{steps.sbom-generate.outputs.fileName }}
+            filePath: ${{ steps.sbom-generate.outputs.fileName }}
      
