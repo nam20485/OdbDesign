@@ -29,6 +29,11 @@ jobs:
     
     steps:
 
+          - name: Harden Runner
+            uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+            with:
+              egress-policy: audit
+
           - name: Check Dispatch ID
             run: |
               if [[ "${{ github.event.client_payload.dispatch_id }}" == "${{ secrets.DISPATCH_ID }}" ]]; then
@@ -42,7 +47,7 @@ jobs:
             uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
        
           - name: Download Artifacts
-            uses: dawidd6/action-download-artifact@v3.0.0
+            uses: dawidd6/action-download-artifact@e7466d1a7587ed14867642c2ca74b5bcc1e19a2d # v3.0.0
             with:
               workflow: cmake-multi-platform.yml
               workflow_conclusion: success

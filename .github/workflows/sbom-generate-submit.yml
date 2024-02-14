@@ -17,17 +17,22 @@ jobs:
         contents: write
 
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+        with:
+          egress-policy: audit
+
       - name: Checkout Code
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
       - name: SBOM Generate
-        uses: advanced-security/sbom-generator-action@v0.0.1
+        uses: advanced-security/sbom-generator-action@375dee8e6144d9fd0ec1f5667b4f6fb4faacefed # v0.0.1
         id: sbom-generate
         env: 
           GITHUB_TOKEN: ${{ github.token }}
 
       - name: SBOM Upload 
-        uses: advanced-security/spdx-dependency-submission-action@v0.0.1
+        uses: advanced-security/spdx-dependency-submission-action@dc069b56ba31ce546dc419b549aceb808c632d9a # v0.0.1
         with:
             filePath: ${{ steps.sbom-generate.outputs.fileName }}
      
