@@ -18,7 +18,8 @@ jobs:
 
   dependency-review:
     runs-on: ubuntu-22.04
-    permissions: 
+    permissions:
+      id-token: write 
       contents: write
       pull-requests: write
     
