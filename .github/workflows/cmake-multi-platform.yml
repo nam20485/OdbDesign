@@ -56,7 +56,7 @@ jobs:
     
     # add problem matchers by compiler
     - name: Add Problem Matchers
-      uses: ammaraskar/msvc-problem-matcher@13149ebc00eaa00eadcd81b204d7159cca5de4fd # master
+      uses: ammaraskar/msvc-problem-matcher@1ebcb382869bfdc2cc645e8a2a43b6d319ea1cc0 # master
       if: matrix.os == 'windows-2022'
     - name: Add Problem Matchers
       uses: ammaraskar/gcc-problem-matcher@0f9c86f9e693db67dacf53986e1674de5f2e5f28 # master
