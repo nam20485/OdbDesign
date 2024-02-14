@@ -15,6 +15,7 @@ on:
   #  branches: [ "development" ]
   pull_request:
     branches: [ "development" ]
+  workflow_dispatch:
 
 # Declare default permissions as read only.
 permissions: read-all
