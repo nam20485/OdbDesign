@@ -47,7 +47,7 @@ jobs:
 
       # add problem matchers
       - name: Add Problem Matchers
-        uses: ammaraskar/gcc-problem-matcher@d1fed1fac9e94d30e23b5a82dba4e2963e71d2e7 # master
+        uses: ammaraskar/gcc-problem-matcher@0f9c86f9e693db67dacf53986e1674de5f2e5f28 # master
 
     #   # Install the cosign tool except on PR
     #   # https://github.com/sigstore/cosign-installer
@@ -138,7 +138,7 @@ jobs:
         
       - name: Upload SARIF result
         id: upload-sarif
-        uses: github/codeql-action/upload-sarif@0b21cf2492b6b02c465a3e5d7c473717ad7721ba # v3.23.1
+        uses: github/codeql-action/upload-sarif@e675ced7a7522a761fc9c8eb26682c8b27c42b2b # v3.24.1
         with:
           sarif_file: sarif.output.json
       
