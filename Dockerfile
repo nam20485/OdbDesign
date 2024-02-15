@@ -1,10 +1,8 @@
-FROM debian:bookworm-20240211-slim@sha256:d02c76d82364cedca16ba3ed6f9102406fa9fa8833076a609cabf14270f43dfc AS build
+FROM --platform=linux/amd64 debian:bookworm-20240211-slim@sha256:d02c76d82364cedca16ba3ed6f9102406fa9fa8833076a609cabf14270f43dfc AS build
 
 ARG OWNER=nam20485
 ARG GITHUB_TOKEN="PASSWORD"
 ARG VCPKG_BINARY_SOURCES=""
-ARG ODBDESIGN_SERVER_REQUEST_USERNAME=""
-ARG ODBDESIGN_SERVER_REQUEST_PASSWORD=""
 
 # install dependencies
 RUN apt-get update && \
@@ -68,7 +66,9 @@ RUN cmake --build --preset linux-release
 # RUN cmake --build --preset linux-debug
 
 # much smaller runtime image
-FROM debian:bookworm-20240211-slim@sha256:d02c76d82364cedca16ba3ed6f9102406fa9fa8833076a609cabf14270f43dfc AS run
+FROM --platform=linux/amd64 debian:bookworm-20240211-slim@sha256:d02c76d82364cedca16ba3ed6f9102406fa9fa8833076a609cabf14270f43dfc AS run
+ARG ODBDESIGN_SERVER_REQUEST_USERNAME=""
+ARG ODBDESIGN_SERVER_REQUEST_PASSWORD=""
 LABEL org.opencontainers.image.source=https://github.com/nam20485/OdbDesign \
       org.opencontainers.image.authors=https://github.com/nam20485 \
       org.opencontainers.image.description="The OdbDesign Docker image runs the OdbDesignServer REST API server executable, listening on port 8888." \
