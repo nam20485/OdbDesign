@@ -1,4 +1,8 @@
 FROM debian:bookworm-20240211@sha256:4482958b4461ff7d9fabc24b3a9ab1e9a2c85ece07b2db1840c7cbc01d053e90 AS build
+LABEL org.opencontainers.image.source=https://github.com/nam20485/OdbDesign
+LABEL org.opencontainers.image.authors=https://github.com/nam20485
+LABEL org.opencontainers.image.description="The OdbDesign Docker image runs the OdbDesignServer REST API server executable, listening on port 8888."
+LABEL org.opencontainers.image.licenses=MIT
 
 ARG OWNER=nam20485
 ARG GITHUB_TOKEN="PASSWORD"
