@@ -60,7 +60,7 @@ RUN apt-get update && \
         python3-pip
 
 WORKDIR /PyOdbDesignServer
-RUN python3 -m pip install -r requirements.txt --break-system-packages
+RUN python3 -m pip install -r requirements.txt --break-system-packages --require-hashes
 
 # run
 WORKDIR /PyOdbDesignServer
