@@ -97,6 +97,8 @@ jobs:
             OWNER=nam20485
             GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
             VCPKG_BINARY_SOURCES=clear;nuget,GitHub,readwrite
+            ODBDESIGN_SERVER_REQUEST_USERNAME=${{ secrets.ODBDESIGN_SERVER_REQUEST_USERNAME }}
+            ODBDESIGN_SERVER_REQUEST_PASSWORD=${{ secrets.ODBDESIGN_SERVER_REQUEST_PASSWORD }}          
 
       # Sign the resulting Docker image digest except on PRs.
       # This will only write to the public Rekor transparency log when the Docker
