@@ -68,6 +68,7 @@ The diagram describes the current state of parser implementation and data availa
 | Security Code Scan          | [![CodeQL Security Scan](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml) |
 | Docker Security Scan        | [![Docker Scout Scan](https://github.com/nam20485/OdbDesign/actions/workflows/docker-scout-scan.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-scout-scan.yml) |
 | Dependency Review Scan      | [![Dependency Review](https://github.com/nam20485/OdbDesign/actions/workflows/dependency-review.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/dependency-review.yml) |
+| Upload SBOM                 | [![SBOM Generate and Submit](https://github.com/nam20485/OdbDesign/actions/workflows/sbom-generate-submit.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/sbom-generate-submit.yml) |
 
 #### `main`
 
@@ -78,6 +79,7 @@ The diagram describes the current state of parser implementation and data availa
 | Security Code Scan          | [![CodeQL Security Scan](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml) |
 | Docker Security Scan        | [![Docker Scout Scan](https://github.com/nam20485/OdbDesign/actions/workflows/docker-scout-scan.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-scout-scan.yml) |
 | Dependency Review Scan      | [![Dependency Review](https://github.com/nam20485/OdbDesign/actions/workflows/dependency-review.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/dependency-review.yml) |
+| Upload SBOM                 | [![SBOM Generate and Submit](https://github.com/nam20485/OdbDesign/actions/workflows/sbom-generate-submit.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/sbom-generate-submit.yml) |
 
 #### `release`
 
@@ -88,6 +90,7 @@ The diagram describes the current state of parser implementation and data availa
 | Security Code Scan          | [![CodeQL Security Scan](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml) |
 | Docker Security Scan        | [![Docker Scout Scan](https://github.com/nam20485/OdbDesign/actions/workflows/docker-scout-scan.yml/badge.svg?branch=release)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-scout-scan.yml) |
 | Dependency Review Scan      | [![Dependency Review](https://github.com/nam20485/OdbDesign/actions/workflows/dependency-review.yml/badge.svg?branch=release)](https://github.com/nam20485/OdbDesign/actions/workflows/dependency-review.yml) |
+| Upload SBOM                 | [![SBOM Generate and Submit](https://github.com/nam20485/OdbDesign/actions/workflows/sbom-generate-submit.yml/badge.svg?branch=release)](https://github.com/nam20485/OdbDesign/actions/workflows/sbom-generate-submit.yml) |
 
 ### Architecture
 

@@ -42,12 +42,17 @@ jobs:
     if: github.event_name != 'pull_request' || github.base_ref != 'development' || github.head_ref == 'nam20485'
 
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+        with:
+          egress-policy: audit
+
       - name: Checkout repository
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
       # add problem matchers
       - name: Add Problem Matchers
-        uses: ammaraskar/gcc-problem-matcher@d1fed1fac9e94d30e23b5a82dba4e2963e71d2e7 # master
+        uses: ammaraskar/gcc-problem-matcher@0f9c86f9e693db67dacf53986e1674de5f2e5f28 # master
 
     #   # Install the cosign tool except on PR
     #   # https://github.com/sigstore/cosign-installer
@@ -83,7 +88,7 @@ jobs:
       # https://github.com/docker/metadata-action
       - name: Extract Docker metadata
         id: meta
-        uses: docker/metadata-action@dbef88086f6cef02e264edb7dbf63250c17cef6c
+        uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d19755c6f78e81
         with:
           images: ${{ env.IMAGE_NAME }}
           tags: |
@@ -128,7 +133,7 @@ jobs:
       - name: Analyze for critical and high CVEs
         id: docker-scout-cves       
         # if: ${{ github.event_name != 'pull_request_target' }} 
-        uses: docker/scout-action@42a6acc319ac229f86e12bfca3b83de09fb058be # v1.3.0
+        uses: docker/scout-action@4a5494eb7c2b3d712b805ee65ad57a0371d50874 # v1.4.1
         with:
           command: cves,recommendations
           image: ${{ steps.meta.outputs.tags }}
@@ -138,14 +143,14 @@ jobs:
         
       - name: Upload SARIF result
         id: upload-sarif
-        uses: github/codeql-action/upload-sarif@0b21cf2492b6b02c465a3e5d7c473717ad7721ba # v3.23.1
+        uses: github/codeql-action/upload-sarif@e675ced7a7522a761fc9c8eb26682c8b27c42b2b # v3.24.1
         with:
           sarif_file: sarif.output.json
       
       - name: Docker Scout Compare to Latest
         id: docker-scout
         if: ${{ github.event_name == 'pull_request' }}
-        uses: docker/scout-action@42a6acc319ac229f86e12bfca3b83de09fb058be # v1.3.0
+        uses: docker/scout-action@4a5494eb7c2b3d712b805ee65ad57a0371d50874 # v1.4.1
         with:
           command: compare
           image: ${{ steps.meta.outputs.tags }}
