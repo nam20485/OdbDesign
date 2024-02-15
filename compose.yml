@@ -1,0 +1,28 @@
+name: odbdesignserver-swaggerui
+
+services:
+
+  odbdesign-server:
+    #environment:
+    #  - BRANCH=nam20485 
+    #image: ghcr.io/nam20485/odbdesign:${BRANCH}-latest
+    image: ghcr.io/nam20485/odbdesign:nam20485-latest
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    container_name: odbdesign-server    
+    ports:
+      - 8888:8888
+    
+   
+  swagger-ui: 
+    # environment:
+    #   - BRANCH=nam20485 
+    # image: ghcr.io/nam20485/odbdesignserver-swaggerui:${BRANCH}-latest
+    image: ghcr.io/nam20485/odbdesignserver-swaggerui:nam20485-latest
+    container_name: swagger-ui
+    depends_on:
+      - odbdesign-server
+    ports:
+      - 8080:8080    
+    
