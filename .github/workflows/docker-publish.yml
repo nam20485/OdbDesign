@@ -102,7 +102,7 @@ jobs:
             ODBDESIGN_SERVER_REQUEST_PASSWORD=${{ secrets.ODBDESIGN_SERVER_REQUEST_PASSWORD }}
           outputs: |
             annotation-index.org.opencontainers.image.source=https://github.com/nam20485/OdbDesign
-            annotation-index.org.opencontainers.image.description="The OdbDesign Docker image runs the OdbDesignServer REST API server executable, listening on port 8888."
+            annotation-index.org.opencontainers.image.description=The OdbDesign Docker image runs the OdbDesignServer REST API server executable, listening on port 8888.
             annotation-index.org.opencontainers.image.licenses=MIT
             annotation-index.org.opencontainers.image.authors=https://github.com/nam20485
 
