@@ -99,7 +99,12 @@ jobs:
             GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
             VCPKG_BINARY_SOURCES=clear;nuget,GitHub,readwrite
             ODBDESIGN_SERVER_REQUEST_USERNAME=${{ secrets.ODBDESIGN_SERVER_REQUEST_USERNAME }}
-            ODBDESIGN_SERVER_REQUEST_PASSWORD=${{ secrets.ODBDESIGN_SERVER_REQUEST_PASSWORD }}          
+            ODBDESIGN_SERVER_REQUEST_PASSWORD=${{ secrets.ODBDESIGN_SERVER_REQUEST_PASSWORD }}
+          outputs: |
+            annotation-index.org.opencontainers.image.source=https://github.com/nam20485/OdbDesign
+            annotation-index.org.opencontainers.image.description="The OdbDesign Docker image runs the OdbDesignServer REST API server executable, listening on port 8888."
+            annotation-index.org.opencontainers.image.licenses=MIT
+            annotation-index.org.opencontainers.image.authors=https://github.com/nam20485
 
       # Sign the resulting Docker image digest except on PRs.
       # This will only write to the public Rekor transparency log when the Docker
