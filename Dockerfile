@@ -71,7 +71,7 @@ ARG ODBDESIGN_SERVER_REQUEST_USERNAME=""
 ARG ODBDESIGN_SERVER_REQUEST_PASSWORD=""
 LABEL org.opencontainers.image.source=https://github.com/nam20485/OdbDesign \
       org.opencontainers.image.authors=https://github.com/nam20485 \
-      org.opencontainers.image.description="The OdbDesign Docker image runs the OdbDesignServer REST API server executable, listening on port 8888." \
+      org.opencontainers.image.description="A free open source cross-platform C++ library for parsing ODB++ Design archives and accessing their data. Exposed via a REST API and packaged inside of a Docker image. The OdbDesign Docker image runs the OdbDesignServer REST API server executable, listening on port 8888." \
       org.opencontainers.image.licenses=MIT
 EXPOSE 8888
 
