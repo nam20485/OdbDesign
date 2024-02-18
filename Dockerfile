@@ -97,4 +97,4 @@ ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/OdbDesign/bin
 # ENV ODBDESIGN_SERVER_REQUEST_USERNAME=${ODBDESIGN_SERVER_REQUEST_USERNAME}
 # ENV ODBDESIGN_SERVER_REQUEST_PASSWORD=${ODBDESIGN_SERVER_REQUEST_PASSWORD}
 RUN chmod +x ./OdbDesignServer
-ENTRYPOINT [ "./OdbDesignServer" ]
+ENTRYPOINT [ "./OdbDesignServer", "--designs-dir", "./designs", "--templates-dir", "./templates" ]
