@@ -101,7 +101,7 @@ jobs:
             org.opencontainers.image.documentation=https://github.com/nam20485/OdbDesign?tab=readme-ov-file
             org.opencontainers.image.version=${{ github.ref_name }}-${{github.run_number}}
             org.opencontainers.image.revision=${{ github.sha }}
-            org.opencontainers.image.created=${CURRENT_DATETIME}
+            org.opencontainers.image.created=${{ env.CURRENT_DATETIME }}
             org.opencontainers.image.title=OdbDesign Server
 
       # Build and push Docker image with Buildx (don't push on PR)
