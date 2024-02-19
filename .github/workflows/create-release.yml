@@ -82,7 +82,7 @@ jobs:
     
           - name: Create Release Variables
             run: |
-              export RELEASE_VERSION="${{vars.RELEASE_VERSION_PREFIX}}.${{github.run_number}}"
+              export RELEASE_VERSION="${{vars.RELEASE_VERSION_PREFIX}}.${{ github.event.client_payload.run_number }}
               echo "RELEASE_VERSION=$RELEASE_VERSION" >> $GITHUB_ENV                    
               export RELEASE_TAG="v${RELEASE_VERSION}"
               echo "RELEASE_TAG=$RELEASE_TAG" >> $GITHUB_ENV
@@ -103,7 +103,7 @@ jobs:
                       repo: context.repo.repo,
                       tag_name: process.env.RELEASE_TAG,
                       body: require('fs').readFileSync('${{ github.workspace }}/release/release-body.md', 'utf8'),
-                      target_commitish: '${{ github.ref_name }}'
+                      target_commitish: '${{ github.event.client_payload.ref_name }}'
                   });
               
                   const files =

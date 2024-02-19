@@ -1,4 +1,4 @@
-FROM debian:bookworm-20240211@sha256:4482958b4461ff7d9fabc24b3a9ab1e9a2c85ece07b2db1840c7cbc01d053e90 AS build
+FROM --platform=$BUILDPLATFORM debian:bookworm-20240211-slim@sha256:d02c76d82364cedca16ba3ed6f9102406fa9fa8833076a609cabf14270f43dfc AS build
 
 ARG OWNER=nam20485
 ARG GITHUB_TOKEN="PASSWORD"
@@ -66,11 +66,13 @@ RUN cmake --build --preset linux-release
 # RUN cmake --build --preset linux-debug
 
 # much smaller runtime image
-FROM debian:bookworm-20240211-slim@sha256:d02c76d82364cedca16ba3ed6f9102406fa9fa8833076a609cabf14270f43dfc AS run
-LABEL org.opencontainers.image.source=https://github.com/nam20485/OdbDesign
-LABEL org.opencontainers.image.authors=https://github.com/nam20485
-LABEL org.opencontainers.image.description="The OdbDesign Docker image runs the OdbDesignServer REST API server executable, listening on port 8888."
-LABEL org.opencontainers.image.licenses=MIT
+FROM --platform=$BUILDPLATFORM debian:bookworm-20240211-slim@sha256:d02c76d82364cedca16ba3ed6f9102406fa9fa8833076a609cabf14270f43dfc AS run
+# ARG ODBDESIGN_SERVER_REQUEST_USERNAME=""
+# ARG ODBDESIGN_SERVER_REQUEST_PASSWORD=""
+LABEL org.opencontainers.image.source=https://github.com/nam20485/OdbDesign \
+      org.opencontainers.image.authors=https://github.com/nam20485 \
+      org.opencontainers.image.description="A free open source cross-platform C++ library for parsing ODB++ Design archives and accessing their data. Exposed via a REST API and packaged inside of a Docker image. The OdbDesign Docker image runs the OdbDesignServer REST API server executable, listening on port 8888." \
+      org.opencontainers.image.licenses=MIT
 EXPOSE 8888
 
 RUN mkdir --parents /OdbDesign/bin
@@ -92,5 +94,7 @@ RUN mkdir ./designs
 
 # run
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/OdbDesign/bin
+# ENV ODBDESIGN_SERVER_REQUEST_USERNAME=${ODBDESIGN_SERVER_REQUEST_USERNAME}
+# ENV ODBDESIGN_SERVER_REQUEST_PASSWORD=${ODBDESIGN_SERVER_REQUEST_PASSWORD}
 RUN chmod +x ./OdbDesignServer
-ENTRYPOINT [ "./OdbDesignServer" ]
+ENTRYPOINT [ "./OdbDesignServer", "--designs-dir", "./designs", "--templates-dir", "./templates" ]

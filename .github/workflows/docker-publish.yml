@@ -68,17 +68,41 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+          
+      - name: Create CURRENT_DATETIME Environment Variable
+        run: | 
+          echo "CURRENT_DATETIME=$(date +"%Y-%m-%d %H:%M:%S")" >> $GITHUB_ENV
+      
+      - name: Echo CURRENT_DATETIME Environment Variable
+        env:        
+          CURRENT_DATETIME: ${{ env.CURRENT_DATETIME }}
+        run: echo ${{ env.CURRENT_DATETIME }}
+
       # Extract metadata (tags, labels) for Docker
       # https://github.com/docker/metadata-action
       - name: Extract Docker metadata
         id: meta
         uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d19755c6f78e81
+        env:
+          DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
+          CURRENT_DATETIME: ${{ env.CURRENT_DATETIME }}
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=ref,event=pr
             type=ref,event=branch,suffix=-${{github.run_number}}
-            type=ref,event=branch,suffix=-latest            
+            type=ref,event=branch,suffix=-latest
+          annotations: |
+            org.opencontainers.image.source=https://github.com/nam20485/OdbDesign
+            org.opencontainers.image.description=A free open source cross-platform C++ library for parsing ODB++ Design archives and accessing their data. Exposed via a REST API and packaged inside of a Docker image. The OdbDesign Docker image runs the OdbDesign Server REST API server executable listening on port 8888.
+            org.opencontainers.image.licenses=MIT
+            org.opencontainers.image.authors=https://github.com/nam20485
+            org.opencontainers.image.url=https://nam20485.github.io/OdbDesign
+            org.opencontainers.image.documentation=https://github.com/nam20485/OdbDesign?tab=readme-ov-file
+            org.opencontainers.image.version=${{ github.ref_name }}-${{github.run_number}}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.created=${{ env.CURRENT_DATETIME }}
+            org.opencontainers.image.title=OdbDesign Server
 
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
@@ -92,12 +116,16 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          #platforms: linux/amd64
           file: Dockerfile
+          annotations: ${{ steps.meta.outputs.annotations }}                      
           build-args: |
             OWNER=nam20485
             GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
             VCPKG_BINARY_SOURCES=clear;nuget,GitHub,readwrite
-
+            # ODBDESIGN_SERVER_REQUEST_USERNAME=${{ secrets.ODBDESIGN_SERVER_REQUEST_USERNAME }}
+            # ODBDESIGN_SERVER_REQUEST_PASSWORD=${{ secrets.ODBDESIGN_SERVER_REQUEST_PASSWORD }}
+          
       # Sign the resulting Docker image digest except on PRs.
       # This will only write to the public Rekor transparency log when the Docker
       # repository is public to avoid leaking data.  If you would like to publish
@@ -115,4 +143,9 @@ jobs:
         with:
           repository: ${{ github.repository }}
           event-type: trigger_deploy_release_event
-          client-payload: '{"ref_name": "${{ github.ref_name }}", "dispatch_id": "${{ secrets.DISPATCH_ID }}"}'
+          client-payload: |
+            '{ 
+                "ref_name": "${{ github.ref_name }}",
+                "run_number": "${{ github.run_number }}", 
+                "dispatch_id": "${{ secrets.DISPATCH_ID }}"
+             }'

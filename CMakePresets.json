@@ -42,7 +42,8 @@
       "displayName": "Python x64 Debug",
       "inherits": "x64-debug",
       "cacheVariables": {
-        "PYTHON_MODULE_BUILD": true
+        "PYTHON_MODULE_BUILD": true,
+        "CMAKE_POSITION_INDENPENDENT_CODE": true
       }
     },
     {
@@ -58,7 +59,8 @@
       "displayName": "Python x64 Release",
       "inherits": "x64-release",
       "cacheVariables": {
-        "PYTHON_MODULE_BUILD": true
+        "PYTHON_MODULE_BUILD": true,
+        "CMAKE_POSITION_INDENPENDENT_CODE": true
       }
     },
     {
