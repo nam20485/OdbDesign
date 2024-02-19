@@ -45,3 +45,4 @@ OdbDesignServer/db.sqlite3
 OdbDesignServer/PyOdbDesignLib/_PyOdbDesignLib.pyd
 /TEST_DATA.zip
 deploy/kubeconfig
+Dockerfile.commentedOut
