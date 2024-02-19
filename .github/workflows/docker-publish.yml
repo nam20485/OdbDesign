@@ -147,7 +147,7 @@ jobs:
         with:
           repository: ${{ github.repository }}
           event-type: trigger_deploy_release_event
-          client-payload: |
+          client-payload: >
             '{ 
                 "ref_name": "${{ github.ref_name }}",
                 "run_number": "${{ github.run_number }}", 
