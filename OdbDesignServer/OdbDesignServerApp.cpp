@@ -64,7 +64,8 @@ namespace Odb::App::Server
 		}
 
 		// add authentication
-		auto basicRequestAuth = std::make_unique<BasicRequestAuthentication>(BasicRequestAuthentication());
+		bool disableAuth = args().disableAuthentication();
+		auto basicRequestAuth = std::make_unique<BasicRequestAuthentication>(BasicRequestAuthentication(disableAuth));
 		request_auth(std::move(basicRequestAuth));
 
 		return true;

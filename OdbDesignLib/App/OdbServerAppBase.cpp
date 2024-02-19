@@ -99,12 +99,12 @@ namespace Odb::Lib::App
 		return m_crowApp;
 	}
 
-	IRequestAuthentication& OdbServerAppBase::request_auth()
+	RequestAuthenticationBase& OdbServerAppBase::request_auth()
 	{
 		return *m_pRequestAuthentication;
 	}
 
-	void OdbServerAppBase::request_auth(std::unique_ptr<IRequestAuthentication> pRequestAuthentication)
+	void OdbServerAppBase::request_auth(std::unique_ptr<RequestAuthenticationBase> pRequestAuthentication)
 	{
 		m_pRequestAuthentication = std::move(pRequestAuthentication);
 	}
