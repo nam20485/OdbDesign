@@ -12,7 +12,7 @@
 Security vulnerabilities can be reported privately using the [_Report a Vulnerability_](https://github.com/nam20485/OdbDesign/security) button under the _Security_ tab of this GitHub repository.
 Full instructions can be found [here](https://docs.github.com/en/code-security/security-advisories/guidance-on-reporting-and-writing-information-about-vulnerabilities/privately-reporting-a-security-vulnerability#privately-reporting-a-security-vulnerability).
 
-If you would like to report a vulnerability publicy, you can create a regular GitHub issue describing it under the Issues tab.
+If you would like to report a vulnerability publicly, you can create a regular GitHub issue describing it under the Issues tab.
 
 If you have any questions or the reporting button is not working, please email the [maintainer](mailto:nmiller217@gmail.com).
 

@@ -18,6 +18,7 @@ namespace Odb::Lib::App
 		bool help() const;
 		std::string loadDesign() const;
 		bool loadAll() const;
+		bool disableAuthentication() const;
 
 	protected:
 		// Inherited via CommandLineArgs
@@ -32,6 +33,7 @@ namespace Odb::Lib::App
 		constexpr static const bool		DEFAULT_HELP =			false;
 		constexpr static const char*	DEFAULT_LOAD_DESIGN =	"";		
 		constexpr static const bool		DEFAULT_LOAD_ALL =		false;
+		constexpr static const bool		DEFAULT_DISABLE_AUTH = false;
 
 	};
 }

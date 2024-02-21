@@ -6,32 +6,34 @@ using namespace Utils;
 
 namespace Odb::Lib::App
 {
+	BasicRequestAuthentication::BasicRequestAuthentication(bool disableAuthentication)
+		: RequestAuthenticationBase(disableAuthentication)
+	{
+	}
+
 	crow::response BasicRequestAuthentication::AuthenticateRequest(const crow::request& req)
 	{
-		// if running debug build AND in Local environment, bypass authentication
-		if (IsDebug() && IsLocal())
+		auto resp = RequestAuthenticationBase::AuthenticateRequest(req);
+		if (resp.code != crow::status::OK)
 		{
-			// 200 Authorized!
-			return crow::response(200, "Authorized");
+			const auto& authHeader = req.get_header_value(AUTHORIZATION_HEADER_NAME);
+			if (authHeader.empty()) return crow::response(401, "Unauthorized");
+
+			auto authValue = authHeader.substr(6);
+			if (authValue.empty()) return crow::response(401, "Unauthorized");
+
+			auto authValueDecoded = crow::utility::base64decode(authValue, authValue.size());
+			if (authValueDecoded.empty()) return crow::response(401, "Unauthorized");
+
+			auto seperatorPos = authValueDecoded.find(':');
+			if (seperatorPos == std::string::npos) return crow::response(401, "Unauthorized");
+
+			auto username = authValueDecoded.substr(0, seperatorPos);
+			auto password = authValueDecoded.substr(seperatorPos + 1);
+
+			//if (! VerifyCredentials(username, password)) return crow::response(403, "Invalid username or password");
+			resp = VerifyCredentials(username, password);
 		}
-
-		const auto& authHeader = req.get_header_value("Authorization");
-		if (authHeader.empty()) return crow::response(401, "Unauthorized");
-
-		auto authValue = authHeader.substr(6);
-		if (authValue.empty()) return crow::response(401, "Unauthorized");
-		
-		auto authValueDecoded = crow::utility::base64decode(authValue, authValue.size());
-		if (authValueDecoded.empty()) return crow::response(401, "Unauthorized");
-
-		auto seperatorPos = authValueDecoded.find(':');
-		if (seperatorPos == std::string::npos) return crow::response(401, "Unauthorized");
-
-		auto username = authValueDecoded.substr(0, seperatorPos);
-		auto password = authValueDecoded.substr(seperatorPos + 1);
-
-		//if (! VerifyCredentials(username, password)) return crow::response(403, "Invalid username or password");
-		auto resp = VerifyCredentials(username, password);		
 		return resp;
 	}
 
