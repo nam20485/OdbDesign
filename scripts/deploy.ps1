@@ -14,7 +14,7 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 #
-# odbdesign-server-v1 
+# odbdesign-server
 #
 
 # apply manifests
@@ -37,6 +37,10 @@ kubectl apply -f deploy/kube/OdbDesignServer-SwaggerUI/service.yaml
 # restart deployment
 kubectl rollout restart deployment/odbdesign-server-swaggerui-v1
 kubectl rollout status deployment/odbdesign-server-swaggerui-v1
+
+#
+# common
+#
 
 # apply ingress manifest
 kubectl apply -f deploy/kube/default-ingress.yaml

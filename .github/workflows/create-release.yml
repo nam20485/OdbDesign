@@ -92,49 +92,9 @@ jobs:
           # create a release
           - name: "Create GitHub Release"
             uses: "actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea" # v7.0.1
+            id: create-github-release
             with:
               github-token: "${{ secrets.GITHUB_TOKEN }}"
               script: |
-                try {       
-                  const createResponse = await github.rest.repos.createRelease({
-                      generate_release_notes: true,
-                      name: process.env.RELEASE_NAME,
-                      owner: context.repo.owner,
-                      repo: context.repo.repo,
-                      tag_name: process.env.RELEASE_TAG,
-                      body: require('fs').readFileSync('${{ github.workspace }}/release/release-body.md', 'utf8'),
-                      target_commitish: '${{ github.event.client_payload.ref_name }}'
-                  });
-              
-                  const files =
-                  [ 
-                      { name: 'OdbDesign-Linux-x64.zip',  contentType: 'application/zip' },
-                      { name: 'OdbDesign-Linux-x64.zip.sha256sum', contentType: 'text/plain' },
-                      { name: 'OdbDesign-Linux-x64.zip.asc', contentType: 'text/plain' },
-                      { name: 'OdbDesign-Windows-x64.zip', contentType: 'application/zip' },
-                      { name: 'OdbDesign-Windows-x64.zip.sha256sum', contentType: 'text/plain' },
-                      { name: 'OdbDesign-Windows-x64.zip.asc', contentType: 'text/plain' },
-                      { name: 'OdbDesign-MacOS-x64.zip', contentType: 'application/zip' },
-                      { name: 'OdbDesign-MacOS-x64.zip.sha256sum', contentType: 'text/plain' },
-                      { name: 'OdbDesign-MacOS-x64.zip.asc', contentType: 'text/plain' }       
-                  ];
-              
-                  const artifactsPath = '${{ github.workspace }}/artifacts';
-                  
-                  for (const file of files) {                        
-                      const filePath = artifactsPath +'/' + file.name;
-                      const uploadResponse = await github.rest.repos.uploadReleaseAsset({
-                          owner: context.repo.owner,
-                          repo: context.repo.repo,
-                          release_id: createResponse.data.id,        
-                          name: file.name,            
-                          data: require('fs').readFileSync(filePath),
-                          headers: {
-                              'content-type': file.contentType,
-                              'content-length': require('fs').statSync(filePath).size
-                          }    
-                      });
-                  }
-                } catch (error) {
-                    core.setFailed(error.message);
-                }         
+                const script = require('./scripts/create-release.js')
+                script({github, context, core}, '${{ github.workspace }}', '${{ github.ref_name }}')     
