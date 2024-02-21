@@ -4,6 +4,7 @@ try {
         name: process.env.RELEASE_NAME,
         owner: context.repo.owner,
         repo: context.repo.repo,
+        prerelease: false,
         tag_name: process.env.RELEASE_TAG,
         body: require('fs').readFileSync('${{ github.workspace }}/release/release-body.md', 'utf8'),
         target_commitish: '${{ github.ref_name }}'

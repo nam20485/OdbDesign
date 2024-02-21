@@ -92,6 +92,7 @@ jobs:
           # create a release
           - name: "Create GitHub Release"
             uses: "actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea" # v7.0.1
+            id: create-github-release
             with:
               github-token: "${{ secrets.GITHUB_TOKEN }}"
               script: |
@@ -101,6 +102,7 @@ jobs:
                       name: process.env.RELEASE_NAME,
                       owner: context.repo.owner,
                       repo: context.repo.repo,
+                      prerelease: false,
                       tag_name: process.env.RELEASE_TAG,
                       body: require('fs').readFileSync('${{ github.workspace }}/release/release-body.md', 'utf8'),
                       target_commitish: '${{ github.event.client_payload.ref_name }}'
