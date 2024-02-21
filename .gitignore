@@ -46,3 +46,4 @@ OdbDesignServer/PyOdbDesignLib/_PyOdbDesignLib.pyd
 /TEST_DATA.zip
 deploy/kubeconfig
 Dockerfile.commentedOut
+scripts/create-release-invoker.js
