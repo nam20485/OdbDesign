@@ -48,6 +48,11 @@ namespace Odb::Lib::App
 		return boolArg("load-all", DEFAULT_LOAD_ALL);
 	}
 
+	bool OdbDesignArgs::disableAuthentication() const
+	{
+		return boolArg("disable-authentication", DEFAULT_DISABLE_AUTH);
+	}
+
 	std::string OdbDesignArgs::getUsageString() const
 	{
 		std::stringstream ss;
@@ -60,6 +65,7 @@ namespace Odb::Lib::App
 		ss << "  --templates-dir <dir>    Directory containing template files (default: " << DEFAULT_TEMPLATES_DIR << ")\n";
 		ss << "  --load-design <design>   Design to load on startup (default: " << DEFAULT_LOAD_DESIGN << ")\n";
 		ss << "  --load-all               Load all designs on startup (default: " << (DEFAULT_LOAD_ALL ? "true" : "false") << ")\n";
+		ss << "  --disable-authentication Disable authentication (default: " << (DEFAULT_DISABLE_AUTH ? "true" : "false") << ")\n";
 		ss << "  --help                   Print this help message\n";
 		return ss.str();		
 	}	
