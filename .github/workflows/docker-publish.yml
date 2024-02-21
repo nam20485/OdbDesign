@@ -103,7 +103,11 @@ jobs:
             org.opencontainers.image.revision=${{ github.sha }}
             org.opencontainers.image.created=${{ env.CURRENT_DATETIME }}
             org.opencontainers.image.title=OdbDesign Server
-
+          labels: |
+            org.opencontainers.image.version=${{ github.ref_name }}-${{github.run_number}}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.created=${{ env.CURRENT_DATETIME }}
+          
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
       - name: Build and push Docker image
@@ -143,7 +147,7 @@ jobs:
         with:
           repository: ${{ github.repository }}
           event-type: trigger_deploy_release_event
-          client-payload: |
+          client-payload: >
             '{ 
                 "ref_name": "${{ github.ref_name }}",
                 "run_number": "${{ github.run_number }}", 

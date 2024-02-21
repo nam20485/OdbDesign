@@ -199,6 +199,8 @@ The project is happy to accept pull requests if you would like to contribute. Pl
 
 All contributed code must be covered by accompanying test cases. Please make sure your changes are covered by test cases before submitting a pull request.
 
+See [docs/CONTRIBUTING.md](CONTRIBUTING.md) for more details.
+
 ## License
 
 This project is free and open source under the MIT [license](https://github.com/nam20485/OdbDesign/blob/c0c8b6e4b93e1c7d4d5e65c7ad25157c883f8bfb/LICENSE).

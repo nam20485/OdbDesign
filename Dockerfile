@@ -72,7 +72,11 @@ FROM --platform=$BUILDPLATFORM debian:bookworm-20240211-slim@sha256:d02c76d82364
 LABEL org.opencontainers.image.source=https://github.com/nam20485/OdbDesign \
       org.opencontainers.image.authors=https://github.com/nam20485 \
       org.opencontainers.image.description="A free open source cross-platform C++ library for parsing ODB++ Design archives and accessing their data. Exposed via a REST API and packaged inside of a Docker image. The OdbDesign Docker image runs the OdbDesignServer REST API server executable, listening on port 8888." \
-      org.opencontainers.image.licenses=MIT
+      org.opencontainers.image.licenses=MIT \    
+      org.opencontainers.image.url=https://nam20485.github.io/OdbDesign \ 
+      org.opencontainers.image.documentation=https://github.com/nam20485/OdbDesign?tab=readme-ov-file \
+      org.opencontainers.image.title="OdbDesign Server"
+
 EXPOSE 8888
 
 RUN mkdir --parents /OdbDesign/bin
