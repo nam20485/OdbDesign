@@ -84,7 +84,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d19755c6f78e81
         env:
-          DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
+          #DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
           CURRENT_DATETIME: ${{ env.CURRENT_DATETIME }}
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
@@ -122,7 +122,7 @@ jobs:
           cache-to: type=gha,mode=max
           #platforms: linux/amd64
           file: Dockerfile
-          annotations: ${{ steps.meta.outputs.annotations }}                      
+          #annotations: ${{ steps.meta.outputs.annotations }}                      
           build-args: |
             OWNER=nam20485
             GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
@@ -147,9 +147,4 @@ jobs:
         with:
           repository: ${{ github.repository }}
           event-type: trigger_deploy_release_event
-          client-payload: |
-            '{ \
-                "ref_name": "${{ github.ref_name }}", \
-                "run_number": "${{ github.run_number }}", \
-                "dispatch_id": "${{ secrets.DISPATCH_ID }}" \
-             }'
+          client-payload: '{ "ref_name": "${{ github.ref_name }}", "run_number": "${{ github.run_number }}", "dispatch_id": "${{ secrets.DISPATCH_ID }}" }'

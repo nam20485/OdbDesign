@@ -43,4 +43,4 @@ kubectl rollout status deployment/odbdesign-server-swaggerui-v1
 #
 
 # apply ingress manifest
-kubectl apply -f deploy/kube/default-ingress.yaml
+kubectl apply -f deploy/kube/local-ingress.yaml
