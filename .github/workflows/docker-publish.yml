@@ -84,7 +84,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d19755c6f78e81
         env:
-          #DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
+          DOCKER_METADATA_ANNOTATIONS_LEVELS: index
           CURRENT_DATETIME: ${{ env.CURRENT_DATETIME }}
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
@@ -119,10 +119,9 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
-          cache-to: type=gha,mode=max
-          #platforms: linux/amd64
+          cache-to: type=gha,mode=max          
           file: Dockerfile
-          #annotations: ${{ steps.meta.outputs.annotations }}                      
+          annotations: ${{ steps.meta.outputs.annotations }}                      
           build-args: |
             OWNER=nam20485
             GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
