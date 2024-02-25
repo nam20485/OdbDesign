@@ -3,17 +3,7 @@ kind: Ingress
 metadata:
   name: odbdesign-server-ingress
 spec:
-  rules:
-    - host: ods.local
-      http:
-        paths:
-          - pathType: Prefix
-            path: "/"
-            backend:
-              service:
-                name: odbdesign-server-service
-                port:
-                  name: ods-svc-port
+  rules:   
     - host: precision5820
       http:
         paths:
