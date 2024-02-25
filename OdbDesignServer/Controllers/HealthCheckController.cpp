@@ -26,16 +26,16 @@ namespace Odb::App::Server
 
 	crow::response HealthCheckController::health_check_live(const crow::request& req)
 	{
-		return crow::response(crow::status::OK, "text/plain", "healthy: live");
+		return crow::response(crow::status::OK, "txt", "healthy: live");
 	}
 
 	crow::response HealthCheckController::health_check_ready(const crow::request& req)
 	{
-		return crow::response(crow::status::OK, "text/plain", "healthy: ready");
+		return crow::response(crow::status::OK, "txt", "healthy: ready");
 	}
 
 	crow::response HealthCheckController::health_check_started(const crow::request& req)
-	{
-		return crow::response(crow::status::OK, "text/plain", "healthy: started");
+	{		
+		return crow::response(crow::status::OK, "txt", "healthy: started");
 	}
 }
