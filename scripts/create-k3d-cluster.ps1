@@ -11,7 +11,11 @@ param(
     # When set to true, the cluster will be deleted first
     [switch]$DeleteClusterFirst = $false,
     # When set to true, the cluster will be deleted without asking for confirmation
-    [switch]$ForceDelete = $false
+    [switch]$ForceDelete = $false,
+     # Host Volume Path for PersistentVolume
+     [Parameter(Mandatory=$true)]    
+     [string]$HostVolumePath = "D:/k3dvolume"
+    
 )
 
 # $clusterName="k3dcluster"
@@ -46,6 +50,9 @@ k3d cluster create $ClusterName `
     --agents $NumAgents `
     --k3s-arg="--tls-san=${hostIp}@server:0" `
     --k3s-arg="--tls-san=precision5820@server:0" `
-    -p "${IngressHostPort}:80@loadbalancer"
+    --port "${IngressHostPort}:80@loadbalancer" `
+    --port "8443:443@loadbalancer" `
+    --volume ${HostVolumePath}:/k3dvolume@all
+    #--volume ${HostVolumePath}:/tmp/k3dvolume@all
 
 Write-Host "Cluster '$ClusterName' created."
