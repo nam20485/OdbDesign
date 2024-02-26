@@ -19,7 +19,20 @@ spec:
       labels:
         app: odbdesign-server
         version: v1
-    spec:
+    spec:    
+      volumes:
+        - name: odbdesign-server-storage
+          persistentVolumeClaim:
+            claimName: k3d-volume-claim
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/master
+                operator: NotIn
+                values:
+                  - "true"
       containers:
         - name: odbdesign-server
           image: ghcr.io/nam20485/odbdesign:nam20485-latest
@@ -27,6 +40,9 @@ spec:
           ports:
             - containerPort: 8888
               name: ods-dep-port
+          volumeMounts:
+            - mountPath: /OdbDesign/data
+              name: odbdesign-server-storage
           env:
             - name: ODBDESIGN_SERVER_REQUEST_USERNAME
               valueFrom: 
@@ -64,4 +80,3 @@ spec:
             failureThreshold: 10
             periodSeconds: 1
             #initialDelaySeconds: 1          
-            
