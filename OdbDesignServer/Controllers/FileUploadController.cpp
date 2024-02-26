@@ -124,11 +124,8 @@ namespace Odb::App::Server
             {
                 // log to debug and skip rest of the loop
                 CROW_LOG_DEBUG << " Value: " << part_value.body << '\n';
-                continue;
-            }
-            else
-            {
                 CROW_LOG_ERROR << "multipart/form-data POST failed! Part name was: [" << part_name << "], which is not supported. Part name should be [" << MULTIPART_FORMDATA_PART_NAME << "].";
+                continue;
             }
 
             // Extract the file name
