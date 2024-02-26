@@ -90,11 +90,12 @@ COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignServer/*.so .
 COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignTests/OdbDesignTests .
 
 # copy templates directory
-RUN mkdir ./templates
+RUN mkdir -p ./templates
 COPY --from=build /src/OdbDesign/OdbDesignServer/templates/* ./templates
 
 # create designs directory
-RUN mkdir ./designs
+# required to be voluume mounted!
+#RUN mkdir ./designs
 
 # run
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/OdbDesign/bin
