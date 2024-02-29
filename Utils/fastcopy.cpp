@@ -39,7 +39,7 @@ namespace Utils
 
 		try
 		{
-			rename(source, dest, ec);
+			rename(source, dest);
 		}
 		catch (filesystem_error& fe)
 		{
