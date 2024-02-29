@@ -41,7 +41,7 @@ spec:
             - containerPort: 8888
               name: ods-dep-port
           volumeMounts:
-            - mountPath: /OdbDesign/data
+            - mountPath: /OdbDesign/designs
               name: odbdesign-server-storage
           env:
             - name: ODBDESIGN_SERVER_REQUEST_USERNAME
