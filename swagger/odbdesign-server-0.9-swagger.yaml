@@ -11,11 +11,12 @@ info:
 servers:
   - url: http://default-ingress-1165108808.us-west-2.elb.amazonaws.com
   - url: http://localhost:8888
+  - url: http://precision5820:8081
 tags:
   - name: "file upload"
   - name: "filemodel"
   #- name: "hello world"
-  #- name: "health check"
+  - name: "health check"
   - name: "steps"
   - name: "layers"
   - name: "symbols"
@@ -564,15 +565,36 @@ paths:
           description: ""
       security:
         - BasicAuth: []
+  /healthz/live:
+    get:
+      tags: ["health check"]
+      parameters: []
+      responses:
+        "200":
+          description: ""  
+  /healthz/started:
+    get:
+      tags: ["health check"]
+      parameters: []
+      responses:
+        "200":
+          description: "" 
+  /healthz/ready:
+    get:
+      tags: ["health check"]
+      parameters: []
+      responses:
+        "200":
+          description: ""      
 components:
   securitySchemes:
     BasicAuth:
       type: http
       scheme: basic
-  schemas:
-    odbdesign-server-schema:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
+  # schemas:
+  #   odbdesign-server-schema:
+  #     type: object
+  #     properties:
+  #       id:
+  #         type: integer
+  #         format: int64

@@ -1,8 +1,8 @@
-name: odbdesignserver-swaggerui
+name: odbdesign
 
 services:
 
-  odbdesign-server:
+  server:
     ## enable for passing in branch name as an environment variable
     #environment:
     #  - BRANCH=nam20485 
@@ -12,7 +12,9 @@ services:
     # build:
     #   context: .
     #   dockerfile: Dockerfile
-    container_name: odbdesign-server    
+    #container_name: odbdesign-server   
+    volumes:
+      - ./compose-designs:/OdbDesign/designs
     ports:
       - 8888:8888
     environment:
@@ -26,9 +28,9 @@ services:
     #   - BRANCH=nam20485 
     # image: ghcr.io/nam20485/odbdesignserver-swaggerui:${BRANCH}-latest
     image: ghcr.io/nam20485/odbdesignserver-swaggerui:nam20485-latest
-    container_name: swagger-ui
+    #container_name: swagger-ui
     depends_on:
-      - odbdesign-server
+      - server
     ports:
       - 8080:8080    
     
