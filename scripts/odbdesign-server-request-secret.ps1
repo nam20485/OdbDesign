@@ -1,0 +1,1 @@
+kubectl create secret generic 'odbdesign-server-request-secret' --from-literal=ODBDESIGN_SERVER_REQUEST_USERNAME=$env:ODBDESIGN_SERVER_REQUEST_USERNAME --from-literal=ODBDESIGN_SERVER_REQUEST_PASSWORD=$env:ODBDESIGN_SERVER_REQUEST_PASSWORD
