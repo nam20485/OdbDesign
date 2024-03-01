@@ -80,25 +80,26 @@ LABEL org.opencontainers.image.source=https://github.com/nam20485/OdbDesign \
 EXPOSE 8888
 
 RUN mkdir --parents /OdbDesign/bin
-WORKDIR /OdbDesign/bin
+WORKDIR /OdbDesign
 
 # copy binaries
-COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignLib/*.so .
-COPY --from=build /src/OdbDesign/out/build/linux-release/Utils/*.so .
-COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignServer/OdbDesignServer .
-COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignServer/*.so .
-COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignTests/OdbDesignTests .
+COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignLib/*.so ./bin/
+COPY --from=build /src/OdbDesign/out/build/linux-release/Utils/*.so ./bin/
+COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignServer/OdbDesignServer ./bin/
+COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignServer/*.so ./bin/
+COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignTests/OdbDesignTests ./bin/
 
 # copy templates directory
-RUN mkdir ./templates
+RUN mkdir -p ./templates
 COPY --from=build /src/OdbDesign/OdbDesignServer/templates/* ./templates
 
 # create designs directory
-RUN mkdir ./designs
+# required to be volume mounted!
+#RUN mkdir ./designs
 
 # run
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/OdbDesign/bin
 # ENV ODBDESIGN_SERVER_REQUEST_USERNAME=${ODBDESIGN_SERVER_REQUEST_USERNAME}
 # ENV ODBDESIGN_SERVER_REQUEST_PASSWORD=${ODBDESIGN_SERVER_REQUEST_PASSWORD}
-RUN chmod +x ./OdbDesignServer
-ENTRYPOINT [ "./OdbDesignServer", "--designs-dir", "./designs", "--templates-dir", "./templates" ]
+RUN chmod +x ./bin/OdbDesignServer
+ENTRYPOINT [ "./bin/OdbDesignServer", "--designs-dir", "./designs", "--templates-dir", "./templates" ]

@@ -14,10 +14,21 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 #
-# odbdesign-server
+# Common (pre)
 #
 
-# apply manifests
+# persistent volume
+kubectl apply -f deploy/kube/k3d-volume-pv.yaml
+kubectl apply -f deploy/kube/k3d-volume-pvc.yaml
+
+#
+# OdbDesignServer
+#
+
+# secrets
+& "$PSScriptRoot\odbdesign-server-request-secret.ps1"
+
+# apply deployment/service manifests
 kubectl apply -f deploy/kube/OdbDesignServer/deployment.yaml
 kubectl apply -f deploy/kube/OdbDesignServer/service.yaml
 
@@ -30,7 +41,7 @@ kubectl rollout status deployment/$DeploymentName
 # Swagger UI
 #
 
-# apply manifests
+# apply deployment/service manifests
 kubectl apply -f deploy/kube/OdbDesignServer-SwaggerUI/deployment.yaml
 kubectl apply -f deploy/kube/OdbDesignServer-SwaggerUI/service.yaml
 
@@ -39,7 +50,7 @@ kubectl rollout restart deployment/odbdesign-server-swaggerui-v1
 kubectl rollout status deployment/odbdesign-server-swaggerui-v1
 
 #
-# common
+# Common (post)
 #
 
 # apply ingress manifest
