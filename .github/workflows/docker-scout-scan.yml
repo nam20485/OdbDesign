@@ -123,7 +123,7 @@ jobs:
       - name: Analyze for critical and high CVEs
         id: docker-scout-cves       
         # if: ${{ github.event_name != 'pull_request_target' }} 
-        uses: docker/scout-action@67eb1afe777307506aaecb9acd9a0e0389cb99ae # v1.5.0
+        uses: docker/scout-action@b3dd3d6c420903eb3ff2812ac1b1d146ffb93a41 # v1.5.1
         with:
           command: cves,recommendations
           image: ${{ steps.meta.outputs.tags }}
@@ -140,7 +140,7 @@ jobs:
       - name: Docker Scout Compare to Latest
         id: docker-scout
         if: ${{ github.event_name == 'pull_request' }}
-        uses: docker/scout-action@67eb1afe777307506aaecb9acd9a0e0389cb99ae # v1.5.0
+        uses: docker/scout-action@b3dd3d6c420903eb3ff2812ac1b1d146ffb93a41 # v1.5.1
         with:
           command: compare
           image: ${{ steps.meta.outputs.tags }}
