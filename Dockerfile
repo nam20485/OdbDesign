@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM debian:bookworm-20240211-slim@sha256:d02c76d82364cedca16ba3ed6f9102406fa9fa8833076a609cabf14270f43dfc AS build
+FROM --platform=$BUILDPLATFORM debian:bookworm-20240311-slim@sha256:ccb33c3ac5b02588fc1d9e4fc09b952e433d0c54d8618d0ee1afadf1f3cf2455 AS build
 
 ARG OWNER=nam20485
 ARG GITHUB_TOKEN="PASSWORD"
@@ -66,7 +66,7 @@ RUN cmake --build --preset linux-release
 # RUN cmake --build --preset linux-debug
 
 # much smaller runtime image
-FROM --platform=$BUILDPLATFORM debian:bookworm-20240211-slim@sha256:d02c76d82364cedca16ba3ed6f9102406fa9fa8833076a609cabf14270f43dfc AS run
+FROM --platform=$BUILDPLATFORM debian:bookworm-20240311-slim@sha256:ccb33c3ac5b02588fc1d9e4fc09b952e433d0c54d8618d0ee1afadf1f3cf2455 AS run
 # ARG ODBDESIGN_SERVER_REQUEST_USERNAME=""
 # ARG ODBDESIGN_SERVER_REQUEST_PASSWORD=""
 LABEL org.opencontainers.image.source=https://github.com/nam20485/OdbDesign \
