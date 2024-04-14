@@ -86,6 +86,10 @@ target_link_libraries(OdbDesign PUBLIC protobuf::libprotobuf)
 # add the generated Protobuf C++ files to the target
 #target_sources(OdbDesign PRIVATE ${PROTO_SRCS} ${PROTO_HDRS})
 
+# gRPC
+find_package(gRPC CONFIG REQUIRED)
+target_link_libraries(OdbDesign PUBLIC gRPC::grpc++)
+
 # workaround to remove error: "C++ command-line error: invalid macro definition: _CROW_ICD-NOTFOUND"
 # (see https://github.com/CrowCpp/Crow/issues/661#issuecomment-1702544225)
 list(REMOVE_ITEM _CROW_ICD "_CROW_ICD-NOTFOUND")

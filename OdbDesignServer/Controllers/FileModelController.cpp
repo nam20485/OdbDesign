@@ -360,6 +360,16 @@ namespace Odb::App::Server
 			return crow::response(crow::status::NOT_FOUND, ss.str());
 		}
 
+		//std::ofstream ofs;
+		//std::string filename = "filemodel_" + designNameDecoded + ".pb";
+		//ofs.open(filename);
+		//pFileArchive->to_stream(ofs);
+		//ofs.close();
+
+		//crow::response resp;
+		//resp.body
+		
+
 		return crow::response(JsonCrowReturnable(*pFileArchive));
 	}
 

@@ -16,6 +16,16 @@ package Odb.Lib.Protobuf;
 //  FileArchive.h
 //
 
+service Greeter {
+  // Sends a greeting
+  rpc GetFileArchive (FileArchiveRequest) returns (FileArchive) {}
+}
+
+message FileArchiveRequest
+{
+    optional string designName = 1;
+}
+
 message FileArchive {
 
     map<string, StepDirectory> stepsByName = 1;
