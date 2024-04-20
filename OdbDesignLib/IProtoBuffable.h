@@ -15,6 +15,7 @@ namespace Odb::Lib
 	class IProtoBuffable : public Utils::IJsonable
 	{
 	public:		
+		// to and from Protocol Buffer messages
 		virtual std::unique_ptr<TPbMessage> to_protobuf() const = 0;
 		virtual void from_protobuf(const TPbMessage& message) = 0;
 
@@ -23,8 +24,8 @@ namespace Odb::Lib
 		bool from_pbstring(const std::string& pb_string);
 
 		// to and from output and input streams
-		bool serializeTo(std::ostream& outputStream) const;
-		bool parseFrom(std::istream& inputSream);
+		bool to_stream(std::ostream& outputStream) const;
+		bool from_stream(std::istream& inputStream);
 
 		// Inherited via IJsonConvertable
 		std::string to_json() const override;
@@ -57,7 +58,7 @@ namespace Odb::Lib
 	}
 
 	template<typename TPbMessage>
-	inline bool IProtoBuffable<TPbMessage>::serializeTo(std::ostream& outputStream) const
+	inline bool IProtoBuffable<TPbMessage>::to_stream(std::ostream& outputStream) const
 	{
 		auto pMessage = to_protobuf();
 		if (pMessage == nullptr) return false;
@@ -65,10 +66,10 @@ namespace Odb::Lib
 	}
 
 	template<typename TPbMessage>
-	inline bool IProtoBuffable<TPbMessage>::parseFrom(std::istream& inputSream)
+	inline bool IProtoBuffable<TPbMessage>::from_stream(std::istream& inputStream)
 	{
 		auto pMessage = std::unique_ptr<TPbMessage>();
-		if (!pMessage->ParseFromIstream(&inputSream)) return false;
+		if (!pMessage->ParseFromIstream(&inputStream)) return false;
 		from_protobuf(*pMessage);
 		return true;
 	}

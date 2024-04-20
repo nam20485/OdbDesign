@@ -13,6 +13,8 @@ namespace Odb::App::Server
 		// Inherited via RouteController
 		void register_routes() override;
 
+		constexpr inline static const char* kszExcludeFileArchiveQueryParamName = "exclude_filearchive";
+
 	private:
 
 		crow::response designs_list_route_handler(const crow::request& req);
