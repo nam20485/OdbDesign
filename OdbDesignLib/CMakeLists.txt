@@ -47,9 +47,6 @@ target_compile_options(OdbDesign PUBLIC
         $<$<CXX_COMPILER_ID:MSVC>:
             /wd4250>)
 
-## required for SWIG
-#set_property(TARGET OdbDesign PROPERTY POSITION_INDEPENDENT_CODE ON)
-
 target_link_libraries(OdbDesign PUBLIC Utils)
 
 # state that anybody linking to us needs to include the current source dir, while we don't.
@@ -90,36 +87,3 @@ target_link_libraries(OdbDesign PUBLIC protobuf::libprotobuf)
 # (see https://github.com/CrowCpp/Crow/issues/661#issuecomment-1702544225)
 list(REMOVE_ITEM _CROW_ICD "_CROW_ICD-NOTFOUND")
 set_target_properties(Crow::Crow PROPERTIES INTERFACE_COMPILE_DEFINITIONS "${_CROW_ICD}")
-
-# Python extension module build settings                           
-if (PYTHON_MODULE_BUILD)
- #   # run swig to generate wrapper file
- #   add_custom_command(TARGET OdbDesign 
- #                      PRE_BUILD
- #                      COMMAND scripts/generate-python-module.ps1)
-
-     if (MSVC)
-        # make a copy of output library with name expected by Python module extensions
-        add_custom_command(TARGET OdbDesign
-                           POST_BUILD
-                           COMMAND ${CMAKE_COMMAND}
-                           ARGS -E copy $<TARGET_FILE:OdbDesign> $<TARGET_FILE_DIR:OdbDesign>/_PyOdbDesignLib.pyd
-                           COMMENT Copying to Python module extension
-                           )
-    elseif(LINUX)
-        # make a copy of output library with name expected by Python module extensions
-        add_custom_command(TARGET OdbDesign
-                           POST_BUILD
-                           COMMAND ${CMAKE_COMMAND}
-                           ARGS -E copy $<TARGET_FILE:OdbDesign> $<TARGET_FILE_DIR:OdbDesign>/_PyOdbDesignLib.so
-                           COMMENT Copying to Python module extension
-                           )
-    endif()
-
-    target_sources(OdbDesign PRIVATE "OdbDesignLib_wrap.cxx")
-
-    # include and link to Python3                           
-    find_package(Python3 COMPONENTS Development REQUIRED)
-    #target_include_directories(OdbDesign PRIVATE ${Python3_INCLUDE_DIRS})    
-    target_link_libraries(OdbDesign PRIVATE Python3::Python)
-endif()
