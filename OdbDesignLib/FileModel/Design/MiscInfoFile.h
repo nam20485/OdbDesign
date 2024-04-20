@@ -6,13 +6,14 @@
 #include <chrono>
 #include "../../IProtoBuffable.h"
 #include "../../ProtoBuf/miscinfofile.pb.h"
+#include "../IStreamSaveable.h"
 
 #pragma once
 
 namespace Odb::Lib::FileModel::Design
 {
 
-    class MiscInfoFile : public OdbFile, public IProtoBuffable<Odb::Lib::Protobuf::MiscInfoFile>
+    class MiscInfoFile : public OdbFile, public IProtoBuffable<Odb::Lib::Protobuf::MiscInfoFile>, public IStreamSaveable
     {
     public:
         MiscInfoFile();
@@ -31,6 +32,7 @@ namespace Odb::Lib::FileModel::Design
         unsigned int GetMaxUniqueId() const;
 
         bool Parse(std::filesystem::path path) override;
+        bool Save(std::ostream& os) override;
 
         // Inherited via IProtoBuffable
         std::unique_ptr<Odb::Lib::Protobuf::MiscInfoFile> to_protobuf() const override;

@@ -1,3 +1,4 @@
+#include "AttrListFile.h"
 //
 // Created by nmill on 10/13/2023.
 //
@@ -203,6 +204,8 @@ namespace Odb::Lib::FileModel::Design
 		return true;
 	}
 
-	
-
+	bool AttrListFile::Save(std::ostream& os)
+	{
+		return true;
+	}
 } // namespace Odb::Lib::FileModel::Design

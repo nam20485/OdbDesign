@@ -1,4 +1,5 @@
 #include "MiscInfoFile.h"
+#include "MiscInfoFile.h"
 //
 // Created by nmill on 10/13/2023.
 //
@@ -189,6 +190,11 @@ namespace Odb::Lib::FileModel::Design
             throw e;
         }
 
+        return true;
+    }
+
+    bool MiscInfoFile::Save(std::ostream& os)
+    {
         return true;
     }
 

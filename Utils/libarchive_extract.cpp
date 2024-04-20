@@ -105,7 +105,7 @@ namespace Utils
         archive_write_free(ext);
 
         return true;
-    }
+    }   
 
     int copy_data(struct archive* ar, struct archive* aw)
     {
@@ -128,4 +128,66 @@ namespace Utils
             }
         }
     }
+
+    bool compress(const char* srcDir, const char* destDir, const char* archiveName)
+    {
+       
+        return false;
+    }
+
+    ////https://stackoverflow.com/a/23332055/4848067
+    //QString directory = "/home/lpapp/tmp/stackoverflow/test";
+    //struct archive* a;
+    //struct archive_entry* entry;
+    //struct stat st;
+    //char buff[8192];
+    //size_t bytes_read;
+    //int fd;
+
+    //QByteArray outArray = directory.toLocal8Bit() + ".tar";
+    //char* outDirectory = outArray.data();
+    //qDebug() << outDirectory;
+
+    //QByteArray inputArray = directory.toLocal8Bit();
+    //char* inputDirectory = inputArray.data();
+    //qDebug() << inputDirectory;
+
+    //QFileInfo inputInfo;
+    //inputInfo.setFile(directory);
+
+    //// the name of the directory
+    //QByteArray pathArray = inputInfo.fileName().toLocal8Bit();
+    //char* pathDirectory = pathArray.data();
+    //qDebug() << pathDirectory;
+
+    //a = archive_write_new();
+    //archive_write_add_filter_gzip(a);
+    //archive_write_set_format_pax_restricted(a);
+    //archive_write_open_filename(a, outDirectory);
+
+    //QDirIterator it(directory, QDirIterator::Subdirectories);
+    //while (it.hasNext()) {
+    //    entry = archive_entry_new();
+    //    stat(inputDirectory, &st);
+
+    //    archive_entry_set_pathname(entry, it.next().toLocal8Bit().constData());
+    //    archive_entry_set_filetype(entry, AE_IFDIR);
+    //    archive_entry_copy_stat(entry, &st);
+    //    archive_write_header(a, entry);
+
+    //    fd = open(inputDirectory, O_RDONLY);
+    //    bytes_read = read(fd, buff, sizeof(buff));
+    //    while (bytes_read > 0) {
+    //        archive_write_data(a, buff, bytes_read);
+    //        bytes_read = read(fd, buff, sizeof(buff));
+    //    }
+    //    close(fd);
+    //    archive_entry_free(entry);
+
+    //    archive_write_finish_entry(a);
+    //    archive_write_close(a);
+    //    archive_write_free(a);
+    //}
+
+    //return 0;
 }

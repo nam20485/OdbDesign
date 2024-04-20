@@ -42,7 +42,10 @@ namespace Odb::Lib::FileModel::Design
 		//const EdaDataFile& GetStepEdaDataFile(std::string stepName) const;
 		//const EdaDataFile& GetFirstStepEdaDataFile() const;		
 
+		
 		bool ParseFileModel();
+		bool SaveFileModel(const std::filesystem::path& directory, const std::string& archiveName);
+		bool SaveFileModel(const std::string& directory, const std::string& archiveName);
 
 		// Inherited via IProtoBuffable
 		std::unique_ptr<Odb::Lib::Protobuf::FileArchive> to_protobuf() const override;

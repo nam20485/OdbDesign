@@ -12,22 +12,23 @@
 #include "../../enums.h"
 #include "../../IProtoBuffable.h"
 #include "../../ProtoBuf/matrixfile.pb.h"
+#include "../IStreamSaveable.h"
 
 
 namespace Odb::Lib::FileModel::Design
 {
-    class MatrixFile : public OdbFile, public IProtoBuffable<Odb::Lib::Protobuf::MatrixFile>
+    class MatrixFile : public OdbFile, public IProtoBuffable<Odb::Lib::Protobuf::MatrixFile>, public IStreamSaveable
     {
-    public:        
+    public:
         ~MatrixFile();
 
         struct StepRecord : public IProtoBuffable<Odb::Lib::Protobuf::MatrixFile::StepRecord>
         {
             unsigned int column;
-            unsigned int id = (unsigned int) -1;
+            unsigned int id = (unsigned int)-1;
             std::string name;
 
-            typedef std::vector<std::shared_ptr<StepRecord>> Vector;	
+            typedef std::vector<std::shared_ptr<StepRecord>> Vector;
 
             inline static const char* RECORD_TOKEN = "STEP";
 
@@ -37,7 +38,7 @@ namespace Odb::Lib::FileModel::Design
         };
 
         struct LayerRecord : public IProtoBuffable<Odb::Lib::Protobuf::MatrixFile::LayerRecord>
-        {    
+        {
             enum class Type
             {
                 Signal,
@@ -53,13 +54,13 @@ namespace Odb::Lib::FileModel::Design
                 Component,
                 Mask,
                 ConductivePaste,
-            };          
+            };
 
             enum class Context
             {
                 Board,
                 Misc
-            };           
+            };
 
             enum class DielectricType
             {
@@ -72,7 +73,7 @@ namespace Odb::Lib::FileModel::Design
             {
                 Rigid,
                 Flex
-            };                              
+            };
 
             typedef std::vector<std::shared_ptr<LayerRecord>> Vector;
 
@@ -84,15 +85,15 @@ namespace Odb::Lib::FileModel::Design
             DielectricType dielectricType = DielectricType::None;
             std::string dielectricName;
             Form form = Form::Rigid;
-            unsigned int cuTop = (unsigned int) -1;
-            unsigned int cuBottom = (unsigned int) -1;
-            unsigned int ref = (unsigned int) -1;
+            unsigned int cuTop = (unsigned int)-1;
+            unsigned int cuBottom = (unsigned int)-1;
+            unsigned int ref = (unsigned int)-1;
             std::string startName;
             std::string endName;
             std::string oldName;
             std::string addType;
-            RgbColor color{"0"};
-            unsigned int id = (unsigned int) -1;
+            RgbColor color{ "0" };
+            unsigned int id = (unsigned int)-1;
 
             inline static const char* RECORD_TOKEN = "LAYER";
 
@@ -106,6 +107,8 @@ namespace Odb::Lib::FileModel::Design
 
         // Inherited via OdbFile
         bool Parse(std::filesystem::path path) override;
+        // Inherited via IStreamSaveable
+        bool Save(std::ostream& os) override;
 
         static inline bool attributeValueIsOptional(const std::string& attribute);
 
@@ -134,6 +137,6 @@ namespace Odb::Lib::FileModel::Design
             "CU_BOTTOM",
             "REF",
             "COLOR",
-        };        
+        };
     };
 }

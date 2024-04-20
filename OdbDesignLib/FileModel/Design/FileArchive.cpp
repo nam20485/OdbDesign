@@ -1,4 +1,6 @@
 #include "FileArchive.h"
+#include "FileArchive.h"
+#include "FileArchive.h"
 #include <filesystem>
 #include "ArchiveExtractor.h"
 #include "MiscInfoFile.h"
@@ -104,6 +106,56 @@ namespace Odb::Lib::FileModel::Design
 		//}
 
 		return false;
+	}
+
+	bool FileArchive::SaveFileModel(const std::filesystem::path& directory, const std::string& archiveName)
+	{
+		// create directory in /tmp
+		// write dir structure and files to it
+		// gzip with archiveName
+		// move archive to directory
+
+		char szTmpNameBuff[L_tmpnam] = { 0 };
+		std::tmpnam(szTmpNameBuff);
+		std::string strTempName(szTmpNameBuff);
+		
+		const auto tempPath = temp_directory_path() / strTempName;
+							
+		if (!std::filesystem::create_directory(tempPath)) return false;
+
+		// MiscInfoFile
+		auto miscPath = tempPath / "misc";
+		if (!std::filesystem::create_directory(miscPath)) return false;
+
+		std::ofstream ofs1(miscPath / "info");
+		if (!m_miscInfoFile.Save(ofs1)) return false;
+		ofs1.close();
+
+		// MiscAttrFile
+		std::ofstream ofs2(miscPath / "sysattr");
+		if (!m_miscAttrListFile.Save(ofs2)) return false;
+		ofs2.close();
+
+		// StandardFontsFile
+		auto fontsPath = tempPath / "fonts";
+		if (!std::filesystem::create_directory(fontsPath)) return false;
+		std::ofstream ofs3(fontsPath / "standard");
+		if (!m_standardFontsFile.Save(ofs3)) return false;
+		ofs3.close();
+
+		// MatrixFile		
+		auto matrixPath = tempPath / "matrix";
+		if (!std::filesystem::create_directory(matrixPath)) return false;
+		std::ofstream ofs4(matrixPath / "matrix");
+		if (!m_matrixFile.Save(ofs4)) return false;
+		ofs4.close();
+
+		return true;
+	}
+
+	bool FileArchive::SaveFileModel(const std::string& directory, const std::string& archiveName)
+	{
+		return SaveFileModel(std::filesystem::path(directory), archiveName);
 	}
 
 	bool FileArchive::ExtractDesignArchive(const std::filesystem::path& path, std::filesystem::path& extractedPath)

@@ -1,4 +1,5 @@
 #include "MatrixFile.h"
+#include "MatrixFile.h"
 //
 // Created by nmill on 10/13/2023.
 //
@@ -470,6 +471,11 @@ namespace Odb::Lib::FileModel::Design
 			pLayerRecord->from_protobuf(layerRecord);
 			m_layerRecords.push_back(pLayerRecord);
 		}
+    }
+
+    bool MatrixFile::Save(std::ostream& os)
+    {
+        return true;
     }
     
     std::unique_ptr<Odb::Lib::Protobuf::MatrixFile::StepRecord> Odb::Lib::FileModel::Design::MatrixFile::StepRecord::to_protobuf() const
