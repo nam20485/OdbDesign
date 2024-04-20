@@ -172,7 +172,8 @@ namespace Odb::App::Server
 		auto szExcludeFileArchive = req.url_params.get(kszExcludeFileArchiveQueryParamName);
 		if (szExcludeFileArchive != nullptr)
 		{
-			if (stricmp(szExcludeFileArchive, "true") == 0)
+			if (std::strcmp(szExcludeFileArchive, "true") == 0 ||
+				std::strcmp(szExcludeFileArchive, "yes") == 0)
 			{
 				excludeFileArchive = true;
 			}
