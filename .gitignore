@@ -48,3 +48,4 @@ deploy/kubeconfig
 Dockerfile.commentedOut
 scripts/create-release-invoker.js
 /compose-designs
+docs/api/
