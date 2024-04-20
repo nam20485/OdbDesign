@@ -168,6 +168,16 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "design name not specified");
 		}
 
+		bool excludeFileArchive = false;
+		auto szExcludeFileArchive = req.url_params.get(kszExcludeFileArchiveQueryParamName);
+		if (szExcludeFileArchive != nullptr)
+		{
+			if (stricmp(szExcludeFileArchive, "true") == 0)
+			{
+				excludeFileArchive = true;
+			}
+		}
+
 		auto pDesign = m_serverApp.designs().GetDesign(designNameDecoded);
 		if (pDesign == nullptr)
 		{
