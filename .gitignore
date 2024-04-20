@@ -25,7 +25,6 @@ build/
 /.idea/workspace.xml
 ssl/
 artifacts/
-doxygen/docs/
 /TEST_DATA
 OdbDesignTests/Testing/
 Testing/
