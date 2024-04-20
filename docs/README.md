@@ -175,17 +175,11 @@ $ docker build . -t odbdesign-server
 
 ## Integration into Other Applications
 
-There are four interfaces that allow use of the library in other applications.
+There are three interfaces that allow use of the library in other applications.
 
 ### C++ Shared Library
 
 ### REST API
-
-### Python Object Interface
-
-SWIG is used to create a Python interface to the C++ library. The interface is exposed as a Python package that can be installed using pip. Parsing is supported, but currently not all data is available to access via the Python interface.
-
->Using the Python interface for anything beyond basic parsing would require implementation of Python wrapper classes to hold the data you are interested in. A better route for Python integration is probably to use the REST API or to generate Python bindings automatically using the included Google Protobuf definitions.
 
 ### Google Protobuf Protocol Buffers
 
