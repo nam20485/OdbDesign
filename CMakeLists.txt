@@ -58,6 +58,7 @@ if (MSVC)
     add_compile_options(/wd4251)
     # ignore C4100: 'identifier': unreferenced formal parameter
     add_compile_options(/wd4100)
+    #add_compile_options(/sdl)
 else()
     # additional warnings    
     add_compile_options(-Wall -Wextra -Wpedantic)
