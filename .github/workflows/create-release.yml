@@ -47,7 +47,7 @@ jobs:
             uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
        
           - name: Download Artifacts
-            uses: dawidd6/action-download-artifact@71072fbb1229e1317f1a8de6b04206afb461bd67 # v3.1.2
+            uses: dawidd6/action-download-artifact@09f2f74827fd3a8607589e5ad7f9398816f540fe # v3.1.4
             with:
               workflow: cmake-multi-platform.yml
               workflow_conclusion: success
