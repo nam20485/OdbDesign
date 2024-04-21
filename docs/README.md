@@ -12,6 +12,14 @@ Sounds great! Now how do I build and run it?
 
 Documentation for the currently-released version of the source code is available [here](https://nam20485.github.io/OdbDesign/api).
 
+## Need Help?
+
+Feel free to message me in the project's Gitter chat room: [odbdesign:gitter.im](https://app.gitter.im/#/room/#odbdesign:gitter.im)
+
+You can also create an issue: <https://github.com/nam20485/OdbDesign/issues>
+
+Or you can start a discussion: <https://github.com/nam20485/OdbDesign/discussions>
+
 ## Key Features
 
 OdbDesign ODB++ parser is differentiated from other offerings by these key features:
@@ -284,6 +292,7 @@ If you are interested in using the parser in your application or code, or have a
 * [GitHub](https://github.com/nam20485/odbdesign)
 * [LinkedIn](https://www.linkedin.com/in/namiller/)
 * [OdbDesign Website](https://nam20485.github.io/OdbDesign/)
+* Gitter chat room: [odbdesign:gitter.im](https://app.gitter.im/#/room/#odbdesign:gitter.im)
 
 ## ODB++
 
