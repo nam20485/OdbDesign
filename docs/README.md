@@ -2,6 +2,16 @@
 
 A free open source cross-platform C++ library for parsing ODB++ Design archives, accessing their data, and building net list product models. Exposed via a REST API packaged inside of a Docker image.
 
+## Skip to Build and Running Instructions
+
+Sounds great! Now how do I build and run it?
+
+[Run](#running)
+
+[Build](#building-from-source)
+
+Documentation for the currently-released version of the source code is available [here](https://nam20485.github.io/OdbDesign/api).
+
 ## Key Features
 
 OdbDesign ODB++ parser is differentiated from other offerings by these key features:
@@ -96,13 +106,48 @@ The diagram describes the current state of parser implementation and data availa
 
 The OdbDesign parser is built as a C++ shared library on all three platforms. An executable running the server links to the library and provides the REST API for accessing the data the library parses. The REST API server can be run by invoking the executable directly or by running the Docker image. The server executable and library can be run on Windows, Linux, or MacOS and the Docker image can be run on any platform that supports Docker.
 
+Documentation for the currently-released version of the source code is available [here](https://nam20485.github.io/OdbDesign/api).
+
 [Insert Diagram Image]
 
 #### Library
 
 FileModel vs. ProductModel...
 
+## Running
+
+There are three different ways to use the project. You can:
+
+1. Build the C++ shared library and use it in your own application
+1. Build the C++ library and REST API server application and then run the application
+1. Run the REST API server (which contains the library inside) from the Docker image.
+
+The instructions for building the C++ shared library and application are below in the [Building from Source](#building-from-source) section. The instructions for running the application or REST API server are here.
+
+### Running the C++ Application
+
+The C++ application REST API server can be run by executing the `OdbDesignServer` or `OdbDesignServer.exe` executable (depending on your platform).
+
+The executable can be found in the following directory:
+
+* `~/src/OdbDesign/out/build/x64-release`                         *(Linux/MacOS)*
+* `C:\Users\<YourName>\Source\OdbDesign\out\build\x64-release`    *(Windows)*
+
+See the [Building from Source](#building-from-source) section for more details on building the C++ application and the build output directory.
+
+If successful, the REST API server will be running and listening on port 8888. You can access the REST API at `http://localhost:8888`.
+
+### Running the REST API Server
+
+From the root of the source directory run:
+
+`$ docker compose up`
+
+If successful, the REST API server will be running and listening on port 8888. You can access the REST API at `http://localhost:8888`. The Swagger UI is available at `http://localhost:8080/swagger`.
+
 ## Building from Source
+
+Documentation for the currently-released version of the source code is available [here](https://nam20485.github.io/OdbDesign/api).
 
 ### Build Dependencies
 
@@ -123,7 +168,7 @@ FileModel vs. ProductModel...
 Get the source code by cloning the GitHub repository:
 
 ```Bash
-$ git clone git@github.com:nam20485/OdbDesign.git
+$ git clone https://github.com/nam20485/OdbDesign.git
 ```
 
 ### Build
@@ -165,21 +210,36 @@ $ cmake --build --preset linux-release
 
 ```
 
+This builds the C++ shared library and the REST API server executable. See the [Running the C++ Application](#running-the-c%2b%2b-application) section for more details.
+
+The build output can be found in the following directory:
+
+* `~/src/OdbDesign/out/build/x64-release`                         *(Linux/MacOS)*
+* `C:\Users\<YourName>\Source\OdbDesign\out\build\x64-release`    *(Windows)*
+
+>The `x64-release` directory will be different if you selected a different configuration preset (`x64-release` vs. `x64-debug` or `linux-release` vs. `linux-debug`). The `x64-release` directory will contain the shared library and the server executable. Make sure to copy the dependencies (.dll files on Windows, .so files on Linux, .dylib files on MacOS) to the same directory as the executable if you want to copy it somewhere else.
+
 #### Docker Image for REST API Server
 
+From the root of the source directory...
+
 ```Bash
-$ docker build . -t odbdesign-server
+$ docker compose up
 ```
 
-## Running the REST API Server
+This builds the Docker image and runs it. See the [Running the REST API Server](#running-the-rest-api-server) section for more details.
 
 ## Integration into Other Applications
 
-There are three interfaces that allow use of the library in other applications.
+There are three separate interfaces that allow use of the library in other applications.
 
 ### C++ Shared Library
 
+Build the C++ shared library and link it into your own C++ application. See the [Building from Source](#building-from-source) section for more details on building it.
+
 ### REST API
+
+Run the REST API server and access the data via the REST API. See the [Running the REST API Server](#running-the-rest-api-server) section for more details on running it.
 
 ### Google Protobuf Protocol Buffers
 
