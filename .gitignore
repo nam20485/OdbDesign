@@ -4,19 +4,6 @@
 
 /.vs
 /out
-OdbDesignLib/OdbDesignLib_wrap.cxx
-PyOdbDesignLib/dist/
-PyOdbDesignLib/_PyOdbDesignLib.dll
-PyOdbDesignLib/PyOdbDesignLib.py
-PyOdbDesignLib/_PyOdbDesignLib.pyd
-PyOdbDesignLib/__pycache__/
-PyOdbDesignServer/Lib/
-PyOdbDesignServer/PyOdbDesignServer/__pycache__/
-PyOdbDesignServer/pyvenv.cfg
-PyOdbDesignServer/db.sqlite3
-PyOdbDesignServer/Scripts/
-PyOdbDesignServer/api/__pycache__/
-PyOdbDesignServer/PyOdbDesignLib/
 /cmake-build-debug
 build/
 /vcpkg_installed
@@ -25,7 +12,6 @@ build/
 /.idea/workspace.xml
 ssl/
 artifacts/
-doxygen/docs/
 /TEST_DATA
 OdbDesignTests/Testing/
 Testing/
@@ -36,15 +22,9 @@ testlog.xml
 /OdbDesignTests/CMakeLists_Local.txt
 /OdbDesignTests/DesignNameTests_Local.cpp
 /output
-OdbDesignServer/api/__pycache__/
-OdbDesignServer/api/migrations/__pycache__/
-OdbDesignServer/OdbDesignServer/__pycache__/
-OdbDesignServer/PyOdbDesignLib/__pycache__/
-OdbDesignServer/PyOdbDesignLib/PyOdbDesignLib.py
-OdbDesignServer/db.sqlite3
-OdbDesignServer/PyOdbDesignLib/_PyOdbDesignLib.pyd
 /TEST_DATA.zip
 deploy/kubeconfig
 Dockerfile.commentedOut
 scripts/create-release-invoker.js
 /compose-designs
+docs/api/

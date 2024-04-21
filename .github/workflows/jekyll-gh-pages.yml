@@ -32,7 +32,13 @@ jobs:
           egress-policy: audit
 
       - name: Checkout
-        uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
+        uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2        
+
+      - name: Install Doxygen
+        run: sudo apt install -y doxygen
+
+      - name: Generate Doxygen docs
+        run: doxygen ./OdbDesignLib/doxygen.conf         
         
       - name: Setup Pages
         uses: actions/configure-pages@1f0c5cde4bc74cd7e1254d0cb4de8d49e9068c7d # v4.0.0
@@ -42,6 +48,9 @@ jobs:
         with:
           source: ./docs
           destination: ./_site
+
+      # - name: Copy Doxygen docs
+      #   run: cp -r ./OdbDesignLib/doxygen/html ./_site/api
           
       - name: Upload artifact
         uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
