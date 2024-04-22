@@ -41,10 +41,18 @@ namespace Odb::Lib::App
 	{
 		// 500 - Internal Server Error
 		auto validUsername = std::getenv(USERNAME_ENV_NAME);
-		if (validUsername == nullptr) return crow::response(500, "Failed retrieving credentials");
+		if (validUsername == nullptr)	//return crow::response(500, "Failed retrieving credentials");
+		{
+			// default username if none supplied in environment
+			validUsername = "odb";
+		}
 
 		auto validPassword = std::getenv(PASSWORD_ENV_NAME);
-		if (validPassword == nullptr) return crow::response(500, "Failed retrieving credentials");
+		if (validPassword == nullptr)	//return crow::response(500, "Failed retrieving credentials");
+		{
+			// default password if none supplied in environment
+			validPassword = "plusplus";
+		}
 		
 		// 403 - Forbidden
 		if (username != validUsername ||
