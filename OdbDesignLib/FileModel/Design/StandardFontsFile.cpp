@@ -1,6 +1,4 @@
 #include "StandardFontsFile.h"
-#include "StandardFontsFile.h"
-
 #include "Logger.h"
 #include <fstream>
 #include "str_utils.h"

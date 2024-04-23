@@ -1,10 +1,4 @@
 #include "LayerDirectory.h"
-#include "LayerDirectory.h"
-#include "LayerDirectory.h"
-#include "LayerDirectory.h"
-#include "LayerDirectory.h"
-#include "LayerDirectory.h"
-#include "LayerDirectory.h"
 #include "Logger.h"
 
 namespace Odb::Lib::FileModel::Design

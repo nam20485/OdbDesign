@@ -1,6 +1,4 @@
 #include "StepDirectory.h"
-#include "StepDirectory.h"
-#include "StepDirectory.h"
 #include <filesystem>
 #include "LayerDirectory.h"
 #include <fstream>

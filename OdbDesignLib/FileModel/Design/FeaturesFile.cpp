@@ -1,5 +1,4 @@
 #include "FeaturesFile.h"
-#include "FeaturesFile.h"
 #include "ArchiveExtractor.h"
 #include <fstream>
 #include "Logger.h"
