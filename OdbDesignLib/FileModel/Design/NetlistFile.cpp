@@ -5,6 +5,9 @@
 #include "../parse_error.h"
 #include "../invalid_odb_error.h"
 #include <climits>
+#include <filesystem>
+
+using namespace std::filesystem;
 
 namespace Odb::Lib::FileModel::Design
 {
@@ -339,6 +342,24 @@ namespace Odb::Lib::FileModel::Design
 			pNetPointRecord->from_protobuf(netPointRecordMessage);
 			m_netPointRecords.push_back(pNetPointRecord);
 		}
+	}
+
+	bool NetlistFile::Save(std::ostream& os)
+	{
+		return true;
+	}
+
+	bool NetlistFile::Save(const std::filesystem::path& directory)
+	{
+		auto netlistDir = directory / m_name;
+		if (!create_directory(netlistDir)) return false;
+
+		std::ofstream netlistFile(netlistDir / "netlist");
+		if (!netlistFile.is_open()) return false;
+		if (! Save(netlistFile)) return false;
+		netlistFile.close();
+
+		return true;
 	}
 
 	std::unique_ptr<Odb::Lib::Protobuf::NetlistFile::NetRecord> NetlistFile::NetRecord::to_protobuf() const

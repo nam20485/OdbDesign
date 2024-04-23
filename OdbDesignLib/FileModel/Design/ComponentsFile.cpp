@@ -149,6 +149,11 @@ namespace Odb::Lib::FileModel::Design
 		}
 	}
 
+	bool ComponentsFile::Save(std::ostream& os)
+	{
+		return true;
+	}
+
 	std::unique_ptr<Odb::Lib::Protobuf::ComponentsFile::BomDescriptionRecord> ComponentsFile::BomDescriptionRecord::to_protobuf() const
 	{
 		std::unique_ptr<Odb::Lib::Protobuf::ComponentsFile::BomDescriptionRecord> pBomDescriptionRecordMessage(new Odb::Lib::Protobuf::ComponentsFile::BomDescriptionRecord);

@@ -14,11 +14,12 @@
 #include "ComponentsFile.h"
 #include "AttrListFile.h"
 #include "StepHdrFile.h"
+#include "../ISaveable.h"
 
 
 namespace Odb::Lib::FileModel::Design
 {
-	class ODBDESIGN_EXPORT StepDirectory : public IProtoBuffable<Odb::Lib::Protobuf::StepDirectory>
+	class ODBDESIGN_EXPORT StepDirectory : public IProtoBuffable<Odb::Lib::Protobuf::StepDirectory>, public ISaveable
 	{
 	public:
 		StepDirectory(std::filesystem::path path);
@@ -38,6 +39,8 @@ namespace Odb::Lib::FileModel::Design
 		const ComponentsFile* GetBottomComponentsFile() const;
 
 		bool Parse();
+		// Inherited via ISaveable
+		bool Save(const std::filesystem::path& directory) override;
 
 		typedef std::map<std::string, std::shared_ptr<StepDirectory>> StringMap;
 

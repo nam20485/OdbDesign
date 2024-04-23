@@ -64,7 +64,7 @@ namespace Odb::Lib::FileModel::Design
 		
 			if (is_regular_file(m_filePath))
 			{
-				std::filesystem::path extractedPath;
+				path extractedPath;
 				if (!ExtractDesignArchive(m_filePath, extractedPath))
 				{
 					logerror("failed to extract archive: (" + m_filePath + ")");
@@ -106,7 +106,12 @@ namespace Odb::Lib::FileModel::Design
 		return false;
 	}
 
-	bool FileArchive::SaveFileModel(const std::filesystem::path& directory, const std::string& archiveName)
+	bool FileArchive::SaveFileModel(const std::string& directory, const std::string& archiveName)
+	{
+		return SaveFileModel(path(directory), archiveName);
+	}
+
+	bool FileArchive::SaveFileModel(const path& directory, const std::string& archiveName)
 	{
 		// create directory in /tmp
 		// write dir structure and files to it
@@ -114,16 +119,21 @@ namespace Odb::Lib::FileModel::Design
 		// move archive to directory
 
 		char szTmpNameBuff[L_tmpnam] = { 0 };
-		std::tmpnam(szTmpNameBuff);
-		std::string strTempName(szTmpNameBuff);
+		std::tmpnam(szTmpNameBuff);		
 		
-		const auto tempPath = temp_directory_path() / strTempName;
+		const auto tempPath = temp_directory_path() / szTmpNameBuff;
 							
-		if (!std::filesystem::create_directory(tempPath)) return false;
+		if (!create_directory(tempPath)) return false;
+		if (!Save(tempPath)) return false;
 
+		return true;
+	}	
+
+	bool FileArchive::Save(const path& directory)
+	{
 		// MiscInfoFile
-		auto miscPath = tempPath / "misc";
-		if (!std::filesystem::create_directory(miscPath)) return false;
+		auto miscPath = directory / "misc";
+		if (!create_directory(miscPath)) return false;
 
 		std::ofstream ofs1(miscPath / "info");
 		if (!m_miscInfoFile.Save(ofs1)) return false;
@@ -135,41 +145,50 @@ namespace Odb::Lib::FileModel::Design
 		ofs2.close();
 
 		// StandardFontsFile
-		auto fontsPath = tempPath / "fonts";
-		if (!std::filesystem::create_directory(fontsPath)) return false;
+		auto fontsPath = directory / "fonts";
+		if (!create_directory(fontsPath)) return false;
 		std::ofstream ofs3(fontsPath / "standard");
 		if (!m_standardFontsFile.Save(ofs3)) return false;
 		ofs3.close();
 
 		// MatrixFile		
-		auto matrixPath = tempPath / "matrix";
-		if (!std::filesystem::create_directory(matrixPath)) return false;
+		auto matrixPath = directory / "matrix";
+		if (!create_directory(matrixPath)) return false;
 		std::ofstream ofs4(matrixPath / "matrix");
 		if (!m_matrixFile.Save(ofs4)) return false;
 		ofs4.close();
 
+		// Steps
+		const auto stepsDirectory = directory / "steps";		
+		for (auto& kvStepDirectory : m_stepsByName)
+		{
+			if (!kvStepDirectory.second->Save(stepsDirectory)) return false;
+		}
+
+		// Symbols
+		const auto symbolsDirectory = directory / "symbols";
+		for (auto& kvSymbolsDirectory : m_symbolsDirectoriesByName)
+		{
+			if (!kvSymbolsDirectory.second->Save(symbolsDirectory)) return false;
+		}
+
 		return true;
 	}
 
-	bool FileArchive::SaveFileModel(const std::string& directory, const std::string& archiveName)
-	{
-		return SaveFileModel(std::filesystem::path(directory), archiveName);
-	}
-
-	bool FileArchive::ExtractDesignArchive(const std::filesystem::path& path, std::filesystem::path& extractedPath)
+	bool FileArchive::ExtractDesignArchive(const path& archivePath, path& extractedPath)
 	{
 		loginfo("Extracting... ");
 
-		if (!Utils::ArchiveExtractor::IsArchiveTypeSupported(path))
+		if (!Utils::ArchiveExtractor::IsArchiveTypeSupported(archivePath))
 		{
-			logerror("Unsupported archive type: (" + path.string() + ")");
+			logerror("Unsupported archive type: (" + archivePath.string() + ")");
 			return false;			
 		}
 
-		Utils::ArchiveExtractor extractor(path.string());
+		Utils::ArchiveExtractor extractor(archivePath.string());
 		if (!extractor.Extract()) return false;
 
-		auto extracted = std::filesystem::path(extractor.GetExtractionDirectory());
+		auto extracted = path(extractor.GetExtractionDirectory());
 		if (!exists(extracted)) return false;
 
 		extractedPath = extracted;
@@ -203,7 +222,7 @@ namespace Odb::Lib::FileModel::Design
 		}
 	}
 
-	/*static*/ bool FileArchive::pathContainsTopLevelDesignDirs(const std::filesystem::path& path)
+	/*static*/ bool FileArchive::pathContainsTopLevelDesignDirs(const path& path)
 	{
 		for (const auto& topLevelRootDirName : TOPLEVEL_DESIGN_DIR_NAMES)
 		{
@@ -260,7 +279,7 @@ namespace Odb::Lib::FileModel::Design
 		}
 	}
 
-	bool FileArchive::ParseDesignDirectory(const std::filesystem::path& path)
+	bool FileArchive::ParseDesignDirectory(const path& path)
 	{
 		if (!exists(path)) return false;
 		else if (!is_directory(path)) return false;
@@ -277,7 +296,7 @@ namespace Odb::Lib::FileModel::Design
 		return true;
 	}
 
-	bool FileArchive::ParseStepDirectories(const std::filesystem::path& path)
+	bool FileArchive::ParseStepDirectories(const path& path)
 	{
 		loginfo("Parsing steps...");
 
@@ -319,7 +338,7 @@ namespace Odb::Lib::FileModel::Design
         return true;
     }
 
-	bool FileArchive::ParseMiscAttrListFile(const std::filesystem::path& path)
+	bool FileArchive::ParseMiscAttrListFile(const path& path)
 	{
 		loginfo("Parsing misc/attrlist file...");
 
@@ -334,7 +353,7 @@ namespace Odb::Lib::FileModel::Design
 		return true;
 	}
 
-	bool FileArchive::ParseMatrixFile(const std::filesystem::path& path)
+	bool FileArchive::ParseMatrixFile(const path& path)
 	{
 		loginfo("Parsing matrix/matrix file...");
 
@@ -348,7 +367,7 @@ namespace Odb::Lib::FileModel::Design
 
 		return true;
 	}
-	bool FileArchive::ParseStandardFontsFile(const std::filesystem::path& path)
+	bool FileArchive::ParseStandardFontsFile(const path& path)
 	{
 		loginfo("Parsing fonts/standard file...");
 
@@ -363,26 +382,26 @@ namespace Odb::Lib::FileModel::Design
 		return true;
 	}
 
-	bool FileArchive::ParseSymbolsDirectories(const std::filesystem::path& path)
+	bool FileArchive::ParseSymbolsDirectories(const path& path)
 	{
 		loginfo("Parsing symbols root directory...");
 
 		auto symbolsDirectory = path / "symbols";
 
-		if (!std::filesystem::exists(symbolsDirectory))
+		if (!exists(symbolsDirectory))
 		{
 			logwarn("symbols root directory does not exist (" + symbolsDirectory.string() + ")");
 			return true;
 		}
-		else if (!std::filesystem::is_directory(symbolsDirectory))
+		else if (!is_directory(symbolsDirectory))
 		{
 			logerror("symbols root directory exists but is a regular file/not a directory (" + symbolsDirectory.string() + ")");
 			return false;
 		}
 
-		for (auto& d : std::filesystem::directory_iterator(symbolsDirectory))
+		for (auto& d : directory_iterator(symbolsDirectory))
 		{
-			if (std::filesystem::is_directory(d))
+			if (is_directory(d))
 			{
 				auto pSymbolsDirectory = std::make_shared<SymbolsDirectory>(d.path());
 				if (pSymbolsDirectory->Parse())

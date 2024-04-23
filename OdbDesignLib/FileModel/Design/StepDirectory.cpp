@@ -170,6 +170,49 @@ namespace Odb::Lib::FileModel::Design
         return success;
     }
 
+    bool StepDirectory::Save(const std::filesystem::path& directory)
+    {
+        // eda/data
+        auto edaPath = directory / "eda";
+        if (!create_directory(edaPath)) return false;
+        std::ofstream edaDataFile(edaPath / "data");
+        if (!m_edaData.Save(edaDataFile)) return false;
+        edaDataFile.close();
+
+        // attrlist
+        std::ofstream attrlistFile(directory / "attrlist");
+        if (!m_attrListFile.Save(attrlistFile)) return false;
+        attrlistFile.close();
+
+        // profile
+        std::ofstream profileFile(directory / "profile");
+        if (!m_profileFile.Save(profileFile)) return false;
+        profileFile.close();
+
+        // StepHdrFile
+        std::ofstream stephdrFile(directory / "stephdr");
+        if (!m_stepHdrFile.Save(stephdrFile)) return false;
+        stephdrFile.close();
+
+        // layers
+        auto layersPath = directory / "layers";
+        if (!create_directory(layersPath)) return false;
+        for (auto& kvLayer : m_layersByName)
+		{
+			if (!kvLayer.second->Save(layersPath)) return false;
+		}
+        
+        // m_netlistsByName;
+        auto netlistsPath = directory / "netlists";
+        if (!create_directory(netlistsPath)) return false;
+        for (auto& kvNetlist : m_netlistsByName)
+		{
+			if (!kvNetlist.second->Save(netlistsPath)) return false;
+		}
+
+        return true;
+    }
+
     std::unique_ptr<Odb::Lib::Protobuf::StepDirectory> StepDirectory::to_protobuf() const
     {
         std::unique_ptr<Odb::Lib::Protobuf::StepDirectory> pStepDirectoryMessage(new Odb::Lib::Protobuf::StepDirectory);

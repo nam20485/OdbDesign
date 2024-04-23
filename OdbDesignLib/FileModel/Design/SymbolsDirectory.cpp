@@ -61,4 +61,24 @@ namespace Odb::Lib::FileModel::Design
 	{
 		return m_attrListFile.Parse(directory);
 	}
+
+	bool SymbolsDirectory::Save(const std::filesystem::path& directory)
+	{
+		auto symbolDir = directory / m_name;
+		if (!create_directory(symbolDir)) return false;
+
+		//FeaturesFile m_featuresFile;
+		std::ofstream featuresFile(symbolDir / "features");
+		if (!featuresFile.is_open()) return false;
+		if (!m_featuresFile.Save(featuresFile)) return false;
+		featuresFile.close();
+
+		//AttrListFile m_attrListFile;
+		std::ofstream attrlistFile(symbolDir / "attrlist");
+		if (!attrlistFile.is_open()) return false;
+		if (!m_attrListFile.Save(attrlistFile)) return false;
+		attrlistFile.close();
+
+		return false;
+	}
 }

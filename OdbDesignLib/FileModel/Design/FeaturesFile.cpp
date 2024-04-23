@@ -857,6 +857,11 @@ namespace Odb::Lib::FileModel::Design
 		}			
 	}
 
+	bool FeaturesFile::Save(std::ostream& os)
+	{
+		return true;
+	}
+
 	FeaturesFile::FeatureRecord::~FeatureRecord()
 	{
 		m_contourPolygons.clear();

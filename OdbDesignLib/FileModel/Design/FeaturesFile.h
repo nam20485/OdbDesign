@@ -9,11 +9,12 @@
 #include "../../ProtoBuf/featuresfile.pb.h"
 #include "SymbolName.h"
 #include "AttributeLookupTable.h"
+#include "../IStreamSaveable.h"
 
 
 namespace Odb::Lib::FileModel::Design
 {
-	class FeaturesFile : public IProtoBuffable<Odb::Lib::Protobuf::FeaturesFile>
+	class FeaturesFile : public IProtoBuffable<Odb::Lib::Protobuf::FeaturesFile>, public IStreamSaveable
 	{
 	public:
 		FeaturesFile();
@@ -86,6 +87,8 @@ namespace Odb::Lib::FileModel::Design
 		};		
 
 		bool Parse(std::filesystem::path directory, const std::string& alternateFilename = "");
+		// Inherited via IStreamSaveable
+		bool Save(std::ostream& os) override;
 
 		std::string GetUnits() const;
 		std::filesystem::path GetPath();
