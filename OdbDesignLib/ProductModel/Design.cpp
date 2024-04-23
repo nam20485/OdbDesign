@@ -417,7 +417,7 @@ namespace Odb::Lib::ProductModel
 				//auto subnetNumber = pToeprintRecord->subnetNumber;
 
 				// -1 means no connection for the component pin
-				if (netNumber != (unsigned int)-1)
+				if (netNumber != static_cast<unsigned int>(-1))
 				{
 					if (!CreatePinConnection(refDes, netNumber, pinNumber, toeprintName)) return false;
 				}
