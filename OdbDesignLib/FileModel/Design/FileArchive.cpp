@@ -5,6 +5,8 @@
 #include <iostream>
 #include "Logger.h"
 #include "StopWatch.h"
+#include "libarchive_extract.h"
+#include "fastcopy.h"
 
 using namespace Utils;
 using namespace std::filesystem;
@@ -106,10 +108,10 @@ namespace Odb::Lib::FileModel::Design
 		return false;
 	}
 
-	bool FileArchive::SaveFileModel(const std::string& directory, const std::string& archiveName)
-	{
-		return SaveFileModel(path(directory), archiveName);
-	}
+	//bool FileArchive::SaveFileModel(const std::string& directory, const std::string& archiveName)
+	//{
+	//	return SaveFileModel(path(directory), archiveName);
+	//}
 
 	bool FileArchive::SaveFileModel(const path& directory, const std::string& archiveName)
 	{
@@ -121,10 +123,22 @@ namespace Odb::Lib::FileModel::Design
 		char szTmpNameBuff[L_tmpnam] = { 0 };
 		std::tmpnam(szTmpNameBuff);		
 		
-		const auto tempPath = temp_directory_path() / szTmpNameBuff;
-							
+		auto tempPath = temp_directory_path() / szTmpNameBuff;
 		if (!create_directory(tempPath)) return false;
-		if (!Save(tempPath)) return false;
+
+		auto rootPath = tempPath / m_productName;					
+		if (!create_directory(rootPath)) return false;
+		if (!Save(rootPath)) return false;
+
+		// compress the written file structure
+		std::string createdArchivePath;
+		if (! Utils::compress(rootPath.string().c_str(), tempPath.string().c_str(), m_productName.c_str(), createdArchivePath)) return false;
+
+		// move the compressed file to the requested save directory
+		path archiveFilename = path(createdArchivePath).filename();
+		path destPath = directory / archiveFilename;
+		auto ec = Utils::fastcopy(createdArchivePath, destPath, true);
+		if (ec.value() != 0) return false;		
 
 		return true;
 	}	
@@ -159,7 +173,8 @@ namespace Odb::Lib::FileModel::Design
 		ofs4.close();
 
 		// Steps
-		const auto stepsDirectory = directory / "steps";		
+		const auto stepsDirectory = directory / "steps";	
+		if (!create_directory(stepsDirectory)) return false;
 		for (auto& kvStepDirectory : m_stepsByName)
 		{
 			if (!kvStepDirectory.second->Save(stepsDirectory)) return false;
@@ -167,6 +182,7 @@ namespace Odb::Lib::FileModel::Design
 
 		// Symbols
 		const auto symbolsDirectory = directory / "symbols";
+		if (!create_directory(symbolsDirectory)) return false;
 		for (auto& kvSymbolsDirectory : m_symbolsDirectoriesByName)
 		{
 			if (!kvSymbolsDirectory.second->Save(symbolsDirectory)) return false;

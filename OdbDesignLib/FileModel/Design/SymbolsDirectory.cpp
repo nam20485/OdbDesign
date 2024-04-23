@@ -79,6 +79,6 @@ namespace Odb::Lib::FileModel::Design
 		if (!m_attrListFile.Save(attrlistFile)) return false;
 		attrlistFile.close();
 
-		return false;
+		return true;
 	}
 }

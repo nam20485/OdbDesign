@@ -45,8 +45,7 @@ namespace Odb::Lib::FileModel::Design
 				
 		bool ParseFileModel();
 		bool SaveFileModel(const std::filesystem::path& directory, const std::string& archiveName);
-		bool SaveFileModel(const std::string& directory, const std::string& archiveName);
-		bool Save(const std::filesystem::path& directory);		
+		//bool SaveFileModel(const std::string& directory, const std::string& archiveName);				
 
 		// Inherited via IProtoBuffable
 		std::unique_ptr<Odb::Lib::Protobuf::FileArchive> to_protobuf() const override;
@@ -76,6 +75,8 @@ namespace Odb::Lib::FileModel::Design
 		bool ParseStandardFontsFile(const std::filesystem::path& path);		
 		bool ParseSymbolsDirectories(const std::filesystem::path& path);
 		bool ParseMiscAttrListFile(const std::filesystem::path& path);
+
+		bool Save(const std::filesystem::path& directory);
 
 		bool ExtractDesignArchive(const std::filesystem::path& path, std::filesystem::path& extractedPath);
 

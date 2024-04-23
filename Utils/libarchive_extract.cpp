@@ -105,7 +105,7 @@ namespace Utils
         archive_write_free(ext);
 
         return true;
-    }   
+    }  
 
     int copy_data(struct archive* ar, struct archive* aw)
     {
@@ -115,79 +115,125 @@ namespace Utils
         la_int64_t offset;
         la_ssize_t written;
 
-        for (;;) {
+        for (;;)
+        {
             r = archive_read_data_block(ar, &buff, &size, &offset);
             if (r == ARCHIVE_EOF)
+            {
                 return (ARCHIVE_OK);
-            if (r < ARCHIVE_OK)
+            }
+            else if (r < ARCHIVE_OK)
+            {
                 return (r);
+            }
+
             written = archive_write_data_block(aw, buff, size, offset);
-            if (written < ARCHIVE_OK) {
+            if (written < ARCHIVE_OK)
+            {
                 fprintf(stderr, "%s\n", archive_error_string(aw));
                 return (r);
             }
         }
     }
 
-    bool compress(const char* srcDir, const char* destDir, const char* archiveName)
+    constexpr inline static const char* TAR_GZIP_EXTENSION = ".tgz";
+    const int COMPRESS_READ_BUFF_SIZE = 1024;    
+
+    bool compress(const char* srcDir, const char* destDir, const char* archiveName, std::string& fileOut, CompressionType type /* = CompressionType::TarGzip*/)
     {
-       
-        return false;
+        path destArchivePath = path(destDir) / archiveName;
+        switch (type)
+        {
+        case CompressionType::TarGzip:
+            destArchivePath.replace_extension(TAR_GZIP_EXTENSION);
+            break;
+        }
+
+        struct archive* a = archive_write_new();
+        if (archive_write_set_format_ustar(a) != ARCHIVE_OK) return false;
+        if (archive_write_add_filter_gzip(a) != ARCHIVE_OK) return false;
+
+        if (archive_write_open_filename(a, destArchivePath.string().c_str()) != ARCHIVE_OK) return false;
+
+        //// add top-level directory to the archive
+        auto root_entry = archive_entry_new();
+        //auto rootDir = path(srcDir).parent_path().filename();
+        auto rootDir = path(archiveName);
+        archive_entry_set_pathname(root_entry, rootDir.string().c_str());
+        archive_entry_set_filetype(root_entry, AE_IFDIR);
+        if (archive_write_header(a, root_entry) != ARCHIVE_OK) return false;
+        archive_entry_free(root_entry);
+
+        struct stat st { 0 };
+        
+        // add files to the archive               
+        for (const auto& it : recursive_directory_iterator(srcDir))
+		{
+            if (it.is_directory())
+            {                                              
+                auto relativePath = relative(it.path(), srcDir);
+                auto dir_entry = archive_entry_new();
+                archive_entry_set_pathname(dir_entry, (rootDir / relativePath).string().c_str());
+                archive_entry_set_filetype(dir_entry, AE_IFDIR);
+                stat(it.path().string().c_str(), &st);
+                archive_entry_copy_stat(dir_entry, &st);
+                if (archive_write_header(a, dir_entry) != ARCHIVE_OK) return false;
+                archive_entry_free(dir_entry);
+            }
+			else if (it.is_regular_file())
+			{
+                // write header				
+                auto relativePath = relative(it.path(), srcDir);
+                auto file_entry = archive_entry_new();
+                archive_entry_set_pathname(file_entry, (rootDir / relativePath).string().c_str());
+				archive_entry_set_filetype(file_entry, AE_IFREG);
+                stat(it.path().string().c_str(), &st);
+                archive_entry_copy_stat(file_entry, &st);
+                if (archive_write_header(a, file_entry) != ARCHIVE_OK) return false;
+                
+                // read file and write to archive
+                char buffer[COMPRESS_READ_BUFF_SIZE]{ 0 };
+                std::ifstream ifs(it.path());                
+                while (ifs.read(buffer, sizeof(buffer)))
+				{
+                    if (COMPRESS_READ_BUFF_SIZE != archive_write_data(a, buffer, sizeof(buffer))) return false;
+				}
+                auto remaining = ifs.gcount();
+                if (archive_write_data(a, buffer, remaining) != remaining) return false;
+                archive_entry_free(file_entry);
+			}
+		}
+
+        // clean up
+        archive_write_finish_entry(a);
+        archive_write_close(a);
+        archive_write_free(a);
+
+        fileOut = destArchivePath.string();
+
+        return true;
+    } 
+
+    static std::string getRelativePath(std::string path, std::string base)
+    {
+        try
+        {
+            path = absolute(u8path(path)).generic_u8string();
+            base = absolute(u8path(base)).generic_u8string();
+        }
+        catch (filesystem_error& e) {
+            //throw Exception("%s", e.what());
+        }
+        if (path.size() < base.size())
+        {
+            //throw Exception("getRelativePath() error: path is shorter than base");
+        }
+        if (!std::equal(base.begin(), base.end(), path.begin()))
+        {
+            //throw Exception("getRelativePath() error: path does not begin with base");
+        }
+
+        // If path == base, this correctly returns "."
+        return "." + std::string(path.begin() + base.size(), path.end());
     }
-
-    ////https://stackoverflow.com/a/23332055/4848067
-    //QString directory = "/home/lpapp/tmp/stackoverflow/test";
-    //struct archive* a;
-    //struct archive_entry* entry;
-    //struct stat st;
-    //char buff[8192];
-    //size_t bytes_read;
-    //int fd;
-
-    //QByteArray outArray = directory.toLocal8Bit() + ".tar";
-    //char* outDirectory = outArray.data();
-    //qDebug() << outDirectory;
-
-    //QByteArray inputArray = directory.toLocal8Bit();
-    //char* inputDirectory = inputArray.data();
-    //qDebug() << inputDirectory;
-
-    //QFileInfo inputInfo;
-    //inputInfo.setFile(directory);
-
-    //// the name of the directory
-    //QByteArray pathArray = inputInfo.fileName().toLocal8Bit();
-    //char* pathDirectory = pathArray.data();
-    //qDebug() << pathDirectory;
-
-    //a = archive_write_new();
-    //archive_write_add_filter_gzip(a);
-    //archive_write_set_format_pax_restricted(a);
-    //archive_write_open_filename(a, outDirectory);
-
-    //QDirIterator it(directory, QDirIterator::Subdirectories);
-    //while (it.hasNext()) {
-    //    entry = archive_entry_new();
-    //    stat(inputDirectory, &st);
-
-    //    archive_entry_set_pathname(entry, it.next().toLocal8Bit().constData());
-    //    archive_entry_set_filetype(entry, AE_IFDIR);
-    //    archive_entry_copy_stat(entry, &st);
-    //    archive_write_header(a, entry);
-
-    //    fd = open(inputDirectory, O_RDONLY);
-    //    bytes_read = read(fd, buff, sizeof(buff));
-    //    while (bytes_read > 0) {
-    //        archive_write_data(a, buff, bytes_read);
-    //        bytes_read = read(fd, buff, sizeof(buff));
-    //    }
-    //    close(fd);
-    //    archive_entry_free(entry);
-
-    //    archive_write_finish_entry(a);
-    //    archive_write_close(a);
-    //    archive_write_free(a);
-    //}
-
-    //return 0;
 }
