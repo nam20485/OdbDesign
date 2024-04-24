@@ -10,7 +10,7 @@ namespace Utils
 	};
 
 	bool extract(const char* filename, const char* destDir);
-	UTILS_EXPORT bool compress(const char* srcDir, 
+	UTILS_EXPORT bool compress_dir(const char* srcDir, 
 							   const char* destDir, 
 							   const char* archiveName, 
 							   std::string& fileOut,

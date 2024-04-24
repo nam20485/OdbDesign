@@ -132,7 +132,8 @@ namespace Odb::Lib::FileModel::Design
 
 		// compress the written file structure
 		std::string createdArchivePath;
-		if (! Utils::compress(rootPath.string().c_str(), tempPath.string().c_str(), m_productName.c_str(), createdArchivePath)) return false;
+		if (! Utils::compress_dir(rootPath.string().c_str(), tempPath.string().c_str(), m_productName.c_str(), createdArchivePath)) return false;
+		if (createdArchivePath.empty()) return false;
 
 		// move the compressed file to the requested save directory
 		path archiveFilename = path(createdArchivePath).filename();

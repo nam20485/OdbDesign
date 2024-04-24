@@ -136,16 +136,16 @@ namespace Utils
         }
     }
 
-    constexpr inline static const char* TAR_GZIP_EXTENSION = ".tgz";
-    const int COMPRESS_READ_BUFF_SIZE = 1024;    
+    constexpr inline static const char* TGZ_EXTENSION = ".tgz";
+    constexpr static const int COMPRESS_READ_BUFF_SIZE = 1024;    
 
-    bool compress(const char* srcDir, const char* destDir, const char* archiveName, std::string& fileOut, CompressionType type /* = CompressionType::TarGzip*/)
+    bool compress_dir(const char* srcDir, const char* destDir, const char* archiveName, std::string& fileOut, CompressionType type /* = CompressionType::TarGzip*/)
     {
         path destArchivePath = path(destDir) / archiveName;
         switch (type)
         {
         case CompressionType::TarGzip:
-            destArchivePath.replace_extension(TAR_GZIP_EXTENSION);
+            destArchivePath.replace_extension(TGZ_EXTENSION);
             break;
         }
 
@@ -157,8 +157,8 @@ namespace Utils
 
         //// add top-level directory to the archive
         auto root_entry = archive_entry_new();
-        //auto rootDir = path(srcDir).parent_path().filename();
-        auto rootDir = path(archiveName);
+        //auto rootDir = path(archiveName);
+        auto rootDir = path(srcDir).filename();
         archive_entry_set_pathname(root_entry, rootDir.string().c_str());
         archive_entry_set_filetype(root_entry, AE_IFDIR);
         if (archive_write_header(a, root_entry) != ARCHIVE_OK) return false;
@@ -212,28 +212,5 @@ namespace Utils
         fileOut = destArchivePath.string();
 
         return true;
-    } 
-
-    static std::string getRelativePath(std::string path, std::string base)
-    {
-        try
-        {
-            path = absolute(u8path(path)).generic_u8string();
-            base = absolute(u8path(base)).generic_u8string();
-        }
-        catch (filesystem_error& e) {
-            //throw Exception("%s", e.what());
-        }
-        if (path.size() < base.size())
-        {
-            //throw Exception("getRelativePath() error: path is shorter than base");
-        }
-        if (!std::equal(base.begin(), base.end(), path.begin()))
-        {
-            //throw Exception("getRelativePath() error: path does not begin with base");
-        }
-
-        // If path == base, this correctly returns "."
-        return "." + std::string(path.begin() + base.size(), path.end());
-    }
+    }     
 }
