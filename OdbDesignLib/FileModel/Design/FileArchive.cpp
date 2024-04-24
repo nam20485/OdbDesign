@@ -5,7 +5,6 @@
 #include <iostream>
 #include "Logger.h"
 #include "StopWatch.h"
-#include "libarchive_extract.h"
 #include "fastcopy.h"
 
 using namespace Utils;
@@ -132,7 +131,7 @@ namespace Odb::Lib::FileModel::Design
 
 		// compress the written file structure
 		std::string createdArchivePath;
-		if (! Utils::compress_dir(rootPath.string().c_str(), tempPath.string().c_str(), m_productName.c_str(), createdArchivePath)) return false;
+		if (! Utils::ArchiveExtractor::CompressDir(rootPath.string(), tempPath.string(), m_productName, createdArchivePath)) return false;
 		if (createdArchivePath.empty()) return false;
 
 		// move the compressed file to the requested save directory
