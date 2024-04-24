@@ -178,6 +178,7 @@ namespace Utils
                 stat(it.path().string().c_str(), &st);
                 archive_entry_copy_stat(dir_entry, &st);
                 if (archive_write_header(a, dir_entry) != ARCHIVE_OK) return false;
+                archive_write_finish_entry(a);
                 archive_entry_free(dir_entry);
             }
 			else if (it.is_regular_file())
@@ -187,6 +188,9 @@ namespace Utils
                 auto file_entry = archive_entry_new();
                 archive_entry_set_pathname(file_entry, (rootDir / relativePath).string().c_str());
 				archive_entry_set_filetype(file_entry, AE_IFREG);
+                //archive_entry_set_size(file_entry, st.st_size);  // Note 2
+                //archive_entry_set_mtime(file_entry, st.st_mtime, 0);
+                //archive_entry_set_perm(file_entry, st.st_mode?);
                 stat(it.path().string().c_str(), &st);
                 archive_entry_copy_stat(file_entry, &st);
                 if (archive_write_header(a, file_entry) != ARCHIVE_OK) return false;
@@ -200,12 +204,12 @@ namespace Utils
 				}
                 auto remaining = ifs.gcount();
                 if (archive_write_data(a, buffer, remaining) != remaining) return false;
+                archive_write_finish_entry(a);
                 archive_entry_free(file_entry);
 			}
 		}
 
-        // clean up
-        archive_write_finish_entry(a);
+        // clean up        
         archive_write_close(a);
         archive_write_free(a);
 
