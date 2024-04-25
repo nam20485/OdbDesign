@@ -3,38 +3,39 @@
 #include <filesystem>
 #include <ios>
 #include <vector>
+#include <iosfwd>
 
 using namespace std::filesystem;
 
 namespace Utils
 {
 	FileReader::FileReader(const std::filesystem::path& filePath)
-		: FileReader(filePath, false)
-	{
-	}
-
-	FileReader::FileReader(const std::filesystem::path& filePath, bool unbuffered)
-		: FileReader(filePath, DEFAULT_OPENMODE, unbuffered)
-	{
-	}
-
-	FileReader::FileReader(const std::filesystem::path& filePath, std::ios::openmode mode, bool unbuffered)
 		: m_filePath(filePath)
-		, m_mode(mode)
-		, m_unbuffered(unbuffered)
 	{
 	}
 
-	size_t FileReader::Read()
-	{
-		size_t read = 0;
+	//FileReader::FileReader(const std::filesystem::path& filePath, std::ios::openmode mode)
+	//	: FileReader(filePath, mode, false)
+	//{
+	//}
 
-		if (m_unbuffered)
+	//FileReader::FileReader(const std::filesystem::path& filePath, std::ios::openmode mode, bool unbuffered)
+	//	: m_filePath(filePath)
+	//	, m_mode(mode)
+	//	, m_unbuffered(unbuffered)
+	//{
+	//}
+
+	long long FileReader::Read(BufferStrategy bufferStrategy /*= BufferStrategy::Buffered*/, std::ios::openmode mode /*= DEFAULT_OPENMODE*/)
+	{
+		auto read = 0LL;
+
+		if (bufferStrategy == BufferStrategy::Unbuffered)
 		{
-			std::ifstream file(m_filePath, m_mode);
+			std::ifstream file(m_filePath, mode);
 			if (file.is_open())
 			{
-				auto size = file_size(m_filePath);
+				long long size = file_size(m_filePath);
 				m_buffer.resize(size);
 				file.read(m_buffer.data(), size);
 				if (file.gcount() == size)
@@ -48,7 +49,7 @@ namespace Utils
 		}
 		else
 		{
-			std::ifstream file(m_filePath, m_mode);
+			std::ifstream file(m_filePath, mode);
 			if (file.is_open())
 			{
 				char szBuffer[BUFFER_SIZE]{ 0 };				

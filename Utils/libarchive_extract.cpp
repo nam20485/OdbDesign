@@ -184,7 +184,7 @@ namespace Utils
                 stat(it.path().string().c_str(), &st);
                 archive_entry_copy_stat(dir_entry, &st);
                 if (archive_write_header(a, dir_entry) != ARCHIVE_OK) return false;
-                //archive_write_finish_entry(a);
+                archive_write_finish_entry(a);
                 archive_entry_free(dir_entry);
             }
 			else if (it.is_regular_file())
@@ -202,13 +202,14 @@ namespace Utils
                 if (archive_write_header(a, file_entry) != ARCHIVE_OK) return false;
                 
                 // read file and write to archive
-                FileReader fr(it.path(), std::ios_base::binary, true);
-                if (fr.Read() > 0)
+                FileReader fr(it.path());
+                auto read = fr.Read();
+                if (read > 0)
                 {
                     auto& buffer = fr.GetBuffer();
-                    if (archive_write_data(a, buffer.data(), buffer.size()) != buffer.size()) return false;
+                    if (archive_write_data(a, buffer.data(), read) != read) return false;
                 }                               
-                //archive_write_finish_entry(a);
+                archive_write_finish_entry(a);
                 archive_entry_free(file_entry);
 			}
 		}
