@@ -3,6 +3,7 @@
 #include "Logger.h"
 #include <memory>
 #include <cstdlib>
+#include "App/DesignCache.h"
 
 using namespace std::filesystem;
 //using namespace Odb::Lib;
@@ -19,7 +20,10 @@ namespace Odb::Test::Fixtures
 
 	void FileArchiveLoadFixture::SetUp()
 	{
-		//Logger::instance()->start();
+		if (ENABLE_TEST_LOGGING)
+		{
+			Logger::instance()->start();
+		}
 		
 		ASSERT_FALSE(getTestDataDir().empty());		
 		m_testDataDir = getTestDataDir();		
@@ -31,19 +35,10 @@ namespace Odb::Test::Fixtures
 		ASSERT_NE(m_pDesignCache, nullptr);
 	}
 
-	/*static*/ std::string FileArchiveLoadFixture::getTestDataDir()
-	{
-		auto szTestDataDir = std::getenv(ODB_TEST_DATA_DIR_ENV_NAME);
-		if (szTestDataDir == nullptr) return "";
-		//if (szTestDataDir == nullptr) throw std::runtime_error("ODB_TEST_DATA_DIR environment variable is not set");				
-		//if (!exists(szTestDataDir)) throw std::runtime_error("ODB_TEST_DATA_DIR environment variable is set to a non-existent directory");
-		return szTestDataDir;
-	}
-
 	void FileArchiveLoadFixture::TearDown()
-	{		
+	{
 		if (m_removeDecompressedDirectories)
-		{		
+		{
 			if (exists(m_testDataDir))
 			{
 				// delete uncompressed directories
@@ -60,11 +55,33 @@ namespace Odb::Test::Fixtures
 			}
 		}
 
-		//Logger::instance()->stop();		
+		if (ENABLE_TEST_LOGGING)
+		{
+			Logger::instance()->stop();
+		}
+	}
+
+	/*static*/ path FileArchiveLoadFixture::getTestDataDir()
+	{
+		auto szTestDataDir = std::getenv(ODB_TEST_DATA_DIR_ENV_NAME);
+		if (szTestDataDir == nullptr) return "";
+		//if (szTestDataDir == nullptr) throw std::runtime_error("ODB_TEST_DATA_DIR environment variable is not set");				
+		//if (!exists(szTestDataDir)) throw std::runtime_error("ODB_TEST_DATA_DIR environment variable is set to a non-existent directory");
+		return szTestDataDir;
+	}
+
+	path FileArchiveLoadFixture::getTestDataFilesDir()
+	{
+		return m_testDataDir / TESTFILE_DIR;
 	}
 
 	path FileArchiveLoadFixture::getDesignPath(const std::string& filename) const
 	{
 		return m_testDataDir / filename;
+	}
+
+	path FileArchiveLoadFixture::getTestDataFilePath(const std::string& filename) const
+	{
+		return m_testDataDir / TESTFILE_DIR / filename;
 	}
 }

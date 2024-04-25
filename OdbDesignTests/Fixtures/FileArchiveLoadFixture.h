@@ -23,12 +23,18 @@ namespace Odb::Test::Fixtures
 		void SetUp() override;
 		void TearDown() override;
 
-		static std::string getTestDataDir();				
+		static std::filesystem::path getTestDataDir();
+		std::filesystem::path getTestDataFilesDir();
 		std::filesystem::path getDesignPath(const std::string& filename) const;
+		std::filesystem::path getTestDataFilePath(const std::string& filename) const;
 
-		static inline const std::vector<std::string> KEEP_DIRECTORIES = { "filereader" };
+		static inline const std::vector<std::string> KEEP_DIRECTORIES = { "files" };
 
 		static inline constexpr const char ODB_TEST_DATA_DIR_ENV_NAME[] = "ODB_TEST_DATA_DIR";
+
+		static inline constexpr const char TESTFILE_DIR[] = "files";
+
+		static inline constexpr bool ENABLE_TEST_LOGGING = false;
 
 	};
 }
