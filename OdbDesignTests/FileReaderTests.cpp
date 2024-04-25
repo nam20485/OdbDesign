@@ -19,10 +19,10 @@ namespace Odb::Test
 
 		ASSERT_TRUE(exists(filePath));
 
-		FileReader fr(filePath, std::ios_base::binary, false);
+		FileReader fr(filePath);
 
 		auto fileSize = file_size(filePath);
-		auto read = fr.Read();
+		auto read = fr.Read(FileReader::BufferStrategy::Buffered);
 		ASSERT_EQ(read, fileSize);
 
 		auto& buffer = fr.GetBuffer();
@@ -36,10 +36,10 @@ namespace Odb::Test
 
 		ASSERT_TRUE(exists(filePath));
 
-		FileReader fr(filePath, std::ios_base::binary, true);
+		FileReader fr(filePath);
 
 		auto fileSize = file_size(filePath);
-		auto read = fr.Read();
+		auto read = fr.Read(FileReader::BufferStrategy::Unbuffered);
 		ASSERT_EQ(read, fileSize);
 
 		auto& buffer = fr.GetBuffer();
