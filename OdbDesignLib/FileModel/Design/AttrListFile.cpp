@@ -43,20 +43,20 @@ namespace Odb::Lib::FileModel::Design
 
 			loginfo("checking for extraction...");
 
-			std::filesystem::path featuresFilePath;
-			for (const std::string featuresFilename : ATTRLIST_FILENAMES)
+			std::filesystem::path attrListFilePath;
+			for (const std::string attrListFilename : ATTRLIST_FILENAMES)
 			{
-				loginfo("trying attrlist file: [" + featuresFilename + "]...");
+				loginfo("trying attrlist file: [" + attrListFilename + "]...");
 
-				featuresFilePath = Utils::ArchiveExtractor::getUncompressedFilePath(m_directory, featuresFilename);
-				if (exists(featuresFilePath) && is_regular_file(featuresFilePath))
+				attrListFilePath = Utils::ArchiveExtractor::getUncompressedFilePath(m_directory, attrListFilename);
+				if (exists(attrListFilePath) && is_regular_file(attrListFilePath))
 				{
-					loginfo("found attrlist file: [" + featuresFilePath.string() + "]");
+					loginfo("found attrlist file: [" + attrListFilePath.string() + "]");
 					break;
 				}
 			}
 
-			m_path = featuresFilePath;
+			m_path = attrListFilePath;
 
 			loginfo("any extraction complete, parsing data...");
 
@@ -205,6 +205,12 @@ namespace Odb::Lib::FileModel::Design
 
 	bool AttrListFile::Save(std::ostream& os)
 	{
+		os << Constants::UNITS_TOKEN << " = " << m_units << std::endl;
+		for (const auto& kvAttribute : m_attributesByName)
+		{
+			os << kvAttribute.first << " = " << kvAttribute.second << std::endl;
+		}
+
 		return true;
 	}
 } // namespace Odb::Lib::FileModel::Design
