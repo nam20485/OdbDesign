@@ -17,13 +17,6 @@ namespace Utils
 
 		FileReader(const std::filesystem::path& filePath);		
 
-		//FileReader(const std::filesystem::path& filePath,
-		//		   std::ios::openmode mode);
-
-		//FileReader(const std::filesystem::path& filePath, 
-		//		   std::ios::openmode mode, 
-		//		   bool unbuffered);
-		
 		long long Read(BufferStrategy bufferStrategy = BufferStrategy::Buffered, std::ios::openmode mode = DEFAULT_OPENMODE);
 		//const char* GetBytes();
 		void Clear();
@@ -31,9 +24,6 @@ namespace Utils
 
 	private:
 		const std::filesystem::path m_filePath;	
-		//const bool m_unbuffered;
-		//const std::ifstream::openmode m_mode;
-
 		std::vector<char> m_buffer;
 
 		static inline constexpr std::ios::openmode DEFAULT_OPENMODE = std::ios::in|std::ios::binary;

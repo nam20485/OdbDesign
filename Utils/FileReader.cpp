@@ -30,29 +30,22 @@ namespace Utils
 	{
 		auto read = 0LL;
 
-		if (bufferStrategy == BufferStrategy::Unbuffered)
+		std::ifstream file(m_filePath, mode);
+		if (file.is_open())
 		{
-			std::ifstream file(m_filePath, mode);
-			if (file.is_open())
+			if (bufferStrategy == BufferStrategy::Unbuffered)
 			{
 				long long size = file_size(m_filePath);
 				m_buffer.resize(size);
 				file.read(m_buffer.data(), size);
 				if (file.gcount() == size)
 				{
-					read = size;					
+					read = size;
 				}
-				m_buffer.push_back(0);
-				m_buffer.resize(read);
-				file.close();
 			}
-		}
-		else
-		{
-			std::ifstream file(m_filePath, mode);
-			if (file.is_open())
+			else
 			{
-				char szBuffer[BUFFER_SIZE]{ 0 };				
+				char szBuffer[BUFFER_SIZE]{ 0 };
 				while (true)
 				{
 					file.read(szBuffer, sizeof(szBuffer));
@@ -61,18 +54,16 @@ namespace Utils
 					{
 						m_buffer.insert(m_buffer.end(), szBuffer, szBuffer + readin);
 						read += readin;
-					}					
+					}
 					else
 					{
 						break;
 					}
 				}
-				// put a '/0' AFTER the end of the buffer
-				m_buffer.push_back(0);
-				// then resize it back so the '/0' isn't included, but visualizing as a C string still works
-				m_buffer.resize(read);
-				file.close();
 			}
+			m_buffer.push_back(0);
+			m_buffer.resize(read);
+			file.close();
 		}
 
 		return read;
