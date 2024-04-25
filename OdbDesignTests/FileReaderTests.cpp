@@ -11,17 +11,15 @@ using namespace Utils;
 
 namespace Odb::Test
 {
-	static inline constexpr char FILE_CONTENTS[] = "Hello, World!";
+	static inline constexpr char FILE_CONTENTS[] = "Hello, World!\r\n";
 
 	TEST_F(FileArchiveLoadFixture, Test_FileReaderRead_Buffered)
-	{
-		auto fileReaderTestPath = path(getTestDataDir());
-		fileReaderTestPath /= "filereader";
-		auto filePath = fileReaderTestPath / "filereader_test1.txt";
+	{		
+		auto filePath = getTestDataFilePath("filereader_test1.txt");
 
 		ASSERT_TRUE(exists(filePath));
 
-		FileReader fr(filePath);
+		FileReader fr(filePath, std::ios_base::binary, false);
 
 		auto fileSize = file_size(filePath);
 		auto read = fr.Read();
@@ -34,13 +32,11 @@ namespace Odb::Test
 
 	TEST_F(FileArchiveLoadFixture, Test_FileReaderRead_Unbuffered)
 	{
-		auto fileReaderTestPath = path(getTestDataDir());
-		fileReaderTestPath /= "filereader";
-		auto filePath = fileReaderTestPath / "filereader_test1.txt";
+		auto filePath = getTestDataFilePath("filereader_test1.txt");
 
 		ASSERT_TRUE(exists(filePath));
 
-		FileReader fr(filePath, true);
+		FileReader fr(filePath, std::ios_base::binary, true);
 
 		auto fileSize = file_size(filePath);
 		auto read = fr.Read();
