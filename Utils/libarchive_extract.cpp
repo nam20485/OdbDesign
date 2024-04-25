@@ -202,7 +202,7 @@ namespace Utils
                 if (archive_write_header(a, file_entry) != ARCHIVE_OK) return false;
                 
                 // read file and write to archive
-                FileReader fr(it.path());
+                FileReader fr(it.path(), std::ios_base::binary, true);
                 if (fr.Read() > 0)
                 {
                     auto& buffer = fr.GetBuffer();
