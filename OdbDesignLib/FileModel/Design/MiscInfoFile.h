@@ -57,6 +57,18 @@ namespace Odb::Lib::FileModel::Design
         {
            //"ODB_SOURCE",  // not optional per spec pg. 80
            "MAX_UID",
-        };       
+        };
+
+        constexpr inline static const char* PRODUCT_MODEL_NAME_KEY = "PRODUCT_MODEL_NAME";
+        constexpr inline static const char* JOB_NAME_KEY = "JOB_NAME";
+        constexpr inline static const char* ODB_VERSION_MAJOR_KEY = "ODB_VERSION_MAJOR";
+        constexpr inline static const char* ODB_VERSION_MINOR_KEY = "ODB_VERSION_MINOR";
+        constexpr inline static const char* ODB_SOURCE_KEY = "ODB_SOURCE";
+        constexpr inline static const char* CREATION_DATE_KEY = "CREATION_DATE";
+        constexpr inline static const char* SAVE_DATE_KEY = "SAVE_DATE";
+        constexpr inline static const char* SAVE_APP_KEY = "SAVE_APP";
+        constexpr inline static const char* SAVE_USER_KEY = "SAVE_USER";
+        constexpr inline static const char* UNITS_KEY = "UNITS";
+        constexpr inline static const char* MAX_UID_KEY = "MAX_UID";        
     };
 }

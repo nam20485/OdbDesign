@@ -475,6 +475,38 @@ namespace Odb::Lib::FileModel::Design
 
     bool MatrixFile::Save(std::ostream& os)
     {
+        for (const auto& stepRecord : m_stepRecords)
+        {
+			os << StepRecord::RECORD_TOKEN << " " << Constants::ARRAY_RECORD_OPEN_TOKEN << std::endl;
+			os << StepRecord::COLUMN_KEY << "=" << stepRecord->column << std::endl;
+            os << StepRecord::NAME_KEY << "=" << stepRecord->name << std::endl;
+            os << StepRecord::ID_KEY << "=" << stepRecord->id << std::endl;		
+			os << Constants::ARRAY_RECORD_CLOSE_TOKEN << std::endl;
+		}
+
+        for (const auto& layerRecord : m_layerRecords)
+        {
+            os << LayerRecord::RECORD_TOKEN << " " << Constants::ARRAY_RECORD_OPEN_TOKEN << std::endl;
+            os << LayerRecord::ROW_KEY << "=" << layerRecord->row << std::endl;
+            os << LayerRecord::NAME_KEY << "=" << layerRecord->name << std::endl;
+            os << LayerRecord::ID_KEY << "=" << layerRecord->id << std::endl;
+            //os << LayerRecord::TYPE_KEY << "=" << layerRecord->type << std::endl;
+            //os << LayerRecord::CONTEXT_KEY << "=" << layerRecord->context << std::endl;
+            //os << LayerRecord::OLD_NAME_KEY << "=" << layerRecord->oldName << std::endl;
+            //os << LayerRecord::POLARITY_KEY << "=" << layerRecord->polarity << std::endl;
+            //os << LayerRecord::DIELECTRIC_TYPE_KEY << "=" << layerRecord->dielectricType << std::endl;
+            os << LayerRecord::DIELECTRIC_NAME_KEY << "=" << layerRecord->dielectricName << std::endl;
+            //os << LayerRecord::FORM_KEY << "=" << layerRecord->form << std::endl;
+            os << LayerRecord::CU_TOP_KEY << "=" << layerRecord->cuTop << std::endl;
+            os << LayerRecord::CU_BOTTOM_KEY << "=" << layerRecord->cuBottom << std::endl;
+            os << LayerRecord::REF_KEY << "=" << layerRecord->ref << std::endl;
+            os << LayerRecord::START_NAME_KEY << "=" << layerRecord->startName << std::endl;
+            os << LayerRecord::END_NAME_KEY << "=" << layerRecord->endName << std::endl;
+            os << LayerRecord::ADD_TYPE_KEY << "=" << layerRecord->addType << std::endl;
+            //os << LayerRecord::COLOR_KEY << "=" << layerRecord->color << std::endl;
+            os << Constants::ARRAY_RECORD_CLOSE_TOKEN << std::endl;
+        }
+
         return true;
     }
     

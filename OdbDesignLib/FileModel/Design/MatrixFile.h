@@ -31,6 +31,9 @@ namespace Odb::Lib::FileModel::Design
             typedef std::vector<std::shared_ptr<StepRecord>> Vector;
 
             inline static const char* RECORD_TOKEN = "STEP";
+            inline static const char* COLUMN_KEY = "COL";
+            inline static const char* NAME_KEY = "NAME";
+            inline static const char* ID_KEY = "ID";
 
             // Inherited via IProtoBuffable
             std::unique_ptr<Odb::Lib::Protobuf::MatrixFile::StepRecord> to_protobuf() const override;
@@ -97,9 +100,39 @@ namespace Odb::Lib::FileModel::Design
 
             inline static const char* RECORD_TOKEN = "LAYER";
 
+            inline static const char* ROW_KEY = "ROW";
+            inline static const char* CONTEXT_KEY = "CONTEXT";
+            inline static const char* TYPE_KEY = "TYPE";
+            inline static const char* NAME_KEY = "NAME";
+            inline static const char* POLARITY_KEY = "POLARITY";
+            inline static const char* DIELECTRIC_TYPE_KEY = "DIELECTRIC_TYPE";
+            inline static const char* DIELECTRIC_NAME_KEY = "DIELECTRIC_NAME";
+            inline static const char* FORM_KEY = "FORM";
+            inline static const char* CU_TOP_KEY = "CU_TOP";
+            inline static const char* CU_BOTTOM_KEY = "CU_BOTTOM";
+            inline static const char* REF_KEY = "REF";
+            inline static const char* START_NAME_KEY = "START_NAME";
+            inline static const char* END_NAME_KEY = "END_NAME";
+            inline static const char* OLD_NAME_KEY = "OLD_NAME";
+            inline static const char* ADD_TYPE_KEY = "ADD_TYPE";
+            inline static const char* COLOR_KEY = "COLOR";
+            inline static const char* ID_KEY = "ID";
+
             // Inherited via IProtoBuffable
             std::unique_ptr<Odb::Lib::Protobuf::MatrixFile::LayerRecord> to_protobuf() const override;
             void from_protobuf(const Odb::Lib::Protobuf::MatrixFile::LayerRecord& message) override;
+
+            //static Type stringToType(const std::string& type);
+            //static Context stringToContext(const std::string& context);
+            //static DielectricType stringToDielectricType(const std::string& dielectricType);
+            //static Form stringToForm(const std::string& form);
+
+            //static std::string typeToString(Type type);
+            //static std::string contextToString(Context context);
+            //static std::string dielectricTypeToString(DielectricType dielectricType);
+            //static std::string formToString(Form form);
+
+
         };
 
         const LayerRecord::Vector& GetLayerRecords() const;
@@ -137,6 +170,6 @@ namespace Odb::Lib::FileModel::Design
             "CU_BOTTOM",
             "REF",
             "COLOR",
-        };
+        };      
     };
 }

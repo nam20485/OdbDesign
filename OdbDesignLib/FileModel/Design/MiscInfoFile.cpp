@@ -195,6 +195,18 @@ namespace Odb::Lib::FileModel::Design
 
     bool MiscInfoFile::Save(std::ostream& os)
     {
+        os << PRODUCT_MODEL_NAME_KEY << "=" << m_productModelName << std::endl;
+        os << JOB_NAME_KEY << "=" << m_jobName << std::endl;
+        os << ODB_VERSION_MAJOR_KEY << "=" << m_odbVersionMajor << std::endl;
+        os << ODB_VERSION_MINOR_KEY << "=" << m_odbVersionMinor << std::endl;
+        os << ODB_SOURCE_KEY << "=" << m_odbSource << std::endl;
+        os << CREATION_DATE_KEY << "=" << Utils::make_timestamp(m_creationDateDate) << std::endl;
+        os << SAVE_DATE_KEY << "=" << Utils::make_timestamp(m_saveDate) << std::endl;
+        os << SAVE_APP_KEY << "=" << m_saveApp << std::endl;
+        os << SAVE_USER_KEY << "=" << m_saveUser << std::endl;
+        os << UNITS_KEY << "=" << m_units << std::endl;
+        os << MAX_UID_KEY << "=" << m_maxUniqueId << std::endl;               
+
         return true;
     }
 
