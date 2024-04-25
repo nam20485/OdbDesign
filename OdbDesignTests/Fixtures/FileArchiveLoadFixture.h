@@ -5,6 +5,7 @@
 #include "OdbDesign.h"
 #include <memory>
 #include <string>
+#include <vector>
 
 namespace Odb::Test::Fixtures
 {
@@ -25,7 +26,9 @@ namespace Odb::Test::Fixtures
 		static std::string getTestDataDir();				
 		std::filesystem::path getDesignPath(const std::string& filename) const;
 
-		constexpr const static inline char ODB_TEST_DATA_DIR_ENV_NAME[] = "ODB_TEST_DATA_DIR";
+		static inline const std::vector<std::string> KEEP_DIRECTORIES = { "filereader" };
+
+		static inline constexpr const char ODB_TEST_DATA_DIR_ENV_NAME[] = "ODB_TEST_DATA_DIR";
 
 	};
 }

@@ -149,7 +149,7 @@ namespace Odb::Lib::FileModel::Design
 		auto miscPath = directory / "misc";
 		if (!create_directory(miscPath)) return false;
 
-		std::ofstream ofs1(miscPath / "info");
+		std::ofstream ofs1(miscPath / "info", std::ios::out);
 		if (!m_miscInfoFile.Save(ofs1)) return false;
 		ofs1.close();
 

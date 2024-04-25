@@ -1,6 +1,8 @@
 #include "FileArchiveLoadFixture.h"
 #include <string>
 #include "Logger.h"
+#include <memory>
+#include <cstdlib>
 
 using namespace std::filesystem;
 //using namespace Odb::Lib;
@@ -49,7 +51,10 @@ namespace Odb::Test::Fixtures
 				{
 					if (is_directory(entry))
 					{
-						remove_all(entry.path());
+						if (std::find(KEEP_DIRECTORIES.begin(), KEEP_DIRECTORIES.end(), entry.path().filename()) == KEEP_DIRECTORIES.end())
+						{
+							remove_all(entry.path());
+						}
 					}
 				}
 			}
