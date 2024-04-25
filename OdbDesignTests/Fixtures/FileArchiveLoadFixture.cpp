@@ -72,7 +72,7 @@ namespace Odb::Test::Fixtures
 
 	path FileArchiveLoadFixture::getTestDataFilesDir()
 	{
-		return m_testDataDir / TESTFILE_DIR;
+		return m_testDataDir / TESTDATA_FILES_DIR;
 	}
 
 	path FileArchiveLoadFixture::getDesignPath(const std::string& filename) const
@@ -82,6 +82,6 @@ namespace Odb::Test::Fixtures
 
 	path FileArchiveLoadFixture::getTestDataFilePath(const std::string& filename) const
 	{
-		return m_testDataDir / TESTFILE_DIR / filename;
+		return m_testDataDir / TESTDATA_FILES_DIR / filename;
 	}
 }
