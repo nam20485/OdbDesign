@@ -29,7 +29,7 @@ namespace Odb::Test
 	TEST_F(FileArchiveLoadFixture, TestDataDirEnvironmentVariablesExists)
 	{
 		//ASSERT_FALSE(getTestDataDir().empty());
-		EXPECT_THAT(getTestDataDir(), Not(IsEmpty()));
+		EXPECT_THAT(getTestDataDir().string(), Not(IsEmpty()));
 	}
 
 	TEST_F(FileArchiveLoadFixture, TestDataDirDirectoryExists)
