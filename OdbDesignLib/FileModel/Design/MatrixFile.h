@@ -125,7 +125,7 @@ namespace Odb::Lib::FileModel::Design
             std::unique_ptr<Odb::Lib::Protobuf::MatrixFile::LayerRecord> to_protobuf() const override;
             void from_protobuf(const Odb::Lib::Protobuf::MatrixFile::LayerRecord& message) override;
 
-            inline static const EnumMap<Type> typeMap {
+            inline static const Utils::EnumMap<Type> typeMap {
                 {
 				    "SIGNAL",
 				    "POWER_GROUND",
@@ -143,14 +143,14 @@ namespace Odb::Lib::FileModel::Design
                 }
             };
 
-            inline static const EnumMap<Context> contextMap{
+            inline static const Utils::EnumMap<Context> contextMap{
                {
                    "BOARD",
                    "MISC"
                }
             };
 
-            inline static const EnumMap<DielectricType> dielectricTypeMap{
+            inline static const Utils::EnumMap<DielectricType> dielectricTypeMap{
                 {
                     "",
                     "NONE",
@@ -159,7 +159,7 @@ namespace Odb::Lib::FileModel::Design
                 }
             };
 
-            inline static const EnumMap<Form> formMap{
+            inline static const Utils::EnumMap<Form> formMap{
                 {
                     "",
                     "RIGID",
@@ -167,7 +167,7 @@ namespace Odb::Lib::FileModel::Design
                 }
             };
 
-            inline static const EnumMap<Polarity> polarityMap{
+            inline static const Utils::EnumMap<Polarity> polarityMap{
                 {
 					"POSITIVE",
 					"NEGATIVE"
