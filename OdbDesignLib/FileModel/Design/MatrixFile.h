@@ -13,6 +13,7 @@
 #include "../../IProtoBuffable.h"
 #include "../../ProtoBuf/matrixfile.pb.h"
 #include "../IStreamSaveable.h"
+#include "EnumMap.h"
 
 
 namespace Odb::Lib::FileModel::Design
@@ -67,6 +68,7 @@ namespace Odb::Lib::FileModel::Design
 
             enum class DielectricType
             {
+                NotSet,
                 None,
                 Prepreg,
                 Core
@@ -74,6 +76,7 @@ namespace Odb::Lib::FileModel::Design
 
             enum class Form
             {
+                NotSet,
                 Rigid,
                 Flex
             };
@@ -85,9 +88,9 @@ namespace Odb::Lib::FileModel::Design
             Type type;
             std::string name;
             Polarity polarity;
-            DielectricType dielectricType = DielectricType::None;
+            DielectricType dielectricType = DielectricType::NotSet;
             std::string dielectricName;
-            Form form = Form::Rigid;
+            Form form = Form::NotSet;
             unsigned int cuTop = (unsigned int)-1;
             unsigned int cuBottom = (unsigned int)-1;
             unsigned int ref = (unsigned int)-1;
@@ -122,17 +125,54 @@ namespace Odb::Lib::FileModel::Design
             std::unique_ptr<Odb::Lib::Protobuf::MatrixFile::LayerRecord> to_protobuf() const override;
             void from_protobuf(const Odb::Lib::Protobuf::MatrixFile::LayerRecord& message) override;
 
-            //static Type stringToType(const std::string& type);
-            //static Context stringToContext(const std::string& context);
-            //static DielectricType stringToDielectricType(const std::string& dielectricType);
-            //static Form stringToForm(const std::string& form);
+            inline static const EnumMap<Type> typeMap {
+                {
+				    "SIGNAL",
+				    "POWER_GROUND",
+				    "DIELECTRIC",
+				    "MIXED",
+                    "SOLDER_MASK",
+                    "SOLDER_PASTE",
+                    "SILK_SCREEN",
+				    "DRILL",
+				    "ROUT",
+				    "DOCUMENT",
+				    "COMPONENT",
+				    "MASK",
+				    "CONDUCTIVE_PASTE"
+                }
+            };
 
-            //static std::string typeToString(Type type);
-            //static std::string contextToString(Context context);
-            //static std::string dielectricTypeToString(DielectricType dielectricType);
-            //static std::string formToString(Form form);
+            inline static const EnumMap<Context> contextMap{
+               {
+                   "BOARD",
+                   "MISC"
+               }
+            };
 
+            inline static const EnumMap<DielectricType> dielectricTypeMap{
+                {
+                    "",
+                    "NONE",
+                    "PREPREG",
+                    "CORE"
+                }
+            };
 
+            inline static const EnumMap<Form> formMap{
+                {
+                    "",
+                    "RIGID",
+                    "FLEX"
+                }
+            };
+
+            inline static const EnumMap<Polarity> polarityMap{
+                {
+					"POSITIVE",
+					"NEGATIVE"
+				}
+			};
         };
 
         const LayerRecord::Vector& GetLayerRecords() const;
