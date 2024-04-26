@@ -37,4 +37,8 @@ namespace Utils
 
 	UTILS_EXPORT std::string str_to_lower_copy(const std::string& s);
 	UTILS_EXPORT std::string str_to_upper_copy(const std::string& s);
+
+	//UTILS_EXPORT std::string str_replace(const std::string& s, const std::string& from, const std::string& to);	
+
+	UTILS_EXPORT bool str_icmp(const std::string& s1, const std::string& s2);
 }

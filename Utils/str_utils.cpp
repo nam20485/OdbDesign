@@ -1,4 +1,6 @@
 #include "str_utils.h"
+#include "str_utils.h"
+#include "str_utils.h"
 #include <iostream>
 #include <string>
 #include <algorithm>
@@ -6,9 +8,11 @@
 
 namespace Utils
 {
+
+    static bool case_insensitive_compare(const std::string& s1, const std::string& s2);
+
     //! std::isspace(char) can only handle chars in the range [0,255] 
     //! so we need to cast the it's argument to unsigned char
-
     // trim from start (in place)
     std::string& str_ltrim(std::string& s)
     {
@@ -127,5 +131,42 @@ namespace Utils
         std::string copy;
         std::transform(copy.begin(), copy.end(), copy.begin(), [](unsigned char c) { return std::toupper(c); });
         return copy;
+    }   
+
+    UTILS_EXPORT bool str_icmp(const std::string& s1, const std::string& s2)
+    {
+        return case_insensitive_compare(s1, s2);
     }
+
+    static bool case_insensitive_compare(const std::string& s1, const std::string& s2)
+    {
+        return std::equal(
+            s1.begin(), s1.end(),
+            s2.begin(), s2.end(),
+            [](char c1, char c2)
+            {
+                return std::tolower(c1) == std::tolower(c2);
+            });
+    }
+
+  //  UTILS_EXPORT std::string Utils::str_replace(const std::string& s, const std::string& from, const std::string& to)
+  //  {
+  //      std::string result;
+		//result.reserve(s.length()); // avoids a few memory allocations
+
+		//std::string::size_type lastPos = 0;
+		//std::string::size_type findPos;
+
+  //      while (std::string::npos != (findPos = s.find(from, lastPos)))
+  //      {
+		//	result.append(s, lastPos, findPos - lastPos);
+		//	result += to;
+		//	lastPos = findPos + from.length();
+		//}
+
+		//// Care for the rest after last occurrence
+		//result += s.substr(lastPos);
+
+		//return result;
+  //  }
 }
