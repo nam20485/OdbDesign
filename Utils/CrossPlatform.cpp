@@ -7,29 +7,32 @@
 
 namespace Utils
 {
-	//bool CrossPlatform::localtime(const std::time_t* time, struct std::tm& tmOut)
+	bool CrossPlatform::localtime_safe(const std::time_t* time, struct std::tm& tmOut)
+	{
+		#if (IS_WINDOWS)
+		{
+			return (0 == localtime_s(&tmOut, time));
+		}
+		#elif (IS_LINUX || IS_APPLE)
+		{	
+			localtime_r(time, &tmOut);
+			return true;
+		}
+		#endif		
+	}
+
+	//char* CrossPlatform::getenv_safe(const char* env_var)
 	//{
-	//	#if (Utils::IsWindows())
+	//	#if (IS_WINDOWS)
 	//	{
-	//		if (0 == localtime_s(&tmOut, time))
-	//		{
-	//			return true;
-	//		}
-	//		return false;
+	//		//_dupenv_s()			
 	//	}
-	//	#elseif (Utils::IsLinux() || Utils::IsApple())		
-	//	{			
+	//	#elif (IS_LINUX || IS_APPLE)
+	//	{
 	//		localtime_r(time, &tmOut);
 	//		return true;
 	//	}
-	//	#endif
-
-	//	return false;
-	//}
-
-	//char* CrossPlatform::getenv(const char* env_var)
-	//{
-	//	return nullptr;
+	//	#endif	
 	//}
 
 	//char* CrossPlatform::tmpnam(char* filename)
