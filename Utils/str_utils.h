@@ -2,6 +2,7 @@
 
 #include <string>
 #include "utils_export.h"
+#include <vector>
 
 
 namespace Utils
@@ -40,5 +41,10 @@ namespace Utils
 
 	//UTILS_EXPORT std::string str_replace(const std::string& s, const std::string& from, const std::string& to);	
 
-	UTILS_EXPORT bool str_icmp(const std::string& s1, const std::string& s2);
+	UTILS_EXPORT bool str_icmp(const std::string& s1, const std::string& s2);	
+
+	UTILS_EXPORT std::vector<std::string>::iterator find_str_icmp(const std::vector<std::string>::iterator first, 
+																  const std::vector<std::string>::iterator last, 
+																  const std::string& val);
+
 }

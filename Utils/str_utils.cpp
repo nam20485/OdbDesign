@@ -1,9 +1,11 @@
 #include "str_utils.h"
 #include "str_utils.h"
 #include "str_utils.h"
+#include "str_utils.h"
 #include <iostream>
 #include <string>
 #include <algorithm>
+#include <vector>
 
 
 namespace Utils
@@ -133,9 +135,14 @@ namespace Utils
         return copy;
     }   
 
-    UTILS_EXPORT bool str_icmp(const std::string& s1, const std::string& s2)
+    bool str_icmp(const std::string& s1, const std::string& s2)
     {
         return case_insensitive_compare(s1, s2);
+    }
+
+    std::vector<std::string>::iterator find_str_icmp(const std::vector<std::string>::iterator first, const std::vector<std::string>::iterator last, const std::string& val)
+    {
+        return std::find_if(first, last, [&val](const std::string& s) { return case_insensitive_compare(s, val); });
     }
 
     static bool case_insensitive_compare(const std::string& s1, const std::string& s2)
