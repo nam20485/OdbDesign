@@ -50,15 +50,12 @@ namespace Utils
 				{
 					file.read(szBuffer, sizeof(szBuffer));
 					auto readin = file.gcount();
-					if (readin > 0)
-					{
-						m_buffer.insert(m_buffer.end(), szBuffer, szBuffer + readin);
-						read += readin;
-					}
-					else
+					if (readin < 1)
 					{
 						break;
 					}
+					m_buffer.insert(m_buffer.end(), szBuffer, szBuffer + readin);
+					read += readin;
 				}
 			}
 			m_buffer.push_back(0);
