@@ -3,18 +3,7 @@
 #include <vector>
 #include <string>
 #include <exception>
-#include <cctype>
 
-//bool case_insensitive_compare(const std::string& s1, const std::string& s2)
-//{
-//	return std::equal(
-//		s1.begin(), s1.end(),
-//		s2.begin(), s2.end(),
-//		[](char c1, char c2)
-//		{
-//			return std::tolower(c1) == std::tolower(c2);
-//		});
-//}
 
 template<typename E>
 class EnumMap
@@ -36,7 +25,6 @@ public:
 
 	E getValue(const std::string& name) const
 	{
-		//auto find = std::find_if(m_names.begin(), m_names.end(), name, case_insensitive_compare);
 		auto findIt = std::find(m_names.begin(), m_names.end(), name);
 		if (findIt == m_names.end())
 		{
@@ -47,7 +35,6 @@ public:
 
 	bool contains(const std::string& name) const
 	{
-		//return std::find_if(m_names.begin(), m_names.end(), name, case_insensitive_compare) != m_names.end();
 		return std::find(m_names.begin(), m_names.end(), name) != m_names.end();
 	}
 
