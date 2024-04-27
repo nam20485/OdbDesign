@@ -2,6 +2,7 @@
 #include "str_utils.h"
 #include "str_utils.h"
 #include "str_utils.h"
+#include "str_utils.h"
 #include <iostream>
 #include <string>
 #include <algorithm>
@@ -135,12 +136,17 @@ namespace Utils
         return copy;
     }   
 
-    bool str_icmp(const std::string& s1, const std::string& s2)
+    bool str_iequals(const std::string& s1, const std::string& s2)
     {
         return case_insensitive_compare(s1, s2);
     }
 
-    std::vector<std::string>::iterator find_str_icmp(const std::vector<std::string>::iterator first, const std::vector<std::string>::iterator last, const std::string& val)
+    std::vector<std::string>::iterator find_str_icmp(std::vector<std::string>::iterator first, std::vector<std::string>::iterator last, const std::string& val)
+    {
+        return std::find_if(first, last, [&val](const std::string& s) { return case_insensitive_compare(s, val); });
+    }
+
+    std::vector<std::string>::const_iterator find_str_icmp(const std::vector<std::string>::const_iterator first, const std::vector<std::string>::const_iterator last, const std::string& val)
     {
         return std::find_if(first, last, [&val](const std::string& s) { return case_insensitive_compare(s, val); });
     }
