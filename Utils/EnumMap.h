@@ -3,7 +3,6 @@
 #include <vector>
 #include <string>
 #include <exception>
-#include "str_utils.h"
 
 namespace Utils
 {
@@ -15,23 +14,24 @@ namespace Utils
 			: m_names(names)
 		{}
 
-		std::string getValue(const E e) const
+		const std::string& getValue(const E e) const
 		{
 			auto index = static_cast<size_t>(e);
 			if (index < 0 || index >= m_names.size())
 			{
-				throw Exception("no name found for value");
+				std::string msg = "no name found for value: " + std::to_string(index);
+				throw Exception(msg.c_str());
 			}
 			return m_names[index];
 		}
 
 		E getValue(const std::string& name) const
 		{
-			//auto findIt = find_str_icmp(m_names.begin(), m_names.end(), name);
 			auto findIt = std::find(m_names.begin(), m_names.end(), name);			
 			if (findIt == m_names.end())
 			{
-				throw Exception("no value found for name");
+				std::string msg = "no value found for name: (" + name + ")";
+				throw Exception(msg.c_str());
 			}
 			return static_cast<E>(std::distance(m_names.begin(), findIt));
 		}
@@ -50,7 +50,7 @@ namespace Utils
 		typedef std::exception Exception;
 
 	private:
-		std::vector<std::string> m_names;
+		const std::vector<std::string> m_names;
 
 	};
 }
