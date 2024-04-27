@@ -1,5 +1,5 @@
 #include "FileUploadController.h"
-#include "fastcopy.h"
+#include "fastmove.h"
 
 using namespace std::filesystem;
 using namespace Odb::Lib::App;
@@ -107,7 +107,7 @@ namespace Odb::App::Server
         path finalPath(m_serverApp.args().designsDir());
         finalPath /= safeName;
         //rename(tempPath, finalPath);        
-        auto ec = fastcopy(tempPath, finalPath, false);
+        auto ec = fastmove(tempPath, finalPath, false);
 
         std::string responseBody = "{ \"filename\": \"" + safeName + "\" }";
 
@@ -177,7 +177,7 @@ namespace Odb::App::Server
             path finalPath(m_serverApp.args().designsDir());
             finalPath /= safeName;
             //rename(tempPath, finalPath);
-            auto ec = fastcopy(tempPath, finalPath, false);
+            auto ec = fastmove(tempPath, finalPath, false);
 
             CROW_LOG_INFO << " Contents written to " << outfile_name << '\n';
         }
