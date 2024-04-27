@@ -4,6 +4,7 @@
 #include <exception>
 #include <filesystem>
 #include <utility>
+#include <StringVector.h>
 
 using namespace Utils;
 using namespace std::filesystem;
