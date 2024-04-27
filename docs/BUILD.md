@@ -72,14 +72,14 @@ Then run the commands from one or more of the sections below, based on what you 
 ###### Windows
 
 ```Bash
-$ cmake --preset x64-debug
+$ cmake --preset x64-release
 $ cmake --build --preset x64-release
 ```
 
 ###### Linux
 
 ```Bash
-$ cmake --preset linux-debug
+$ cmake --preset linux-release
 $ cmake --build --preset linux-release
 
 ```
