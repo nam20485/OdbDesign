@@ -1,16 +1,17 @@
 #pragma once
 
-#include <corecrt.h>
+//#include <corecrt.h>
 #include "utils_export.h"
+#include <string>
 
 namespace Utils
 {
-	class CrossPlatform
+	class UTILS_EXPORT CrossPlatform
 	{
 	public:
 		static bool localtime_safe(const std::time_t* time, struct std::tm& tmOut);
-		//static char* getenv(const char* env_var);
-		//static char* tmpnam(char* filename);
+		static bool getenv(const char* env_var, std::string& envValueOut);
+		static bool tmpnam_safe(std::string& tempNameOut);
 
 	};
 }
