@@ -19,7 +19,7 @@ namespace Utils
 		bool contains(const std::string& name) const;
 		bool contains(const E e) const;
 
-		typedef std::exception Exception;
+		//typedef std::exception Exception;
 
 	private:
 		const std::vector<std::string> m_names;
@@ -40,7 +40,7 @@ namespace Utils
 		if (index < 0 || index >= m_names.size())
 		{
 			std::string msg = "no name found for value: " + std::to_string(index);
-			throw Exception(msg.c_str());
+			throw std::invalid_argument(msg.c_str());
 		}
 		return m_names[index];
 	}
@@ -61,7 +61,7 @@ namespace Utils
 		if (findIt == m_names.end())
 		{
 			std::string msg = "no value found for name: (" + name + ")";
-			throw Exception(msg.c_str());
+			throw std::invalid_argument(msg.c_str());
 		}
 		return static_cast<E>(std::distance(m_names.begin(), findIt));
 	}

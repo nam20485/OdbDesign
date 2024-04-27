@@ -170,7 +170,7 @@ namespace Utils
         if (archive_write_header(a, root_entry) != ARCHIVE_OK) return false;
         archive_entry_free(root_entry);
 
-        struct stat st { 0 };
+        struct stat st;
         
         // add files to the archive               
         for (const auto& it : recursive_directory_iterator(srcDir))

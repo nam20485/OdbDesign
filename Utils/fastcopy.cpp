@@ -23,15 +23,15 @@ namespace Utils
 		return ec;
 	}
 
-	error_code copy(const string& source, const string& dest, bool overwriteExisting)
-	{
-		return copy(path(source), path(dest), overwriteExisting);
-	}
+	//error_code copy(const string& source, const string& dest, bool overwriteExisting)
+	//{
+	//	return copy(path(source), path(dest), overwriteExisting);
+	//}
 
-	error_code fastcopy(const string& source, const string& dest, bool overwriteExisting)
-	{
-		return fastcopy(path(source), path(dest), overwriteExisting);
-	}
+	//error_code fastcopy(const string& source, const string& dest, bool overwriteExisting)
+	//{
+	//	return fastcopy(path(source), path(dest), overwriteExisting);
+	//}
 
 	error_code fastcopy(const path& source, const path& dest, bool overwriteExisting)
 	{
