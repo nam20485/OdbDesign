@@ -1,9 +1,8 @@
 #include <gtest/gtest.h>
-#include <gmock/gmock.h>
 #include <filesystem>
-#include "FileReader.h"
 #include "Fixtures/FileArchiveLoadFixture.h"
 #include "libarchive_extract.h"
+#include "ArchiveExtractor.h"
 
 using namespace std::filesystem;
 using namespace Odb::Test::Fixtures;
@@ -17,7 +16,15 @@ namespace Odb::Test
 	TEST_F(FileArchiveLoadFixture, Test_LibArchive_CompressDir)
 	{
 		std::string fileArchiveOut;
-		compress_dir(getTestDataFilesDir().string().c_str(), getTestDataFilesDir().string().c_str(), "files", fileArchiveOut);
+		compress_dir(getTestDataFilesDir().string().c_str(), getTestDataFilesDir().string().c_str(), "files_libarchive", fileArchiveOut);
+
+		ASSERT_TRUE(exists(fileArchiveOut));
+	}
+
+	TEST_F(FileArchiveLoadFixture, Test_ArchiveExtractor_CompressDir)
+	{
+		std::string fileArchiveOut;
+		ArchiveExtractor::CompressDir(getTestDataFilesDir().string(), getTestDataFilesDir().string(), "files_archiveextractor", fileArchiveOut);
 
 		ASSERT_TRUE(exists(fileArchiveOut));
 	}
