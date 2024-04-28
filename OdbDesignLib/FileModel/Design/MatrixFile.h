@@ -14,6 +14,8 @@
 #include "../../ProtoBuf/matrixfile.pb.h"
 #include "../IStreamSaveable.h"
 #include "EnumMap.h"
+#include <string>
+#include <iostream>
 
 
 namespace Odb::Lib::FileModel::Design
