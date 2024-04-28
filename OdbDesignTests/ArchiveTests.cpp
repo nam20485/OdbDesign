@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <filesystem>
-#include "Fixtures/FileArchiveLoadFixture.h"
+#include "Fixtures/TestDataFixture.h"
 #include "libarchive_extract.h"
 #include "ArchiveExtractor.h"
 
@@ -13,7 +13,7 @@ namespace Odb::Test
 {
 	static inline constexpr char FILE_CONTENTS[] = "Hello, World!\n\n";
 
-	TEST_F(FileArchiveLoadFixture, Test_LibArchive_CompressDir)
+	TEST_F(TestDataFixture, Test_LibArchive_CompressDir)
 	{
 		std::string fileArchiveOut;
 		compress_dir(getTestDataFilesDir().string().c_str(), getTestDataFilesDir().string().c_str(), "files_libarchive", fileArchiveOut);
@@ -21,7 +21,7 @@ namespace Odb::Test
 		ASSERT_TRUE(exists(fileArchiveOut));
 	}
 
-	TEST_F(FileArchiveLoadFixture, Test_ArchiveExtractor_CompressDir)
+	TEST_F(TestDataFixture, Test_ArchiveExtractor_CompressDir)
 	{
 		std::string fileArchiveOut;
 		ArchiveExtractor::CompressDir(getTestDataFilesDir().string(), getTestDataFilesDir().string(), "files_archiveextractor", fileArchiveOut);

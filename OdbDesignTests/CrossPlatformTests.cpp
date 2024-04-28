@@ -1,6 +1,4 @@
 #include <gtest/gtest.h>
-#include <filesystem>
-#include "Fixtures/FileArchiveLoadFixture.h"
 #include "CrossPlatform.h"
 #include <ctime>
 
@@ -11,7 +9,7 @@ using namespace Utils;
 
 namespace Odb::Test
 {
-	TEST_F(FileArchiveLoadFixture, Test_CrossPlatform_GetEnvSafe_VariableExists)
+	TEST_F(TestDataFixture, Test_CrossPlatform_GetEnvSafe_VariableExists)
 	{
 		std::string value;
 		ASSERT_EQ(value.size(), 0U);
@@ -20,7 +18,7 @@ namespace Odb::Test
 		ASSERT_STREQ(value.c_str(), m_testDataDir.string().c_str());
 	}
 
-	TEST_F(FileArchiveLoadFixture, Test_CrossPlatform_GetEnvSafe_VariableDoesntExist)
+	TEST_F(TestDataFixture, Test_CrossPlatform_GetEnvSafe_VariableDoesntExist)
 	{
 		std::string value;
 		ASSERT_EQ(value.size(), 0U);
@@ -28,7 +26,7 @@ namespace Odb::Test
 		ASSERT_STREQ(value.c_str(), "");		
 	}
 
-	TEST_F(FileArchiveLoadFixture, Test_CrossPlatform_TmpNameSafe_ReturnsRandomFilename)
+	TEST_F(TestDataFixture, Test_CrossPlatform_TmpNameSafe_ReturnsRandomFilename)
 	{
 		std::string value1;
 		ASSERT_EQ(value1.size(), 0U);
@@ -43,7 +41,7 @@ namespace Odb::Test
 		ASSERT_STRNE(value1.c_str(), value2.c_str());
 	}
 
-	TEST_F(FileArchiveLoadFixture, Test_CrossPlatform_LocalTimeSafe_ReturnsSomeTime)
+	TEST_F(TestDataFixture, Test_CrossPlatform_LocalTimeSafe_ReturnsSomeTime)
 	{
 		time_t tt{ 0 };
 		ASSERT_EQ(tt, 0LL);

@@ -1,8 +1,7 @@
 #include <gtest/gtest.h>
-#include <gmock/gmock.h>
 #include <filesystem>
 #include "FileReader.h"
-#include "Fixtures//FileArchiveLoadFixture.h"
+#include "Fixtures/TestDataFixture.h"
 
 using namespace std::filesystem;
 using namespace Odb::Test::Fixtures;
@@ -13,7 +12,7 @@ namespace Odb::Test
 {
 	static inline constexpr char FILE_CONTENTS[] = "Hello, World!\r\n";
 
-	TEST_F(FileArchiveLoadFixture, Test_FileReaderRead_Buffered)
+	TEST_F(TestDataFixture, Test_FileReaderRead_Buffered)
 	{		
 		auto filePath = getTestDataFilePath("filereader_test1.txt");
 
@@ -30,7 +29,7 @@ namespace Odb::Test
 		ASSERT_STREQ(buffer.data(), FILE_CONTENTS);		
 	}
 
-	TEST_F(FileArchiveLoadFixture, Test_FileReaderRead_Unbuffered)
+	TEST_F(TestDataFixture, Test_FileReaderRead_Unbuffered)
 	{
 		auto filePath = getTestDataFilePath("filereader_test1.txt");
 
