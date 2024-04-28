@@ -6,6 +6,6 @@
 
 namespace Utils
 {
-	UTILS_EXPORT std::error_code move(const std::filesystem::path& source, const std::filesystem::path& dest, bool overwriteExisting);
-	UTILS_EXPORT std::error_code fastmove(const std::filesystem::path& source, const std::filesystem::path& dest, bool overwriteExisting);
+	UTILS_EXPORT void move_file(const std::filesystem::path& source, const std::filesystem::path& dest, bool overwriteExisting, std::error_code& ec);
+	UTILS_EXPORT void fastmove_file(const std::filesystem::path& source, const std::filesystem::path& dest, bool overwriteExisting, std::error_code& ec);
 }

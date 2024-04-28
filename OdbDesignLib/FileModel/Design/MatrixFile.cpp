@@ -429,9 +429,9 @@ namespace Odb::Lib::FileModel::Design
             os << '\t' << LayerRecord::ROW_KEY << "=" << layerRecord->row << std::endl;
             os << '\t' << LayerRecord::CONTEXT_KEY << "=" << LayerRecord::contextMap.getValue(layerRecord->context) << std::endl;
             os << '\t' << LayerRecord::TYPE_KEY << "=" << LayerRecord::typeMap.getValue(layerRecord->type) << std::endl;
-            os << '\t' << LayerRecord::NAME_KEY << "=" << layerRecord->name << std::endl;          
-            os << '\t' << LayerRecord::FORM_KEY << "=" << LayerRecord::formMap.getValue(layerRecord->form) << std::endl;
+            os << '\t' << LayerRecord::NAME_KEY << "=" << layerRecord->name << std::endl;                      
             os << '\t' << LayerRecord::POLARITY_KEY << "=" << LayerRecord::polarityMap.getValue(layerRecord->polarity) << std::endl;
+            os << '\t' << LayerRecord::FORM_KEY << "=" << LayerRecord::formMap.getValue(layerRecord->form) << std::endl;
             os << '\t' << LayerRecord::DIELECTRIC_TYPE_KEY << "=" << LayerRecord::dielectricTypeMap.getValue(layerRecord->dielectricType) << std::endl;
             os << '\t' << LayerRecord::DIELECTRIC_NAME_KEY << "=" << layerRecord->dielectricName << std::endl;            
             os << '\t' << LayerRecord::CU_TOP_KEY << "=";

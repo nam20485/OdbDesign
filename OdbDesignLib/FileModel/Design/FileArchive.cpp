@@ -6,6 +6,7 @@
 #include "Logger.h"
 #include "StopWatch.h"
 #include "fastmove.h"
+#include <system_error>
 
 using namespace Utils;
 using namespace std::filesystem;
@@ -137,7 +138,8 @@ namespace Odb::Lib::FileModel::Design
 		// move the compressed file to the requested save directory
 		path archiveFilename = path(createdArchivePath).filename();
 		path destPath = directory / archiveFilename;
-		auto ec = Utils::fastmove(createdArchivePath, destPath, true);
+		std::error_code ec;
+		Utils::fastmove_file(createdArchivePath, destPath, true, ec);
 		if (ec.value() != 0) return false;		
 
 		return true;

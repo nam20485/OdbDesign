@@ -1,51 +1,49 @@
 #include "fastmove.h"
+#include <system_error>
 
 using namespace std;
 using namespace std::filesystem;
 
 namespace Utils
 {
-	error_code move(const path& source, const path& dest, bool overwriteExisting)
+	void move_file(const path& source, const path& dest, bool overwriteExisting, std::error_code& ec)
 	{
-		error_code ec;
-
 		auto options = copy_options::none;
 		if (overwriteExisting)
 		{
 			options |= copy_options::overwrite_existing;
-		}
-		// TODO: handle recursive copy for use on directories
-		//options |= copy_options::recursive;
+		}		
 
-		if (copy_file(source, dest, options, ec))
+		if (copy_file(source, dest, options, ec) && 
+			ec.value() == 0)
 		{
 			remove(source, ec);
 		}
-
-		return ec;
 	}
 
-	error_code fastmove(const path& source, const path& dest, bool overwriteExisting)
+	void fastmove_file(const path& source, const path& dest, bool overwriteExisting, std::error_code& ec)
 	{
-		error_code ec;
-
-		try
+		//try
 		{
-			rename(source, dest);
-		}
-		catch (filesystem_error& fe)
-		{
-			// can't rename across devices- try standard copy and remove
-			if (fe.code() == std::errc::cross_device_link)
+			rename(source, dest, ec);
+			if (ec.value() == static_cast<int>(std::errc::cross_device_link))
 			{
-				ec = move(source, dest, overwriteExisting);
-			}
-			else
-			{
-				throw fe;
+				move_file(source, dest, overwriteExisting, ec);
 			}
 		}
+		//catch (filesystem_error& fe)
+		//{
+		//	// can't rename across devices- try standard copy and remove
+		//	if (fe.code() == std::errc::cross_device_link)
+		//	{
+		//		ec = move_file(source, dest, overwriteExisting);
+		//	}
+		//	else
+		//	{
+		//		throw fe;
+		//	}
+		//}
 
-		return ec;
+		//return ec;
 	}
 }
