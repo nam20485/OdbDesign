@@ -7,6 +7,7 @@
 #include <cstdio>
 #include "FileReader.h"
 #include <sys/stat.h>
+#include <iosfwd>
 
 
 // from: https://github.com/libarchive/libarchive/wiki/Examples#user-content-A_Complete_Extractor
@@ -141,7 +142,7 @@ namespace Utils
     }
 
     constexpr inline static const char* TGZ_EXTENSION = ".tgz";
-    constexpr static const int COMPRESS_READ_BUFF_SIZE = 1024;    
+    constexpr static const int READ_BUFF_SIZE = 1024;    
 
     bool compress_dir(const char* srcDir, const char* destDir, const char* archiveName, std::string& fileOut, CompressionType type /* = CompressionType::TarGzip*/)
     {
@@ -201,14 +202,29 @@ namespace Utils
                 archive_entry_copy_stat(file_entry, &st);
                 if (archive_write_header(a, file_entry) != ARCHIVE_OK) return false;
                 
-                // read file and write to archive
-                FileReader fr(it.path());
-                auto read = fr.Read();
-                if (read > 0)
+                std::ifstream ifs(it.path(), std::ios::in | std::ios::binary);
+                if (!ifs.is_open()) return false;
+                char szBuffer[READ_BUFF_SIZE]{ 0 };
+                while (true)
                 {
-                    auto& buffer = fr.GetBuffer();
-                    if (archive_write_data(a, buffer.data(), read) != read) return false;
-                }                               
+                    ifs.read(szBuffer, sizeof(szBuffer));
+                    auto readin = ifs.gcount();
+                    if (readin < 1)
+                    {
+                        break;
+                    }
+                    if (archive_write_data(a, szBuffer, readin) != readin) return false;
+                }
+                ifs.close();
+
+                // read file and write to archive
+                //FileReader fr(it.path());
+                //auto read = fr.Read();
+                //if (read > 0)
+                //{
+                //    auto& buffer = fr.GetBuffer();
+                //    if (archive_write_data(a, buffer.data(), read) != read) return false;
+                //}                               
                 archive_write_finish_entry(a);
                 archive_entry_free(file_entry);
 			}
