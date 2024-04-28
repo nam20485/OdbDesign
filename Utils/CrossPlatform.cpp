@@ -25,7 +25,7 @@ namespace Utils
 		return false;
 	}
 
-	bool CrossPlatform::getenv(const char* env_var, std::string& envValueOut)
+	bool CrossPlatform::getenv_safe(const char* env_var, std::string& envValueOut)
 	{
 		#if (IS_WINDOWS)
 		{
@@ -43,7 +43,13 @@ namespace Utils
 		}
 		#elif (IS_LINUX || IS_APPLE)
 		{
-			
+			auto val = std::getenv(env_var);
+			if (val != nullptr)
+			{
+				envValueOut = val;
+				return true;
+			}
+
 		}
 		#endif
 
@@ -62,7 +68,15 @@ namespace Utils
 			}
 		}
 		#elif (IS_LINUX || IS_APPLE)
-			//mkstemp
+		{
+			// mkstemp
+			char szTempName[L_tmpnam_s]{ 0 };
+			if (nullptr != std::tmpnam(szTempName))
+			{
+				tempNameOut = szTempName;
+				return true;
+			}
+		}
 		#endif				
 		
 		return false;

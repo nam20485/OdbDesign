@@ -10,7 +10,7 @@ namespace Utils
 	{
 	public:
 		static bool localtime_safe(const std::time_t* time, struct std::tm& tmOut);
-		static bool getenv(const char* env_var, std::string& envValueOut);
+		static bool getenv_safe(const char* env_var, std::string& envValueOut);
 		static bool tmpnam_safe(std::string& tempNameOut);
 
 	};
