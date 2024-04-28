@@ -193,11 +193,11 @@ namespace Utils
                 auto relativePath = relative(it.path(), srcDir);
                 auto file_entry = archive_entry_new();
                 archive_entry_set_pathname(file_entry, (rootDir / relativePath).string().c_str());
-				archive_entry_set_filetype(file_entry, AE_IFREG);
+                stat(it.path().string().c_str(), &st);
+                archive_entry_set_filetype(file_entry, AE_IFREG);
                 archive_entry_set_size(file_entry, st.st_size);  // Note 2
                 //archive_entry_set_mtime(file_entry, st.st_mtime, 0);
-                //archive_entry_set_perm(file_entry, st.st_mode?);
-                stat(it.path().string().c_str(), &st);
+                //archive_entry_set_perm(file_entry, st.st_mode?);                
                 archive_entry_copy_stat(file_entry, &st);
                 if (archive_write_header(a, file_entry) != ARCHIVE_OK) return false;
                 
