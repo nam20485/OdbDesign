@@ -18,21 +18,20 @@ namespace Odb::Lib::App
 		if (resp.code != crow::status::OK)
 		{
 			const auto& authHeader = req.get_header_value(AUTHORIZATION_HEADER_NAME);
-			if (authHeader.empty()) return crow::response(401, "Unauthorized");
+			if (authHeader.empty()) return crow::response(crow::status::UNAUTHORIZED, "Unauthorized");
 
 			auto authValue = authHeader.substr(6);
-			if (authValue.empty()) return crow::response(401, "Unauthorized");
+			if (authValue.empty()) return crow::response(crow::status::UNAUTHORIZED, "Unauthorized");
 
 			auto authValueDecoded = crow::utility::base64decode(authValue, authValue.size());
-			if (authValueDecoded.empty()) return crow::response(401, "Unauthorized");
+			if (authValueDecoded.empty()) return crow::response(crow::status::UNAUTHORIZED, "Unauthorized");
 
 			auto seperatorPos = authValueDecoded.find(':');
-			if (seperatorPos == std::string::npos) return crow::response(401, "Unauthorized");
+			if (seperatorPos == std::string::npos) return crow::response(crow::status::UNAUTHORIZED, "Unauthorized");
 
 			auto username = authValueDecoded.substr(0, seperatorPos);
 			auto password = authValueDecoded.substr(seperatorPos + 1);
 
-			//if (! VerifyCredentials(username, password)) return crow::response(403, "Invalid username or password");
 			resp = VerifyCredentials(username, password);
 		}
 		return resp;
@@ -59,10 +58,10 @@ namespace Odb::Lib::App
 		if (username != validUsername ||
 			password != validPassword)
 		{
-			return crow::response(403, "Invalid username or password");
+			return crow::response(crow::status::FORBIDDEN, "Invalid username or password");
 		}
 
 		// 200 Authorized!
-		return crow::response(200, "Authorized");
+		return crow::response(crow::status::OK, "Authorized");
 	}
 }

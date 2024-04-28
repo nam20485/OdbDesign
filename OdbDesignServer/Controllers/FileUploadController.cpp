@@ -139,13 +139,13 @@ namespace Odb::App::Server
             if (headers_it == part_value.headers.end())
             {
                 CROW_LOG_ERROR << "No Content-Disposition found";
-                return crow::response(400);
+                return crow::response(crow::status::BAD_REQUEST);
             }
             auto params_it = headers_it->second.params.find("filename");
             if (params_it == headers_it->second.params.end())
             {
                 CROW_LOG_ERROR << "Part with name \"InputFile\" should have a file";
-                return crow::response(400);
+                return crow::response(crow::status::BAD_REQUEST);
             }
             const std::string outfile_name = params_it->second;
 
