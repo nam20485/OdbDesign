@@ -171,6 +171,25 @@ Documentation for the currently-released version of the source code is available
 * Ninja ([install instructions for your platform](https://ninja-build.org/))
 * Docker ([install instructions for your platform](https://docs.docker.com/get-docker/)) (*optional*)
 
+git, CMake, and ninja can all be installed via the `sudo apt install` command listed above. vcpkg can be installed by following the instructions below. Docker is optional but can be installed via the following command:
+
+`$ sudo apt install docker.io docker-compose-v2`
+
+#### vcpkg
+
+```Bash
+$ git clone https://github.com/microsoft/vcpkg
+$ .\vcpkg\bootstrap-vcpkg.bat
+```
+
+Then add the following line to your shell profile (e.g. ~/.bashrc, ~/.zshrc, etc.):
+
+`export VCPKG_ROOT=/path/to/vcpkg`
+
+Make sure to restart your shell or source the profile after adding the line.
+
+`source ~/.bashrc`
+
 ### Source Code
 
 Get the source code by cloning the GitHub repository:
