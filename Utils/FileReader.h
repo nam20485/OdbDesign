@@ -17,8 +17,7 @@ namespace Utils
 
 		FileReader(const std::filesystem::path& filePath);		
 
-		long long Read(BufferStrategy bufferStrategy = BufferStrategy::Buffered, std::ios::openmode mode = DEFAULT_OPENMODE);
-		//const char* GetBytes();
+		long long Read(BufferStrategy bufferStrategy = BufferStrategy::Buffered, std::ios::openmode mode = DEFAULT_OPENMODE);		
 		void Clear();
 		const std::vector<char>& GetBuffer() const;
 

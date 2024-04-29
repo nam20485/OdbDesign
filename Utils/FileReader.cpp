@@ -66,15 +66,6 @@ namespace Utils
 		return read;
 	}
 
-	//const char* FileReader::GetBytes()
-	//{
-	//	if (m_buffer.size() > 0)
-	//	{
-	//		return m_buffer.data();
-	//	}
-	//	return nullptr;		
-	//}
-
 	void FileReader::Clear()
 	{
 		m_buffer.clear();
