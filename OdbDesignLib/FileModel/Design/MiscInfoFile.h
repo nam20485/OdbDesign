@@ -7,6 +7,7 @@
 #include "../../IProtoBuffable.h"
 #include "../../ProtoBuf/miscinfofile.pb.h"
 #include "../IStreamSaveable.h"
+#include <memory>
 
 #pragma once
 

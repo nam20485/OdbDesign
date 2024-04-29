@@ -2,11 +2,11 @@
 #include <filesystem>
 #include "ArchiveExtractor.h"
 #include "MiscInfoFile.h"
-#include <iostream>
 #include "Logger.h"
 #include "StopWatch.h"
 #include "fastmove.h"
 #include <system_error>
+#include <cstdio>
 
 using namespace Utils;
 using namespace std::filesystem;
@@ -107,11 +107,6 @@ namespace Odb::Lib::FileModel::Design
 
 		return false;
 	}
-
-	//bool FileArchive::SaveFileModel(const std::string& directory, const std::string& archiveName)
-	//{
-	//	return SaveFileModel(path(directory), archiveName);
-	//}
 
 	bool FileArchive::SaveFileModel(const path& directory, const std::string& archiveName)
 	{

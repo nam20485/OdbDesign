@@ -15,6 +15,7 @@
 #include "AttrListFile.h"
 #include "StepHdrFile.h"
 #include "../ISaveable.h"
+#include "FeaturesFile.h"
 
 
 namespace Odb::Lib::FileModel::Design

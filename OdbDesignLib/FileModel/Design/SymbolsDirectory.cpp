@@ -1,6 +1,10 @@
 #include "SymbolsDirectory.h"
 #include "Logger.h"
 #include <filesystem>
+#include <string>
+#include "FeaturesFile.h"
+#include "AttrListFile.h"
+#include <memory>
 
 namespace Odb::Lib::FileModel::Design
 {
