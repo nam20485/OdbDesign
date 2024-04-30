@@ -172,30 +172,33 @@ namespace Odb::Lib::FileModel::Design
 
     bool StepDirectory::Save(const std::filesystem::path& directory)
     {
+        auto stepDir = directory / m_name;
+        if (!create_directory(stepDir)) return false;
+
         // eda/data
-        auto edaPath = directory / "eda";
+        auto edaPath = stepDir / "eda";
         if (!create_directory(edaPath)) return false;
         std::ofstream edaDataFile(edaPath / "data");
         if (!m_edaData.Save(edaDataFile)) return false;
         edaDataFile.close();
 
         // attrlist
-        std::ofstream attrlistFile(directory / "attrlist");
+        std::ofstream attrlistFile(stepDir / "attrlist");
         if (!m_attrListFile.Save(attrlistFile)) return false;
         attrlistFile.close();
 
         // profile
-        std::ofstream profileFile(directory / "profile");
+        std::ofstream profileFile(stepDir / "profile");
         if (!m_profileFile.Save(profileFile)) return false;
         profileFile.close();
 
         // StepHdrFile
-        std::ofstream stephdrFile(directory / "stephdr");
+        std::ofstream stephdrFile(stepDir / "stephdr");
         if (!m_stepHdrFile.Save(stephdrFile)) return false;
         stephdrFile.close();
 
         // layers
-        auto layersPath = directory / "layers";
+        auto layersPath = stepDir / "layers";
         if (!create_directory(layersPath)) return false;
         for (auto& kvLayer : m_layersByName)
 		{
@@ -203,7 +206,7 @@ namespace Odb::Lib::FileModel::Design
 		}
         
         // m_netlistsByName;
-        auto netlistsPath = directory / "netlists";
+        auto netlistsPath = stepDir / "netlists";
         if (!create_directory(netlistsPath)) return false;
         for (auto& kvNetlist : m_netlistsByName)
 		{
