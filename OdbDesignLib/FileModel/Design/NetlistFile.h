@@ -10,6 +10,7 @@
 #include "../../ProtoBuf/netlistfile.pb.h"
 #include "../ISaveable.h"
 #include "../IStreamSaveable.h"
+#include "EnumMap.h"
 
 
 namespace Odb::Lib::FileModel::Design
@@ -32,7 +33,7 @@ namespace Odb::Lib::FileModel::Design
 			inline constexpr static const char* FIELD_TOKEN = "$";
 		};
 
-		struct ODBDESIGN_EXPORT NetPointRecord : public IProtoBuffable<Odb::Lib::Protobuf::NetlistFile::NetPointRecord>
+		struct ODBDESIGN_EXPORT NetPointRecord : public IProtoBuffable<Odb::Lib::Protobuf::NetlistFile::NetPointRecord>, public IStreamSaveable
 		{
 			enum AccessSide
 			{
@@ -66,6 +67,19 @@ namespace Odb::Lib::FileModel::Design
 			void from_protobuf(const Odb::Lib::Protobuf::NetlistFile::NetPointRecord& message) override;
 
 			typedef std::vector<std::shared_ptr<NetPointRecord>> Vector;
+
+			inline static const Utils::EnumMap<AccessSide> accessSideMap{
+				{
+					"Top",
+					"Down",
+					"Both",
+					"Inner"
+				}
+			};
+
+			// Inherited via IStreamSaveable
+			bool Save(std::ostream& os) override;
+
 		};	// NetPointRecord
 
 		enum class Staggered
@@ -73,6 +87,14 @@ namespace Odb::Lib::FileModel::Design
 			Yes,
 			No,
 			Unknown
+		};
+
+		inline static const Utils::EnumMap<Staggered> staggeredMap{
+			{
+				"Y",
+				"N",
+				"Unknown"
+			}
 		};
 
 		NetlistFile(std::filesystem::path path);
@@ -109,15 +131,13 @@ namespace Odb::Lib::FileModel::Design
 		
 		NetRecord::Vector m_netRecords;
 		NetRecord::StringMap m_netRecordsByName;
-		NetPointRecord::Vector m_netPointRecords;		
+		NetPointRecord::Vector m_netPointRecords;
 
-		inline constexpr static const char* UNITS_TOKEN = "UNITS";
-		inline constexpr static const char* COMMENT_TOKEN = "#";
-		inline constexpr static const char* HEADER_TOKEN = "H";				
-
+		inline constexpr static const char HEADER_TOKEN[] = "H";
+		inline constexpr static const char STAGGERED_KEY[] = "staggered";
 
 		// Inherited via IStreamSaveable
 		bool Save(std::ostream& os) override;
 
-};	// NetlistFile
+	};	// NetlistFile
 }
