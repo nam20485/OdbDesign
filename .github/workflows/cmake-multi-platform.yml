@@ -170,7 +170,7 @@ jobs:
            
     # report test results
     - name: Report Test Results
-      uses: dorny/test-reporter@eaa763f6ffc21c7a37837f56cd5f9737f27fc6c8 # v1.8.0
+      uses: dorny/test-reporter@c40d89d5e987cd80f3a32b3c233556e22bdca958 # v1.9.0
       if: steps.cmake-test.outcome == 'success' || steps.cmake-test.outcome == 'failure'
       with:
         name: ${{ matrix.os }}_test-results
