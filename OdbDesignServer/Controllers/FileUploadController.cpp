@@ -28,7 +28,7 @@ namespace Odb::App::Server
 					const auto& contentType = req.get_header_value("Content-Type");
 					if (contentType != "application/octet-stream")
 					{
-                        return crow::response(crow::status::BAD_REQUEST, "unsupported content type: this endpoint only accepts 'applicaiton/octet-stream'");                        
+                        return crow::response(crow::status::BAD_REQUEST, "unsupported content type: this endpoint only accepts 'applicaiton/octet-stream'");
 					}
 
                     return handleOctetStreamUpload(filename, req);
@@ -164,7 +164,7 @@ namespace Odb::App::Server
 
             // Create a new file with the extracted file name and write file contents to it
             const auto tempPath = temp_directory_path() / std::tmpnam(nullptr);
-            std::ofstream out_file(tempPath);
+            std::ofstream out_file(tempPath, std::ofstream::binary);
             if (!out_file)
             {
                 CROW_LOG_ERROR << " Write to file failed\n";
@@ -176,7 +176,6 @@ namespace Odb::App::Server
             auto safeName = sanitizeFilename(outfile_name);
             path finalPath(m_serverApp.args().designsDir());
             finalPath /= safeName;
-            //rename(tempPath, finalPath);
             auto ec = fastcopy(tempPath, finalPath, false);
 
             CROW_LOG_INFO << " Contents written to " << outfile_name << '\n';
