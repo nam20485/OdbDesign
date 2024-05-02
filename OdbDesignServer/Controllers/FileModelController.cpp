@@ -1055,17 +1055,7 @@ namespace Odb::App::Server
 
 	crow::response FileModelController::filemodels_list_route_handler(const crow::request& req)
 	{
-		const auto& fileArchives = m_serverApp.designs().getUnloadedDesignNames();
-		
-		crow::json::wvalue::list designNames;
-		for (const auto& designName : fileArchives)
-		{
-			designNames.push_back(designName);
-		}
-
-		crow::json::wvalue jsonResponse;
-		jsonResponse["filearchives"] = std::move(designNames);
-		return crow::response(jsonResponse);
+		return makeLoadedFileModelsResponse();
 	}
 
 	crow::response FileModelController::misc_attrlist_route_handler(const std::string& designName, const crow::request& req)

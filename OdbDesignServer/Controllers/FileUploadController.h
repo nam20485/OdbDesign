@@ -16,8 +16,6 @@ namespace Odb::App::Server
 		crow::response handleOctetStreamUpload(const std::string& filename, const crow::request& req);
 		crow::response handleMultipartFormUpload(const crow::request& req);
 
-		crow::response makeLoadedDesignsResponse() const;
-
 		// TODO: actually implement sanitizeFilename()
 		std::string sanitizeFilename(const std::string& filename) const;
 

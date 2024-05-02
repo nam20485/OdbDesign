@@ -1,4 +1,6 @@
 #include "RouteController.h"
+#include "RouteController.h"
+#include "RouteController.h"
 
 
 namespace Odb::Lib::App
@@ -38,5 +40,35 @@ namespace Odb::Lib::App
 		//		{
 		//			return handler(req);
 		//		});
+	}
+
+	crow::response Odb::Lib::App::RouteController::makeLoadedFileModelsResponse() const
+	{
+		auto unloadedDesignNames = m_serverApp.designs().getUnloadedDesignNames();
+		auto loadedFileArchiveNames = m_serverApp.designs().getLoadedFileArchiveNames();
+		auto loadedDesignNames = m_serverApp.designs().getLoadedDesignNames();
+
+		crow::json::wvalue::list designs;
+		for (const auto& designName : unloadedDesignNames)
+		{
+			auto loaded = false;
+			if (std::find(loadedFileArchiveNames.begin(), loadedFileArchiveNames.end(), designName) != loadedFileArchiveNames.end() ||
+				std::find(loadedDesignNames.begin(), loadedDesignNames.end(), designName) != loadedDesignNames.end())
+			{
+				loaded = true;
+			}
+			crow::json::wvalue design;
+			design["name"] = designName;
+			design["loaded"] = loaded;
+			designs.push_back(design);
+		}
+		crow::json::wvalue jsonResponse;
+		jsonResponse["filearchives"] = std::move(designs);
+
+#if defined(_DEBUG)
+		auto j = jsonResponse.dump();
+#endif
+
+		return crow::response(jsonResponse);
 	}
 }
