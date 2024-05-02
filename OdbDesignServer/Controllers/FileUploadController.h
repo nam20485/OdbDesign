@@ -24,7 +24,7 @@ namespace Odb::App::Server
 		constexpr static const inline char CONTENT_DISPOSITION_HEADER_NAME[] = "Content-Disposition";
 		constexpr static const inline char CONTENT_TYPE_HEADER_NAME[] = "Content-Type";
 		constexpr static const inline char CONTENT_TYPE_MULTIPART_FORM_DATA[] = "multipart/form-data";
-		constexpr static const inline char CONTENT_TYPE_APPLICATION_OCTET_STREAM[] = "multipart/form-data";
+		constexpr static const inline char CONTENT_TYPE_APPLICATION_OCTET_STREAM[] = "application/octet-stream";
 		
 		
 		//constexpr static const inline char MULTIPART_FORMDATA_PART_NAME[] = "InputFile"

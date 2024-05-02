@@ -29,7 +29,7 @@ namespace Odb::App::Server
 					const auto& contentType = req.get_header_value(CONTENT_TYPE_HEADER_NAME);
 					if (contentType != CONTENT_TYPE_APPLICATION_OCTET_STREAM)
 					{
-                        return crow::response(crow::status::BAD_REQUEST, "unsupported content type: this endpoint only accepts 'applicaiton/octet-stream'");
+                        return crow::response(crow::status::BAD_REQUEST, std::string("unsupported content type: this endpoint only accepts '") + CONTENT_TYPE_APPLICATION_OCTET_STREAM + "'");
 					}
 
                     return handleOctetStreamUpload(filename, req);
@@ -50,7 +50,7 @@ namespace Odb::App::Server
                     if (contentType.find(CONTENT_TYPE_MULTIPART_FORM_DATA) != 0)
                     {
                         // "Content-Type" header doesn't start with "multipart/form-data"
-                        return crow::response(crow::status::BAD_REQUEST, "unsupported content type: this endpoint only accepts 'multipart/form-data'");                        
+                        return crow::response(crow::status::BAD_REQUEST, std::string("unsupported content type: this endpoint only accepts '") + CONTENT_TYPE_MULTIPART_FORM_DATA + "'");
                     }
                     
                     return handleMultipartFormUpload(req);
