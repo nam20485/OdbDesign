@@ -90,7 +90,7 @@ namespace Utils
 
 			auto exitCode = std::system(command.c_str());
 
-#ifdef __linux__ || __apple__
+#if defined(__linux__) || defined(__apple__)
 			exitCode = WEXITSTATUS(exitCode);
 #endif
 
