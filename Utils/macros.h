@@ -9,18 +9,18 @@ namespace Utils
 	constexpr static inline bool IsMsvc()
 	{
 		#if defined(_MSC_VER)
-				return true;
+			return true;
 		#else
-				return false;
+			return false;
 		#endif
 	}
 
 	constexpr static inline bool IsDebug()
 	{
 		#if defined(_DEBUG)
-				return true;
+			return true;
 		#else
-				return false;
+			return false;
 		#endif
 	}
 
