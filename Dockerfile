@@ -20,9 +20,14 @@ RUN apt-get update && \
         tar  \
         pkg-config \
         mono-complete \
-        linux-libc-dev \   
+        linux-libc-dev \ 
+        p7zip-full \  
         && \
+    apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+
+# test 7z install
+RUN 7z -h
 
 # install vcpkg
 ENV VCPKG_ROOT=/root/src/github/microsoft/vcpkg
