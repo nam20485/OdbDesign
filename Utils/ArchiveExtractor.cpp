@@ -5,6 +5,8 @@
 #include <exception>
 #include "macros.h"
 #include "str_utils.h"
+#include <cstdlib>
+#include <stdexcept>
 
 using namespace std::filesystem;
 
@@ -87,6 +89,11 @@ namespace Utils
 			loginfo("running 7z command: [" + command + "]...");
 
 			auto exitCode = std::system(command.c_str());
+
+#ifdef __linux__ || __apple__
+			exitCode = WEXITSTATUS(exitCode);
+#endif
+
 			if (exitCode != (int) e7zExitCode::Success &&
 				exitCode != (int) e7zExitCode::Warning)
 			{
