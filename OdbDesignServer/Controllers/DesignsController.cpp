@@ -1,6 +1,11 @@
 #include "DesignsController.h"
 #include <JsonCrowReturnable.h>
 #include "UrlEncoding.h"
+#include "App/IOdbServerApp.h"
+#include "App/RouteController.h"
+#include <cstring>
+#include <vector>
+
 
 using namespace Odb::Lib::App;
 using namespace Utils;
@@ -158,6 +163,7 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "design name not specified");
 		}
 
+		// TODO: use excludeFileArchive
 		bool excludeFileArchive = false;
 		auto szExcludeFileArchive = req.url_params.get(kszExcludeFileArchiveQueryParamName);
 		if (szExcludeFileArchive != nullptr)
