@@ -1,4 +1,5 @@
 #include "ArchiveExtractor.h"
+#include "ArchiveExtractor.h"
 #include <filesystem>
 #include "libarchive_extract.h"
 #include "Logger.h"
@@ -7,17 +8,21 @@
 #include "str_utils.h"
 #include <cstdlib>
 #include <stdexcept>
+#include <string>
+#include "lzma.h"
 
 using namespace std::filesystem;
 
 namespace Utils
 {
-	ArchiveExtractor::ArchiveExtractor(const std::string& path)
+	ArchiveExtractor::ArchiveExtractor(const std::string& path, bool bExtractLzmaInProc /* = false*/, bool bExtractLzmaUsing7Zip /* = true*/)
 		: m_path(path)
+		, m_bExtractLzmaInProc(bExtractLzmaInProc)
+		, m_bExtractLzmaUsing7Zip(bExtractLzmaUsing7Zip)
 	{
 	}
 
-	std::string ArchiveExtractor::GetPath() const
+	path ArchiveExtractor::GetPath() const
 	{
 		return m_path;
 	}
@@ -27,7 +32,7 @@ namespace Utils
 		return m_extractionDirectory;
 	}
 
-	bool ArchiveExtractor::IsArchiveTypeSupported(const std::filesystem::path& file)
+	bool ArchiveExtractor::IsArchiveTypeSupported(const path& file)
 	{
 		if (ALLOW_ALL_ARCHIVE_EXTENSION_TYPES) return true;
 
@@ -45,73 +50,89 @@ namespace Utils
 
 	bool ArchiveExtractor::IsArchiveTypeSupported(const std::string& file)
 	{
-		return IsArchiveTypeSupported(std::filesystem::path(file));
+		return IsArchiveTypeSupported(path(file));
 	}
 
 	bool ArchiveExtractor::Extract()
 	{
-		auto path = std::filesystem::path(m_path);
 		//auto extractionPath = path.replace_extension().string();
-		auto extractionPath = path.parent_path() / path.stem();
+		auto extractionPath = m_path.parent_path() / m_path.stem();
 		return Extract(extractionPath.string());
+	}
+
+	bool Utils::ArchiveExtractor::ExtractLzmaInProc(const std::filesystem::path& destinationPath)
+	{
+		return false;
+	}
+
+	bool ArchiveExtractor::ExtractLzmaOutOfProc(const path& destinationPath)
+	{
+		// https://documentation.help/7-Zip/extract_full.htm
+
+		std::stringstream ss;
+		ss << "7z"
+			<< " x " /*<< '"'*/ << m_path /*<< '"'*/			// extract w/ full paths and archive path
+			<< " -o" /*<< '"'*/ << destinationPath /*<< '"'*/	// output path
+			<< " -y" 									// yes to all prompts
+			<< " -aoa";									// overwrite all
+
+		const auto silent = true;
+		if (silent)
+		{
+			bool isWindows = true;
+			if (isWindows)
+			{
+				ss << " >$null 2>&1";
+			}
+			else
+			{
+				ss << " >nul 2>nul";
+			}
+		}
+
+		auto command = ss.str();
+
+		loginfo("running 7z command: [" + command + "]...");
+
+		auto exitCode = std::system(command.c_str());
+
+#if defined(__linux__) || defined(__apple__)
+		exitCode = WEXITSTATUS(exitCode);
+#endif
+
+		if (exitCode != static_cast<int>(e7zExitCode::Success) &&
+			exitCode != static_cast<int>(e7zExitCode::Warning))
+		{
+			auto message = "7z command failed (exit code = " + std::to_string(exitCode) + ")";
+			logerror(message);
+			throw std::runtime_error(message.c_str());
+			//return false;
+		}
+
+		loginfo("7z command succeeded");
+
+		m_extractionDirectory = destinationPath.string();
+		return true;
 	}
 
 	bool ArchiveExtractor::Extract(const std::string& destinationPath)
 	{
-		path p(m_path);
-		if (p.extension() == ".Z" || p.extension() == ".z")
+		if (m_bExtractLzmaUsing7Zip && 
+			std::find(LZMA_FILE_EXTENSIONS.begin(), LZMA_FILE_EXTENSIONS.end(), m_path.extension()) != LZMA_FILE_EXTENSIONS.end())
 		{			
-			// https://documentation.help/7-Zip/extract_full.htm
-
-			std::stringstream ss;
-			ss << "7z"
-				<< " x " << '"' << m_path << '"'			// extract w/ full paths and archive path
-				<< " -o" << '"' << destinationPath << '"'	// output path
-				<< " -y" 									// yes to all prompts
-				<< " -aoa";									// overwrite all
-
-			const auto silent = true;
-			if (silent)
+			if (m_bExtractLzmaInProc)
 			{
-				bool isWindows = true;
-				if (isWindows)
-				{
-					ss << " >$null 2>&1";
-				}
-				else
-				{
-					ss << " >nul 2>nul";
-				}
+				return ExtractLzmaInProc(destinationPath);
 			}
-
-			auto command = ss.str();
-
-			loginfo("running 7z command: [" + command + "]...");
-
-			auto exitCode = std::system(command.c_str());
-
-#if defined(__linux__) || defined(__apple__)
-			exitCode = WEXITSTATUS(exitCode);
-#endif
-
-			if (exitCode != (int) e7zExitCode::Success &&
-				exitCode != (int) e7zExitCode::Warning)
+			else
 			{
-				auto message = "7z command failed (exit code = " + std::to_string(exitCode) + ")";
-				logerror(message);
-				throw std::runtime_error(message.c_str());
-				//return false;
-			}
-
-			loginfo("7z command succeeded");
-
-			m_extractionDirectory = destinationPath;
-			return true;
+				return ExtractLzmaOutOfProc(destinationPath);
+			}			
 		}
-		else if (extract(m_path.c_str(), destinationPath.c_str()))
+		else if (extract(m_path.string().c_str(), destinationPath.c_str()))
 		{
-			//std::filesystem::path p(destinationPath);
-			//p /= std::filesystem::path(m_path).stem();
+			//path p(destinationPath);
+			//p /= path(m_path).stem();
 			m_extractionDirectory = destinationPath;
 			return true;
 		}
@@ -161,5 +182,5 @@ namespace Utils
 		}		
 
 		return uncompressedPath;
-	}
+	}	
 }
