@@ -10,6 +10,8 @@
       ]
     },
     "openssl",
-    "liblzma"
+    "liblzma",
+    "7zip",
+    "bxzstr"
   ]
 }
