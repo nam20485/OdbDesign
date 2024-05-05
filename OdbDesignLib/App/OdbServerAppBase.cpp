@@ -1,6 +1,14 @@
 #include "OdbServerAppBase.h"
 #include "OdbServerAppBase.h"
 #include "Logger.h"
+#include "RequestAuthenticationBase.h"
+#include "crow_win.h"
+#include <boost/throw_exception.hpp>
+#include <boost/system/system_error.hpp>
+#include "OdbAppBase.h"
+#include <ExitCode.h>
+#include <memory>
+#include <filesystem>
 
 using namespace Utils;
 using namespace std::filesystem;
