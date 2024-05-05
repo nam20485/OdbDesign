@@ -6,6 +6,8 @@
 #include <string>
 #include <time.h>
 #include <mutex>
+#include <cstdio>
+#include <ctime>
 
 namespace Utils
 {
@@ -74,7 +76,7 @@ namespace Utils
 		#elif (IS_LINUX || IS_APPLE)
 		{
 			// mkstemp
-			char szTempName[L_tmpnam_s]{ 0 };
+			char szTempName[L_tmpnam]{ 0 };
 			if (nullptr != std::tmpnam(szTempName))
 			{
 				tempNameOut = szTempName;
