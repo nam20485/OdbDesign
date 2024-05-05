@@ -5,9 +5,12 @@
 #include <malloc.h>
 #include <string>
 #include <time.h>
+#include <mutex>
 
 namespace Utils
 {
+	std::mutex localtimeMutex;
+
 	bool CrossPlatform::localtime_safe(const std::time_t* time, struct std::tm& tmOut)
 	{
 		#if (IS_WINDOWS)
@@ -16,6 +19,7 @@ namespace Utils
 		}
 		#elif (IS_LINUX || IS_APPLE)
 		{	
+			std::lock_guard lock(localtimeMutex);
 			if (nullptr != localtime_r(time, &tmOut))
 			{
 				return true;
