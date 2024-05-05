@@ -17,3 +17,7 @@ target_precompile_headers(Utils PRIVATE ${UTILS_HEADER_FILES})
 # Link to LibArchive
 find_package(LibArchive REQUIRED)
 target_link_libraries(Utils PRIVATE LibArchive::LibArchive)
+
+# liblzma
+find_package(LibLZMA REQUIRED)
+target_link_libraries(Utils PRIVATE LibLZMA::LibLZMA)
