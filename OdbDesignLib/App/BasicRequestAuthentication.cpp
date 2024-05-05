@@ -2,6 +2,7 @@
 #include <string>
 #include "macros.h"
 #include <cstdlib>
+#include "RequestAuthenticationBase.h"
 
 using namespace Utils;
 
