@@ -233,11 +233,6 @@ namespace Odb::Lib::App
         return m_directory;
     }
 
-    //bool DesignCache::isQueryValid(const std::string& query) const
-    //{
-    //    return false;
-    //}
-
     void DesignCache::Clear()
     {
         m_fileArchivesByName.clear();

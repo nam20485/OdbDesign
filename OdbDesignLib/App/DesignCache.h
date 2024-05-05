@@ -29,9 +29,7 @@ namespace Odb::Lib::App
 		int loadDesigns(const Utils::StringVector& names);
 
 		void setDirectory(const std::string& directory);
-		const std::string& getDirectory() const;
-
-		//bool isQueryValid(const std::string& query) const;
+		const std::string& getDirectory() const;		
 
 		void Clear();		
 		
