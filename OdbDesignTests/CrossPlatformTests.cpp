@@ -1,6 +1,9 @@
 #include <gtest/gtest.h>
 #include "CrossPlatform.h"
 #include <ctime>
+#include "Fixtures/TestDataFixture.h"
+#include <string>
+#include <filesystem>
 
 using namespace std::filesystem;
 using namespace Odb::Test::Fixtures;
@@ -15,7 +18,7 @@ namespace Odb::Test
 		ASSERT_EQ(value.size(), 0U);
 		ASSERT_TRUE(CrossPlatform::getenv_safe(ODB_TEST_DATA_DIR_ENV_NAME, value));
 		ASSERT_STRNE(value.c_str(), "");
-		ASSERT_STREQ(value.c_str(), m_testDataDir.string().c_str());
+		ASSERT_STREQ(path(value).c_str(), m_testDataDir.c_str());
 	}
 
 	TEST_F(TestDataFixture, Test_CrossPlatform_GetEnvSafe_VariableDoesntExist)
