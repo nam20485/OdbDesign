@@ -14,11 +14,12 @@
 #include "../../ProtoBuf/filearchive.pb.h"
 #include "SymbolsDirectory.h"
 #include "AttrListFile.h"
+#include "../ISaveable.h"
 
 
 namespace Odb::Lib::FileModel::Design
 {
-	class ODBDESIGN_EXPORT FileArchive : public IProtoBuffable<Odb::Lib::Protobuf::FileArchive>
+	class ODBDESIGN_EXPORT FileArchive : public IProtoBuffable<Odb::Lib::Protobuf::FileArchive>, public ISaveable
 	{
 	public:
 		FileArchive(std::string path);
@@ -41,8 +42,10 @@ namespace Odb::Lib::FileModel::Design
 		// TODO: fix these to use pointer return types
 		//const EdaDataFile& GetStepEdaDataFile(std::string stepName) const;
 		//const EdaDataFile& GetFirstStepEdaDataFile() const;		
-
+				
 		bool ParseFileModel();
+		bool SaveFileModel(const std::filesystem::path& directory, const std::string& archiveName);
+		//bool SaveFileModel(const std::string& directory, const std::string& archiveName);				
 
 		// Inherited via IProtoBuffable
 		std::unique_ptr<Odb::Lib::Protobuf::FileArchive> to_protobuf() const override;
@@ -57,12 +60,13 @@ namespace Odb::Lib::FileModel::Design
 		std::string m_filename;
 		std::string m_filePath;
 
-		StepDirectory::StringMap m_stepsByName;
-        MiscInfoFile m_miscInfoFile;
+		MiscInfoFile m_miscInfoFile;
 		MatrixFile m_matrixFile;
 		StandardFontsFile m_standardFontsFile;
-		SymbolsDirectory::StringMap m_symbolsDirectoriesByName;
 		AttrListFile m_miscAttrListFile;
+
+		StepDirectory::StringMap m_stepsByName;
+		SymbolsDirectory::StringMap m_symbolsDirectoriesByName;
 
 		bool ParseDesignDirectory(const std::filesystem::path& path);
 		bool ParseStepDirectories(const std::filesystem::path& path);
@@ -71,6 +75,8 @@ namespace Odb::Lib::FileModel::Design
 		bool ParseStandardFontsFile(const std::filesystem::path& path);		
 		bool ParseSymbolsDirectories(const std::filesystem::path& path);
 		bool ParseMiscAttrListFile(const std::filesystem::path& path);
+
+		bool Save(const std::filesystem::path& directory);
 
 		bool ExtractDesignArchive(const std::filesystem::path& path, std::filesystem::path& extractedPath);
 

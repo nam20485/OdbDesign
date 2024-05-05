@@ -1,7 +1,6 @@
 ﻿// main.cpp : Source file for your target.
 //
 
-#include "OdbDesignServer.h"
 #include "OdbDesignServerApp.h"
 
 using namespace Odb::App::Server;

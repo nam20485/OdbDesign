@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include "Fixtures/FileArchiveLoadFixture.h"
+#include "Fixtures/TestDataFixture.h"
 #include <filesystem>
 
 using namespace std::filesystem;
@@ -26,13 +26,13 @@ namespace Odb::Test
 		SUCCEED();
 	}
 
-	TEST_F(FileArchiveLoadFixture, TestDataDirEnvironmentVariablesExists)
+	TEST_F(TestDataFixture, TestDataDirEnvironmentVariablesExists)
 	{
 		//ASSERT_FALSE(getTestDataDir().empty());
-		EXPECT_THAT(getTestDataDir(), Not(IsEmpty()));
+		EXPECT_THAT(getTestDataDir().string(), Not(IsEmpty()));
 	}
 
-	TEST_F(FileArchiveLoadFixture, TestDataDirDirectoryExists)
+	TEST_F(TestDataFixture, TestDataDirDirectoryExists)
 	{
 		ASSERT_FALSE(getTestDataDir().empty());
 		EXPECT_TRUE(exists(getTestDataDir()));

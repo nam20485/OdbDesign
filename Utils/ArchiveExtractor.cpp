@@ -182,5 +182,12 @@ namespace Utils
 		}		
 
 		return uncompressedPath;
-	}	
+	}
+
+	/*static*/ bool ArchiveExtractor::CompressDir(const std::string& srcDir, const std::string& destDir, 
+												  const std::string& archiveName, std::string& fileOut, 
+												  CompressionType type)
+	{
+		return compress_dir(srcDir.c_str(), destDir.c_str(), archiveName.c_str(), fileOut, type);
+	}
 }

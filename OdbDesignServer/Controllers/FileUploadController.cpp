@@ -1,6 +1,9 @@
 #include "FileUploadController.h"
-#include "fastcopy.h"
-#include <string>
+#include "fastmove.h"
+#include <system_error>
+#include <fstream>
+#include <App/RouteController.h>
+#include <crow/json.h>
 
 using namespace std::filesystem;
 using namespace Odb::Lib::App;
@@ -102,13 +105,16 @@ namespace Odb::App::Server
         outfile << req.body;
         outfile.close();
 
-        // TODO: sanitize provided filename
         auto safeName = sanitizeFilename(filename);
-
         path finalPath(m_serverApp.args().designsDir());
         finalPath /= safeName;
-        //rename(tempPath, finalPath);        
-        auto ec = fastcopy(tempPath, finalPath, false);
+
+        std::error_code ec;
+        fastmove_file(tempPath, finalPath, false, ec);
+        if (ec.value() != 0)
+        {
+            return crow::response(crow::status::INTERNAL_SERVER_ERROR, "failed handling new file");
+        }
 
         std::string responseBody = "{ \"filename\": \"" + safeName + "\" }";
 
@@ -139,14 +145,14 @@ namespace Odb::App::Server
             auto headers_it = part_value.headers.find(CONTENT_DISPOSITION_HEADER_NAME);
             if (headers_it == part_value.headers.end())
             {
-                CROW_LOG_ERROR << "No " << CONTENT_DISPOSITION_HEADER_NAME << " found";
-                return crow::response(400);
+                CROW_LOG_ERROR << "No " << CONTENT_DISPOSITION_HEADER_NAME << " found";                
+                return crow::response(crow::status::BAD_REQUEST);
             }
             auto params_it = headers_it->second.params.find(MULTIPART_FORM_DATA_PART_FILENAME);
             if (params_it == headers_it->second.params.end())
             {
                 CROW_LOG_ERROR << "Part with name \"" << "MULTIPART_FORMDATA_PART_NAME" << "\" should have a \"" << "MULTIPART_FORMDATA_PART_FILENAME" << "\" parameter";
-                return crow::response(400);
+                return crow::response(crow::status::BAD_REQUEST);                               
             }
             const std::string outfile_name = params_it->second;
 
@@ -177,7 +183,13 @@ namespace Odb::App::Server
             auto safeName = sanitizeFilename(outfile_name);
             path finalPath(m_serverApp.args().designsDir());
             finalPath /= safeName;
-            auto ec = fastcopy(tempPath, finalPath, false);
+
+            std::error_code ec;
+            fastmove_file(tempPath, finalPath, false, ec);
+            if (ec.value() != 0)
+            {
+                return crow::response(crow::status::INTERNAL_SERVER_ERROR, "failed handling new file");
+            }
 
             CROW_LOG_INFO << " Contents written to " << outfile_name << '\n';
         }
@@ -187,6 +199,7 @@ namespace Odb::App::Server
 
     std::string FileUploadController::sanitizeFilename(const std::string& filename) const
     {
+        // TODO: implement sanitize filename
         return filename;
     }
 }

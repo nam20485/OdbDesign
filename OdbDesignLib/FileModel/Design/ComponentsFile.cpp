@@ -1,10 +1,4 @@
 #include "ComponentsFile.h"
-#include "ComponentsFile.h"
-#include "ComponentsFile.h"
-#include "ComponentsFile.h"
-#include "ComponentsFile.h"
-#include "ComponentsFile.h"
-#include "ComponentsFile.h"
 #include <fstream>
 #include <sstream>
 #include <filesystem>
@@ -153,6 +147,11 @@ namespace Odb::Lib::FileModel::Design
 			pBomDescriptionRecord->from_protobuf(kvBomDescriptionRecord.second);
 			m_bomDescriptionRecordsByCpn[kvBomDescriptionRecord.first] = pBomDescriptionRecord;
 		}
+	}
+
+	bool ComponentsFile::Save(std::ostream& os)
+	{
+		return true;
 	}
 
 	std::unique_ptr<Odb::Lib::Protobuf::ComponentsFile::BomDescriptionRecord> ComponentsFile::BomDescriptionRecord::to_protobuf() const

@@ -12,11 +12,12 @@
 #include "PropertyRecord.h"
 #include "ContourPolygon.h"
 #include "AttributeLookupTable.h"
+#include "../IStreamSaveable.h"
 
 
 namespace Odb::Lib::FileModel::Design
 {	
-	class ODBDESIGN_EXPORT EdaDataFile : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile>
+	class ODBDESIGN_EXPORT EdaDataFile : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile>, public IStreamSaveable
 	{
 	public:
 		EdaDataFile(bool logAllLineParsing = false);
@@ -27,7 +28,9 @@ namespace Odb::Lib::FileModel::Design
 		const std::string& GetUnits() const;
 		const std::string& GetSource() const;
 
-		bool Parse(std::filesystem::path path);		
+		bool Parse(std::filesystem::path path);	
+		// Inherited via IStreamSaveable
+		bool Save(std::ostream& os) override;
 		
 		struct ODBDESIGN_EXPORT FeatureIdRecord : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::FeatureIdRecord>
 		{

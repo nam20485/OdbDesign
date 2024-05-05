@@ -11,17 +11,20 @@
 #include "PropertyRecord.h"
 #include "../../ProtoBuf/componentsfile.pb.h"
 #include "AttributeLookupTable.h"
+#include "../IStreamSaveable.h"
 
 
 namespace Odb::Lib::FileModel::Design
 {
-	class ODBDESIGN_EXPORT ComponentsFile : public IProtoBuffable<Odb::Lib::Protobuf::ComponentsFile>
+	class ODBDESIGN_EXPORT ComponentsFile : public IProtoBuffable<Odb::Lib::Protobuf::ComponentsFile>, public IStreamSaveable
 	{
 	public:
 		ComponentsFile();
 		~ComponentsFile();
 
 		bool Parse(std::filesystem::path directory);
+		// Inherited via IStreamSaveable
+		bool Save(std::ostream& os) override;
 
 		std::string GetUnits() const;
 		BoardSide GetSide() const;
@@ -123,7 +126,7 @@ namespace Odb::Lib::FileModel::Design
 
 		constexpr inline static const char* TOP_COMPONENTS_LAYER_NAME = "comp_+_top";
 		constexpr inline static const char* BOTTOM_COMPONENTS_LAYER_NAME = "comp_+_bot";
-		
+
 		// Inherited via IProtoBuffable
 		std::unique_ptr<Odb::Lib::Protobuf::ComponentsFile> to_protobuf() const override;
 		void from_protobuf(const Odb::Lib::Protobuf::ComponentsFile& message) override;
@@ -148,9 +151,9 @@ namespace Odb::Lib::FileModel::Design
 		const bool m_allowToepintNetNumbersOfNegative1 = true;
 
 		constexpr inline static const char* COMPONENTS_FILENAMES[] =
-		{ 
-			"components", 
-			"components2", 
+		{
+			"components",
+			"components2",
 			"components3"
 		};
 
@@ -168,6 +171,7 @@ namespace Odb::Lib::FileModel::Design
 		constexpr inline static const char* BOM_DESCR_RECORD_TOKEN_VPL_VND = "VPL_VND";
 		constexpr inline static const char* BOM_DESCR_RECORD_TOKEN_VPL_MPN = "VPL_MPN";
 		constexpr inline static const char* BOM_DESCR_RECORD_TOKEN_VND = "VND";
-		constexpr inline static const char* BOM_DESCR_RECORD_TOKEN_MPN = "MPN";				
-};
+		constexpr inline static const char* BOM_DESCR_RECORD_TOKEN_MPN = "MPN";
+
+	};
 }

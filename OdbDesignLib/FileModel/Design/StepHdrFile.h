@@ -8,10 +8,11 @@
 #include "../../IProtoBuffable.h"
 #include "../../ProtoBuf/stephdrfile.pb.h"
 #include "../OdbFile.h"
+#include "../IStreamSaveable.h"
 
 namespace Odb::Lib::FileModel::Design
 {
-	class ODBDESIGN_EXPORT StepHdrFile : public OdbFile, public IProtoBuffable<Odb::Lib::Protobuf::StepHdrFile>
+	class ODBDESIGN_EXPORT StepHdrFile : public OdbFile, public IProtoBuffable<Odb::Lib::Protobuf::StepHdrFile>, public IStreamSaveable
 	{
 	public:
 		virtual ~StepHdrFile();		
@@ -39,6 +40,8 @@ namespace Odb::Lib::FileModel::Design
 		};
 
 		bool Parse(std::filesystem::path path) override;
+		// Inherited via IStreamSaveable
+		bool Save(std::ostream& os) override;
 
 		// Inherited via IProtoBuffable
 		std::unique_ptr<Odb::Lib::Protobuf::StepHdrFile> to_protobuf() const override;

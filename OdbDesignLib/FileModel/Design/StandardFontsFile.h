@@ -6,16 +6,19 @@
 #include <vector>
 #include "../../IProtoBuffable.h"
 #include "../../ProtoBuf/standardfontsfile.pb.h"
+#include "../IStreamSaveable.h"
 
 namespace Odb::Lib::FileModel::Design
 {
-	class StandardFontsFile : public OdbFile, public IProtoBuffable<Odb::Lib::Protobuf::StandardFontsFile>
+	class StandardFontsFile : public OdbFile, public IProtoBuffable<Odb::Lib::Protobuf::StandardFontsFile>, public IStreamSaveable
 	{
 	public:
 		StandardFontsFile() = default;
 		~StandardFontsFile();
 	
 		bool Parse(std::filesystem::path path) override;
+		// Inherited via IStreamSaveable
+		bool Save(std::ostream& os) override;
 
 		// Inherited via IProtoBuffable
 		std::unique_ptr<Odb::Lib::Protobuf::StandardFontsFile> to_protobuf() const override;
@@ -61,6 +64,6 @@ namespace Odb::Lib::FileModel::Design
 		float m_ySize;
 		float m_offset;
 
-		CharacterBlock::Vector m_characterBlocks;		
+		CharacterBlock::Vector m_characterBlocks;				
 	};
 }

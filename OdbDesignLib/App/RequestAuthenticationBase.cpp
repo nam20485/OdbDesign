@@ -16,16 +16,16 @@ namespace Odb::Lib::App
 		if (IsDebug() && IsLocal())
 		{
 			// 200 Authorized!
-			return crow::response(200, "Authorized");
+			return crow::response(crow::status::OK, "Authorized");
 		}
 		else if (m_disableAuthentication)
 		{
 			// 200 Authorized!
-			return crow::response(200, "Authorized");
+			return crow::response(crow::status::OK, "Authorized");
 		}
 		else
 		{
-			return crow::response(401, "Unauthorized");
+			return crow::response(crow::status::UNAUTHORIZED, "Unauthorized");
 		}
 	}
 }
