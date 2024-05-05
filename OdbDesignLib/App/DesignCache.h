@@ -4,6 +4,8 @@
 #include "../ProductModel/Design.h"
 #include "../odbdesign_export.h"
 #include "StringVector.h"
+#include <memory>
+#include <vector>
 
 
 namespace Odb::Lib::App

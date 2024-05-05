@@ -4,6 +4,10 @@
 #include <exception>
 #include <filesystem>
 #include <utility>
+#include <vector>
+#include "../FileModel/Design/FileArchive.h"
+#include <memory>
+#include "../ProductModel/Design.h"
 
 using namespace Utils;
 using namespace std::filesystem;
