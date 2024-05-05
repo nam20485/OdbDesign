@@ -6,6 +6,7 @@
 #include "Controllers/HealthCheckController.h"
 #include "Controllers/DesignsController.h"
 #include "macros.h"
+#include <App/BasicRequestAuthentication.h>
 
 using namespace Odb::Lib::App;
 
@@ -50,16 +51,18 @@ namespace Odb::App::Server
 		auto& cors = crow_app().get_middleware<crow::CORSHandler>();
 		if (Utils::IsProduction())
 		{
-			cors.global().headers("*");
+			cors.global()
+				.headers("*")
+				.origin("*");
 			//cors.global().methods(crow::HTTPMethod::Get, crow::HTTPMethod::Post);
-			cors.global().origin("*");
 			//cors.global().origin("73.157.184.219");			
 		}
 		else
 		{
-			cors.global().headers("*");
+			cors.global()
+				.headers("*")
+				.origin("*");
 			//cors.global().methods(crow::HTTPMethod::Get);
-			cors.global().origin("*");
 			//cors.global().origin("73.157.184.219");
 		}
 
