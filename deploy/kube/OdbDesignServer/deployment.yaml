@@ -56,11 +56,11 @@ spec:
                   key: ODBDESIGN_SERVER_REQUEST_PASSWORD           
           resources:
             limits:
+              cpu: "8"
+              memory: 10Gi
+            requests:
               cpu: "2"
               memory: 2Gi
-            requests:
-              cpu: "1"
-              memory: 1Gi
           livenessProbe:
             httpGet:
               path: /healthz/live
