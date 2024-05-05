@@ -1,6 +1,5 @@
 #include "BasicRequestAuthentication.h"
 #include <string>
-#include "macros.h"
 #include <cstdlib>
 #include "RequestAuthenticationBase.h"
 

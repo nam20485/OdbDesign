@@ -3,13 +3,10 @@
 #include <filesystem>
 #include "libarchive_extract.h"
 #include "Logger.h"
-#include <exception>
-#include "macros.h"
 #include "str_utils.h"
 #include <cstdlib>
 #include <stdexcept>
 #include <string>
-#include "lzma.h"
 
 using namespace std::filesystem;
 
