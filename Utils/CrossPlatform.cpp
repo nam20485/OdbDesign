@@ -2,7 +2,7 @@
 #include "macros.h"
 #include <ctime>
 #include <cstdlib>
-#include <malloc.h>
+#include <stdlib.h>
 #include <string>
 #include <time.h>
 #include <mutex>
