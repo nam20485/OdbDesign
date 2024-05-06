@@ -10,12 +10,20 @@ using namespace Utils;
 
 namespace Odb::Test
 {
-	static inline constexpr char FILE_CONTENTS[] = "Hello, World!\r\n";
+	static inline constexpr char FILE_CONTENTS[] = "Hello, World!";
+	static inline constexpr char FILE_NAME[] = "filereader_test1.txt";
+
+	TEST_F(TestDataFixture, Test_FileReaderRead_FileExists)
+	{		
+		auto filePath = getTestDataFilePath(FILE_NAME);
+		ASSERT_FALSE(filePath.empty());
+		ASSERT_TRUE(exists(filePath));
+	}
 
 	TEST_F(TestDataFixture, Test_FileReaderRead_Buffered)
 	{		
-		auto filePath = getTestDataFilePath("filereader_test1.txt");
-
+		auto filePath = getTestDataFilePath(FILE_NAME);
+		ASSERT_FALSE(filePath.empty());
 		ASSERT_TRUE(exists(filePath));
 
 		FileReader fr(filePath);
@@ -31,8 +39,8 @@ namespace Odb::Test
 
 	TEST_F(TestDataFixture, Test_FileReaderRead_Unbuffered)
 	{
-		auto filePath = getTestDataFilePath("filereader_test1.txt");
-
+		auto filePath = getTestDataFilePath(FILE_NAME);
+		ASSERT_FALSE(filePath.empty());
 		ASSERT_TRUE(exists(filePath));
 
 		FileReader fr(filePath);
