@@ -23,7 +23,7 @@ namespace Odb::Test::Fixtures
 	{
 		TestDataFixture::SetUp();
 
-		m_pDesignCache = std::unique_ptr<DesignCache>(new DesignCache(m_testDataDir.string()));
+		m_pDesignCache = std::unique_ptr<DesignCache>(new DesignCache(getTestDataDir().string()));
 		ASSERT_NE(m_pDesignCache, nullptr);
 	}
 
@@ -31,10 +31,10 @@ namespace Odb::Test::Fixtures
 	{
 		if (m_removeDecompressedDirectories)
 		{
-			if (exists(m_testDataDir))
+			if (exists(getTestDataDir()))
 			{
 				// delete uncompressed directories
-				for (const auto& entry : directory_iterator(m_testDataDir))
+				for (const auto& entry : directory_iterator(getTestDataDir()))
 				{
 					if (is_directory(entry))
 					{
