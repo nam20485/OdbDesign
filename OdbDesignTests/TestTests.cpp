@@ -43,4 +43,10 @@ namespace Odb::Test
 		ASSERT_TRUE(exists(getDesignPath("sample_design.tgz")));
 		ASSERT_TRUE(exists(getDesignPath("designodb_rigidflex.tgz")));
 	}
+
+	TEST_F(TestDataFixture, TestDataFilesDirDirectoryExists)
+	{
+		ASSERT_FALSE(getTestDataFilesDir().empty());
+		EXPECT_TRUE(exists(getTestDataFilesDir()));
+	}	
 }
