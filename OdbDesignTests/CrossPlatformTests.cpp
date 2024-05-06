@@ -16,16 +16,16 @@ namespace Odb::Test
 	{
 		std::string value;
 		ASSERT_EQ(value.size(), 0U);
-		ASSERT_TRUE(CrossPlatform::getenv_safe(ODB_TEST_DATA_DIR_ENV_NAME, value));
+		ASSERT_TRUE(CrossPlatform::getenv_safe(ODB_TEST_ENV_NAME, value));
 		ASSERT_STRNE(value.c_str(), "");
-		ASSERT_STREQ(path(value).c_str(), m_testDataDir.c_str());
+		ASSERT_STREQ(value.c_str(), ODB_TEST_ENV_VALUE);
 	}
 
 	TEST_F(TestDataFixture, Test_CrossPlatform_GetEnvSafe_VariableDoesntExist)
 	{
 		std::string value;
 		ASSERT_EQ(value.size(), 0U);
-		ASSERT_FALSE(CrossPlatform::getenv_safe("FEARISTHEMINDKILLER", value));
+		ASSERT_FALSE(CrossPlatform::getenv_safe(ODB_TEST_NONEXISTENT_ENV_NAME, value));
 		ASSERT_STREQ(value.c_str(), "");		
 	}
 
