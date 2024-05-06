@@ -3,6 +3,7 @@
 #include "Fixtures/TestDataFixture.h"
 #include "libarchive_extract.h"
 #include "ArchiveExtractor.h"
+#include <string>
 
 using namespace std::filesystem;
 using namespace Odb::Test::Fixtures;
@@ -11,7 +12,7 @@ using namespace Utils;
 
 namespace Odb::Test
 {
-	static inline constexpr char FILE_CONTENTS[] = "Hello, World!\n\n";
+	static inline constexpr char FILE_CONTENTS[] = "Hello, World!";
 
 	TEST_F(TestDataFixture, Test_LibArchive_CompressDir)
 	{
