@@ -116,7 +116,7 @@ namespace Odb::Lib::FileModel::Design
 		// move archive to directory
 
 		char szTmpNameBuff[L_tmpnam] = { 0 };
-		std::tmpnam(szTmpNameBuff);		
+		if (nullptr == std::tmpnam(szTmpNameBuff)) return false;
 		
 		auto tempPath = temp_directory_path() / szTmpNameBuff;
 		if (!create_directory(tempPath)) return false;
