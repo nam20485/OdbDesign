@@ -1,4 +1,5 @@
 #include "FileArchive.h"
+#include "FileArchive.h"
 #include <filesystem>
 #include "ArchiveExtractor.h"
 #include "MiscInfoFile.h"
@@ -109,6 +110,11 @@ namespace Odb::Lib::FileModel::Design
 		return false;
 	}
 
+	bool FileArchive::SaveFileModel(const path& directory)
+	{
+		return SaveFileModel(directory, m_productName);	
+	}
+
 	bool FileArchive::SaveFileModel(const path& directory, const std::string& archiveName)
 	{
 		// create directory in /tmp
@@ -122,13 +128,13 @@ namespace Odb::Lib::FileModel::Design
 		auto tempPath = temp_directory_path() / szTmpNameBuff;
 		if (!create_directory(tempPath)) return false;
 
-		auto rootPath = tempPath / m_productName;					
+		auto rootPath = tempPath / archiveName;
 		if (!create_directory(rootPath)) return false;
 		if (!Save(rootPath)) return false;
 
 		// compress the written file structure
 		std::string createdArchivePath;
-		if (! Utils::ArchiveExtractor::CompressDir(rootPath.string(), tempPath.string(), m_productName, createdArchivePath)) return false;
+		if (! Utils::ArchiveExtractor::CompressDir(rootPath.string(), tempPath.string(), archiveName, createdArchivePath)) return false;
 		if (createdArchivePath.empty()) return false;
 
 		// move the compressed file to the requested save directory
