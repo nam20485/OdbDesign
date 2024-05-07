@@ -7,6 +7,7 @@
 #include "fastmove.h"
 #include <system_error>
 #include <cstdio>
+#include <string>
 
 using namespace Utils;
 using namespace std::filesystem;
@@ -245,11 +246,12 @@ namespace Odb::Lib::FileModel::Design
 		return true;
 	}
 
-	std::unique_ptr<Odb::Lib::Protobuf::FileArchive> FileArchive::to_protobuf() const
+	std::unique_ptr<Protobuf::FileArchive> FileArchive::to_protobuf() const
 	{
-		std::unique_ptr<Odb::Lib::Protobuf::FileArchive> pFileArchiveMessage(new Odb::Lib::Protobuf::FileArchive);
+		std::unique_ptr<Protobuf::FileArchive> pFileArchiveMessage(new Protobuf::FileArchive);
 		pFileArchiveMessage->set_productname(m_productName);
 		pFileArchiveMessage->set_filename(m_filename);
+		//pFileArchiveMessage->set_filepath(m_filePath);
 		pFileArchiveMessage->mutable_matrixfile()->CopyFrom(*m_matrixFile.to_protobuf());
 		pFileArchiveMessage->mutable_miscinfofile()->CopyFrom(*m_miscInfoFile.to_protobuf());
 		pFileArchiveMessage->mutable_standardfontsfile()->CopyFrom(*m_standardFontsFile.to_protobuf());
@@ -268,10 +270,11 @@ namespace Odb::Lib::FileModel::Design
 		return pFileArchiveMessage;
 	}
 
-	void FileArchive::from_protobuf(const Odb::Lib::Protobuf::FileArchive& message)
+	void FileArchive::from_protobuf(const Protobuf::FileArchive& message)
 	{
 		m_productName = message.productname();
 		m_filename = message.filename();
+		//m_filePath = message.filepath();
 		m_matrixFile.from_protobuf(message.matrixfile());
 		m_miscInfoFile.from_protobuf(message.miscinfofile());
 		m_standardFontsFile.from_protobuf(message.standardfontsfile());
