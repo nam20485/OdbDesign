@@ -15,6 +15,7 @@
 #include "SymbolsDirectory.h"
 #include "AttrListFile.h"
 #include "../ISaveable.h"
+#include <memory>
 
 
 namespace Odb::Lib::FileModel::Design

@@ -6,6 +6,7 @@
 #include "StringVector.h"
 #include <memory>
 #include <vector>
+#include <string>
 
 
 namespace Odb::Lib::App
