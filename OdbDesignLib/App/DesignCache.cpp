@@ -1,3 +1,5 @@
+#include "DesignCache.h"
+#include "DesignCache.h"
 #include "ArchiveExtractor.h"
 #include "DesignCache.h"
 #include "Logger.h"
@@ -63,6 +65,25 @@ namespace Odb::Lib::App
         }
 
         return m_fileArchivesByName[designName];        
+    }
+
+    void DesignCache::AddFileArchive(const std::string& designName, const std::shared_ptr<FileModel::Design::FileArchive>& fileArchive, bool save)
+    {
+        m_fileArchivesByName[designName] = fileArchive;
+        if (save)
+        {
+            SaveFileArchive(designName);
+        }
+    }
+
+    bool DesignCache::SaveFileArchive(const std::string& designName)
+    {
+        auto fileArchive = GetFileArchive(designName);
+        if (fileArchive != nullptr)
+        {
+            return fileArchive->SaveFileModel(m_directory);
+        }
+        return false;
     }
 
     std::vector<std::string> DesignCache::getLoadedDesignNames(const std::string& filter) const
