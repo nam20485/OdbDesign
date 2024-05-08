@@ -23,7 +23,8 @@ namespace Odb::Lib::FileModel::Design
 	class ODBDESIGN_EXPORT FileArchive : public IProtoBuffable<Odb::Lib::Protobuf::FileArchive>, public ISaveable
 	{
 	public:
-		FileArchive(std::string path);
+		FileArchive();
+		FileArchive(const std::string& path);
 		~FileArchive();
 
 		std::string GetRootDir() const;

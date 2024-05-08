@@ -1,5 +1,6 @@
 #include "FileArchive.h"
 #include "FileArchive.h"
+#include "FileArchive.h"
 #include <filesystem>
 #include "ArchiveExtractor.h"
 #include "MiscInfoFile.h"
@@ -15,8 +16,12 @@ using namespace std::filesystem;
 
 namespace Odb::Lib::FileModel::Design
 {
+	FileArchive::FileArchive()		
+		: m_filePath()
+	{			
+	}
 
-	FileArchive::FileArchive(std::string path)
+	FileArchive::FileArchive(const std::string& path)
 		: m_filePath(path)
 	{
 	}

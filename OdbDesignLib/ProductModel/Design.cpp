@@ -191,7 +191,7 @@ namespace Odb::Lib::ProductModel
 		m_name = message.name();
 		m_productModel = message.productmodel();
 
-		m_pFileModel = std::make_shared<FileModel::Design::FileArchive>("");
+		m_pFileModel = std::make_shared<FileModel::Design::FileArchive>();
 		m_pFileModel->from_protobuf(message.filemodel());
 
 		for (const auto& pNetMsg : message.nets())
