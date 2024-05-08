@@ -3,7 +3,6 @@
 #include "../../odbdesign_export.h"
 #include <string>
 #include "StepDirectory.h"
-#include "EdaDataFile.h"
 #include <map>
 #include <vector>
 #include "MiscInfoFile.h"
@@ -22,10 +21,12 @@ namespace Odb::Lib::FileModel::Design
 {
 	class ODBDESIGN_EXPORT FileArchive : public IProtoBuffable<Odb::Lib::Protobuf::FileArchive>, public ISaveable
 	{
-	public:
-		FileArchive();
+	public:		
 		FileArchive(const std::string& path);
 		~FileArchive();
+
+		static std::shared_ptr<FileArchive> Make();
+		static std::shared_ptr<FileArchive> Make(const std::string& json);
 
 		std::string GetRootDir() const;
 		std::string GetProductName() const;
@@ -70,6 +71,8 @@ namespace Odb::Lib::FileModel::Design
 
 		StepDirectory::StringMap m_stepsByName;
 		SymbolsDirectory::StringMap m_symbolsDirectoriesByName;
+
+		FileArchive();
 
 		bool ParseDesignDirectory(const std::filesystem::path& path);
 		bool ParseStepDirectories(const std::filesystem::path& path);
