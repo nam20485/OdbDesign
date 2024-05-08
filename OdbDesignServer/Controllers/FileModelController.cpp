@@ -392,7 +392,8 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "no data provided in POST body");
 		}
 
-		auto fileArchive = FileArchive::Make(json);
+		auto fileArchive = std::make_shared<FileArchive>();
+		fileArchive->from_json(json);
 		m_serverApp.designs().AddFileArchive(designName, fileArchive, false);
 		
 		return crow::response();
