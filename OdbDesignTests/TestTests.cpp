@@ -1,7 +1,10 @@
 #include <gtest/gtest.h>
-#include <gmock/gmock.h>
+//#include <gmock/gmock.h>
 #include "Fixtures/TestDataFixture.h"
 #include <filesystem>
+#include <gmock/gmock-more-matchers.h>
+#include <gmock/gmock-matchers.h>
+#include "Fixtures/FileArchiveLoadFixture.h"
 
 using namespace std::filesystem;
 using namespace Odb::Test::Fixtures;
@@ -27,8 +30,7 @@ namespace Odb::Test
 	}
 
 	TEST_F(TestDataFixture, TestDataDirEnvironmentVariablesExists)
-	{
-		//ASSERT_FALSE(getTestDataDir().empty());
+	{		
 		EXPECT_THAT(getTestDataDir().string(), Not(IsEmpty()));
 	}
 
@@ -46,7 +48,7 @@ namespace Odb::Test
 
 	TEST_F(TestDataFixture, TestDataFilesDirDirectoryExists)
 	{
-		ASSERT_FALSE(getTestDataFilesDir().empty());
+		EXPECT_THAT(getTestDataFilesDir().string(), Not(IsEmpty()));
 		EXPECT_TRUE(exists(getTestDataFilesDir()));
 	}	
 }
