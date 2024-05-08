@@ -2,6 +2,7 @@
 #include "Design.h"
 #include "Package.h"
 #include "Logger.h"
+#include "../enums.h"
 
 
 namespace Odb::Lib::ProductModel
@@ -191,7 +192,7 @@ namespace Odb::Lib::ProductModel
 		m_name = message.name();
 		m_productModel = message.productmodel();
 
-		m_pFileModel = FileModel::Design::FileArchive::Make();
+		m_pFileModel = std::make_shared<FileModel::Design::FileArchive>();
 		m_pFileModel->from_protobuf(message.filemodel());
 
 		for (const auto& pNetMsg : message.nets())

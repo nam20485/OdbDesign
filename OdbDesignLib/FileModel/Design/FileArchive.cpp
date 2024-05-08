@@ -29,19 +29,7 @@ namespace Odb::Lib::FileModel::Design
 	{
 		m_stepsByName.clear();
 		m_symbolsDirectoriesByName.clear();
-	}
-
-	std::shared_ptr<FileArchive> FileArchive::Make()
-	{
-		return std::shared_ptr<FileArchive>();
-	}
-
-	std::shared_ptr<FileArchive> FileArchive::Make(const std::string& json)
-	{
-		auto fileArchive = Make();
-		fileArchive->from_json(json);
-		return fileArchive;
-	}
+	}	
 
 	std::string FileArchive::GetRootDir() const
 	{

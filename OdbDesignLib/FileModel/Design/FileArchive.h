@@ -21,12 +21,10 @@ namespace Odb::Lib::FileModel::Design
 {
 	class ODBDESIGN_EXPORT FileArchive : public IProtoBuffable<Odb::Lib::Protobuf::FileArchive>, public ISaveable
 	{
-	public:		
+	public:	
+		FileArchive();
 		FileArchive(const std::string& path);
 		~FileArchive();
-
-		static std::shared_ptr<FileArchive> Make();
-		static std::shared_ptr<FileArchive> Make(const std::string& json);
 
 		std::string GetRootDir() const;
 		std::string GetProductName() const;
@@ -71,9 +69,7 @@ namespace Odb::Lib::FileModel::Design
 
 		StepDirectory::StringMap m_stepsByName;
 		SymbolsDirectory::StringMap m_symbolsDirectoriesByName;
-
-		FileArchive();
-
+		
 		bool ParseDesignDirectory(const std::filesystem::path& path);
 		bool ParseStepDirectories(const std::filesystem::path& path);
         bool ParseMiscInfoFile(const std::filesystem::path& path);
