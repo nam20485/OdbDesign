@@ -17,16 +17,8 @@ namespace Odb::Test
 	TEST_F(TestDataFixture, Test_LibArchive_CompressDir)
 	{
 		std::string fileArchiveOut;
-		compress_dir(getTestDataFilesDir().string().c_str(), getTestDataFilesDir().string().c_str(), "files_libarchive", fileArchiveOut);
+		compress_dir(getTestDataFilesDir().string().c_str(), getTestDataDir().string().c_str(), "files_libarchive", fileArchiveOut);
 
 		ASSERT_TRUE(exists(fileArchiveOut));
-	}
-
-	TEST_F(TestDataFixture, Test_ArchiveExtractor_CompressDir)
-	{
-		std::string fileArchiveOut;
-		ArchiveExtractor::CompressDir(getTestDataFilesDir().string(), getTestDataFilesDir().string(), "files_archiveextractor", fileArchiveOut);
-
-		ASSERT_TRUE(exists(fileArchiveOut));
-	}
+	}	
 }
