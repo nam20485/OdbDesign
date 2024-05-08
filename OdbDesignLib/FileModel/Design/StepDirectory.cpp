@@ -4,6 +4,7 @@
 #include <fstream>
 #include <sstream>
 #include "Logger.h"
+#include <memory>
 
 
 namespace Odb::Lib::FileModel::Design
