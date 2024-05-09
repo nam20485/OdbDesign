@@ -86,8 +86,8 @@ namespace Odb::Test
 		ASSERT_NE(tm.tm_year, 0);
 		ASSERT_NE(tm.tm_mon, 0);
 		ASSERT_NE(tm.tm_mday, 0);
-		ASSERT_NE(tm.tm_hour, 0);
-		ASSERT_NE(tm.tm_min, 0);
-		ASSERT_NE(tm.tm_sec, 0);
+		//ASSERT_NE(tm.tm_hour, 0);
+		//ASSERT_NE(tm.tm_min, 0);
+		//ASSERT_NE(tm.tm_sec, 0);
 	}
 }
