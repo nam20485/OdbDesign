@@ -71,8 +71,8 @@ namespace Utils
 		ss << "7z"
 			<< " x " /*<< '"'*/ << m_path /*<< '"'*/			// extract w/ full paths and archive path
 			<< " -o" /*<< '"'*/ << destinationPath /*<< '"'*/	// output path
-			<< " -y" 									// yes to all prompts
-			<< " -aoa";									// overwrite all
+			<< " -y" 											// yes to all prompts
+			<< " -aoa";											// overwrite all
 
 		if (HIDE_7Z_COMMAND_OUTPUT)
 		{
