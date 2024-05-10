@@ -8,6 +8,7 @@
 #include <stdexcept>
 #include <string>
 #include "macros.h"
+#include <sstream>
 
 using namespace std::filesystem;
 
