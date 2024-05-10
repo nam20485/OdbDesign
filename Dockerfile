@@ -21,7 +21,6 @@ RUN apt-get update && \
         pkg-config \
         mono-complete \
         linux-libc-dev \ 
-        p7zip-full \  
         && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
@@ -83,6 +82,17 @@ LABEL org.opencontainers.image.source=https://github.com/nam20485/OdbDesign \
       org.opencontainers.image.title="OdbDesign Server"
 
 EXPOSE 8888
+
+# install dependencies (7z command)
+RUN apt-get update && \
+    apt-get install -y -q --no-install-recommends \
+        curl \
+        apt-transport-https \
+        ca-certificates \        
+        p7zip-full \  
+        && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN mkdir --parents /OdbDesign/bin
 WORKDIR /OdbDesign
