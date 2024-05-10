@@ -73,8 +73,7 @@ namespace Utils
 			<< " -y" 									// yes to all prompts
 			<< " -aoa";									// overwrite all
 
-		const auto silent = true;
-		if (silent)
+		if (HIDE_7Z_COMMAND_OUTPUT)
 		{
 			bool isWindows = true;
 			if (isWindows)

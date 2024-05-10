@@ -55,5 +55,7 @@ namespace Utils
 
 		static inline const std::vector<std::string> LZMA_FILE_EXTENSIONS = { ".Z", ".z", ".lzma", ".lz" };
 
+		constexpr static inline bool HIDE_7Z_COMMAND_OUTPUT = true;
+
 	};
 }
