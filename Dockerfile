@@ -25,9 +25,6 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# test 7z install
-RUN 7z -h
-
 # install vcpkg
 ENV VCPKG_ROOT=/root/src/github/microsoft/vcpkg
 RUN git clone https://github.com/Microsoft/vcpkg.git ${VCPKG_ROOT}
@@ -93,6 +90,9 @@ RUN apt-get update && \
         && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+
+# test 7z install
+RUN 7z -h
 
 RUN mkdir --parents /OdbDesign/bin
 WORKDIR /OdbDesign
