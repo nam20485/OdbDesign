@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include <stdexcept>
 #include <string>
+#include "macros.h"
 
 using namespace std::filesystem;
 
@@ -75,8 +76,7 @@ namespace Utils
 
 		if (HIDE_7Z_COMMAND_OUTPUT)
 		{
-			bool isWindows = true;
-			if (isWindows)
+			if (Utils::IsWindows())
 			{
 				ss << " >$null 2>&1";
 			}
@@ -92,7 +92,7 @@ namespace Utils
 
 		auto exitCode = std::system(command.c_str());
 
-#if defined(__linux__) || defined(__apple__)
+#if !IS_WINDOWS
 		exitCode = WEXITSTATUS(exitCode);
 #endif
 
