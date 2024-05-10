@@ -100,6 +100,7 @@ namespace Utils
 			exitCode != static_cast<int>(e7zExitCode::Warning))
 		{
 			auto message = "7z command failed (exit code = " + std::to_string(exitCode) + ")";
+			message += ", cwd: [" + current_path().string() + "]";
 			logerror(message);
 			throw std::runtime_error(message.c_str());
 			//return false;
