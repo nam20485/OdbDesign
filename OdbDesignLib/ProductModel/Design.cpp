@@ -1,8 +1,11 @@
-#include <vector>
+#include "Design.h"
 #include "Design.h"
 #include "Package.h"
 #include "Logger.h"
 #include "../enums.h"
+#include "Part.h"
+#include <memory>
+#include "Net.h"
 
 
 namespace Odb::Lib::ProductModel
@@ -128,6 +131,11 @@ namespace Odb::Lib::ProductModel
 		//if (! BuildNoneNet()) return false;
 		//if (! BreakSinglePinNets()) return false;
 
+		if (CLIP_FILEMODEL_AFTER_BUILD)
+		{
+			ClipFileModel();
+		}
+
 		return true;
 	}
 
@@ -136,13 +144,21 @@ namespace Odb::Lib::ProductModel
 		return m_pFileModel;
 	}
 
+	void Design::ClipFileModel()
+	{
+		m_pFileModel = nullptr;
+	}
+
 	std::unique_ptr<Odb::Lib::Protobuf::ProductModel::Design> Design::to_protobuf() const
 	{
 		auto pDesignMsg = std::make_unique<Odb::Lib::Protobuf::ProductModel::Design>();
 		pDesignMsg->set_name(m_name);
 		pDesignMsg->set_productmodel(m_productModel);
 
-		pDesignMsg->mutable_filemodel()->CopyFrom(*m_pFileModel->to_protobuf());
+		if (m_pFileModel != nullptr)
+		{
+			pDesignMsg->mutable_filemodel()->CopyFrom(*m_pFileModel->to_protobuf());
+		}
 
 		for (const auto& pNet : m_nets)
 		{

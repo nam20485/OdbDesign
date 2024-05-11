@@ -161,19 +161,7 @@ namespace Odb::App::Server
 		if (designNameDecoded.empty())
 		{
 			return crow::response(crow::status::BAD_REQUEST, "design name not specified");
-		}
-
-		// TODO: use excludeFileArchive
-		bool excludeFileArchive = false;
-		auto szExcludeFileArchive = req.url_params.get(kszExcludeFileArchiveQueryParamName);
-		if (szExcludeFileArchive != nullptr)
-		{
-			if (std::strcmp(szExcludeFileArchive, "true") == 0 ||
-				std::strcmp(szExcludeFileArchive, "yes") == 0)
-			{
-				excludeFileArchive = true;
-			}
-		}
+		}		
 
 		auto pDesign = m_serverApp.designs().GetDesign(designNameDecoded);
 		if (pDesign == nullptr)
@@ -181,6 +169,23 @@ namespace Odb::App::Server
 			std::stringstream ss;
 			ss << "design: \"" << designNameDecoded << "\" not found";
 			return crow::response(crow::status::NOT_FOUND, ss.str());
+		}
+
+		// TODO: use excludeFileArchive
+		bool includeFileArchive = false;
+		auto szIncludeFileArchive = req.url_params.get(kszIncludeFileArchiveQueryParamName);
+		if (szIncludeFileArchive != nullptr)
+		{
+			if (std::strcmp(szIncludeFileArchive, "true") == 0 ||
+				std::strcmp(szIncludeFileArchive, "yes") == 0)
+			{
+				includeFileArchive = true;
+			}
+		}
+
+		if (!includeFileArchive)
+		{
+			pDesign->ClipFileModel();
 		}
 
 		return crow::response(JsonCrowReturnable(*pDesign));
