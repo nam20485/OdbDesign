@@ -52,8 +52,11 @@ namespace Odb::Lib::App
 		for (const auto& designName : unloadedDesignNames)
 		{
 			auto loaded = false;
-			if (std::find(loadedFileArchiveNames.begin(), loadedFileArchiveNames.end(), designName) != loadedFileArchiveNames.end() ||
-				std::find(loadedDesignNames.begin(), loadedDesignNames.end(), designName) != loadedDesignNames.end())
+			if (std::find(loadedFileArchiveNames.begin(), loadedFileArchiveNames.end(), designName) != loadedFileArchiveNames.end())
+			{
+				loaded = true;
+			}
+			else if (std::find(loadedDesignNames.begin(), loadedDesignNames.end(), designName) != loadedDesignNames.end())
 			{
 				loaded = true;
 			}
