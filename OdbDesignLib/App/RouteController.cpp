@@ -53,21 +53,21 @@ namespace Odb::Lib::App
 		for (const auto& designName : unloadedDesignNames)
 		{
 			auto loaded = false;
-			auto designType = DesignType::FileArchive;
+			auto isDesign = false;
 			if (std::find(loadedFileArchiveNames.begin(), loadedFileArchiveNames.end(), designName) != loadedFileArchiveNames.end())
 			{
 				loaded = true;
-				designType = DesignType::FileArchive;
+				isDesign = false;
 			}
 			else if (std::find(loadedDesignNames.begin(), loadedDesignNames.end(), designName) != loadedDesignNames.end())
 			{
 				loaded = true;
-				designType = DesignType::Design;
+				isDesign = true;
 			}
 			crow::json::wvalue design;
 			design["name"] = designName;
 			design["loaded"] = loaded;
-			design["type"] = designTypeMap.getValue(designType);
+			design["type"] = isDesign? "Design" : "FileArchive";
 			designs.push_back(design);
 		}
 		crow::json::wvalue jsonResponse;
