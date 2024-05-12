@@ -4,6 +4,8 @@
 #include <string>
 #include <exception>
 #include "str_utils.h"
+#include <algorithm>
+#include <iterator>
 
 namespace Utils
 {
