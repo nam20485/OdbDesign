@@ -6,6 +6,7 @@
 #include "Part.h"
 #include <memory>
 #include "Net.h"
+#include "../FileModel/Design/FileArchive.h"
 
 
 namespace Odb::Lib::ProductModel
@@ -117,6 +118,9 @@ namespace Odb::Lib::ProductModel
 		if (pFileModel == nullptr) return false;
 
 		m_pFileModel = pFileModel;
+
+		//m_productModel = m_pFileModel->GetProductName();
+		//m_name = m_pFileModel->GetProductName();
 
 		// atomic elements
 		if (! BuildNets()) return false;
