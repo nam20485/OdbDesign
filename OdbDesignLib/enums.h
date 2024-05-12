@@ -1,5 +1,7 @@
 #pragma once
 
+#include "EnumMap.h"
+
 namespace Odb::Lib
 {
 	enum class BoardSide
@@ -26,5 +28,18 @@ namespace Odb::Lib
 		None,
 		Metric,
 		Imperial
+	};
+
+	enum class DesignType
+	{
+		FileArchive,
+		Design
+	};
+
+	static const Utils::EnumMap<DesignType> designTypeMap{
+		{
+			"FileArchive",
+			"Design"
+		}
 	};
 }

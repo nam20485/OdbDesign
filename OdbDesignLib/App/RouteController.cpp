@@ -1,6 +1,7 @@
 #include "RouteController.h"
 #include "RouteController.h"
 #include "RouteController.h"
+#include "../enums.h"
 
 
 namespace Odb::Lib::App
@@ -52,17 +53,21 @@ namespace Odb::Lib::App
 		for (const auto& designName : unloadedDesignNames)
 		{
 			auto loaded = false;
+			auto designType = DesignType::FileArchive;
 			if (std::find(loadedFileArchiveNames.begin(), loadedFileArchiveNames.end(), designName) != loadedFileArchiveNames.end())
 			{
 				loaded = true;
+				designType = DesignType::FileArchive;
 			}
 			else if (std::find(loadedDesignNames.begin(), loadedDesignNames.end(), designName) != loadedDesignNames.end())
 			{
 				loaded = true;
+				designType = DesignType::Design;
 			}
 			crow::json::wvalue design;
 			design["name"] = designName;
 			design["loaded"] = loaded;
+			design["type"] = designTypeMap.getValue(designType);
 			designs.push_back(design);
 		}
 		crow::json::wvalue jsonResponse;
