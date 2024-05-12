@@ -11,8 +11,10 @@ target_include_directories(Utils
                            $<INSTALL_INTERFACE:include>)
 
 ## PCH
-file (GLOB_RECURSE UTILS_HEADER_FILES "*.h")
-target_precompile_headers(Utils PRIVATE ${UTILS_HEADER_FILES})
+if (NOT DEFINED ENV{CI})
+    file (GLOB_RECURSE UTILS_HEADER_FILES "*.h")
+    target_precompile_headers(Utils PRIVATE ${UTILS_HEADER_FILES})
+endif()
 
 # Link to LibArchive
 find_package(LibArchive REQUIRED)
