@@ -23,7 +23,7 @@ namespace Odb::Lib::ProductModel
 		std::shared_ptr<Pin> GetPin() const;
 		std::shared_ptr<Component> GetComponent() const;
 
-		std::string MakeName(std::shared_ptr<Odb::Lib::ProductModel::Component>& pComponent, std::shared_ptr<Odb::Lib::ProductModel::Pin>& pPin);
+		static std::string MakeName(const Component& component, const Pin& pin);
 
 		// Inherited via IProtoBuffable
 		std::unique_ptr<Odb::Lib::Protobuf::ProductModel::PinConnection> to_protobuf() const override;
