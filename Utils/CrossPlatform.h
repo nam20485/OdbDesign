@@ -3,6 +3,8 @@
 //#include <corecrt.h>
 #include "utils_export.h"
 #include <string>
+#include <ctime>
+#include <time.h>
 
 namespace Utils
 {

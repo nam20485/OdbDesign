@@ -1,6 +1,7 @@
 #pragma once
 
 #include "utils_export.h"
+#include <string>
 
 namespace Utils
 {
