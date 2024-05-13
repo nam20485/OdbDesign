@@ -3,8 +3,6 @@
 #include <cstdlib>
 #include "RequestAuthenticationBase.h"
 
-using namespace Utils;
-
 namespace Odb::Lib::App
 {
 	BasicRequestAuthentication::BasicRequestAuthentication(bool disableAuthentication)
