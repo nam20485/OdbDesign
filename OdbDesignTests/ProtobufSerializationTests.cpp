@@ -27,7 +27,7 @@ namespace Odb::Test
 		auto pComponentMsg = pComponent->to_protobuf();
 		ASSERT_THAT(pComponentMsg, NotNull());
 
-		auto pComponentFromMsg = std::unique_ptr<Component>();
+		auto pComponentFromMsg = std::make_unique<Component>();
 		pComponentFromMsg->from_protobuf(*pComponentMsg);	
 
 		ASSERT_EQ(pComponent->GetRefDes(), pComponentFromMsg->GetRefDes());
@@ -82,7 +82,7 @@ namespace Odb::Test
 		auto pComponentMsg = pComponent->to_protobuf();
 		ASSERT_THAT(pComponentMsg, NotNull());
 
-		auto pComponentFromMsg = std::unique_ptr<Component>();
+		auto pComponentFromMsg = std::make_unique<Component>();
 		pComponentFromMsg->from_protobuf(*pComponentMsg);
 
 		ASSERT_EQ(pComponent->GetRefDes(), pComponentFromMsg->GetRefDes());
