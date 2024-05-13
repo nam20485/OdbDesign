@@ -71,7 +71,7 @@ namespace Odb::Lib::App
         return m_fileArchivesByName[designName];        
     }
 
-    void DesignCache::AddFileArchive(const std::string& designName, const std::shared_ptr<FileModel::Design::FileArchive>& fileArchive, bool save)
+    void DesignCache::AddFileArchive(const std::string& designName, std::shared_ptr<FileModel::Design::FileArchive> fileArchive, bool save)
     {
         m_fileArchivesByName[designName] = fileArchive;
         if (save)

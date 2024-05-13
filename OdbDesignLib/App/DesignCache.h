@@ -20,7 +20,7 @@ namespace Odb::Lib::App
 		std::shared_ptr<ProductModel::Design> GetDesign(const std::string& designName);
 		std::shared_ptr<FileModel::Design::FileArchive> GetFileArchive(const std::string& designName);
 
-		void AddFileArchive(const std::string& designName, const std::shared_ptr<FileModel::Design::FileArchive>& fileArchive, bool save);
+		void AddFileArchive(const std::string& designName, std::shared_ptr<FileModel::Design::FileArchive> fileArchive, bool save);
 
 		bool SaveFileArchive(const std::string& designName);
 
