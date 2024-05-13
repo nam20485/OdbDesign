@@ -4,6 +4,7 @@
 #include "Pin.h"
 #include "../ProtoBuf/net.pb.h"
 #include <string>
+#include "PinConnection.h"
 
 
 namespace Odb::Lib::ProductModel

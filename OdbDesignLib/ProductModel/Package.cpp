@@ -1,6 +1,8 @@
 #include "Package.h"
 #include <string>
 #include "../ProtoBuf/package.pb.h"
+#include "Pin.h"
+#include <memory>
 
 namespace Odb::Lib::ProductModel
 {
