@@ -5,7 +5,6 @@
 #include <vector>
 #include <map>
 #include <memory>
-#include "Pin.h"
 #include "Package.h"
 #include "../enums.h"
 #include "Part.h"
@@ -18,7 +17,7 @@ namespace Odb::Lib::ProductModel
 	class ODBDESIGN_EXPORT Component : public IProtoBuffable<Odb::Lib::Protobuf::ProductModel::Component>
 	{
 	public:
-		Component() = default;
+		Component();
 		Component(const std::string& refDes, const std::string& partName, std::shared_ptr<Package> pPackage, unsigned int index, BoardSide side, std::shared_ptr<Part> pPart);
 		~Component();
 
