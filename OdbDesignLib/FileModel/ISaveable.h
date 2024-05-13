@@ -5,7 +5,7 @@
 
 namespace Odb::Lib::FileModel
 {
-	class ISaveable
+	class ODBDESIGN_EXPORT ISaveable
 	{
 	public:
 		virtual bool Save(const std::filesystem::path& directory) = 0;
