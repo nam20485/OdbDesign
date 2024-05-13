@@ -1,6 +1,10 @@
 #include <gtest/gtest.h>
 #include "Fixtures/FileArchiveLoadFixture.h"
 #include <gmock/gmock-matchers.h>
+#include "FileModel/Design/FileArchive.h"
+#include <memory>
+#include "ProductModel/Component.h"
+#include "ProductModel/Design.h"
 
 
 //using namespace Odb::Lib::App;
