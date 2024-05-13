@@ -7,6 +7,7 @@
 #include <memory>
 #include "Net.h"
 #include "../FileModel/Design/FileArchive.h"
+#include "../FileModel/Design/EdaDataFile.h"
 
 
 namespace Odb::Lib::ProductModel
