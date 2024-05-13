@@ -52,7 +52,7 @@ namespace Odb::Lib::ProductModel
 	void PinConnection::from_protobuf(const Odb::Lib::Protobuf::ProductModel::PinConnection& message)
 	{
 		m_name = message.name();
-		m_pComponent = std::shared_ptr<Component>();
+		m_pComponent = std::make_shared<Component>();
 		m_pComponent->from_protobuf(message.component());
 		m_pPin = std::make_shared<Pin>("", -1);
 		m_pPin->from_protobuf(message.pin());
