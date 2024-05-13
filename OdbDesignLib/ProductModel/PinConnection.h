@@ -17,7 +17,7 @@ namespace Odb::Lib::ProductModel
 	{
 	public:
 		PinConnection(std::shared_ptr<Component> pComponent, std::shared_ptr<Pin> pPin);		
-		PinConnection(std::shared_ptr<Component> pComponent, std::shared_ptr<Pin> pPin, std::string name);
+		PinConnection(std::shared_ptr<Component> pComponent, std::shared_ptr<Pin> pPin, const std::string& name);
 		//~PinConnection();	
 
 		std::shared_ptr<Pin> GetPin() const;

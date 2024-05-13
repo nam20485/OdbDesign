@@ -1,4 +1,9 @@
 #include "PinConnection.h"
+#include <memory>
+#include "Pin.h"
+#include "Component.h"
+#include <string>
+#include "../ProtoBuf/pinconnection.pb.h"
 
 
 namespace Odb::Lib::ProductModel
@@ -12,7 +17,7 @@ namespace Odb::Lib::ProductModel
 	{
 	}	
 
-	PinConnection::PinConnection(std::shared_ptr<Component> pComponent, std::shared_ptr<Pin> pPin, std::string name)
+	PinConnection::PinConnection(std::shared_ptr<Component> pComponent, std::shared_ptr<Pin> pPin, const std::string& name)
 		: m_name(name)
 		, m_pComponent(pComponent)
 		, m_pPin(pPin)		
@@ -47,7 +52,7 @@ namespace Odb::Lib::ProductModel
 	void PinConnection::from_protobuf(const Odb::Lib::Protobuf::ProductModel::PinConnection& message)
 	{
 		m_name = message.name();
-		m_pComponent = std::shared_ptr<Component>(Component::MakeEmpty());
+		m_pComponent = std::shared_ptr<Component>();
 		m_pComponent->from_protobuf(message.component());
 		m_pPin = std::make_shared<Pin>("", -1);
 		m_pPin->from_protobuf(message.pin());

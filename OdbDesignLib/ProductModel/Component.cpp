@@ -1,9 +1,15 @@
 #include "Component.h"
+#include "../ProtoBuf/component.pb.h"
+#include "../ProtoBuf/enums.pb.h"
+#include <string>
+#include <memory>
+#include "../enums.h"
+#include "Part.h"
 
 
 namespace Odb::Lib::ProductModel
 {
-	Component::Component(std::string refDes, std::string partName, std::shared_ptr<Package> pPackage, unsigned int index, BoardSide side, std::shared_ptr<Part> pPart)
+	Component::Component(const std::string& refDes, const std::string& partName, std::shared_ptr<Package> pPackage, unsigned int index, BoardSide side, std::shared_ptr<Part> pPart)
 		: m_refDes(refDes)
 		, m_partName(partName)
 		, m_pPackage(pPackage)
@@ -71,9 +77,9 @@ namespace Odb::Lib::ProductModel
 		m_pPart->from_protobuf(message.part());
 	}
 
-	Component* Component::MakeEmpty()
-	{
-		return new Component();
-	}
+	//Component* Component::MakeEmpty()
+	//{
+	//	return new Component();
+	//}
 
 } // namespace Odb::Lib::ProductModel

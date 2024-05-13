@@ -1,4 +1,8 @@
 #include "Via.h"
+#include <memory>
+#include "../ProtoBuf/via.pb.h"
+#include "../ProtoBuf/enums.pb.h"
+#include "../enums.h"
 
 
 namespace Odb::Lib::ProductModel
