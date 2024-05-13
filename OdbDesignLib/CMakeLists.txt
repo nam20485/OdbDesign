@@ -56,10 +56,10 @@ target_include_directories(OdbDesign
                            $<INSTALL_INTERFACE:include>)
 
 # PCH
-if (NOT DEFINED ENV{CI})
+#if (NOT DEFINED ENV{CI})
     file (GLOB_RECURSE ODBDESIGN_HEADER_FILES "*.h")
     target_precompile_headers(OdbDesign PRIVATE ${ODBDESIGN_HEADER_FILES})
-endif()
+#endif()
 
 # link to zlib (required for Crow HTTP compression)
 find_package(ZLIB REQUIRED)
