@@ -1,8 +1,6 @@
 ﻿# CMakeList.txt : CMake project for OdbDesignTests
 #
 
-enable_testing()
-
 add_executable(OdbDesignTests
     "Fixtures/FileArchiveLoadFixture.h" 
     "Fixtures/FileArchiveLoadFixture.cpp"     
