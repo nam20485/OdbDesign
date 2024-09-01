@@ -21,6 +21,7 @@ RUN apt-get update && \
         pkg-config \
         mono-complete \
         linux-libc-dev \ 
+        python3 \
         && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
