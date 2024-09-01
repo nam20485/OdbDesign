@@ -9,6 +9,12 @@
         "zlib"
       ]
     },
-    "openssl"
+    "openssl",
+    {
+      "name": "grpc",
+      "features": [
+        "codegen"
+      ]
+    }
   ]
 }
