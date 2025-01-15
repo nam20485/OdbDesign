@@ -40,7 +40,7 @@ jobs:
           - os: ubuntu-22.04
             preset: linux-release
           # MacOS x64 Release
-          - os: macos-12
+          - os: macos-14
             preset: macos-release
           # Linux mingw x64 Release
           # - os: ubuntu-22.04
@@ -195,7 +195,7 @@ jobs:
         zip -r ./artifacts-${{matrix.os}}.zip ./*.so ./OdbDesignServer
 
     - name: Compress Artifacts (MacOS)
-      if: matrix.os == 'macos-12'
+      if: matrix.os == 'macos-14'
       run: |
         mkdir ${{env.ARTIFACTS_DIR}}
         cp ./out/build/${{matrix.preset}}/OdbDesignLib/*.dylib ${{env.ARTIFACTS_DIR}}
