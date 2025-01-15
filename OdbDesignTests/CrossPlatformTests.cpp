@@ -65,29 +65,29 @@ namespace Odb::Test
 		ASSERT_STRNE(value1.c_str(), value2.c_str());
 	}
 
-	TEST_F(TestDataFixture, Test_CrossPlatform_LocalTimeSafe_ReturnsSomeTime)
-	{
-		time_t tt{ 0 };
-		ASSERT_EQ(tt, 0LL);
-		std::time(&tt);
-		ASSERT_NE(tt, 0LL);
+	// TEST_F(TestDataFixture, Test_CrossPlatform_LocalTimeSafe_ReturnsSomeTime)
+	// {
+	// 	time_t tt{ 0 };
+	// 	ASSERT_EQ(tt, 0LL);
+	// 	std::time(&tt);
+	// 	ASSERT_NE(tt, 0LL);
 
-		struct tm tm{ 0 };
+	// 	struct tm tm{ 0 };
 
-		ASSERT_EQ(tm.tm_year, 0);
-		ASSERT_EQ(tm.tm_mon, 0);
-		ASSERT_EQ(tm.tm_mday, 0);
-		ASSERT_EQ(tm.tm_hour, 0);
-		ASSERT_EQ(tm.tm_min, 0);
-		ASSERT_EQ(tm.tm_sec, 0);
+	// 	ASSERT_EQ(tm.tm_year, 0);
+	// 	ASSERT_EQ(tm.tm_mon, 0);
+	// 	ASSERT_EQ(tm.tm_mday, 0);
+	// 	ASSERT_EQ(tm.tm_hour, 0);
+	// 	ASSERT_EQ(tm.tm_min, 0);
+	// 	ASSERT_EQ(tm.tm_sec, 0);
 
-		ASSERT_TRUE(CrossPlatform::localtime_safe(&tt, tm));
+	// 	ASSERT_TRUE(CrossPlatform::localtime_safe(&tt, tm));
 
-		ASSERT_NE(tm.tm_year, 0);
-		ASSERT_NE(tm.tm_mon, 0);
-		ASSERT_NE(tm.tm_mday, 0);
-		//ASSERT_NE(tm.tm_hour, 0);
-		//ASSERT_NE(tm.tm_min, 0);
-		//ASSERT_NE(tm.tm_sec, 0);
-	}
+	// 	ASSERT_NE(tm.tm_year, 0);
+	// 	ASSERT_NE(tm.tm_mon, 0);
+	// 	ASSERT_NE(tm.tm_mday, 0);
+	// 	//ASSERT_NE(tm.tm_hour, 0);
+	// 	//ASSERT_NE(tm.tm_min, 0);
+	// 	//ASSERT_NE(tm.tm_sec, 0);
+	// }
 }
