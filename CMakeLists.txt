@@ -69,7 +69,7 @@ endif()
 
 # Include sub-projects.
 add_subdirectory("OdbDesignLib")
-#add_subdirectory("OdbDesignApp")
+add_subdirectory("OdbDesignApp")
 add_subdirectory("OdbDesignServer")
 add_subdirectory("Utils")
 add_subdirectory("OdbDesignTests")
