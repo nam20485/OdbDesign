@@ -52,12 +52,12 @@ jobs:
     steps:   
     
     - name: Harden Runner
-      uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+      uses: step-security/harden-runner@a4aa98b93cab29d9b1101a6143fb8bce00e2eac4 # v2.7.1
       with:
         egress-policy: audit
 
     - name: Checkout Repository
-      uses: actions/checkout@1d96c772d19495a3b5c517cd2bc0cb401ea0529f # v4.1.3
+      uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b # v4.1.5
     
     # add problem matchers by compiler
     - name: Add Problem Matchers
@@ -148,7 +148,7 @@ jobs:
       run: cmake --build --preset ${{matrix.preset}}
 
     - name: Checkout OdbDesign Test Data Repository
-      uses: actions/checkout@1d96c772d19495a3b5c517cd2bc0cb401ea0529f # v4.1.3
+      uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b # v4.1.5
       with:
         repository: 'nam20485/OdbDesignTestData'
         path: 'OdbDesignTestData'
@@ -171,7 +171,7 @@ jobs:
            
     # report test results
     - name: Report Test Results
-      uses: dorny/test-reporter@eaa763f6ffc21c7a37837f56cd5f9737f27fc6c8 # v1.8.0
+      uses: dorny/test-reporter@31a54ee7ebcacc03a09ea97a7e5465a47b84aea5 # v1.9.1
       if: steps.cmake-test.outcome == 'success' || steps.cmake-test.outcome == 'failure'
       with:
         name: ${{ matrix.os }}_test-results
