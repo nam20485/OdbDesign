@@ -1,0 +1,32 @@
+﻿{
+  "version": "1",
+  "environments": [
+    // See https://aka.ms/remotetesting for more details
+    // about how to configure remote environments.
+    //{
+    //  "name": "WSL Ubuntu",
+    //  "type": "wsl",
+    //  "wslDistribution": "Ubuntu"
+    //},
+    //{
+    //  "name": "Docker dotnet/sdk",
+    //  "type": "docker",
+    //  "dockerImage": "mcr.microsoft.com/dotnet/sdk"
+    //}
+    {
+      "name": "WSL Debian",
+      "type": "wsl",
+      "wslDistribution": "Debian"
+    },
+    {
+      "name": "Docker macOS",
+      "type": "docker",
+      "dockerImage": "sickcodes/macos:ventura"
+    },
+    {
+      "name": "Docker Debian",
+      "type": "docker",
+      "dockerImage": "sickcodes/macos:ventura"
+    }
+  ]
+}

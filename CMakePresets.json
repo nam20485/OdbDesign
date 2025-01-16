@@ -17,7 +17,8 @@
         "CMAKE_TOOLCHAIN_FILE": {
           "value": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
           "type": "FILEPATH"
-        }
+        },
+        "VCPKG_PLATFORM_TOOLSET": "v144" 
       },
       "condition": {
         "type": "equals",
