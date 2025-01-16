@@ -6,6 +6,29 @@
   },
   "configurePresets": [
     {
+      "name": "windows-x64-debug-clang",
+      "displayName": "x64 Debug Windows Clang",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/out/build/${presetName}",
+      "installDir": "${sourceDir}/out/install/${presetName}",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_TOOLCHAIN_FILE": {
+          "value": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+          "type": "FILEPATH"
+        },
+        "VCPKG_OVERLAY_TRIPLETS": "C:/Source/github/Neumann-A/my-vcpkg-triplets",
+        "VCPKG_HOST_TRIPLET": "x64-win-llvm",
+        "VCPKG_TARGET_TRIPLET": "x64-win-llvm",
+        "VCPKG_OVERLAY_PORTS": "C:/Source/github/Neumann-A/my-vcpkg-ports"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
       "name": "windows-base",
       "hidden": true,
       "generator": "Ninja",
