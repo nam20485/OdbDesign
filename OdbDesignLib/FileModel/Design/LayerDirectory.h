@@ -10,11 +10,12 @@
 #include "../../ProtoBuf/layerdirectory.pb.h"
 #include "FeaturesFile.h"
 #include "AttrListFile.h"
+#include "../ISaveable.h"
 
 
 namespace Odb::Lib::FileModel::Design
 {
-	class ODBDESIGN_EXPORT LayerDirectory : public IProtoBuffable<Odb::Lib::Protobuf::LayerDirectory>
+	class ODBDESIGN_EXPORT LayerDirectory : public IProtoBuffable<Odb::Lib::Protobuf::LayerDirectory>, public ISaveable
 	{
 	public:
 		LayerDirectory(std::filesystem::path path);
@@ -24,6 +25,8 @@ namespace Odb::Lib::FileModel::Design
 		std::filesystem::path GetPath() const;
 
 		bool Parse();
+		// Inherited via ISaveable
+		bool Save(const std::filesystem::path& directory) override;
 
 		bool ParseComponentsFile(std::filesystem::path directory);
 		bool ParseFeaturesFile(std::filesystem::path directory);

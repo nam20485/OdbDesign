@@ -5,6 +5,7 @@
 #include "utils_export.h"
 #include <fstream>
 #include <string>
+#include "EnumMap.h"
 
 namespace Utils
 {	
@@ -48,12 +49,12 @@ namespace Utils
 			std::string file;
 			int line;
 
-			Message(std::string message, Level level)
+			Message(const std::string& message, Level level)
 				: message(message), level(level), timeStamp(std::chrono::system_clock::now()), file(""), line(-1)
 			{
 			}
 
-			Message(std::string message, Level level, std::string file, int line)
+			Message(const std::string& message, Level level, const std::string& file, int line)
 				: message(message), level(level), timeStamp(std::chrono::system_clock::now()), file(file), line(line)
 			{
 			}
@@ -111,12 +112,16 @@ namespace Utils
 		bool logMessage(const struct Message& logMessage);
 
 		static std::string formatLogMessage(const struct Message& logMessage);
-		static std::string logLevelToString(Level level);
+		//static std::string logLevelToString(Level level);
 			
 		static Logger* _instance;	
 
 		inline static constexpr const char DEFAULT_LOG_FILENAME[] = "log.txt";
-		inline static constexpr const char* LogLevelStrings[] = { "NONE", "DEBUG", "INFO", "WARN", "ERROR" };
+		//inline static constexpr const char* LogLevelStrings[] = ;
+
+		static const inline EnumMap<Level> logLevelMap{
+			{ "NONE", "DEBUG", "INFO", "WARN", "ERROR" }
+		};
 	};	
 
 	template<class T>

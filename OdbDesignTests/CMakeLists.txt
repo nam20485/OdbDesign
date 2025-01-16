@@ -1,8 +1,6 @@
 ﻿# CMakeList.txt : CMake project for OdbDesignTests
 #
 
-enable_testing()
-
 add_executable(OdbDesignTests
     "Fixtures/FileArchiveLoadFixture.h" 
     "Fixtures/FileArchiveLoadFixture.cpp"     
@@ -10,7 +8,7 @@ add_executable(OdbDesignTests
     "DesignCacheLoadTests.cpp"
     "Fixtures/DesignNameValueParamTest.h"   
     "FileArchiveTests.cpp"
- "DesignTests.cpp" "ProtobufSerializationTests.cpp")
+  "ProtobufSerializationTests.cpp" "FileReaderTests.cpp" "ArchiveTests.cpp" "CrossPlatformTests.cpp" "Fixtures/TestDataFixture.h" "Fixtures/TestDataFixture.cpp" "ArchiveExtractorTests.cpp")
 
 target_link_libraries(OdbDesignTests PRIVATE GTest::gtest_main GTest::gmock_main)
 
@@ -21,5 +19,7 @@ include(GoogleTest)
 gtest_discover_tests(OdbDesignTests)
 
 ## PCH
-file (GLOB_RECURSE OdbDesignTests_HEADER_FILES "*.h")
-target_precompile_headers(OdbDesignTests PRIVATE ${OdbDesignTests_HEADER_FILES})
+#if (NOT DEFINED ENV{CI})
+    file (GLOB_RECURSE OdbDesignTests_HEADER_FILES "*.h")
+    target_precompile_headers(OdbDesignTests PRIVATE ${OdbDesignTests_HEADER_FILES})
+#endif()

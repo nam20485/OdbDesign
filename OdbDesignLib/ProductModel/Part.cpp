@@ -1,8 +1,11 @@
 #include "Part.h"
+#include <string>
+#include "../ProtoBuf/part.pb.h"
+#include <memory>
 
 namespace Odb::Lib::ProductModel
 {
-	Part::Part(std::string name)
+	Part::Part(const std::string& name)
 		: m_name(name)
 	{
 	}

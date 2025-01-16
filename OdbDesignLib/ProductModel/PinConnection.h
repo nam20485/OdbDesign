@@ -17,13 +17,13 @@ namespace Odb::Lib::ProductModel
 	{
 	public:
 		PinConnection(std::shared_ptr<Component> pComponent, std::shared_ptr<Pin> pPin);		
-		PinConnection(std::shared_ptr<Component> pComponent, std::shared_ptr<Pin> pPin, std::string name);
+		PinConnection(std::shared_ptr<Component> pComponent, std::shared_ptr<Pin> pPin, const std::string& name);
 		//~PinConnection();	
 
 		std::shared_ptr<Pin> GetPin() const;
 		std::shared_ptr<Component> GetComponent() const;
 
-		std::string MakeName(std::shared_ptr<Odb::Lib::ProductModel::Component>& pComponent, std::shared_ptr<Odb::Lib::ProductModel::Pin>& pPin);
+		static std::string MakeName(const Component& component, const Pin& pin);
 
 		// Inherited via IProtoBuffable
 		std::unique_ptr<Odb::Lib::Protobuf::ProductModel::PinConnection> to_protobuf() const override;

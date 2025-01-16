@@ -14,7 +14,8 @@ namespace Odb::App::Server
 		void register_routes() override;
 
 	private:
-		crow::response filemodels_route_handler(const std::string& designName, const crow::request& req);
+		crow::response filemodels_get_route_handler(const std::string& designName, const crow::request& req);
+		crow::response filemodels_post_route_handler(const std::string& designName, const crow::request& req);
 		crow::response filemodels_list_route_handler(const crow::request& req);
 
 		crow::response steps_route_handler(const std::string& designName, const std::string& stepName, const crow::request& req);

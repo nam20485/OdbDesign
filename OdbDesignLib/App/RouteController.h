@@ -2,13 +2,16 @@
 
 #include "IOdbServerApp.h"
 #include "../odbdesign_export.h"
+#include <string>
+#include <functional>
+#include <memory>
+#include <vector>
 
 namespace Odb::Lib::App
 {
 	class ODBDESIGN_EXPORT RouteController
 	{
 	public:		
-		RouteController(IOdbServerApp& serverApp);
 		virtual ~RouteController() = default;
 
 		virtual void register_routes() = 0;
@@ -18,9 +21,14 @@ namespace Odb::Lib::App
 	protected:		
 		IOdbServerApp& m_serverApp;
 
+		RouteController(IOdbServerApp& serverApp);
+
 		typedef std::function<crow::response(const crow::request& req)> TRouteHandlerFunction;
 
 		void register_route_handler(std::string route, TRouteHandlerFunction handler);	
+
+        crow::response makeLoadedFileModelsResponse() const;
+
 	};
 }
 
