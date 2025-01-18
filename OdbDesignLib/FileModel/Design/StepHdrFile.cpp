@@ -351,6 +351,11 @@ namespace Odb::Lib::FileModel::Design
         }
 	}
 
+    bool StepHdrFile::Save(std::ostream& os)
+    {
+        return true;
+    }
+
 	std::unique_ptr<Odb::Lib::Protobuf::StepHdrFile::StepRepeatRecord> StepHdrFile::StepRepeatRecord::to_protobuf() const
 	{
 		auto message = std::make_unique<Odb::Lib::Protobuf::StepHdrFile::StepRepeatRecord>();

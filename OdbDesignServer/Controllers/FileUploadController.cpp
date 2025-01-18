@@ -1,5 +1,9 @@
 #include "FileUploadController.h"
-#include "fastcopy.h"
+#include "fastmove.h"
+#include <system_error>
+#include <fstream>
+#include <App/RouteController.h>
+#include <crow/json.h>
 
 using namespace std::filesystem;
 using namespace Odb::Lib::App;
@@ -25,10 +29,10 @@ namespace Odb::App::Server
                         return authResp;
                     }
 
-					const auto& contentType = req.get_header_value("Content-Type");
-					if (contentType != "application/octet-stream")
+					const auto& contentType = req.get_header_value(CONTENT_TYPE_HEADER_NAME);
+					if (contentType != CONTENT_TYPE_APPLICATION_OCTET_STREAM)
 					{
-                        return crow::response(crow::status::BAD_REQUEST, "unsupported content type: this endpoint only accepts 'applicaiton/octet-stream'");                        
+                        return crow::response(crow::status::BAD_REQUEST, std::string("unsupported content type: this endpoint only accepts '") + CONTENT_TYPE_APPLICATION_OCTET_STREAM + "'");
 					}
 
                     return handleOctetStreamUpload(filename, req);
@@ -45,11 +49,11 @@ namespace Odb::App::Server
                         return authResp;
                     }
 
-                    const auto& contentType = req.get_header_value("Content-Type");
-                    if (contentType.find("multipart/form-data") != 0)
+                    const auto& contentType = req.get_header_value(CONTENT_TYPE_HEADER_NAME);
+                    if (contentType.find(CONTENT_TYPE_MULTIPART_FORM_DATA) != 0)
                     {
                         // "Content-Type" header doesn't start with "multipart/form-data"
-                        return crow::response(crow::status::BAD_REQUEST, "unsupported content type: this endpoint only accepts 'multipart/form-data'");                        
+                        return crow::response(crow::status::BAD_REQUEST, std::string("unsupported content type: this endpoint only accepts '") + CONTENT_TYPE_MULTIPART_FORM_DATA + "'");
                     }
                     
                     return handleMultipartFormUpload(req);
@@ -66,7 +70,7 @@ namespace Odb::App::Server
                         return authResp;
                     }
 
-                    return makeLoadedDesignsResponse();
+                    return makeLoadedFileModelsResponse();
                 });
 
 //        CROW_ROUTE(m_serverApp.crow_app(), "/designs/list/<string>").methods(crow::HTTPMethod::GET)
@@ -101,17 +105,20 @@ namespace Odb::App::Server
         outfile << req.body;
         outfile.close();
 
-        // TODO: sanitize provided filename
         auto safeName = sanitizeFilename(filename);
-
         path finalPath(m_serverApp.args().designsDir());
         finalPath /= safeName;
-        //rename(tempPath, finalPath);        
-        auto ec = fastcopy(tempPath, finalPath, false);
+
+        std::error_code ec;
+        fastmove_file(tempPath, finalPath, false, ec);
+        if (ec.value() != 0)
+        {
+            return crow::response(crow::status::INTERNAL_SERVER_ERROR, "failed handling new file");
+        }
 
         std::string responseBody = "{ \"filename\": \"" + safeName + "\" }";
 
-        return makeLoadedDesignsResponse();
+        return makeLoadedFileModelsResponse();
     }
 
     crow::response FileUploadController::handleMultipartFormUpload(const crow::request& req)
@@ -123,29 +130,29 @@ namespace Odb::App::Server
             const auto& part_value = part.second;
 
             CROW_LOG_DEBUG << "Part: " << part_name;
-            if (MULTIPART_FORMDATA_PART_NAME != part_name)
+            if (MULTIPART_FORM_DATA_PART_NAME != part_name)
             {
                 // log to debug and skip rest of the loop
                 CROW_LOG_DEBUG << " Value: " << part_value.body << '\n';
                 CROW_LOG_ERROR 
                     << "multipart/form-data POST failed! Part name was: [" << part_name 
-                    << "], which is not supported. Part name should be [" << MULTIPART_FORMDATA_PART_NAME 
+                    << "], which is not supported. Part name should be [" << MULTIPART_FORM_DATA_PART_NAME 
                     << "].";
                 continue;
             }
 
             // Extract the file name
-            auto headers_it = part_value.headers.find("Content-Disposition");
+            auto headers_it = part_value.headers.find(CONTENT_DISPOSITION_HEADER_NAME);
             if (headers_it == part_value.headers.end())
             {
-                CROW_LOG_ERROR << "No Content-Disposition found";
-                return crow::response(400);
+                CROW_LOG_ERROR << "No " << CONTENT_DISPOSITION_HEADER_NAME << " found";                
+                return crow::response(crow::status::BAD_REQUEST);
             }
-            auto params_it = headers_it->second.params.find("filename");
+            auto params_it = headers_it->second.params.find(MULTIPART_FORM_DATA_PART_FILENAME);
             if (params_it == headers_it->second.params.end())
             {
-                CROW_LOG_ERROR << "Part with name \"InputFile\" should have a file";
-                return crow::response(400);
+                CROW_LOG_ERROR << "Part with name \"" << "MULTIPART_FORMDATA_PART_NAME" << "\" should have a \"" << "MULTIPART_FORMDATA_PART_FILENAME" << "\" parameter";
+                return crow::response(crow::status::BAD_REQUEST);                               
             }
             const std::string outfile_name = params_it->second;
 
@@ -164,7 +171,7 @@ namespace Odb::App::Server
 
             // Create a new file with the extracted file name and write file contents to it
             const auto tempPath = temp_directory_path() / std::tmpnam(nullptr);
-            std::ofstream out_file(tempPath);
+            std::ofstream out_file(tempPath, std::ofstream::binary);
             if (!out_file)
             {
                 CROW_LOG_ERROR << " Write to file failed\n";
@@ -176,47 +183,23 @@ namespace Odb::App::Server
             auto safeName = sanitizeFilename(outfile_name);
             path finalPath(m_serverApp.args().designsDir());
             finalPath /= safeName;
-            //rename(tempPath, finalPath);
-            auto ec = fastcopy(tempPath, finalPath, false);
+
+            std::error_code ec;
+            fastmove_file(tempPath, finalPath, false, ec);
+            if (ec.value() != 0)
+            {
+                return crow::response(crow::status::INTERNAL_SERVER_ERROR, "failed handling new file");
+            }
 
             CROW_LOG_INFO << " Contents written to " << outfile_name << '\n';
         }
 
-        return makeLoadedDesignsResponse();
-    }
-
-    crow::response FileUploadController::makeLoadedDesignsResponse() const
-    {
-        auto unloadedDesignNames = m_serverApp.designs().getUnloadedDesignNames();
-        auto loadedFileArchiveNames = m_serverApp.designs().getLoadedFileArchiveNames();
-        auto loadedDesignNames = m_serverApp.designs().getLoadedDesignNames();
-
-        crow::json::wvalue::list designs;
-        for (const auto& designName : unloadedDesignNames)
-        {
-            auto loaded = false;
-            if (std::find(loadedFileArchiveNames.begin(), loadedFileArchiveNames.end(), designName) != loadedFileArchiveNames.end() ||
-                std::find(loadedDesignNames.begin(), loadedDesignNames.end(), designName) != loadedDesignNames.end())
-            {
-                loaded = true;
-            }
-            crow::json::wvalue design;
-            design["name"] = designName;
-            design["loaded"] = loaded;
-            designs.push_back(design);
-        }
-        crow::json::wvalue jsonResponse;
-        jsonResponse["designs"] = std::move(designs);
-
-#if defined(_DEBUG)
-        auto j = jsonResponse.dump();
-#endif
-
-        return crow::response(jsonResponse);
+        return makeLoadedFileModelsResponse();
     }
 
     std::string FileUploadController::sanitizeFilename(const std::string& filename) const
     {
+        // TODO: implement sanitize filename
         return filename;
     }
 }

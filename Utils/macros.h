@@ -6,21 +6,73 @@
 
 namespace Utils
 {
-	constexpr static inline bool IsMsvc()
+
+#if defined(_WIN32)		// or _MSC_VER
+#	define IS_WINDOWS (1)
+#else
+#	define IS_WINDOWS (0)
+#endif
+
+#if defined(__linux__)
+#	define IS_LINUX (1)
+#else
+#	define IS_LINUX (0)
+#endif
+
+#if defined(__APPLE__)
+#	define IS_APPLE (1)
+#else
+#	define IS_APPLE (0)
+#endif
+
+#if defined(__unix__)
+#	define IS_UNIX (1)
+#else
+#	define IS_UNIX (0)
+#endif
+
+	constexpr static inline bool IsWindows()
 	{
-		#if defined(_MSC_VER)
+		#if IS_WINDOWS 
+			return true;
+		#else
+			return false;
+		#endif
+	}
+
+	constexpr static inline bool IsApple()
+	{
+		#if IS_APPLE
+			return true;
+		#else
+			return false;
+		#endif
+	}
+
+	constexpr static inline bool IsLinux()
+	{
+		#if IS_LINUX
+			return true;
+		#else
+			return false;
+		#endif
+	}
+
+	constexpr static inline bool IsUnix()
+	{
+		#if IS_UNIX
 				return true;
 		#else
-				return false;
+			return false;
 		#endif
 	}
 
 	constexpr static inline bool IsDebug()
 	{
 		#if defined(_DEBUG)
-				return true;
+			return true;
 		#else
-				return false;
+			return false;
 		#endif
 	}
 

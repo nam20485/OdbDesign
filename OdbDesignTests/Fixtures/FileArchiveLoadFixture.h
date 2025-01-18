@@ -2,19 +2,18 @@
 
 #include "gtest/gtest.h"
 #include <filesystem>
-#include "OdbDesign.h"
-#include <memory>
 #include <string>
+#include <App/DesignCache.h>
+#include "TestDataFixture.h"
 
 namespace Odb::Test::Fixtures
 {
-	class FileArchiveLoadFixture : public testing::Test
+	class FileArchiveLoadFixture : public TestDataFixture
 	{
 	public:		
 		FileArchiveLoadFixture();
 
 	protected:
-		std::filesystem::path m_testDataDir;
 		std::unique_ptr<Odb::Lib::App::DesignCache> m_pDesignCache;
 		
 		const bool m_removeDecompressedDirectories = true;
@@ -22,10 +21,9 @@ namespace Odb::Test::Fixtures
 		void SetUp() override;
 		void TearDown() override;
 
-		static std::string getTestDataDir();				
 		std::filesystem::path getDesignPath(const std::string& filename) const;
-
-		constexpr const static inline char ODB_TEST_DATA_DIR_ENV_NAME[] = "ODB_TEST_DATA_DIR";
+			
+		static inline const std::vector<std::string> KEEP_DIRECTORIES = { TESTDATA_FILES_DIR };		
 
 	};
 }

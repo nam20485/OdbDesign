@@ -1,4 +1,3 @@
-#include "MatrixFile.h"
 //
 // Created by nmill on 10/13/2023.
 //
@@ -13,6 +12,10 @@
 #include <Logger.h>
 #include "../invalid_odb_error.h"
 #include "../../ProtoBuf/enums.pb.h"
+#include "../../enums.h"
+#include "../OdbFile.h"
+#include <memory>
+#include <ostream>
 
 namespace Odb::Lib::FileModel::Design
 {
@@ -132,6 +135,7 @@ namespace Odb::Lib::FileModel::Design
                     {
                         // TODO: how to determine if you are opening a step or layer array record?
                         // (maybe a boolean flag? stepArrayOpen = true/false)
+                        
                         // no current opening of a layer or step array record found yet
                         if (pCurrentStepRecord == nullptr && pCurrentLayerRecord == nullptr)
                         {
@@ -190,17 +194,17 @@ namespace Odb::Lib::FileModel::Design
 
                             if (pCurrentStepRecord != nullptr && openBraceFound)
                             {
-                                if (attribute == "COL" || attribute == "col")
+                                if (attribute == StepRecord::COLUMN_KEY || attribute == "col")
                                 {
                                     pCurrentStepRecord->column = std::stoi(value);
                                 }
-                                else if (attribute == "NAME" || attribute == "name")
+                                else if (attribute == StepRecord::NAME_KEY || attribute == "name")
                                 {
                                     pCurrentStepRecord->name = value;
                                 }
-                                else if (attribute == "ID" || attribute == "id")
+                                else if (attribute == StepRecord::ID_KEY || attribute == "id")
                                 {
-                                    pCurrentStepRecord->id = (unsigned int)std::stoul(value);
+                                    pCurrentStepRecord->id = static_cast<unsigned int>(std::stoul(value));
                                 }
                                 else
                                 {
@@ -222,135 +226,67 @@ namespace Odb::Lib::FileModel::Design
                                     pCurrentLayerRecord->id = (unsigned int)std::stoul(value);
                                 }
                                 else if (attribute == "TYPE" || attribute == "type")
-                                {
-                                    if (value == "SIGNAL")
+                                {                                    
+                                    if (LayerRecord::typeMap.contains(value))
                                     {
-                                        pCurrentLayerRecord->type = LayerRecord::Type::Signal;
-                                    }
-                                    else if (value == "POWER_GROUND")
-                                    {
-                                        pCurrentLayerRecord->type = LayerRecord::Type::PowerGround;
-                                    }
-                                    else if (value == "DIELECTRIC")
-                                    {
-                                        pCurrentLayerRecord->type = LayerRecord::Type::Dielectric;
-                                    }
-                                    else if (value == "MIXED")
-                                    {
-                                        pCurrentLayerRecord->type = LayerRecord::Type::Mixed;
-                                    }
-                                    else if (value == "SOLDER_MASK")
-                                    {
-                                        pCurrentLayerRecord->type = LayerRecord::Type::SolderMask;
-                                    }
-                                    else if (value == "SOLDER_PASTE")
-                                    {
-                                        pCurrentLayerRecord->type = LayerRecord::Type::SolderPaste;
-                                    }
-                                    else if (value == "SILK_SCREEN")
-                                    {
-                                        pCurrentLayerRecord->type = LayerRecord::Type::SilkScreen;
-                                    }
-                                    else if (value == "DRILL")
-                                    {
-                                        pCurrentLayerRecord->type = LayerRecord::Type::Drill;
-                                    }
-                                    else if (value == "ROUT")
-                                    {
-                                        pCurrentLayerRecord->type = LayerRecord::Type::Rout;
-                                    }
-                                    else if (value == "DOCUMENT")
-                                    {
-                                        pCurrentLayerRecord->type = LayerRecord::Type::Document;
-                                    }
-                                    else if (value == "COMPONENT")
-                                    {
-                                        pCurrentLayerRecord->type = LayerRecord::Type::Component;
-                                    }
-                                    else if (value == "MASK")
-                                    {
-                                        pCurrentLayerRecord->type = LayerRecord::Type::Mask;
-                                    }
-                                    else if (value == "CONDUCTIVE_PASTE")
-                                    {
-                                        pCurrentLayerRecord->type = LayerRecord::Type::ConductivePaste;
-                                    }
+                                        pCurrentLayerRecord->type = LayerRecord::typeMap.getValue(value);
+                                    }                                        
                                     else
                                     {
                                         throw_parse_error(m_path, line, attribute, lineNumber);
                                     }
                                 }
-                                else if (attribute == "CONTEXT" || attribute == "context")
+                                else if (attribute == LayerRecord::CONTEXT_KEY || attribute == "context")
                                 {
-                                    if (value == "BOARD")
+                                    if (LayerRecord::contextMap.contains(value))
                                     {
-                                        pCurrentLayerRecord->context = LayerRecord::Context::Board;
-                                    }
-                                    else if (value == "MISC")
-                                    {
-                                        pCurrentLayerRecord->context = LayerRecord::Context::Misc;
-                                    }
+										pCurrentLayerRecord->context = LayerRecord::contextMap.getValue(value);
+									}
                                     else
                                     {
-                                        throw_parse_error(m_path, line, attribute, lineNumber);
-                                    }
+										throw_parse_error(m_path, line, attribute, lineNumber);
+									}
                                 }
                                 else if (attribute == "OLD_NAME" || attribute == "old_name")
                                 {
                                     pCurrentLayerRecord->oldName = value;
                                 }
-                                else if (attribute == "POLARITY" || attribute == "polarity")
+                                else if (attribute == LayerRecord::POLARITY_KEY || attribute == "polarity")
                                 {
-                                    if (value == "POSITIVE")
+                                    if (LayerRecord::polarityMap.contains(value))
                                     {
-                                        pCurrentLayerRecord->polarity = Polarity::Positive;
-                                    }
-                                    else if (value == "NEGATIVE")
-                                    {
-                                        pCurrentLayerRecord->polarity = Polarity::Negative;
-                                    }
+										pCurrentLayerRecord->polarity = LayerRecord::polarityMap.getValue(value);
+									}
                                     else
                                     {
                                         throw_parse_error(m_path, line, attribute, lineNumber);
-                                    }
+                                    }                                   
                                 }
-                                else if (attribute == "DIELECTRIC_TYPE" || attribute == "dielectric_type")
+                                else if (attribute == LayerRecord::DIELECTRIC_TYPE_KEY || attribute == "dielectric_type")
                                 {
-                                    if (value == "NONE")
+                                    if (LayerRecord::dielectricTypeMap.contains(value))
                                     {
-                                        pCurrentLayerRecord->dielectricType = LayerRecord::DielectricType::None;
-                                    }
-                                    else if (value == "PREPREG")
-                                    {
-                                        pCurrentLayerRecord->dielectricType = LayerRecord::DielectricType::Prepreg;
-                                    }
-                                    else if (value == "CORE")
-                                    {
-                                        pCurrentLayerRecord->dielectricType = LayerRecord::DielectricType::Core;
-                                    }
+										pCurrentLayerRecord->dielectricType = LayerRecord::dielectricTypeMap.getValue(value);
+									}
                                     else
                                     {
-                                        throw_parse_error(m_path, line, attribute, lineNumber);
-                                    }
+										throw_parse_error(m_path, line, attribute, lineNumber);
+									}
                                 }
                                 else if (attribute == "DIELECTRIC_NAME" || attribute == "dielectric_name")
                                 {
                                     pCurrentLayerRecord->dielectricName = value;
                                 }
-                                else if (attribute == "FORM" || attribute == "form")
+                                else if (attribute == LayerRecord::FORM_KEY || attribute == "form")
                                 {
-                                    if (value == "RIGID")
+                                    if (LayerRecord::formMap.contains(value))
                                     {
-                                        pCurrentLayerRecord->form = LayerRecord::Form::Rigid;
-                                    }
-                                    else if (value == "FLEX")
-                                    {
-                                        pCurrentLayerRecord->form = LayerRecord::Form::Flex;
-                                    }
+										pCurrentLayerRecord->form = LayerRecord::formMap.getValue(value);
+									}
                                     else
                                     {
-                                        throw_parse_error(m_path, line, attribute, lineNumber);
-                                    }
+										throw_parse_error(m_path, line, attribute, lineNumber);
+									}
                                 }
                                 else if (attribute == "CU_TOP" || attribute == "cu_top")
                                 {
@@ -471,6 +407,64 @@ namespace Odb::Lib::FileModel::Design
 			m_layerRecords.push_back(pLayerRecord);
 		}
     }
+
+    bool MatrixFile::Save(std::ostream& os)
+    {
+        for (const auto& stepRecord : m_stepRecords)
+        {
+			os << StepRecord::RECORD_TOKEN << " " << Constants::ARRAY_RECORD_OPEN_TOKEN << std::endl;
+
+			os << '\t' << StepRecord::COLUMN_KEY << "=" << stepRecord->column << std::endl;
+            os << '\t' << StepRecord::NAME_KEY << "=" << stepRecord->name << std::endl;
+            os << '\t' << StepRecord::ID_KEY << "=" << stepRecord->id << std::endl;
+
+			os << Constants::ARRAY_RECORD_CLOSE_TOKEN << std::endl;
+            os << std::endl;
+		}        
+
+        for (const auto& layerRecord : m_layerRecords)
+        {
+            os << LayerRecord::RECORD_TOKEN << " " << Constants::ARRAY_RECORD_OPEN_TOKEN << std::endl;
+
+            os << '\t' << LayerRecord::ROW_KEY << "=" << layerRecord->row << std::endl;
+            os << '\t' << LayerRecord::CONTEXT_KEY << "=" << LayerRecord::contextMap.getValue(layerRecord->context) << std::endl;
+            os << '\t' << LayerRecord::TYPE_KEY << "=" << LayerRecord::typeMap.getValue(layerRecord->type) << std::endl;
+            os << '\t' << LayerRecord::NAME_KEY << "=" << layerRecord->name << std::endl;                      
+            os << '\t' << LayerRecord::POLARITY_KEY << "=" << LayerRecord::polarityMap.getValue(layerRecord->polarity) << std::endl;
+            os << '\t' << LayerRecord::FORM_KEY << "=" << LayerRecord::formMap.getValue(layerRecord->form) << std::endl;
+            os << '\t' << LayerRecord::DIELECTRIC_TYPE_KEY << "=" << LayerRecord::dielectricTypeMap.getValue(layerRecord->dielectricType) << std::endl;
+            os << '\t' << LayerRecord::DIELECTRIC_NAME_KEY << "=" << layerRecord->dielectricName << std::endl;            
+            os << '\t' << LayerRecord::CU_TOP_KEY << "=";
+            if (layerRecord->cuTop != (unsigned int)-1)
+            {
+                os << layerRecord->cuTop;
+            }    
+            os << std::endl;
+            os << '\t' << LayerRecord::CU_BOTTOM_KEY << "=";
+            if (layerRecord->cuBottom != (unsigned int)-1)
+            {
+				os << layerRecord->cuBottom;
+			}
+            os << std::endl;
+            os << '\t' << LayerRecord::REF_KEY << "=";
+            if (layerRecord->ref != (unsigned int)-1)
+            {
+                os << layerRecord->ref;
+            }
+            os << std::endl;
+            os << '\t' << LayerRecord::START_NAME_KEY << "=" << layerRecord->startName << std::endl;
+            os << '\t' << LayerRecord::END_NAME_KEY << "=" << layerRecord->endName << std::endl;
+            os << '\t' << LayerRecord::OLD_NAME_KEY << "=" << layerRecord->oldName << std::endl;
+            os << '\t' << LayerRecord::ADD_TYPE_KEY << "=" << layerRecord->addType << std::endl;
+            os << '\t' << LayerRecord::COLOR_KEY << "=" << layerRecord->color.to_string() << std::endl;
+            os << '\t' << LayerRecord::ID_KEY << "=" << layerRecord->id << std::endl;
+            
+            os << Constants::ARRAY_RECORD_CLOSE_TOKEN << std::endl;            
+            os << std::endl;
+        }
+
+        return true;
+    }
     
     std::unique_ptr<Odb::Lib::Protobuf::MatrixFile::StepRecord> Odb::Lib::FileModel::Design::MatrixFile::StepRecord::to_protobuf() const
     {
@@ -536,5 +530,5 @@ namespace Odb::Lib::FileModel::Design
 		//color.r = message.color().r();
 		//color.g = message.color().g();
 		//color.b = message.color().b();
-    }
+    }   
 }

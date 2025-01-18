@@ -2,6 +2,7 @@
 
 #include "IJsonable.h"
 #include "CrowReturnable.h"
+#include <string>
 
 namespace Utils
 {

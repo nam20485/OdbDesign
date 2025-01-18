@@ -1,4 +1,5 @@
 #include "RgbColor.h"
+#include <cstdint>
 
 namespace Odb::Lib::FileModel::Design
 {
@@ -44,7 +45,7 @@ namespace Odb::Lib::FileModel::Design
         return false;
     }
 
-    inline std::string RgbColor::to_string()
+    std::string RgbColor::to_string() const
     {
         if (noPreference)
         {

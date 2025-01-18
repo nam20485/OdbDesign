@@ -17,7 +17,7 @@ namespace Odb::Lib::ProductModel
 	class ODBDESIGN_EXPORT Net : public IProtoBuffable<Odb::Lib::Protobuf::ProductModel::Net>
 	{
 	public:
-		Net(std::string name, unsigned int index);
+		Net(const std::string& name, unsigned int index);
 		~Net();
 
 		std::string GetName() const;
