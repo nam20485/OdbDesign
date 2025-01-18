@@ -1,14 +1,13 @@
 #include "OdbServerAppBase.h"
-#include "OdbServerAppBase.h"
-#include "Logger.h"
+//#include "Logger.h"
 #include "RequestAuthenticationBase.h"
 #include "crow_win.h"
-#include <boost/throw_exception.hpp>
-#include <boost/system/system_error.hpp>
+//#include <boost/throw_exception.hpp>
+//#include <boost/system/system_error.hpp>
 #include "OdbAppBase.h"
 #include <ExitCode.h>
 #include <memory>
-#include <filesystem>
+//#include <filesystem>
 
 using namespace Utils;
 using namespace std::filesystem;
@@ -55,29 +54,29 @@ namespace Odb::Lib::App
 		// enable HTTP compression
 		m_crowApp.use_compression(crow::compression::algorithm::GZIP);
 
-		try
-		{
-			if (args().useHttps())
-			{
-				path sslDirPath(args().sslDir());
-				if (!exists(sslDirPath) || !is_directory(sslDirPath))
-				{
-					logerror("SSL was specified but the directory does not exist, exiting...");
-					return ExitCode::FailedInitSslDirDoesNotExist;
-				}				
+		//try
+		//{
+		//	if (args().useHttps())
+		//	{
+		//		path sslDirPath(args().sslDir());
+		//		if (!exists(sslDirPath) || !is_directory(sslDirPath))
+		//		{
+		//			logerror("SSL was specified but the directory does not exist, exiting...");
+		//			return ExitCode::FailedInitSslDirDoesNotExist;
+		//		}				
 
-				// enable SSL/HTTPS
-				m_crowApp.ssl_file((sslDirPath / SSL_CERT_FILE).string(),
-								   (sslDirPath / SSL_KEY_FILE).string());
-			}
-		}
-		catch (boost::wrapexcept<boost::system::system_error>& e)
-		{
-			// log the error
-			logexception(e);
-			logerror("SSL was specified but it failed to initialize, exiting...");			
-			return ExitCode::FailedInitSsl;
-		}
+		//		// enable SSL/HTTPS
+		//		m_crowApp.ssl_file((sslDirPath / SSL_CERT_FILE).string(),
+		//						   (sslDirPath / SSL_KEY_FILE).string());
+		//	}
+		//}
+		//catch (boost::wrapexcept<boost::system::system_error>& e)
+		//{
+		//	// log the error
+		//	logexception(e);
+		//	logerror("SSL was specified but it failed to initialize, exiting...");			
+		//	return ExitCode::FailedInitSsl;
+		//}
 
 		// let subclasses add controller types
 		add_controllers();
