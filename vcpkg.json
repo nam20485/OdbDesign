@@ -1,5 +1,12 @@
 {
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
   "dependencies": [
+    {
+
+      "name": "libiconv",
+      "platform": "!windows",
+      "host": true
+    },
     "libarchive",
     "zlib",
     "crow",
