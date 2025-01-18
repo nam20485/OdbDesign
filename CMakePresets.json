@@ -18,9 +18,9 @@
           "type": "FILEPATH"
         },
         "VCPKG_OVERLAY_TRIPLETS": "C:/Source/github/Neumann-A/my-vcpkg-triplets",
-        "VCPKG_HOST_TRIPLET": "x64-win-llvm",
-        "VCPKG_TARGET_TRIPLET": "x64-win-llvm",
-        "VCPKG_OVERLAY_PORTS": "C:/Source/github/Neumann-A/my-vcpkg-ports"
+        "VCPKG_HOST_TRIPLET": "x64-windows-llvm",
+        "VCPKG_TARGET_TRIPLET": "x64-windows-llvm"
+        //"VCPKG_OVERLAY_PORTS": "C:/Source/github/Neumann-A/my-vcpkg-ports"
       },
       "condition": {
         "type": "equals",
