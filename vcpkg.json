@@ -1,4 +1,5 @@
 {
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
   "dependencies": [
     "libarchive",
     "zlib",
@@ -9,12 +10,6 @@
         "zlib"
       ]
     },
-    "openssl",
-    {
-      "name": "grpc",
-      "features": [
-        "codegen"
-      ]
-    }
+    "openssl"
   ]
 }
