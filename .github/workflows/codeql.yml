@@ -15,7 +15,7 @@ on:
   push:
     branches: [ "nam20485" ]
   pull_request:
-    branches: [ "development", "main", "release", "nam20485" ]
+    branches: [ "development", "staging", "main", "release", "nam20485" ]
 
 env:
   VCPKG_ROOT: ${{ github.workspace }}/vcpkg
