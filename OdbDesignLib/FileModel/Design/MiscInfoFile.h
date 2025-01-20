@@ -8,13 +8,15 @@
 #include "../../ProtoBuf/miscinfofile.pb.h"
 #include "../IStreamSaveable.h"
 #include <memory>
+#include "../../odbdesign_export.h"
+
 
 #pragma once
 
 namespace Odb::Lib::FileModel::Design
 {
 
-    class MiscInfoFile : public OdbFile, public IProtoBuffable<Odb::Lib::Protobuf::MiscInfoFile>, public IStreamSaveable
+    class ODBDESIGN_EXPORT MiscInfoFile : public OdbFile, public IProtoBuffable<Odb::Lib::Protobuf::MiscInfoFile>, public IStreamSaveable
     {
     public:
         MiscInfoFile();
