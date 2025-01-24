@@ -20,13 +20,13 @@ namespace Odb::Lib::FileModel::Design
 		struct StepRepeatRecord : public IProtoBuffable<Odb::Lib::Protobuf::StepHdrFile::StepRepeatRecord>
 		{
 			std::string name;
-			float x;
-			float y;
-			float dx;
-			float dy;
+			double x;
+			double y;
+			double dx;
+			double dy;
 			int nx;
 			int ny;
-			float angle;
+			double angle;
 			bool flip;
 			bool mirror;
 
@@ -49,15 +49,15 @@ namespace Odb::Lib::FileModel::Design
 
 	private:	
 		std::string m_units;
-		float xDatum;
-		float yDatum;
+		double xDatum;
+		double yDatum;
 		unsigned id;
-		float xOrigin;
-		float yOrigin;
-		float topActive;
-		float bottomActive;
-		float rightActive;
-		float leftActive;
+		double xOrigin;
+		double yOrigin;
+		double topActive;
+		double bottomActive;
+		double rightActive;
+		double leftActive;
 		std::string affectingBom;
 		bool affectingBomChanged;		
 		std::map<std::string, std::string> m_onlineValues;

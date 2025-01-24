@@ -235,48 +235,48 @@ class ODBDESIGN_EXPORT StandardFontsFile_CharacterBlock_LineRecord final : publi
     kShapeFieldNumber = 6,
     kWidthFieldNumber = 7,
   };
-  // optional float xStart = 1;
+  // optional double xStart = 1;
   bool has_xstart() const;
   void clear_xstart() ;
-  float xstart() const;
-  void set_xstart(float value);
+  double xstart() const;
+  void set_xstart(double value);
 
   private:
-  float _internal_xstart() const;
-  void _internal_set_xstart(float value);
+  double _internal_xstart() const;
+  void _internal_set_xstart(double value);
 
   public:
-  // optional float yStart = 2;
+  // optional double yStart = 2;
   bool has_ystart() const;
   void clear_ystart() ;
-  float ystart() const;
-  void set_ystart(float value);
+  double ystart() const;
+  void set_ystart(double value);
 
   private:
-  float _internal_ystart() const;
-  void _internal_set_ystart(float value);
+  double _internal_ystart() const;
+  void _internal_set_ystart(double value);
 
   public:
-  // optional float xEnd = 3;
+  // optional double xEnd = 3;
   bool has_xend() const;
   void clear_xend() ;
-  float xend() const;
-  void set_xend(float value);
+  double xend() const;
+  void set_xend(double value);
 
   private:
-  float _internal_xend() const;
-  void _internal_set_xend(float value);
+  double _internal_xend() const;
+  void _internal_set_xend(double value);
 
   public:
-  // optional float yEnd = 4;
+  // optional double yEnd = 4;
   bool has_yend() const;
   void clear_yend() ;
-  float yend() const;
-  void set_yend(float value);
+  double yend() const;
+  void set_yend(double value);
 
   private:
-  float _internal_yend() const;
-  void _internal_set_yend(float value);
+  double _internal_yend() const;
+  void _internal_set_yend(double value);
 
   public:
   // optional .Odb.Lib.Protobuf.Polarity polarity = 5;
@@ -301,15 +301,15 @@ class ODBDESIGN_EXPORT StandardFontsFile_CharacterBlock_LineRecord final : publi
   void _internal_set_shape(::Odb::Lib::Protobuf::LineShape value);
 
   public:
-  // optional float width = 7;
+  // optional double width = 7;
   bool has_width() const;
   void clear_width() ;
-  float width() const;
-  void set_width(float value);
+  double width() const;
+  void set_width(double value);
 
   private:
-  float _internal_width() const;
-  void _internal_set_width(float value);
+  double _internal_width() const;
+  void _internal_set_width(double value);
 
   public:
   // @@protoc_insertion_point(class_scope:Odb.Lib.Protobuf.StandardFontsFile.CharacterBlock.LineRecord)
@@ -337,13 +337,13 @@ class ODBDESIGN_EXPORT StandardFontsFile_CharacterBlock_LineRecord final : publi
                           const StandardFontsFile_CharacterBlock_LineRecord& from_msg);
     ::google::protobuf::internal::HasBits<1> _has_bits_;
     ::google::protobuf::internal::CachedSize _cached_size_;
-    float xstart_;
-    float ystart_;
-    float xend_;
-    float yend_;
+    double xstart_;
+    double ystart_;
+    double xend_;
+    double yend_;
     int polarity_;
     int shape_;
-    float width_;
+    double width_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -738,37 +738,37 @@ class ODBDESIGN_EXPORT StandardFontsFile final : public ::google::protobuf::Mess
   const ::Odb::Lib::Protobuf::StandardFontsFile_CharacterBlock& m_characterblocks(int index) const;
   ::Odb::Lib::Protobuf::StandardFontsFile_CharacterBlock* add_m_characterblocks();
   const ::google::protobuf::RepeatedPtrField<::Odb::Lib::Protobuf::StandardFontsFile_CharacterBlock>& m_characterblocks() const;
-  // optional float xSize = 1;
+  // optional double xSize = 1;
   bool has_xsize() const;
   void clear_xsize() ;
-  float xsize() const;
-  void set_xsize(float value);
+  double xsize() const;
+  void set_xsize(double value);
 
   private:
-  float _internal_xsize() const;
-  void _internal_set_xsize(float value);
+  double _internal_xsize() const;
+  void _internal_set_xsize(double value);
 
   public:
-  // optional float ySize = 2;
+  // optional double ySize = 2;
   bool has_ysize() const;
   void clear_ysize() ;
-  float ysize() const;
-  void set_ysize(float value);
+  double ysize() const;
+  void set_ysize(double value);
 
   private:
-  float _internal_ysize() const;
-  void _internal_set_ysize(float value);
+  double _internal_ysize() const;
+  void _internal_set_ysize(double value);
 
   public:
-  // optional float offset = 3;
+  // optional double offset = 3;
   bool has_offset() const;
   void clear_offset() ;
-  float offset() const;
-  void set_offset(float value);
+  double offset() const;
+  void set_offset(double value);
 
   private:
-  float _internal_offset() const;
-  void _internal_set_offset(float value);
+  double _internal_offset() const;
+  void _internal_set_offset(double value);
 
   public:
   // @@protoc_insertion_point(class_scope:Odb.Lib.Protobuf.StandardFontsFile)
@@ -797,9 +797,9 @@ class ODBDESIGN_EXPORT StandardFontsFile final : public ::google::protobuf::Mess
     ::google::protobuf::internal::HasBits<1> _has_bits_;
     ::google::protobuf::internal::CachedSize _cached_size_;
     ::google::protobuf::RepeatedPtrField< ::Odb::Lib::Protobuf::StandardFontsFile_CharacterBlock > m_characterblocks_;
-    float xsize_;
-    float ysize_;
-    float offset_;
+    double xsize_;
+    double ysize_;
+    double offset_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -822,7 +822,7 @@ class ODBDESIGN_EXPORT StandardFontsFile final : public ::google::protobuf::Mess
 
 // StandardFontsFile_CharacterBlock_LineRecord
 
-// optional float xStart = 1;
+// optional double xStart = 1;
 inline bool StandardFontsFile_CharacterBlock_LineRecord::has_xstart() const {
   bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
   return value;
@@ -832,25 +832,25 @@ inline void StandardFontsFile_CharacterBlock_LineRecord::clear_xstart() {
   _impl_.xstart_ = 0;
   _impl_._has_bits_[0] &= ~0x00000001u;
 }
-inline float StandardFontsFile_CharacterBlock_LineRecord::xstart() const {
+inline double StandardFontsFile_CharacterBlock_LineRecord::xstart() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.StandardFontsFile.CharacterBlock.LineRecord.xStart)
   return _internal_xstart();
 }
-inline void StandardFontsFile_CharacterBlock_LineRecord::set_xstart(float value) {
+inline void StandardFontsFile_CharacterBlock_LineRecord::set_xstart(double value) {
   _internal_set_xstart(value);
   _impl_._has_bits_[0] |= 0x00000001u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.StandardFontsFile.CharacterBlock.LineRecord.xStart)
 }
-inline float StandardFontsFile_CharacterBlock_LineRecord::_internal_xstart() const {
+inline double StandardFontsFile_CharacterBlock_LineRecord::_internal_xstart() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.xstart_;
 }
-inline void StandardFontsFile_CharacterBlock_LineRecord::_internal_set_xstart(float value) {
+inline void StandardFontsFile_CharacterBlock_LineRecord::_internal_set_xstart(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.xstart_ = value;
 }
 
-// optional float yStart = 2;
+// optional double yStart = 2;
 inline bool StandardFontsFile_CharacterBlock_LineRecord::has_ystart() const {
   bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
   return value;
@@ -860,25 +860,25 @@ inline void StandardFontsFile_CharacterBlock_LineRecord::clear_ystart() {
   _impl_.ystart_ = 0;
   _impl_._has_bits_[0] &= ~0x00000002u;
 }
-inline float StandardFontsFile_CharacterBlock_LineRecord::ystart() const {
+inline double StandardFontsFile_CharacterBlock_LineRecord::ystart() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.StandardFontsFile.CharacterBlock.LineRecord.yStart)
   return _internal_ystart();
 }
-inline void StandardFontsFile_CharacterBlock_LineRecord::set_ystart(float value) {
+inline void StandardFontsFile_CharacterBlock_LineRecord::set_ystart(double value) {
   _internal_set_ystart(value);
   _impl_._has_bits_[0] |= 0x00000002u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.StandardFontsFile.CharacterBlock.LineRecord.yStart)
 }
-inline float StandardFontsFile_CharacterBlock_LineRecord::_internal_ystart() const {
+inline double StandardFontsFile_CharacterBlock_LineRecord::_internal_ystart() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.ystart_;
 }
-inline void StandardFontsFile_CharacterBlock_LineRecord::_internal_set_ystart(float value) {
+inline void StandardFontsFile_CharacterBlock_LineRecord::_internal_set_ystart(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.ystart_ = value;
 }
 
-// optional float xEnd = 3;
+// optional double xEnd = 3;
 inline bool StandardFontsFile_CharacterBlock_LineRecord::has_xend() const {
   bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
   return value;
@@ -888,25 +888,25 @@ inline void StandardFontsFile_CharacterBlock_LineRecord::clear_xend() {
   _impl_.xend_ = 0;
   _impl_._has_bits_[0] &= ~0x00000004u;
 }
-inline float StandardFontsFile_CharacterBlock_LineRecord::xend() const {
+inline double StandardFontsFile_CharacterBlock_LineRecord::xend() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.StandardFontsFile.CharacterBlock.LineRecord.xEnd)
   return _internal_xend();
 }
-inline void StandardFontsFile_CharacterBlock_LineRecord::set_xend(float value) {
+inline void StandardFontsFile_CharacterBlock_LineRecord::set_xend(double value) {
   _internal_set_xend(value);
   _impl_._has_bits_[0] |= 0x00000004u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.StandardFontsFile.CharacterBlock.LineRecord.xEnd)
 }
-inline float StandardFontsFile_CharacterBlock_LineRecord::_internal_xend() const {
+inline double StandardFontsFile_CharacterBlock_LineRecord::_internal_xend() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.xend_;
 }
-inline void StandardFontsFile_CharacterBlock_LineRecord::_internal_set_xend(float value) {
+inline void StandardFontsFile_CharacterBlock_LineRecord::_internal_set_xend(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.xend_ = value;
 }
 
-// optional float yEnd = 4;
+// optional double yEnd = 4;
 inline bool StandardFontsFile_CharacterBlock_LineRecord::has_yend() const {
   bool value = (_impl_._has_bits_[0] & 0x00000008u) != 0;
   return value;
@@ -916,20 +916,20 @@ inline void StandardFontsFile_CharacterBlock_LineRecord::clear_yend() {
   _impl_.yend_ = 0;
   _impl_._has_bits_[0] &= ~0x00000008u;
 }
-inline float StandardFontsFile_CharacterBlock_LineRecord::yend() const {
+inline double StandardFontsFile_CharacterBlock_LineRecord::yend() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.StandardFontsFile.CharacterBlock.LineRecord.yEnd)
   return _internal_yend();
 }
-inline void StandardFontsFile_CharacterBlock_LineRecord::set_yend(float value) {
+inline void StandardFontsFile_CharacterBlock_LineRecord::set_yend(double value) {
   _internal_set_yend(value);
   _impl_._has_bits_[0] |= 0x00000008u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.StandardFontsFile.CharacterBlock.LineRecord.yEnd)
 }
-inline float StandardFontsFile_CharacterBlock_LineRecord::_internal_yend() const {
+inline double StandardFontsFile_CharacterBlock_LineRecord::_internal_yend() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.yend_;
 }
-inline void StandardFontsFile_CharacterBlock_LineRecord::_internal_set_yend(float value) {
+inline void StandardFontsFile_CharacterBlock_LineRecord::_internal_set_yend(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.yend_ = value;
 }
@@ -990,7 +990,7 @@ inline void StandardFontsFile_CharacterBlock_LineRecord::_internal_set_shape(::O
   _impl_.shape_ = value;
 }
 
-// optional float width = 7;
+// optional double width = 7;
 inline bool StandardFontsFile_CharacterBlock_LineRecord::has_width() const {
   bool value = (_impl_._has_bits_[0] & 0x00000040u) != 0;
   return value;
@@ -1000,20 +1000,20 @@ inline void StandardFontsFile_CharacterBlock_LineRecord::clear_width() {
   _impl_.width_ = 0;
   _impl_._has_bits_[0] &= ~0x00000040u;
 }
-inline float StandardFontsFile_CharacterBlock_LineRecord::width() const {
+inline double StandardFontsFile_CharacterBlock_LineRecord::width() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.StandardFontsFile.CharacterBlock.LineRecord.width)
   return _internal_width();
 }
-inline void StandardFontsFile_CharacterBlock_LineRecord::set_width(float value) {
+inline void StandardFontsFile_CharacterBlock_LineRecord::set_width(double value) {
   _internal_set_width(value);
   _impl_._has_bits_[0] |= 0x00000040u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.StandardFontsFile.CharacterBlock.LineRecord.width)
 }
-inline float StandardFontsFile_CharacterBlock_LineRecord::_internal_width() const {
+inline double StandardFontsFile_CharacterBlock_LineRecord::_internal_width() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.width_;
 }
-inline void StandardFontsFile_CharacterBlock_LineRecord::_internal_set_width(float value) {
+inline void StandardFontsFile_CharacterBlock_LineRecord::_internal_set_width(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.width_ = value;
 }
@@ -1144,7 +1144,7 @@ StandardFontsFile_CharacterBlock::_internal_mutable_m_linerecords() {
 
 // StandardFontsFile
 
-// optional float xSize = 1;
+// optional double xSize = 1;
 inline bool StandardFontsFile::has_xsize() const {
   bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
   return value;
@@ -1154,25 +1154,25 @@ inline void StandardFontsFile::clear_xsize() {
   _impl_.xsize_ = 0;
   _impl_._has_bits_[0] &= ~0x00000001u;
 }
-inline float StandardFontsFile::xsize() const {
+inline double StandardFontsFile::xsize() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.StandardFontsFile.xSize)
   return _internal_xsize();
 }
-inline void StandardFontsFile::set_xsize(float value) {
+inline void StandardFontsFile::set_xsize(double value) {
   _internal_set_xsize(value);
   _impl_._has_bits_[0] |= 0x00000001u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.StandardFontsFile.xSize)
 }
-inline float StandardFontsFile::_internal_xsize() const {
+inline double StandardFontsFile::_internal_xsize() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.xsize_;
 }
-inline void StandardFontsFile::_internal_set_xsize(float value) {
+inline void StandardFontsFile::_internal_set_xsize(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.xsize_ = value;
 }
 
-// optional float ySize = 2;
+// optional double ySize = 2;
 inline bool StandardFontsFile::has_ysize() const {
   bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
   return value;
@@ -1182,25 +1182,25 @@ inline void StandardFontsFile::clear_ysize() {
   _impl_.ysize_ = 0;
   _impl_._has_bits_[0] &= ~0x00000002u;
 }
-inline float StandardFontsFile::ysize() const {
+inline double StandardFontsFile::ysize() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.StandardFontsFile.ySize)
   return _internal_ysize();
 }
-inline void StandardFontsFile::set_ysize(float value) {
+inline void StandardFontsFile::set_ysize(double value) {
   _internal_set_ysize(value);
   _impl_._has_bits_[0] |= 0x00000002u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.StandardFontsFile.ySize)
 }
-inline float StandardFontsFile::_internal_ysize() const {
+inline double StandardFontsFile::_internal_ysize() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.ysize_;
 }
-inline void StandardFontsFile::_internal_set_ysize(float value) {
+inline void StandardFontsFile::_internal_set_ysize(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.ysize_ = value;
 }
 
-// optional float offset = 3;
+// optional double offset = 3;
 inline bool StandardFontsFile::has_offset() const {
   bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
   return value;
@@ -1210,20 +1210,20 @@ inline void StandardFontsFile::clear_offset() {
   _impl_.offset_ = 0;
   _impl_._has_bits_[0] &= ~0x00000004u;
 }
-inline float StandardFontsFile::offset() const {
+inline double StandardFontsFile::offset() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.StandardFontsFile.offset)
   return _internal_offset();
 }
-inline void StandardFontsFile::set_offset(float value) {
+inline void StandardFontsFile::set_offset(double value) {
   _internal_set_offset(value);
   _impl_._has_bits_[0] |= 0x00000004u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.StandardFontsFile.offset)
 }
-inline float StandardFontsFile::_internal_offset() const {
+inline double StandardFontsFile::_internal_offset() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.offset_;
 }
-inline void StandardFontsFile::_internal_set_offset(float value) {
+inline void StandardFontsFile::_internal_set_offset(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.offset_ = value;
 }

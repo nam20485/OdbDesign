@@ -607,11 +607,11 @@ class ODBDESIGN_EXPORT EdaDataFile_PackageRecord_PinRecord final : public ::goog
   // accessors -------------------------------------------------------
   enum : int {
     kNameFieldNumber = 1,
-    kTypeFieldNumber = 2,
     kXCenterFieldNumber = 3,
     kYCenterFieldNumber = 4,
-    kFinishedHoleSizeFieldNumber = 5,
+    kTypeFieldNumber = 2,
     kElectricalTypeFieldNumber = 6,
+    kFinishedHoleSizeFieldNumber = 5,
     kMountTypeFieldNumber = 7,
     kIdFieldNumber = 8,
     kIndexFieldNumber = 9,
@@ -633,6 +633,28 @@ class ODBDESIGN_EXPORT EdaDataFile_PackageRecord_PinRecord final : public ::goog
   std::string* _internal_mutable_name();
 
   public:
+  // optional double xCenter = 3;
+  bool has_xcenter() const;
+  void clear_xcenter() ;
+  double xcenter() const;
+  void set_xcenter(double value);
+
+  private:
+  double _internal_xcenter() const;
+  void _internal_set_xcenter(double value);
+
+  public:
+  // optional double yCenter = 4;
+  bool has_ycenter() const;
+  void clear_ycenter() ;
+  double ycenter() const;
+  void set_ycenter(double value);
+
+  private:
+  double _internal_ycenter() const;
+  void _internal_set_ycenter(double value);
+
+  public:
   // optional .Odb.Lib.Protobuf.EdaDataFile.PackageRecord.PinRecord.Type type = 2;
   bool has_type() const;
   void clear_type() ;
@@ -644,39 +666,6 @@ class ODBDESIGN_EXPORT EdaDataFile_PackageRecord_PinRecord final : public ::goog
   void _internal_set_type(::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_PinRecord_Type value);
 
   public:
-  // optional float xCenter = 3;
-  bool has_xcenter() const;
-  void clear_xcenter() ;
-  float xcenter() const;
-  void set_xcenter(float value);
-
-  private:
-  float _internal_xcenter() const;
-  void _internal_set_xcenter(float value);
-
-  public:
-  // optional float yCenter = 4;
-  bool has_ycenter() const;
-  void clear_ycenter() ;
-  float ycenter() const;
-  void set_ycenter(float value);
-
-  private:
-  float _internal_ycenter() const;
-  void _internal_set_ycenter(float value);
-
-  public:
-  // optional float finishedHoleSize = 5;
-  bool has_finishedholesize() const;
-  void clear_finishedholesize() ;
-  float finishedholesize() const;
-  void set_finishedholesize(float value);
-
-  private:
-  float _internal_finishedholesize() const;
-  void _internal_set_finishedholesize(float value);
-
-  public:
   // optional .Odb.Lib.Protobuf.EdaDataFile.PackageRecord.PinRecord.ElectricalType electricalType = 6;
   bool has_electricaltype() const;
   void clear_electricaltype() ;
@@ -686,6 +675,17 @@ class ODBDESIGN_EXPORT EdaDataFile_PackageRecord_PinRecord final : public ::goog
   private:
   ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_PinRecord_ElectricalType _internal_electricaltype() const;
   void _internal_set_electricaltype(::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_PinRecord_ElectricalType value);
+
+  public:
+  // optional double finishedHoleSize = 5;
+  bool has_finishedholesize() const;
+  void clear_finishedholesize() ;
+  double finishedholesize() const;
+  void set_finishedholesize(double value);
+
+  private:
+  double _internal_finishedholesize() const;
+  void _internal_set_finishedholesize(double value);
 
   public:
   // optional .Odb.Lib.Protobuf.EdaDataFile.PackageRecord.PinRecord.MountType mountType = 7;
@@ -747,11 +747,11 @@ class ODBDESIGN_EXPORT EdaDataFile_PackageRecord_PinRecord final : public ::goog
     ::google::protobuf::internal::HasBits<1> _has_bits_;
     ::google::protobuf::internal::CachedSize _cached_size_;
     ::google::protobuf::internal::ArenaStringPtr name_;
+    double xcenter_;
+    double ycenter_;
     int type_;
-    float xcenter_;
-    float ycenter_;
-    float finishedholesize_;
     int electricaltype_;
+    double finishedholesize_;
     int mounttype_;
     ::uint32_t id_;
     ::uint32_t index_;
@@ -1327,8 +1327,8 @@ class ODBDESIGN_EXPORT EdaDataFile_NetRecord_SubnetRecord final : public ::googl
     kFeatureIdRecordsFieldNumber = 2,
     kTypeFieldNumber = 1,
     kFillTypeFieldNumber = 3,
-    kCutoutTypeFieldNumber = 4,
     kFillSizeFieldNumber = 5,
+    kCutoutTypeFieldNumber = 4,
     kSideFieldNumber = 6,
     kComponentNumberFieldNumber = 7,
     kToeprintNumberFieldNumber = 8,
@@ -1373,6 +1373,17 @@ class ODBDESIGN_EXPORT EdaDataFile_NetRecord_SubnetRecord final : public ::googl
   void _internal_set_filltype(::Odb::Lib::Protobuf::EdaDataFile_NetRecord_SubnetRecord_FillType value);
 
   public:
+  // optional double fillSize = 5;
+  bool has_fillsize() const;
+  void clear_fillsize() ;
+  double fillsize() const;
+  void set_fillsize(double value);
+
+  private:
+  double _internal_fillsize() const;
+  void _internal_set_fillsize(double value);
+
+  public:
   // optional .Odb.Lib.Protobuf.EdaDataFile.NetRecord.SubnetRecord.CutoutType cutoutType = 4;
   bool has_cutouttype() const;
   void clear_cutouttype() ;
@@ -1382,17 +1393,6 @@ class ODBDESIGN_EXPORT EdaDataFile_NetRecord_SubnetRecord final : public ::googl
   private:
   ::Odb::Lib::Protobuf::EdaDataFile_NetRecord_SubnetRecord_CutoutType _internal_cutouttype() const;
   void _internal_set_cutouttype(::Odb::Lib::Protobuf::EdaDataFile_NetRecord_SubnetRecord_CutoutType value);
-
-  public:
-  // optional float fillSize = 5;
-  bool has_fillsize() const;
-  void clear_fillsize() ;
-  float fillsize() const;
-  void set_fillsize(float value);
-
-  private:
-  float _internal_fillsize() const;
-  void _internal_set_fillsize(float value);
 
   public:
   // optional .Odb.Lib.Protobuf.BoardSide side = 6;
@@ -1467,8 +1467,8 @@ class ODBDESIGN_EXPORT EdaDataFile_NetRecord_SubnetRecord final : public ::googl
     ::google::protobuf::RepeatedPtrField< ::Odb::Lib::Protobuf::EdaDataFile_FeatureIdRecord > featureidrecords_;
     int type_;
     int filltype_;
+    double fillsize_;
     int cutouttype_;
-    float fillsize_;
     int side_;
     ::uint32_t componentnumber_;
     ::uint32_t toeprintnumber_;
@@ -1884,7 +1884,6 @@ class ODBDESIGN_EXPORT EdaDataFile_PackageRecord_OutlineRecord final : public ::
   // accessors -------------------------------------------------------
   enum : int {
     kContourPolygonsFieldNumber = 10,
-    kTypeFieldNumber = 1,
     kLowerLeftXFieldNumber = 2,
     kLowerLeftYFieldNumber = 3,
     kWidthFieldNumber = 4,
@@ -1893,6 +1892,7 @@ class ODBDESIGN_EXPORT EdaDataFile_PackageRecord_OutlineRecord final : public ::
     kYCenterFieldNumber = 7,
     kHalfSideFieldNumber = 8,
     kRadiusFieldNumber = 9,
+    kTypeFieldNumber = 1,
   };
   // repeated .Odb.Lib.Protobuf.ContourPolygon contourPolygons = 10;
   int contourpolygons_size() const;
@@ -1911,6 +1911,94 @@ class ODBDESIGN_EXPORT EdaDataFile_PackageRecord_OutlineRecord final : public ::
   const ::Odb::Lib::Protobuf::ContourPolygon& contourpolygons(int index) const;
   ::Odb::Lib::Protobuf::ContourPolygon* add_contourpolygons();
   const ::google::protobuf::RepeatedPtrField<::Odb::Lib::Protobuf::ContourPolygon>& contourpolygons() const;
+  // optional double lowerLeftX = 2;
+  bool has_lowerleftx() const;
+  void clear_lowerleftx() ;
+  double lowerleftx() const;
+  void set_lowerleftx(double value);
+
+  private:
+  double _internal_lowerleftx() const;
+  void _internal_set_lowerleftx(double value);
+
+  public:
+  // optional double lowerLeftY = 3;
+  bool has_lowerlefty() const;
+  void clear_lowerlefty() ;
+  double lowerlefty() const;
+  void set_lowerlefty(double value);
+
+  private:
+  double _internal_lowerlefty() const;
+  void _internal_set_lowerlefty(double value);
+
+  public:
+  // optional double width = 4;
+  bool has_width() const;
+  void clear_width() ;
+  double width() const;
+  void set_width(double value);
+
+  private:
+  double _internal_width() const;
+  void _internal_set_width(double value);
+
+  public:
+  // optional double height = 5;
+  bool has_height() const;
+  void clear_height() ;
+  double height() const;
+  void set_height(double value);
+
+  private:
+  double _internal_height() const;
+  void _internal_set_height(double value);
+
+  public:
+  // optional double xCenter = 6;
+  bool has_xcenter() const;
+  void clear_xcenter() ;
+  double xcenter() const;
+  void set_xcenter(double value);
+
+  private:
+  double _internal_xcenter() const;
+  void _internal_set_xcenter(double value);
+
+  public:
+  // optional double yCenter = 7;
+  bool has_ycenter() const;
+  void clear_ycenter() ;
+  double ycenter() const;
+  void set_ycenter(double value);
+
+  private:
+  double _internal_ycenter() const;
+  void _internal_set_ycenter(double value);
+
+  public:
+  // optional double halfSide = 8;
+  bool has_halfside() const;
+  void clear_halfside() ;
+  double halfside() const;
+  void set_halfside(double value);
+
+  private:
+  double _internal_halfside() const;
+  void _internal_set_halfside(double value);
+
+  public:
+  // optional double radius = 9;
+  bool has_radius() const;
+  void clear_radius() ;
+  double radius() const;
+  void set_radius(double value);
+
+  private:
+  double _internal_radius() const;
+  void _internal_set_radius(double value);
+
+  public:
   // optional .Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.Type type = 1;
   bool has_type() const;
   void clear_type() ;
@@ -1920,94 +2008,6 @@ class ODBDESIGN_EXPORT EdaDataFile_PackageRecord_OutlineRecord final : public ::
   private:
   ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord_Type _internal_type() const;
   void _internal_set_type(::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord_Type value);
-
-  public:
-  // optional float lowerLeftX = 2;
-  bool has_lowerleftx() const;
-  void clear_lowerleftx() ;
-  float lowerleftx() const;
-  void set_lowerleftx(float value);
-
-  private:
-  float _internal_lowerleftx() const;
-  void _internal_set_lowerleftx(float value);
-
-  public:
-  // optional float lowerLeftY = 3;
-  bool has_lowerlefty() const;
-  void clear_lowerlefty() ;
-  float lowerlefty() const;
-  void set_lowerlefty(float value);
-
-  private:
-  float _internal_lowerlefty() const;
-  void _internal_set_lowerlefty(float value);
-
-  public:
-  // optional float width = 4;
-  bool has_width() const;
-  void clear_width() ;
-  float width() const;
-  void set_width(float value);
-
-  private:
-  float _internal_width() const;
-  void _internal_set_width(float value);
-
-  public:
-  // optional float height = 5;
-  bool has_height() const;
-  void clear_height() ;
-  float height() const;
-  void set_height(float value);
-
-  private:
-  float _internal_height() const;
-  void _internal_set_height(float value);
-
-  public:
-  // optional float xCenter = 6;
-  bool has_xcenter() const;
-  void clear_xcenter() ;
-  float xcenter() const;
-  void set_xcenter(float value);
-
-  private:
-  float _internal_xcenter() const;
-  void _internal_set_xcenter(float value);
-
-  public:
-  // optional float yCenter = 7;
-  bool has_ycenter() const;
-  void clear_ycenter() ;
-  float ycenter() const;
-  void set_ycenter(float value);
-
-  private:
-  float _internal_ycenter() const;
-  void _internal_set_ycenter(float value);
-
-  public:
-  // optional float halfSide = 8;
-  bool has_halfside() const;
-  void clear_halfside() ;
-  float halfside() const;
-  void set_halfside(float value);
-
-  private:
-  float _internal_halfside() const;
-  void _internal_set_halfside(float value);
-
-  public:
-  // optional float radius = 9;
-  bool has_radius() const;
-  void clear_radius() ;
-  float radius() const;
-  void set_radius(float value);
-
-  private:
-  float _internal_radius() const;
-  void _internal_set_radius(float value);
 
   public:
   // @@protoc_insertion_point(class_scope:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord)
@@ -2036,15 +2036,15 @@ class ODBDESIGN_EXPORT EdaDataFile_PackageRecord_OutlineRecord final : public ::
     ::google::protobuf::internal::HasBits<1> _has_bits_;
     ::google::protobuf::internal::CachedSize _cached_size_;
     ::google::protobuf::RepeatedPtrField< ::Odb::Lib::Protobuf::ContourPolygon > contourpolygons_;
+    double lowerleftx_;
+    double lowerlefty_;
+    double width_;
+    double height_;
+    double xcenter_;
+    double ycenter_;
+    double halfside_;
+    double radius_;
     int type_;
-    float lowerleftx_;
-    float lowerlefty_;
-    float width_;
-    float height_;
-    float xcenter_;
-    float ycenter_;
-    float halfside_;
-    float radius_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -2617,59 +2617,59 @@ class ODBDESIGN_EXPORT EdaDataFile_PackageRecord final : public ::google::protob
   std::string* _internal_mutable_attributesidstring();
 
   public:
-  // optional float pitch = 2;
+  // optional double pitch = 2;
   bool has_pitch() const;
   void clear_pitch() ;
-  float pitch() const;
-  void set_pitch(float value);
+  double pitch() const;
+  void set_pitch(double value);
 
   private:
-  float _internal_pitch() const;
-  void _internal_set_pitch(float value);
+  double _internal_pitch() const;
+  void _internal_set_pitch(double value);
 
   public:
-  // optional float xMin = 3;
+  // optional double xMin = 3;
   bool has_xmin() const;
   void clear_xmin() ;
-  float xmin() const;
-  void set_xmin(float value);
+  double xmin() const;
+  void set_xmin(double value);
 
   private:
-  float _internal_xmin() const;
-  void _internal_set_xmin(float value);
+  double _internal_xmin() const;
+  void _internal_set_xmin(double value);
 
   public:
-  // optional float yMin = 4;
+  // optional double yMin = 4;
   bool has_ymin() const;
   void clear_ymin() ;
-  float ymin() const;
-  void set_ymin(float value);
+  double ymin() const;
+  void set_ymin(double value);
 
   private:
-  float _internal_ymin() const;
-  void _internal_set_ymin(float value);
+  double _internal_ymin() const;
+  void _internal_set_ymin(double value);
 
   public:
-  // optional float xMax = 5;
+  // optional double xMax = 5;
   bool has_xmax() const;
   void clear_xmax() ;
-  float xmax() const;
-  void set_xmax(float value);
+  double xmax() const;
+  void set_xmax(double value);
 
   private:
-  float _internal_xmax() const;
-  void _internal_set_xmax(float value);
+  double _internal_xmax() const;
+  void _internal_set_xmax(double value);
 
   public:
-  // optional float yMax = 6;
+  // optional double yMax = 6;
   bool has_ymax() const;
   void clear_ymax() ;
-  float ymax() const;
-  void set_ymax(float value);
+  double ymax() const;
+  void set_ymax(double value);
 
   private:
-  float _internal_ymax() const;
-  void _internal_set_ymax(float value);
+  double _internal_ymax() const;
+  void _internal_set_ymax(double value);
 
   public:
   // @@protoc_insertion_point(class_scope:Odb.Lib.Protobuf.EdaDataFile.PackageRecord)
@@ -2710,11 +2710,11 @@ class ODBDESIGN_EXPORT EdaDataFile_PackageRecord final : public ::google::protob
         attributelookuptable_;
     ::google::protobuf::internal::ArenaStringPtr name_;
     ::google::protobuf::internal::ArenaStringPtr attributesidstring_;
-    float pitch_;
-    float xmin_;
-    float ymin_;
-    float xmax_;
-    float ymax_;
+    double pitch_;
+    double xmin_;
+    double ymin_;
+    double xmax_;
+    double ymax_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -3438,13 +3438,13 @@ inline void EdaDataFile_NetRecord_SubnetRecord::_internal_set_filltype(::Odb::Li
 
 // optional .Odb.Lib.Protobuf.EdaDataFile.NetRecord.SubnetRecord.CutoutType cutoutType = 4;
 inline bool EdaDataFile_NetRecord_SubnetRecord::has_cutouttype() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000008u) != 0;
   return value;
 }
 inline void EdaDataFile_NetRecord_SubnetRecord::clear_cutouttype() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.cutouttype_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000004u;
+  _impl_._has_bits_[0] &= ~0x00000008u;
 }
 inline ::Odb::Lib::Protobuf::EdaDataFile_NetRecord_SubnetRecord_CutoutType EdaDataFile_NetRecord_SubnetRecord::cutouttype() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.EdaDataFile.NetRecord.SubnetRecord.cutoutType)
@@ -3452,7 +3452,7 @@ inline ::Odb::Lib::Protobuf::EdaDataFile_NetRecord_SubnetRecord_CutoutType EdaDa
 }
 inline void EdaDataFile_NetRecord_SubnetRecord::set_cutouttype(::Odb::Lib::Protobuf::EdaDataFile_NetRecord_SubnetRecord_CutoutType value) {
   _internal_set_cutouttype(value);
-  _impl_._has_bits_[0] |= 0x00000004u;
+  _impl_._has_bits_[0] |= 0x00000008u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.EdaDataFile.NetRecord.SubnetRecord.cutoutType)
 }
 inline ::Odb::Lib::Protobuf::EdaDataFile_NetRecord_SubnetRecord_CutoutType EdaDataFile_NetRecord_SubnetRecord::_internal_cutouttype() const {
@@ -3464,30 +3464,30 @@ inline void EdaDataFile_NetRecord_SubnetRecord::_internal_set_cutouttype(::Odb::
   _impl_.cutouttype_ = value;
 }
 
-// optional float fillSize = 5;
+// optional double fillSize = 5;
 inline bool EdaDataFile_NetRecord_SubnetRecord::has_fillsize() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000008u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
   return value;
 }
 inline void EdaDataFile_NetRecord_SubnetRecord::clear_fillsize() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.fillsize_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000008u;
+  _impl_._has_bits_[0] &= ~0x00000004u;
 }
-inline float EdaDataFile_NetRecord_SubnetRecord::fillsize() const {
+inline double EdaDataFile_NetRecord_SubnetRecord::fillsize() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.EdaDataFile.NetRecord.SubnetRecord.fillSize)
   return _internal_fillsize();
 }
-inline void EdaDataFile_NetRecord_SubnetRecord::set_fillsize(float value) {
+inline void EdaDataFile_NetRecord_SubnetRecord::set_fillsize(double value) {
   _internal_set_fillsize(value);
-  _impl_._has_bits_[0] |= 0x00000008u;
+  _impl_._has_bits_[0] |= 0x00000004u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.EdaDataFile.NetRecord.SubnetRecord.fillSize)
 }
-inline float EdaDataFile_NetRecord_SubnetRecord::_internal_fillsize() const {
+inline double EdaDataFile_NetRecord_SubnetRecord::_internal_fillsize() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.fillsize_;
 }
-inline void EdaDataFile_NetRecord_SubnetRecord::_internal_set_fillsize(float value) {
+inline void EdaDataFile_NetRecord_SubnetRecord::_internal_set_fillsize(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.fillsize_ = value;
 }
@@ -3908,13 +3908,13 @@ inline ::google::protobuf::Map<std::string, std::string>* EdaDataFile_NetRecord:
 
 // optional .Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.Type type = 1;
 inline bool EdaDataFile_PackageRecord_OutlineRecord::has_type() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000100u) != 0;
   return value;
 }
 inline void EdaDataFile_PackageRecord_OutlineRecord::clear_type() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.type_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000001u;
+  _impl_._has_bits_[0] &= ~0x00000100u;
 }
 inline ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord_Type EdaDataFile_PackageRecord_OutlineRecord::type() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.type)
@@ -3922,7 +3922,7 @@ inline ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord_Type EdaDat
 }
 inline void EdaDataFile_PackageRecord_OutlineRecord::set_type(::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord_Type value) {
   _internal_set_type(value);
-  _impl_._has_bits_[0] |= 0x00000001u;
+  _impl_._has_bits_[0] |= 0x00000100u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.type)
 }
 inline ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord_Type EdaDataFile_PackageRecord_OutlineRecord::_internal_type() const {
@@ -3934,226 +3934,226 @@ inline void EdaDataFile_PackageRecord_OutlineRecord::_internal_set_type(::Odb::L
   _impl_.type_ = value;
 }
 
-// optional float lowerLeftX = 2;
+// optional double lowerLeftX = 2;
 inline bool EdaDataFile_PackageRecord_OutlineRecord::has_lowerleftx() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
   return value;
 }
 inline void EdaDataFile_PackageRecord_OutlineRecord::clear_lowerleftx() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.lowerleftx_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000002u;
+  _impl_._has_bits_[0] &= ~0x00000001u;
 }
-inline float EdaDataFile_PackageRecord_OutlineRecord::lowerleftx() const {
+inline double EdaDataFile_PackageRecord_OutlineRecord::lowerleftx() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.lowerLeftX)
   return _internal_lowerleftx();
 }
-inline void EdaDataFile_PackageRecord_OutlineRecord::set_lowerleftx(float value) {
+inline void EdaDataFile_PackageRecord_OutlineRecord::set_lowerleftx(double value) {
   _internal_set_lowerleftx(value);
-  _impl_._has_bits_[0] |= 0x00000002u;
+  _impl_._has_bits_[0] |= 0x00000001u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.lowerLeftX)
 }
-inline float EdaDataFile_PackageRecord_OutlineRecord::_internal_lowerleftx() const {
+inline double EdaDataFile_PackageRecord_OutlineRecord::_internal_lowerleftx() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.lowerleftx_;
 }
-inline void EdaDataFile_PackageRecord_OutlineRecord::_internal_set_lowerleftx(float value) {
+inline void EdaDataFile_PackageRecord_OutlineRecord::_internal_set_lowerleftx(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.lowerleftx_ = value;
 }
 
-// optional float lowerLeftY = 3;
+// optional double lowerLeftY = 3;
 inline bool EdaDataFile_PackageRecord_OutlineRecord::has_lowerlefty() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
   return value;
 }
 inline void EdaDataFile_PackageRecord_OutlineRecord::clear_lowerlefty() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.lowerlefty_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000004u;
+  _impl_._has_bits_[0] &= ~0x00000002u;
 }
-inline float EdaDataFile_PackageRecord_OutlineRecord::lowerlefty() const {
+inline double EdaDataFile_PackageRecord_OutlineRecord::lowerlefty() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.lowerLeftY)
   return _internal_lowerlefty();
 }
-inline void EdaDataFile_PackageRecord_OutlineRecord::set_lowerlefty(float value) {
+inline void EdaDataFile_PackageRecord_OutlineRecord::set_lowerlefty(double value) {
   _internal_set_lowerlefty(value);
-  _impl_._has_bits_[0] |= 0x00000004u;
+  _impl_._has_bits_[0] |= 0x00000002u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.lowerLeftY)
 }
-inline float EdaDataFile_PackageRecord_OutlineRecord::_internal_lowerlefty() const {
+inline double EdaDataFile_PackageRecord_OutlineRecord::_internal_lowerlefty() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.lowerlefty_;
 }
-inline void EdaDataFile_PackageRecord_OutlineRecord::_internal_set_lowerlefty(float value) {
+inline void EdaDataFile_PackageRecord_OutlineRecord::_internal_set_lowerlefty(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.lowerlefty_ = value;
 }
 
-// optional float width = 4;
+// optional double width = 4;
 inline bool EdaDataFile_PackageRecord_OutlineRecord::has_width() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000008u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
   return value;
 }
 inline void EdaDataFile_PackageRecord_OutlineRecord::clear_width() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.width_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000008u;
+  _impl_._has_bits_[0] &= ~0x00000004u;
 }
-inline float EdaDataFile_PackageRecord_OutlineRecord::width() const {
+inline double EdaDataFile_PackageRecord_OutlineRecord::width() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.width)
   return _internal_width();
 }
-inline void EdaDataFile_PackageRecord_OutlineRecord::set_width(float value) {
+inline void EdaDataFile_PackageRecord_OutlineRecord::set_width(double value) {
   _internal_set_width(value);
-  _impl_._has_bits_[0] |= 0x00000008u;
+  _impl_._has_bits_[0] |= 0x00000004u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.width)
 }
-inline float EdaDataFile_PackageRecord_OutlineRecord::_internal_width() const {
+inline double EdaDataFile_PackageRecord_OutlineRecord::_internal_width() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.width_;
 }
-inline void EdaDataFile_PackageRecord_OutlineRecord::_internal_set_width(float value) {
+inline void EdaDataFile_PackageRecord_OutlineRecord::_internal_set_width(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.width_ = value;
 }
 
-// optional float height = 5;
+// optional double height = 5;
 inline bool EdaDataFile_PackageRecord_OutlineRecord::has_height() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000010u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000008u) != 0;
   return value;
 }
 inline void EdaDataFile_PackageRecord_OutlineRecord::clear_height() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.height_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000010u;
+  _impl_._has_bits_[0] &= ~0x00000008u;
 }
-inline float EdaDataFile_PackageRecord_OutlineRecord::height() const {
+inline double EdaDataFile_PackageRecord_OutlineRecord::height() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.height)
   return _internal_height();
 }
-inline void EdaDataFile_PackageRecord_OutlineRecord::set_height(float value) {
+inline void EdaDataFile_PackageRecord_OutlineRecord::set_height(double value) {
   _internal_set_height(value);
-  _impl_._has_bits_[0] |= 0x00000010u;
+  _impl_._has_bits_[0] |= 0x00000008u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.height)
 }
-inline float EdaDataFile_PackageRecord_OutlineRecord::_internal_height() const {
+inline double EdaDataFile_PackageRecord_OutlineRecord::_internal_height() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.height_;
 }
-inline void EdaDataFile_PackageRecord_OutlineRecord::_internal_set_height(float value) {
+inline void EdaDataFile_PackageRecord_OutlineRecord::_internal_set_height(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.height_ = value;
 }
 
-// optional float xCenter = 6;
+// optional double xCenter = 6;
 inline bool EdaDataFile_PackageRecord_OutlineRecord::has_xcenter() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000020u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000010u) != 0;
   return value;
 }
 inline void EdaDataFile_PackageRecord_OutlineRecord::clear_xcenter() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.xcenter_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000020u;
+  _impl_._has_bits_[0] &= ~0x00000010u;
 }
-inline float EdaDataFile_PackageRecord_OutlineRecord::xcenter() const {
+inline double EdaDataFile_PackageRecord_OutlineRecord::xcenter() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.xCenter)
   return _internal_xcenter();
 }
-inline void EdaDataFile_PackageRecord_OutlineRecord::set_xcenter(float value) {
+inline void EdaDataFile_PackageRecord_OutlineRecord::set_xcenter(double value) {
   _internal_set_xcenter(value);
-  _impl_._has_bits_[0] |= 0x00000020u;
+  _impl_._has_bits_[0] |= 0x00000010u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.xCenter)
 }
-inline float EdaDataFile_PackageRecord_OutlineRecord::_internal_xcenter() const {
+inline double EdaDataFile_PackageRecord_OutlineRecord::_internal_xcenter() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.xcenter_;
 }
-inline void EdaDataFile_PackageRecord_OutlineRecord::_internal_set_xcenter(float value) {
+inline void EdaDataFile_PackageRecord_OutlineRecord::_internal_set_xcenter(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.xcenter_ = value;
 }
 
-// optional float yCenter = 7;
+// optional double yCenter = 7;
 inline bool EdaDataFile_PackageRecord_OutlineRecord::has_ycenter() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000040u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000020u) != 0;
   return value;
 }
 inline void EdaDataFile_PackageRecord_OutlineRecord::clear_ycenter() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.ycenter_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000040u;
+  _impl_._has_bits_[0] &= ~0x00000020u;
 }
-inline float EdaDataFile_PackageRecord_OutlineRecord::ycenter() const {
+inline double EdaDataFile_PackageRecord_OutlineRecord::ycenter() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.yCenter)
   return _internal_ycenter();
 }
-inline void EdaDataFile_PackageRecord_OutlineRecord::set_ycenter(float value) {
+inline void EdaDataFile_PackageRecord_OutlineRecord::set_ycenter(double value) {
   _internal_set_ycenter(value);
-  _impl_._has_bits_[0] |= 0x00000040u;
+  _impl_._has_bits_[0] |= 0x00000020u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.yCenter)
 }
-inline float EdaDataFile_PackageRecord_OutlineRecord::_internal_ycenter() const {
+inline double EdaDataFile_PackageRecord_OutlineRecord::_internal_ycenter() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.ycenter_;
 }
-inline void EdaDataFile_PackageRecord_OutlineRecord::_internal_set_ycenter(float value) {
+inline void EdaDataFile_PackageRecord_OutlineRecord::_internal_set_ycenter(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.ycenter_ = value;
 }
 
-// optional float halfSide = 8;
+// optional double halfSide = 8;
 inline bool EdaDataFile_PackageRecord_OutlineRecord::has_halfside() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000080u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000040u) != 0;
   return value;
 }
 inline void EdaDataFile_PackageRecord_OutlineRecord::clear_halfside() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.halfside_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000080u;
+  _impl_._has_bits_[0] &= ~0x00000040u;
 }
-inline float EdaDataFile_PackageRecord_OutlineRecord::halfside() const {
+inline double EdaDataFile_PackageRecord_OutlineRecord::halfside() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.halfSide)
   return _internal_halfside();
 }
-inline void EdaDataFile_PackageRecord_OutlineRecord::set_halfside(float value) {
+inline void EdaDataFile_PackageRecord_OutlineRecord::set_halfside(double value) {
   _internal_set_halfside(value);
-  _impl_._has_bits_[0] |= 0x00000080u;
+  _impl_._has_bits_[0] |= 0x00000040u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.halfSide)
 }
-inline float EdaDataFile_PackageRecord_OutlineRecord::_internal_halfside() const {
+inline double EdaDataFile_PackageRecord_OutlineRecord::_internal_halfside() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.halfside_;
 }
-inline void EdaDataFile_PackageRecord_OutlineRecord::_internal_set_halfside(float value) {
+inline void EdaDataFile_PackageRecord_OutlineRecord::_internal_set_halfside(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.halfside_ = value;
 }
 
-// optional float radius = 9;
+// optional double radius = 9;
 inline bool EdaDataFile_PackageRecord_OutlineRecord::has_radius() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000100u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000080u) != 0;
   return value;
 }
 inline void EdaDataFile_PackageRecord_OutlineRecord::clear_radius() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.radius_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000100u;
+  _impl_._has_bits_[0] &= ~0x00000080u;
 }
-inline float EdaDataFile_PackageRecord_OutlineRecord::radius() const {
+inline double EdaDataFile_PackageRecord_OutlineRecord::radius() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.radius)
   return _internal_radius();
 }
-inline void EdaDataFile_PackageRecord_OutlineRecord::set_radius(float value) {
+inline void EdaDataFile_PackageRecord_OutlineRecord::set_radius(double value) {
   _internal_set_radius(value);
-  _impl_._has_bits_[0] |= 0x00000100u;
+  _impl_._has_bits_[0] |= 0x00000080u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.radius)
 }
-inline float EdaDataFile_PackageRecord_OutlineRecord::_internal_radius() const {
+inline double EdaDataFile_PackageRecord_OutlineRecord::_internal_radius() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.radius_;
 }
-inline void EdaDataFile_PackageRecord_OutlineRecord::_internal_set_radius(float value) {
+inline void EdaDataFile_PackageRecord_OutlineRecord::_internal_set_radius(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.radius_ = value;
 }
@@ -4278,13 +4278,13 @@ inline void EdaDataFile_PackageRecord_PinRecord::set_allocated_name(std::string*
 
 // optional .Odb.Lib.Protobuf.EdaDataFile.PackageRecord.PinRecord.Type type = 2;
 inline bool EdaDataFile_PackageRecord_PinRecord::has_type() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000008u) != 0;
   return value;
 }
 inline void EdaDataFile_PackageRecord_PinRecord::clear_type() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.type_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000002u;
+  _impl_._has_bits_[0] &= ~0x00000008u;
 }
 inline ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_PinRecord_Type EdaDataFile_PackageRecord_PinRecord::type() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.PinRecord.type)
@@ -4292,7 +4292,7 @@ inline ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_PinRecord_Type EdaDataFil
 }
 inline void EdaDataFile_PackageRecord_PinRecord::set_type(::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_PinRecord_Type value) {
   _internal_set_type(value);
-  _impl_._has_bits_[0] |= 0x00000002u;
+  _impl_._has_bits_[0] |= 0x00000008u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.PinRecord.type)
 }
 inline ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_PinRecord_Type EdaDataFile_PackageRecord_PinRecord::_internal_type() const {
@@ -4304,99 +4304,99 @@ inline void EdaDataFile_PackageRecord_PinRecord::_internal_set_type(::Odb::Lib::
   _impl_.type_ = value;
 }
 
-// optional float xCenter = 3;
+// optional double xCenter = 3;
 inline bool EdaDataFile_PackageRecord_PinRecord::has_xcenter() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
   return value;
 }
 inline void EdaDataFile_PackageRecord_PinRecord::clear_xcenter() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.xcenter_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000004u;
+  _impl_._has_bits_[0] &= ~0x00000002u;
 }
-inline float EdaDataFile_PackageRecord_PinRecord::xcenter() const {
+inline double EdaDataFile_PackageRecord_PinRecord::xcenter() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.PinRecord.xCenter)
   return _internal_xcenter();
 }
-inline void EdaDataFile_PackageRecord_PinRecord::set_xcenter(float value) {
+inline void EdaDataFile_PackageRecord_PinRecord::set_xcenter(double value) {
   _internal_set_xcenter(value);
-  _impl_._has_bits_[0] |= 0x00000004u;
+  _impl_._has_bits_[0] |= 0x00000002u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.PinRecord.xCenter)
 }
-inline float EdaDataFile_PackageRecord_PinRecord::_internal_xcenter() const {
+inline double EdaDataFile_PackageRecord_PinRecord::_internal_xcenter() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.xcenter_;
 }
-inline void EdaDataFile_PackageRecord_PinRecord::_internal_set_xcenter(float value) {
+inline void EdaDataFile_PackageRecord_PinRecord::_internal_set_xcenter(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.xcenter_ = value;
 }
 
-// optional float yCenter = 4;
+// optional double yCenter = 4;
 inline bool EdaDataFile_PackageRecord_PinRecord::has_ycenter() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000008u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
   return value;
 }
 inline void EdaDataFile_PackageRecord_PinRecord::clear_ycenter() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.ycenter_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000008u;
+  _impl_._has_bits_[0] &= ~0x00000004u;
 }
-inline float EdaDataFile_PackageRecord_PinRecord::ycenter() const {
+inline double EdaDataFile_PackageRecord_PinRecord::ycenter() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.PinRecord.yCenter)
   return _internal_ycenter();
 }
-inline void EdaDataFile_PackageRecord_PinRecord::set_ycenter(float value) {
+inline void EdaDataFile_PackageRecord_PinRecord::set_ycenter(double value) {
   _internal_set_ycenter(value);
-  _impl_._has_bits_[0] |= 0x00000008u;
+  _impl_._has_bits_[0] |= 0x00000004u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.PinRecord.yCenter)
 }
-inline float EdaDataFile_PackageRecord_PinRecord::_internal_ycenter() const {
+inline double EdaDataFile_PackageRecord_PinRecord::_internal_ycenter() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.ycenter_;
 }
-inline void EdaDataFile_PackageRecord_PinRecord::_internal_set_ycenter(float value) {
+inline void EdaDataFile_PackageRecord_PinRecord::_internal_set_ycenter(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.ycenter_ = value;
 }
 
-// optional float finishedHoleSize = 5;
+// optional double finishedHoleSize = 5;
 inline bool EdaDataFile_PackageRecord_PinRecord::has_finishedholesize() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000010u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000020u) != 0;
   return value;
 }
 inline void EdaDataFile_PackageRecord_PinRecord::clear_finishedholesize() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.finishedholesize_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000010u;
+  _impl_._has_bits_[0] &= ~0x00000020u;
 }
-inline float EdaDataFile_PackageRecord_PinRecord::finishedholesize() const {
+inline double EdaDataFile_PackageRecord_PinRecord::finishedholesize() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.PinRecord.finishedHoleSize)
   return _internal_finishedholesize();
 }
-inline void EdaDataFile_PackageRecord_PinRecord::set_finishedholesize(float value) {
+inline void EdaDataFile_PackageRecord_PinRecord::set_finishedholesize(double value) {
   _internal_set_finishedholesize(value);
-  _impl_._has_bits_[0] |= 0x00000010u;
+  _impl_._has_bits_[0] |= 0x00000020u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.PinRecord.finishedHoleSize)
 }
-inline float EdaDataFile_PackageRecord_PinRecord::_internal_finishedholesize() const {
+inline double EdaDataFile_PackageRecord_PinRecord::_internal_finishedholesize() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.finishedholesize_;
 }
-inline void EdaDataFile_PackageRecord_PinRecord::_internal_set_finishedholesize(float value) {
+inline void EdaDataFile_PackageRecord_PinRecord::_internal_set_finishedholesize(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.finishedholesize_ = value;
 }
 
 // optional .Odb.Lib.Protobuf.EdaDataFile.PackageRecord.PinRecord.ElectricalType electricalType = 6;
 inline bool EdaDataFile_PackageRecord_PinRecord::has_electricaltype() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000020u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000010u) != 0;
   return value;
 }
 inline void EdaDataFile_PackageRecord_PinRecord::clear_electricaltype() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.electricaltype_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000020u;
+  _impl_._has_bits_[0] &= ~0x00000010u;
 }
 inline ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_PinRecord_ElectricalType EdaDataFile_PackageRecord_PinRecord::electricaltype() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.PinRecord.electricalType)
@@ -4404,7 +4404,7 @@ inline ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_PinRecord_ElectricalType 
 }
 inline void EdaDataFile_PackageRecord_PinRecord::set_electricaltype(::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_PinRecord_ElectricalType value) {
   _internal_set_electricaltype(value);
-  _impl_._has_bits_[0] |= 0x00000020u;
+  _impl_._has_bits_[0] |= 0x00000010u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.PinRecord.electricalType)
 }
 inline ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_PinRecord_ElectricalType EdaDataFile_PackageRecord_PinRecord::_internal_electricaltype() const {
@@ -4573,7 +4573,7 @@ inline void EdaDataFile_PackageRecord::set_allocated_name(std::string* value) {
   // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.name)
 }
 
-// optional float pitch = 2;
+// optional double pitch = 2;
 inline bool EdaDataFile_PackageRecord::has_pitch() const {
   bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
   return value;
@@ -4583,25 +4583,25 @@ inline void EdaDataFile_PackageRecord::clear_pitch() {
   _impl_.pitch_ = 0;
   _impl_._has_bits_[0] &= ~0x00000004u;
 }
-inline float EdaDataFile_PackageRecord::pitch() const {
+inline double EdaDataFile_PackageRecord::pitch() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.pitch)
   return _internal_pitch();
 }
-inline void EdaDataFile_PackageRecord::set_pitch(float value) {
+inline void EdaDataFile_PackageRecord::set_pitch(double value) {
   _internal_set_pitch(value);
   _impl_._has_bits_[0] |= 0x00000004u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.pitch)
 }
-inline float EdaDataFile_PackageRecord::_internal_pitch() const {
+inline double EdaDataFile_PackageRecord::_internal_pitch() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.pitch_;
 }
-inline void EdaDataFile_PackageRecord::_internal_set_pitch(float value) {
+inline void EdaDataFile_PackageRecord::_internal_set_pitch(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.pitch_ = value;
 }
 
-// optional float xMin = 3;
+// optional double xMin = 3;
 inline bool EdaDataFile_PackageRecord::has_xmin() const {
   bool value = (_impl_._has_bits_[0] & 0x00000008u) != 0;
   return value;
@@ -4611,25 +4611,25 @@ inline void EdaDataFile_PackageRecord::clear_xmin() {
   _impl_.xmin_ = 0;
   _impl_._has_bits_[0] &= ~0x00000008u;
 }
-inline float EdaDataFile_PackageRecord::xmin() const {
+inline double EdaDataFile_PackageRecord::xmin() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.xMin)
   return _internal_xmin();
 }
-inline void EdaDataFile_PackageRecord::set_xmin(float value) {
+inline void EdaDataFile_PackageRecord::set_xmin(double value) {
   _internal_set_xmin(value);
   _impl_._has_bits_[0] |= 0x00000008u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.xMin)
 }
-inline float EdaDataFile_PackageRecord::_internal_xmin() const {
+inline double EdaDataFile_PackageRecord::_internal_xmin() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.xmin_;
 }
-inline void EdaDataFile_PackageRecord::_internal_set_xmin(float value) {
+inline void EdaDataFile_PackageRecord::_internal_set_xmin(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.xmin_ = value;
 }
 
-// optional float yMin = 4;
+// optional double yMin = 4;
 inline bool EdaDataFile_PackageRecord::has_ymin() const {
   bool value = (_impl_._has_bits_[0] & 0x00000010u) != 0;
   return value;
@@ -4639,25 +4639,25 @@ inline void EdaDataFile_PackageRecord::clear_ymin() {
   _impl_.ymin_ = 0;
   _impl_._has_bits_[0] &= ~0x00000010u;
 }
-inline float EdaDataFile_PackageRecord::ymin() const {
+inline double EdaDataFile_PackageRecord::ymin() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.yMin)
   return _internal_ymin();
 }
-inline void EdaDataFile_PackageRecord::set_ymin(float value) {
+inline void EdaDataFile_PackageRecord::set_ymin(double value) {
   _internal_set_ymin(value);
   _impl_._has_bits_[0] |= 0x00000010u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.yMin)
 }
-inline float EdaDataFile_PackageRecord::_internal_ymin() const {
+inline double EdaDataFile_PackageRecord::_internal_ymin() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.ymin_;
 }
-inline void EdaDataFile_PackageRecord::_internal_set_ymin(float value) {
+inline void EdaDataFile_PackageRecord::_internal_set_ymin(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.ymin_ = value;
 }
 
-// optional float xMax = 5;
+// optional double xMax = 5;
 inline bool EdaDataFile_PackageRecord::has_xmax() const {
   bool value = (_impl_._has_bits_[0] & 0x00000020u) != 0;
   return value;
@@ -4667,25 +4667,25 @@ inline void EdaDataFile_PackageRecord::clear_xmax() {
   _impl_.xmax_ = 0;
   _impl_._has_bits_[0] &= ~0x00000020u;
 }
-inline float EdaDataFile_PackageRecord::xmax() const {
+inline double EdaDataFile_PackageRecord::xmax() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.xMax)
   return _internal_xmax();
 }
-inline void EdaDataFile_PackageRecord::set_xmax(float value) {
+inline void EdaDataFile_PackageRecord::set_xmax(double value) {
   _internal_set_xmax(value);
   _impl_._has_bits_[0] |= 0x00000020u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.xMax)
 }
-inline float EdaDataFile_PackageRecord::_internal_xmax() const {
+inline double EdaDataFile_PackageRecord::_internal_xmax() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.xmax_;
 }
-inline void EdaDataFile_PackageRecord::_internal_set_xmax(float value) {
+inline void EdaDataFile_PackageRecord::_internal_set_xmax(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.xmax_ = value;
 }
 
-// optional float yMax = 6;
+// optional double yMax = 6;
 inline bool EdaDataFile_PackageRecord::has_ymax() const {
   bool value = (_impl_._has_bits_[0] & 0x00000040u) != 0;
   return value;
@@ -4695,20 +4695,20 @@ inline void EdaDataFile_PackageRecord::clear_ymax() {
   _impl_.ymax_ = 0;
   _impl_._has_bits_[0] &= ~0x00000040u;
 }
-inline float EdaDataFile_PackageRecord::ymax() const {
+inline double EdaDataFile_PackageRecord::ymax() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.yMax)
   return _internal_ymax();
 }
-inline void EdaDataFile_PackageRecord::set_ymax(float value) {
+inline void EdaDataFile_PackageRecord::set_ymax(double value) {
   _internal_set_ymax(value);
   _impl_._has_bits_[0] |= 0x00000040u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.yMax)
 }
-inline float EdaDataFile_PackageRecord::_internal_ymax() const {
+inline double EdaDataFile_PackageRecord::_internal_ymax() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.ymax_;
 }
-inline void EdaDataFile_PackageRecord::_internal_set_ymax(float value) {
+inline void EdaDataFile_PackageRecord::_internal_set_ymax(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.ymax_ = value;
 }

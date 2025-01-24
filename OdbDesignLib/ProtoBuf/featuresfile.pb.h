@@ -379,19 +379,19 @@ class ODBDESIGN_EXPORT FeaturesFile_FeatureRecord final : public ::google::proto
     kFontFieldNumber = 15,
     kTextFieldNumber = 19,
     kValueFieldNumber = 25,
-    kTypeFieldNumber = 2,
     kXsFieldNumber = 3,
     kYsFieldNumber = 4,
     kXeFieldNumber = 5,
+    kTypeFieldNumber = 2,
+    kAptDefFieldNumber = 9,
     kYeFieldNumber = 6,
     kXFieldNumber = 7,
     kYFieldNumber = 8,
-    kAptDefFieldNumber = 9,
-    kAptDefSymbolNumFieldNumber = 10,
     kAptDefResizeFactorFieldNumber = 11,
     kXcFieldNumber = 12,
-    kYcFieldNumber = 13,
+    kAptDefSymbolNumFieldNumber = 10,
     kCwFieldNumber = 14,
+    kYcFieldNumber = 13,
     kXsizeFieldNumber = 16,
     kYsizeFieldNumber = 17,
     kWidthFactorFieldNumber = 18,
@@ -401,8 +401,8 @@ class ODBDESIGN_EXPORT FeaturesFile_FeatureRecord final : public ::google::proto
     kDcodeFieldNumber = 23,
     kAtrFieldNumber = 24,
     kIdFieldNumber = 26,
-    kOrientDefFieldNumber = 27,
     kOrientDefRotationFieldNumber = 28,
+    kOrientDefFieldNumber = 27,
   };
   // repeated .Odb.Lib.Protobuf.ContourPolygon contourPolygons = 1;
   int contourpolygons_size() const;
@@ -487,6 +487,39 @@ class ODBDESIGN_EXPORT FeaturesFile_FeatureRecord final : public ::google::proto
   std::string* _internal_mutable_value();
 
   public:
+  // optional double xs = 3;
+  bool has_xs() const;
+  void clear_xs() ;
+  double xs() const;
+  void set_xs(double value);
+
+  private:
+  double _internal_xs() const;
+  void _internal_set_xs(double value);
+
+  public:
+  // optional double ys = 4;
+  bool has_ys() const;
+  void clear_ys() ;
+  double ys() const;
+  void set_ys(double value);
+
+  private:
+  double _internal_ys() const;
+  void _internal_set_ys(double value);
+
+  public:
+  // optional double xe = 5;
+  bool has_xe() const;
+  void clear_xe() ;
+  double xe() const;
+  void set_xe(double value);
+
+  private:
+  double _internal_xe() const;
+  void _internal_set_xe(double value);
+
+  public:
   // optional .Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.Type type = 2;
   bool has_type() const;
   void clear_type() ;
@@ -496,72 +529,6 @@ class ODBDESIGN_EXPORT FeaturesFile_FeatureRecord final : public ::google::proto
   private:
   ::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord_Type _internal_type() const;
   void _internal_set_type(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord_Type value);
-
-  public:
-  // optional float xs = 3;
-  bool has_xs() const;
-  void clear_xs() ;
-  float xs() const;
-  void set_xs(float value);
-
-  private:
-  float _internal_xs() const;
-  void _internal_set_xs(float value);
-
-  public:
-  // optional float ys = 4;
-  bool has_ys() const;
-  void clear_ys() ;
-  float ys() const;
-  void set_ys(float value);
-
-  private:
-  float _internal_ys() const;
-  void _internal_set_ys(float value);
-
-  public:
-  // optional float xe = 5;
-  bool has_xe() const;
-  void clear_xe() ;
-  float xe() const;
-  void set_xe(float value);
-
-  private:
-  float _internal_xe() const;
-  void _internal_set_xe(float value);
-
-  public:
-  // optional float ye = 6;
-  bool has_ye() const;
-  void clear_ye() ;
-  float ye() const;
-  void set_ye(float value);
-
-  private:
-  float _internal_ye() const;
-  void _internal_set_ye(float value);
-
-  public:
-  // optional float x = 7;
-  bool has_x() const;
-  void clear_x() ;
-  float x() const;
-  void set_x(float value);
-
-  private:
-  float _internal_x() const;
-  void _internal_set_x(float value);
-
-  public:
-  // optional float y = 8;
-  bool has_y() const;
-  void clear_y() ;
-  float y() const;
-  void set_y(float value);
-
-  private:
-  float _internal_y() const;
-  void _internal_set_y(float value);
 
   public:
   // optional int32 apt_def = 9;
@@ -575,6 +542,61 @@ class ODBDESIGN_EXPORT FeaturesFile_FeatureRecord final : public ::google::proto
   void _internal_set_apt_def(::int32_t value);
 
   public:
+  // optional double ye = 6;
+  bool has_ye() const;
+  void clear_ye() ;
+  double ye() const;
+  void set_ye(double value);
+
+  private:
+  double _internal_ye() const;
+  void _internal_set_ye(double value);
+
+  public:
+  // optional double x = 7;
+  bool has_x() const;
+  void clear_x() ;
+  double x() const;
+  void set_x(double value);
+
+  private:
+  double _internal_x() const;
+  void _internal_set_x(double value);
+
+  public:
+  // optional double y = 8;
+  bool has_y() const;
+  void clear_y() ;
+  double y() const;
+  void set_y(double value);
+
+  private:
+  double _internal_y() const;
+  void _internal_set_y(double value);
+
+  public:
+  // optional double apt_def_resize_factor = 11;
+  bool has_apt_def_resize_factor() const;
+  void clear_apt_def_resize_factor() ;
+  double apt_def_resize_factor() const;
+  void set_apt_def_resize_factor(double value);
+
+  private:
+  double _internal_apt_def_resize_factor() const;
+  void _internal_set_apt_def_resize_factor(double value);
+
+  public:
+  // optional double xc = 12;
+  bool has_xc() const;
+  void clear_xc() ;
+  double xc() const;
+  void set_xc(double value);
+
+  private:
+  double _internal_xc() const;
+  void _internal_set_xc(double value);
+
+  public:
   // optional int32 apt_def_symbol_num = 10;
   bool has_apt_def_symbol_num() const;
   void clear_apt_def_symbol_num() ;
@@ -584,39 +606,6 @@ class ODBDESIGN_EXPORT FeaturesFile_FeatureRecord final : public ::google::proto
   private:
   ::int32_t _internal_apt_def_symbol_num() const;
   void _internal_set_apt_def_symbol_num(::int32_t value);
-
-  public:
-  // optional float apt_def_resize_factor = 11;
-  bool has_apt_def_resize_factor() const;
-  void clear_apt_def_resize_factor() ;
-  float apt_def_resize_factor() const;
-  void set_apt_def_resize_factor(float value);
-
-  private:
-  float _internal_apt_def_resize_factor() const;
-  void _internal_set_apt_def_resize_factor(float value);
-
-  public:
-  // optional float xc = 12;
-  bool has_xc() const;
-  void clear_xc() ;
-  float xc() const;
-  void set_xc(float value);
-
-  private:
-  float _internal_xc() const;
-  void _internal_set_xc(float value);
-
-  public:
-  // optional float yc = 13;
-  bool has_yc() const;
-  void clear_yc() ;
-  float yc() const;
-  void set_yc(float value);
-
-  private:
-  float _internal_yc() const;
-  void _internal_set_yc(float value);
 
   public:
   // optional bool cw = 14;
@@ -630,37 +619,48 @@ class ODBDESIGN_EXPORT FeaturesFile_FeatureRecord final : public ::google::proto
   void _internal_set_cw(bool value);
 
   public:
-  // optional float xsize = 16;
+  // optional double yc = 13;
+  bool has_yc() const;
+  void clear_yc() ;
+  double yc() const;
+  void set_yc(double value);
+
+  private:
+  double _internal_yc() const;
+  void _internal_set_yc(double value);
+
+  public:
+  // optional double xsize = 16;
   bool has_xsize() const;
   void clear_xsize() ;
-  float xsize() const;
-  void set_xsize(float value);
+  double xsize() const;
+  void set_xsize(double value);
 
   private:
-  float _internal_xsize() const;
-  void _internal_set_xsize(float value);
+  double _internal_xsize() const;
+  void _internal_set_xsize(double value);
 
   public:
-  // optional float ysize = 17;
+  // optional double ysize = 17;
   bool has_ysize() const;
   void clear_ysize() ;
-  float ysize() const;
-  void set_ysize(float value);
+  double ysize() const;
+  void set_ysize(double value);
 
   private:
-  float _internal_ysize() const;
-  void _internal_set_ysize(float value);
+  double _internal_ysize() const;
+  void _internal_set_ysize(double value);
 
   public:
-  // optional float width_factor = 18;
+  // optional double width_factor = 18;
   bool has_width_factor() const;
   void clear_width_factor() ;
-  float width_factor() const;
-  void set_width_factor(float value);
+  double width_factor() const;
+  void set_width_factor(double value);
 
   private:
-  float _internal_width_factor() const;
-  void _internal_set_width_factor(float value);
+  double _internal_width_factor() const;
+  void _internal_set_width_factor(double value);
 
   public:
   // optional int32 version = 20;
@@ -729,6 +729,17 @@ class ODBDESIGN_EXPORT FeaturesFile_FeatureRecord final : public ::google::proto
   void _internal_set_id(::uint32_t value);
 
   public:
+  // optional double orient_def_rotation = 28;
+  bool has_orient_def_rotation() const;
+  void clear_orient_def_rotation() ;
+  double orient_def_rotation() const;
+  void set_orient_def_rotation(double value);
+
+  private:
+  double _internal_orient_def_rotation() const;
+  void _internal_set_orient_def_rotation(double value);
+
+  public:
   // optional int32 orient_def = 27;
   bool has_orient_def() const;
   void clear_orient_def() ;
@@ -738,17 +749,6 @@ class ODBDESIGN_EXPORT FeaturesFile_FeatureRecord final : public ::google::proto
   private:
   ::int32_t _internal_orient_def() const;
   void _internal_set_orient_def(::int32_t value);
-
-  public:
-  // optional float orient_def_rotation = 28;
-  bool has_orient_def_rotation() const;
-  void clear_orient_def_rotation() ;
-  float orient_def_rotation() const;
-  void set_orient_def_rotation(float value);
-
-  private:
-  float _internal_orient_def_rotation() const;
-  void _internal_set_orient_def_rotation(float value);
 
   public:
   // @@protoc_insertion_point(class_scope:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord)
@@ -784,30 +784,30 @@ class ODBDESIGN_EXPORT FeaturesFile_FeatureRecord final : public ::google::proto
     ::google::protobuf::internal::ArenaStringPtr font_;
     ::google::protobuf::internal::ArenaStringPtr text_;
     ::google::protobuf::internal::ArenaStringPtr value_;
+    double xs_;
+    double ys_;
+    double xe_;
     int type_;
-    float xs_;
-    float ys_;
-    float xe_;
-    float ye_;
-    float x_;
-    float y_;
     ::int32_t apt_def_;
+    double ye_;
+    double x_;
+    double y_;
+    double apt_def_resize_factor_;
+    double xc_;
     ::int32_t apt_def_symbol_num_;
-    float apt_def_resize_factor_;
-    float xc_;
-    float yc_;
     bool cw_;
-    float xsize_;
-    float ysize_;
-    float width_factor_;
+    double yc_;
+    double xsize_;
+    double ysize_;
+    double width_factor_;
     ::int32_t version_;
     ::int32_t sym_num_;
     int polarity_;
     ::int32_t dcode_;
     ::int32_t atr_;
     ::uint32_t id_;
+    double orient_def_rotation_;
     ::int32_t orient_def_;
-    float orient_def_rotation_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -1136,13 +1136,13 @@ class ODBDESIGN_EXPORT FeaturesFile final : public ::google::protobuf::Message
 
 // optional .Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.Type type = 2;
 inline bool FeaturesFile_FeatureRecord::has_type() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000008u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000040u) != 0;
   return value;
 }
 inline void FeaturesFile_FeatureRecord::clear_type() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.type_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000008u;
+  _impl_._has_bits_[0] &= ~0x00000040u;
 }
 inline ::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord_Type FeaturesFile_FeatureRecord::type() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.type)
@@ -1150,7 +1150,7 @@ inline ::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord_Type FeaturesFile_Featur
 }
 inline void FeaturesFile_FeatureRecord::set_type(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord_Type value) {
   _internal_set_type(value);
-  _impl_._has_bits_[0] |= 0x00000008u;
+  _impl_._has_bits_[0] |= 0x00000040u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.type)
 }
 inline ::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord_Type FeaturesFile_FeatureRecord::_internal_type() const {
@@ -1162,183 +1162,183 @@ inline void FeaturesFile_FeatureRecord::_internal_set_type(::Odb::Lib::Protobuf:
   _impl_.type_ = value;
 }
 
-// optional float xs = 3;
+// optional double xs = 3;
 inline bool FeaturesFile_FeatureRecord::has_xs() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000010u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000008u) != 0;
   return value;
 }
 inline void FeaturesFile_FeatureRecord::clear_xs() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.xs_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000010u;
+  _impl_._has_bits_[0] &= ~0x00000008u;
 }
-inline float FeaturesFile_FeatureRecord::xs() const {
+inline double FeaturesFile_FeatureRecord::xs() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.xs)
   return _internal_xs();
 }
-inline void FeaturesFile_FeatureRecord::set_xs(float value) {
+inline void FeaturesFile_FeatureRecord::set_xs(double value) {
   _internal_set_xs(value);
-  _impl_._has_bits_[0] |= 0x00000010u;
+  _impl_._has_bits_[0] |= 0x00000008u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.xs)
 }
-inline float FeaturesFile_FeatureRecord::_internal_xs() const {
+inline double FeaturesFile_FeatureRecord::_internal_xs() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.xs_;
 }
-inline void FeaturesFile_FeatureRecord::_internal_set_xs(float value) {
+inline void FeaturesFile_FeatureRecord::_internal_set_xs(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.xs_ = value;
 }
 
-// optional float ys = 4;
+// optional double ys = 4;
 inline bool FeaturesFile_FeatureRecord::has_ys() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000020u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000010u) != 0;
   return value;
 }
 inline void FeaturesFile_FeatureRecord::clear_ys() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.ys_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000020u;
+  _impl_._has_bits_[0] &= ~0x00000010u;
 }
-inline float FeaturesFile_FeatureRecord::ys() const {
+inline double FeaturesFile_FeatureRecord::ys() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.ys)
   return _internal_ys();
 }
-inline void FeaturesFile_FeatureRecord::set_ys(float value) {
+inline void FeaturesFile_FeatureRecord::set_ys(double value) {
   _internal_set_ys(value);
-  _impl_._has_bits_[0] |= 0x00000020u;
+  _impl_._has_bits_[0] |= 0x00000010u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.ys)
 }
-inline float FeaturesFile_FeatureRecord::_internal_ys() const {
+inline double FeaturesFile_FeatureRecord::_internal_ys() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.ys_;
 }
-inline void FeaturesFile_FeatureRecord::_internal_set_ys(float value) {
+inline void FeaturesFile_FeatureRecord::_internal_set_ys(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.ys_ = value;
 }
 
-// optional float xe = 5;
+// optional double xe = 5;
 inline bool FeaturesFile_FeatureRecord::has_xe() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000040u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000020u) != 0;
   return value;
 }
 inline void FeaturesFile_FeatureRecord::clear_xe() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.xe_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000040u;
+  _impl_._has_bits_[0] &= ~0x00000020u;
 }
-inline float FeaturesFile_FeatureRecord::xe() const {
+inline double FeaturesFile_FeatureRecord::xe() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.xe)
   return _internal_xe();
 }
-inline void FeaturesFile_FeatureRecord::set_xe(float value) {
+inline void FeaturesFile_FeatureRecord::set_xe(double value) {
   _internal_set_xe(value);
-  _impl_._has_bits_[0] |= 0x00000040u;
+  _impl_._has_bits_[0] |= 0x00000020u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.xe)
 }
-inline float FeaturesFile_FeatureRecord::_internal_xe() const {
+inline double FeaturesFile_FeatureRecord::_internal_xe() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.xe_;
 }
-inline void FeaturesFile_FeatureRecord::_internal_set_xe(float value) {
+inline void FeaturesFile_FeatureRecord::_internal_set_xe(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.xe_ = value;
 }
 
-// optional float ye = 6;
+// optional double ye = 6;
 inline bool FeaturesFile_FeatureRecord::has_ye() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000080u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000100u) != 0;
   return value;
 }
 inline void FeaturesFile_FeatureRecord::clear_ye() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.ye_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000080u;
+  _impl_._has_bits_[0] &= ~0x00000100u;
 }
-inline float FeaturesFile_FeatureRecord::ye() const {
+inline double FeaturesFile_FeatureRecord::ye() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.ye)
   return _internal_ye();
 }
-inline void FeaturesFile_FeatureRecord::set_ye(float value) {
+inline void FeaturesFile_FeatureRecord::set_ye(double value) {
   _internal_set_ye(value);
-  _impl_._has_bits_[0] |= 0x00000080u;
+  _impl_._has_bits_[0] |= 0x00000100u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.ye)
 }
-inline float FeaturesFile_FeatureRecord::_internal_ye() const {
+inline double FeaturesFile_FeatureRecord::_internal_ye() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.ye_;
 }
-inline void FeaturesFile_FeatureRecord::_internal_set_ye(float value) {
+inline void FeaturesFile_FeatureRecord::_internal_set_ye(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.ye_ = value;
 }
 
-// optional float x = 7;
+// optional double x = 7;
 inline bool FeaturesFile_FeatureRecord::has_x() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000100u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000200u) != 0;
   return value;
 }
 inline void FeaturesFile_FeatureRecord::clear_x() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.x_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000100u;
+  _impl_._has_bits_[0] &= ~0x00000200u;
 }
-inline float FeaturesFile_FeatureRecord::x() const {
+inline double FeaturesFile_FeatureRecord::x() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.x)
   return _internal_x();
 }
-inline void FeaturesFile_FeatureRecord::set_x(float value) {
+inline void FeaturesFile_FeatureRecord::set_x(double value) {
   _internal_set_x(value);
-  _impl_._has_bits_[0] |= 0x00000100u;
+  _impl_._has_bits_[0] |= 0x00000200u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.x)
 }
-inline float FeaturesFile_FeatureRecord::_internal_x() const {
+inline double FeaturesFile_FeatureRecord::_internal_x() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.x_;
 }
-inline void FeaturesFile_FeatureRecord::_internal_set_x(float value) {
+inline void FeaturesFile_FeatureRecord::_internal_set_x(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.x_ = value;
 }
 
-// optional float y = 8;
+// optional double y = 8;
 inline bool FeaturesFile_FeatureRecord::has_y() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000200u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000400u) != 0;
   return value;
 }
 inline void FeaturesFile_FeatureRecord::clear_y() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.y_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000200u;
+  _impl_._has_bits_[0] &= ~0x00000400u;
 }
-inline float FeaturesFile_FeatureRecord::y() const {
+inline double FeaturesFile_FeatureRecord::y() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.y)
   return _internal_y();
 }
-inline void FeaturesFile_FeatureRecord::set_y(float value) {
+inline void FeaturesFile_FeatureRecord::set_y(double value) {
   _internal_set_y(value);
-  _impl_._has_bits_[0] |= 0x00000200u;
+  _impl_._has_bits_[0] |= 0x00000400u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.y)
 }
-inline float FeaturesFile_FeatureRecord::_internal_y() const {
+inline double FeaturesFile_FeatureRecord::_internal_y() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.y_;
 }
-inline void FeaturesFile_FeatureRecord::_internal_set_y(float value) {
+inline void FeaturesFile_FeatureRecord::_internal_set_y(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.y_ = value;
 }
 
 // optional int32 apt_def = 9;
 inline bool FeaturesFile_FeatureRecord::has_apt_def() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000400u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000080u) != 0;
   return value;
 }
 inline void FeaturesFile_FeatureRecord::clear_apt_def() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.apt_def_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000400u;
+  _impl_._has_bits_[0] &= ~0x00000080u;
 }
 inline ::int32_t FeaturesFile_FeatureRecord::apt_def() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.apt_def)
@@ -1346,7 +1346,7 @@ inline ::int32_t FeaturesFile_FeatureRecord::apt_def() const {
 }
 inline void FeaturesFile_FeatureRecord::set_apt_def(::int32_t value) {
   _internal_set_apt_def(value);
-  _impl_._has_bits_[0] |= 0x00000400u;
+  _impl_._has_bits_[0] |= 0x00000080u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.apt_def)
 }
 inline ::int32_t FeaturesFile_FeatureRecord::_internal_apt_def() const {
@@ -1360,13 +1360,13 @@ inline void FeaturesFile_FeatureRecord::_internal_set_apt_def(::int32_t value) {
 
 // optional int32 apt_def_symbol_num = 10;
 inline bool FeaturesFile_FeatureRecord::has_apt_def_symbol_num() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000800u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00002000u) != 0;
   return value;
 }
 inline void FeaturesFile_FeatureRecord::clear_apt_def_symbol_num() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.apt_def_symbol_num_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000800u;
+  _impl_._has_bits_[0] &= ~0x00002000u;
 }
 inline ::int32_t FeaturesFile_FeatureRecord::apt_def_symbol_num() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.apt_def_symbol_num)
@@ -1374,7 +1374,7 @@ inline ::int32_t FeaturesFile_FeatureRecord::apt_def_symbol_num() const {
 }
 inline void FeaturesFile_FeatureRecord::set_apt_def_symbol_num(::int32_t value) {
   _internal_set_apt_def_symbol_num(value);
-  _impl_._has_bits_[0] |= 0x00000800u;
+  _impl_._has_bits_[0] |= 0x00002000u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.apt_def_symbol_num)
 }
 inline ::int32_t FeaturesFile_FeatureRecord::_internal_apt_def_symbol_num() const {
@@ -1386,99 +1386,99 @@ inline void FeaturesFile_FeatureRecord::_internal_set_apt_def_symbol_num(::int32
   _impl_.apt_def_symbol_num_ = value;
 }
 
-// optional float apt_def_resize_factor = 11;
+// optional double apt_def_resize_factor = 11;
 inline bool FeaturesFile_FeatureRecord::has_apt_def_resize_factor() const {
-  bool value = (_impl_._has_bits_[0] & 0x00001000u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000800u) != 0;
   return value;
 }
 inline void FeaturesFile_FeatureRecord::clear_apt_def_resize_factor() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.apt_def_resize_factor_ = 0;
-  _impl_._has_bits_[0] &= ~0x00001000u;
+  _impl_._has_bits_[0] &= ~0x00000800u;
 }
-inline float FeaturesFile_FeatureRecord::apt_def_resize_factor() const {
+inline double FeaturesFile_FeatureRecord::apt_def_resize_factor() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.apt_def_resize_factor)
   return _internal_apt_def_resize_factor();
 }
-inline void FeaturesFile_FeatureRecord::set_apt_def_resize_factor(float value) {
+inline void FeaturesFile_FeatureRecord::set_apt_def_resize_factor(double value) {
   _internal_set_apt_def_resize_factor(value);
-  _impl_._has_bits_[0] |= 0x00001000u;
+  _impl_._has_bits_[0] |= 0x00000800u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.apt_def_resize_factor)
 }
-inline float FeaturesFile_FeatureRecord::_internal_apt_def_resize_factor() const {
+inline double FeaturesFile_FeatureRecord::_internal_apt_def_resize_factor() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.apt_def_resize_factor_;
 }
-inline void FeaturesFile_FeatureRecord::_internal_set_apt_def_resize_factor(float value) {
+inline void FeaturesFile_FeatureRecord::_internal_set_apt_def_resize_factor(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.apt_def_resize_factor_ = value;
 }
 
-// optional float xc = 12;
+// optional double xc = 12;
 inline bool FeaturesFile_FeatureRecord::has_xc() const {
-  bool value = (_impl_._has_bits_[0] & 0x00002000u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00001000u) != 0;
   return value;
 }
 inline void FeaturesFile_FeatureRecord::clear_xc() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.xc_ = 0;
-  _impl_._has_bits_[0] &= ~0x00002000u;
+  _impl_._has_bits_[0] &= ~0x00001000u;
 }
-inline float FeaturesFile_FeatureRecord::xc() const {
+inline double FeaturesFile_FeatureRecord::xc() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.xc)
   return _internal_xc();
 }
-inline void FeaturesFile_FeatureRecord::set_xc(float value) {
+inline void FeaturesFile_FeatureRecord::set_xc(double value) {
   _internal_set_xc(value);
-  _impl_._has_bits_[0] |= 0x00002000u;
+  _impl_._has_bits_[0] |= 0x00001000u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.xc)
 }
-inline float FeaturesFile_FeatureRecord::_internal_xc() const {
+inline double FeaturesFile_FeatureRecord::_internal_xc() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.xc_;
 }
-inline void FeaturesFile_FeatureRecord::_internal_set_xc(float value) {
+inline void FeaturesFile_FeatureRecord::_internal_set_xc(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.xc_ = value;
 }
 
-// optional float yc = 13;
+// optional double yc = 13;
 inline bool FeaturesFile_FeatureRecord::has_yc() const {
-  bool value = (_impl_._has_bits_[0] & 0x00004000u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00008000u) != 0;
   return value;
 }
 inline void FeaturesFile_FeatureRecord::clear_yc() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.yc_ = 0;
-  _impl_._has_bits_[0] &= ~0x00004000u;
+  _impl_._has_bits_[0] &= ~0x00008000u;
 }
-inline float FeaturesFile_FeatureRecord::yc() const {
+inline double FeaturesFile_FeatureRecord::yc() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.yc)
   return _internal_yc();
 }
-inline void FeaturesFile_FeatureRecord::set_yc(float value) {
+inline void FeaturesFile_FeatureRecord::set_yc(double value) {
   _internal_set_yc(value);
-  _impl_._has_bits_[0] |= 0x00004000u;
+  _impl_._has_bits_[0] |= 0x00008000u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.yc)
 }
-inline float FeaturesFile_FeatureRecord::_internal_yc() const {
+inline double FeaturesFile_FeatureRecord::_internal_yc() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.yc_;
 }
-inline void FeaturesFile_FeatureRecord::_internal_set_yc(float value) {
+inline void FeaturesFile_FeatureRecord::_internal_set_yc(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.yc_ = value;
 }
 
 // optional bool cw = 14;
 inline bool FeaturesFile_FeatureRecord::has_cw() const {
-  bool value = (_impl_._has_bits_[0] & 0x00008000u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00004000u) != 0;
   return value;
 }
 inline void FeaturesFile_FeatureRecord::clear_cw() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.cw_ = false;
-  _impl_._has_bits_[0] &= ~0x00008000u;
+  _impl_._has_bits_[0] &= ~0x00004000u;
 }
 inline bool FeaturesFile_FeatureRecord::cw() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.cw)
@@ -1486,7 +1486,7 @@ inline bool FeaturesFile_FeatureRecord::cw() const {
 }
 inline void FeaturesFile_FeatureRecord::set_cw(bool value) {
   _internal_set_cw(value);
-  _impl_._has_bits_[0] |= 0x00008000u;
+  _impl_._has_bits_[0] |= 0x00004000u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.cw)
 }
 inline bool FeaturesFile_FeatureRecord::_internal_cw() const {
@@ -1567,7 +1567,7 @@ inline void FeaturesFile_FeatureRecord::set_allocated_font(std::string* value) {
   // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.font)
 }
 
-// optional float xsize = 16;
+// optional double xsize = 16;
 inline bool FeaturesFile_FeatureRecord::has_xsize() const {
   bool value = (_impl_._has_bits_[0] & 0x00010000u) != 0;
   return value;
@@ -1577,25 +1577,25 @@ inline void FeaturesFile_FeatureRecord::clear_xsize() {
   _impl_.xsize_ = 0;
   _impl_._has_bits_[0] &= ~0x00010000u;
 }
-inline float FeaturesFile_FeatureRecord::xsize() const {
+inline double FeaturesFile_FeatureRecord::xsize() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.xsize)
   return _internal_xsize();
 }
-inline void FeaturesFile_FeatureRecord::set_xsize(float value) {
+inline void FeaturesFile_FeatureRecord::set_xsize(double value) {
   _internal_set_xsize(value);
   _impl_._has_bits_[0] |= 0x00010000u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.xsize)
 }
-inline float FeaturesFile_FeatureRecord::_internal_xsize() const {
+inline double FeaturesFile_FeatureRecord::_internal_xsize() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.xsize_;
 }
-inline void FeaturesFile_FeatureRecord::_internal_set_xsize(float value) {
+inline void FeaturesFile_FeatureRecord::_internal_set_xsize(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.xsize_ = value;
 }
 
-// optional float ysize = 17;
+// optional double ysize = 17;
 inline bool FeaturesFile_FeatureRecord::has_ysize() const {
   bool value = (_impl_._has_bits_[0] & 0x00020000u) != 0;
   return value;
@@ -1605,25 +1605,25 @@ inline void FeaturesFile_FeatureRecord::clear_ysize() {
   _impl_.ysize_ = 0;
   _impl_._has_bits_[0] &= ~0x00020000u;
 }
-inline float FeaturesFile_FeatureRecord::ysize() const {
+inline double FeaturesFile_FeatureRecord::ysize() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.ysize)
   return _internal_ysize();
 }
-inline void FeaturesFile_FeatureRecord::set_ysize(float value) {
+inline void FeaturesFile_FeatureRecord::set_ysize(double value) {
   _internal_set_ysize(value);
   _impl_._has_bits_[0] |= 0x00020000u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.ysize)
 }
-inline float FeaturesFile_FeatureRecord::_internal_ysize() const {
+inline double FeaturesFile_FeatureRecord::_internal_ysize() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.ysize_;
 }
-inline void FeaturesFile_FeatureRecord::_internal_set_ysize(float value) {
+inline void FeaturesFile_FeatureRecord::_internal_set_ysize(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.ysize_ = value;
 }
 
-// optional float width_factor = 18;
+// optional double width_factor = 18;
 inline bool FeaturesFile_FeatureRecord::has_width_factor() const {
   bool value = (_impl_._has_bits_[0] & 0x00040000u) != 0;
   return value;
@@ -1633,20 +1633,20 @@ inline void FeaturesFile_FeatureRecord::clear_width_factor() {
   _impl_.width_factor_ = 0;
   _impl_._has_bits_[0] &= ~0x00040000u;
 }
-inline float FeaturesFile_FeatureRecord::width_factor() const {
+inline double FeaturesFile_FeatureRecord::width_factor() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.width_factor)
   return _internal_width_factor();
 }
-inline void FeaturesFile_FeatureRecord::set_width_factor(float value) {
+inline void FeaturesFile_FeatureRecord::set_width_factor(double value) {
   _internal_set_width_factor(value);
   _impl_._has_bits_[0] |= 0x00040000u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.width_factor)
 }
-inline float FeaturesFile_FeatureRecord::_internal_width_factor() const {
+inline double FeaturesFile_FeatureRecord::_internal_width_factor() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.width_factor_;
 }
-inline void FeaturesFile_FeatureRecord::_internal_set_width_factor(float value) {
+inline void FeaturesFile_FeatureRecord::_internal_set_width_factor(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.width_factor_ = value;
 }
@@ -1959,13 +1959,13 @@ inline void FeaturesFile_FeatureRecord::_internal_set_id(::uint32_t value) {
 
 // optional int32 orient_def = 27;
 inline bool FeaturesFile_FeatureRecord::has_orient_def() const {
-  bool value = (_impl_._has_bits_[0] & 0x02000000u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x04000000u) != 0;
   return value;
 }
 inline void FeaturesFile_FeatureRecord::clear_orient_def() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.orient_def_ = 0;
-  _impl_._has_bits_[0] &= ~0x02000000u;
+  _impl_._has_bits_[0] &= ~0x04000000u;
 }
 inline ::int32_t FeaturesFile_FeatureRecord::orient_def() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.orient_def)
@@ -1973,7 +1973,7 @@ inline ::int32_t FeaturesFile_FeatureRecord::orient_def() const {
 }
 inline void FeaturesFile_FeatureRecord::set_orient_def(::int32_t value) {
   _internal_set_orient_def(value);
-  _impl_._has_bits_[0] |= 0x02000000u;
+  _impl_._has_bits_[0] |= 0x04000000u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.orient_def)
 }
 inline ::int32_t FeaturesFile_FeatureRecord::_internal_orient_def() const {
@@ -1985,30 +1985,30 @@ inline void FeaturesFile_FeatureRecord::_internal_set_orient_def(::int32_t value
   _impl_.orient_def_ = value;
 }
 
-// optional float orient_def_rotation = 28;
+// optional double orient_def_rotation = 28;
 inline bool FeaturesFile_FeatureRecord::has_orient_def_rotation() const {
-  bool value = (_impl_._has_bits_[0] & 0x04000000u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x02000000u) != 0;
   return value;
 }
 inline void FeaturesFile_FeatureRecord::clear_orient_def_rotation() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.orient_def_rotation_ = 0;
-  _impl_._has_bits_[0] &= ~0x04000000u;
+  _impl_._has_bits_[0] &= ~0x02000000u;
 }
-inline float FeaturesFile_FeatureRecord::orient_def_rotation() const {
+inline double FeaturesFile_FeatureRecord::orient_def_rotation() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.orient_def_rotation)
   return _internal_orient_def_rotation();
 }
-inline void FeaturesFile_FeatureRecord::set_orient_def_rotation(float value) {
+inline void FeaturesFile_FeatureRecord::set_orient_def_rotation(double value) {
   _internal_set_orient_def_rotation(value);
-  _impl_._has_bits_[0] |= 0x04000000u;
+  _impl_._has_bits_[0] |= 0x02000000u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord.orient_def_rotation)
 }
-inline float FeaturesFile_FeatureRecord::_internal_orient_def_rotation() const {
+inline double FeaturesFile_FeatureRecord::_internal_orient_def_rotation() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.orient_def_rotation_;
 }
-inline void FeaturesFile_FeatureRecord::_internal_set_orient_def_rotation(float value) {
+inline void FeaturesFile_FeatureRecord::_internal_set_orient_def_rotation(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.orient_def_rotation_ = value;
 }

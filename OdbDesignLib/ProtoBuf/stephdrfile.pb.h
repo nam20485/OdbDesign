@@ -257,48 +257,48 @@ class ODBDESIGN_EXPORT StepHdrFile_StepRepeatRecord final : public ::google::pro
   std::string* _internal_mutable_name();
 
   public:
-  // optional float x = 2;
+  // optional double x = 2;
   bool has_x() const;
   void clear_x() ;
-  float x() const;
-  void set_x(float value);
+  double x() const;
+  void set_x(double value);
 
   private:
-  float _internal_x() const;
-  void _internal_set_x(float value);
+  double _internal_x() const;
+  void _internal_set_x(double value);
 
   public:
-  // optional float y = 3;
+  // optional double y = 3;
   bool has_y() const;
   void clear_y() ;
-  float y() const;
-  void set_y(float value);
+  double y() const;
+  void set_y(double value);
 
   private:
-  float _internal_y() const;
-  void _internal_set_y(float value);
+  double _internal_y() const;
+  void _internal_set_y(double value);
 
   public:
-  // optional float dx = 4;
+  // optional double dx = 4;
   bool has_dx() const;
   void clear_dx() ;
-  float dx() const;
-  void set_dx(float value);
+  double dx() const;
+  void set_dx(double value);
 
   private:
-  float _internal_dx() const;
-  void _internal_set_dx(float value);
+  double _internal_dx() const;
+  void _internal_set_dx(double value);
 
   public:
-  // optional float dy = 5;
+  // optional double dy = 5;
   bool has_dy() const;
   void clear_dy() ;
-  float dy() const;
-  void set_dy(float value);
+  double dy() const;
+  void set_dy(double value);
 
   private:
-  float _internal_dy() const;
-  void _internal_set_dy(float value);
+  double _internal_dy() const;
+  void _internal_set_dy(double value);
 
   public:
   // optional int32 nx = 6;
@@ -323,15 +323,15 @@ class ODBDESIGN_EXPORT StepHdrFile_StepRepeatRecord final : public ::google::pro
   void _internal_set_ny(::int32_t value);
 
   public:
-  // optional float angle = 8;
+  // optional double angle = 8;
   bool has_angle() const;
   void clear_angle() ;
-  float angle() const;
-  void set_angle(float value);
+  double angle() const;
+  void set_angle(double value);
 
   private:
-  float _internal_angle() const;
-  void _internal_set_angle(float value);
+  double _internal_angle() const;
+  void _internal_set_angle(double value);
 
   public:
   // optional bool flip = 9;
@@ -382,13 +382,13 @@ class ODBDESIGN_EXPORT StepHdrFile_StepRepeatRecord final : public ::google::pro
     ::google::protobuf::internal::HasBits<1> _has_bits_;
     ::google::protobuf::internal::CachedSize _cached_size_;
     ::google::protobuf::internal::ArenaStringPtr name_;
-    float x_;
-    float y_;
-    float dx_;
-    float dy_;
+    double x_;
+    double y_;
+    double dx_;
+    double dy_;
     ::int32_t nx_;
     ::int32_t ny_;
-    float angle_;
+    double angle_;
     bool flip_;
     bool mirror_;
     PROTOBUF_TSAN_DECLARE_MEMBER
@@ -591,14 +591,14 @@ class ODBDESIGN_EXPORT StepHdrFile final : public ::google::protobuf::Message
     kPathFieldNumber = 14,
     kXDatumFieldNumber = 1,
     kYDatumFieldNumber = 2,
-    kIdFieldNumber = 3,
     kXOriginFieldNumber = 4,
     kYOriginFieldNumber = 5,
     kTopActiveFieldNumber = 6,
     kBottomActiveFieldNumber = 7,
+    kIdFieldNumber = 3,
+    kAffectingBomChangedFieldNumber = 11,
     kRightActiveFieldNumber = 8,
     kLeftActiveFieldNumber = 9,
-    kAffectingBomChangedFieldNumber = 11,
   };
   // repeated .Odb.Lib.Protobuf.StepHdrFile.StepRepeatRecord stepRepeatRecords = 13;
   int steprepeatrecords_size() const;
@@ -683,26 +683,70 @@ class ODBDESIGN_EXPORT StepHdrFile final : public ::google::protobuf::Message
   std::string* _internal_mutable_path();
 
   public:
-  // optional float xDatum = 1;
+  // optional double xDatum = 1;
   bool has_xdatum() const;
   void clear_xdatum() ;
-  float xdatum() const;
-  void set_xdatum(float value);
+  double xdatum() const;
+  void set_xdatum(double value);
 
   private:
-  float _internal_xdatum() const;
-  void _internal_set_xdatum(float value);
+  double _internal_xdatum() const;
+  void _internal_set_xdatum(double value);
 
   public:
-  // optional float yDatum = 2;
+  // optional double yDatum = 2;
   bool has_ydatum() const;
   void clear_ydatum() ;
-  float ydatum() const;
-  void set_ydatum(float value);
+  double ydatum() const;
+  void set_ydatum(double value);
 
   private:
-  float _internal_ydatum() const;
-  void _internal_set_ydatum(float value);
+  double _internal_ydatum() const;
+  void _internal_set_ydatum(double value);
+
+  public:
+  // optional double xOrigin = 4;
+  bool has_xorigin() const;
+  void clear_xorigin() ;
+  double xorigin() const;
+  void set_xorigin(double value);
+
+  private:
+  double _internal_xorigin() const;
+  void _internal_set_xorigin(double value);
+
+  public:
+  // optional double yOrigin = 5;
+  bool has_yorigin() const;
+  void clear_yorigin() ;
+  double yorigin() const;
+  void set_yorigin(double value);
+
+  private:
+  double _internal_yorigin() const;
+  void _internal_set_yorigin(double value);
+
+  public:
+  // optional double topActive = 6;
+  bool has_topactive() const;
+  void clear_topactive() ;
+  double topactive() const;
+  void set_topactive(double value);
+
+  private:
+  double _internal_topactive() const;
+  void _internal_set_topactive(double value);
+
+  public:
+  // optional double bottomActive = 7;
+  bool has_bottomactive() const;
+  void clear_bottomactive() ;
+  double bottomactive() const;
+  void set_bottomactive(double value);
+
+  private:
+  double _internal_bottomactive() const;
+  void _internal_set_bottomactive(double value);
 
   public:
   // optional int32 id = 3;
@@ -716,72 +760,6 @@ class ODBDESIGN_EXPORT StepHdrFile final : public ::google::protobuf::Message
   void _internal_set_id(::int32_t value);
 
   public:
-  // optional float xOrigin = 4;
-  bool has_xorigin() const;
-  void clear_xorigin() ;
-  float xorigin() const;
-  void set_xorigin(float value);
-
-  private:
-  float _internal_xorigin() const;
-  void _internal_set_xorigin(float value);
-
-  public:
-  // optional float yOrigin = 5;
-  bool has_yorigin() const;
-  void clear_yorigin() ;
-  float yorigin() const;
-  void set_yorigin(float value);
-
-  private:
-  float _internal_yorigin() const;
-  void _internal_set_yorigin(float value);
-
-  public:
-  // optional float topActive = 6;
-  bool has_topactive() const;
-  void clear_topactive() ;
-  float topactive() const;
-  void set_topactive(float value);
-
-  private:
-  float _internal_topactive() const;
-  void _internal_set_topactive(float value);
-
-  public:
-  // optional float bottomActive = 7;
-  bool has_bottomactive() const;
-  void clear_bottomactive() ;
-  float bottomactive() const;
-  void set_bottomactive(float value);
-
-  private:
-  float _internal_bottomactive() const;
-  void _internal_set_bottomactive(float value);
-
-  public:
-  // optional float rightActive = 8;
-  bool has_rightactive() const;
-  void clear_rightactive() ;
-  float rightactive() const;
-  void set_rightactive(float value);
-
-  private:
-  float _internal_rightactive() const;
-  void _internal_set_rightactive(float value);
-
-  public:
-  // optional float leftActive = 9;
-  bool has_leftactive() const;
-  void clear_leftactive() ;
-  float leftactive() const;
-  void set_leftactive(float value);
-
-  private:
-  float _internal_leftactive() const;
-  void _internal_set_leftactive(float value);
-
-  public:
   // optional bool affectingBomChanged = 11;
   bool has_affectingbomchanged() const;
   void clear_affectingbomchanged() ;
@@ -791,6 +769,28 @@ class ODBDESIGN_EXPORT StepHdrFile final : public ::google::protobuf::Message
   private:
   bool _internal_affectingbomchanged() const;
   void _internal_set_affectingbomchanged(bool value);
+
+  public:
+  // optional double rightActive = 8;
+  bool has_rightactive() const;
+  void clear_rightactive() ;
+  double rightactive() const;
+  void set_rightactive(double value);
+
+  private:
+  double _internal_rightactive() const;
+  void _internal_set_rightactive(double value);
+
+  public:
+  // optional double leftActive = 9;
+  bool has_leftactive() const;
+  void clear_leftactive() ;
+  double leftactive() const;
+  void set_leftactive(double value);
+
+  private:
+  double _internal_leftactive() const;
+  void _internal_set_leftactive(double value);
 
   public:
   // @@protoc_insertion_point(class_scope:Odb.Lib.Protobuf.StepHdrFile)
@@ -826,16 +826,16 @@ class ODBDESIGN_EXPORT StepHdrFile final : public ::google::protobuf::Message
     ::google::protobuf::internal::ArenaStringPtr affectingbom_;
     ::google::protobuf::internal::ArenaStringPtr online_;
     ::google::protobuf::internal::ArenaStringPtr path_;
-    float xdatum_;
-    float ydatum_;
+    double xdatum_;
+    double ydatum_;
+    double xorigin_;
+    double yorigin_;
+    double topactive_;
+    double bottomactive_;
     ::int32_t id_;
-    float xorigin_;
-    float yorigin_;
-    float topactive_;
-    float bottomactive_;
-    float rightactive_;
-    float leftactive_;
     bool affectingbomchanged_;
+    double rightactive_;
+    double leftactive_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -927,7 +927,7 @@ inline void StepHdrFile_StepRepeatRecord::set_allocated_name(std::string* value)
   // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.StepHdrFile.StepRepeatRecord.name)
 }
 
-// optional float x = 2;
+// optional double x = 2;
 inline bool StepHdrFile_StepRepeatRecord::has_x() const {
   bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
   return value;
@@ -937,25 +937,25 @@ inline void StepHdrFile_StepRepeatRecord::clear_x() {
   _impl_.x_ = 0;
   _impl_._has_bits_[0] &= ~0x00000002u;
 }
-inline float StepHdrFile_StepRepeatRecord::x() const {
+inline double StepHdrFile_StepRepeatRecord::x() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.StepHdrFile.StepRepeatRecord.x)
   return _internal_x();
 }
-inline void StepHdrFile_StepRepeatRecord::set_x(float value) {
+inline void StepHdrFile_StepRepeatRecord::set_x(double value) {
   _internal_set_x(value);
   _impl_._has_bits_[0] |= 0x00000002u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.StepHdrFile.StepRepeatRecord.x)
 }
-inline float StepHdrFile_StepRepeatRecord::_internal_x() const {
+inline double StepHdrFile_StepRepeatRecord::_internal_x() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.x_;
 }
-inline void StepHdrFile_StepRepeatRecord::_internal_set_x(float value) {
+inline void StepHdrFile_StepRepeatRecord::_internal_set_x(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.x_ = value;
 }
 
-// optional float y = 3;
+// optional double y = 3;
 inline bool StepHdrFile_StepRepeatRecord::has_y() const {
   bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
   return value;
@@ -965,25 +965,25 @@ inline void StepHdrFile_StepRepeatRecord::clear_y() {
   _impl_.y_ = 0;
   _impl_._has_bits_[0] &= ~0x00000004u;
 }
-inline float StepHdrFile_StepRepeatRecord::y() const {
+inline double StepHdrFile_StepRepeatRecord::y() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.StepHdrFile.StepRepeatRecord.y)
   return _internal_y();
 }
-inline void StepHdrFile_StepRepeatRecord::set_y(float value) {
+inline void StepHdrFile_StepRepeatRecord::set_y(double value) {
   _internal_set_y(value);
   _impl_._has_bits_[0] |= 0x00000004u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.StepHdrFile.StepRepeatRecord.y)
 }
-inline float StepHdrFile_StepRepeatRecord::_internal_y() const {
+inline double StepHdrFile_StepRepeatRecord::_internal_y() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.y_;
 }
-inline void StepHdrFile_StepRepeatRecord::_internal_set_y(float value) {
+inline void StepHdrFile_StepRepeatRecord::_internal_set_y(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.y_ = value;
 }
 
-// optional float dx = 4;
+// optional double dx = 4;
 inline bool StepHdrFile_StepRepeatRecord::has_dx() const {
   bool value = (_impl_._has_bits_[0] & 0x00000008u) != 0;
   return value;
@@ -993,25 +993,25 @@ inline void StepHdrFile_StepRepeatRecord::clear_dx() {
   _impl_.dx_ = 0;
   _impl_._has_bits_[0] &= ~0x00000008u;
 }
-inline float StepHdrFile_StepRepeatRecord::dx() const {
+inline double StepHdrFile_StepRepeatRecord::dx() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.StepHdrFile.StepRepeatRecord.dx)
   return _internal_dx();
 }
-inline void StepHdrFile_StepRepeatRecord::set_dx(float value) {
+inline void StepHdrFile_StepRepeatRecord::set_dx(double value) {
   _internal_set_dx(value);
   _impl_._has_bits_[0] |= 0x00000008u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.StepHdrFile.StepRepeatRecord.dx)
 }
-inline float StepHdrFile_StepRepeatRecord::_internal_dx() const {
+inline double StepHdrFile_StepRepeatRecord::_internal_dx() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.dx_;
 }
-inline void StepHdrFile_StepRepeatRecord::_internal_set_dx(float value) {
+inline void StepHdrFile_StepRepeatRecord::_internal_set_dx(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.dx_ = value;
 }
 
-// optional float dy = 5;
+// optional double dy = 5;
 inline bool StepHdrFile_StepRepeatRecord::has_dy() const {
   bool value = (_impl_._has_bits_[0] & 0x00000010u) != 0;
   return value;
@@ -1021,20 +1021,20 @@ inline void StepHdrFile_StepRepeatRecord::clear_dy() {
   _impl_.dy_ = 0;
   _impl_._has_bits_[0] &= ~0x00000010u;
 }
-inline float StepHdrFile_StepRepeatRecord::dy() const {
+inline double StepHdrFile_StepRepeatRecord::dy() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.StepHdrFile.StepRepeatRecord.dy)
   return _internal_dy();
 }
-inline void StepHdrFile_StepRepeatRecord::set_dy(float value) {
+inline void StepHdrFile_StepRepeatRecord::set_dy(double value) {
   _internal_set_dy(value);
   _impl_._has_bits_[0] |= 0x00000010u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.StepHdrFile.StepRepeatRecord.dy)
 }
-inline float StepHdrFile_StepRepeatRecord::_internal_dy() const {
+inline double StepHdrFile_StepRepeatRecord::_internal_dy() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.dy_;
 }
-inline void StepHdrFile_StepRepeatRecord::_internal_set_dy(float value) {
+inline void StepHdrFile_StepRepeatRecord::_internal_set_dy(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.dy_ = value;
 }
@@ -1095,7 +1095,7 @@ inline void StepHdrFile_StepRepeatRecord::_internal_set_ny(::int32_t value) {
   _impl_.ny_ = value;
 }
 
-// optional float angle = 8;
+// optional double angle = 8;
 inline bool StepHdrFile_StepRepeatRecord::has_angle() const {
   bool value = (_impl_._has_bits_[0] & 0x00000080u) != 0;
   return value;
@@ -1105,20 +1105,20 @@ inline void StepHdrFile_StepRepeatRecord::clear_angle() {
   _impl_.angle_ = 0;
   _impl_._has_bits_[0] &= ~0x00000080u;
 }
-inline float StepHdrFile_StepRepeatRecord::angle() const {
+inline double StepHdrFile_StepRepeatRecord::angle() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.StepHdrFile.StepRepeatRecord.angle)
   return _internal_angle();
 }
-inline void StepHdrFile_StepRepeatRecord::set_angle(float value) {
+inline void StepHdrFile_StepRepeatRecord::set_angle(double value) {
   _internal_set_angle(value);
   _impl_._has_bits_[0] |= 0x00000080u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.StepHdrFile.StepRepeatRecord.angle)
 }
-inline float StepHdrFile_StepRepeatRecord::_internal_angle() const {
+inline double StepHdrFile_StepRepeatRecord::_internal_angle() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.angle_;
 }
-inline void StepHdrFile_StepRepeatRecord::_internal_set_angle(float value) {
+inline void StepHdrFile_StepRepeatRecord::_internal_set_angle(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.angle_ = value;
 }
@@ -1185,7 +1185,7 @@ inline void StepHdrFile_StepRepeatRecord::_internal_set_mirror(bool value) {
 
 // StepHdrFile
 
-// optional float xDatum = 1;
+// optional double xDatum = 1;
 inline bool StepHdrFile::has_xdatum() const {
   bool value = (_impl_._has_bits_[0] & 0x00000008u) != 0;
   return value;
@@ -1195,25 +1195,25 @@ inline void StepHdrFile::clear_xdatum() {
   _impl_.xdatum_ = 0;
   _impl_._has_bits_[0] &= ~0x00000008u;
 }
-inline float StepHdrFile::xdatum() const {
+inline double StepHdrFile::xdatum() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.StepHdrFile.xDatum)
   return _internal_xdatum();
 }
-inline void StepHdrFile::set_xdatum(float value) {
+inline void StepHdrFile::set_xdatum(double value) {
   _internal_set_xdatum(value);
   _impl_._has_bits_[0] |= 0x00000008u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.StepHdrFile.xDatum)
 }
-inline float StepHdrFile::_internal_xdatum() const {
+inline double StepHdrFile::_internal_xdatum() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.xdatum_;
 }
-inline void StepHdrFile::_internal_set_xdatum(float value) {
+inline void StepHdrFile::_internal_set_xdatum(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.xdatum_ = value;
 }
 
-// optional float yDatum = 2;
+// optional double yDatum = 2;
 inline bool StepHdrFile::has_ydatum() const {
   bool value = (_impl_._has_bits_[0] & 0x00000010u) != 0;
   return value;
@@ -1223,33 +1223,33 @@ inline void StepHdrFile::clear_ydatum() {
   _impl_.ydatum_ = 0;
   _impl_._has_bits_[0] &= ~0x00000010u;
 }
-inline float StepHdrFile::ydatum() const {
+inline double StepHdrFile::ydatum() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.StepHdrFile.yDatum)
   return _internal_ydatum();
 }
-inline void StepHdrFile::set_ydatum(float value) {
+inline void StepHdrFile::set_ydatum(double value) {
   _internal_set_ydatum(value);
   _impl_._has_bits_[0] |= 0x00000010u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.StepHdrFile.yDatum)
 }
-inline float StepHdrFile::_internal_ydatum() const {
+inline double StepHdrFile::_internal_ydatum() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.ydatum_;
 }
-inline void StepHdrFile::_internal_set_ydatum(float value) {
+inline void StepHdrFile::_internal_set_ydatum(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.ydatum_ = value;
 }
 
 // optional int32 id = 3;
 inline bool StepHdrFile::has_id() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000020u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000200u) != 0;
   return value;
 }
 inline void StepHdrFile::clear_id() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.id_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000020u;
+  _impl_._has_bits_[0] &= ~0x00000200u;
 }
 inline ::int32_t StepHdrFile::id() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.StepHdrFile.id)
@@ -1257,7 +1257,7 @@ inline ::int32_t StepHdrFile::id() const {
 }
 inline void StepHdrFile::set_id(::int32_t value) {
   _internal_set_id(value);
-  _impl_._has_bits_[0] |= 0x00000020u;
+  _impl_._has_bits_[0] |= 0x00000200u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.StepHdrFile.id)
 }
 inline ::int32_t StepHdrFile::_internal_id() const {
@@ -1269,170 +1269,170 @@ inline void StepHdrFile::_internal_set_id(::int32_t value) {
   _impl_.id_ = value;
 }
 
-// optional float xOrigin = 4;
+// optional double xOrigin = 4;
 inline bool StepHdrFile::has_xorigin() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000040u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000020u) != 0;
   return value;
 }
 inline void StepHdrFile::clear_xorigin() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.xorigin_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000040u;
+  _impl_._has_bits_[0] &= ~0x00000020u;
 }
-inline float StepHdrFile::xorigin() const {
+inline double StepHdrFile::xorigin() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.StepHdrFile.xOrigin)
   return _internal_xorigin();
 }
-inline void StepHdrFile::set_xorigin(float value) {
+inline void StepHdrFile::set_xorigin(double value) {
   _internal_set_xorigin(value);
-  _impl_._has_bits_[0] |= 0x00000040u;
+  _impl_._has_bits_[0] |= 0x00000020u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.StepHdrFile.xOrigin)
 }
-inline float StepHdrFile::_internal_xorigin() const {
+inline double StepHdrFile::_internal_xorigin() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.xorigin_;
 }
-inline void StepHdrFile::_internal_set_xorigin(float value) {
+inline void StepHdrFile::_internal_set_xorigin(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.xorigin_ = value;
 }
 
-// optional float yOrigin = 5;
+// optional double yOrigin = 5;
 inline bool StepHdrFile::has_yorigin() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000080u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000040u) != 0;
   return value;
 }
 inline void StepHdrFile::clear_yorigin() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.yorigin_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000080u;
+  _impl_._has_bits_[0] &= ~0x00000040u;
 }
-inline float StepHdrFile::yorigin() const {
+inline double StepHdrFile::yorigin() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.StepHdrFile.yOrigin)
   return _internal_yorigin();
 }
-inline void StepHdrFile::set_yorigin(float value) {
+inline void StepHdrFile::set_yorigin(double value) {
   _internal_set_yorigin(value);
-  _impl_._has_bits_[0] |= 0x00000080u;
+  _impl_._has_bits_[0] |= 0x00000040u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.StepHdrFile.yOrigin)
 }
-inline float StepHdrFile::_internal_yorigin() const {
+inline double StepHdrFile::_internal_yorigin() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.yorigin_;
 }
-inline void StepHdrFile::_internal_set_yorigin(float value) {
+inline void StepHdrFile::_internal_set_yorigin(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.yorigin_ = value;
 }
 
-// optional float topActive = 6;
+// optional double topActive = 6;
 inline bool StepHdrFile::has_topactive() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000100u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000080u) != 0;
   return value;
 }
 inline void StepHdrFile::clear_topactive() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.topactive_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000100u;
+  _impl_._has_bits_[0] &= ~0x00000080u;
 }
-inline float StepHdrFile::topactive() const {
+inline double StepHdrFile::topactive() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.StepHdrFile.topActive)
   return _internal_topactive();
 }
-inline void StepHdrFile::set_topactive(float value) {
+inline void StepHdrFile::set_topactive(double value) {
   _internal_set_topactive(value);
-  _impl_._has_bits_[0] |= 0x00000100u;
+  _impl_._has_bits_[0] |= 0x00000080u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.StepHdrFile.topActive)
 }
-inline float StepHdrFile::_internal_topactive() const {
+inline double StepHdrFile::_internal_topactive() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.topactive_;
 }
-inline void StepHdrFile::_internal_set_topactive(float value) {
+inline void StepHdrFile::_internal_set_topactive(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.topactive_ = value;
 }
 
-// optional float bottomActive = 7;
+// optional double bottomActive = 7;
 inline bool StepHdrFile::has_bottomactive() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000200u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000100u) != 0;
   return value;
 }
 inline void StepHdrFile::clear_bottomactive() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.bottomactive_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000200u;
+  _impl_._has_bits_[0] &= ~0x00000100u;
 }
-inline float StepHdrFile::bottomactive() const {
+inline double StepHdrFile::bottomactive() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.StepHdrFile.bottomActive)
   return _internal_bottomactive();
 }
-inline void StepHdrFile::set_bottomactive(float value) {
+inline void StepHdrFile::set_bottomactive(double value) {
   _internal_set_bottomactive(value);
-  _impl_._has_bits_[0] |= 0x00000200u;
+  _impl_._has_bits_[0] |= 0x00000100u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.StepHdrFile.bottomActive)
 }
-inline float StepHdrFile::_internal_bottomactive() const {
+inline double StepHdrFile::_internal_bottomactive() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.bottomactive_;
 }
-inline void StepHdrFile::_internal_set_bottomactive(float value) {
+inline void StepHdrFile::_internal_set_bottomactive(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.bottomactive_ = value;
 }
 
-// optional float rightActive = 8;
+// optional double rightActive = 8;
 inline bool StepHdrFile::has_rightactive() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000400u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000800u) != 0;
   return value;
 }
 inline void StepHdrFile::clear_rightactive() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.rightactive_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000400u;
+  _impl_._has_bits_[0] &= ~0x00000800u;
 }
-inline float StepHdrFile::rightactive() const {
+inline double StepHdrFile::rightactive() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.StepHdrFile.rightActive)
   return _internal_rightactive();
 }
-inline void StepHdrFile::set_rightactive(float value) {
+inline void StepHdrFile::set_rightactive(double value) {
   _internal_set_rightactive(value);
-  _impl_._has_bits_[0] |= 0x00000400u;
+  _impl_._has_bits_[0] |= 0x00000800u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.StepHdrFile.rightActive)
 }
-inline float StepHdrFile::_internal_rightactive() const {
+inline double StepHdrFile::_internal_rightactive() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.rightactive_;
 }
-inline void StepHdrFile::_internal_set_rightactive(float value) {
+inline void StepHdrFile::_internal_set_rightactive(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.rightactive_ = value;
 }
 
-// optional float leftActive = 9;
+// optional double leftActive = 9;
 inline bool StepHdrFile::has_leftactive() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000800u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00001000u) != 0;
   return value;
 }
 inline void StepHdrFile::clear_leftactive() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.leftactive_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000800u;
+  _impl_._has_bits_[0] &= ~0x00001000u;
 }
-inline float StepHdrFile::leftactive() const {
+inline double StepHdrFile::leftactive() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.StepHdrFile.leftActive)
   return _internal_leftactive();
 }
-inline void StepHdrFile::set_leftactive(float value) {
+inline void StepHdrFile::set_leftactive(double value) {
   _internal_set_leftactive(value);
-  _impl_._has_bits_[0] |= 0x00000800u;
+  _impl_._has_bits_[0] |= 0x00001000u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.StepHdrFile.leftActive)
 }
-inline float StepHdrFile::_internal_leftactive() const {
+inline double StepHdrFile::_internal_leftactive() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.leftactive_;
 }
-inline void StepHdrFile::_internal_set_leftactive(float value) {
+inline void StepHdrFile::_internal_set_leftactive(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.leftactive_ = value;
 }
@@ -1508,13 +1508,13 @@ inline void StepHdrFile::set_allocated_affectingbom(std::string* value) {
 
 // optional bool affectingBomChanged = 11;
 inline bool StepHdrFile::has_affectingbomchanged() const {
-  bool value = (_impl_._has_bits_[0] & 0x00001000u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000400u) != 0;
   return value;
 }
 inline void StepHdrFile::clear_affectingbomchanged() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.affectingbomchanged_ = false;
-  _impl_._has_bits_[0] &= ~0x00001000u;
+  _impl_._has_bits_[0] &= ~0x00000400u;
 }
 inline bool StepHdrFile::affectingbomchanged() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.StepHdrFile.affectingBomChanged)
@@ -1522,7 +1522,7 @@ inline bool StepHdrFile::affectingbomchanged() const {
 }
 inline void StepHdrFile::set_affectingbomchanged(bool value) {
   _internal_set_affectingbomchanged(value);
-  _impl_._has_bits_[0] |= 0x00001000u;
+  _impl_._has_bits_[0] |= 0x00000400u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.StepHdrFile.affectingBomChanged)
 }
 inline bool StepHdrFile::_internal_affectingbomchanged() const {

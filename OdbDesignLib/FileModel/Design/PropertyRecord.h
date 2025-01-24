@@ -15,7 +15,7 @@ namespace Odb::Lib::FileModel::Design
 		// data members
 		std::string name;
 		std::string value;
-		std::vector<float> floatValues;
+		std::vector<double> floatValues;
 
 		// constants
 		constexpr inline static const char* RECORD_TOKEN = "PRP";
