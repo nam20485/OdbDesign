@@ -10,11 +10,12 @@
 #include "SymbolName.h"
 #include "AttributeLookupTable.h"
 #include "../IStreamSaveable.h"
+#include "../../odbdesign_export.h"
 
 
 namespace Odb::Lib::FileModel::Design
 {
-	class FeaturesFile : public IProtoBuffable<Odb::Lib::Protobuf::FeaturesFile>, public IStreamSaveable
+	class ODBDESIGN_EXPORT FeaturesFile : public IProtoBuffable<Odb::Lib::Protobuf::FeaturesFile>, public IStreamSaveable
 	{
 	public:
 		FeaturesFile();

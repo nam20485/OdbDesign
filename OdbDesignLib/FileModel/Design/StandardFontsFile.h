@@ -10,7 +10,7 @@
 
 namespace Odb::Lib::FileModel::Design
 {
-	class StandardFontsFile : public OdbFile, public IProtoBuffable<Odb::Lib::Protobuf::StandardFontsFile>, public IStreamSaveable
+	class ODBDESIGN_EXPORT StandardFontsFile : public OdbFile, public IProtoBuffable<Odb::Lib::Protobuf::StandardFontsFile>, public IStreamSaveable
 	{
 	public:
 		StandardFontsFile() = default;
