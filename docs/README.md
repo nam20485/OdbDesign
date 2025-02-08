@@ -288,7 +288,7 @@ See [docs/CONTRIBUTING.md](CONTRIBUTING.md) for more details.
 
 This project is free and open source under the [AGPL V3.0](https://github.com/nam20485/OdbDesign/blob/df807d5c2c52af53b8fdec6f73605ce9ea6f6c22/LICENSE).
 
-> The AGPL V3.0 is a non-permissive open source license that is not suitable for use in closed-source applications. However, licenses suitable for use in closed-source applications are available. Please contact me to obtain a license suitable for closed-source uses.
+> The AGPL V3.0 is a non-permissive open source license that is not suitable for use in closed-source applications. However, licenses suitable for use in closed-source applications are available. Please contact me to obtain a license suitable for your needs.
 
 ## Credit
 
