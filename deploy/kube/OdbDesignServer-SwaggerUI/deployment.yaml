@@ -1,0 +1,37 @@
+##################################################################################################
+# odbdesign-server-swaggerui deployment
+##################################################################################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: odbdesign-server-swaggerui-v1
+  labels:
+    app: odbdesign-server-swaggerui
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: odbdesign-server-swaggerui
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: odbdesign-server-swaggerui
+        version: v1
+    spec:
+      containers:
+        - name: odbdesign-server-swaggerui
+          image: ghcr.io/nam20485/odbdesignserver-swaggerui:nam20485-latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              name: oss-dep-port
+          resources:
+            limits:
+              cpu: "8"
+              memory: 10Gi
+            requests:
+              cpu: "2"
+              memory: 2Gi                 
+            

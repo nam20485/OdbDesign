@@ -1,0 +1,82 @@
+##################################################################################################
+# OdbDesignServer deployment
+##################################################################################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: odbdesign-server-v1
+  labels:
+    app: odbdesign-server
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: odbdesign-server
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: odbdesign-server
+        version: v1
+    spec:    
+      volumes:
+        - name: odbdesign-server-storage
+          persistentVolumeClaim:
+            claimName: k3d-volume-claim
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/master
+                operator: NotIn
+                values:
+                  - "true"
+      containers:
+        - name: odbdesign-server
+          image: ghcr.io/nam20485/odbdesign:nam20485-latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8888
+              name: ods-dep-port
+          volumeMounts:
+            - mountPath: /OdbDesign/designs
+              name: odbdesign-server-storage
+          env:
+            - name: ODBDESIGN_SERVER_REQUEST_USERNAME
+              valueFrom: 
+                secretKeyRef:
+                  name: odbdesign-server-request-secret
+                  key: ODBDESIGN_SERVER_REQUEST_USERNAME
+            - name: ODBDESIGN_SERVER_REQUEST_PASSWORD
+              valueFrom: 
+                secretKeyRef:
+                  name: odbdesign-server-request-secret
+                  key: ODBDESIGN_SERVER_REQUEST_PASSWORD           
+          resources:
+            limits:
+              cpu: "8"
+              memory: 10Gi
+            requests:
+              cpu: "2"
+              memory: 2Gi
+          livenessProbe:
+            httpGet:
+              path: /healthz/live
+              port: ods-dep-port
+            failureThreshold: 3
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /healthz/ready
+              port: ods-dep-port
+            failureThreshold: 3
+            periodSeconds: 5
+          startupProbe:
+            httpGet:
+              path: /healthz/started
+              port: ods-dep-port
+            failureThreshold: 10
+            periodSeconds: 1
+            #initialDelaySeconds: 1          

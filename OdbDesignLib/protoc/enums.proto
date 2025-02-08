@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+//// https://protobuf.dev/reference/cpp/cpp-generated/#message
+//option optimize_for = CODE_SIZE;
+
+package Odb.Lib.Protobuf;
+
+enum BoardSide
+{
+    BsNone = 0;
+    Top = 1;
+    Bottom = 2;   
+};
+
+enum LineShape
+{
+    Square = 0;
+    Round = 1;
+};
+
+enum Polarity
+{
+    Positive = 0;
+    Negative = 1;
+};
+
+enum UnitType
+{
+	None = 0;
+	Metric = 1;
+	Imperial = 2;
+};

@@ -1,0 +1,78 @@
+syntax = "proto3";
+
+//// https://protobuf.dev/reference/cpp/cpp-generated/#message
+//option optimize_for = CODE_SIZE;
+
+import "common.proto";
+import "enums.proto";
+
+package Odb.Lib.Protobuf;
+
+//
+//  EdaDataFile.h
+//
+
+message ComponentsFile {
+
+    message ComponentRecord {
+
+        message ToeprintRecord  {
+
+            optional uint32 pinNumber = 1;
+            optional double locationX = 2;
+            optional double locationY = 3;
+            optional double rotation = 4;
+            optional bool mirror = 5;
+            optional uint32 netNumber = 6;
+            optional uint32 subnetNumber = 7;
+            optional string name = 8;
+
+        }
+        
+        optional uint32 pkgRef = 1;
+        optional double locationX = 2;
+        optional double locationY = 3;
+        optional double rotation = 4;
+        optional bool mirror = 5;
+        optional string compName = 6;
+        optional string partName = 7;
+        optional string attributes = 8;
+        optional uint32 id = 9;
+        optional uint32 index = 10; 
+
+        repeated PropertyRecord propertyRecords = 11;
+        repeated ToeprintRecord toeprintRecords = 12; 
+        map<string, string> attributeLookupTable = 13;       
+
+    }
+
+    message BomDescriptionRecord
+    {
+        optional string cpn = 1;
+        optional string pkg = 2;
+        optional string ipn = 3;
+        repeated string descriptions = 4;
+        optional string vpl_vnd = 5;
+        optional string vpl_mpn = 6;
+        optional string vnd = 7;
+        optional string mpn = 8;
+    }
+   
+    optional string units = 1;
+    optional uint32 id = 2;
+    optional BoardSide side = 3;
+    optional string layerName = 4;
+    optional string path = 5;
+    optional string directory = 6;
+
+    repeated string attributeNames = 7;
+    repeated string attributeTextValues = 8;
+
+    repeated ComponentRecord componentRecords = 9;
+    map<string, ComponentRecord> componentRecordsByName = 10;
+
+    repeated PropertyRecord propertyRecords = 11;
+    map<string, PropertyRecord> propertyRecordsByName = 12;
+
+    map<string, BomDescriptionRecord> bomDescriptionRecordsByCpn = 13;
+}

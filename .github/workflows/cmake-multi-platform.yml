@@ -3,12 +3,12 @@ name: CMake Build Multi-Platform
 
 on:
   push:
-    branches: [ "development", "main", "release" ]
+    branches: [ "nam20485" ]
   pull_request:
-    branches: [ "development", "main", "release" ]  
+    branches: [ "development", "main", "release", "nam20485" ]  
 
 permissions:
-  contents: write  
+  contents: read  
 
 env:
   VCPKG_ROOT: ${{ github.workspace }}/vcpkg
@@ -23,6 +23,9 @@ jobs:
   build:
     name: CMake-Multi-Platform-Build
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
+      checks: write
 
     strategy:
       # Set fail-fast to false to ensure that feedback is delivered for all matrix combinations. Consider changing this to true when your workflow is stable.
@@ -37,7 +40,7 @@ jobs:
           - os: ubuntu-22.04
             preset: linux-release
           # MacOS x64 Release
-          - os: macos-12
+          - os: macos-14
             preset: macos-release
           # Linux mingw x64 Release
           # - os: ubuntu-22.04
@@ -47,15 +50,21 @@ jobs:
           #   preset: python-linux-release
 
     steps:   
+    
+    - name: Harden Runner
+      uses: step-security/harden-runner@a4aa98b93cab29d9b1101a6143fb8bce00e2eac4 # v2.7.1
+      with:
+        egress-policy: audit
 
-    - uses: actions/checkout@v3 
+    - name: Checkout Repository
+      uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b # v4.1.5
     
     # add problem matchers by compiler
     - name: Add Problem Matchers
-      uses: ammaraskar/msvc-problem-matcher@master
+      uses: ammaraskar/msvc-problem-matcher@1ebcb382869bfdc2cc645e8a2a43b6d319ea1cc0 # master
       if: matrix.os == 'windows-2022'
     - name: Add Problem Matchers
-      uses: ammaraskar/gcc-problem-matcher@master
+      uses: ammaraskar/gcc-problem-matcher@0f9c86f9e693db67dacf53986e1674de5f2e5f28 # master
       if: matrix.os != 'windows-2022'
     
     - name: Install vcpkg Dependencies
@@ -75,12 +84,12 @@ jobs:
       if: matrix.os != 'windows-2022'
     
     - name: Install Ninja    
-      uses: seanmiddleditch/gha-setup-ninja@master
+      uses: seanmiddleditch/gha-setup-ninja@8b297075da4cd2a5f1fd21fe011b499edf06e9d2 # master
       if: matrix.os != 'windows-2022'
 
     # Export vcpkg Cache Variables
     - name : Export vcpkg Cache Variables
-      uses: actions/github-script@v6
+      uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
       with:
         script: |
           core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
@@ -99,7 +108,7 @@ jobs:
     #   os == windows-2022
     #
     - name: Setup VC Tools
-      uses: ilammy/msvc-dev-cmd@v1
+      uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
       if: matrix.os == 'windows-2022'
       
     - name: Patch vcpkg
@@ -136,10 +145,41 @@ jobs:
       run: cmake --preset ${{matrix.preset}}    
 
     - name: CMake Build          
-      run: cmake --build --preset ${{matrix.preset}} 
+      run: cmake --build --preset ${{matrix.preset}}
+
+    - name: Checkout OdbDesign Test Data Repository
+      uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b # v4.1.5
+      with:
+        repository: 'nam20485/OdbDesignTestData'
+        path: 'OdbDesignTestData'
+        ref: 'main'
+        #token: ${{ secrets.ODBDESIGN_TESTDATA_ACCESS_TOKEN }}
+        
+    - name : Export ODB_TEST_DATA_DIR    
+      uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+      with:
+        script: core.exportVariable('ODB_TEST_DATA_DIR', "${{github.workspace}}/OdbDesignTestData/TEST_DATA" || '');                
 
     - name: CMake Test
-      run: ctest --preset ${{matrix.preset}} -V
+      id: cmake-test
+      env:
+        ODB_TEST_DATA_DIR: ${{github.workspace}}/OdbDesignTestData/TEST_DATA
+        ODB_TEST_ENVIRONMENT_VARIABLE: ${{vars.ODB_TEST_ENVIRONMENT_VARIABLE}}
+      run: ctest --test-dir ./out/build/${{matrix.preset}}/OdbDesignTests --output-log ${{github.workspace}}/testlog.txt --output-junit ${{github.workspace}}/testlog.xml --output-on-failure      
+      # let the report step fail the job if it finds failed tests...
+      continue-on-error: true
+           
+    # report test results
+    - name: Report Test Results
+      uses: dorny/test-reporter@31a54ee7ebcacc03a09ea97a7e5465a47b84aea5 # v1.9.1
+      if: steps.cmake-test.outcome == 'success' || steps.cmake-test.outcome == 'failure'
+      with:
+        name: ${{ matrix.os }}_test-results
+        path: ${{github.workspace}}/testlog.xml
+        reporter: java-junit
+        path-replace-backslashes: true
+        # fail job based on report results
+        fail-on-error: true     
 
     #
     #   Artifacts
@@ -155,7 +195,7 @@ jobs:
         zip -r ./artifacts-${{matrix.os}}.zip ./*.so ./OdbDesignServer
 
     - name: Compress Artifacts (MacOS)
-      if: matrix.os == 'macos-12'
+      if: matrix.os == 'macos-14'
       run: |
         mkdir ${{env.ARTIFACTS_DIR}}
         cp ./out/build/${{matrix.preset}}/OdbDesignLib/*.dylib ${{env.ARTIFACTS_DIR}}
@@ -173,82 +213,8 @@ jobs:
         Compress-Archive -Path "${{env.ARTIFACTS_DIR_WIN}}\*.dll","${{env.ARTIFACTS_DIR_WIN}}\*.exe"  -DestinationPath "${{env.ARTIFACTS_DIR_WIN}}\artifacts-${{matrix.os}}.zip" -Verbose -Force
 
     - name: Upload Artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
       with:
         name: ${{ matrix.os }}-artifacts
         path: ${{ env.ARTIFACTS_DIR }}/artifacts-${{matrix.os}}.zip
-        retention-days: 1
-
-  release:
-    # only on pushes to the release branch
-    name: Create Release
-    needs: build
-    if: ${{ (github.ref_name == 'release') && github.event_name == 'push' }}       
-    runs-on: ubuntu-22.04
-    permissions: 
-      contents: write
-
-    steps:
-
-      # download the artifacts
-      - name: "Download artifacts"
-        uses: "actions/download-artifact@v2"
-        with:
-          path: ${{ github.workspace }}/artifacts
-
-      - name: Create Release Variables
-        run: |
-          ls -al ${{ github.workspace }}/artifacts
-          export RELEASE_VERSION="${{vars.RELEASE_VERSION_PREFIX}}.${{github.run_number}}"
-          echo "RELEASE_VERSION=$RELEASE_VERSION" >> $GITHUB_ENV                    
-          export RELEASE_TAG="v${RELEASE_VERSION}"
-          echo "RELEASE_TAG=$RELEASE_TAG" >> $GITHUB_ENV
-          export RELEASE_NAME="OdbDesign ${RELEASE_TAG}"
-          echo "RELEASE_NAME=$RELEASE_NAME" >> $GITHUB_ENV
-
-      - name: Rename Artifacts
-        run: |
-          mv ${{ github.workspace }}/artifacts/ubuntu-22.04-artifacts/artifacts-ubuntu-22.04.zip ${{ github.workspace }}/artifacts/OdbDesign-Linux-x64.zip
-          mv ${{ github.workspace }}/artifacts/windows-2022-artifacts/artifacts-windows-2022.zip ${{ github.workspace }}/artifacts/OdbDesign-Windows-x64.zip
-          mv ${{ github.workspace }}/artifacts/macos-12-artifacts/artifacts-macos-12.zip ${{ github.workspace }}/artifacts/OdbDesign-MacOS-x64.zip
-
-      # create a release
-      - name: "Create GH Release"
-        uses: "actions/github-script@v6"
-        with:
-          github-token: "${{ secrets.GITHUB_TOKEN }}"
-          script: |
-            try {             
-              const createResponse = await github.rest.repos.createRelease({
-                generate_release_notes: true,
-                name: process.env.RELEASE_NAME,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                tag_name: process.env.RELEASE_TAG,
-                target_commitish: '${{ github.ref_name }}'
-              });
-          
-              const filenames = [ 
-                  'OdbDesign-Linux-x64.zip',
-                  'OdbDesign-Windows-x64.zip',
-                  'OdbDesign-MacOS-x64.zip'
-              ];
-              
-              for (const filename of filenames) {                  
-                  const artifactsPath = 'artifacts';
-                  const filePath = artifactsPath +'/' + filename;
-                  const uploadResponse = await github.rest.repos.uploadReleaseAsset({
-                      owner: context.repo.owner,
-                      repo: context.repo.repo,
-                      release_id: createResponse.data.id,        
-                      name: filename,            
-                      data: require('fs').readFileSync(filePath),
-                      headers: {
-                      'content-type': 'application/zip',
-                      'content-length': require('fs').statSync(filePath).size
-                      }    
-                  });
-              }
-            } catch (error) {
-                core.setFailed(error.message);
-            }               
+        retention-days: 365 # 1 year

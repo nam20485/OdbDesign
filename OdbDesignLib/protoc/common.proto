@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+//// https://protobuf.dev/reference/cpp/cpp-generated/#message
+//option optimize_for = CODE_SIZE;
+
+package Odb.Lib.Protobuf;
+
+message PropertyRecord {   
+
+    optional string name = 1;
+    optional string value = 2;
+    repeated double floatValues = 3;
+} 
+
+message ContourPolygon {
+
+    message PolygonPart {
+       
+        enum Type
+        {
+            Segment = 0;
+            Arc = 1;
+        };
+
+        optional Type type = 1;
+        optional double endX = 2;
+        optional double endY = 3;
+        optional double xCenter = 4;
+        optional double yCenter = 5;
+        optional bool isClockwise = 6;
+
+    }
+
+    enum Type
+    {
+        Island = 0;
+        Hole = 1;
+    };
+
+    optional Type type = 1;
+    optional double xStart = 2;
+    optional double yStart = 3;
+    
+    repeated PolygonPart polygonParts = 4;
+}

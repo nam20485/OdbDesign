@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+//// https://protobuf.dev/reference/cpp/cpp-generated/#message
+//option optimize_for = CODE_SIZE;
+
+import "filearchive.proto";
+import "net.proto";
+import "package.proto";
+import "component.proto";
+import "part.proto";
+
+package Odb.Lib.Protobuf.ProductModel;
+
+//
+//  Design.h
+//
+
+message Design {
+
+    // std::string m_productModel;
+    // std::string m_name;
+
+    // std::shared_ptr<FileModel::Design::FileArchive> m_pFileModel;
+
+    // Net::Vector m_nets;
+    // Net::StringMap m_netsByName;
+
+    // Package::Vector m_packages;
+    // Package::StringMap m_packagesByName;
+
+    // Component::Vector m_components;
+    // Component::StringMap m_componentsByName;
+
+    // Part::Vector m_parts;
+    // Part::StringMap m_partsByName;
+
+    optional string productModel = 1;
+    optional string name = 2;
+    optional FileArchive fileModel = 3;
+    repeated Net nets = 4;
+    map<string, Net> netsByName = 5;
+    repeated Package packages = 6;
+    map<string, Package> packagesByName = 7;
+    repeated Component components = 8;
+    map<string, Component> componentsByName = 9;
+    repeated Part parts = 10;
+    map<string, Part> partsByName = 11;
+    
+}

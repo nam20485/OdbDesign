@@ -164,12 +164,12 @@ namespace Utils
     template<typename T>
     typename ThreadSafeQueue<T>::wait_result ThreadSafeQueue<T>::wait()
     {
-        logInternal("ThreadSafeQueue<TResults>::wait() enter, taking lock...");
+        logInternal("[ThreadSafeQueue<TResults>::wait] enter, taking lock...");
 
         // wait until _queue is not empty _OR_ interrupt has been set
         std::unique_lock lock(_m);
 
-        logInternal("ThreadSafeQueue<TResults>::wait() lock taken, begin waiting...");
+        logInternal("[ThreadSafeQueue<TResults>::wait] lock taken, begin waiting...");
 
         _cv.wait(lock,
             [&]
@@ -178,7 +178,7 @@ namespace Utils
             });
 
         std::stringstream ss;
-        ss << "ThreadSafeQueue<TResults>::wait() wait returned, exiting (_queue.size() => " << _queue.size() << ", _interrupted = " << _interrupted.load() << ')';
+        ss << "[ThreadSafeQueue<TResults>::wait] wait returned, exiting (_queue.size() => " << _queue.size() << ", _interrupted = " << _interrupted.load() << ')';
         logInternal(ss.str());
 
         // return whether _interrupted was tripped
@@ -195,12 +195,12 @@ namespace Utils
     template<typename T>
     typename ThreadSafeQueue<T>::wait_result ThreadSafeQueue<T>::wait(std::chrono::milliseconds wait_ms)
     {
-        logInternal("ThreadSafeQueue<TResults>::wait() enter, taking lock...");
+        logInternal("[ThreadSafeQueue<TResults>::wait] enter, taking lock...");
 
         // wait until _queue is not empty _OR_ interrupt has been set
         std::unique_lock lock(_m);
 
-        logInternal("ThreadSafeQueue<TResults>::wait() lock taken, begin waiting...");
+        logInternal("[ThreadSafeQueue<TResults>::wait] lock taken, begin waiting...");
 
         auto expired = !_cv.wait_for(lock, wait_ms, // NOLINT(clion-misra-cpp2008-5-3-1)
             [&]
@@ -209,7 +209,7 @@ namespace Utils
             });
 
         std::stringstream ss;
-        ss << "ThreadSafeQueue<TResults>::wait() wait returned, exiting (_queue.size() => " << _queue.size() << ", _interrupted = " << _interrupted.load() << ')';
+        ss << "[ThreadSafeQueue<TResults>::wait] wait returned, exiting (_queue.size() => " << _queue.size() << ", _interrupted = " << _interrupted.load() << ')';
         logInternal(ss.str());
 
         wait_result wait_result;

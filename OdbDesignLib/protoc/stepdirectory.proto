@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+//// https://protobuf.dev/reference/cpp/cpp-generated/#message
+//option optimize_for = CODE_SIZE;
+
+import "edadatafile.proto";
+import "netlistfile.proto";
+import "layerdirectory.proto";
+import "attrlistfile.proto";
+import "featuresfile.proto";
+import "stephdrfile.proto";
+
+package Odb.Lib.Protobuf;
+
+//
+//  StepDirectory.h
+//
+
+message StepDirectory {
+
+    optional string name = 1;
+    optional string path = 2;
+
+    map<string, LayerDirectory> layersByName = 3;
+    map<string, NetlistFile> netlistsByName = 4;
+    optional EdaDataFile edadatafile = 5;
+    optional AttrListFile attrlistfile = 6;
+    optional FeaturesFile profilefile = 7;
+    optional StepHdrFile stephdrfile = 8;
+
+}

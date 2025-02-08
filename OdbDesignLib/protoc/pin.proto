@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+//// https://protobuf.dev/reference/cpp/cpp-generated/#message
+//option optimize_for = CODE_SIZE;
+
+package Odb.Lib.Protobuf.ProductModel;
+
+//
+//  Pin.h
+//
+
+message Pin {
+
+    optional string name = 1;
+    optional uint32 index = 2;
+    
+}

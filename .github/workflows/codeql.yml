@@ -13,14 +13,17 @@ name: "CodeQL Security Scan"
 
 on:
   push:
-    branches: [ "development", "main", "release" ]
+    branches: [ "nam20485" ]
   pull_request:
-    branches: [ "development", "main", "release" ]
+    branches: [ "development", "staging", "main", "release", "nam20485" ]
 
 env:
   VCPKG_ROOT: ${{ github.workspace }}/vcpkg
   VCPKG_BINARY_SOURCES: 'clear;x-gha,readwrite'
     
+permissions:
+  contents: read
+
 jobs:
   analyze:
     name: CodeQL-Security-Scan
@@ -34,20 +37,25 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [ 'cpp' ]
+        language: [ 'c-cpp' ]
         # CodeQL supports [ 'cpp', 'csharp', 'go', 'java', 'javascript', 'python', 'ruby', 'swift' ]
         # Learn more about CodeQL language support at https://aka.ms/codeql-docs/language-support
 
     steps:
+    - name: Harden Runner
+      uses: step-security/harden-runner@a4aa98b93cab29d9b1101a6143fb8bce00e2eac4 # v2.7.1
+      with:
+        egress-policy: audit
+
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b # v4.1.5
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2
+      uses: github/codeql-action/init@b7cec7526559c32f1616476ff32d17ba4c59b2d6 # v3.25.5
       with:        
         languages: ${{ matrix.language }}
-        config-file: ${{ github.workspace }}/.github/codeql/codeql-config.yml        
+        config-file: ${{ github.workspace }}/.github/codeql-config.yml        
 
     - name: Install vcpkg
       run: |               
@@ -55,11 +63,11 @@ jobs:
         "${{env.VCPKG_ROOT}}/bootstrap-vcpkg.sh"            
       
     - name: Install Ninja    
-      uses: seanmiddleditch/gha-setup-ninja@master
+      uses: seanmiddleditch/gha-setup-ninja@8b297075da4cd2a5f1fd21fe011b499edf06e9d2 # master
       
     # Export vcpkg Cache Variables
     - name : Export vcpkg Cache Variables
-      uses: actions/github-script@v6
+      uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
       with:
         script: |
           core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
@@ -75,6 +83,6 @@ jobs:
       run: cmake --build --preset linux-release
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
+      uses: github/codeql-action/analyze@b7cec7526559c32f1616476ff32d17ba4c59b2d6 # v3.25.5
       with:
         category: "/language:${{matrix.language}}"

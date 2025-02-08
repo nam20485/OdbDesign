@@ -1,0 +1,27 @@
+##################################################################################################
+# OdbDesignServer service
+##################################################################################################
+apiVersion: v1
+kind: Service
+metadata:
+  name: odbdesign-server-service
+  labels:
+    app: odbdesign-server
+    service: odbdesign-server
+spec:
+  ## NodePort-style access
+  # type: NodePort
+  # ports:
+  #   - port: 80
+  #     targetPort: ods-dep-port
+  #     nodePort: 30888
+  #     name: ods-svc-port
+  ## ClusterIP/regular ingress-style access
+  # type: ClusterIP
+  ports:
+    - port: 80
+      name: ods-svc-port
+      targetPort: ods-dep-port
+  selector:
+    app: odbdesign-server
+
