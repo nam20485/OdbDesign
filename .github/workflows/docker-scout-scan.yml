@@ -136,10 +136,17 @@ jobs:
         uses: github/codeql-action/upload-sarif@b7cec7526559c32f1616476ff32d17ba4c59b2d6 # v3.25.5
         with:
           sarif_file: sarif.output.json
-      
+
+      - name: Check Compare Image Exists
+        id: compare_image_exists
+        if: ${{ github.event_name == 'pull_request' }}
+        continue-on-error: true
+        run: |
+          curl --head --fail -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://ghcr.io/v2/${{ env.IMAGE_NAME }}/manifests/${{ github.base_ref }}-${{ env.COMPARE_TAG }}
+                     
       - name: Docker Scout Compare to Latest
         id: docker-scout
-        if: ${{ github.event_name == 'pull_request' }}
+        if: ${{ github.event_name == 'pull_request' }} && ${{ steps.compare_image_exists.outcome == 'success' }}
         uses: docker/scout-action@b3dd3d6c420903eb3ff2812ac1b1d146ffb93a41 # v1.5.1
         with:
           command: compare
