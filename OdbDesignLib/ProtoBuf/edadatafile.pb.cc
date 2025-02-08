@@ -34,11 +34,11 @@ inline constexpr EdaDataFile_PackageRecord_PinRecord::Impl_::Impl_(
         name_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()),
-        type_{static_cast< ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_PinRecord_Type >(0)},
         xcenter_{0},
         ycenter_{0},
-        finishedholesize_{0},
+        type_{static_cast< ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_PinRecord_Type >(0)},
         electricaltype_{static_cast< ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_PinRecord_ElectricalType >(0)},
+        finishedholesize_{0},
         mounttype_{static_cast< ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_PinRecord_MountType >(0)},
         id_{0u},
         index_{0u} {}
@@ -150,8 +150,8 @@ inline constexpr EdaDataFile_NetRecord_SubnetRecord::Impl_::Impl_(
         featureidrecords_{},
         type_{static_cast< ::Odb::Lib::Protobuf::EdaDataFile_NetRecord_SubnetRecord_Type >(0)},
         filltype_{static_cast< ::Odb::Lib::Protobuf::EdaDataFile_NetRecord_SubnetRecord_FillType >(0)},
-        cutouttype_{static_cast< ::Odb::Lib::Protobuf::EdaDataFile_NetRecord_SubnetRecord_CutoutType >(0)},
         fillsize_{0},
+        cutouttype_{static_cast< ::Odb::Lib::Protobuf::EdaDataFile_NetRecord_SubnetRecord_CutoutType >(0)},
         side_{static_cast< ::Odb::Lib::Protobuf::BoardSide >(0)},
         componentnumber_{0u},
         toeprintnumber_{0u},
@@ -210,7 +210,6 @@ inline constexpr EdaDataFile_PackageRecord_OutlineRecord::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
       : _cached_size_{0},
         contourpolygons_{},
-        type_{static_cast< ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord_Type >(0)},
         lowerleftx_{0},
         lowerlefty_{0},
         width_{0},
@@ -218,7 +217,8 @@ inline constexpr EdaDataFile_PackageRecord_OutlineRecord::Impl_::Impl_(
         xcenter_{0},
         ycenter_{0},
         halfside_{0},
-        radius_{0} {}
+        radius_{0},
+        type_{static_cast< ::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord_Type >(0)} {}
 
 template <typename>
 PROTOBUF_CONSTEXPR EdaDataFile_PackageRecord_OutlineRecord::EdaDataFile_PackageRecord_OutlineRecord(::_pbi::ConstantInitialized)
@@ -434,8 +434,8 @@ const ::uint32_t
         0,
         ~0u,
         1,
-        2,
         3,
+        2,
         4,
         5,
         6,
@@ -514,6 +514,7 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord, _impl_.halfside_),
         PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord, _impl_.radius_),
         PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_OutlineRecord, _impl_.contourpolygons_),
+        8,
         0,
         1,
         2,
@@ -522,7 +523,6 @@ const ::uint32_t
         5,
         6,
         7,
-        8,
         ~0u,
         PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_PinRecord, _impl_._has_bits_),
         PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_PinRecord, _internal_metadata_),
@@ -542,11 +542,11 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_PinRecord, _impl_.id_),
         PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::EdaDataFile_PackageRecord_PinRecord, _impl_.index_),
         0,
+        3,
         1,
         2,
-        3,
-        4,
         5,
+        4,
         6,
         7,
         8,
@@ -725,7 +725,7 @@ const char descriptor_table_protodef_edadatafile_2eproto[] ABSL_ATTRIBUTE_SECTIO
     "buf.EdaDataFile.NetRecord.SubnetRecord.F"
     "illTypeH\001\210\001\001\022X\n\ncutoutType\030\004 \001(\0162\?.Odb.L"
     "ib.Protobuf.EdaDataFile.NetRecord.Subnet"
-    "Record.CutoutTypeH\002\210\001\001\022\025\n\010fillSize\030\005 \001(\002"
+    "Record.CutoutTypeH\002\210\001\001\022\025\n\010fillSize\030\005 \001(\001"
     "H\003\210\001\001\022.\n\004side\030\006 \001(\0162\033.Odb.Lib.Protobuf.B"
     "oardSideH\004\210\001\001\022\034\n\017componentNumber\030\007 \001(\rH\005"
     "\210\001\001\022\033\n\016toeprintNumber\030\010 \001(\rH\006\210\001\001\022\022\n\005inde"
@@ -739,9 +739,9 @@ const char descriptor_table_protodef_edadatafile_2eproto[] ABSL_ATTRIBUTE_SECTIO
     "tributeLookupTableEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005"
     "value\030\002 \001(\t:\0028\001B\007\n\005_nameB\025\n\023_attributesI"
     "dStringB\010\n\006_index\032\314\020\n\rPackageRecord\022\021\n\004n"
-    "ame\030\001 \001(\tH\000\210\001\001\022\022\n\005pitch\030\002 \001(\002H\001\210\001\001\022\021\n\004xM"
-    "in\030\003 \001(\002H\002\210\001\001\022\021\n\004yMin\030\004 \001(\002H\003\210\001\001\022\021\n\004xMax"
-    "\030\005 \001(\002H\004\210\001\001\022\021\n\004yMax\030\006 \001(\002H\005\210\001\001\022\037\n\022attrib"
+    "ame\030\001 \001(\tH\000\210\001\001\022\022\n\005pitch\030\002 \001(\001H\001\210\001\001\022\021\n\004xM"
+    "in\030\003 \001(\001H\002\210\001\001\022\021\n\004yMin\030\004 \001(\001H\003\210\001\001\022\021\n\004xMax"
+    "\030\005 \001(\001H\004\210\001\001\022\021\n\004yMax\030\006 \001(\001H\005\210\001\001\022\037\n\022attrib"
     "utesIdString\030\007 \001(\tH\006\210\001\001\022I\n\npinRecords\030\010 "
     "\003(\01325.Odb.Lib.Protobuf.EdaDataFile.Packa"
     "geRecord.PinRecord\022[\n\020pinRecordsByName\030\t"
@@ -760,11 +760,11 @@ const char descriptor_table_protodef_edadatafile_2eproto[] ABSL_ATTRIBUTE_SECTIO
     "\001(\t:\0028\001\032\370\003\n\rOutlineRecord\022Q\n\004type\030\001 \001(\0162"
     ">.Odb.Lib.Protobuf.EdaDataFile.PackageRe"
     "cord.OutlineRecord.TypeH\000\210\001\001\022\027\n\nlowerLef"
-    "tX\030\002 \001(\002H\001\210\001\001\022\027\n\nlowerLeftY\030\003 \001(\002H\002\210\001\001\022\022"
-    "\n\005width\030\004 \001(\002H\003\210\001\001\022\023\n\006height\030\005 \001(\002H\004\210\001\001\022"
-    "\024\n\007xCenter\030\006 \001(\002H\005\210\001\001\022\024\n\007yCenter\030\007 \001(\002H\006"
-    "\210\001\001\022\025\n\010halfSide\030\010 \001(\002H\007\210\001\001\022\023\n\006radius\030\t \001"
-    "(\002H\010\210\001\001\0229\n\017contourPolygons\030\n \003(\0132 .Odb.L"
+    "tX\030\002 \001(\001H\001\210\001\001\022\027\n\nlowerLeftY\030\003 \001(\001H\002\210\001\001\022\022"
+    "\n\005width\030\004 \001(\001H\003\210\001\001\022\023\n\006height\030\005 \001(\001H\004\210\001\001\022"
+    "\024\n\007xCenter\030\006 \001(\001H\005\210\001\001\022\024\n\007yCenter\030\007 \001(\001H\006"
+    "\210\001\001\022\025\n\010halfSide\030\010 \001(\001H\007\210\001\001\022\023\n\006radius\030\t \001"
+    "(\001H\010\210\001\001\0229\n\017contourPolygons\030\n \003(\0132 .Odb.L"
     "ib.Protobuf.ContourPolygon\":\n\004Type\022\r\n\tRe"
     "ctangle\020\000\022\n\n\006Circle\020\001\022\n\n\006Square\020\002\022\013\n\007Con"
     "tour\020\003B\007\n\005_typeB\r\n\013_lowerLeftXB\r\n\013_lower"
@@ -773,8 +773,8 @@ const char descriptor_table_protodef_edadatafile_2eproto[] ABSL_ATTRIBUTE_SECTIO
     "inRecord\022\021\n\004name\030\001 \001(\tH\000\210\001\001\022M\n\004type\030\002 \001("
     "\0162:.Odb.Lib.Protobuf.EdaDataFile.Package"
     "Record.PinRecord.TypeH\001\210\001\001\022\024\n\007xCenter\030\003 "
-    "\001(\002H\002\210\001\001\022\024\n\007yCenter\030\004 \001(\002H\003\210\001\001\022\035\n\020finish"
-    "edHoleSize\030\005 \001(\002H\004\210\001\001\022a\n\016electricalType\030"
+    "\001(\001H\002\210\001\001\022\024\n\007yCenter\030\004 \001(\001H\003\210\001\001\022\035\n\020finish"
+    "edHoleSize\030\005 \001(\001H\004\210\001\001\022a\n\016electricalType\030"
     "\006 \001(\0162D.Odb.Lib.Protobuf.EdaDataFile.Pac"
     "kageRecord.PinRecord.ElectricalTypeH\005\210\001\001"
     "\022W\n\tmountType\030\007 \001(\0162\?.Odb.Lib.Protobuf.E"
@@ -1434,11 +1434,11 @@ const ::_pbi::TcParseTable<4, 9, 1, 0, 2> EdaDataFile_NetRecord_SubnetRecord::_t
     {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(EdaDataFile_NetRecord_SubnetRecord, _impl_.filltype_), 1>(),
      {24, 1, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_NetRecord_SubnetRecord, _impl_.filltype_)}},
     // optional .Odb.Lib.Protobuf.EdaDataFile.NetRecord.SubnetRecord.CutoutType cutoutType = 4;
-    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(EdaDataFile_NetRecord_SubnetRecord, _impl_.cutouttype_), 2>(),
-     {32, 2, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_NetRecord_SubnetRecord, _impl_.cutouttype_)}},
-    // optional float fillSize = 5;
-    {::_pbi::TcParser::FastF32S1,
-     {45, 3, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_NetRecord_SubnetRecord, _impl_.fillsize_)}},
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(EdaDataFile_NetRecord_SubnetRecord, _impl_.cutouttype_), 3>(),
+     {32, 3, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_NetRecord_SubnetRecord, _impl_.cutouttype_)}},
+    // optional double fillSize = 5;
+    {::_pbi::TcParser::FastF64S1,
+     {41, 2, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_NetRecord_SubnetRecord, _impl_.fillsize_)}},
     // optional .Odb.Lib.Protobuf.BoardSide side = 6;
     {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(EdaDataFile_NetRecord_SubnetRecord, _impl_.side_), 4>(),
      {48, 4, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_NetRecord_SubnetRecord, _impl_.side_)}},
@@ -1470,11 +1470,11 @@ const ::_pbi::TcParseTable<4, 9, 1, 0, 2> EdaDataFile_NetRecord_SubnetRecord::_t
     {PROTOBUF_FIELD_OFFSET(EdaDataFile_NetRecord_SubnetRecord, _impl_.filltype_), _Internal::kHasBitsOffset + 1, 0,
     (0 | ::_fl::kFcOptional | ::_fl::kOpenEnum)},
     // optional .Odb.Lib.Protobuf.EdaDataFile.NetRecord.SubnetRecord.CutoutType cutoutType = 4;
-    {PROTOBUF_FIELD_OFFSET(EdaDataFile_NetRecord_SubnetRecord, _impl_.cutouttype_), _Internal::kHasBitsOffset + 2, 0,
+    {PROTOBUF_FIELD_OFFSET(EdaDataFile_NetRecord_SubnetRecord, _impl_.cutouttype_), _Internal::kHasBitsOffset + 3, 0,
     (0 | ::_fl::kFcOptional | ::_fl::kOpenEnum)},
-    // optional float fillSize = 5;
-    {PROTOBUF_FIELD_OFFSET(EdaDataFile_NetRecord_SubnetRecord, _impl_.fillsize_), _Internal::kHasBitsOffset + 3, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
+    // optional double fillSize = 5;
+    {PROTOBUF_FIELD_OFFSET(EdaDataFile_NetRecord_SubnetRecord, _impl_.fillsize_), _Internal::kHasBitsOffset + 2, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
     // optional .Odb.Lib.Protobuf.BoardSide side = 6;
     {PROTOBUF_FIELD_OFFSET(EdaDataFile_NetRecord_SubnetRecord, _impl_.side_), _Internal::kHasBitsOffset + 4, 0,
     (0 | ::_fl::kFcOptional | ::_fl::kOpenEnum)},
@@ -1553,16 +1553,16 @@ PROTOBUF_NOINLINE void EdaDataFile_NetRecord_SubnetRecord::Clear() {
           }
 
           // optional .Odb.Lib.Protobuf.EdaDataFile.NetRecord.SubnetRecord.CutoutType cutoutType = 4;
-          if (cached_has_bits & 0x00000004u) {
+          if (cached_has_bits & 0x00000008u) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteEnumToArray(
                 4, this_._internal_cutouttype(), target);
           }
 
-          // optional float fillSize = 5;
-          if (cached_has_bits & 0x00000008u) {
+          // optional double fillSize = 5;
+          if (cached_has_bits & 0x00000004u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 5, this_._internal_fillsize(), target);
           }
 
@@ -1639,14 +1639,14 @@ PROTOBUF_NOINLINE void EdaDataFile_NetRecord_SubnetRecord::Clear() {
               total_size += 1 +
                             ::_pbi::WireFormatLite::EnumSize(this_._internal_filltype());
             }
-            // optional .Odb.Lib.Protobuf.EdaDataFile.NetRecord.SubnetRecord.CutoutType cutoutType = 4;
+            // optional double fillSize = 5;
             if (cached_has_bits & 0x00000004u) {
+              total_size += 9;
+            }
+            // optional .Odb.Lib.Protobuf.EdaDataFile.NetRecord.SubnetRecord.CutoutType cutoutType = 4;
+            if (cached_has_bits & 0x00000008u) {
               total_size += 1 +
                             ::_pbi::WireFormatLite::EnumSize(this_._internal_cutouttype());
-            }
-            // optional float fillSize = 5;
-            if (cached_has_bits & 0x00000008u) {
-              total_size += 5;
             }
             // optional .Odb.Lib.Protobuf.BoardSide side = 6;
             if (cached_has_bits & 0x00000010u) {
@@ -1692,10 +1692,10 @@ void EdaDataFile_NetRecord_SubnetRecord::MergeImpl(::google::protobuf::MessageLi
       _this->_impl_.filltype_ = from._impl_.filltype_;
     }
     if (cached_has_bits & 0x00000004u) {
-      _this->_impl_.cutouttype_ = from._impl_.cutouttype_;
+      _this->_impl_.fillsize_ = from._impl_.fillsize_;
     }
     if (cached_has_bits & 0x00000008u) {
-      _this->_impl_.fillsize_ = from._impl_.fillsize_;
+      _this->_impl_.cutouttype_ = from._impl_.cutouttype_;
     }
     if (cached_has_bits & 0x00000010u) {
       _this->_impl_.side_ = from._impl_.side_;
@@ -2509,12 +2509,12 @@ EdaDataFile_PackageRecord_OutlineRecord::EdaDataFile_PackageRecord_OutlineRecord
       from._internal_metadata_);
   new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
   ::memcpy(reinterpret_cast<char *>(&_impl_) +
-               offsetof(Impl_, type_),
+               offsetof(Impl_, lowerleftx_),
            reinterpret_cast<const char *>(&from._impl_) +
-               offsetof(Impl_, type_),
-           offsetof(Impl_, radius_) -
-               offsetof(Impl_, type_) +
-               sizeof(Impl_::radius_));
+               offsetof(Impl_, lowerleftx_),
+           offsetof(Impl_, type_) -
+               offsetof(Impl_, lowerleftx_) +
+               sizeof(Impl_::type_));
 
   // @@protoc_insertion_point(copy_constructor:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord)
 }
@@ -2527,11 +2527,11 @@ inline PROTOBUF_NDEBUG_INLINE EdaDataFile_PackageRecord_OutlineRecord::Impl_::Im
 inline void EdaDataFile_PackageRecord_OutlineRecord::SharedCtor(::_pb::Arena* arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
   ::memset(reinterpret_cast<char *>(&_impl_) +
-               offsetof(Impl_, type_),
+               offsetof(Impl_, lowerleftx_),
            0,
-           offsetof(Impl_, radius_) -
-               offsetof(Impl_, type_) +
-               sizeof(Impl_::radius_));
+           offsetof(Impl_, type_) -
+               offsetof(Impl_, lowerleftx_) +
+               sizeof(Impl_::type_));
 }
 EdaDataFile_PackageRecord_OutlineRecord::~EdaDataFile_PackageRecord_OutlineRecord() {
   // @@protoc_insertion_point(destructor:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord)
@@ -2612,32 +2612,32 @@ const ::_pbi::TcParseTable<4, 10, 1, 0, 2> EdaDataFile_PackageRecord_OutlineReco
   }, {{
     {::_pbi::TcParser::MiniParse, {}},
     // optional .Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.Type type = 1;
-    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(EdaDataFile_PackageRecord_OutlineRecord, _impl_.type_), 0>(),
-     {8, 0, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_OutlineRecord, _impl_.type_)}},
-    // optional float lowerLeftX = 2;
-    {::_pbi::TcParser::FastF32S1,
-     {21, 1, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_OutlineRecord, _impl_.lowerleftx_)}},
-    // optional float lowerLeftY = 3;
-    {::_pbi::TcParser::FastF32S1,
-     {29, 2, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_OutlineRecord, _impl_.lowerlefty_)}},
-    // optional float width = 4;
-    {::_pbi::TcParser::FastF32S1,
-     {37, 3, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_OutlineRecord, _impl_.width_)}},
-    // optional float height = 5;
-    {::_pbi::TcParser::FastF32S1,
-     {45, 4, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_OutlineRecord, _impl_.height_)}},
-    // optional float xCenter = 6;
-    {::_pbi::TcParser::FastF32S1,
-     {53, 5, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_OutlineRecord, _impl_.xcenter_)}},
-    // optional float yCenter = 7;
-    {::_pbi::TcParser::FastF32S1,
-     {61, 6, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_OutlineRecord, _impl_.ycenter_)}},
-    // optional float halfSide = 8;
-    {::_pbi::TcParser::FastF32S1,
-     {69, 7, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_OutlineRecord, _impl_.halfside_)}},
-    // optional float radius = 9;
-    {::_pbi::TcParser::FastF32S1,
-     {77, 8, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_OutlineRecord, _impl_.radius_)}},
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(EdaDataFile_PackageRecord_OutlineRecord, _impl_.type_), 8>(),
+     {8, 8, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_OutlineRecord, _impl_.type_)}},
+    // optional double lowerLeftX = 2;
+    {::_pbi::TcParser::FastF64S1,
+     {17, 0, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_OutlineRecord, _impl_.lowerleftx_)}},
+    // optional double lowerLeftY = 3;
+    {::_pbi::TcParser::FastF64S1,
+     {25, 1, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_OutlineRecord, _impl_.lowerlefty_)}},
+    // optional double width = 4;
+    {::_pbi::TcParser::FastF64S1,
+     {33, 2, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_OutlineRecord, _impl_.width_)}},
+    // optional double height = 5;
+    {::_pbi::TcParser::FastF64S1,
+     {41, 3, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_OutlineRecord, _impl_.height_)}},
+    // optional double xCenter = 6;
+    {::_pbi::TcParser::FastF64S1,
+     {49, 4, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_OutlineRecord, _impl_.xcenter_)}},
+    // optional double yCenter = 7;
+    {::_pbi::TcParser::FastF64S1,
+     {57, 5, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_OutlineRecord, _impl_.ycenter_)}},
+    // optional double halfSide = 8;
+    {::_pbi::TcParser::FastF64S1,
+     {65, 6, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_OutlineRecord, _impl_.halfside_)}},
+    // optional double radius = 9;
+    {::_pbi::TcParser::FastF64S1,
+     {73, 7, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_OutlineRecord, _impl_.radius_)}},
     // repeated .Odb.Lib.Protobuf.ContourPolygon contourPolygons = 10;
     {::_pbi::TcParser::FastMtR1,
      {82, 63, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_OutlineRecord, _impl_.contourpolygons_)}},
@@ -2650,32 +2650,32 @@ const ::_pbi::TcParseTable<4, 10, 1, 0, 2> EdaDataFile_PackageRecord_OutlineReco
     65535, 65535
   }}, {{
     // optional .Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.Type type = 1;
-    {PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_OutlineRecord, _impl_.type_), _Internal::kHasBitsOffset + 0, 0,
+    {PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_OutlineRecord, _impl_.type_), _Internal::kHasBitsOffset + 8, 0,
     (0 | ::_fl::kFcOptional | ::_fl::kOpenEnum)},
-    // optional float lowerLeftX = 2;
-    {PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_OutlineRecord, _impl_.lowerleftx_), _Internal::kHasBitsOffset + 1, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
-    // optional float lowerLeftY = 3;
-    {PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_OutlineRecord, _impl_.lowerlefty_), _Internal::kHasBitsOffset + 2, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
-    // optional float width = 4;
-    {PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_OutlineRecord, _impl_.width_), _Internal::kHasBitsOffset + 3, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
-    // optional float height = 5;
-    {PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_OutlineRecord, _impl_.height_), _Internal::kHasBitsOffset + 4, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
-    // optional float xCenter = 6;
-    {PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_OutlineRecord, _impl_.xcenter_), _Internal::kHasBitsOffset + 5, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
-    // optional float yCenter = 7;
-    {PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_OutlineRecord, _impl_.ycenter_), _Internal::kHasBitsOffset + 6, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
-    // optional float halfSide = 8;
-    {PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_OutlineRecord, _impl_.halfside_), _Internal::kHasBitsOffset + 7, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
-    // optional float radius = 9;
-    {PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_OutlineRecord, _impl_.radius_), _Internal::kHasBitsOffset + 8, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
+    // optional double lowerLeftX = 2;
+    {PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_OutlineRecord, _impl_.lowerleftx_), _Internal::kHasBitsOffset + 0, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double lowerLeftY = 3;
+    {PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_OutlineRecord, _impl_.lowerlefty_), _Internal::kHasBitsOffset + 1, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double width = 4;
+    {PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_OutlineRecord, _impl_.width_), _Internal::kHasBitsOffset + 2, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double height = 5;
+    {PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_OutlineRecord, _impl_.height_), _Internal::kHasBitsOffset + 3, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double xCenter = 6;
+    {PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_OutlineRecord, _impl_.xcenter_), _Internal::kHasBitsOffset + 4, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double yCenter = 7;
+    {PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_OutlineRecord, _impl_.ycenter_), _Internal::kHasBitsOffset + 5, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double halfSide = 8;
+    {PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_OutlineRecord, _impl_.halfside_), _Internal::kHasBitsOffset + 6, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double radius = 9;
+    {PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_OutlineRecord, _impl_.radius_), _Internal::kHasBitsOffset + 7, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
     // repeated .Odb.Lib.Protobuf.ContourPolygon contourPolygons = 10;
     {PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_OutlineRecord, _impl_.contourpolygons_), -1, 0,
     (0 | ::_fl::kFcRepeated | ::_fl::kMessage | ::_fl::kTvTable)},
@@ -2695,11 +2695,11 @@ PROTOBUF_NOINLINE void EdaDataFile_PackageRecord_OutlineRecord::Clear() {
   _impl_.contourpolygons_.Clear();
   cached_has_bits = _impl_._has_bits_[0];
   if (cached_has_bits & 0x000000ffu) {
-    ::memset(&_impl_.type_, 0, static_cast<::size_t>(
-        reinterpret_cast<char*>(&_impl_.halfside_) -
-        reinterpret_cast<char*>(&_impl_.type_)) + sizeof(_impl_.halfside_));
+    ::memset(&_impl_.lowerleftx_, 0, static_cast<::size_t>(
+        reinterpret_cast<char*>(&_impl_.radius_) -
+        reinterpret_cast<char*>(&_impl_.lowerleftx_)) + sizeof(_impl_.radius_));
   }
-  _impl_.radius_ = 0;
+  _impl_.type_ = 0;
   _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
@@ -2721,65 +2721,65 @@ PROTOBUF_NOINLINE void EdaDataFile_PackageRecord_OutlineRecord::Clear() {
 
           cached_has_bits = this_._impl_._has_bits_[0];
           // optional .Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.Type type = 1;
-          if (cached_has_bits & 0x00000001u) {
+          if (cached_has_bits & 0x00000100u) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteEnumToArray(
                 1, this_._internal_type(), target);
           }
 
-          // optional float lowerLeftX = 2;
-          if (cached_has_bits & 0x00000002u) {
+          // optional double lowerLeftX = 2;
+          if (cached_has_bits & 0x00000001u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 2, this_._internal_lowerleftx(), target);
           }
 
-          // optional float lowerLeftY = 3;
-          if (cached_has_bits & 0x00000004u) {
+          // optional double lowerLeftY = 3;
+          if (cached_has_bits & 0x00000002u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 3, this_._internal_lowerlefty(), target);
           }
 
-          // optional float width = 4;
-          if (cached_has_bits & 0x00000008u) {
+          // optional double width = 4;
+          if (cached_has_bits & 0x00000004u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 4, this_._internal_width(), target);
           }
 
-          // optional float height = 5;
-          if (cached_has_bits & 0x00000010u) {
+          // optional double height = 5;
+          if (cached_has_bits & 0x00000008u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 5, this_._internal_height(), target);
           }
 
-          // optional float xCenter = 6;
-          if (cached_has_bits & 0x00000020u) {
+          // optional double xCenter = 6;
+          if (cached_has_bits & 0x00000010u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 6, this_._internal_xcenter(), target);
           }
 
-          // optional float yCenter = 7;
-          if (cached_has_bits & 0x00000040u) {
+          // optional double yCenter = 7;
+          if (cached_has_bits & 0x00000020u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 7, this_._internal_ycenter(), target);
           }
 
-          // optional float halfSide = 8;
-          if (cached_has_bits & 0x00000080u) {
+          // optional double halfSide = 8;
+          if (cached_has_bits & 0x00000040u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 8, this_._internal_halfside(), target);
           }
 
-          // optional float radius = 9;
-          if (cached_has_bits & 0x00000100u) {
+          // optional double radius = 9;
+          if (cached_has_bits & 0x00000080u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 9, this_._internal_radius(), target);
           }
 
@@ -2829,44 +2829,44 @@ PROTOBUF_NOINLINE void EdaDataFile_PackageRecord_OutlineRecord::Clear() {
           }
           cached_has_bits = this_._impl_._has_bits_[0];
           if (cached_has_bits & 0x000000ffu) {
-            // optional .Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.Type type = 1;
+            // optional double lowerLeftX = 2;
             if (cached_has_bits & 0x00000001u) {
-              total_size += 1 +
-                            ::_pbi::WireFormatLite::EnumSize(this_._internal_type());
+              total_size += 9;
             }
-            // optional float lowerLeftX = 2;
+            // optional double lowerLeftY = 3;
             if (cached_has_bits & 0x00000002u) {
-              total_size += 5;
+              total_size += 9;
             }
-            // optional float lowerLeftY = 3;
+            // optional double width = 4;
             if (cached_has_bits & 0x00000004u) {
-              total_size += 5;
+              total_size += 9;
             }
-            // optional float width = 4;
+            // optional double height = 5;
             if (cached_has_bits & 0x00000008u) {
-              total_size += 5;
+              total_size += 9;
             }
-            // optional float height = 5;
+            // optional double xCenter = 6;
             if (cached_has_bits & 0x00000010u) {
-              total_size += 5;
+              total_size += 9;
             }
-            // optional float xCenter = 6;
+            // optional double yCenter = 7;
             if (cached_has_bits & 0x00000020u) {
-              total_size += 5;
+              total_size += 9;
             }
-            // optional float yCenter = 7;
+            // optional double halfSide = 8;
             if (cached_has_bits & 0x00000040u) {
-              total_size += 5;
+              total_size += 9;
             }
-            // optional float halfSide = 8;
+            // optional double radius = 9;
             if (cached_has_bits & 0x00000080u) {
-              total_size += 5;
+              total_size += 9;
             }
           }
            {
-            // optional float radius = 9;
+            // optional .Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord.Type type = 1;
             if (cached_has_bits & 0x00000100u) {
-              total_size += 5;
+              total_size += 1 +
+                            ::_pbi::WireFormatLite::EnumSize(this_._internal_type());
             }
           }
           return this_.MaybeComputeUnknownFieldsSize(total_size,
@@ -2886,32 +2886,32 @@ void EdaDataFile_PackageRecord_OutlineRecord::MergeImpl(::google::protobuf::Mess
   cached_has_bits = from._impl_._has_bits_[0];
   if (cached_has_bits & 0x000000ffu) {
     if (cached_has_bits & 0x00000001u) {
-      _this->_impl_.type_ = from._impl_.type_;
-    }
-    if (cached_has_bits & 0x00000002u) {
       _this->_impl_.lowerleftx_ = from._impl_.lowerleftx_;
     }
-    if (cached_has_bits & 0x00000004u) {
+    if (cached_has_bits & 0x00000002u) {
       _this->_impl_.lowerlefty_ = from._impl_.lowerlefty_;
     }
-    if (cached_has_bits & 0x00000008u) {
+    if (cached_has_bits & 0x00000004u) {
       _this->_impl_.width_ = from._impl_.width_;
     }
-    if (cached_has_bits & 0x00000010u) {
+    if (cached_has_bits & 0x00000008u) {
       _this->_impl_.height_ = from._impl_.height_;
     }
-    if (cached_has_bits & 0x00000020u) {
+    if (cached_has_bits & 0x00000010u) {
       _this->_impl_.xcenter_ = from._impl_.xcenter_;
     }
-    if (cached_has_bits & 0x00000040u) {
+    if (cached_has_bits & 0x00000020u) {
       _this->_impl_.ycenter_ = from._impl_.ycenter_;
     }
-    if (cached_has_bits & 0x00000080u) {
+    if (cached_has_bits & 0x00000040u) {
       _this->_impl_.halfside_ = from._impl_.halfside_;
+    }
+    if (cached_has_bits & 0x00000080u) {
+      _this->_impl_.radius_ = from._impl_.radius_;
     }
   }
   if (cached_has_bits & 0x00000100u) {
-    _this->_impl_.radius_ = from._impl_.radius_;
+    _this->_impl_.type_ = from._impl_.type_;
   }
   _this->_impl_._has_bits_[0] |= cached_has_bits;
   _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
@@ -2931,11 +2931,11 @@ void EdaDataFile_PackageRecord_OutlineRecord::InternalSwap(EdaDataFile_PackageRe
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
   _impl_.contourpolygons_.InternalSwap(&other->_impl_.contourpolygons_);
   ::google::protobuf::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_OutlineRecord, _impl_.radius_)
-      + sizeof(EdaDataFile_PackageRecord_OutlineRecord::_impl_.radius_)
-      - PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_OutlineRecord, _impl_.type_)>(
-          reinterpret_cast<char*>(&_impl_.type_),
-          reinterpret_cast<char*>(&other->_impl_.type_));
+      PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_OutlineRecord, _impl_.type_)
+      + sizeof(EdaDataFile_PackageRecord_OutlineRecord::_impl_.type_)
+      - PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_OutlineRecord, _impl_.lowerleftx_)>(
+          reinterpret_cast<char*>(&_impl_.lowerleftx_),
+          reinterpret_cast<char*>(&other->_impl_.lowerleftx_));
 }
 
 ::google::protobuf::Metadata EdaDataFile_PackageRecord_OutlineRecord::GetMetadata() const {
@@ -2981,11 +2981,11 @@ EdaDataFile_PackageRecord_PinRecord::EdaDataFile_PackageRecord_PinRecord(
       from._internal_metadata_);
   new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
   ::memcpy(reinterpret_cast<char *>(&_impl_) +
-               offsetof(Impl_, type_),
+               offsetof(Impl_, xcenter_),
            reinterpret_cast<const char *>(&from._impl_) +
-               offsetof(Impl_, type_),
+               offsetof(Impl_, xcenter_),
            offsetof(Impl_, index_) -
-               offsetof(Impl_, type_) +
+               offsetof(Impl_, xcenter_) +
                sizeof(Impl_::index_));
 
   // @@protoc_insertion_point(copy_constructor:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.PinRecord)
@@ -2999,10 +2999,10 @@ inline PROTOBUF_NDEBUG_INLINE EdaDataFile_PackageRecord_PinRecord::Impl_::Impl_(
 inline void EdaDataFile_PackageRecord_PinRecord::SharedCtor(::_pb::Arena* arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
   ::memset(reinterpret_cast<char *>(&_impl_) +
-               offsetof(Impl_, type_),
+               offsetof(Impl_, xcenter_),
            0,
            offsetof(Impl_, index_) -
-               offsetof(Impl_, type_) +
+               offsetof(Impl_, xcenter_) +
                sizeof(Impl_::index_));
 }
 EdaDataFile_PackageRecord_PinRecord::~EdaDataFile_PackageRecord_PinRecord() {
@@ -3076,20 +3076,20 @@ const ::_pbi::TcParseTable<4, 9, 0, 73, 2> EdaDataFile_PackageRecord_PinRecord::
     {::_pbi::TcParser::FastUS1,
      {10, 0, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_PinRecord, _impl_.name_)}},
     // optional .Odb.Lib.Protobuf.EdaDataFile.PackageRecord.PinRecord.Type type = 2;
-    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(EdaDataFile_PackageRecord_PinRecord, _impl_.type_), 1>(),
-     {16, 1, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_PinRecord, _impl_.type_)}},
-    // optional float xCenter = 3;
-    {::_pbi::TcParser::FastF32S1,
-     {29, 2, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_PinRecord, _impl_.xcenter_)}},
-    // optional float yCenter = 4;
-    {::_pbi::TcParser::FastF32S1,
-     {37, 3, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_PinRecord, _impl_.ycenter_)}},
-    // optional float finishedHoleSize = 5;
-    {::_pbi::TcParser::FastF32S1,
-     {45, 4, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_PinRecord, _impl_.finishedholesize_)}},
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(EdaDataFile_PackageRecord_PinRecord, _impl_.type_), 3>(),
+     {16, 3, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_PinRecord, _impl_.type_)}},
+    // optional double xCenter = 3;
+    {::_pbi::TcParser::FastF64S1,
+     {25, 1, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_PinRecord, _impl_.xcenter_)}},
+    // optional double yCenter = 4;
+    {::_pbi::TcParser::FastF64S1,
+     {33, 2, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_PinRecord, _impl_.ycenter_)}},
+    // optional double finishedHoleSize = 5;
+    {::_pbi::TcParser::FastF64S1,
+     {41, 5, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_PinRecord, _impl_.finishedholesize_)}},
     // optional .Odb.Lib.Protobuf.EdaDataFile.PackageRecord.PinRecord.ElectricalType electricalType = 6;
-    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(EdaDataFile_PackageRecord_PinRecord, _impl_.electricaltype_), 5>(),
-     {48, 5, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_PinRecord, _impl_.electricaltype_)}},
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(EdaDataFile_PackageRecord_PinRecord, _impl_.electricaltype_), 4>(),
+     {48, 4, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_PinRecord, _impl_.electricaltype_)}},
     // optional .Odb.Lib.Protobuf.EdaDataFile.PackageRecord.PinRecord.MountType mountType = 7;
     {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(EdaDataFile_PackageRecord_PinRecord, _impl_.mounttype_), 6>(),
      {56, 6, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_PinRecord, _impl_.mounttype_)}},
@@ -3112,19 +3112,19 @@ const ::_pbi::TcParseTable<4, 9, 0, 73, 2> EdaDataFile_PackageRecord_PinRecord::
     {PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_PinRecord, _impl_.name_), _Internal::kHasBitsOffset + 0, 0,
     (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
     // optional .Odb.Lib.Protobuf.EdaDataFile.PackageRecord.PinRecord.Type type = 2;
-    {PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_PinRecord, _impl_.type_), _Internal::kHasBitsOffset + 1, 0,
+    {PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_PinRecord, _impl_.type_), _Internal::kHasBitsOffset + 3, 0,
     (0 | ::_fl::kFcOptional | ::_fl::kOpenEnum)},
-    // optional float xCenter = 3;
-    {PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_PinRecord, _impl_.xcenter_), _Internal::kHasBitsOffset + 2, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
-    // optional float yCenter = 4;
-    {PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_PinRecord, _impl_.ycenter_), _Internal::kHasBitsOffset + 3, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
-    // optional float finishedHoleSize = 5;
-    {PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_PinRecord, _impl_.finishedholesize_), _Internal::kHasBitsOffset + 4, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
+    // optional double xCenter = 3;
+    {PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_PinRecord, _impl_.xcenter_), _Internal::kHasBitsOffset + 1, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double yCenter = 4;
+    {PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_PinRecord, _impl_.ycenter_), _Internal::kHasBitsOffset + 2, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double finishedHoleSize = 5;
+    {PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_PinRecord, _impl_.finishedholesize_), _Internal::kHasBitsOffset + 5, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
     // optional .Odb.Lib.Protobuf.EdaDataFile.PackageRecord.PinRecord.ElectricalType electricalType = 6;
-    {PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_PinRecord, _impl_.electricaltype_), _Internal::kHasBitsOffset + 5, 0,
+    {PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_PinRecord, _impl_.electricaltype_), _Internal::kHasBitsOffset + 4, 0,
     (0 | ::_fl::kFcOptional | ::_fl::kOpenEnum)},
     // optional .Odb.Lib.Protobuf.EdaDataFile.PackageRecord.PinRecord.MountType mountType = 7;
     {PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_PinRecord, _impl_.mounttype_), _Internal::kHasBitsOffset + 6, 0,
@@ -3156,9 +3156,9 @@ PROTOBUF_NOINLINE void EdaDataFile_PackageRecord_PinRecord::Clear() {
     _impl_.name_.ClearNonDefaultToEmpty();
   }
   if (cached_has_bits & 0x000000feu) {
-    ::memset(&_impl_.type_, 0, static_cast<::size_t>(
+    ::memset(&_impl_.xcenter_, 0, static_cast<::size_t>(
         reinterpret_cast<char*>(&_impl_.id_) -
-        reinterpret_cast<char*>(&_impl_.type_)) + sizeof(_impl_.id_));
+        reinterpret_cast<char*>(&_impl_.xcenter_)) + sizeof(_impl_.id_));
   }
   _impl_.index_ = 0u;
   _impl_._has_bits_.Clear();
@@ -3190,35 +3190,35 @@ PROTOBUF_NOINLINE void EdaDataFile_PackageRecord_PinRecord::Clear() {
           }
 
           // optional .Odb.Lib.Protobuf.EdaDataFile.PackageRecord.PinRecord.Type type = 2;
-          if (cached_has_bits & 0x00000002u) {
+          if (cached_has_bits & 0x00000008u) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteEnumToArray(
                 2, this_._internal_type(), target);
           }
 
-          // optional float xCenter = 3;
-          if (cached_has_bits & 0x00000004u) {
+          // optional double xCenter = 3;
+          if (cached_has_bits & 0x00000002u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 3, this_._internal_xcenter(), target);
           }
 
-          // optional float yCenter = 4;
-          if (cached_has_bits & 0x00000008u) {
+          // optional double yCenter = 4;
+          if (cached_has_bits & 0x00000004u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 4, this_._internal_ycenter(), target);
           }
 
-          // optional float finishedHoleSize = 5;
-          if (cached_has_bits & 0x00000010u) {
+          // optional double finishedHoleSize = 5;
+          if (cached_has_bits & 0x00000020u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 5, this_._internal_finishedholesize(), target);
           }
 
           // optional .Odb.Lib.Protobuf.EdaDataFile.PackageRecord.PinRecord.ElectricalType electricalType = 6;
-          if (cached_has_bits & 0x00000020u) {
+          if (cached_has_bits & 0x00000010u) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteEnumToArray(
                 6, this_._internal_electricaltype(), target);
@@ -3276,27 +3276,27 @@ PROTOBUF_NOINLINE void EdaDataFile_PackageRecord_PinRecord::Clear() {
               total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
                                               this_._internal_name());
             }
-            // optional .Odb.Lib.Protobuf.EdaDataFile.PackageRecord.PinRecord.Type type = 2;
+            // optional double xCenter = 3;
             if (cached_has_bits & 0x00000002u) {
+              total_size += 9;
+            }
+            // optional double yCenter = 4;
+            if (cached_has_bits & 0x00000004u) {
+              total_size += 9;
+            }
+            // optional .Odb.Lib.Protobuf.EdaDataFile.PackageRecord.PinRecord.Type type = 2;
+            if (cached_has_bits & 0x00000008u) {
               total_size += 1 +
                             ::_pbi::WireFormatLite::EnumSize(this_._internal_type());
             }
-            // optional float xCenter = 3;
-            if (cached_has_bits & 0x00000004u) {
-              total_size += 5;
-            }
-            // optional float yCenter = 4;
-            if (cached_has_bits & 0x00000008u) {
-              total_size += 5;
-            }
-            // optional float finishedHoleSize = 5;
-            if (cached_has_bits & 0x00000010u) {
-              total_size += 5;
-            }
             // optional .Odb.Lib.Protobuf.EdaDataFile.PackageRecord.PinRecord.ElectricalType electricalType = 6;
-            if (cached_has_bits & 0x00000020u) {
+            if (cached_has_bits & 0x00000010u) {
               total_size += 1 +
                             ::_pbi::WireFormatLite::EnumSize(this_._internal_electricaltype());
+            }
+            // optional double finishedHoleSize = 5;
+            if (cached_has_bits & 0x00000020u) {
+              total_size += 9;
             }
             // optional .Odb.Lib.Protobuf.EdaDataFile.PackageRecord.PinRecord.MountType mountType = 7;
             if (cached_has_bits & 0x00000040u) {
@@ -3334,19 +3334,19 @@ void EdaDataFile_PackageRecord_PinRecord::MergeImpl(::google::protobuf::MessageL
       _this->_internal_set_name(from._internal_name());
     }
     if (cached_has_bits & 0x00000002u) {
-      _this->_impl_.type_ = from._impl_.type_;
-    }
-    if (cached_has_bits & 0x00000004u) {
       _this->_impl_.xcenter_ = from._impl_.xcenter_;
     }
-    if (cached_has_bits & 0x00000008u) {
+    if (cached_has_bits & 0x00000004u) {
       _this->_impl_.ycenter_ = from._impl_.ycenter_;
     }
+    if (cached_has_bits & 0x00000008u) {
+      _this->_impl_.type_ = from._impl_.type_;
+    }
     if (cached_has_bits & 0x00000010u) {
-      _this->_impl_.finishedholesize_ = from._impl_.finishedholesize_;
+      _this->_impl_.electricaltype_ = from._impl_.electricaltype_;
     }
     if (cached_has_bits & 0x00000020u) {
-      _this->_impl_.electricaltype_ = from._impl_.electricaltype_;
+      _this->_impl_.finishedholesize_ = from._impl_.finishedholesize_;
     }
     if (cached_has_bits & 0x00000040u) {
       _this->_impl_.mounttype_ = from._impl_.mounttype_;
@@ -3380,9 +3380,9 @@ void EdaDataFile_PackageRecord_PinRecord::InternalSwap(EdaDataFile_PackageRecord
   ::google::protobuf::internal::memswap<
       PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_PinRecord, _impl_.index_)
       + sizeof(EdaDataFile_PackageRecord_PinRecord::_impl_.index_)
-      - PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_PinRecord, _impl_.type_)>(
-          reinterpret_cast<char*>(&_impl_.type_),
-          reinterpret_cast<char*>(&other->_impl_.type_));
+      - PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord_PinRecord, _impl_.xcenter_)>(
+          reinterpret_cast<char*>(&_impl_.xcenter_),
+          reinterpret_cast<char*>(&other->_impl_.xcenter_));
 }
 
 ::google::protobuf::Metadata EdaDataFile_PackageRecord_PinRecord::GetMetadata() const {
@@ -3575,21 +3575,21 @@ const ::_pbi::TcParseTable<4, 12, 6, 117, 2> EdaDataFile_PackageRecord::_table_ 
     // optional string name = 1;
     {::_pbi::TcParser::FastUS1,
      {10, 0, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord, _impl_.name_)}},
-    // optional float pitch = 2;
-    {::_pbi::TcParser::FastF32S1,
-     {21, 2, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord, _impl_.pitch_)}},
-    // optional float xMin = 3;
-    {::_pbi::TcParser::FastF32S1,
-     {29, 3, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord, _impl_.xmin_)}},
-    // optional float yMin = 4;
-    {::_pbi::TcParser::FastF32S1,
-     {37, 4, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord, _impl_.ymin_)}},
-    // optional float xMax = 5;
-    {::_pbi::TcParser::FastF32S1,
-     {45, 5, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord, _impl_.xmax_)}},
-    // optional float yMax = 6;
-    {::_pbi::TcParser::FastF32S1,
-     {53, 6, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord, _impl_.ymax_)}},
+    // optional double pitch = 2;
+    {::_pbi::TcParser::FastF64S1,
+     {17, 2, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord, _impl_.pitch_)}},
+    // optional double xMin = 3;
+    {::_pbi::TcParser::FastF64S1,
+     {25, 3, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord, _impl_.xmin_)}},
+    // optional double yMin = 4;
+    {::_pbi::TcParser::FastF64S1,
+     {33, 4, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord, _impl_.ymin_)}},
+    // optional double xMax = 5;
+    {::_pbi::TcParser::FastF64S1,
+     {41, 5, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord, _impl_.xmax_)}},
+    // optional double yMax = 6;
+    {::_pbi::TcParser::FastF64S1,
+     {49, 6, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord, _impl_.ymax_)}},
     // optional string attributesIdString = 7;
     {::_pbi::TcParser::FastUS1,
      {58, 1, 0, PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord, _impl_.attributesidstring_)}},
@@ -3613,21 +3613,21 @@ const ::_pbi::TcParseTable<4, 12, 6, 117, 2> EdaDataFile_PackageRecord::_table_ 
     // optional string name = 1;
     {PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord, _impl_.name_), _Internal::kHasBitsOffset + 0, 0,
     (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
-    // optional float pitch = 2;
+    // optional double pitch = 2;
     {PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord, _impl_.pitch_), _Internal::kHasBitsOffset + 2, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
-    // optional float xMin = 3;
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double xMin = 3;
     {PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord, _impl_.xmin_), _Internal::kHasBitsOffset + 3, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
-    // optional float yMin = 4;
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double yMin = 4;
     {PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord, _impl_.ymin_), _Internal::kHasBitsOffset + 4, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
-    // optional float xMax = 5;
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double xMax = 5;
     {PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord, _impl_.xmax_), _Internal::kHasBitsOffset + 5, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
-    // optional float yMax = 6;
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double yMax = 6;
     {PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord, _impl_.ymax_), _Internal::kHasBitsOffset + 6, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
     // optional string attributesIdString = 7;
     {PROTOBUF_FIELD_OFFSET(EdaDataFile_PackageRecord, _impl_.attributesidstring_), _Internal::kHasBitsOffset + 1, 0,
     (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
@@ -3723,38 +3723,38 @@ PROTOBUF_NOINLINE void EdaDataFile_PackageRecord::Clear() {
             target = stream->WriteStringMaybeAliased(1, _s, target);
           }
 
-          // optional float pitch = 2;
+          // optional double pitch = 2;
           if (cached_has_bits & 0x00000004u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 2, this_._internal_pitch(), target);
           }
 
-          // optional float xMin = 3;
+          // optional double xMin = 3;
           if (cached_has_bits & 0x00000008u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 3, this_._internal_xmin(), target);
           }
 
-          // optional float yMin = 4;
+          // optional double yMin = 4;
           if (cached_has_bits & 0x00000010u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 4, this_._internal_ymin(), target);
           }
 
-          // optional float xMax = 5;
+          // optional double xMax = 5;
           if (cached_has_bits & 0x00000020u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 5, this_._internal_xmax(), target);
           }
 
-          // optional float yMax = 6;
+          // optional double yMax = 6;
           if (cached_has_bits & 0x00000040u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 6, this_._internal_ymax(), target);
           }
 
@@ -3938,25 +3938,25 @@ PROTOBUF_NOINLINE void EdaDataFile_PackageRecord::Clear() {
               total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
                                               this_._internal_attributesidstring());
             }
-            // optional float pitch = 2;
+            // optional double pitch = 2;
             if (cached_has_bits & 0x00000004u) {
-              total_size += 5;
+              total_size += 9;
             }
-            // optional float xMin = 3;
+            // optional double xMin = 3;
             if (cached_has_bits & 0x00000008u) {
-              total_size += 5;
+              total_size += 9;
             }
-            // optional float yMin = 4;
+            // optional double yMin = 4;
             if (cached_has_bits & 0x00000010u) {
-              total_size += 5;
+              total_size += 9;
             }
-            // optional float xMax = 5;
+            // optional double xMax = 5;
             if (cached_has_bits & 0x00000020u) {
-              total_size += 5;
+              total_size += 9;
             }
-            // optional float yMax = 6;
+            // optional double yMax = 6;
             if (cached_has_bits & 0x00000040u) {
-              total_size += 5;
+              total_size += 9;
             }
           }
           return this_.MaybeComputeUnknownFieldsSize(total_size,

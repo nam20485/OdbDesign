@@ -98,14 +98,14 @@ inline constexpr StepHdrFile::Impl_::Impl_(
             ::_pbi::ConstantInitialized()),
         xdatum_{0},
         ydatum_{0},
-        id_{0},
         xorigin_{0},
         yorigin_{0},
         topactive_{0},
         bottomactive_{0},
+        id_{0},
+        affectingbomchanged_{false},
         rightactive_{0},
-        leftactive_{0},
-        affectingbomchanged_{false} {}
+        leftactive_{0} {}
 
 template <typename>
 PROTOBUF_CONSTEXPR StepHdrFile::StepHdrFile(::_pbi::ConstantInitialized)
@@ -201,15 +201,15 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::StepHdrFile, _impl_.onlinevalues_),
         3,
         4,
+        9,
         5,
         6,
         7,
         8,
-        9,
-        10,
         11,
-        0,
         12,
+        0,
+        10,
         1,
         ~0u,
         2,
@@ -230,22 +230,22 @@ static const ::_pb::Message* const file_default_instances[] = {
 const char descriptor_table_protodef_stephdrfile_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
     protodesc_cold) = {
     "\n\021stephdrfile.proto\022\020Odb.Lib.Protobuf\"\315\007"
-    "\n\013StepHdrFile\022\023\n\006xDatum\030\001 \001(\002H\000\210\001\001\022\023\n\006yD"
-    "atum\030\002 \001(\002H\001\210\001\001\022\017\n\002id\030\003 \001(\005H\002\210\001\001\022\024\n\007xOri"
-    "gin\030\004 \001(\002H\003\210\001\001\022\024\n\007yOrigin\030\005 \001(\002H\004\210\001\001\022\026\n\t"
-    "topActive\030\006 \001(\002H\005\210\001\001\022\031\n\014bottomActive\030\007 \001"
-    "(\002H\006\210\001\001\022\030\n\013rightActive\030\010 \001(\002H\007\210\001\001\022\027\n\nlef"
-    "tActive\030\t \001(\002H\010\210\001\001\022\031\n\014affectingBom\030\n \001(\t"
+    "\n\013StepHdrFile\022\023\n\006xDatum\030\001 \001(\001H\000\210\001\001\022\023\n\006yD"
+    "atum\030\002 \001(\001H\001\210\001\001\022\017\n\002id\030\003 \001(\005H\002\210\001\001\022\024\n\007xOri"
+    "gin\030\004 \001(\001H\003\210\001\001\022\024\n\007yOrigin\030\005 \001(\001H\004\210\001\001\022\026\n\t"
+    "topActive\030\006 \001(\001H\005\210\001\001\022\031\n\014bottomActive\030\007 \001"
+    "(\001H\006\210\001\001\022\030\n\013rightActive\030\010 \001(\001H\007\210\001\001\022\027\n\nlef"
+    "tActive\030\t \001(\001H\010\210\001\001\022\031\n\014affectingBom\030\n \001(\t"
     "H\t\210\001\001\022 \n\023affectingBomChanged\030\013 \001(\010H\n\210\001\001\022"
     "\023\n\006online\030\014 \001(\tH\013\210\001\001\022I\n\021stepRepeatRecord"
     "s\030\r \003(\0132..Odb.Lib.Protobuf.StepHdrFile.S"
     "tepRepeatRecord\022\021\n\004path\030\016 \001(\tH\014\210\001\001\022E\n\014on"
     "lineValues\030\017 \003(\0132/.Odb.Lib.Protobuf.Step"
     "HdrFile.OnlineValuesEntry\032\224\002\n\020StepRepeat"
-    "Record\022\021\n\004name\030\001 \001(\tH\000\210\001\001\022\016\n\001x\030\002 \001(\002H\001\210\001"
-    "\001\022\016\n\001y\030\003 \001(\002H\002\210\001\001\022\017\n\002dx\030\004 \001(\002H\003\210\001\001\022\017\n\002dy"
-    "\030\005 \001(\002H\004\210\001\001\022\017\n\002nx\030\006 \001(\005H\005\210\001\001\022\017\n\002ny\030\007 \001(\005"
-    "H\006\210\001\001\022\022\n\005angle\030\010 \001(\002H\007\210\001\001\022\021\n\004flip\030\t \001(\010H"
+    "Record\022\021\n\004name\030\001 \001(\tH\000\210\001\001\022\016\n\001x\030\002 \001(\001H\001\210\001"
+    "\001\022\016\n\001y\030\003 \001(\001H\002\210\001\001\022\017\n\002dx\030\004 \001(\001H\003\210\001\001\022\017\n\002dy"
+    "\030\005 \001(\001H\004\210\001\001\022\017\n\002nx\030\006 \001(\005H\005\210\001\001\022\017\n\002ny\030\007 \001(\005"
+    "H\006\210\001\001\022\022\n\005angle\030\010 \001(\001H\007\210\001\001\022\021\n\004flip\030\t \001(\010H"
     "\010\210\001\001\022\023\n\006mirror\030\n \001(\010H\t\210\001\001B\007\n\005_nameB\004\n\002_x"
     "B\004\n\002_yB\005\n\003_dxB\005\n\003_dyB\005\n\003_nxB\005\n\003_nyB\010\n\006_a"
     "ngleB\007\n\005_flipB\t\n\007_mirror\0323\n\021OnlineValues"
@@ -410,27 +410,27 @@ const ::_pbi::TcParseTable<4, 10, 0, 66, 2> StepHdrFile_StepRepeatRecord::_table
     // optional string name = 1;
     {::_pbi::TcParser::FastUS1,
      {10, 0, 0, PROTOBUF_FIELD_OFFSET(StepHdrFile_StepRepeatRecord, _impl_.name_)}},
-    // optional float x = 2;
-    {::_pbi::TcParser::FastF32S1,
-     {21, 1, 0, PROTOBUF_FIELD_OFFSET(StepHdrFile_StepRepeatRecord, _impl_.x_)}},
-    // optional float y = 3;
-    {::_pbi::TcParser::FastF32S1,
-     {29, 2, 0, PROTOBUF_FIELD_OFFSET(StepHdrFile_StepRepeatRecord, _impl_.y_)}},
-    // optional float dx = 4;
-    {::_pbi::TcParser::FastF32S1,
-     {37, 3, 0, PROTOBUF_FIELD_OFFSET(StepHdrFile_StepRepeatRecord, _impl_.dx_)}},
-    // optional float dy = 5;
-    {::_pbi::TcParser::FastF32S1,
-     {45, 4, 0, PROTOBUF_FIELD_OFFSET(StepHdrFile_StepRepeatRecord, _impl_.dy_)}},
+    // optional double x = 2;
+    {::_pbi::TcParser::FastF64S1,
+     {17, 1, 0, PROTOBUF_FIELD_OFFSET(StepHdrFile_StepRepeatRecord, _impl_.x_)}},
+    // optional double y = 3;
+    {::_pbi::TcParser::FastF64S1,
+     {25, 2, 0, PROTOBUF_FIELD_OFFSET(StepHdrFile_StepRepeatRecord, _impl_.y_)}},
+    // optional double dx = 4;
+    {::_pbi::TcParser::FastF64S1,
+     {33, 3, 0, PROTOBUF_FIELD_OFFSET(StepHdrFile_StepRepeatRecord, _impl_.dx_)}},
+    // optional double dy = 5;
+    {::_pbi::TcParser::FastF64S1,
+     {41, 4, 0, PROTOBUF_FIELD_OFFSET(StepHdrFile_StepRepeatRecord, _impl_.dy_)}},
     // optional int32 nx = 6;
     {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(StepHdrFile_StepRepeatRecord, _impl_.nx_), 5>(),
      {48, 5, 0, PROTOBUF_FIELD_OFFSET(StepHdrFile_StepRepeatRecord, _impl_.nx_)}},
     // optional int32 ny = 7;
     {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(StepHdrFile_StepRepeatRecord, _impl_.ny_), 6>(),
      {56, 6, 0, PROTOBUF_FIELD_OFFSET(StepHdrFile_StepRepeatRecord, _impl_.ny_)}},
-    // optional float angle = 8;
-    {::_pbi::TcParser::FastF32S1,
-     {69, 7, 0, PROTOBUF_FIELD_OFFSET(StepHdrFile_StepRepeatRecord, _impl_.angle_)}},
+    // optional double angle = 8;
+    {::_pbi::TcParser::FastF64S1,
+     {65, 7, 0, PROTOBUF_FIELD_OFFSET(StepHdrFile_StepRepeatRecord, _impl_.angle_)}},
     // optional bool flip = 9;
     {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(StepHdrFile_StepRepeatRecord, _impl_.flip_), 8>(),
      {72, 8, 0, PROTOBUF_FIELD_OFFSET(StepHdrFile_StepRepeatRecord, _impl_.flip_)}},
@@ -448,27 +448,27 @@ const ::_pbi::TcParseTable<4, 10, 0, 66, 2> StepHdrFile_StepRepeatRecord::_table
     // optional string name = 1;
     {PROTOBUF_FIELD_OFFSET(StepHdrFile_StepRepeatRecord, _impl_.name_), _Internal::kHasBitsOffset + 0, 0,
     (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
-    // optional float x = 2;
+    // optional double x = 2;
     {PROTOBUF_FIELD_OFFSET(StepHdrFile_StepRepeatRecord, _impl_.x_), _Internal::kHasBitsOffset + 1, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
-    // optional float y = 3;
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double y = 3;
     {PROTOBUF_FIELD_OFFSET(StepHdrFile_StepRepeatRecord, _impl_.y_), _Internal::kHasBitsOffset + 2, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
-    // optional float dx = 4;
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double dx = 4;
     {PROTOBUF_FIELD_OFFSET(StepHdrFile_StepRepeatRecord, _impl_.dx_), _Internal::kHasBitsOffset + 3, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
-    // optional float dy = 5;
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double dy = 5;
     {PROTOBUF_FIELD_OFFSET(StepHdrFile_StepRepeatRecord, _impl_.dy_), _Internal::kHasBitsOffset + 4, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
     // optional int32 nx = 6;
     {PROTOBUF_FIELD_OFFSET(StepHdrFile_StepRepeatRecord, _impl_.nx_), _Internal::kHasBitsOffset + 5, 0,
     (0 | ::_fl::kFcOptional | ::_fl::kInt32)},
     // optional int32 ny = 7;
     {PROTOBUF_FIELD_OFFSET(StepHdrFile_StepRepeatRecord, _impl_.ny_), _Internal::kHasBitsOffset + 6, 0,
     (0 | ::_fl::kFcOptional | ::_fl::kInt32)},
-    // optional float angle = 8;
+    // optional double angle = 8;
     {PROTOBUF_FIELD_OFFSET(StepHdrFile_StepRepeatRecord, _impl_.angle_), _Internal::kHasBitsOffset + 7, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
     // optional bool flip = 9;
     {PROTOBUF_FIELD_OFFSET(StepHdrFile_StepRepeatRecord, _impl_.flip_), _Internal::kHasBitsOffset + 8, 0,
     (0 | ::_fl::kFcOptional | ::_fl::kBool)},
@@ -533,31 +533,31 @@ PROTOBUF_NOINLINE void StepHdrFile_StepRepeatRecord::Clear() {
             target = stream->WriteStringMaybeAliased(1, _s, target);
           }
 
-          // optional float x = 2;
+          // optional double x = 2;
           if (cached_has_bits & 0x00000002u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 2, this_._internal_x(), target);
           }
 
-          // optional float y = 3;
+          // optional double y = 3;
           if (cached_has_bits & 0x00000004u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 3, this_._internal_y(), target);
           }
 
-          // optional float dx = 4;
+          // optional double dx = 4;
           if (cached_has_bits & 0x00000008u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 4, this_._internal_dx(), target);
           }
 
-          // optional float dy = 5;
+          // optional double dy = 5;
           if (cached_has_bits & 0x00000010u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 5, this_._internal_dy(), target);
           }
 
@@ -575,10 +575,10 @@ PROTOBUF_NOINLINE void StepHdrFile_StepRepeatRecord::Clear() {
                     stream, this_._internal_ny(), target);
           }
 
-          // optional float angle = 8;
+          // optional double angle = 8;
           if (cached_has_bits & 0x00000080u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 8, this_._internal_angle(), target);
           }
 
@@ -627,21 +627,21 @@ PROTOBUF_NOINLINE void StepHdrFile_StepRepeatRecord::Clear() {
               total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
                                               this_._internal_name());
             }
-            // optional float x = 2;
+            // optional double x = 2;
             if (cached_has_bits & 0x00000002u) {
-              total_size += 5;
+              total_size += 9;
             }
-            // optional float y = 3;
+            // optional double y = 3;
             if (cached_has_bits & 0x00000004u) {
-              total_size += 5;
+              total_size += 9;
             }
-            // optional float dx = 4;
+            // optional double dx = 4;
             if (cached_has_bits & 0x00000008u) {
-              total_size += 5;
+              total_size += 9;
             }
-            // optional float dy = 5;
+            // optional double dy = 5;
             if (cached_has_bits & 0x00000010u) {
-              total_size += 5;
+              total_size += 9;
             }
             // optional int32 nx = 6;
             if (cached_has_bits & 0x00000020u) {
@@ -653,9 +653,9 @@ PROTOBUF_NOINLINE void StepHdrFile_StepRepeatRecord::Clear() {
               total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
                   this_._internal_ny());
             }
-            // optional float angle = 8;
+            // optional double angle = 8;
             if (cached_has_bits & 0x00000080u) {
-              total_size += 5;
+              total_size += 9;
             }
           }
           if (cached_has_bits & 0x00000300u) {
@@ -883,9 +883,9 @@ StepHdrFile::StepHdrFile(
                offsetof(Impl_, xdatum_),
            reinterpret_cast<const char *>(&from._impl_) +
                offsetof(Impl_, xdatum_),
-           offsetof(Impl_, affectingbomchanged_) -
+           offsetof(Impl_, leftactive_) -
                offsetof(Impl_, xdatum_) +
-               sizeof(Impl_::affectingbomchanged_));
+               sizeof(Impl_::leftactive_));
 
   // @@protoc_insertion_point(copy_constructor:Odb.Lib.Protobuf.StepHdrFile)
 }
@@ -904,9 +904,9 @@ inline void StepHdrFile::SharedCtor(::_pb::Arena* arena) {
   ::memset(reinterpret_cast<char *>(&_impl_) +
                offsetof(Impl_, xdatum_),
            0,
-           offsetof(Impl_, affectingbomchanged_) -
+           offsetof(Impl_, leftactive_) -
                offsetof(Impl_, xdatum_) +
-               sizeof(Impl_::affectingbomchanged_));
+               sizeof(Impl_::leftactive_));
 }
 StepHdrFile::~StepHdrFile() {
   // @@protoc_insertion_point(destructor:Odb.Lib.Protobuf.StepHdrFile)
@@ -997,39 +997,39 @@ const ::_pbi::TcParseTable<4, 15, 2, 79, 2> StepHdrFile::_table_ = {
     #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
   }, {{
     {::_pbi::TcParser::MiniParse, {}},
-    // optional float xDatum = 1;
-    {::_pbi::TcParser::FastF32S1,
-     {13, 3, 0, PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.xdatum_)}},
-    // optional float yDatum = 2;
-    {::_pbi::TcParser::FastF32S1,
-     {21, 4, 0, PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.ydatum_)}},
+    // optional double xDatum = 1;
+    {::_pbi::TcParser::FastF64S1,
+     {9, 3, 0, PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.xdatum_)}},
+    // optional double yDatum = 2;
+    {::_pbi::TcParser::FastF64S1,
+     {17, 4, 0, PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.ydatum_)}},
     // optional int32 id = 3;
-    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(StepHdrFile, _impl_.id_), 5>(),
-     {24, 5, 0, PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.id_)}},
-    // optional float xOrigin = 4;
-    {::_pbi::TcParser::FastF32S1,
-     {37, 6, 0, PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.xorigin_)}},
-    // optional float yOrigin = 5;
-    {::_pbi::TcParser::FastF32S1,
-     {45, 7, 0, PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.yorigin_)}},
-    // optional float topActive = 6;
-    {::_pbi::TcParser::FastF32S1,
-     {53, 8, 0, PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.topactive_)}},
-    // optional float bottomActive = 7;
-    {::_pbi::TcParser::FastF32S1,
-     {61, 9, 0, PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.bottomactive_)}},
-    // optional float rightActive = 8;
-    {::_pbi::TcParser::FastF32S1,
-     {69, 10, 0, PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.rightactive_)}},
-    // optional float leftActive = 9;
-    {::_pbi::TcParser::FastF32S1,
-     {77, 11, 0, PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.leftactive_)}},
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(StepHdrFile, _impl_.id_), 9>(),
+     {24, 9, 0, PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.id_)}},
+    // optional double xOrigin = 4;
+    {::_pbi::TcParser::FastF64S1,
+     {33, 5, 0, PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.xorigin_)}},
+    // optional double yOrigin = 5;
+    {::_pbi::TcParser::FastF64S1,
+     {41, 6, 0, PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.yorigin_)}},
+    // optional double topActive = 6;
+    {::_pbi::TcParser::FastF64S1,
+     {49, 7, 0, PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.topactive_)}},
+    // optional double bottomActive = 7;
+    {::_pbi::TcParser::FastF64S1,
+     {57, 8, 0, PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.bottomactive_)}},
+    // optional double rightActive = 8;
+    {::_pbi::TcParser::FastF64S1,
+     {65, 11, 0, PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.rightactive_)}},
+    // optional double leftActive = 9;
+    {::_pbi::TcParser::FastF64S1,
+     {73, 12, 0, PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.leftactive_)}},
     // optional string affectingBom = 10;
     {::_pbi::TcParser::FastUS1,
      {82, 0, 0, PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.affectingbom_)}},
     // optional bool affectingBomChanged = 11;
-    {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(StepHdrFile, _impl_.affectingbomchanged_), 12>(),
-     {88, 12, 0, PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.affectingbomchanged_)}},
+    {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(StepHdrFile, _impl_.affectingbomchanged_), 10>(),
+     {88, 10, 0, PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.affectingbomchanged_)}},
     // optional string online = 12;
     {::_pbi::TcParser::FastUS1,
      {98, 1, 0, PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.online_)}},
@@ -1043,38 +1043,38 @@ const ::_pbi::TcParseTable<4, 15, 2, 79, 2> StepHdrFile::_table_ = {
   }}, {{
     65535, 65535
   }}, {{
-    // optional float xDatum = 1;
+    // optional double xDatum = 1;
     {PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.xdatum_), _Internal::kHasBitsOffset + 3, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
-    // optional float yDatum = 2;
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double yDatum = 2;
     {PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.ydatum_), _Internal::kHasBitsOffset + 4, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
     // optional int32 id = 3;
-    {PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.id_), _Internal::kHasBitsOffset + 5, 0,
+    {PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.id_), _Internal::kHasBitsOffset + 9, 0,
     (0 | ::_fl::kFcOptional | ::_fl::kInt32)},
-    // optional float xOrigin = 4;
-    {PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.xorigin_), _Internal::kHasBitsOffset + 6, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
-    // optional float yOrigin = 5;
-    {PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.yorigin_), _Internal::kHasBitsOffset + 7, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
-    // optional float topActive = 6;
-    {PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.topactive_), _Internal::kHasBitsOffset + 8, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
-    // optional float bottomActive = 7;
-    {PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.bottomactive_), _Internal::kHasBitsOffset + 9, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
-    // optional float rightActive = 8;
-    {PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.rightactive_), _Internal::kHasBitsOffset + 10, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
-    // optional float leftActive = 9;
-    {PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.leftactive_), _Internal::kHasBitsOffset + 11, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
+    // optional double xOrigin = 4;
+    {PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.xorigin_), _Internal::kHasBitsOffset + 5, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double yOrigin = 5;
+    {PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.yorigin_), _Internal::kHasBitsOffset + 6, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double topActive = 6;
+    {PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.topactive_), _Internal::kHasBitsOffset + 7, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double bottomActive = 7;
+    {PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.bottomactive_), _Internal::kHasBitsOffset + 8, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double rightActive = 8;
+    {PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.rightactive_), _Internal::kHasBitsOffset + 11, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double leftActive = 9;
+    {PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.leftactive_), _Internal::kHasBitsOffset + 12, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
     // optional string affectingBom = 10;
     {PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.affectingbom_), _Internal::kHasBitsOffset + 0, 0,
     (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
     // optional bool affectingBomChanged = 11;
-    {PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.affectingbomchanged_), _Internal::kHasBitsOffset + 12, 0,
+    {PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.affectingbomchanged_), _Internal::kHasBitsOffset + 10, 0,
     (0 | ::_fl::kFcOptional | ::_fl::kBool)},
     // optional string online = 12;
     {PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.online_), _Internal::kHasBitsOffset + 1, 0,
@@ -1127,13 +1127,13 @@ PROTOBUF_NOINLINE void StepHdrFile::Clear() {
   }
   if (cached_has_bits & 0x000000f8u) {
     ::memset(&_impl_.xdatum_, 0, static_cast<::size_t>(
-        reinterpret_cast<char*>(&_impl_.yorigin_) -
-        reinterpret_cast<char*>(&_impl_.xdatum_)) + sizeof(_impl_.yorigin_));
+        reinterpret_cast<char*>(&_impl_.topactive_) -
+        reinterpret_cast<char*>(&_impl_.xdatum_)) + sizeof(_impl_.topactive_));
   }
   if (cached_has_bits & 0x00001f00u) {
-    ::memset(&_impl_.topactive_, 0, static_cast<::size_t>(
-        reinterpret_cast<char*>(&_impl_.affectingbomchanged_) -
-        reinterpret_cast<char*>(&_impl_.topactive_)) + sizeof(_impl_.affectingbomchanged_));
+    ::memset(&_impl_.bottomactive_, 0, static_cast<::size_t>(
+        reinterpret_cast<char*>(&_impl_.leftactive_) -
+        reinterpret_cast<char*>(&_impl_.bottomactive_)) + sizeof(_impl_.leftactive_));
   }
   _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
@@ -1155,66 +1155,66 @@ PROTOBUF_NOINLINE void StepHdrFile::Clear() {
           (void)cached_has_bits;
 
           cached_has_bits = this_._impl_._has_bits_[0];
-          // optional float xDatum = 1;
+          // optional double xDatum = 1;
           if (cached_has_bits & 0x00000008u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 1, this_._internal_xdatum(), target);
           }
 
-          // optional float yDatum = 2;
+          // optional double yDatum = 2;
           if (cached_has_bits & 0x00000010u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 2, this_._internal_ydatum(), target);
           }
 
           // optional int32 id = 3;
-          if (cached_has_bits & 0x00000020u) {
+          if (cached_has_bits & 0x00000200u) {
             target = ::google::protobuf::internal::WireFormatLite::
                 WriteInt32ToArrayWithField<3>(
                     stream, this_._internal_id(), target);
           }
 
-          // optional float xOrigin = 4;
-          if (cached_has_bits & 0x00000040u) {
+          // optional double xOrigin = 4;
+          if (cached_has_bits & 0x00000020u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 4, this_._internal_xorigin(), target);
           }
 
-          // optional float yOrigin = 5;
-          if (cached_has_bits & 0x00000080u) {
+          // optional double yOrigin = 5;
+          if (cached_has_bits & 0x00000040u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 5, this_._internal_yorigin(), target);
           }
 
-          // optional float topActive = 6;
-          if (cached_has_bits & 0x00000100u) {
+          // optional double topActive = 6;
+          if (cached_has_bits & 0x00000080u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 6, this_._internal_topactive(), target);
           }
 
-          // optional float bottomActive = 7;
-          if (cached_has_bits & 0x00000200u) {
+          // optional double bottomActive = 7;
+          if (cached_has_bits & 0x00000100u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 7, this_._internal_bottomactive(), target);
           }
 
-          // optional float rightActive = 8;
-          if (cached_has_bits & 0x00000400u) {
+          // optional double rightActive = 8;
+          if (cached_has_bits & 0x00000800u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 8, this_._internal_rightactive(), target);
           }
 
-          // optional float leftActive = 9;
-          if (cached_has_bits & 0x00000800u) {
+          // optional double leftActive = 9;
+          if (cached_has_bits & 0x00001000u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 9, this_._internal_leftactive(), target);
           }
 
@@ -1227,7 +1227,7 @@ PROTOBUF_NOINLINE void StepHdrFile::Clear() {
           }
 
           // optional bool affectingBomChanged = 11;
-          if (cached_has_bits & 0x00001000u) {
+          if (cached_has_bits & 0x00000400u) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteBoolToArray(
                 11, this_._internal_affectingbomchanged(), target);
@@ -1353,48 +1353,48 @@ PROTOBUF_NOINLINE void StepHdrFile::Clear() {
               total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
                                               this_._internal_path());
             }
-            // optional float xDatum = 1;
+            // optional double xDatum = 1;
             if (cached_has_bits & 0x00000008u) {
-              total_size += 5;
+              total_size += 9;
             }
-            // optional float yDatum = 2;
+            // optional double yDatum = 2;
             if (cached_has_bits & 0x00000010u) {
-              total_size += 5;
+              total_size += 9;
             }
-            // optional int32 id = 3;
+            // optional double xOrigin = 4;
             if (cached_has_bits & 0x00000020u) {
-              total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
-                  this_._internal_id());
+              total_size += 9;
             }
-            // optional float xOrigin = 4;
+            // optional double yOrigin = 5;
             if (cached_has_bits & 0x00000040u) {
-              total_size += 5;
+              total_size += 9;
             }
-            // optional float yOrigin = 5;
+            // optional double topActive = 6;
             if (cached_has_bits & 0x00000080u) {
-              total_size += 5;
+              total_size += 9;
             }
           }
           if (cached_has_bits & 0x00001f00u) {
-            // optional float topActive = 6;
+            // optional double bottomActive = 7;
             if (cached_has_bits & 0x00000100u) {
-              total_size += 5;
+              total_size += 9;
             }
-            // optional float bottomActive = 7;
+            // optional int32 id = 3;
             if (cached_has_bits & 0x00000200u) {
-              total_size += 5;
-            }
-            // optional float rightActive = 8;
-            if (cached_has_bits & 0x00000400u) {
-              total_size += 5;
-            }
-            // optional float leftActive = 9;
-            if (cached_has_bits & 0x00000800u) {
-              total_size += 5;
+              total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
+                  this_._internal_id());
             }
             // optional bool affectingBomChanged = 11;
-            if (cached_has_bits & 0x00001000u) {
+            if (cached_has_bits & 0x00000400u) {
               total_size += 2;
+            }
+            // optional double rightActive = 8;
+            if (cached_has_bits & 0x00000800u) {
+              total_size += 9;
+            }
+            // optional double leftActive = 9;
+            if (cached_has_bits & 0x00001000u) {
+              total_size += 9;
             }
           }
           return this_.MaybeComputeUnknownFieldsSize(total_size,
@@ -1430,30 +1430,30 @@ void StepHdrFile::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::goo
       _this->_impl_.ydatum_ = from._impl_.ydatum_;
     }
     if (cached_has_bits & 0x00000020u) {
-      _this->_impl_.id_ = from._impl_.id_;
-    }
-    if (cached_has_bits & 0x00000040u) {
       _this->_impl_.xorigin_ = from._impl_.xorigin_;
     }
-    if (cached_has_bits & 0x00000080u) {
+    if (cached_has_bits & 0x00000040u) {
       _this->_impl_.yorigin_ = from._impl_.yorigin_;
+    }
+    if (cached_has_bits & 0x00000080u) {
+      _this->_impl_.topactive_ = from._impl_.topactive_;
     }
   }
   if (cached_has_bits & 0x00001f00u) {
     if (cached_has_bits & 0x00000100u) {
-      _this->_impl_.topactive_ = from._impl_.topactive_;
-    }
-    if (cached_has_bits & 0x00000200u) {
       _this->_impl_.bottomactive_ = from._impl_.bottomactive_;
     }
+    if (cached_has_bits & 0x00000200u) {
+      _this->_impl_.id_ = from._impl_.id_;
+    }
     if (cached_has_bits & 0x00000400u) {
-      _this->_impl_.rightactive_ = from._impl_.rightactive_;
+      _this->_impl_.affectingbomchanged_ = from._impl_.affectingbomchanged_;
     }
     if (cached_has_bits & 0x00000800u) {
-      _this->_impl_.leftactive_ = from._impl_.leftactive_;
+      _this->_impl_.rightactive_ = from._impl_.rightactive_;
     }
     if (cached_has_bits & 0x00001000u) {
-      _this->_impl_.affectingbomchanged_ = from._impl_.affectingbomchanged_;
+      _this->_impl_.leftactive_ = from._impl_.leftactive_;
     }
   }
   _this->_impl_._has_bits_[0] |= cached_has_bits;
@@ -1480,8 +1480,8 @@ void StepHdrFile::InternalSwap(StepHdrFile* PROTOBUF_RESTRICT other) {
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.online_, &other->_impl_.online_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.path_, &other->_impl_.path_, arena);
   ::google::protobuf::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.affectingbomchanged_)
-      + sizeof(StepHdrFile::_impl_.affectingbomchanged_)
+      PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.leftactive_)
+      + sizeof(StepHdrFile::_impl_.leftactive_)
       - PROTOBUF_FIELD_OFFSET(StepHdrFile, _impl_.xdatum_)>(
           reinterpret_cast<char*>(&_impl_.xdatum_),
           reinterpret_cast<char*>(&other->_impl_.xdatum_));

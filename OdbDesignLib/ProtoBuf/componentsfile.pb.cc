@@ -34,11 +34,11 @@ inline constexpr ComponentsFile_ComponentRecord_ToeprintRecord::Impl_::Impl_(
         name_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()),
-        pinnumber_{0u},
         locationx_{0},
         locationy_{0},
-        rotation_{0},
+        pinnumber_{0u},
         mirror_{false},
+        rotation_{0},
         netnumber_{0u},
         subnetnumber_{0u} {}
 
@@ -159,11 +159,11 @@ inline constexpr ComponentsFile_ComponentRecord::Impl_::Impl_(
         attributes_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()),
-        pkgref_{0u},
         locationx_{0},
         locationy_{0},
-        rotation_{0},
+        pkgref_{0u},
         mirror_{false},
+        rotation_{0},
         id_{0u},
         index_{0u} {}
 
@@ -293,11 +293,11 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord_ToeprintRecord, _impl_.netnumber_),
         PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord_ToeprintRecord, _impl_.subnetnumber_),
         PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord_ToeprintRecord, _impl_.name_),
+        3,
         1,
         2,
-        3,
-        4,
         5,
+        4,
         6,
         7,
         0,
@@ -334,11 +334,11 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord, _impl_.propertyrecords_),
         PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord, _impl_.toeprintrecords_),
         PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ComponentsFile_ComponentRecord, _impl_.attributelookuptable_),
+        5,
         3,
         4,
-        5,
-        6,
         7,
+        6,
         0,
         1,
         2,
@@ -485,8 +485,8 @@ const char descriptor_table_protodef_componentsfile_2eproto[] ABSL_ATTRIBUTE_SEC
     "pn\030\r \003(\0132@.Odb.Lib.Protobuf.ComponentsFi"
     "le.BomDescriptionRecordsByCpnEntry\032\332\007\n\017C"
     "omponentRecord\022\023\n\006pkgRef\030\001 \001(\rH\000\210\001\001\022\026\n\tl"
-    "ocationX\030\002 \001(\002H\001\210\001\001\022\026\n\tlocationY\030\003 \001(\002H\002"
-    "\210\001\001\022\025\n\010rotation\030\004 \001(\002H\003\210\001\001\022\023\n\006mirror\030\005 \001"
+    "ocationX\030\002 \001(\001H\001\210\001\001\022\026\n\tlocationY\030\003 \001(\001H\002"
+    "\210\001\001\022\025\n\010rotation\030\004 \001(\001H\003\210\001\001\022\023\n\006mirror\030\005 \001"
     "(\010H\004\210\001\001\022\025\n\010compName\030\006 \001(\tH\005\210\001\001\022\025\n\010partNa"
     "me\030\007 \001(\tH\006\210\001\001\022\027\n\nattributes\030\010 \001(\tH\007\210\001\001\022\017"
     "\n\002id\030\t \001(\rH\010\210\001\001\022\022\n\005index\030\n \001(\rH\t\210\001\001\0229\n\017p"
@@ -497,8 +497,8 @@ const char descriptor_table_protodef_componentsfile_2eproto[] ABSL_ATTRIBUTE_SEC
     "kupTable\030\r \003(\0132J.Odb.Lib.Protobuf.Compon"
     "entsFile.ComponentRecord.AttributeLookup"
     "TableEntry\032\264\002\n\016ToeprintRecord\022\026\n\tpinNumb"
-    "er\030\001 \001(\rH\000\210\001\001\022\026\n\tlocationX\030\002 \001(\002H\001\210\001\001\022\026\n"
-    "\tlocationY\030\003 \001(\002H\002\210\001\001\022\025\n\010rotation\030\004 \001(\002H"
+    "er\030\001 \001(\rH\000\210\001\001\022\026\n\tlocationX\030\002 \001(\001H\001\210\001\001\022\026\n"
+    "\tlocationY\030\003 \001(\001H\002\210\001\001\022\025\n\010rotation\030\004 \001(\001H"
     "\003\210\001\001\022\023\n\006mirror\030\005 \001(\010H\004\210\001\001\022\026\n\tnetNumber\030\006"
     " \001(\rH\005\210\001\001\022\031\n\014subnetNumber\030\007 \001(\rH\006\210\001\001\022\021\n\004"
     "name\030\010 \001(\tH\007\210\001\001B\014\n\n_pinNumberB\014\n\n_locati"
@@ -591,11 +591,11 @@ ComponentsFile_ComponentRecord_ToeprintRecord::ComponentsFile_ComponentRecord_To
       from._internal_metadata_);
   new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
   ::memcpy(reinterpret_cast<char *>(&_impl_) +
-               offsetof(Impl_, pinnumber_),
+               offsetof(Impl_, locationx_),
            reinterpret_cast<const char *>(&from._impl_) +
-               offsetof(Impl_, pinnumber_),
+               offsetof(Impl_, locationx_),
            offsetof(Impl_, subnetnumber_) -
-               offsetof(Impl_, pinnumber_) +
+               offsetof(Impl_, locationx_) +
                sizeof(Impl_::subnetnumber_));
 
   // @@protoc_insertion_point(copy_constructor:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.ToeprintRecord)
@@ -609,10 +609,10 @@ inline PROTOBUF_NDEBUG_INLINE ComponentsFile_ComponentRecord_ToeprintRecord::Imp
 inline void ComponentsFile_ComponentRecord_ToeprintRecord::SharedCtor(::_pb::Arena* arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
   ::memset(reinterpret_cast<char *>(&_impl_) +
-               offsetof(Impl_, pinnumber_),
+               offsetof(Impl_, locationx_),
            0,
            offsetof(Impl_, subnetnumber_) -
-               offsetof(Impl_, pinnumber_) +
+               offsetof(Impl_, locationx_) +
                sizeof(Impl_::subnetnumber_));
 }
 ComponentsFile_ComponentRecord_ToeprintRecord::~ComponentsFile_ComponentRecord_ToeprintRecord() {
@@ -685,20 +685,20 @@ const ::_pbi::TcParseTable<3, 8, 0, 83, 2> ComponentsFile_ComponentRecord_Toepri
     {::_pbi::TcParser::FastUS1,
      {66, 0, 0, PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord_ToeprintRecord, _impl_.name_)}},
     // optional uint32 pinNumber = 1;
-    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(ComponentsFile_ComponentRecord_ToeprintRecord, _impl_.pinnumber_), 1>(),
-     {8, 1, 0, PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord_ToeprintRecord, _impl_.pinnumber_)}},
-    // optional float locationX = 2;
-    {::_pbi::TcParser::FastF32S1,
-     {21, 2, 0, PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord_ToeprintRecord, _impl_.locationx_)}},
-    // optional float locationY = 3;
-    {::_pbi::TcParser::FastF32S1,
-     {29, 3, 0, PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord_ToeprintRecord, _impl_.locationy_)}},
-    // optional float rotation = 4;
-    {::_pbi::TcParser::FastF32S1,
-     {37, 4, 0, PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord_ToeprintRecord, _impl_.rotation_)}},
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(ComponentsFile_ComponentRecord_ToeprintRecord, _impl_.pinnumber_), 3>(),
+     {8, 3, 0, PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord_ToeprintRecord, _impl_.pinnumber_)}},
+    // optional double locationX = 2;
+    {::_pbi::TcParser::FastF64S1,
+     {17, 1, 0, PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord_ToeprintRecord, _impl_.locationx_)}},
+    // optional double locationY = 3;
+    {::_pbi::TcParser::FastF64S1,
+     {25, 2, 0, PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord_ToeprintRecord, _impl_.locationy_)}},
+    // optional double rotation = 4;
+    {::_pbi::TcParser::FastF64S1,
+     {33, 5, 0, PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord_ToeprintRecord, _impl_.rotation_)}},
     // optional bool mirror = 5;
-    {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(ComponentsFile_ComponentRecord_ToeprintRecord, _impl_.mirror_), 5>(),
-     {40, 5, 0, PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord_ToeprintRecord, _impl_.mirror_)}},
+    {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(ComponentsFile_ComponentRecord_ToeprintRecord, _impl_.mirror_), 4>(),
+     {40, 4, 0, PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord_ToeprintRecord, _impl_.mirror_)}},
     // optional uint32 netNumber = 6;
     {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(ComponentsFile_ComponentRecord_ToeprintRecord, _impl_.netnumber_), 6>(),
      {48, 6, 0, PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord_ToeprintRecord, _impl_.netnumber_)}},
@@ -709,19 +709,19 @@ const ::_pbi::TcParseTable<3, 8, 0, 83, 2> ComponentsFile_ComponentRecord_Toepri
     65535, 65535
   }}, {{
     // optional uint32 pinNumber = 1;
-    {PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord_ToeprintRecord, _impl_.pinnumber_), _Internal::kHasBitsOffset + 1, 0,
+    {PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord_ToeprintRecord, _impl_.pinnumber_), _Internal::kHasBitsOffset + 3, 0,
     (0 | ::_fl::kFcOptional | ::_fl::kUInt32)},
-    // optional float locationX = 2;
-    {PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord_ToeprintRecord, _impl_.locationx_), _Internal::kHasBitsOffset + 2, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
-    // optional float locationY = 3;
-    {PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord_ToeprintRecord, _impl_.locationy_), _Internal::kHasBitsOffset + 3, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
-    // optional float rotation = 4;
-    {PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord_ToeprintRecord, _impl_.rotation_), _Internal::kHasBitsOffset + 4, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
+    // optional double locationX = 2;
+    {PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord_ToeprintRecord, _impl_.locationx_), _Internal::kHasBitsOffset + 1, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double locationY = 3;
+    {PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord_ToeprintRecord, _impl_.locationy_), _Internal::kHasBitsOffset + 2, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double rotation = 4;
+    {PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord_ToeprintRecord, _impl_.rotation_), _Internal::kHasBitsOffset + 5, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
     // optional bool mirror = 5;
-    {PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord_ToeprintRecord, _impl_.mirror_), _Internal::kHasBitsOffset + 5, 0,
+    {PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord_ToeprintRecord, _impl_.mirror_), _Internal::kHasBitsOffset + 4, 0,
     (0 | ::_fl::kFcOptional | ::_fl::kBool)},
     // optional uint32 netNumber = 6;
     {PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord_ToeprintRecord, _impl_.netnumber_), _Internal::kHasBitsOffset + 6, 0,
@@ -753,9 +753,9 @@ PROTOBUF_NOINLINE void ComponentsFile_ComponentRecord_ToeprintRecord::Clear() {
     _impl_.name_.ClearNonDefaultToEmpty();
   }
   if (cached_has_bits & 0x000000feu) {
-    ::memset(&_impl_.pinnumber_, 0, static_cast<::size_t>(
+    ::memset(&_impl_.locationx_, 0, static_cast<::size_t>(
         reinterpret_cast<char*>(&_impl_.subnetnumber_) -
-        reinterpret_cast<char*>(&_impl_.pinnumber_)) + sizeof(_impl_.subnetnumber_));
+        reinterpret_cast<char*>(&_impl_.locationx_)) + sizeof(_impl_.subnetnumber_));
   }
   _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
@@ -778,35 +778,35 @@ PROTOBUF_NOINLINE void ComponentsFile_ComponentRecord_ToeprintRecord::Clear() {
 
           cached_has_bits = this_._impl_._has_bits_[0];
           // optional uint32 pinNumber = 1;
-          if (cached_has_bits & 0x00000002u) {
+          if (cached_has_bits & 0x00000008u) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
                 1, this_._internal_pinnumber(), target);
           }
 
-          // optional float locationX = 2;
-          if (cached_has_bits & 0x00000004u) {
+          // optional double locationX = 2;
+          if (cached_has_bits & 0x00000002u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 2, this_._internal_locationx(), target);
           }
 
-          // optional float locationY = 3;
-          if (cached_has_bits & 0x00000008u) {
+          // optional double locationY = 3;
+          if (cached_has_bits & 0x00000004u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 3, this_._internal_locationy(), target);
           }
 
-          // optional float rotation = 4;
-          if (cached_has_bits & 0x00000010u) {
+          // optional double rotation = 4;
+          if (cached_has_bits & 0x00000020u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 4, this_._internal_rotation(), target);
           }
 
           // optional bool mirror = 5;
-          if (cached_has_bits & 0x00000020u) {
+          if (cached_has_bits & 0x00000010u) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteBoolToArray(
                 5, this_._internal_mirror(), target);
@@ -865,26 +865,26 @@ PROTOBUF_NOINLINE void ComponentsFile_ComponentRecord_ToeprintRecord::Clear() {
               total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
                                               this_._internal_name());
             }
-            // optional uint32 pinNumber = 1;
+            // optional double locationX = 2;
             if (cached_has_bits & 0x00000002u) {
+              total_size += 9;
+            }
+            // optional double locationY = 3;
+            if (cached_has_bits & 0x00000004u) {
+              total_size += 9;
+            }
+            // optional uint32 pinNumber = 1;
+            if (cached_has_bits & 0x00000008u) {
               total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
                   this_._internal_pinnumber());
             }
-            // optional float locationX = 2;
-            if (cached_has_bits & 0x00000004u) {
-              total_size += 5;
-            }
-            // optional float locationY = 3;
-            if (cached_has_bits & 0x00000008u) {
-              total_size += 5;
-            }
-            // optional float rotation = 4;
-            if (cached_has_bits & 0x00000010u) {
-              total_size += 5;
-            }
             // optional bool mirror = 5;
-            if (cached_has_bits & 0x00000020u) {
+            if (cached_has_bits & 0x00000010u) {
               total_size += 2;
+            }
+            // optional double rotation = 4;
+            if (cached_has_bits & 0x00000020u) {
+              total_size += 9;
             }
             // optional uint32 netNumber = 6;
             if (cached_has_bits & 0x00000040u) {
@@ -915,19 +915,19 @@ void ComponentsFile_ComponentRecord_ToeprintRecord::MergeImpl(::google::protobuf
       _this->_internal_set_name(from._internal_name());
     }
     if (cached_has_bits & 0x00000002u) {
-      _this->_impl_.pinnumber_ = from._impl_.pinnumber_;
-    }
-    if (cached_has_bits & 0x00000004u) {
       _this->_impl_.locationx_ = from._impl_.locationx_;
     }
-    if (cached_has_bits & 0x00000008u) {
+    if (cached_has_bits & 0x00000004u) {
       _this->_impl_.locationy_ = from._impl_.locationy_;
     }
+    if (cached_has_bits & 0x00000008u) {
+      _this->_impl_.pinnumber_ = from._impl_.pinnumber_;
+    }
     if (cached_has_bits & 0x00000010u) {
-      _this->_impl_.rotation_ = from._impl_.rotation_;
+      _this->_impl_.mirror_ = from._impl_.mirror_;
     }
     if (cached_has_bits & 0x00000020u) {
-      _this->_impl_.mirror_ = from._impl_.mirror_;
+      _this->_impl_.rotation_ = from._impl_.rotation_;
     }
     if (cached_has_bits & 0x00000040u) {
       _this->_impl_.netnumber_ = from._impl_.netnumber_;
@@ -958,9 +958,9 @@ void ComponentsFile_ComponentRecord_ToeprintRecord::InternalSwap(ComponentsFile_
   ::google::protobuf::internal::memswap<
       PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord_ToeprintRecord, _impl_.subnetnumber_)
       + sizeof(ComponentsFile_ComponentRecord_ToeprintRecord::_impl_.subnetnumber_)
-      - PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord_ToeprintRecord, _impl_.pinnumber_)>(
-          reinterpret_cast<char*>(&_impl_.pinnumber_),
-          reinterpret_cast<char*>(&other->_impl_.pinnumber_));
+      - PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord_ToeprintRecord, _impl_.locationx_)>(
+          reinterpret_cast<char*>(&_impl_.locationx_),
+          reinterpret_cast<char*>(&other->_impl_.locationx_));
 }
 
 ::google::protobuf::Metadata ComponentsFile_ComponentRecord_ToeprintRecord::GetMetadata() const {
@@ -1106,11 +1106,11 @@ ComponentsFile_ComponentRecord::ComponentsFile_ComponentRecord(
       from._internal_metadata_);
   new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
   ::memcpy(reinterpret_cast<char *>(&_impl_) +
-               offsetof(Impl_, pkgref_),
+               offsetof(Impl_, locationx_),
            reinterpret_cast<const char *>(&from._impl_) +
-               offsetof(Impl_, pkgref_),
+               offsetof(Impl_, locationx_),
            offsetof(Impl_, index_) -
-               offsetof(Impl_, pkgref_) +
+               offsetof(Impl_, locationx_) +
                sizeof(Impl_::index_));
 
   // @@protoc_insertion_point(copy_constructor:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord)
@@ -1129,10 +1129,10 @@ inline PROTOBUF_NDEBUG_INLINE ComponentsFile_ComponentRecord::Impl_::Impl_(
 inline void ComponentsFile_ComponentRecord::SharedCtor(::_pb::Arena* arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
   ::memset(reinterpret_cast<char *>(&_impl_) +
-               offsetof(Impl_, pkgref_),
+               offsetof(Impl_, locationx_),
            0,
            offsetof(Impl_, index_) -
-               offsetof(Impl_, pkgref_) +
+               offsetof(Impl_, locationx_) +
                sizeof(Impl_::index_));
 }
 ComponentsFile_ComponentRecord::~ComponentsFile_ComponentRecord() {
@@ -1229,20 +1229,20 @@ const ::_pbi::TcParseTable<4, 13, 3, 110, 2> ComponentsFile_ComponentRecord::_ta
   }, {{
     {::_pbi::TcParser::MiniParse, {}},
     // optional uint32 pkgRef = 1;
-    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(ComponentsFile_ComponentRecord, _impl_.pkgref_), 3>(),
-     {8, 3, 0, PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord, _impl_.pkgref_)}},
-    // optional float locationX = 2;
-    {::_pbi::TcParser::FastF32S1,
-     {21, 4, 0, PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord, _impl_.locationx_)}},
-    // optional float locationY = 3;
-    {::_pbi::TcParser::FastF32S1,
-     {29, 5, 0, PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord, _impl_.locationy_)}},
-    // optional float rotation = 4;
-    {::_pbi::TcParser::FastF32S1,
-     {37, 6, 0, PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord, _impl_.rotation_)}},
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(ComponentsFile_ComponentRecord, _impl_.pkgref_), 5>(),
+     {8, 5, 0, PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord, _impl_.pkgref_)}},
+    // optional double locationX = 2;
+    {::_pbi::TcParser::FastF64S1,
+     {17, 3, 0, PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord, _impl_.locationx_)}},
+    // optional double locationY = 3;
+    {::_pbi::TcParser::FastF64S1,
+     {25, 4, 0, PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord, _impl_.locationy_)}},
+    // optional double rotation = 4;
+    {::_pbi::TcParser::FastF64S1,
+     {33, 7, 0, PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord, _impl_.rotation_)}},
     // optional bool mirror = 5;
-    {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(ComponentsFile_ComponentRecord, _impl_.mirror_), 7>(),
-     {40, 7, 0, PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord, _impl_.mirror_)}},
+    {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(ComponentsFile_ComponentRecord, _impl_.mirror_), 6>(),
+     {40, 6, 0, PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord, _impl_.mirror_)}},
     // optional string compName = 6;
     {::_pbi::TcParser::FastUS1,
      {50, 0, 0, PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord, _impl_.compname_)}},
@@ -1271,19 +1271,19 @@ const ::_pbi::TcParseTable<4, 13, 3, 110, 2> ComponentsFile_ComponentRecord::_ta
     65535, 65535
   }}, {{
     // optional uint32 pkgRef = 1;
-    {PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord, _impl_.pkgref_), _Internal::kHasBitsOffset + 3, 0,
+    {PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord, _impl_.pkgref_), _Internal::kHasBitsOffset + 5, 0,
     (0 | ::_fl::kFcOptional | ::_fl::kUInt32)},
-    // optional float locationX = 2;
-    {PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord, _impl_.locationx_), _Internal::kHasBitsOffset + 4, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
-    // optional float locationY = 3;
-    {PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord, _impl_.locationy_), _Internal::kHasBitsOffset + 5, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
-    // optional float rotation = 4;
-    {PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord, _impl_.rotation_), _Internal::kHasBitsOffset + 6, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
+    // optional double locationX = 2;
+    {PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord, _impl_.locationx_), _Internal::kHasBitsOffset + 3, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double locationY = 3;
+    {PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord, _impl_.locationy_), _Internal::kHasBitsOffset + 4, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double rotation = 4;
+    {PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord, _impl_.rotation_), _Internal::kHasBitsOffset + 7, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
     // optional bool mirror = 5;
-    {PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord, _impl_.mirror_), _Internal::kHasBitsOffset + 7, 0,
+    {PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord, _impl_.mirror_), _Internal::kHasBitsOffset + 6, 0,
     (0 | ::_fl::kFcOptional | ::_fl::kBool)},
     // optional string compName = 6;
     {PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord, _impl_.compname_), _Internal::kHasBitsOffset + 0, 0,
@@ -1349,9 +1349,9 @@ PROTOBUF_NOINLINE void ComponentsFile_ComponentRecord::Clear() {
     }
   }
   if (cached_has_bits & 0x000000f8u) {
-    ::memset(&_impl_.pkgref_, 0, static_cast<::size_t>(
-        reinterpret_cast<char*>(&_impl_.mirror_) -
-        reinterpret_cast<char*>(&_impl_.pkgref_)) + sizeof(_impl_.mirror_));
+    ::memset(&_impl_.locationx_, 0, static_cast<::size_t>(
+        reinterpret_cast<char*>(&_impl_.rotation_) -
+        reinterpret_cast<char*>(&_impl_.locationx_)) + sizeof(_impl_.rotation_));
   }
   if (cached_has_bits & 0x00000300u) {
     ::memset(&_impl_.id_, 0, static_cast<::size_t>(
@@ -1379,35 +1379,35 @@ PROTOBUF_NOINLINE void ComponentsFile_ComponentRecord::Clear() {
 
           cached_has_bits = this_._impl_._has_bits_[0];
           // optional uint32 pkgRef = 1;
-          if (cached_has_bits & 0x00000008u) {
+          if (cached_has_bits & 0x00000020u) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
                 1, this_._internal_pkgref(), target);
           }
 
-          // optional float locationX = 2;
-          if (cached_has_bits & 0x00000010u) {
+          // optional double locationX = 2;
+          if (cached_has_bits & 0x00000008u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 2, this_._internal_locationx(), target);
           }
 
-          // optional float locationY = 3;
-          if (cached_has_bits & 0x00000020u) {
+          // optional double locationY = 3;
+          if (cached_has_bits & 0x00000010u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 3, this_._internal_locationy(), target);
           }
 
-          // optional float rotation = 4;
-          if (cached_has_bits & 0x00000040u) {
+          // optional double rotation = 4;
+          if (cached_has_bits & 0x00000080u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 4, this_._internal_rotation(), target);
           }
 
           // optional bool mirror = 5;
-          if (cached_has_bits & 0x00000080u) {
+          if (cached_has_bits & 0x00000040u) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteBoolToArray(
                 5, this_._internal_mirror(), target);
@@ -1573,26 +1573,26 @@ PROTOBUF_NOINLINE void ComponentsFile_ComponentRecord::Clear() {
               total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
                                               this_._internal_attributes());
             }
-            // optional uint32 pkgRef = 1;
+            // optional double locationX = 2;
             if (cached_has_bits & 0x00000008u) {
+              total_size += 9;
+            }
+            // optional double locationY = 3;
+            if (cached_has_bits & 0x00000010u) {
+              total_size += 9;
+            }
+            // optional uint32 pkgRef = 1;
+            if (cached_has_bits & 0x00000020u) {
               total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
                   this_._internal_pkgref());
             }
-            // optional float locationX = 2;
-            if (cached_has_bits & 0x00000010u) {
-              total_size += 5;
-            }
-            // optional float locationY = 3;
-            if (cached_has_bits & 0x00000020u) {
-              total_size += 5;
-            }
-            // optional float rotation = 4;
-            if (cached_has_bits & 0x00000040u) {
-              total_size += 5;
-            }
             // optional bool mirror = 5;
-            if (cached_has_bits & 0x00000080u) {
+            if (cached_has_bits & 0x00000040u) {
               total_size += 2;
+            }
+            // optional double rotation = 4;
+            if (cached_has_bits & 0x00000080u) {
+              total_size += 9;
             }
           }
           if (cached_has_bits & 0x00000300u) {
@@ -1636,19 +1636,19 @@ void ComponentsFile_ComponentRecord::MergeImpl(::google::protobuf::MessageLite& 
       _this->_internal_set_attributes(from._internal_attributes());
     }
     if (cached_has_bits & 0x00000008u) {
-      _this->_impl_.pkgref_ = from._impl_.pkgref_;
-    }
-    if (cached_has_bits & 0x00000010u) {
       _this->_impl_.locationx_ = from._impl_.locationx_;
     }
-    if (cached_has_bits & 0x00000020u) {
+    if (cached_has_bits & 0x00000010u) {
       _this->_impl_.locationy_ = from._impl_.locationy_;
     }
+    if (cached_has_bits & 0x00000020u) {
+      _this->_impl_.pkgref_ = from._impl_.pkgref_;
+    }
     if (cached_has_bits & 0x00000040u) {
-      _this->_impl_.rotation_ = from._impl_.rotation_;
+      _this->_impl_.mirror_ = from._impl_.mirror_;
     }
     if (cached_has_bits & 0x00000080u) {
-      _this->_impl_.mirror_ = from._impl_.mirror_;
+      _this->_impl_.rotation_ = from._impl_.rotation_;
     }
   }
   if (cached_has_bits & 0x00000300u) {
@@ -1686,9 +1686,9 @@ void ComponentsFile_ComponentRecord::InternalSwap(ComponentsFile_ComponentRecord
   ::google::protobuf::internal::memswap<
       PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord, _impl_.index_)
       + sizeof(ComponentsFile_ComponentRecord::_impl_.index_)
-      - PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord, _impl_.pkgref_)>(
-          reinterpret_cast<char*>(&_impl_.pkgref_),
-          reinterpret_cast<char*>(&other->_impl_.pkgref_));
+      - PROTOBUF_FIELD_OFFSET(ComponentsFile_ComponentRecord, _impl_.locationx_)>(
+          reinterpret_cast<char*>(&_impl_.locationx_),
+          reinterpret_cast<char*>(&other->_impl_.locationx_));
 }
 
 ::google::protobuf::Metadata ComponentsFile_ComponentRecord::GetMetadata() const {

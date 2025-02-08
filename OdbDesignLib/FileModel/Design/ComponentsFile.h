@@ -38,9 +38,9 @@ namespace Odb::Lib::FileModel::Design
 
 			// data members
 			unsigned int pkgRef;	// reference number of PKG in eda/data file
-			float locationX;
-			float locationY;
-			float rotation;
+			double locationX;
+			double locationY;
+			double rotation;
 			bool mirror;
 			std::string compName;	// refDes
 			std::string partName;
@@ -60,9 +60,9 @@ namespace Odb::Lib::FileModel::Design
 			{
 				// TODO: use pinNumber
 				unsigned int pinNumber;		// what does this refer to? own pin # or packages pin #?
-				float locationX;
-				float locationY;
-				float rotation;
+				double locationX;
+				double locationY;
+				double rotation;
 				bool mirror;
 				unsigned int netNumber;		// net number of NET in eda/data file
 				unsigned int subnetNumber;	// subnet number of NET in eda/data file

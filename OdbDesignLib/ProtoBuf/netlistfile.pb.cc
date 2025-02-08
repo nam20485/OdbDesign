@@ -68,20 +68,20 @@ inline constexpr NetlistFile_NetPointRecord::Impl_::Impl_(
         testexecutionside_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()),
-        netnumber_{0u},
         radius_{0},
         x_{0},
-        y_{0},
+        netnumber_{0u},
         side_{static_cast< ::Odb::Lib::Protobuf::NetlistFile_NetPointRecord_AccessSide >(0)},
+        y_{0},
         width_{0},
         height_{0},
-        commentpoint_{false},
         staggeredx_{0},
         staggeredy_{0},
         staggeredradius_{0},
         viapoint_{0},
         fiducialpoint_{0},
-        testpoint_{0} {}
+        testpoint_{0},
+        commentpoint_{false} {}
 
 template <typename>
 PROTOBUF_CONSTEXPR NetlistFile_NetPointRecord::NetlistFile_NetPointRecord(::_pbi::ConstantInitialized)
@@ -204,22 +204,22 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::NetlistFile_NetPointRecord, _impl_.fiducialpoint_),
         PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::NetlistFile_NetPointRecord, _impl_.testpoint_),
         PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::NetlistFile_NetPointRecord, _impl_.testexecutionside_),
+        5,
         3,
         4,
-        5,
-        6,
         7,
+        6,
         8,
         9,
         0,
         1,
+        16,
         10,
         11,
         12,
         13,
         14,
         15,
-        16,
         2,
         PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::NetlistFile_NetRecordsByNameEntry_DoNotUse, _impl_._has_bits_),
         PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::NetlistFile_NetRecordsByNameEntry_DoNotUse, _internal_metadata_),
@@ -288,16 +288,16 @@ const char descriptor_table_protodef_netlistfile_2eproto[] ABSL_ATTRIBUTE_SECTIO
     "r\030\001 \001(\rH\000\210\001\001\022\024\n\007netName\030\002 \001(\tH\001\210\001\001B\017\n\r_s"
     "erialNumberB\n\n\010_netName\032\341\005\n\016NetPointReco"
     "rd\022\026\n\tnetNumber\030\001 \001(\rH\000\210\001\001\022\023\n\006radius\030\002 \001"
-    "(\002H\001\210\001\001\022\016\n\001x\030\003 \001(\002H\002\210\001\001\022\016\n\001y\030\004 \001(\002H\003\210\001\001\022"
+    "(\001H\001\210\001\001\022\016\n\001x\030\003 \001(\001H\002\210\001\001\022\016\n\001y\030\004 \001(\001H\003\210\001\001\022"
     "J\n\004side\030\005 \001(\01627.Odb.Lib.Protobuf.Netlist"
     "File.NetPointRecord.AccessSideH\004\210\001\001\022\022\n\005w"
-    "idth\030\006 \001(\002H\005\210\001\001\022\023\n\006height\030\007 \001(\002H\006\210\001\001\022\023\n\006"
+    "idth\030\006 \001(\001H\005\210\001\001\022\023\n\006height\030\007 \001(\001H\006\210\001\001\022\023\n\006"
     "epoint\030\010 \001(\tH\007\210\001\001\022\020\n\003exp\030\t \001(\tH\010\210\001\001\022\031\n\014c"
     "ommentPoint\030\n \001(\010H\t\210\001\001\022\027\n\nstaggeredX\030\013 \001"
-    "(\002H\n\210\001\001\022\027\n\nstaggeredY\030\014 \001(\002H\013\210\001\001\022\034\n\017stag"
-    "geredRadius\030\r \001(\002H\014\210\001\001\022\025\n\010viaPoint\030\016 \001(\002"
-    "H\r\210\001\001\022\032\n\rfiducialPoint\030\017 \001(\002H\016\210\001\001\022\026\n\ttes"
-    "tPoint\030\020 \001(\002H\017\210\001\001\022\036\n\021testExecutionSide\030\021"
+    "(\001H\n\210\001\001\022\027\n\nstaggeredY\030\014 \001(\001H\013\210\001\001\022\034\n\017stag"
+    "geredRadius\030\r \001(\001H\014\210\001\001\022\025\n\010viaPoint\030\016 \001(\001"
+    "H\r\210\001\001\022\032\n\rfiducialPoint\030\017 \001(\001H\016\210\001\001\022\026\n\ttes"
+    "tPoint\030\020 \001(\001H\017\210\001\001\022\036\n\021testExecutionSide\030\021"
     " \001(\tH\020\210\001\001\"4\n\nAccessSide\022\007\n\003Top\020\000\022\010\n\004Down"
     "\020\001\022\010\n\004Both\020\002\022\t\n\005Inner\020\003B\014\n\n_netNumberB\t\n"
     "\007_radiusB\004\n\002_xB\004\n\002_yB\007\n\005_sideB\010\n\006_widthB"
@@ -690,12 +690,12 @@ NetlistFile_NetPointRecord::NetlistFile_NetPointRecord(
       from._internal_metadata_);
   new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
   ::memcpy(reinterpret_cast<char *>(&_impl_) +
-               offsetof(Impl_, netnumber_),
+               offsetof(Impl_, radius_),
            reinterpret_cast<const char *>(&from._impl_) +
-               offsetof(Impl_, netnumber_),
-           offsetof(Impl_, testpoint_) -
-               offsetof(Impl_, netnumber_) +
-               sizeof(Impl_::testpoint_));
+               offsetof(Impl_, radius_),
+           offsetof(Impl_, commentpoint_) -
+               offsetof(Impl_, radius_) +
+               sizeof(Impl_::commentpoint_));
 
   // @@protoc_insertion_point(copy_constructor:Odb.Lib.Protobuf.NetlistFile.NetPointRecord)
 }
@@ -710,11 +710,11 @@ inline PROTOBUF_NDEBUG_INLINE NetlistFile_NetPointRecord::Impl_::Impl_(
 inline void NetlistFile_NetPointRecord::SharedCtor(::_pb::Arena* arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
   ::memset(reinterpret_cast<char *>(&_impl_) +
-               offsetof(Impl_, netnumber_),
+               offsetof(Impl_, radius_),
            0,
-           offsetof(Impl_, testpoint_) -
-               offsetof(Impl_, netnumber_) +
-               sizeof(Impl_::testpoint_));
+           offsetof(Impl_, commentpoint_) -
+               offsetof(Impl_, radius_) +
+               sizeof(Impl_::commentpoint_));
 }
 NetlistFile_NetPointRecord::~NetlistFile_NetPointRecord() {
   // @@protoc_insertion_point(destructor:Odb.Lib.Protobuf.NetlistFile.NetPointRecord)
@@ -786,26 +786,26 @@ const ::_pbi::TcParseTable<5, 17, 0, 94, 2> NetlistFile_NetPointRecord::_table_ 
   }, {{
     {::_pbi::TcParser::MiniParse, {}},
     // optional uint32 netNumber = 1;
-    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(NetlistFile_NetPointRecord, _impl_.netnumber_), 3>(),
-     {8, 3, 0, PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.netnumber_)}},
-    // optional float radius = 2;
-    {::_pbi::TcParser::FastF32S1,
-     {21, 4, 0, PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.radius_)}},
-    // optional float x = 3;
-    {::_pbi::TcParser::FastF32S1,
-     {29, 5, 0, PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.x_)}},
-    // optional float y = 4;
-    {::_pbi::TcParser::FastF32S1,
-     {37, 6, 0, PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.y_)}},
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(NetlistFile_NetPointRecord, _impl_.netnumber_), 5>(),
+     {8, 5, 0, PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.netnumber_)}},
+    // optional double radius = 2;
+    {::_pbi::TcParser::FastF64S1,
+     {17, 3, 0, PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.radius_)}},
+    // optional double x = 3;
+    {::_pbi::TcParser::FastF64S1,
+     {25, 4, 0, PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.x_)}},
+    // optional double y = 4;
+    {::_pbi::TcParser::FastF64S1,
+     {33, 7, 0, PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.y_)}},
     // optional .Odb.Lib.Protobuf.NetlistFile.NetPointRecord.AccessSide side = 5;
-    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(NetlistFile_NetPointRecord, _impl_.side_), 7>(),
-     {40, 7, 0, PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.side_)}},
-    // optional float width = 6;
-    {::_pbi::TcParser::FastF32S1,
-     {53, 8, 0, PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.width_)}},
-    // optional float height = 7;
-    {::_pbi::TcParser::FastF32S1,
-     {61, 9, 0, PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.height_)}},
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(NetlistFile_NetPointRecord, _impl_.side_), 6>(),
+     {40, 6, 0, PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.side_)}},
+    // optional double width = 6;
+    {::_pbi::TcParser::FastF64S1,
+     {49, 8, 0, PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.width_)}},
+    // optional double height = 7;
+    {::_pbi::TcParser::FastF64S1,
+     {57, 9, 0, PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.height_)}},
     // optional string epoint = 8;
     {::_pbi::TcParser::FastUS1,
      {66, 0, 0, PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.epoint_)}},
@@ -813,26 +813,26 @@ const ::_pbi::TcParseTable<5, 17, 0, 94, 2> NetlistFile_NetPointRecord::_table_ 
     {::_pbi::TcParser::FastUS1,
      {74, 1, 0, PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.exp_)}},
     // optional bool commentPoint = 10;
-    {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(NetlistFile_NetPointRecord, _impl_.commentpoint_), 10>(),
-     {80, 10, 0, PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.commentpoint_)}},
-    // optional float staggeredX = 11;
-    {::_pbi::TcParser::FastF32S1,
-     {93, 11, 0, PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.staggeredx_)}},
-    // optional float staggeredY = 12;
-    {::_pbi::TcParser::FastF32S1,
-     {101, 12, 0, PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.staggeredy_)}},
-    // optional float staggeredRadius = 13;
-    {::_pbi::TcParser::FastF32S1,
-     {109, 13, 0, PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.staggeredradius_)}},
-    // optional float viaPoint = 14;
-    {::_pbi::TcParser::FastF32S1,
-     {117, 14, 0, PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.viapoint_)}},
-    // optional float fiducialPoint = 15;
-    {::_pbi::TcParser::FastF32S1,
-     {125, 15, 0, PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.fiducialpoint_)}},
-    // optional float testPoint = 16;
-    {::_pbi::TcParser::FastF32S2,
-     {389, 16, 0, PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.testpoint_)}},
+    {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(NetlistFile_NetPointRecord, _impl_.commentpoint_), 16>(),
+     {80, 16, 0, PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.commentpoint_)}},
+    // optional double staggeredX = 11;
+    {::_pbi::TcParser::FastF64S1,
+     {89, 10, 0, PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.staggeredx_)}},
+    // optional double staggeredY = 12;
+    {::_pbi::TcParser::FastF64S1,
+     {97, 11, 0, PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.staggeredy_)}},
+    // optional double staggeredRadius = 13;
+    {::_pbi::TcParser::FastF64S1,
+     {105, 12, 0, PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.staggeredradius_)}},
+    // optional double viaPoint = 14;
+    {::_pbi::TcParser::FastF64S1,
+     {113, 13, 0, PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.viapoint_)}},
+    // optional double fiducialPoint = 15;
+    {::_pbi::TcParser::FastF64S1,
+     {121, 14, 0, PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.fiducialpoint_)}},
+    // optional double testPoint = 16;
+    {::_pbi::TcParser::FastF64S2,
+     {385, 15, 0, PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.testpoint_)}},
     // optional string testExecutionSide = 17;
     {::_pbi::TcParser::FastUS2,
      {394, 2, 0, PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.testexecutionside_)}},
@@ -854,26 +854,26 @@ const ::_pbi::TcParseTable<5, 17, 0, 94, 2> NetlistFile_NetPointRecord::_table_ 
     65535, 65535
   }}, {{
     // optional uint32 netNumber = 1;
-    {PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.netnumber_), _Internal::kHasBitsOffset + 3, 0,
+    {PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.netnumber_), _Internal::kHasBitsOffset + 5, 0,
     (0 | ::_fl::kFcOptional | ::_fl::kUInt32)},
-    // optional float radius = 2;
-    {PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.radius_), _Internal::kHasBitsOffset + 4, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
-    // optional float x = 3;
-    {PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.x_), _Internal::kHasBitsOffset + 5, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
-    // optional float y = 4;
-    {PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.y_), _Internal::kHasBitsOffset + 6, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
+    // optional double radius = 2;
+    {PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.radius_), _Internal::kHasBitsOffset + 3, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double x = 3;
+    {PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.x_), _Internal::kHasBitsOffset + 4, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double y = 4;
+    {PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.y_), _Internal::kHasBitsOffset + 7, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
     // optional .Odb.Lib.Protobuf.NetlistFile.NetPointRecord.AccessSide side = 5;
-    {PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.side_), _Internal::kHasBitsOffset + 7, 0,
+    {PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.side_), _Internal::kHasBitsOffset + 6, 0,
     (0 | ::_fl::kFcOptional | ::_fl::kOpenEnum)},
-    // optional float width = 6;
+    // optional double width = 6;
     {PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.width_), _Internal::kHasBitsOffset + 8, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
-    // optional float height = 7;
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double height = 7;
     {PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.height_), _Internal::kHasBitsOffset + 9, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
     // optional string epoint = 8;
     {PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.epoint_), _Internal::kHasBitsOffset + 0, 0,
     (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
@@ -881,26 +881,26 @@ const ::_pbi::TcParseTable<5, 17, 0, 94, 2> NetlistFile_NetPointRecord::_table_ 
     {PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.exp_), _Internal::kHasBitsOffset + 1, 0,
     (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
     // optional bool commentPoint = 10;
-    {PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.commentpoint_), _Internal::kHasBitsOffset + 10, 0,
+    {PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.commentpoint_), _Internal::kHasBitsOffset + 16, 0,
     (0 | ::_fl::kFcOptional | ::_fl::kBool)},
-    // optional float staggeredX = 11;
-    {PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.staggeredx_), _Internal::kHasBitsOffset + 11, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
-    // optional float staggeredY = 12;
-    {PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.staggeredy_), _Internal::kHasBitsOffset + 12, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
-    // optional float staggeredRadius = 13;
-    {PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.staggeredradius_), _Internal::kHasBitsOffset + 13, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
-    // optional float viaPoint = 14;
-    {PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.viapoint_), _Internal::kHasBitsOffset + 14, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
-    // optional float fiducialPoint = 15;
-    {PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.fiducialpoint_), _Internal::kHasBitsOffset + 15, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
-    // optional float testPoint = 16;
-    {PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.testpoint_), _Internal::kHasBitsOffset + 16, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
+    // optional double staggeredX = 11;
+    {PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.staggeredx_), _Internal::kHasBitsOffset + 10, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double staggeredY = 12;
+    {PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.staggeredy_), _Internal::kHasBitsOffset + 11, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double staggeredRadius = 13;
+    {PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.staggeredradius_), _Internal::kHasBitsOffset + 12, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double viaPoint = 14;
+    {PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.viapoint_), _Internal::kHasBitsOffset + 13, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double fiducialPoint = 15;
+    {PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.fiducialpoint_), _Internal::kHasBitsOffset + 14, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double testPoint = 16;
+    {PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.testpoint_), _Internal::kHasBitsOffset + 15, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
     // optional string testExecutionSide = 17;
     {PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.testexecutionside_), _Internal::kHasBitsOffset + 2, 0,
     (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
@@ -935,16 +935,16 @@ PROTOBUF_NOINLINE void NetlistFile_NetPointRecord::Clear() {
     }
   }
   if (cached_has_bits & 0x000000f8u) {
-    ::memset(&_impl_.netnumber_, 0, static_cast<::size_t>(
-        reinterpret_cast<char*>(&_impl_.side_) -
-        reinterpret_cast<char*>(&_impl_.netnumber_)) + sizeof(_impl_.side_));
+    ::memset(&_impl_.radius_, 0, static_cast<::size_t>(
+        reinterpret_cast<char*>(&_impl_.y_) -
+        reinterpret_cast<char*>(&_impl_.radius_)) + sizeof(_impl_.y_));
   }
   if (cached_has_bits & 0x0000ff00u) {
     ::memset(&_impl_.width_, 0, static_cast<::size_t>(
-        reinterpret_cast<char*>(&_impl_.fiducialpoint_) -
-        reinterpret_cast<char*>(&_impl_.width_)) + sizeof(_impl_.fiducialpoint_));
+        reinterpret_cast<char*>(&_impl_.testpoint_) -
+        reinterpret_cast<char*>(&_impl_.width_)) + sizeof(_impl_.testpoint_));
   }
-  _impl_.testpoint_ = 0;
+  _impl_.commentpoint_ = false;
   _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
@@ -966,51 +966,51 @@ PROTOBUF_NOINLINE void NetlistFile_NetPointRecord::Clear() {
 
           cached_has_bits = this_._impl_._has_bits_[0];
           // optional uint32 netNumber = 1;
-          if (cached_has_bits & 0x00000008u) {
+          if (cached_has_bits & 0x00000020u) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
                 1, this_._internal_netnumber(), target);
           }
 
-          // optional float radius = 2;
-          if (cached_has_bits & 0x00000010u) {
+          // optional double radius = 2;
+          if (cached_has_bits & 0x00000008u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 2, this_._internal_radius(), target);
           }
 
-          // optional float x = 3;
-          if (cached_has_bits & 0x00000020u) {
+          // optional double x = 3;
+          if (cached_has_bits & 0x00000010u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 3, this_._internal_x(), target);
           }
 
-          // optional float y = 4;
-          if (cached_has_bits & 0x00000040u) {
+          // optional double y = 4;
+          if (cached_has_bits & 0x00000080u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 4, this_._internal_y(), target);
           }
 
           // optional .Odb.Lib.Protobuf.NetlistFile.NetPointRecord.AccessSide side = 5;
-          if (cached_has_bits & 0x00000080u) {
+          if (cached_has_bits & 0x00000040u) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteEnumToArray(
                 5, this_._internal_side(), target);
           }
 
-          // optional float width = 6;
+          // optional double width = 6;
           if (cached_has_bits & 0x00000100u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 6, this_._internal_width(), target);
           }
 
-          // optional float height = 7;
+          // optional double height = 7;
           if (cached_has_bits & 0x00000200u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 7, this_._internal_height(), target);
           }
 
@@ -1031,51 +1031,51 @@ PROTOBUF_NOINLINE void NetlistFile_NetPointRecord::Clear() {
           }
 
           // optional bool commentPoint = 10;
-          if (cached_has_bits & 0x00000400u) {
+          if (cached_has_bits & 0x00010000u) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteBoolToArray(
                 10, this_._internal_commentpoint(), target);
           }
 
-          // optional float staggeredX = 11;
-          if (cached_has_bits & 0x00000800u) {
+          // optional double staggeredX = 11;
+          if (cached_has_bits & 0x00000400u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 11, this_._internal_staggeredx(), target);
           }
 
-          // optional float staggeredY = 12;
-          if (cached_has_bits & 0x00001000u) {
+          // optional double staggeredY = 12;
+          if (cached_has_bits & 0x00000800u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 12, this_._internal_staggeredy(), target);
           }
 
-          // optional float staggeredRadius = 13;
-          if (cached_has_bits & 0x00002000u) {
+          // optional double staggeredRadius = 13;
+          if (cached_has_bits & 0x00001000u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 13, this_._internal_staggeredradius(), target);
           }
 
-          // optional float viaPoint = 14;
-          if (cached_has_bits & 0x00004000u) {
+          // optional double viaPoint = 14;
+          if (cached_has_bits & 0x00002000u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 14, this_._internal_viapoint(), target);
           }
 
-          // optional float fiducialPoint = 15;
-          if (cached_has_bits & 0x00008000u) {
+          // optional double fiducialPoint = 15;
+          if (cached_has_bits & 0x00004000u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 15, this_._internal_fiducialpoint(), target);
           }
 
-          // optional float testPoint = 16;
-          if (cached_has_bits & 0x00010000u) {
+          // optional double testPoint = 16;
+          if (cached_has_bits & 0x00008000u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 16, this_._internal_testpoint(), target);
           }
 
@@ -1128,67 +1128,67 @@ PROTOBUF_NOINLINE void NetlistFile_NetPointRecord::Clear() {
               total_size += 2 + ::google::protobuf::internal::WireFormatLite::StringSize(
                                               this_._internal_testexecutionside());
             }
-            // optional uint32 netNumber = 1;
+            // optional double radius = 2;
             if (cached_has_bits & 0x00000008u) {
+              total_size += 9;
+            }
+            // optional double x = 3;
+            if (cached_has_bits & 0x00000010u) {
+              total_size += 9;
+            }
+            // optional uint32 netNumber = 1;
+            if (cached_has_bits & 0x00000020u) {
               total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
                   this_._internal_netnumber());
             }
-            // optional float radius = 2;
-            if (cached_has_bits & 0x00000010u) {
-              total_size += 5;
-            }
-            // optional float x = 3;
-            if (cached_has_bits & 0x00000020u) {
-              total_size += 5;
-            }
-            // optional float y = 4;
-            if (cached_has_bits & 0x00000040u) {
-              total_size += 5;
-            }
             // optional .Odb.Lib.Protobuf.NetlistFile.NetPointRecord.AccessSide side = 5;
-            if (cached_has_bits & 0x00000080u) {
+            if (cached_has_bits & 0x00000040u) {
               total_size += 1 +
                             ::_pbi::WireFormatLite::EnumSize(this_._internal_side());
             }
+            // optional double y = 4;
+            if (cached_has_bits & 0x00000080u) {
+              total_size += 9;
+            }
           }
           if (cached_has_bits & 0x0000ff00u) {
-            // optional float width = 6;
+            // optional double width = 6;
             if (cached_has_bits & 0x00000100u) {
-              total_size += 5;
+              total_size += 9;
             }
-            // optional float height = 7;
+            // optional double height = 7;
             if (cached_has_bits & 0x00000200u) {
-              total_size += 5;
+              total_size += 9;
             }
-            // optional bool commentPoint = 10;
+            // optional double staggeredX = 11;
             if (cached_has_bits & 0x00000400u) {
-              total_size += 2;
+              total_size += 9;
             }
-            // optional float staggeredX = 11;
+            // optional double staggeredY = 12;
             if (cached_has_bits & 0x00000800u) {
-              total_size += 5;
+              total_size += 9;
             }
-            // optional float staggeredY = 12;
+            // optional double staggeredRadius = 13;
             if (cached_has_bits & 0x00001000u) {
-              total_size += 5;
+              total_size += 9;
             }
-            // optional float staggeredRadius = 13;
+            // optional double viaPoint = 14;
             if (cached_has_bits & 0x00002000u) {
-              total_size += 5;
+              total_size += 9;
             }
-            // optional float viaPoint = 14;
+            // optional double fiducialPoint = 15;
             if (cached_has_bits & 0x00004000u) {
-              total_size += 5;
+              total_size += 9;
             }
-            // optional float fiducialPoint = 15;
+            // optional double testPoint = 16;
             if (cached_has_bits & 0x00008000u) {
-              total_size += 5;
+              total_size += 10;
             }
           }
            {
-            // optional float testPoint = 16;
+            // optional bool commentPoint = 10;
             if (cached_has_bits & 0x00010000u) {
-              total_size += 6;
+              total_size += 2;
             }
           }
           return this_.MaybeComputeUnknownFieldsSize(total_size,
@@ -1215,19 +1215,19 @@ void NetlistFile_NetPointRecord::MergeImpl(::google::protobuf::MessageLite& to_m
       _this->_internal_set_testexecutionside(from._internal_testexecutionside());
     }
     if (cached_has_bits & 0x00000008u) {
-      _this->_impl_.netnumber_ = from._impl_.netnumber_;
-    }
-    if (cached_has_bits & 0x00000010u) {
       _this->_impl_.radius_ = from._impl_.radius_;
     }
-    if (cached_has_bits & 0x00000020u) {
+    if (cached_has_bits & 0x00000010u) {
       _this->_impl_.x_ = from._impl_.x_;
     }
+    if (cached_has_bits & 0x00000020u) {
+      _this->_impl_.netnumber_ = from._impl_.netnumber_;
+    }
     if (cached_has_bits & 0x00000040u) {
-      _this->_impl_.y_ = from._impl_.y_;
+      _this->_impl_.side_ = from._impl_.side_;
     }
     if (cached_has_bits & 0x00000080u) {
-      _this->_impl_.side_ = from._impl_.side_;
+      _this->_impl_.y_ = from._impl_.y_;
     }
   }
   if (cached_has_bits & 0x0000ff00u) {
@@ -1238,26 +1238,26 @@ void NetlistFile_NetPointRecord::MergeImpl(::google::protobuf::MessageLite& to_m
       _this->_impl_.height_ = from._impl_.height_;
     }
     if (cached_has_bits & 0x00000400u) {
-      _this->_impl_.commentpoint_ = from._impl_.commentpoint_;
-    }
-    if (cached_has_bits & 0x00000800u) {
       _this->_impl_.staggeredx_ = from._impl_.staggeredx_;
     }
-    if (cached_has_bits & 0x00001000u) {
+    if (cached_has_bits & 0x00000800u) {
       _this->_impl_.staggeredy_ = from._impl_.staggeredy_;
     }
-    if (cached_has_bits & 0x00002000u) {
+    if (cached_has_bits & 0x00001000u) {
       _this->_impl_.staggeredradius_ = from._impl_.staggeredradius_;
     }
-    if (cached_has_bits & 0x00004000u) {
+    if (cached_has_bits & 0x00002000u) {
       _this->_impl_.viapoint_ = from._impl_.viapoint_;
     }
-    if (cached_has_bits & 0x00008000u) {
+    if (cached_has_bits & 0x00004000u) {
       _this->_impl_.fiducialpoint_ = from._impl_.fiducialpoint_;
+    }
+    if (cached_has_bits & 0x00008000u) {
+      _this->_impl_.testpoint_ = from._impl_.testpoint_;
     }
   }
   if (cached_has_bits & 0x00010000u) {
-    _this->_impl_.testpoint_ = from._impl_.testpoint_;
+    _this->_impl_.commentpoint_ = from._impl_.commentpoint_;
   }
   _this->_impl_._has_bits_[0] |= cached_has_bits;
   _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
@@ -1281,11 +1281,11 @@ void NetlistFile_NetPointRecord::InternalSwap(NetlistFile_NetPointRecord* PROTOB
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.exp_, &other->_impl_.exp_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.testexecutionside_, &other->_impl_.testexecutionside_, arena);
   ::google::protobuf::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.testpoint_)
-      + sizeof(NetlistFile_NetPointRecord::_impl_.testpoint_)
-      - PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.netnumber_)>(
-          reinterpret_cast<char*>(&_impl_.netnumber_),
-          reinterpret_cast<char*>(&other->_impl_.netnumber_));
+      PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.commentpoint_)
+      + sizeof(NetlistFile_NetPointRecord::_impl_.commentpoint_)
+      - PROTOBUF_FIELD_OFFSET(NetlistFile_NetPointRecord, _impl_.radius_)>(
+          reinterpret_cast<char*>(&_impl_.radius_),
+          reinterpret_cast<char*>(&other->_impl_.radius_));
 }
 
 ::google::protobuf::Metadata NetlistFile_NetPointRecord::GetMetadata() const {

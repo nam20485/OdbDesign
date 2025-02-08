@@ -16,11 +16,12 @@
 #include "EnumMap.h"
 #include <string>
 #include <iostream>
+#include "../../odbdesign_export.h"
 
 
 namespace Odb::Lib::FileModel::Design
 {
-    class MatrixFile : public OdbFile, public IProtoBuffable<Odb::Lib::Protobuf::MatrixFile>, public IStreamSaveable
+    class ODBDESIGN_EXPORT MatrixFile : public OdbFile, public IProtoBuffable<Odb::Lib::Protobuf::MatrixFile>, public IStreamSaveable
     {
     public:
         ~MatrixFile();

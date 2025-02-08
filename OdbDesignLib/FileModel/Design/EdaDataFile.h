@@ -96,7 +96,7 @@ namespace Odb::Lib::FileModel::Design
 				// Plane subnet type fields
 				FillType fillType;
 				CutoutType cutoutType;
-				float fillSize;
+				double fillSize;
 				unsigned int index;
 
 				inline static const std::string RECORD_TOKEN = "SNT";
@@ -150,19 +150,19 @@ namespace Odb::Lib::FileModel::Design
 				Type type;
 
 				// Rectangle
-				float lowerLeftX;
-				float lowerLeftY;
-				float width;
-				float height;
+				double lowerLeftX;
+				double lowerLeftY;
+				double width;
+				double height;
 
 				// Square/Circle
-				float xCenter;
-				float yCenter;
+				double xCenter;
+				double yCenter;
 
 				// Square
-				float halfSide;
+				double halfSide;
 				// Circle
-				float radius;
+				double radius;
 
 				ContourPolygon::Vector m_contourPolygons;
 
@@ -216,9 +216,9 @@ namespace Odb::Lib::FileModel::Design
 
 				std::string name;
 				Type type;
-				float xCenter;
-				float yCenter;
-				float finishedHoleSize;	// unused, set to 0
+				double xCenter;
+				double yCenter;
+				double finishedHoleSize;	// unused, set to 0
 				ElectricalType electricalType;
 				MountType mountType;
 				unsigned int id;
@@ -244,9 +244,9 @@ namespace Odb::Lib::FileModel::Design
 			}
 
 			std::string name;
-			float pitch;
-			float xMin, yMin;
-			float xMax, yMax;			
+			double pitch;
+			double xMin, yMin;
+			double xMax, yMax;			
 			unsigned int index;
 
 			OutlineRecord::Vector m_outlineRecords;

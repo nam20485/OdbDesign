@@ -574,7 +574,7 @@ namespace Odb::Lib::FileModel::Design
 
                         pPropertyRecord->value = token;
 
-                        float f;
+                        double f;
                         while (lineStream >> f)
                         {
                             pPropertyRecord->floatValues.push_back(f);
