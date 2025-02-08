@@ -5,6 +5,8 @@
 #include "macros.h"
 #include "ExitCode.h"
 #include <iostream>
+#include <FileModel/Design/LayerDirectory.h>
+#include <FileModel/Design/EdaDataFile.h>
 
 
 bool TestRigidFlexDesign();
@@ -39,7 +41,7 @@ int main()
 bool TestSampleDesign()
 {
     std::string sampleDesignPath;
-    if (Odb::Lib::IsMsvc())
+    if (Utils::IsWindows())
     {
         sampleDesignPath = R"(C:\Users\nmill\OneDrive\Documents\ODB++\Samples\sample_design.tgz)";
     }
@@ -63,7 +65,7 @@ bool TestSampleDesign()
 bool TestRigidFlexDesign()
 {   
     std::string rigidFlexDesignPath;
-    if (Odb::Lib::IsMsvc())
+    if (Utils::IsWindows())
     {
         rigidFlexDesignPath = R"(C:\Users\nmill\OneDrive\Documents\ODB++\Samples\designodb_rigidflex.tgz)";
     }
@@ -119,7 +121,7 @@ bool TestRigidFlexDesign()
 
         // layers
         auto& layersByName = pStep->GetLayersByName();
-        auto layerFind = layersByName.find(Odb::Lib::FileModel::Design::LayerDirectory::TOP_COMPONENTS_LAYER_NAME);
+        auto layerFind = layersByName.find(Odb::Lib::FileModel::Design::ComponentsFile::TOP_COMPONENTS_LAYER_NAME);
         if (layerFind != layersByName.end())
         {
             auto& pLayer = layerFind->second;
@@ -133,13 +135,10 @@ bool TestRigidFlexDesign()
         {
             auto& pNetlist = netlistFind->second;
             auto netlistName = pNetlist->GetName();
-            auto& netNames = pNetlist->GetNetNames();
-            for (auto& netName : netNames)
+            auto& netRecords = pNetlist->GetNetRecords();
+            for (auto& pNetRecord : netRecords)
             {
-                if (netName == "")
-                {
-
-                }
+                
             }
         }
     }

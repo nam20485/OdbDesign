@@ -5,18 +5,21 @@
 #include <memory>
 #include "Net.h"
 #include "Component.h"
-#include "../FileModel/Design/FileArchive.h"
-#include "Via.h"
 #include "Package.h"
 #include "Part.h"
-//#include "../FileModel/Design/StepDirectory.h"
 #include "../ProtoBuf/design.pb.h"
 #include "../IProtoBuffable.h"	
+#include <map>
+#include <vector>
+#include "../FileModel/Design/StepDirectory.h"
+#include "../FileModel/Design/EdaDataFile.h"
+#include "../FileModel/Design/ComponentsFile.h"
+#include "../FileModel/Design/FileArchive.h"
 
 
 namespace Odb::Lib::ProductModel
 {
-	class ODBDESIGN_EXPORT Design : public IProtoBuffable<Odb::Lib::Protobuf::ProductModel::Design>
+	class ODBDESIGN_EXPORT Design : public IProtoBuffable<Protobuf::ProductModel::Design>
 	{
 	public:	
 		Design();
@@ -45,10 +48,11 @@ namespace Odb::Lib::ProductModel
 		bool Build(std::shared_ptr<FileModel::Design::FileArchive> pFileModel);	
 
 		std::shared_ptr<FileModel::Design::FileArchive> GetFileModel() const;
+		void ClipFileModel();
 
 		// Inherited via IProtoBuffable
-		std::unique_ptr<Odb::Lib::Protobuf::ProductModel::Design> to_protobuf() const override;
-		void from_protobuf(const Odb::Lib::Protobuf::ProductModel::Design& message) override;
+		std::unique_ptr<Protobuf::ProductModel::Design> to_protobuf() const override;
+		void from_protobuf(const Protobuf::ProductModel::Design& message) override;
 
 		typedef std::vector<std::shared_ptr<Design>> Vector;
 		typedef std::map<std::string, std::shared_ptr<Design>> StringMap;
@@ -74,13 +78,13 @@ namespace Odb::Lib::ProductModel
 		bool BuildNets();
 		bool BuildPackages();
 		bool BuildAllParts();
-		bool BuildParts(const Odb::Lib::FileModel::Design::ComponentsFile* pComponentsFile);
+		bool BuildParts(const FileModel::Design::ComponentsFile* pComponentsFile);
 		bool BuildAllComponents();
-		bool BuildComponents(const Odb::Lib::FileModel::Design::ComponentsFile* pComponentsFile);	
+		bool BuildComponents(const FileModel::Design::ComponentsFile* pComponentsFile);	
 		bool BuildVias();
 
 		bool BuildPlacementsFromComponentsFiles();
-		bool BuildPlacementsFromComponentsFile(const Odb::Lib::FileModel::Design::ComponentsFile* pComponentsFile);		
+		bool BuildPlacementsFromComponentsFile(const FileModel::Design::ComponentsFile* pComponentsFile);		
 
 		bool BuildPlacementsFromEdaDataFile();
 		
@@ -92,6 +96,8 @@ namespace Odb::Lib::ProductModel
 		bool CreateNetConnections(const std::shared_ptr<FileModel::Design::EdaDataFile::NetRecord>& pNetRecord, const std::shared_ptr<FileModel::Design::StepDirectory>& pStepDirectory);
 
 		constexpr inline static const char* NONE_NET_NAME = "$NONE$";
+
+		constexpr inline static bool CLIP_FILEMODEL_AFTER_BUILD = false;
 
 	};	
 }

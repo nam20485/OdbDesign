@@ -1,6 +1,12 @@
 #include "FileModelController.h"
 #include <JsonCrowReturnable.h>
 #include "UrlEncoding.h"
+#include <memory>
+#include <FileModel/Design/FileArchive.h>
+#include <sstream>
+#include <string>
+#include "crow_win.h"
+#include "App/RouteController.h"
 
 
 using namespace Odb::Lib::App;
@@ -53,7 +59,7 @@ namespace Odb::App::Server
 					return this->filemodels_list_route_handler(req);
 				});
 
-		CROW_ROUTE(m_serverApp.crow_app(), "/filemodels/<string>")
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodels/<string>").methods(crow::HTTPMethod::GET)
 			([&](const crow::request& req, std::string designName)
 				{
 					// authenticate request before sending to handler
@@ -63,8 +69,21 @@ namespace Odb::App::Server
 						return authResp;
 					}
 
-					return this->filemodels_route_handler(designName, req);
+					return this->filemodels_get_route_handler(designName, req);
 				});
+
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodels/<string>").methods(crow::HTTPMethod::POST)
+			([&](const crow::request& req, std::string designName)
+				{
+					// authenticate request before sending to handler
+					auto authResp = m_serverApp.request_auth().AuthenticateRequest(req);
+					if (authResp.code != crow::status::OK)
+					{
+						return authResp;
+					}
+
+					return this->filemodels_post_route_handler(designName, req);
+				});			
 
 		CROW_ROUTE(m_serverApp.crow_app(), "/filemodels/<string>/steps/<string>")
 			([&](const crow::request& req, std::string designName, std::string stepName)
@@ -344,7 +363,7 @@ namespace Odb::App::Server
 				});
 	}
 
-	crow::response FileModelController::filemodels_route_handler(const std::string& designName, const crow::request& req)
+	crow::response FileModelController::filemodels_get_route_handler(const std::string& designName, const crow::request& req)
 	{
 		auto designNameDecoded = UrlEncoding::decode(designName);
 		if (designNameDecoded.empty())
@@ -361,6 +380,27 @@ namespace Odb::App::Server
 		}
 
 		return crow::response(JsonCrowReturnable(*pFileArchive));
+	}
+
+	crow::response FileModelController::filemodels_post_route_handler(const std::string& designName, const crow::request& req)
+	{
+		auto designNameDecoded = UrlEncoding::decode(designName);
+		if (designNameDecoded.empty())
+		{
+			return crow::response(crow::status::BAD_REQUEST, "design name not specified");
+		}
+
+		const auto& json = req.body;
+		if (json.empty())
+		{
+			return crow::response(crow::status::BAD_REQUEST, "no data provided in POST body");
+		}
+
+		auto fileArchive = std::make_shared<FileArchive>();
+		fileArchive->from_json(json);
+		m_serverApp.designs().AddFileArchive(designName, fileArchive, false);
+		
+		return crow::response();
 	}
 
 	crow::response FileModelController::steps_edadata_route_handler(const std::string& designName,
@@ -1055,17 +1095,7 @@ namespace Odb::App::Server
 
 	crow::response FileModelController::filemodels_list_route_handler(const crow::request& req)
 	{
-		const auto& fileArchives = m_serverApp.designs().getUnloadedDesignNames();
-		
-		crow::json::wvalue::list designNames;
-		for (const auto& designName : fileArchives)
-		{
-			designNames.push_back(designName);
-		}
-
-		crow::json::wvalue jsonResponse;
-		jsonResponse["file archives"] = std::move(designNames);
-		return crow::response(jsonResponse);
+		return makeLoadedFileModelsResponse();
 	}
 
 	crow::response FileModelController::misc_attrlist_route_handler(const std::string& designName, const crow::request& req)

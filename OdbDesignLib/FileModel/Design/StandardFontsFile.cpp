@@ -1,5 +1,4 @@
 #include "StandardFontsFile.h"
-
 #include "Logger.h"
 #include <fstream>
 #include "str_utils.h"
@@ -305,6 +304,11 @@ namespace Odb::Lib::FileModel::Design
             pCharacterBlock->from_protobuf(characterBlockMessage);
             m_characterBlocks.push_back(pCharacterBlock);
         }
+    }
+
+    bool StandardFontsFile::Save(std::ostream& os)
+    {
+        return true;
     }
 
     StandardFontsFile::CharacterBlock::~CharacterBlock()

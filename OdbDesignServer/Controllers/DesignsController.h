@@ -13,7 +13,7 @@ namespace Odb::App::Server
 		// Inherited via RouteController
 		void register_routes() override;
 
-		constexpr inline static const char* kszExcludeFileArchiveQueryParamName = "exclude_filearchive";
+		constexpr inline static const char* kszIncludeFileArchiveQueryParamName = "include_filearchive";
 
 	private:
 

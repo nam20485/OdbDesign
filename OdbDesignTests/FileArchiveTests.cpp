@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include "Fixtures/FileArchiveLoadFixture.h"
-#include "OdbDesign.h"
+#include <FileModel/Design/EdaDataFile.h>
+#include <FileModel/Design/ComponentsFile.h>
 
 //using namespace Odb::Lib::App;
 using namespace Odb::Lib::FileModel;
@@ -12,7 +13,7 @@ namespace Odb::Test
 	{
         auto rigidFlexDesignPath = getDesignPath("designodb_rigidflex.tgz");
 
-        Odb::Lib::FileModel::Design::FileArchive rigidFlexOdbDesign(rigidFlexDesignPath.string());
+        Design::FileArchive rigidFlexOdbDesign(rigidFlexDesignPath.string());
         auto success = rigidFlexOdbDesign.ParseFileModel();
         ASSERT_TRUE(success);
 
@@ -34,10 +35,10 @@ namespace Odb::Test
         auto& pSubnetRecord = pNetRecord->m_subnetRecords[44];        
         
         auto subnetType = pSubnetRecord->type;
-        ASSERT_EQ(subnetType, Odb::Lib::FileModel::Design::EdaDataFile::NetRecord::SubnetRecord::Type::Toeprint);
+        ASSERT_EQ(subnetType, Design::EdaDataFile::NetRecord::SubnetRecord::Type::Toeprint);
         //auto pToeprintSubnetRecord = pSubnetRecord;
         //auto viaType = pToeprintSubnetRecord->type;
-        //if (viaType == Odb::Lib::FileModel::Design::EdaDataFile::NetRecord::ToeprintSubnetRecord::Type::Via)
+        //if (viaType == Design::EdaDataFile::NetRecord::ToeprintSubnetRecord::Type::Via)
         //{
         //}        
         
@@ -51,7 +52,7 @@ namespace Odb::Test
         auto& layersByName = pStep->GetLayersByName();
         ASSERT_GT(layersByName.size(), 0);
 
-        auto layerFind = layersByName.find(Odb::Lib::FileModel::Design::ComponentsFile::TOP_COMPONENTS_LAYER_NAME);
+        auto layerFind = layersByName.find(Design::ComponentsFile::TOP_COMPONENTS_LAYER_NAME);
         ASSERT_NE(layerFind, layersByName.end());
         auto& pLayer = layerFind->second;
         ASSERT_NE(pLayer, nullptr);
@@ -85,7 +86,7 @@ namespace Odb::Test
     {
         auto rigidFlexDesignPath = getDesignPath("sample_design.tgz");
 
-        Odb::Lib::FileModel::Design::FileArchive rigidFlexOdbDesign(rigidFlexDesignPath.string());
+        Design::FileArchive rigidFlexOdbDesign(rigidFlexDesignPath.string());
         auto success = rigidFlexOdbDesign.ParseFileModel();
         ASSERT_TRUE(success);
 
@@ -107,7 +108,7 @@ namespace Odb::Test
         auto& pSubnetRecord = pNetRecord->m_subnetRecords[44];
 
         auto subnetType = pSubnetRecord->type;
-        ASSERT_EQ(subnetType, Odb::Lib::FileModel::Design::EdaDataFile::NetRecord::SubnetRecord::Type::Trace);
+        ASSERT_EQ(subnetType, Design::EdaDataFile::NetRecord::SubnetRecord::Type::Trace);
         //auto pToeprintSubnetRecord = pSubnetRecord;
         //auto viaType = pToeprintSubnetRecord->type;
         //if (viaType == Odb::Lib::FileModel::Design::EdaDataFile::NetRecord::ToeprintSubnetRecord::Type::Via)
@@ -124,7 +125,7 @@ namespace Odb::Test
         auto& layersByName = pStep->GetLayersByName();
         ASSERT_GT(layersByName.size(), 0);
 
-        auto layerFind = layersByName.find(Odb::Lib::FileModel::Design::ComponentsFile::TOP_COMPONENTS_LAYER_NAME);
+        auto layerFind = layersByName.find(Design::ComponentsFile::TOP_COMPONENTS_LAYER_NAME);
         ASSERT_NE(layerFind, layersByName.end());
         auto& pLayer = layerFind->second;
         ASSERT_NE(pLayer, nullptr);

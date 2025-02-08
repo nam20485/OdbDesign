@@ -5,7 +5,9 @@
 #include "RouteController.h"
 #include "../odbdesign_export.h"
 #include "RequestAuthenticationBase.h"
-#include "BasicRequestAuthentication.h"
+#include <ExitCode.h>
+#include <memory>
+#include <crow_win.h>
 
 namespace Odb::Lib::App
 {

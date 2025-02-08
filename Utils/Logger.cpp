@@ -158,7 +158,7 @@ namespace Utils
 		ss << " "
 			<< std::setw(6)
 			<< std::right
-			<< logLevelToString(logMessage.level)
+			<< logLevelMap.getValue(logMessage.level)
 			<< "]";
 		
 		ss << " "
@@ -210,10 +210,5 @@ namespace Utils
 		//std::cout << "[Logger::logMessage] exit" << std::endl;
 
 		return true;
-	}
-
-	/*static*/ std::string Logger::logLevelToString(Level level)
-	{		
-		return LogLevelStrings[static_cast<int>(level)];
-	}
+	}	
 }

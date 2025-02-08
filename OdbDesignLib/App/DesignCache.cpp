@@ -1,9 +1,18 @@
+#include "DesignCache.h"
+#include "DesignCache.h"
 #include "ArchiveExtractor.h"
 #include "DesignCache.h"
 #include "Logger.h"
 #include <exception>
 #include <filesystem>
-#include <utility>
+#include <vector>
+#include "../FileModel/Design/FileArchive.h"
+#include <memory>
+#include "../ProductModel/Design.h"
+#include <iosfwd>
+#include <string>
+#include <type_traits>
+#include <StringVector.h>
 
 using namespace Utils;
 using namespace std::filesystem;
@@ -62,12 +71,31 @@ namespace Odb::Lib::App
         return m_fileArchivesByName[designName];        
     }
 
+    void DesignCache::AddFileArchive(const std::string& designName, std::shared_ptr<FileModel::Design::FileArchive> fileArchive, bool save)
+    {
+        m_fileArchivesByName[designName] = fileArchive;
+        if (save)
+        {
+            SaveFileArchive(designName);
+        }
+    }
+
+    bool DesignCache::SaveFileArchive(const std::string& designName)
+    {
+        auto fileArchive = GetFileArchive(designName);
+        if (fileArchive != nullptr)
+        {
+            return fileArchive->SaveFileModel(m_directory);
+        }
+        return false;
+    }
+
     std::vector<std::string> DesignCache::getLoadedDesignNames(const std::string& filter) const
     {
         std::vector<std::string> loadedDesigns;
         for (const auto& kv : m_designsByName)
         {
-            loadedDesigns.push_back(kv.second->GetFileModel()->GetProductName());
+            loadedDesigns.push_back(kv.first);
         }
         return loadedDesigns;
     }
@@ -77,7 +105,7 @@ namespace Odb::Lib::App
         std::vector<std::string> loadedFileArchives;
         for (const auto& kv : m_fileArchivesByName)
 		{
-			loadedFileArchives.push_back(kv.second->GetProductName());
+			loadedFileArchives.push_back(kv.first);
 		}
         return loadedFileArchives;
     }
@@ -229,11 +257,6 @@ namespace Odb::Lib::App
         return m_directory;
     }
 
-    //bool DesignCache::isQueryValid(const std::string& query) const
-    //{
-    //    return false;
-    //}
-
     void DesignCache::Clear()
     {
         m_fileArchivesByName.clear();
@@ -255,7 +278,7 @@ namespace Odb::Lib::App
                         if (pDesign->Build(pFileModel))
                         {
                             // overwrite any existing design with the same name
-                            m_designsByName[pFileModel->GetProductName()] =  pDesign;
+                            m_designsByName[designName] =  pDesign;
                             return pDesign;
                         }
                         else
@@ -294,7 +317,7 @@ namespace Odb::Lib::App
                     if (pFileArchive->ParseFileModel())
                     {
                         // overwrite any existing file archive with the same name
-                        m_fileArchivesByName[pFileArchive->GetProductName()] = pFileArchive;
+                        m_fileArchivesByName[designName] = pFileArchive;
                         return pFileArchive;
                     }
                     else

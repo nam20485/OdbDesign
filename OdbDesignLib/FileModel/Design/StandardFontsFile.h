@@ -6,16 +6,19 @@
 #include <vector>
 #include "../../IProtoBuffable.h"
 #include "../../ProtoBuf/standardfontsfile.pb.h"
+#include "../IStreamSaveable.h"
 
 namespace Odb::Lib::FileModel::Design
 {
-	class StandardFontsFile : public OdbFile, public IProtoBuffable<Odb::Lib::Protobuf::StandardFontsFile>
+	class ODBDESIGN_EXPORT StandardFontsFile : public OdbFile, public IProtoBuffable<Odb::Lib::Protobuf::StandardFontsFile>, public IStreamSaveable
 	{
 	public:
 		StandardFontsFile() = default;
 		~StandardFontsFile();
 	
 		bool Parse(std::filesystem::path path) override;
+		// Inherited via IStreamSaveable
+		bool Save(std::ostream& os) override;
 
 		// Inherited via IProtoBuffable
 		std::unique_ptr<Odb::Lib::Protobuf::StandardFontsFile> to_protobuf() const override;
@@ -27,13 +30,13 @@ namespace Odb::Lib::FileModel::Design
 
 			struct LineRecord : public IProtoBuffable<Odb::Lib::Protobuf::StandardFontsFile::CharacterBlock::LineRecord>
 			{
-				float xStart;
-				float yStart;
-				float xEnd;
-				float yEnd;
+				double xStart;
+				double yStart;
+				double xEnd;
+				double yEnd;
 				Polarity polarity;
 				LineShape shape;
-				float width;
+				double width;
 
 				std::unique_ptr<Odb::Lib::Protobuf::StandardFontsFile::CharacterBlock::LineRecord> to_protobuf() const override;
 				void from_protobuf(const Odb::Lib::Protobuf::StandardFontsFile::CharacterBlock::LineRecord& message) override;
@@ -57,10 +60,10 @@ namespace Odb::Lib::FileModel::Design
 		};
 
 	private:
-		float m_xSize;
-		float m_ySize;
-		float m_offset;
+		double m_xSize;
+		double m_ySize;
+		double m_offset;
 
-		CharacterBlock::Vector m_characterBlocks;		
+		CharacterBlock::Vector m_characterBlocks;				
 	};
 }

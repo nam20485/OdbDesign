@@ -59,7 +59,7 @@ message EdaDataFile {
             // Plane subnet type fields
             optional FillType fillType = 3;
             optional CutoutType cutoutType = 4;
-            optional float fillSize = 5;
+            optional double fillSize = 5;
 
             // Toeprint subnet type fields
             optional BoardSide side = 6;
@@ -80,11 +80,11 @@ message EdaDataFile {
     message PackageRecord {    
 
         optional string name = 1;
-        optional float pitch = 2;
-        optional float xMin = 3;
-        optional float yMin = 4;
-        optional float xMax = 5;
-        optional float yMax = 6;
+        optional double pitch = 2;
+        optional double xMin = 3;
+        optional double yMin = 4;
+        optional double xMax = 5;
+        optional double yMax = 6;
         optional string attributesIdString = 7;
 
         repeated PinRecord pinRecords = 8;
@@ -104,14 +104,14 @@ message EdaDataFile {
             };
 
             optional Type type = 1;
-            optional float lowerLeftX = 2;
-            optional float lowerLeftY = 3;
-            optional float width = 4;
-            optional float height = 5;
-            optional float xCenter = 6;
-            optional float yCenter = 7;
-            optional float halfSide = 8;
-            optional float radius = 9;
+            optional double lowerLeftX = 2;
+            optional double lowerLeftY = 3;
+            optional double width = 4;
+            optional double height = 5;
+            optional double xCenter = 6;
+            optional double yCenter = 7;
+            optional double halfSide = 8;
+            optional double radius = 9;
 
             repeated ContourPolygon contourPolygons = 10;
         }
@@ -143,9 +143,9 @@ message EdaDataFile {
 
             optional string name = 1;
             optional Type type = 2;
-            optional float xCenter = 3;
-            optional float yCenter = 4;
-            optional float finishedHoleSize = 5;    // unused, set to 0
+            optional double xCenter = 3;
+            optional double yCenter = 4;
+            optional double finishedHoleSize = 5;    // unused, set to 0
             optional ElectricalType electricalType = 6;
             optional MountType mountType = 7;
             optional uint32 id = 8;

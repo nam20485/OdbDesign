@@ -1,5 +1,4 @@
 #include "FeaturesFile.h"
-#include "FeaturesFile.h"
 #include "ArchiveExtractor.h"
 #include <fstream>
 #include "Logger.h"
@@ -856,6 +855,11 @@ namespace Odb::Lib::FileModel::Design
 			pSymbolName->from_protobuf(kvSymbolNameMessage.second);
 			m_symbolNamesByName[kvSymbolNameMessage.first] = pSymbolName;
 		}			
+	}
+
+	bool FeaturesFile::Save(std::ostream& os)
+	{
+		return true;
 	}
 
 	FeaturesFile::FeatureRecord::~FeatureRecord()

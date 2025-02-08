@@ -1,9 +1,15 @@
 #include "Net.h"
+#include <memory>
+#include "Component.h"
+#include "Pin.h"
+#include "../ProtoBuf/net.pb.h"
+#include <string>
+#include "PinConnection.h"
 
 
 namespace Odb::Lib::ProductModel
 {
-	Net::Net(std::string name, unsigned int index)
+	Net::Net(const std::string& name, unsigned int index)
 		: m_name(name)
 		, m_index(index)
 	{
