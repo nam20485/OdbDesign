@@ -44,21 +44,21 @@ namespace Odb::Lib::FileModel::Design
 			};
 
 			unsigned int netNumber;
-			float radius;
-			float x;
-			float y;
+			double radius;
+			double x;
+			double y;
 			AccessSide side;
-			float width;
-			float height;
+			double width;
+			double height;
 			char epoint;
 			char exp;
 			bool commentPoint;
-			float staggeredX;
-			float staggeredY;
-			float staggeredRadius;
-			float viaPoint;
-			float fiducialPoint;
-			float testPoint;
+			double staggeredX;
+			double staggeredY;
+			double staggeredRadius;
+			double viaPoint;
+			double fiducialPoint;
+			double testPoint;
 			// ...
 			char testExecutionSide;
 

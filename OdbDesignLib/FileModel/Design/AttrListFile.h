@@ -11,6 +11,7 @@
 #include "../../ProtoBuf/attrlistfile.pb.h"
 #include "../../odbdesign_export.h"
 #include "../IStreamSaveable.h"
+#include <memory>
 
 namespace Odb::Lib::FileModel::Design
 {

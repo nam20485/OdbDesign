@@ -247,11 +247,11 @@ class ODBDESIGN_EXPORT ComponentsFile_ComponentRecord_ToeprintRecord final : pub
   // accessors -------------------------------------------------------
   enum : int {
     kNameFieldNumber = 8,
-    kPinNumberFieldNumber = 1,
     kLocationXFieldNumber = 2,
     kLocationYFieldNumber = 3,
-    kRotationFieldNumber = 4,
+    kPinNumberFieldNumber = 1,
     kMirrorFieldNumber = 5,
+    kRotationFieldNumber = 4,
     kNetNumberFieldNumber = 6,
     kSubnetNumberFieldNumber = 7,
   };
@@ -272,6 +272,28 @@ class ODBDESIGN_EXPORT ComponentsFile_ComponentRecord_ToeprintRecord final : pub
   std::string* _internal_mutable_name();
 
   public:
+  // optional double locationX = 2;
+  bool has_locationx() const;
+  void clear_locationx() ;
+  double locationx() const;
+  void set_locationx(double value);
+
+  private:
+  double _internal_locationx() const;
+  void _internal_set_locationx(double value);
+
+  public:
+  // optional double locationY = 3;
+  bool has_locationy() const;
+  void clear_locationy() ;
+  double locationy() const;
+  void set_locationy(double value);
+
+  private:
+  double _internal_locationy() const;
+  void _internal_set_locationy(double value);
+
+  public:
   // optional uint32 pinNumber = 1;
   bool has_pinnumber() const;
   void clear_pinnumber() ;
@@ -283,39 +305,6 @@ class ODBDESIGN_EXPORT ComponentsFile_ComponentRecord_ToeprintRecord final : pub
   void _internal_set_pinnumber(::uint32_t value);
 
   public:
-  // optional float locationX = 2;
-  bool has_locationx() const;
-  void clear_locationx() ;
-  float locationx() const;
-  void set_locationx(float value);
-
-  private:
-  float _internal_locationx() const;
-  void _internal_set_locationx(float value);
-
-  public:
-  // optional float locationY = 3;
-  bool has_locationy() const;
-  void clear_locationy() ;
-  float locationy() const;
-  void set_locationy(float value);
-
-  private:
-  float _internal_locationy() const;
-  void _internal_set_locationy(float value);
-
-  public:
-  // optional float rotation = 4;
-  bool has_rotation() const;
-  void clear_rotation() ;
-  float rotation() const;
-  void set_rotation(float value);
-
-  private:
-  float _internal_rotation() const;
-  void _internal_set_rotation(float value);
-
-  public:
   // optional bool mirror = 5;
   bool has_mirror() const;
   void clear_mirror() ;
@@ -325,6 +314,17 @@ class ODBDESIGN_EXPORT ComponentsFile_ComponentRecord_ToeprintRecord final : pub
   private:
   bool _internal_mirror() const;
   void _internal_set_mirror(bool value);
+
+  public:
+  // optional double rotation = 4;
+  bool has_rotation() const;
+  void clear_rotation() ;
+  double rotation() const;
+  void set_rotation(double value);
+
+  private:
+  double _internal_rotation() const;
+  void _internal_set_rotation(double value);
 
   public:
   // optional uint32 netNumber = 6;
@@ -375,11 +375,11 @@ class ODBDESIGN_EXPORT ComponentsFile_ComponentRecord_ToeprintRecord final : pub
     ::google::protobuf::internal::HasBits<1> _has_bits_;
     ::google::protobuf::internal::CachedSize _cached_size_;
     ::google::protobuf::internal::ArenaStringPtr name_;
+    double locationx_;
+    double locationy_;
     ::uint32_t pinnumber_;
-    float locationx_;
-    float locationy_;
-    float rotation_;
     bool mirror_;
+    double rotation_;
     ::uint32_t netnumber_;
     ::uint32_t subnetnumber_;
     PROTOBUF_TSAN_DECLARE_MEMBER
@@ -956,11 +956,11 @@ class ODBDESIGN_EXPORT ComponentsFile_ComponentRecord final : public ::google::p
     kCompNameFieldNumber = 6,
     kPartNameFieldNumber = 7,
     kAttributesFieldNumber = 8,
-    kPkgRefFieldNumber = 1,
     kLocationXFieldNumber = 2,
     kLocationYFieldNumber = 3,
-    kRotationFieldNumber = 4,
+    kPkgRefFieldNumber = 1,
     kMirrorFieldNumber = 5,
+    kRotationFieldNumber = 4,
     kIdFieldNumber = 9,
     kIndexFieldNumber = 10,
   };
@@ -1064,6 +1064,28 @@ class ODBDESIGN_EXPORT ComponentsFile_ComponentRecord final : public ::google::p
   std::string* _internal_mutable_attributes();
 
   public:
+  // optional double locationX = 2;
+  bool has_locationx() const;
+  void clear_locationx() ;
+  double locationx() const;
+  void set_locationx(double value);
+
+  private:
+  double _internal_locationx() const;
+  void _internal_set_locationx(double value);
+
+  public:
+  // optional double locationY = 3;
+  bool has_locationy() const;
+  void clear_locationy() ;
+  double locationy() const;
+  void set_locationy(double value);
+
+  private:
+  double _internal_locationy() const;
+  void _internal_set_locationy(double value);
+
+  public:
   // optional uint32 pkgRef = 1;
   bool has_pkgref() const;
   void clear_pkgref() ;
@@ -1075,39 +1097,6 @@ class ODBDESIGN_EXPORT ComponentsFile_ComponentRecord final : public ::google::p
   void _internal_set_pkgref(::uint32_t value);
 
   public:
-  // optional float locationX = 2;
-  bool has_locationx() const;
-  void clear_locationx() ;
-  float locationx() const;
-  void set_locationx(float value);
-
-  private:
-  float _internal_locationx() const;
-  void _internal_set_locationx(float value);
-
-  public:
-  // optional float locationY = 3;
-  bool has_locationy() const;
-  void clear_locationy() ;
-  float locationy() const;
-  void set_locationy(float value);
-
-  private:
-  float _internal_locationy() const;
-  void _internal_set_locationy(float value);
-
-  public:
-  // optional float rotation = 4;
-  bool has_rotation() const;
-  void clear_rotation() ;
-  float rotation() const;
-  void set_rotation(float value);
-
-  private:
-  float _internal_rotation() const;
-  void _internal_set_rotation(float value);
-
-  public:
   // optional bool mirror = 5;
   bool has_mirror() const;
   void clear_mirror() ;
@@ -1117,6 +1106,17 @@ class ODBDESIGN_EXPORT ComponentsFile_ComponentRecord final : public ::google::p
   private:
   bool _internal_mirror() const;
   void _internal_set_mirror(bool value);
+
+  public:
+  // optional double rotation = 4;
+  bool has_rotation() const;
+  void clear_rotation() ;
+  double rotation() const;
+  void set_rotation(double value);
+
+  private:
+  double _internal_rotation() const;
+  void _internal_set_rotation(double value);
 
   public:
   // optional uint32 id = 9;
@@ -1175,11 +1175,11 @@ class ODBDESIGN_EXPORT ComponentsFile_ComponentRecord final : public ::google::p
     ::google::protobuf::internal::ArenaStringPtr compname_;
     ::google::protobuf::internal::ArenaStringPtr partname_;
     ::google::protobuf::internal::ArenaStringPtr attributes_;
+    double locationx_;
+    double locationy_;
     ::uint32_t pkgref_;
-    float locationx_;
-    float locationy_;
-    float rotation_;
     bool mirror_;
+    double rotation_;
     ::uint32_t id_;
     ::uint32_t index_;
     PROTOBUF_TSAN_DECLARE_MEMBER
@@ -1713,13 +1713,13 @@ class ODBDESIGN_EXPORT ComponentsFile final : public ::google::protobuf::Message
 
 // optional uint32 pinNumber = 1;
 inline bool ComponentsFile_ComponentRecord_ToeprintRecord::has_pinnumber() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000008u) != 0;
   return value;
 }
 inline void ComponentsFile_ComponentRecord_ToeprintRecord::clear_pinnumber() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.pinnumber_ = 0u;
-  _impl_._has_bits_[0] &= ~0x00000002u;
+  _impl_._has_bits_[0] &= ~0x00000008u;
 }
 inline ::uint32_t ComponentsFile_ComponentRecord_ToeprintRecord::pinnumber() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.ToeprintRecord.pinNumber)
@@ -1727,7 +1727,7 @@ inline ::uint32_t ComponentsFile_ComponentRecord_ToeprintRecord::pinnumber() con
 }
 inline void ComponentsFile_ComponentRecord_ToeprintRecord::set_pinnumber(::uint32_t value) {
   _internal_set_pinnumber(value);
-  _impl_._has_bits_[0] |= 0x00000002u;
+  _impl_._has_bits_[0] |= 0x00000008u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.ToeprintRecord.pinNumber)
 }
 inline ::uint32_t ComponentsFile_ComponentRecord_ToeprintRecord::_internal_pinnumber() const {
@@ -1739,99 +1739,99 @@ inline void ComponentsFile_ComponentRecord_ToeprintRecord::_internal_set_pinnumb
   _impl_.pinnumber_ = value;
 }
 
-// optional float locationX = 2;
+// optional double locationX = 2;
 inline bool ComponentsFile_ComponentRecord_ToeprintRecord::has_locationx() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
   return value;
 }
 inline void ComponentsFile_ComponentRecord_ToeprintRecord::clear_locationx() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.locationx_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000004u;
+  _impl_._has_bits_[0] &= ~0x00000002u;
 }
-inline float ComponentsFile_ComponentRecord_ToeprintRecord::locationx() const {
+inline double ComponentsFile_ComponentRecord_ToeprintRecord::locationx() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.ToeprintRecord.locationX)
   return _internal_locationx();
 }
-inline void ComponentsFile_ComponentRecord_ToeprintRecord::set_locationx(float value) {
+inline void ComponentsFile_ComponentRecord_ToeprintRecord::set_locationx(double value) {
   _internal_set_locationx(value);
-  _impl_._has_bits_[0] |= 0x00000004u;
+  _impl_._has_bits_[0] |= 0x00000002u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.ToeprintRecord.locationX)
 }
-inline float ComponentsFile_ComponentRecord_ToeprintRecord::_internal_locationx() const {
+inline double ComponentsFile_ComponentRecord_ToeprintRecord::_internal_locationx() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.locationx_;
 }
-inline void ComponentsFile_ComponentRecord_ToeprintRecord::_internal_set_locationx(float value) {
+inline void ComponentsFile_ComponentRecord_ToeprintRecord::_internal_set_locationx(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.locationx_ = value;
 }
 
-// optional float locationY = 3;
+// optional double locationY = 3;
 inline bool ComponentsFile_ComponentRecord_ToeprintRecord::has_locationy() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000008u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
   return value;
 }
 inline void ComponentsFile_ComponentRecord_ToeprintRecord::clear_locationy() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.locationy_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000008u;
+  _impl_._has_bits_[0] &= ~0x00000004u;
 }
-inline float ComponentsFile_ComponentRecord_ToeprintRecord::locationy() const {
+inline double ComponentsFile_ComponentRecord_ToeprintRecord::locationy() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.ToeprintRecord.locationY)
   return _internal_locationy();
 }
-inline void ComponentsFile_ComponentRecord_ToeprintRecord::set_locationy(float value) {
+inline void ComponentsFile_ComponentRecord_ToeprintRecord::set_locationy(double value) {
   _internal_set_locationy(value);
-  _impl_._has_bits_[0] |= 0x00000008u;
+  _impl_._has_bits_[0] |= 0x00000004u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.ToeprintRecord.locationY)
 }
-inline float ComponentsFile_ComponentRecord_ToeprintRecord::_internal_locationy() const {
+inline double ComponentsFile_ComponentRecord_ToeprintRecord::_internal_locationy() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.locationy_;
 }
-inline void ComponentsFile_ComponentRecord_ToeprintRecord::_internal_set_locationy(float value) {
+inline void ComponentsFile_ComponentRecord_ToeprintRecord::_internal_set_locationy(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.locationy_ = value;
 }
 
-// optional float rotation = 4;
+// optional double rotation = 4;
 inline bool ComponentsFile_ComponentRecord_ToeprintRecord::has_rotation() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000010u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000020u) != 0;
   return value;
 }
 inline void ComponentsFile_ComponentRecord_ToeprintRecord::clear_rotation() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.rotation_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000010u;
+  _impl_._has_bits_[0] &= ~0x00000020u;
 }
-inline float ComponentsFile_ComponentRecord_ToeprintRecord::rotation() const {
+inline double ComponentsFile_ComponentRecord_ToeprintRecord::rotation() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.ToeprintRecord.rotation)
   return _internal_rotation();
 }
-inline void ComponentsFile_ComponentRecord_ToeprintRecord::set_rotation(float value) {
+inline void ComponentsFile_ComponentRecord_ToeprintRecord::set_rotation(double value) {
   _internal_set_rotation(value);
-  _impl_._has_bits_[0] |= 0x00000010u;
+  _impl_._has_bits_[0] |= 0x00000020u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.ToeprintRecord.rotation)
 }
-inline float ComponentsFile_ComponentRecord_ToeprintRecord::_internal_rotation() const {
+inline double ComponentsFile_ComponentRecord_ToeprintRecord::_internal_rotation() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.rotation_;
 }
-inline void ComponentsFile_ComponentRecord_ToeprintRecord::_internal_set_rotation(float value) {
+inline void ComponentsFile_ComponentRecord_ToeprintRecord::_internal_set_rotation(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.rotation_ = value;
 }
 
 // optional bool mirror = 5;
 inline bool ComponentsFile_ComponentRecord_ToeprintRecord::has_mirror() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000020u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000010u) != 0;
   return value;
 }
 inline void ComponentsFile_ComponentRecord_ToeprintRecord::clear_mirror() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.mirror_ = false;
-  _impl_._has_bits_[0] &= ~0x00000020u;
+  _impl_._has_bits_[0] &= ~0x00000010u;
 }
 inline bool ComponentsFile_ComponentRecord_ToeprintRecord::mirror() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.ToeprintRecord.mirror)
@@ -1839,7 +1839,7 @@ inline bool ComponentsFile_ComponentRecord_ToeprintRecord::mirror() const {
 }
 inline void ComponentsFile_ComponentRecord_ToeprintRecord::set_mirror(bool value) {
   _internal_set_mirror(value);
-  _impl_._has_bits_[0] |= 0x00000020u;
+  _impl_._has_bits_[0] |= 0x00000010u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.ToeprintRecord.mirror)
 }
 inline bool ComponentsFile_ComponentRecord_ToeprintRecord::_internal_mirror() const {
@@ -1984,13 +1984,13 @@ inline void ComponentsFile_ComponentRecord_ToeprintRecord::set_allocated_name(st
 
 // optional uint32 pkgRef = 1;
 inline bool ComponentsFile_ComponentRecord::has_pkgref() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000008u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000020u) != 0;
   return value;
 }
 inline void ComponentsFile_ComponentRecord::clear_pkgref() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.pkgref_ = 0u;
-  _impl_._has_bits_[0] &= ~0x00000008u;
+  _impl_._has_bits_[0] &= ~0x00000020u;
 }
 inline ::uint32_t ComponentsFile_ComponentRecord::pkgref() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.pkgRef)
@@ -1998,7 +1998,7 @@ inline ::uint32_t ComponentsFile_ComponentRecord::pkgref() const {
 }
 inline void ComponentsFile_ComponentRecord::set_pkgref(::uint32_t value) {
   _internal_set_pkgref(value);
-  _impl_._has_bits_[0] |= 0x00000008u;
+  _impl_._has_bits_[0] |= 0x00000020u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.pkgRef)
 }
 inline ::uint32_t ComponentsFile_ComponentRecord::_internal_pkgref() const {
@@ -2010,99 +2010,99 @@ inline void ComponentsFile_ComponentRecord::_internal_set_pkgref(::uint32_t valu
   _impl_.pkgref_ = value;
 }
 
-// optional float locationX = 2;
+// optional double locationX = 2;
 inline bool ComponentsFile_ComponentRecord::has_locationx() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000010u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000008u) != 0;
   return value;
 }
 inline void ComponentsFile_ComponentRecord::clear_locationx() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.locationx_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000010u;
+  _impl_._has_bits_[0] &= ~0x00000008u;
 }
-inline float ComponentsFile_ComponentRecord::locationx() const {
+inline double ComponentsFile_ComponentRecord::locationx() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.locationX)
   return _internal_locationx();
 }
-inline void ComponentsFile_ComponentRecord::set_locationx(float value) {
+inline void ComponentsFile_ComponentRecord::set_locationx(double value) {
   _internal_set_locationx(value);
-  _impl_._has_bits_[0] |= 0x00000010u;
+  _impl_._has_bits_[0] |= 0x00000008u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.locationX)
 }
-inline float ComponentsFile_ComponentRecord::_internal_locationx() const {
+inline double ComponentsFile_ComponentRecord::_internal_locationx() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.locationx_;
 }
-inline void ComponentsFile_ComponentRecord::_internal_set_locationx(float value) {
+inline void ComponentsFile_ComponentRecord::_internal_set_locationx(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.locationx_ = value;
 }
 
-// optional float locationY = 3;
+// optional double locationY = 3;
 inline bool ComponentsFile_ComponentRecord::has_locationy() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000020u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000010u) != 0;
   return value;
 }
 inline void ComponentsFile_ComponentRecord::clear_locationy() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.locationy_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000020u;
+  _impl_._has_bits_[0] &= ~0x00000010u;
 }
-inline float ComponentsFile_ComponentRecord::locationy() const {
+inline double ComponentsFile_ComponentRecord::locationy() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.locationY)
   return _internal_locationy();
 }
-inline void ComponentsFile_ComponentRecord::set_locationy(float value) {
+inline void ComponentsFile_ComponentRecord::set_locationy(double value) {
   _internal_set_locationy(value);
-  _impl_._has_bits_[0] |= 0x00000020u;
+  _impl_._has_bits_[0] |= 0x00000010u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.locationY)
 }
-inline float ComponentsFile_ComponentRecord::_internal_locationy() const {
+inline double ComponentsFile_ComponentRecord::_internal_locationy() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.locationy_;
 }
-inline void ComponentsFile_ComponentRecord::_internal_set_locationy(float value) {
+inline void ComponentsFile_ComponentRecord::_internal_set_locationy(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.locationy_ = value;
 }
 
-// optional float rotation = 4;
+// optional double rotation = 4;
 inline bool ComponentsFile_ComponentRecord::has_rotation() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000040u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000080u) != 0;
   return value;
 }
 inline void ComponentsFile_ComponentRecord::clear_rotation() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.rotation_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000040u;
+  _impl_._has_bits_[0] &= ~0x00000080u;
 }
-inline float ComponentsFile_ComponentRecord::rotation() const {
+inline double ComponentsFile_ComponentRecord::rotation() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.rotation)
   return _internal_rotation();
 }
-inline void ComponentsFile_ComponentRecord::set_rotation(float value) {
+inline void ComponentsFile_ComponentRecord::set_rotation(double value) {
   _internal_set_rotation(value);
-  _impl_._has_bits_[0] |= 0x00000040u;
+  _impl_._has_bits_[0] |= 0x00000080u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.rotation)
 }
-inline float ComponentsFile_ComponentRecord::_internal_rotation() const {
+inline double ComponentsFile_ComponentRecord::_internal_rotation() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.rotation_;
 }
-inline void ComponentsFile_ComponentRecord::_internal_set_rotation(float value) {
+inline void ComponentsFile_ComponentRecord::_internal_set_rotation(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.rotation_ = value;
 }
 
 // optional bool mirror = 5;
 inline bool ComponentsFile_ComponentRecord::has_mirror() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000080u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000040u) != 0;
   return value;
 }
 inline void ComponentsFile_ComponentRecord::clear_mirror() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.mirror_ = false;
-  _impl_._has_bits_[0] &= ~0x00000080u;
+  _impl_._has_bits_[0] &= ~0x00000040u;
 }
 inline bool ComponentsFile_ComponentRecord::mirror() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.mirror)
@@ -2110,7 +2110,7 @@ inline bool ComponentsFile_ComponentRecord::mirror() const {
 }
 inline void ComponentsFile_ComponentRecord::set_mirror(bool value) {
   _internal_set_mirror(value);
-  _impl_._has_bits_[0] |= 0x00000080u;
+  _impl_._has_bits_[0] |= 0x00000040u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.mirror)
 }
 inline bool ComponentsFile_ComponentRecord::_internal_mirror() const {

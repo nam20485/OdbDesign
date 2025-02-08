@@ -297,22 +297,22 @@ class ODBDESIGN_EXPORT PropertyRecord final : public ::google::protobuf::Message
     kNameFieldNumber = 1,
     kValueFieldNumber = 2,
   };
-  // repeated float floatValues = 3;
+  // repeated double floatValues = 3;
   int floatvalues_size() const;
   private:
   int _internal_floatvalues_size() const;
 
   public:
   void clear_floatvalues() ;
-  float floatvalues(int index) const;
-  void set_floatvalues(int index, float value);
-  void add_floatvalues(float value);
-  const ::google::protobuf::RepeatedField<float>& floatvalues() const;
-  ::google::protobuf::RepeatedField<float>* mutable_floatvalues();
+  double floatvalues(int index) const;
+  void set_floatvalues(int index, double value);
+  void add_floatvalues(double value);
+  const ::google::protobuf::RepeatedField<double>& floatvalues() const;
+  ::google::protobuf::RepeatedField<double>* mutable_floatvalues();
 
   private:
-  const ::google::protobuf::RepeatedField<float>& _internal_floatvalues() const;
-  ::google::protobuf::RepeatedField<float>* _internal_mutable_floatvalues();
+  const ::google::protobuf::RepeatedField<double>& _internal_floatvalues() const;
+  ::google::protobuf::RepeatedField<double>* _internal_mutable_floatvalues();
 
   public:
   // optional string name = 1;
@@ -374,7 +374,7 @@ class ODBDESIGN_EXPORT PropertyRecord final : public ::google::protobuf::Message
                           const PropertyRecord& from_msg);
     ::google::protobuf::internal::HasBits<1> _has_bits_;
     ::google::protobuf::internal::CachedSize _cached_size_;
-    ::google::protobuf::RepeatedField<float> floatvalues_;
+    ::google::protobuf::RepeatedField<double> floatvalues_;
     ::google::protobuf::internal::ArenaStringPtr name_;
     ::google::protobuf::internal::ArenaStringPtr value_;
     PROTOBUF_TSAN_DECLARE_MEMBER
@@ -549,13 +549,35 @@ class ODBDESIGN_EXPORT ContourPolygon_PolygonPart final : public ::google::proto
 
   // accessors -------------------------------------------------------
   enum : int {
-    kTypeFieldNumber = 1,
     kEndXFieldNumber = 2,
     kEndYFieldNumber = 3,
+    kTypeFieldNumber = 1,
+    kIsClockwiseFieldNumber = 6,
     kXCenterFieldNumber = 4,
     kYCenterFieldNumber = 5,
-    kIsClockwiseFieldNumber = 6,
   };
+  // optional double endX = 2;
+  bool has_endx() const;
+  void clear_endx() ;
+  double endx() const;
+  void set_endx(double value);
+
+  private:
+  double _internal_endx() const;
+  void _internal_set_endx(double value);
+
+  public:
+  // optional double endY = 3;
+  bool has_endy() const;
+  void clear_endy() ;
+  double endy() const;
+  void set_endy(double value);
+
+  private:
+  double _internal_endy() const;
+  void _internal_set_endy(double value);
+
+  public:
   // optional .Odb.Lib.Protobuf.ContourPolygon.PolygonPart.Type type = 1;
   bool has_type() const;
   void clear_type() ;
@@ -567,50 +589,6 @@ class ODBDESIGN_EXPORT ContourPolygon_PolygonPart final : public ::google::proto
   void _internal_set_type(::Odb::Lib::Protobuf::ContourPolygon_PolygonPart_Type value);
 
   public:
-  // optional float endX = 2;
-  bool has_endx() const;
-  void clear_endx() ;
-  float endx() const;
-  void set_endx(float value);
-
-  private:
-  float _internal_endx() const;
-  void _internal_set_endx(float value);
-
-  public:
-  // optional float endY = 3;
-  bool has_endy() const;
-  void clear_endy() ;
-  float endy() const;
-  void set_endy(float value);
-
-  private:
-  float _internal_endy() const;
-  void _internal_set_endy(float value);
-
-  public:
-  // optional float xCenter = 4;
-  bool has_xcenter() const;
-  void clear_xcenter() ;
-  float xcenter() const;
-  void set_xcenter(float value);
-
-  private:
-  float _internal_xcenter() const;
-  void _internal_set_xcenter(float value);
-
-  public:
-  // optional float yCenter = 5;
-  bool has_ycenter() const;
-  void clear_ycenter() ;
-  float ycenter() const;
-  void set_ycenter(float value);
-
-  private:
-  float _internal_ycenter() const;
-  void _internal_set_ycenter(float value);
-
-  public:
   // optional bool isClockwise = 6;
   bool has_isclockwise() const;
   void clear_isclockwise() ;
@@ -620,6 +598,28 @@ class ODBDESIGN_EXPORT ContourPolygon_PolygonPart final : public ::google::proto
   private:
   bool _internal_isclockwise() const;
   void _internal_set_isclockwise(bool value);
+
+  public:
+  // optional double xCenter = 4;
+  bool has_xcenter() const;
+  void clear_xcenter() ;
+  double xcenter() const;
+  void set_xcenter(double value);
+
+  private:
+  double _internal_xcenter() const;
+  void _internal_set_xcenter(double value);
+
+  public:
+  // optional double yCenter = 5;
+  bool has_ycenter() const;
+  void clear_ycenter() ;
+  double ycenter() const;
+  void set_ycenter(double value);
+
+  private:
+  double _internal_ycenter() const;
+  void _internal_set_ycenter(double value);
 
   public:
   // @@protoc_insertion_point(class_scope:Odb.Lib.Protobuf.ContourPolygon.PolygonPart)
@@ -647,12 +647,12 @@ class ODBDESIGN_EXPORT ContourPolygon_PolygonPart final : public ::google::proto
                           const ContourPolygon_PolygonPart& from_msg);
     ::google::protobuf::internal::HasBits<1> _has_bits_;
     ::google::protobuf::internal::CachedSize _cached_size_;
+    double endx_;
+    double endy_;
     int type_;
-    float endx_;
-    float endy_;
-    float xcenter_;
-    float ycenter_;
     bool isclockwise_;
+    double xcenter_;
+    double ycenter_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -827,9 +827,9 @@ class ODBDESIGN_EXPORT ContourPolygon final : public ::google::protobuf::Message
   // accessors -------------------------------------------------------
   enum : int {
     kPolygonPartsFieldNumber = 4,
-    kTypeFieldNumber = 1,
     kXStartFieldNumber = 2,
     kYStartFieldNumber = 3,
+    kTypeFieldNumber = 1,
   };
   // repeated .Odb.Lib.Protobuf.ContourPolygon.PolygonPart polygonParts = 4;
   int polygonparts_size() const;
@@ -848,6 +848,28 @@ class ODBDESIGN_EXPORT ContourPolygon final : public ::google::protobuf::Message
   const ::Odb::Lib::Protobuf::ContourPolygon_PolygonPart& polygonparts(int index) const;
   ::Odb::Lib::Protobuf::ContourPolygon_PolygonPart* add_polygonparts();
   const ::google::protobuf::RepeatedPtrField<::Odb::Lib::Protobuf::ContourPolygon_PolygonPart>& polygonparts() const;
+  // optional double xStart = 2;
+  bool has_xstart() const;
+  void clear_xstart() ;
+  double xstart() const;
+  void set_xstart(double value);
+
+  private:
+  double _internal_xstart() const;
+  void _internal_set_xstart(double value);
+
+  public:
+  // optional double yStart = 3;
+  bool has_ystart() const;
+  void clear_ystart() ;
+  double ystart() const;
+  void set_ystart(double value);
+
+  private:
+  double _internal_ystart() const;
+  void _internal_set_ystart(double value);
+
+  public:
   // optional .Odb.Lib.Protobuf.ContourPolygon.Type type = 1;
   bool has_type() const;
   void clear_type() ;
@@ -857,28 +879,6 @@ class ODBDESIGN_EXPORT ContourPolygon final : public ::google::protobuf::Message
   private:
   ::Odb::Lib::Protobuf::ContourPolygon_Type _internal_type() const;
   void _internal_set_type(::Odb::Lib::Protobuf::ContourPolygon_Type value);
-
-  public:
-  // optional float xStart = 2;
-  bool has_xstart() const;
-  void clear_xstart() ;
-  float xstart() const;
-  void set_xstart(float value);
-
-  private:
-  float _internal_xstart() const;
-  void _internal_set_xstart(float value);
-
-  public:
-  // optional float yStart = 3;
-  bool has_ystart() const;
-  void clear_ystart() ;
-  float ystart() const;
-  void set_ystart(float value);
-
-  private:
-  float _internal_ystart() const;
-  void _internal_set_ystart(float value);
 
   public:
   // @@protoc_insertion_point(class_scope:Odb.Lib.Protobuf.ContourPolygon)
@@ -907,9 +907,9 @@ class ODBDESIGN_EXPORT ContourPolygon final : public ::google::protobuf::Message
     ::google::protobuf::internal::HasBits<1> _has_bits_;
     ::google::protobuf::internal::CachedSize _cached_size_;
     ::google::protobuf::RepeatedPtrField< ::Odb::Lib::Protobuf::ContourPolygon_PolygonPart > polygonparts_;
+    double xstart_;
+    double ystart_;
     int type_;
-    float xstart_;
-    float ystart_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -1070,7 +1070,7 @@ inline void PropertyRecord::set_allocated_value(std::string* value) {
   // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.PropertyRecord.value)
 }
 
-// repeated float floatValues = 3;
+// repeated double floatValues = 3;
 inline int PropertyRecord::_internal_floatvalues_size() const {
   return _internal_floatvalues().size();
 }
@@ -1081,36 +1081,36 @@ inline void PropertyRecord::clear_floatvalues() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.floatvalues_.Clear();
 }
-inline float PropertyRecord::floatvalues(int index) const {
+inline double PropertyRecord::floatvalues(int index) const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.PropertyRecord.floatValues)
   return _internal_floatvalues().Get(index);
 }
-inline void PropertyRecord::set_floatvalues(int index, float value) {
+inline void PropertyRecord::set_floatvalues(int index, double value) {
   _internal_mutable_floatvalues()->Set(index, value);
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.PropertyRecord.floatValues)
 }
-inline void PropertyRecord::add_floatvalues(float value) {
+inline void PropertyRecord::add_floatvalues(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _internal_mutable_floatvalues()->Add(value);
   // @@protoc_insertion_point(field_add:Odb.Lib.Protobuf.PropertyRecord.floatValues)
 }
-inline const ::google::protobuf::RepeatedField<float>& PropertyRecord::floatvalues() const
+inline const ::google::protobuf::RepeatedField<double>& PropertyRecord::floatvalues() const
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
   // @@protoc_insertion_point(field_list:Odb.Lib.Protobuf.PropertyRecord.floatValues)
   return _internal_floatvalues();
 }
-inline ::google::protobuf::RepeatedField<float>* PropertyRecord::mutable_floatvalues()
+inline ::google::protobuf::RepeatedField<double>* PropertyRecord::mutable_floatvalues()
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
   // @@protoc_insertion_point(field_mutable_list:Odb.Lib.Protobuf.PropertyRecord.floatValues)
   ::google::protobuf::internal::TSanWrite(&_impl_);
   return _internal_mutable_floatvalues();
 }
-inline const ::google::protobuf::RepeatedField<float>&
+inline const ::google::protobuf::RepeatedField<double>&
 PropertyRecord::_internal_floatvalues() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.floatvalues_;
 }
-inline ::google::protobuf::RepeatedField<float>* PropertyRecord::_internal_mutable_floatvalues() {
+inline ::google::protobuf::RepeatedField<double>* PropertyRecord::_internal_mutable_floatvalues() {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return &_impl_.floatvalues_;
 }
@@ -1121,13 +1121,13 @@ inline ::google::protobuf::RepeatedField<float>* PropertyRecord::_internal_mutab
 
 // optional .Odb.Lib.Protobuf.ContourPolygon.PolygonPart.Type type = 1;
 inline bool ContourPolygon_PolygonPart::has_type() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
   return value;
 }
 inline void ContourPolygon_PolygonPart::clear_type() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.type_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000001u;
+  _impl_._has_bits_[0] &= ~0x00000004u;
 }
 inline ::Odb::Lib::Protobuf::ContourPolygon_PolygonPart_Type ContourPolygon_PolygonPart::type() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.ContourPolygon.PolygonPart.type)
@@ -1135,7 +1135,7 @@ inline ::Odb::Lib::Protobuf::ContourPolygon_PolygonPart_Type ContourPolygon_Poly
 }
 inline void ContourPolygon_PolygonPart::set_type(::Odb::Lib::Protobuf::ContourPolygon_PolygonPart_Type value) {
   _internal_set_type(value);
-  _impl_._has_bits_[0] |= 0x00000001u;
+  _impl_._has_bits_[0] |= 0x00000004u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ContourPolygon.PolygonPart.type)
 }
 inline ::Odb::Lib::Protobuf::ContourPolygon_PolygonPart_Type ContourPolygon_PolygonPart::_internal_type() const {
@@ -1147,127 +1147,127 @@ inline void ContourPolygon_PolygonPart::_internal_set_type(::Odb::Lib::Protobuf:
   _impl_.type_ = value;
 }
 
-// optional float endX = 2;
+// optional double endX = 2;
 inline bool ContourPolygon_PolygonPart::has_endx() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
   return value;
 }
 inline void ContourPolygon_PolygonPart::clear_endx() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.endx_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000002u;
+  _impl_._has_bits_[0] &= ~0x00000001u;
 }
-inline float ContourPolygon_PolygonPart::endx() const {
+inline double ContourPolygon_PolygonPart::endx() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.ContourPolygon.PolygonPart.endX)
   return _internal_endx();
 }
-inline void ContourPolygon_PolygonPart::set_endx(float value) {
+inline void ContourPolygon_PolygonPart::set_endx(double value) {
   _internal_set_endx(value);
-  _impl_._has_bits_[0] |= 0x00000002u;
+  _impl_._has_bits_[0] |= 0x00000001u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ContourPolygon.PolygonPart.endX)
 }
-inline float ContourPolygon_PolygonPart::_internal_endx() const {
+inline double ContourPolygon_PolygonPart::_internal_endx() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.endx_;
 }
-inline void ContourPolygon_PolygonPart::_internal_set_endx(float value) {
+inline void ContourPolygon_PolygonPart::_internal_set_endx(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.endx_ = value;
 }
 
-// optional float endY = 3;
+// optional double endY = 3;
 inline bool ContourPolygon_PolygonPart::has_endy() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
   return value;
 }
 inline void ContourPolygon_PolygonPart::clear_endy() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.endy_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000004u;
+  _impl_._has_bits_[0] &= ~0x00000002u;
 }
-inline float ContourPolygon_PolygonPart::endy() const {
+inline double ContourPolygon_PolygonPart::endy() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.ContourPolygon.PolygonPart.endY)
   return _internal_endy();
 }
-inline void ContourPolygon_PolygonPart::set_endy(float value) {
+inline void ContourPolygon_PolygonPart::set_endy(double value) {
   _internal_set_endy(value);
-  _impl_._has_bits_[0] |= 0x00000004u;
+  _impl_._has_bits_[0] |= 0x00000002u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ContourPolygon.PolygonPart.endY)
 }
-inline float ContourPolygon_PolygonPart::_internal_endy() const {
+inline double ContourPolygon_PolygonPart::_internal_endy() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.endy_;
 }
-inline void ContourPolygon_PolygonPart::_internal_set_endy(float value) {
+inline void ContourPolygon_PolygonPart::_internal_set_endy(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.endy_ = value;
 }
 
-// optional float xCenter = 4;
+// optional double xCenter = 4;
 inline bool ContourPolygon_PolygonPart::has_xcenter() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000008u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000010u) != 0;
   return value;
 }
 inline void ContourPolygon_PolygonPart::clear_xcenter() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.xcenter_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000008u;
+  _impl_._has_bits_[0] &= ~0x00000010u;
 }
-inline float ContourPolygon_PolygonPart::xcenter() const {
+inline double ContourPolygon_PolygonPart::xcenter() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.ContourPolygon.PolygonPart.xCenter)
   return _internal_xcenter();
 }
-inline void ContourPolygon_PolygonPart::set_xcenter(float value) {
+inline void ContourPolygon_PolygonPart::set_xcenter(double value) {
   _internal_set_xcenter(value);
-  _impl_._has_bits_[0] |= 0x00000008u;
+  _impl_._has_bits_[0] |= 0x00000010u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ContourPolygon.PolygonPart.xCenter)
 }
-inline float ContourPolygon_PolygonPart::_internal_xcenter() const {
+inline double ContourPolygon_PolygonPart::_internal_xcenter() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.xcenter_;
 }
-inline void ContourPolygon_PolygonPart::_internal_set_xcenter(float value) {
+inline void ContourPolygon_PolygonPart::_internal_set_xcenter(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.xcenter_ = value;
 }
 
-// optional float yCenter = 5;
+// optional double yCenter = 5;
 inline bool ContourPolygon_PolygonPart::has_ycenter() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000010u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000020u) != 0;
   return value;
 }
 inline void ContourPolygon_PolygonPart::clear_ycenter() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.ycenter_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000010u;
+  _impl_._has_bits_[0] &= ~0x00000020u;
 }
-inline float ContourPolygon_PolygonPart::ycenter() const {
+inline double ContourPolygon_PolygonPart::ycenter() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.ContourPolygon.PolygonPart.yCenter)
   return _internal_ycenter();
 }
-inline void ContourPolygon_PolygonPart::set_ycenter(float value) {
+inline void ContourPolygon_PolygonPart::set_ycenter(double value) {
   _internal_set_ycenter(value);
-  _impl_._has_bits_[0] |= 0x00000010u;
+  _impl_._has_bits_[0] |= 0x00000020u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ContourPolygon.PolygonPart.yCenter)
 }
-inline float ContourPolygon_PolygonPart::_internal_ycenter() const {
+inline double ContourPolygon_PolygonPart::_internal_ycenter() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.ycenter_;
 }
-inline void ContourPolygon_PolygonPart::_internal_set_ycenter(float value) {
+inline void ContourPolygon_PolygonPart::_internal_set_ycenter(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.ycenter_ = value;
 }
 
 // optional bool isClockwise = 6;
 inline bool ContourPolygon_PolygonPart::has_isclockwise() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000020u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000008u) != 0;
   return value;
 }
 inline void ContourPolygon_PolygonPart::clear_isclockwise() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.isclockwise_ = false;
-  _impl_._has_bits_[0] &= ~0x00000020u;
+  _impl_._has_bits_[0] &= ~0x00000008u;
 }
 inline bool ContourPolygon_PolygonPart::isclockwise() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.ContourPolygon.PolygonPart.isClockwise)
@@ -1275,7 +1275,7 @@ inline bool ContourPolygon_PolygonPart::isclockwise() const {
 }
 inline void ContourPolygon_PolygonPart::set_isclockwise(bool value) {
   _internal_set_isclockwise(value);
-  _impl_._has_bits_[0] |= 0x00000020u;
+  _impl_._has_bits_[0] |= 0x00000008u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ContourPolygon.PolygonPart.isClockwise)
 }
 inline bool ContourPolygon_PolygonPart::_internal_isclockwise() const {
@@ -1293,13 +1293,13 @@ inline void ContourPolygon_PolygonPart::_internal_set_isclockwise(bool value) {
 
 // optional .Odb.Lib.Protobuf.ContourPolygon.Type type = 1;
 inline bool ContourPolygon::has_type() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
   return value;
 }
 inline void ContourPolygon::clear_type() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.type_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000001u;
+  _impl_._has_bits_[0] &= ~0x00000004u;
 }
 inline ::Odb::Lib::Protobuf::ContourPolygon_Type ContourPolygon::type() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.ContourPolygon.type)
@@ -1307,7 +1307,7 @@ inline ::Odb::Lib::Protobuf::ContourPolygon_Type ContourPolygon::type() const {
 }
 inline void ContourPolygon::set_type(::Odb::Lib::Protobuf::ContourPolygon_Type value) {
   _internal_set_type(value);
-  _impl_._has_bits_[0] |= 0x00000001u;
+  _impl_._has_bits_[0] |= 0x00000004u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ContourPolygon.type)
 }
 inline ::Odb::Lib::Protobuf::ContourPolygon_Type ContourPolygon::_internal_type() const {
@@ -1319,58 +1319,58 @@ inline void ContourPolygon::_internal_set_type(::Odb::Lib::Protobuf::ContourPoly
   _impl_.type_ = value;
 }
 
-// optional float xStart = 2;
+// optional double xStart = 2;
 inline bool ContourPolygon::has_xstart() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
   return value;
 }
 inline void ContourPolygon::clear_xstart() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.xstart_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000002u;
+  _impl_._has_bits_[0] &= ~0x00000001u;
 }
-inline float ContourPolygon::xstart() const {
+inline double ContourPolygon::xstart() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.ContourPolygon.xStart)
   return _internal_xstart();
 }
-inline void ContourPolygon::set_xstart(float value) {
+inline void ContourPolygon::set_xstart(double value) {
   _internal_set_xstart(value);
-  _impl_._has_bits_[0] |= 0x00000002u;
+  _impl_._has_bits_[0] |= 0x00000001u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ContourPolygon.xStart)
 }
-inline float ContourPolygon::_internal_xstart() const {
+inline double ContourPolygon::_internal_xstart() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.xstart_;
 }
-inline void ContourPolygon::_internal_set_xstart(float value) {
+inline void ContourPolygon::_internal_set_xstart(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.xstart_ = value;
 }
 
-// optional float yStart = 3;
+// optional double yStart = 3;
 inline bool ContourPolygon::has_ystart() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
   return value;
 }
 inline void ContourPolygon::clear_ystart() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.ystart_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000004u;
+  _impl_._has_bits_[0] &= ~0x00000002u;
 }
-inline float ContourPolygon::ystart() const {
+inline double ContourPolygon::ystart() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.ContourPolygon.yStart)
   return _internal_ystart();
 }
-inline void ContourPolygon::set_ystart(float value) {
+inline void ContourPolygon::set_ystart(double value) {
   _internal_set_ystart(value);
-  _impl_._has_bits_[0] |= 0x00000004u;
+  _impl_._has_bits_[0] |= 0x00000002u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.ContourPolygon.yStart)
 }
-inline float ContourPolygon::_internal_ystart() const {
+inline double ContourPolygon::_internal_ystart() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.ystart_;
 }
-inline void ContourPolygon::_internal_set_ystart(float value) {
+inline void ContourPolygon::_internal_set_ystart(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.ystart_ = value;
 }

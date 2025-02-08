@@ -62,12 +62,12 @@ PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
 inline constexpr ContourPolygon_PolygonPart::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
       : _cached_size_{0},
-        type_{static_cast< ::Odb::Lib::Protobuf::ContourPolygon_PolygonPart_Type >(0)},
         endx_{0},
         endy_{0},
+        type_{static_cast< ::Odb::Lib::Protobuf::ContourPolygon_PolygonPart_Type >(0)},
+        isclockwise_{false},
         xcenter_{0},
-        ycenter_{0},
-        isclockwise_{false} {}
+        ycenter_{0} {}
 
 template <typename>
 PROTOBUF_CONSTEXPR ContourPolygon_PolygonPart::ContourPolygon_PolygonPart(::_pbi::ConstantInitialized)
@@ -93,9 +93,9 @@ inline constexpr ContourPolygon::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
       : _cached_size_{0},
         polygonparts_{},
-        type_{static_cast< ::Odb::Lib::Protobuf::ContourPolygon_Type >(0)},
         xstart_{0},
-        ystart_{0} {}
+        ystart_{0},
+        type_{static_cast< ::Odb::Lib::Protobuf::ContourPolygon_Type >(0)} {}
 
 template <typename>
 PROTOBUF_CONSTEXPR ContourPolygon::ContourPolygon(::_pbi::ConstantInitialized)
@@ -153,12 +153,12 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ContourPolygon_PolygonPart, _impl_.xcenter_),
         PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ContourPolygon_PolygonPart, _impl_.ycenter_),
         PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ContourPolygon_PolygonPart, _impl_.isclockwise_),
+        2,
         0,
         1,
-        2,
-        3,
         4,
         5,
+        3,
         PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ContourPolygon, _impl_._has_bits_),
         PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ContourPolygon, _internal_metadata_),
         ~0u,  // no _extensions_
@@ -171,9 +171,9 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ContourPolygon, _impl_.xstart_),
         PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ContourPolygon, _impl_.ystart_),
         PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::ContourPolygon, _impl_.polygonparts_),
+        2,
         0,
         1,
-        2,
         ~0u,
 };
 
@@ -192,16 +192,16 @@ const char descriptor_table_protodef_common_2eproto[] ABSL_ATTRIBUTE_SECTION_VAR
     protodesc_cold) = {
     "\n\014common.proto\022\020Odb.Lib.Protobuf\"_\n\016Prop"
     "ertyRecord\022\021\n\004name\030\001 \001(\tH\000\210\001\001\022\022\n\005value\030\002"
-    " \001(\tH\001\210\001\001\022\023\n\013floatValues\030\003 \003(\002B\007\n\005_nameB"
+    " \001(\tH\001\210\001\001\022\023\n\013floatValues\030\003 \003(\001B\007\n\005_nameB"
     "\010\n\006_value\"\230\004\n\016ContourPolygon\0228\n\004type\030\001 \001"
     "(\0162%.Odb.Lib.Protobuf.ContourPolygon.Typ"
-    "eH\000\210\001\001\022\023\n\006xStart\030\002 \001(\002H\001\210\001\001\022\023\n\006yStart\030\003 "
-    "\001(\002H\002\210\001\001\022B\n\014polygonParts\030\004 \003(\0132,.Odb.Lib"
+    "eH\000\210\001\001\022\023\n\006xStart\030\002 \001(\001H\001\210\001\001\022\023\n\006yStart\030\003 "
+    "\001(\001H\002\210\001\001\022B\n\014polygonParts\030\004 \003(\0132,.Odb.Lib"
     ".Protobuf.ContourPolygon.PolygonPart\032\240\002\n"
     "\013PolygonPart\022D\n\004type\030\001 \001(\01621.Odb.Lib.Pro"
     "tobuf.ContourPolygon.PolygonPart.TypeH\000\210"
-    "\001\001\022\021\n\004endX\030\002 \001(\002H\001\210\001\001\022\021\n\004endY\030\003 \001(\002H\002\210\001\001"
-    "\022\024\n\007xCenter\030\004 \001(\002H\003\210\001\001\022\024\n\007yCenter\030\005 \001(\002H"
+    "\001\001\022\021\n\004endX\030\002 \001(\001H\001\210\001\001\022\021\n\004endY\030\003 \001(\001H\002\210\001\001"
+    "\022\024\n\007xCenter\030\004 \001(\001H\003\210\001\001\022\024\n\007yCenter\030\005 \001(\001H"
     "\004\210\001\001\022\030\n\013isClockwise\030\006 \001(\010H\005\210\001\001\"\034\n\004Type\022\013"
     "\n\007Segment\020\000\022\007\n\003Arc\020\001B\007\n\005_typeB\007\n\005_endXB\007"
     "\n\005_endYB\n\n\010_xCenterB\n\n\010_yCenterB\016\n\014_isCl"
@@ -409,8 +409,8 @@ const ::_pbi::TcParseTable<2, 3, 0, 49, 2> PropertyRecord::_table_ = {
     // optional string value = 2;
     {::_pbi::TcParser::FastUS1,
      {18, 1, 0, PROTOBUF_FIELD_OFFSET(PropertyRecord, _impl_.value_)}},
-    // repeated float floatValues = 3;
-    {::_pbi::TcParser::FastF32P1,
+    // repeated double floatValues = 3;
+    {::_pbi::TcParser::FastF64P1,
      {26, 63, 0, PROTOBUF_FIELD_OFFSET(PropertyRecord, _impl_.floatvalues_)}},
   }}, {{
     65535, 65535
@@ -421,9 +421,9 @@ const ::_pbi::TcParseTable<2, 3, 0, 49, 2> PropertyRecord::_table_ = {
     // optional string value = 2;
     {PROTOBUF_FIELD_OFFSET(PropertyRecord, _impl_.value_), _Internal::kHasBitsOffset + 1, 0,
     (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
-    // repeated float floatValues = 3;
+    // repeated double floatValues = 3;
     {PROTOBUF_FIELD_OFFSET(PropertyRecord, _impl_.floatvalues_), -1, 0,
-    (0 | ::_fl::kFcRepeated | ::_fl::kPackedFloat)},
+    (0 | ::_fl::kFcRepeated | ::_fl::kPackedDouble)},
   }},
   // no aux_entries
   {{
@@ -487,7 +487,7 @@ PROTOBUF_NOINLINE void PropertyRecord::Clear() {
             target = stream->WriteStringMaybeAliased(2, _s, target);
           }
 
-          // repeated float floatValues = 3;
+          // repeated double floatValues = 3;
           if (this_._internal_floatvalues_size() > 0) {
             target = stream->WriteFixedPacked(3, this_._internal_floatvalues(), target);
           }
@@ -517,9 +517,9 @@ PROTOBUF_NOINLINE void PropertyRecord::Clear() {
 
           ::_pbi::Prefetch5LinesFrom7Lines(&this_);
            {
-            // repeated float floatValues = 3;
+            // repeated double floatValues = 3;
             {
-              std::size_t data_size = std::size_t{4} *
+              std::size_t data_size = std::size_t{8} *
                   ::_pbi::FromIntSize(this_._internal_floatvalues_size());
               std::size_t tag_size = data_size == 0
                   ? 0
@@ -621,11 +621,11 @@ inline PROTOBUF_NDEBUG_INLINE ContourPolygon_PolygonPart::Impl_::Impl_(
 inline void ContourPolygon_PolygonPart::SharedCtor(::_pb::Arena* arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
   ::memset(reinterpret_cast<char *>(&_impl_) +
-               offsetof(Impl_, type_),
+               offsetof(Impl_, endx_),
            0,
-           offsetof(Impl_, isclockwise_) -
-               offsetof(Impl_, type_) +
-               sizeof(Impl_::isclockwise_));
+           offsetof(Impl_, ycenter_) -
+               offsetof(Impl_, endx_) +
+               sizeof(Impl_::ycenter_));
 }
 ContourPolygon_PolygonPart::~ContourPolygon_PolygonPart() {
   // @@protoc_insertion_point(destructor:Odb.Lib.Protobuf.ContourPolygon.PolygonPart)
@@ -694,44 +694,44 @@ const ::_pbi::TcParseTable<3, 6, 0, 0, 2> ContourPolygon_PolygonPart::_table_ = 
   }, {{
     {::_pbi::TcParser::MiniParse, {}},
     // optional .Odb.Lib.Protobuf.ContourPolygon.PolygonPart.Type type = 1;
-    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(ContourPolygon_PolygonPart, _impl_.type_), 0>(),
-     {8, 0, 0, PROTOBUF_FIELD_OFFSET(ContourPolygon_PolygonPart, _impl_.type_)}},
-    // optional float endX = 2;
-    {::_pbi::TcParser::FastF32S1,
-     {21, 1, 0, PROTOBUF_FIELD_OFFSET(ContourPolygon_PolygonPart, _impl_.endx_)}},
-    // optional float endY = 3;
-    {::_pbi::TcParser::FastF32S1,
-     {29, 2, 0, PROTOBUF_FIELD_OFFSET(ContourPolygon_PolygonPart, _impl_.endy_)}},
-    // optional float xCenter = 4;
-    {::_pbi::TcParser::FastF32S1,
-     {37, 3, 0, PROTOBUF_FIELD_OFFSET(ContourPolygon_PolygonPart, _impl_.xcenter_)}},
-    // optional float yCenter = 5;
-    {::_pbi::TcParser::FastF32S1,
-     {45, 4, 0, PROTOBUF_FIELD_OFFSET(ContourPolygon_PolygonPart, _impl_.ycenter_)}},
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(ContourPolygon_PolygonPart, _impl_.type_), 2>(),
+     {8, 2, 0, PROTOBUF_FIELD_OFFSET(ContourPolygon_PolygonPart, _impl_.type_)}},
+    // optional double endX = 2;
+    {::_pbi::TcParser::FastF64S1,
+     {17, 0, 0, PROTOBUF_FIELD_OFFSET(ContourPolygon_PolygonPart, _impl_.endx_)}},
+    // optional double endY = 3;
+    {::_pbi::TcParser::FastF64S1,
+     {25, 1, 0, PROTOBUF_FIELD_OFFSET(ContourPolygon_PolygonPart, _impl_.endy_)}},
+    // optional double xCenter = 4;
+    {::_pbi::TcParser::FastF64S1,
+     {33, 4, 0, PROTOBUF_FIELD_OFFSET(ContourPolygon_PolygonPart, _impl_.xcenter_)}},
+    // optional double yCenter = 5;
+    {::_pbi::TcParser::FastF64S1,
+     {41, 5, 0, PROTOBUF_FIELD_OFFSET(ContourPolygon_PolygonPart, _impl_.ycenter_)}},
     // optional bool isClockwise = 6;
-    {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(ContourPolygon_PolygonPart, _impl_.isclockwise_), 5>(),
-     {48, 5, 0, PROTOBUF_FIELD_OFFSET(ContourPolygon_PolygonPart, _impl_.isclockwise_)}},
+    {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(ContourPolygon_PolygonPart, _impl_.isclockwise_), 3>(),
+     {48, 3, 0, PROTOBUF_FIELD_OFFSET(ContourPolygon_PolygonPart, _impl_.isclockwise_)}},
     {::_pbi::TcParser::MiniParse, {}},
   }}, {{
     65535, 65535
   }}, {{
     // optional .Odb.Lib.Protobuf.ContourPolygon.PolygonPart.Type type = 1;
-    {PROTOBUF_FIELD_OFFSET(ContourPolygon_PolygonPart, _impl_.type_), _Internal::kHasBitsOffset + 0, 0,
+    {PROTOBUF_FIELD_OFFSET(ContourPolygon_PolygonPart, _impl_.type_), _Internal::kHasBitsOffset + 2, 0,
     (0 | ::_fl::kFcOptional | ::_fl::kOpenEnum)},
-    // optional float endX = 2;
-    {PROTOBUF_FIELD_OFFSET(ContourPolygon_PolygonPart, _impl_.endx_), _Internal::kHasBitsOffset + 1, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
-    // optional float endY = 3;
-    {PROTOBUF_FIELD_OFFSET(ContourPolygon_PolygonPart, _impl_.endy_), _Internal::kHasBitsOffset + 2, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
-    // optional float xCenter = 4;
-    {PROTOBUF_FIELD_OFFSET(ContourPolygon_PolygonPart, _impl_.xcenter_), _Internal::kHasBitsOffset + 3, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
-    // optional float yCenter = 5;
-    {PROTOBUF_FIELD_OFFSET(ContourPolygon_PolygonPart, _impl_.ycenter_), _Internal::kHasBitsOffset + 4, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
+    // optional double endX = 2;
+    {PROTOBUF_FIELD_OFFSET(ContourPolygon_PolygonPart, _impl_.endx_), _Internal::kHasBitsOffset + 0, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double endY = 3;
+    {PROTOBUF_FIELD_OFFSET(ContourPolygon_PolygonPart, _impl_.endy_), _Internal::kHasBitsOffset + 1, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double xCenter = 4;
+    {PROTOBUF_FIELD_OFFSET(ContourPolygon_PolygonPart, _impl_.xcenter_), _Internal::kHasBitsOffset + 4, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double yCenter = 5;
+    {PROTOBUF_FIELD_OFFSET(ContourPolygon_PolygonPart, _impl_.ycenter_), _Internal::kHasBitsOffset + 5, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
     // optional bool isClockwise = 6;
-    {PROTOBUF_FIELD_OFFSET(ContourPolygon_PolygonPart, _impl_.isclockwise_), _Internal::kHasBitsOffset + 5, 0,
+    {PROTOBUF_FIELD_OFFSET(ContourPolygon_PolygonPart, _impl_.isclockwise_), _Internal::kHasBitsOffset + 3, 0,
     (0 | ::_fl::kFcOptional | ::_fl::kBool)},
   }},
   // no aux_entries
@@ -748,9 +748,9 @@ PROTOBUF_NOINLINE void ContourPolygon_PolygonPart::Clear() {
 
   cached_has_bits = _impl_._has_bits_[0];
   if (cached_has_bits & 0x0000003fu) {
-    ::memset(&_impl_.type_, 0, static_cast<::size_t>(
-        reinterpret_cast<char*>(&_impl_.isclockwise_) -
-        reinterpret_cast<char*>(&_impl_.type_)) + sizeof(_impl_.isclockwise_));
+    ::memset(&_impl_.endx_, 0, static_cast<::size_t>(
+        reinterpret_cast<char*>(&_impl_.ycenter_) -
+        reinterpret_cast<char*>(&_impl_.endx_)) + sizeof(_impl_.ycenter_));
   }
   _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
@@ -773,42 +773,42 @@ PROTOBUF_NOINLINE void ContourPolygon_PolygonPart::Clear() {
 
           cached_has_bits = this_._impl_._has_bits_[0];
           // optional .Odb.Lib.Protobuf.ContourPolygon.PolygonPart.Type type = 1;
-          if (cached_has_bits & 0x00000001u) {
+          if (cached_has_bits & 0x00000004u) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteEnumToArray(
                 1, this_._internal_type(), target);
           }
 
-          // optional float endX = 2;
-          if (cached_has_bits & 0x00000002u) {
+          // optional double endX = 2;
+          if (cached_has_bits & 0x00000001u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 2, this_._internal_endx(), target);
           }
 
-          // optional float endY = 3;
-          if (cached_has_bits & 0x00000004u) {
+          // optional double endY = 3;
+          if (cached_has_bits & 0x00000002u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 3, this_._internal_endy(), target);
           }
 
-          // optional float xCenter = 4;
-          if (cached_has_bits & 0x00000008u) {
+          // optional double xCenter = 4;
+          if (cached_has_bits & 0x00000010u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 4, this_._internal_xcenter(), target);
           }
 
-          // optional float yCenter = 5;
-          if (cached_has_bits & 0x00000010u) {
+          // optional double yCenter = 5;
+          if (cached_has_bits & 0x00000020u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 5, this_._internal_ycenter(), target);
           }
 
           // optional bool isClockwise = 6;
-          if (cached_has_bits & 0x00000020u) {
+          if (cached_has_bits & 0x00000008u) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteBoolToArray(
                 6, this_._internal_isclockwise(), target);
@@ -840,30 +840,30 @@ PROTOBUF_NOINLINE void ContourPolygon_PolygonPart::Clear() {
           ::_pbi::Prefetch5LinesFrom7Lines(&this_);
           cached_has_bits = this_._impl_._has_bits_[0];
           if (cached_has_bits & 0x0000003fu) {
-            // optional .Odb.Lib.Protobuf.ContourPolygon.PolygonPart.Type type = 1;
+            // optional double endX = 2;
             if (cached_has_bits & 0x00000001u) {
+              total_size += 9;
+            }
+            // optional double endY = 3;
+            if (cached_has_bits & 0x00000002u) {
+              total_size += 9;
+            }
+            // optional .Odb.Lib.Protobuf.ContourPolygon.PolygonPart.Type type = 1;
+            if (cached_has_bits & 0x00000004u) {
               total_size += 1 +
                             ::_pbi::WireFormatLite::EnumSize(this_._internal_type());
             }
-            // optional float endX = 2;
-            if (cached_has_bits & 0x00000002u) {
-              total_size += 5;
-            }
-            // optional float endY = 3;
-            if (cached_has_bits & 0x00000004u) {
-              total_size += 5;
-            }
-            // optional float xCenter = 4;
-            if (cached_has_bits & 0x00000008u) {
-              total_size += 5;
-            }
-            // optional float yCenter = 5;
-            if (cached_has_bits & 0x00000010u) {
-              total_size += 5;
-            }
             // optional bool isClockwise = 6;
-            if (cached_has_bits & 0x00000020u) {
+            if (cached_has_bits & 0x00000008u) {
               total_size += 2;
+            }
+            // optional double xCenter = 4;
+            if (cached_has_bits & 0x00000010u) {
+              total_size += 9;
+            }
+            // optional double yCenter = 5;
+            if (cached_has_bits & 0x00000020u) {
+              total_size += 9;
             }
           }
           return this_.MaybeComputeUnknownFieldsSize(total_size,
@@ -881,22 +881,22 @@ void ContourPolygon_PolygonPart::MergeImpl(::google::protobuf::MessageLite& to_m
   cached_has_bits = from._impl_._has_bits_[0];
   if (cached_has_bits & 0x0000003fu) {
     if (cached_has_bits & 0x00000001u) {
-      _this->_impl_.type_ = from._impl_.type_;
-    }
-    if (cached_has_bits & 0x00000002u) {
       _this->_impl_.endx_ = from._impl_.endx_;
     }
-    if (cached_has_bits & 0x00000004u) {
+    if (cached_has_bits & 0x00000002u) {
       _this->_impl_.endy_ = from._impl_.endy_;
     }
+    if (cached_has_bits & 0x00000004u) {
+      _this->_impl_.type_ = from._impl_.type_;
+    }
     if (cached_has_bits & 0x00000008u) {
-      _this->_impl_.xcenter_ = from._impl_.xcenter_;
+      _this->_impl_.isclockwise_ = from._impl_.isclockwise_;
     }
     if (cached_has_bits & 0x00000010u) {
-      _this->_impl_.ycenter_ = from._impl_.ycenter_;
+      _this->_impl_.xcenter_ = from._impl_.xcenter_;
     }
     if (cached_has_bits & 0x00000020u) {
-      _this->_impl_.isclockwise_ = from._impl_.isclockwise_;
+      _this->_impl_.ycenter_ = from._impl_.ycenter_;
     }
   }
   _this->_impl_._has_bits_[0] |= cached_has_bits;
@@ -916,11 +916,11 @@ void ContourPolygon_PolygonPart::InternalSwap(ContourPolygon_PolygonPart* PROTOB
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
   ::google::protobuf::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(ContourPolygon_PolygonPart, _impl_.isclockwise_)
-      + sizeof(ContourPolygon_PolygonPart::_impl_.isclockwise_)
-      - PROTOBUF_FIELD_OFFSET(ContourPolygon_PolygonPart, _impl_.type_)>(
-          reinterpret_cast<char*>(&_impl_.type_),
-          reinterpret_cast<char*>(&other->_impl_.type_));
+      PROTOBUF_FIELD_OFFSET(ContourPolygon_PolygonPart, _impl_.ycenter_)
+      + sizeof(ContourPolygon_PolygonPart::_impl_.ycenter_)
+      - PROTOBUF_FIELD_OFFSET(ContourPolygon_PolygonPart, _impl_.endx_)>(
+          reinterpret_cast<char*>(&_impl_.endx_),
+          reinterpret_cast<char*>(&other->_impl_.endx_));
 }
 
 ::google::protobuf::Metadata ContourPolygon_PolygonPart::GetMetadata() const {
@@ -966,12 +966,12 @@ ContourPolygon::ContourPolygon(
       from._internal_metadata_);
   new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
   ::memcpy(reinterpret_cast<char *>(&_impl_) +
-               offsetof(Impl_, type_),
+               offsetof(Impl_, xstart_),
            reinterpret_cast<const char *>(&from._impl_) +
-               offsetof(Impl_, type_),
-           offsetof(Impl_, ystart_) -
-               offsetof(Impl_, type_) +
-               sizeof(Impl_::ystart_));
+               offsetof(Impl_, xstart_),
+           offsetof(Impl_, type_) -
+               offsetof(Impl_, xstart_) +
+               sizeof(Impl_::type_));
 
   // @@protoc_insertion_point(copy_constructor:Odb.Lib.Protobuf.ContourPolygon)
 }
@@ -984,11 +984,11 @@ inline PROTOBUF_NDEBUG_INLINE ContourPolygon::Impl_::Impl_(
 inline void ContourPolygon::SharedCtor(::_pb::Arena* arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
   ::memset(reinterpret_cast<char *>(&_impl_) +
-               offsetof(Impl_, type_),
+               offsetof(Impl_, xstart_),
            0,
-           offsetof(Impl_, ystart_) -
-               offsetof(Impl_, type_) +
-               sizeof(Impl_::ystart_));
+           offsetof(Impl_, type_) -
+               offsetof(Impl_, xstart_) +
+               sizeof(Impl_::type_));
 }
 ContourPolygon::~ContourPolygon() {
   // @@protoc_insertion_point(destructor:Odb.Lib.Protobuf.ContourPolygon)
@@ -1071,26 +1071,26 @@ const ::_pbi::TcParseTable<2, 4, 1, 0, 2> ContourPolygon::_table_ = {
     {::_pbi::TcParser::FastMtR1,
      {34, 63, 0, PROTOBUF_FIELD_OFFSET(ContourPolygon, _impl_.polygonparts_)}},
     // optional .Odb.Lib.Protobuf.ContourPolygon.Type type = 1;
-    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(ContourPolygon, _impl_.type_), 0>(),
-     {8, 0, 0, PROTOBUF_FIELD_OFFSET(ContourPolygon, _impl_.type_)}},
-    // optional float xStart = 2;
-    {::_pbi::TcParser::FastF32S1,
-     {21, 1, 0, PROTOBUF_FIELD_OFFSET(ContourPolygon, _impl_.xstart_)}},
-    // optional float yStart = 3;
-    {::_pbi::TcParser::FastF32S1,
-     {29, 2, 0, PROTOBUF_FIELD_OFFSET(ContourPolygon, _impl_.ystart_)}},
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(ContourPolygon, _impl_.type_), 2>(),
+     {8, 2, 0, PROTOBUF_FIELD_OFFSET(ContourPolygon, _impl_.type_)}},
+    // optional double xStart = 2;
+    {::_pbi::TcParser::FastF64S1,
+     {17, 0, 0, PROTOBUF_FIELD_OFFSET(ContourPolygon, _impl_.xstart_)}},
+    // optional double yStart = 3;
+    {::_pbi::TcParser::FastF64S1,
+     {25, 1, 0, PROTOBUF_FIELD_OFFSET(ContourPolygon, _impl_.ystart_)}},
   }}, {{
     65535, 65535
   }}, {{
     // optional .Odb.Lib.Protobuf.ContourPolygon.Type type = 1;
-    {PROTOBUF_FIELD_OFFSET(ContourPolygon, _impl_.type_), _Internal::kHasBitsOffset + 0, 0,
+    {PROTOBUF_FIELD_OFFSET(ContourPolygon, _impl_.type_), _Internal::kHasBitsOffset + 2, 0,
     (0 | ::_fl::kFcOptional | ::_fl::kOpenEnum)},
-    // optional float xStart = 2;
-    {PROTOBUF_FIELD_OFFSET(ContourPolygon, _impl_.xstart_), _Internal::kHasBitsOffset + 1, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
-    // optional float yStart = 3;
-    {PROTOBUF_FIELD_OFFSET(ContourPolygon, _impl_.ystart_), _Internal::kHasBitsOffset + 2, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
+    // optional double xStart = 2;
+    {PROTOBUF_FIELD_OFFSET(ContourPolygon, _impl_.xstart_), _Internal::kHasBitsOffset + 0, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double yStart = 3;
+    {PROTOBUF_FIELD_OFFSET(ContourPolygon, _impl_.ystart_), _Internal::kHasBitsOffset + 1, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
     // repeated .Odb.Lib.Protobuf.ContourPolygon.PolygonPart polygonParts = 4;
     {PROTOBUF_FIELD_OFFSET(ContourPolygon, _impl_.polygonparts_), -1, 0,
     (0 | ::_fl::kFcRepeated | ::_fl::kMessage | ::_fl::kTvTable)},
@@ -1110,9 +1110,9 @@ PROTOBUF_NOINLINE void ContourPolygon::Clear() {
   _impl_.polygonparts_.Clear();
   cached_has_bits = _impl_._has_bits_[0];
   if (cached_has_bits & 0x00000007u) {
-    ::memset(&_impl_.type_, 0, static_cast<::size_t>(
-        reinterpret_cast<char*>(&_impl_.ystart_) -
-        reinterpret_cast<char*>(&_impl_.type_)) + sizeof(_impl_.ystart_));
+    ::memset(&_impl_.xstart_, 0, static_cast<::size_t>(
+        reinterpret_cast<char*>(&_impl_.type_) -
+        reinterpret_cast<char*>(&_impl_.xstart_)) + sizeof(_impl_.type_));
   }
   _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
@@ -1135,23 +1135,23 @@ PROTOBUF_NOINLINE void ContourPolygon::Clear() {
 
           cached_has_bits = this_._impl_._has_bits_[0];
           // optional .Odb.Lib.Protobuf.ContourPolygon.Type type = 1;
-          if (cached_has_bits & 0x00000001u) {
+          if (cached_has_bits & 0x00000004u) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteEnumToArray(
                 1, this_._internal_type(), target);
           }
 
-          // optional float xStart = 2;
-          if (cached_has_bits & 0x00000002u) {
+          // optional double xStart = 2;
+          if (cached_has_bits & 0x00000001u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 2, this_._internal_xstart(), target);
           }
 
-          // optional float yStart = 3;
-          if (cached_has_bits & 0x00000004u) {
+          // optional double yStart = 3;
+          if (cached_has_bits & 0x00000002u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 3, this_._internal_ystart(), target);
           }
 
@@ -1201,18 +1201,18 @@ PROTOBUF_NOINLINE void ContourPolygon::Clear() {
           }
           cached_has_bits = this_._impl_._has_bits_[0];
           if (cached_has_bits & 0x00000007u) {
-            // optional .Odb.Lib.Protobuf.ContourPolygon.Type type = 1;
+            // optional double xStart = 2;
             if (cached_has_bits & 0x00000001u) {
+              total_size += 9;
+            }
+            // optional double yStart = 3;
+            if (cached_has_bits & 0x00000002u) {
+              total_size += 9;
+            }
+            // optional .Odb.Lib.Protobuf.ContourPolygon.Type type = 1;
+            if (cached_has_bits & 0x00000004u) {
               total_size += 1 +
                             ::_pbi::WireFormatLite::EnumSize(this_._internal_type());
-            }
-            // optional float xStart = 2;
-            if (cached_has_bits & 0x00000002u) {
-              total_size += 5;
-            }
-            // optional float yStart = 3;
-            if (cached_has_bits & 0x00000004u) {
-              total_size += 5;
             }
           }
           return this_.MaybeComputeUnknownFieldsSize(total_size,
@@ -1232,13 +1232,13 @@ void ContourPolygon::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::
   cached_has_bits = from._impl_._has_bits_[0];
   if (cached_has_bits & 0x00000007u) {
     if (cached_has_bits & 0x00000001u) {
-      _this->_impl_.type_ = from._impl_.type_;
-    }
-    if (cached_has_bits & 0x00000002u) {
       _this->_impl_.xstart_ = from._impl_.xstart_;
     }
-    if (cached_has_bits & 0x00000004u) {
+    if (cached_has_bits & 0x00000002u) {
       _this->_impl_.ystart_ = from._impl_.ystart_;
+    }
+    if (cached_has_bits & 0x00000004u) {
+      _this->_impl_.type_ = from._impl_.type_;
     }
   }
   _this->_impl_._has_bits_[0] |= cached_has_bits;
@@ -1259,11 +1259,11 @@ void ContourPolygon::InternalSwap(ContourPolygon* PROTOBUF_RESTRICT other) {
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
   _impl_.polygonparts_.InternalSwap(&other->_impl_.polygonparts_);
   ::google::protobuf::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(ContourPolygon, _impl_.ystart_)
-      + sizeof(ContourPolygon::_impl_.ystart_)
-      - PROTOBUF_FIELD_OFFSET(ContourPolygon, _impl_.type_)>(
-          reinterpret_cast<char*>(&_impl_.type_),
-          reinterpret_cast<char*>(&other->_impl_.type_));
+      PROTOBUF_FIELD_OFFSET(ContourPolygon, _impl_.type_)
+      + sizeof(ContourPolygon::_impl_.type_)
+      - PROTOBUF_FIELD_OFFSET(ContourPolygon, _impl_.xstart_)>(
+          reinterpret_cast<char*>(&_impl_.xstart_),
+          reinterpret_cast<char*>(&other->_impl_.xstart_));
 }
 
 ::google::protobuf::Metadata ContourPolygon::GetMetadata() const {

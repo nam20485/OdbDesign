@@ -10,7 +10,7 @@
 
 namespace Odb::Lib::FileModel::Design
 {
-	class StandardFontsFile : public OdbFile, public IProtoBuffable<Odb::Lib::Protobuf::StandardFontsFile>, public IStreamSaveable
+	class ODBDESIGN_EXPORT StandardFontsFile : public OdbFile, public IProtoBuffable<Odb::Lib::Protobuf::StandardFontsFile>, public IStreamSaveable
 	{
 	public:
 		StandardFontsFile() = default;
@@ -30,13 +30,13 @@ namespace Odb::Lib::FileModel::Design
 
 			struct LineRecord : public IProtoBuffable<Odb::Lib::Protobuf::StandardFontsFile::CharacterBlock::LineRecord>
 			{
-				float xStart;
-				float yStart;
-				float xEnd;
-				float yEnd;
+				double xStart;
+				double yStart;
+				double xEnd;
+				double yEnd;
 				Polarity polarity;
 				LineShape shape;
-				float width;
+				double width;
 
 				std::unique_ptr<Odb::Lib::Protobuf::StandardFontsFile::CharacterBlock::LineRecord> to_protobuf() const override;
 				void from_protobuf(const Odb::Lib::Protobuf::StandardFontsFile::CharacterBlock::LineRecord& message) override;
@@ -60,9 +60,9 @@ namespace Odb::Lib::FileModel::Design
 		};
 
 	private:
-		float m_xSize;
-		float m_ySize;
-		float m_offset;
+		double m_xSize;
+		double m_ySize;
+		double m_offset;
 
 		CharacterBlock::Vector m_characterBlocks;				
 	};

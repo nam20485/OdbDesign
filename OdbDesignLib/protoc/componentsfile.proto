@@ -19,9 +19,9 @@ message ComponentsFile {
         message ToeprintRecord  {
 
             optional uint32 pinNumber = 1;
-            optional float locationX = 2;
-            optional float locationY = 3;
-            optional float rotation = 4;
+            optional double locationX = 2;
+            optional double locationY = 3;
+            optional double rotation = 4;
             optional bool mirror = 5;
             optional uint32 netNumber = 6;
             optional uint32 subnetNumber = 7;
@@ -30,9 +30,9 @@ message ComponentsFile {
         }
         
         optional uint32 pkgRef = 1;
-        optional float locationX = 2;
-        optional float locationY = 3;
-        optional float rotation = 4;
+        optional double locationX = 2;
+        optional double locationY = 3;
+        optional double rotation = 4;
         optional bool mirror = 5;
         optional string compName = 6;
         optional string partName = 7;

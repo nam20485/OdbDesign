@@ -191,18 +191,18 @@ const char descriptor_table_protodef_standardfontsfile_2eproto[] ABSL_ATTRIBUTE_
     protodesc_cold) = {
     "\n\027standardfontsfile.proto\022\020Odb.Lib.Proto"
     "buf\032\013enums.proto\"\355\004\n\021StandardFontsFile\022\022"
-    "\n\005xSize\030\001 \001(\002H\000\210\001\001\022\022\n\005ySize\030\002 \001(\002H\001\210\001\001\022\023"
-    "\n\006offset\030\003 \001(\002H\002\210\001\001\022M\n\021m_characterBlocks"
+    "\n\005xSize\030\001 \001(\001H\000\210\001\001\022\022\n\005ySize\030\002 \001(\001H\001\210\001\001\022\023"
+    "\n\006offset\030\003 \001(\001H\002\210\001\001\022M\n\021m_characterBlocks"
     "\030\004 \003(\01322.Odb.Lib.Protobuf.StandardFontsF"
     "ile.CharacterBlock\032\254\003\n\016CharacterBlock\022\026\n"
     "\tcharacter\030\001 \001(\tH\000\210\001\001\022T\n\rm_lineRecords\030\002"
     " \003(\0132=.Odb.Lib.Protobuf.StandardFontsFil"
     "e.CharacterBlock.LineRecord\032\235\002\n\nLineReco"
-    "rd\022\023\n\006xStart\030\001 \001(\002H\000\210\001\001\022\023\n\006yStart\030\002 \001(\002H"
-    "\001\210\001\001\022\021\n\004xEnd\030\003 \001(\002H\002\210\001\001\022\021\n\004yEnd\030\004 \001(\002H\003\210"
+    "rd\022\023\n\006xStart\030\001 \001(\001H\000\210\001\001\022\023\n\006yStart\030\002 \001(\001H"
+    "\001\210\001\001\022\021\n\004xEnd\030\003 \001(\001H\002\210\001\001\022\021\n\004yEnd\030\004 \001(\001H\003\210"
     "\001\001\0221\n\010polarity\030\005 \001(\0162\032.Odb.Lib.Protobuf."
     "PolarityH\004\210\001\001\022/\n\005shape\030\006 \001(\0162\033.Odb.Lib.P"
-    "rotobuf.LineShapeH\005\210\001\001\022\022\n\005width\030\007 \001(\002H\006\210"
+    "rotobuf.LineShapeH\005\210\001\001\022\022\n\005width\030\007 \001(\001H\006\210"
     "\001\001B\t\n\007_xStartB\t\n\007_yStartB\007\n\005_xEndB\007\n\005_yE"
     "ndB\013\n\t_polarityB\010\n\006_shapeB\010\n\006_widthB\014\n\n_"
     "characterB\010\n\006_xSizeB\010\n\006_ySizeB\t\n\007_offset"
@@ -336,51 +336,51 @@ const ::_pbi::TcParseTable<3, 7, 0, 0, 2> StandardFontsFile_CharacterBlock_LineR
     #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
   }, {{
     {::_pbi::TcParser::MiniParse, {}},
-    // optional float xStart = 1;
-    {::_pbi::TcParser::FastF32S1,
-     {13, 0, 0, PROTOBUF_FIELD_OFFSET(StandardFontsFile_CharacterBlock_LineRecord, _impl_.xstart_)}},
-    // optional float yStart = 2;
-    {::_pbi::TcParser::FastF32S1,
-     {21, 1, 0, PROTOBUF_FIELD_OFFSET(StandardFontsFile_CharacterBlock_LineRecord, _impl_.ystart_)}},
-    // optional float xEnd = 3;
-    {::_pbi::TcParser::FastF32S1,
-     {29, 2, 0, PROTOBUF_FIELD_OFFSET(StandardFontsFile_CharacterBlock_LineRecord, _impl_.xend_)}},
-    // optional float yEnd = 4;
-    {::_pbi::TcParser::FastF32S1,
-     {37, 3, 0, PROTOBUF_FIELD_OFFSET(StandardFontsFile_CharacterBlock_LineRecord, _impl_.yend_)}},
+    // optional double xStart = 1;
+    {::_pbi::TcParser::FastF64S1,
+     {9, 0, 0, PROTOBUF_FIELD_OFFSET(StandardFontsFile_CharacterBlock_LineRecord, _impl_.xstart_)}},
+    // optional double yStart = 2;
+    {::_pbi::TcParser::FastF64S1,
+     {17, 1, 0, PROTOBUF_FIELD_OFFSET(StandardFontsFile_CharacterBlock_LineRecord, _impl_.ystart_)}},
+    // optional double xEnd = 3;
+    {::_pbi::TcParser::FastF64S1,
+     {25, 2, 0, PROTOBUF_FIELD_OFFSET(StandardFontsFile_CharacterBlock_LineRecord, _impl_.xend_)}},
+    // optional double yEnd = 4;
+    {::_pbi::TcParser::FastF64S1,
+     {33, 3, 0, PROTOBUF_FIELD_OFFSET(StandardFontsFile_CharacterBlock_LineRecord, _impl_.yend_)}},
     // optional .Odb.Lib.Protobuf.Polarity polarity = 5;
     {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(StandardFontsFile_CharacterBlock_LineRecord, _impl_.polarity_), 4>(),
      {40, 4, 0, PROTOBUF_FIELD_OFFSET(StandardFontsFile_CharacterBlock_LineRecord, _impl_.polarity_)}},
     // optional .Odb.Lib.Protobuf.LineShape shape = 6;
     {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(StandardFontsFile_CharacterBlock_LineRecord, _impl_.shape_), 5>(),
      {48, 5, 0, PROTOBUF_FIELD_OFFSET(StandardFontsFile_CharacterBlock_LineRecord, _impl_.shape_)}},
-    // optional float width = 7;
-    {::_pbi::TcParser::FastF32S1,
-     {61, 6, 0, PROTOBUF_FIELD_OFFSET(StandardFontsFile_CharacterBlock_LineRecord, _impl_.width_)}},
+    // optional double width = 7;
+    {::_pbi::TcParser::FastF64S1,
+     {57, 6, 0, PROTOBUF_FIELD_OFFSET(StandardFontsFile_CharacterBlock_LineRecord, _impl_.width_)}},
   }}, {{
     65535, 65535
   }}, {{
-    // optional float xStart = 1;
+    // optional double xStart = 1;
     {PROTOBUF_FIELD_OFFSET(StandardFontsFile_CharacterBlock_LineRecord, _impl_.xstart_), _Internal::kHasBitsOffset + 0, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
-    // optional float yStart = 2;
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double yStart = 2;
     {PROTOBUF_FIELD_OFFSET(StandardFontsFile_CharacterBlock_LineRecord, _impl_.ystart_), _Internal::kHasBitsOffset + 1, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
-    // optional float xEnd = 3;
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double xEnd = 3;
     {PROTOBUF_FIELD_OFFSET(StandardFontsFile_CharacterBlock_LineRecord, _impl_.xend_), _Internal::kHasBitsOffset + 2, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
-    // optional float yEnd = 4;
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double yEnd = 4;
     {PROTOBUF_FIELD_OFFSET(StandardFontsFile_CharacterBlock_LineRecord, _impl_.yend_), _Internal::kHasBitsOffset + 3, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
     // optional .Odb.Lib.Protobuf.Polarity polarity = 5;
     {PROTOBUF_FIELD_OFFSET(StandardFontsFile_CharacterBlock_LineRecord, _impl_.polarity_), _Internal::kHasBitsOffset + 4, 0,
     (0 | ::_fl::kFcOptional | ::_fl::kOpenEnum)},
     // optional .Odb.Lib.Protobuf.LineShape shape = 6;
     {PROTOBUF_FIELD_OFFSET(StandardFontsFile_CharacterBlock_LineRecord, _impl_.shape_), _Internal::kHasBitsOffset + 5, 0,
     (0 | ::_fl::kFcOptional | ::_fl::kOpenEnum)},
-    // optional float width = 7;
+    // optional double width = 7;
     {PROTOBUF_FIELD_OFFSET(StandardFontsFile_CharacterBlock_LineRecord, _impl_.width_), _Internal::kHasBitsOffset + 6, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
   }},
   // no aux_entries
   {{
@@ -420,31 +420,31 @@ PROTOBUF_NOINLINE void StandardFontsFile_CharacterBlock_LineRecord::Clear() {
           (void)cached_has_bits;
 
           cached_has_bits = this_._impl_._has_bits_[0];
-          // optional float xStart = 1;
+          // optional double xStart = 1;
           if (cached_has_bits & 0x00000001u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 1, this_._internal_xstart(), target);
           }
 
-          // optional float yStart = 2;
+          // optional double yStart = 2;
           if (cached_has_bits & 0x00000002u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 2, this_._internal_ystart(), target);
           }
 
-          // optional float xEnd = 3;
+          // optional double xEnd = 3;
           if (cached_has_bits & 0x00000004u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 3, this_._internal_xend(), target);
           }
 
-          // optional float yEnd = 4;
+          // optional double yEnd = 4;
           if (cached_has_bits & 0x00000008u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 4, this_._internal_yend(), target);
           }
 
@@ -462,10 +462,10 @@ PROTOBUF_NOINLINE void StandardFontsFile_CharacterBlock_LineRecord::Clear() {
                 6, this_._internal_shape(), target);
           }
 
-          // optional float width = 7;
+          // optional double width = 7;
           if (cached_has_bits & 0x00000040u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 7, this_._internal_width(), target);
           }
 
@@ -495,21 +495,21 @@ PROTOBUF_NOINLINE void StandardFontsFile_CharacterBlock_LineRecord::Clear() {
           ::_pbi::Prefetch5LinesFrom7Lines(&this_);
           cached_has_bits = this_._impl_._has_bits_[0];
           if (cached_has_bits & 0x0000007fu) {
-            // optional float xStart = 1;
+            // optional double xStart = 1;
             if (cached_has_bits & 0x00000001u) {
-              total_size += 5;
+              total_size += 9;
             }
-            // optional float yStart = 2;
+            // optional double yStart = 2;
             if (cached_has_bits & 0x00000002u) {
-              total_size += 5;
+              total_size += 9;
             }
-            // optional float xEnd = 3;
+            // optional double xEnd = 3;
             if (cached_has_bits & 0x00000004u) {
-              total_size += 5;
+              total_size += 9;
             }
-            // optional float yEnd = 4;
+            // optional double yEnd = 4;
             if (cached_has_bits & 0x00000008u) {
-              total_size += 5;
+              total_size += 9;
             }
             // optional .Odb.Lib.Protobuf.Polarity polarity = 5;
             if (cached_has_bits & 0x00000010u) {
@@ -521,9 +521,9 @@ PROTOBUF_NOINLINE void StandardFontsFile_CharacterBlock_LineRecord::Clear() {
               total_size += 1 +
                             ::_pbi::WireFormatLite::EnumSize(this_._internal_shape());
             }
-            // optional float width = 7;
+            // optional double width = 7;
             if (cached_has_bits & 0x00000040u) {
-              total_size += 5;
+              total_size += 9;
             }
           }
           return this_.MaybeComputeUnknownFieldsSize(total_size,
@@ -1023,27 +1023,27 @@ const ::_pbi::TcParseTable<2, 4, 1, 0, 2> StandardFontsFile::_table_ = {
     // repeated .Odb.Lib.Protobuf.StandardFontsFile.CharacterBlock m_characterBlocks = 4;
     {::_pbi::TcParser::FastMtR1,
      {34, 63, 0, PROTOBUF_FIELD_OFFSET(StandardFontsFile, _impl_.m_characterblocks_)}},
-    // optional float xSize = 1;
-    {::_pbi::TcParser::FastF32S1,
-     {13, 0, 0, PROTOBUF_FIELD_OFFSET(StandardFontsFile, _impl_.xsize_)}},
-    // optional float ySize = 2;
-    {::_pbi::TcParser::FastF32S1,
-     {21, 1, 0, PROTOBUF_FIELD_OFFSET(StandardFontsFile, _impl_.ysize_)}},
-    // optional float offset = 3;
-    {::_pbi::TcParser::FastF32S1,
-     {29, 2, 0, PROTOBUF_FIELD_OFFSET(StandardFontsFile, _impl_.offset_)}},
+    // optional double xSize = 1;
+    {::_pbi::TcParser::FastF64S1,
+     {9, 0, 0, PROTOBUF_FIELD_OFFSET(StandardFontsFile, _impl_.xsize_)}},
+    // optional double ySize = 2;
+    {::_pbi::TcParser::FastF64S1,
+     {17, 1, 0, PROTOBUF_FIELD_OFFSET(StandardFontsFile, _impl_.ysize_)}},
+    // optional double offset = 3;
+    {::_pbi::TcParser::FastF64S1,
+     {25, 2, 0, PROTOBUF_FIELD_OFFSET(StandardFontsFile, _impl_.offset_)}},
   }}, {{
     65535, 65535
   }}, {{
-    // optional float xSize = 1;
+    // optional double xSize = 1;
     {PROTOBUF_FIELD_OFFSET(StandardFontsFile, _impl_.xsize_), _Internal::kHasBitsOffset + 0, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
-    // optional float ySize = 2;
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double ySize = 2;
     {PROTOBUF_FIELD_OFFSET(StandardFontsFile, _impl_.ysize_), _Internal::kHasBitsOffset + 1, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
-    // optional float offset = 3;
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    // optional double offset = 3;
     {PROTOBUF_FIELD_OFFSET(StandardFontsFile, _impl_.offset_), _Internal::kHasBitsOffset + 2, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
+    (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
     // repeated .Odb.Lib.Protobuf.StandardFontsFile.CharacterBlock m_characterBlocks = 4;
     {PROTOBUF_FIELD_OFFSET(StandardFontsFile, _impl_.m_characterblocks_), -1, 0,
     (0 | ::_fl::kFcRepeated | ::_fl::kMessage | ::_fl::kTvTable)},
@@ -1087,24 +1087,24 @@ PROTOBUF_NOINLINE void StandardFontsFile::Clear() {
           (void)cached_has_bits;
 
           cached_has_bits = this_._impl_._has_bits_[0];
-          // optional float xSize = 1;
+          // optional double xSize = 1;
           if (cached_has_bits & 0x00000001u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 1, this_._internal_xsize(), target);
           }
 
-          // optional float ySize = 2;
+          // optional double ySize = 2;
           if (cached_has_bits & 0x00000002u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 2, this_._internal_ysize(), target);
           }
 
-          // optional float offset = 3;
+          // optional double offset = 3;
           if (cached_has_bits & 0x00000004u) {
             target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
                 3, this_._internal_offset(), target);
           }
 
@@ -1154,17 +1154,17 @@ PROTOBUF_NOINLINE void StandardFontsFile::Clear() {
           }
           cached_has_bits = this_._impl_._has_bits_[0];
           if (cached_has_bits & 0x00000007u) {
-            // optional float xSize = 1;
+            // optional double xSize = 1;
             if (cached_has_bits & 0x00000001u) {
-              total_size += 5;
+              total_size += 9;
             }
-            // optional float ySize = 2;
+            // optional double ySize = 2;
             if (cached_has_bits & 0x00000002u) {
-              total_size += 5;
+              total_size += 9;
             }
-            // optional float offset = 3;
+            // optional double offset = 3;
             if (cached_has_bits & 0x00000004u) {
-              total_size += 5;
+              total_size += 9;
             }
           }
           return this_.MaybeComputeUnknownFieldsSize(total_size,

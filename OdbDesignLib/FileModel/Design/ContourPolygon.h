@@ -29,10 +29,10 @@ namespace Odb::Lib::FileModel::Design
 			Type type;
 
 			// Segment/Arc
-			float endX, endY;
+			double endX, endY;
 
 			// Arc
-			float xCenter, yCenter;
+			double xCenter, yCenter;
 			bool isClockwise;
 
 			// Inherited via IProtoBuffable
@@ -53,7 +53,7 @@ namespace Odb::Lib::FileModel::Design
 		};		
 
 		Type type;
-		float xStart, yStart;
+		double xStart, yStart;
 
 		PolygonPart::Vector m_polygonParts;
 

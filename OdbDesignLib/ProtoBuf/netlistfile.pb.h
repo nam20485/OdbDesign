@@ -537,20 +537,20 @@ class ODBDESIGN_EXPORT NetlistFile_NetPointRecord final : public ::google::proto
     kEpointFieldNumber = 8,
     kExpFieldNumber = 9,
     kTestExecutionSideFieldNumber = 17,
-    kNetNumberFieldNumber = 1,
     kRadiusFieldNumber = 2,
     kXFieldNumber = 3,
-    kYFieldNumber = 4,
+    kNetNumberFieldNumber = 1,
     kSideFieldNumber = 5,
+    kYFieldNumber = 4,
     kWidthFieldNumber = 6,
     kHeightFieldNumber = 7,
-    kCommentPointFieldNumber = 10,
     kStaggeredXFieldNumber = 11,
     kStaggeredYFieldNumber = 12,
     kStaggeredRadiusFieldNumber = 13,
     kViaPointFieldNumber = 14,
     kFiducialPointFieldNumber = 15,
     kTestPointFieldNumber = 16,
+    kCommentPointFieldNumber = 10,
   };
   // optional string epoint = 8;
   bool has_epoint() const;
@@ -603,6 +603,28 @@ class ODBDESIGN_EXPORT NetlistFile_NetPointRecord final : public ::google::proto
   std::string* _internal_mutable_testexecutionside();
 
   public:
+  // optional double radius = 2;
+  bool has_radius() const;
+  void clear_radius() ;
+  double radius() const;
+  void set_radius(double value);
+
+  private:
+  double _internal_radius() const;
+  void _internal_set_radius(double value);
+
+  public:
+  // optional double x = 3;
+  bool has_x() const;
+  void clear_x() ;
+  double x() const;
+  void set_x(double value);
+
+  private:
+  double _internal_x() const;
+  void _internal_set_x(double value);
+
+  public:
   // optional uint32 netNumber = 1;
   bool has_netnumber() const;
   void clear_netnumber() ;
@@ -612,39 +634,6 @@ class ODBDESIGN_EXPORT NetlistFile_NetPointRecord final : public ::google::proto
   private:
   ::uint32_t _internal_netnumber() const;
   void _internal_set_netnumber(::uint32_t value);
-
-  public:
-  // optional float radius = 2;
-  bool has_radius() const;
-  void clear_radius() ;
-  float radius() const;
-  void set_radius(float value);
-
-  private:
-  float _internal_radius() const;
-  void _internal_set_radius(float value);
-
-  public:
-  // optional float x = 3;
-  bool has_x() const;
-  void clear_x() ;
-  float x() const;
-  void set_x(float value);
-
-  private:
-  float _internal_x() const;
-  void _internal_set_x(float value);
-
-  public:
-  // optional float y = 4;
-  bool has_y() const;
-  void clear_y() ;
-  float y() const;
-  void set_y(float value);
-
-  private:
-  float _internal_y() const;
-  void _internal_set_y(float value);
 
   public:
   // optional .Odb.Lib.Protobuf.NetlistFile.NetPointRecord.AccessSide side = 5;
@@ -658,26 +647,103 @@ class ODBDESIGN_EXPORT NetlistFile_NetPointRecord final : public ::google::proto
   void _internal_set_side(::Odb::Lib::Protobuf::NetlistFile_NetPointRecord_AccessSide value);
 
   public:
-  // optional float width = 6;
-  bool has_width() const;
-  void clear_width() ;
-  float width() const;
-  void set_width(float value);
+  // optional double y = 4;
+  bool has_y() const;
+  void clear_y() ;
+  double y() const;
+  void set_y(double value);
 
   private:
-  float _internal_width() const;
-  void _internal_set_width(float value);
+  double _internal_y() const;
+  void _internal_set_y(double value);
 
   public:
-  // optional float height = 7;
-  bool has_height() const;
-  void clear_height() ;
-  float height() const;
-  void set_height(float value);
+  // optional double width = 6;
+  bool has_width() const;
+  void clear_width() ;
+  double width() const;
+  void set_width(double value);
 
   private:
-  float _internal_height() const;
-  void _internal_set_height(float value);
+  double _internal_width() const;
+  void _internal_set_width(double value);
+
+  public:
+  // optional double height = 7;
+  bool has_height() const;
+  void clear_height() ;
+  double height() const;
+  void set_height(double value);
+
+  private:
+  double _internal_height() const;
+  void _internal_set_height(double value);
+
+  public:
+  // optional double staggeredX = 11;
+  bool has_staggeredx() const;
+  void clear_staggeredx() ;
+  double staggeredx() const;
+  void set_staggeredx(double value);
+
+  private:
+  double _internal_staggeredx() const;
+  void _internal_set_staggeredx(double value);
+
+  public:
+  // optional double staggeredY = 12;
+  bool has_staggeredy() const;
+  void clear_staggeredy() ;
+  double staggeredy() const;
+  void set_staggeredy(double value);
+
+  private:
+  double _internal_staggeredy() const;
+  void _internal_set_staggeredy(double value);
+
+  public:
+  // optional double staggeredRadius = 13;
+  bool has_staggeredradius() const;
+  void clear_staggeredradius() ;
+  double staggeredradius() const;
+  void set_staggeredradius(double value);
+
+  private:
+  double _internal_staggeredradius() const;
+  void _internal_set_staggeredradius(double value);
+
+  public:
+  // optional double viaPoint = 14;
+  bool has_viapoint() const;
+  void clear_viapoint() ;
+  double viapoint() const;
+  void set_viapoint(double value);
+
+  private:
+  double _internal_viapoint() const;
+  void _internal_set_viapoint(double value);
+
+  public:
+  // optional double fiducialPoint = 15;
+  bool has_fiducialpoint() const;
+  void clear_fiducialpoint() ;
+  double fiducialpoint() const;
+  void set_fiducialpoint(double value);
+
+  private:
+  double _internal_fiducialpoint() const;
+  void _internal_set_fiducialpoint(double value);
+
+  public:
+  // optional double testPoint = 16;
+  bool has_testpoint() const;
+  void clear_testpoint() ;
+  double testpoint() const;
+  void set_testpoint(double value);
+
+  private:
+  double _internal_testpoint() const;
+  void _internal_set_testpoint(double value);
 
   public:
   // optional bool commentPoint = 10;
@@ -689,72 +755,6 @@ class ODBDESIGN_EXPORT NetlistFile_NetPointRecord final : public ::google::proto
   private:
   bool _internal_commentpoint() const;
   void _internal_set_commentpoint(bool value);
-
-  public:
-  // optional float staggeredX = 11;
-  bool has_staggeredx() const;
-  void clear_staggeredx() ;
-  float staggeredx() const;
-  void set_staggeredx(float value);
-
-  private:
-  float _internal_staggeredx() const;
-  void _internal_set_staggeredx(float value);
-
-  public:
-  // optional float staggeredY = 12;
-  bool has_staggeredy() const;
-  void clear_staggeredy() ;
-  float staggeredy() const;
-  void set_staggeredy(float value);
-
-  private:
-  float _internal_staggeredy() const;
-  void _internal_set_staggeredy(float value);
-
-  public:
-  // optional float staggeredRadius = 13;
-  bool has_staggeredradius() const;
-  void clear_staggeredradius() ;
-  float staggeredradius() const;
-  void set_staggeredradius(float value);
-
-  private:
-  float _internal_staggeredradius() const;
-  void _internal_set_staggeredradius(float value);
-
-  public:
-  // optional float viaPoint = 14;
-  bool has_viapoint() const;
-  void clear_viapoint() ;
-  float viapoint() const;
-  void set_viapoint(float value);
-
-  private:
-  float _internal_viapoint() const;
-  void _internal_set_viapoint(float value);
-
-  public:
-  // optional float fiducialPoint = 15;
-  bool has_fiducialpoint() const;
-  void clear_fiducialpoint() ;
-  float fiducialpoint() const;
-  void set_fiducialpoint(float value);
-
-  private:
-  float _internal_fiducialpoint() const;
-  void _internal_set_fiducialpoint(float value);
-
-  public:
-  // optional float testPoint = 16;
-  bool has_testpoint() const;
-  void clear_testpoint() ;
-  float testpoint() const;
-  void set_testpoint(float value);
-
-  private:
-  float _internal_testpoint() const;
-  void _internal_set_testpoint(float value);
 
   public:
   // @@protoc_insertion_point(class_scope:Odb.Lib.Protobuf.NetlistFile.NetPointRecord)
@@ -785,20 +785,20 @@ class ODBDESIGN_EXPORT NetlistFile_NetPointRecord final : public ::google::proto
     ::google::protobuf::internal::ArenaStringPtr epoint_;
     ::google::protobuf::internal::ArenaStringPtr exp_;
     ::google::protobuf::internal::ArenaStringPtr testexecutionside_;
+    double radius_;
+    double x_;
     ::uint32_t netnumber_;
-    float radius_;
-    float x_;
-    float y_;
     int side_;
-    float width_;
-    float height_;
+    double y_;
+    double width_;
+    double height_;
+    double staggeredx_;
+    double staggeredy_;
+    double staggeredradius_;
+    double viapoint_;
+    double fiducialpoint_;
+    double testpoint_;
     bool commentpoint_;
-    float staggeredx_;
-    float staggeredy_;
-    float staggeredradius_;
-    float viapoint_;
-    float fiducialpoint_;
-    float testpoint_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -1305,13 +1305,13 @@ inline void NetlistFile_NetRecord::set_allocated_netname(std::string* value) {
 
 // optional uint32 netNumber = 1;
 inline bool NetlistFile_NetPointRecord::has_netnumber() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000008u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000020u) != 0;
   return value;
 }
 inline void NetlistFile_NetPointRecord::clear_netnumber() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.netnumber_ = 0u;
-  _impl_._has_bits_[0] &= ~0x00000008u;
+  _impl_._has_bits_[0] &= ~0x00000020u;
 }
 inline ::uint32_t NetlistFile_NetPointRecord::netnumber() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.netNumber)
@@ -1319,7 +1319,7 @@ inline ::uint32_t NetlistFile_NetPointRecord::netnumber() const {
 }
 inline void NetlistFile_NetPointRecord::set_netnumber(::uint32_t value) {
   _internal_set_netnumber(value);
-  _impl_._has_bits_[0] |= 0x00000008u;
+  _impl_._has_bits_[0] |= 0x00000020u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.netNumber)
 }
 inline ::uint32_t NetlistFile_NetPointRecord::_internal_netnumber() const {
@@ -1331,99 +1331,99 @@ inline void NetlistFile_NetPointRecord::_internal_set_netnumber(::uint32_t value
   _impl_.netnumber_ = value;
 }
 
-// optional float radius = 2;
+// optional double radius = 2;
 inline bool NetlistFile_NetPointRecord::has_radius() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000010u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000008u) != 0;
   return value;
 }
 inline void NetlistFile_NetPointRecord::clear_radius() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.radius_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000010u;
+  _impl_._has_bits_[0] &= ~0x00000008u;
 }
-inline float NetlistFile_NetPointRecord::radius() const {
+inline double NetlistFile_NetPointRecord::radius() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.radius)
   return _internal_radius();
 }
-inline void NetlistFile_NetPointRecord::set_radius(float value) {
+inline void NetlistFile_NetPointRecord::set_radius(double value) {
   _internal_set_radius(value);
-  _impl_._has_bits_[0] |= 0x00000010u;
+  _impl_._has_bits_[0] |= 0x00000008u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.radius)
 }
-inline float NetlistFile_NetPointRecord::_internal_radius() const {
+inline double NetlistFile_NetPointRecord::_internal_radius() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.radius_;
 }
-inline void NetlistFile_NetPointRecord::_internal_set_radius(float value) {
+inline void NetlistFile_NetPointRecord::_internal_set_radius(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.radius_ = value;
 }
 
-// optional float x = 3;
+// optional double x = 3;
 inline bool NetlistFile_NetPointRecord::has_x() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000020u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000010u) != 0;
   return value;
 }
 inline void NetlistFile_NetPointRecord::clear_x() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.x_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000020u;
+  _impl_._has_bits_[0] &= ~0x00000010u;
 }
-inline float NetlistFile_NetPointRecord::x() const {
+inline double NetlistFile_NetPointRecord::x() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.x)
   return _internal_x();
 }
-inline void NetlistFile_NetPointRecord::set_x(float value) {
+inline void NetlistFile_NetPointRecord::set_x(double value) {
   _internal_set_x(value);
-  _impl_._has_bits_[0] |= 0x00000020u;
+  _impl_._has_bits_[0] |= 0x00000010u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.x)
 }
-inline float NetlistFile_NetPointRecord::_internal_x() const {
+inline double NetlistFile_NetPointRecord::_internal_x() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.x_;
 }
-inline void NetlistFile_NetPointRecord::_internal_set_x(float value) {
+inline void NetlistFile_NetPointRecord::_internal_set_x(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.x_ = value;
 }
 
-// optional float y = 4;
+// optional double y = 4;
 inline bool NetlistFile_NetPointRecord::has_y() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000040u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000080u) != 0;
   return value;
 }
 inline void NetlistFile_NetPointRecord::clear_y() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.y_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000040u;
+  _impl_._has_bits_[0] &= ~0x00000080u;
 }
-inline float NetlistFile_NetPointRecord::y() const {
+inline double NetlistFile_NetPointRecord::y() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.y)
   return _internal_y();
 }
-inline void NetlistFile_NetPointRecord::set_y(float value) {
+inline void NetlistFile_NetPointRecord::set_y(double value) {
   _internal_set_y(value);
-  _impl_._has_bits_[0] |= 0x00000040u;
+  _impl_._has_bits_[0] |= 0x00000080u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.y)
 }
-inline float NetlistFile_NetPointRecord::_internal_y() const {
+inline double NetlistFile_NetPointRecord::_internal_y() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.y_;
 }
-inline void NetlistFile_NetPointRecord::_internal_set_y(float value) {
+inline void NetlistFile_NetPointRecord::_internal_set_y(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.y_ = value;
 }
 
 // optional .Odb.Lib.Protobuf.NetlistFile.NetPointRecord.AccessSide side = 5;
 inline bool NetlistFile_NetPointRecord::has_side() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000080u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000040u) != 0;
   return value;
 }
 inline void NetlistFile_NetPointRecord::clear_side() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.side_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000080u;
+  _impl_._has_bits_[0] &= ~0x00000040u;
 }
 inline ::Odb::Lib::Protobuf::NetlistFile_NetPointRecord_AccessSide NetlistFile_NetPointRecord::side() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.side)
@@ -1431,7 +1431,7 @@ inline ::Odb::Lib::Protobuf::NetlistFile_NetPointRecord_AccessSide NetlistFile_N
 }
 inline void NetlistFile_NetPointRecord::set_side(::Odb::Lib::Protobuf::NetlistFile_NetPointRecord_AccessSide value) {
   _internal_set_side(value);
-  _impl_._has_bits_[0] |= 0x00000080u;
+  _impl_._has_bits_[0] |= 0x00000040u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.side)
 }
 inline ::Odb::Lib::Protobuf::NetlistFile_NetPointRecord_AccessSide NetlistFile_NetPointRecord::_internal_side() const {
@@ -1443,7 +1443,7 @@ inline void NetlistFile_NetPointRecord::_internal_set_side(::Odb::Lib::Protobuf:
   _impl_.side_ = value;
 }
 
-// optional float width = 6;
+// optional double width = 6;
 inline bool NetlistFile_NetPointRecord::has_width() const {
   bool value = (_impl_._has_bits_[0] & 0x00000100u) != 0;
   return value;
@@ -1453,25 +1453,25 @@ inline void NetlistFile_NetPointRecord::clear_width() {
   _impl_.width_ = 0;
   _impl_._has_bits_[0] &= ~0x00000100u;
 }
-inline float NetlistFile_NetPointRecord::width() const {
+inline double NetlistFile_NetPointRecord::width() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.width)
   return _internal_width();
 }
-inline void NetlistFile_NetPointRecord::set_width(float value) {
+inline void NetlistFile_NetPointRecord::set_width(double value) {
   _internal_set_width(value);
   _impl_._has_bits_[0] |= 0x00000100u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.width)
 }
-inline float NetlistFile_NetPointRecord::_internal_width() const {
+inline double NetlistFile_NetPointRecord::_internal_width() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.width_;
 }
-inline void NetlistFile_NetPointRecord::_internal_set_width(float value) {
+inline void NetlistFile_NetPointRecord::_internal_set_width(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.width_ = value;
 }
 
-// optional float height = 7;
+// optional double height = 7;
 inline bool NetlistFile_NetPointRecord::has_height() const {
   bool value = (_impl_._has_bits_[0] & 0x00000200u) != 0;
   return value;
@@ -1481,20 +1481,20 @@ inline void NetlistFile_NetPointRecord::clear_height() {
   _impl_.height_ = 0;
   _impl_._has_bits_[0] &= ~0x00000200u;
 }
-inline float NetlistFile_NetPointRecord::height() const {
+inline double NetlistFile_NetPointRecord::height() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.height)
   return _internal_height();
 }
-inline void NetlistFile_NetPointRecord::set_height(float value) {
+inline void NetlistFile_NetPointRecord::set_height(double value) {
   _internal_set_height(value);
   _impl_._has_bits_[0] |= 0x00000200u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.height)
 }
-inline float NetlistFile_NetPointRecord::_internal_height() const {
+inline double NetlistFile_NetPointRecord::_internal_height() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.height_;
 }
-inline void NetlistFile_NetPointRecord::_internal_set_height(float value) {
+inline void NetlistFile_NetPointRecord::_internal_set_height(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.height_ = value;
 }
@@ -1639,13 +1639,13 @@ inline void NetlistFile_NetPointRecord::set_allocated_exp(std::string* value) {
 
 // optional bool commentPoint = 10;
 inline bool NetlistFile_NetPointRecord::has_commentpoint() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000400u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00010000u) != 0;
   return value;
 }
 inline void NetlistFile_NetPointRecord::clear_commentpoint() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.commentpoint_ = false;
-  _impl_._has_bits_[0] &= ~0x00000400u;
+  _impl_._has_bits_[0] &= ~0x00010000u;
 }
 inline bool NetlistFile_NetPointRecord::commentpoint() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.commentPoint)
@@ -1653,7 +1653,7 @@ inline bool NetlistFile_NetPointRecord::commentpoint() const {
 }
 inline void NetlistFile_NetPointRecord::set_commentpoint(bool value) {
   _internal_set_commentpoint(value);
-  _impl_._has_bits_[0] |= 0x00000400u;
+  _impl_._has_bits_[0] |= 0x00010000u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.commentPoint)
 }
 inline bool NetlistFile_NetPointRecord::_internal_commentpoint() const {
@@ -1665,170 +1665,170 @@ inline void NetlistFile_NetPointRecord::_internal_set_commentpoint(bool value) {
   _impl_.commentpoint_ = value;
 }
 
-// optional float staggeredX = 11;
+// optional double staggeredX = 11;
 inline bool NetlistFile_NetPointRecord::has_staggeredx() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000800u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000400u) != 0;
   return value;
 }
 inline void NetlistFile_NetPointRecord::clear_staggeredx() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.staggeredx_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000800u;
+  _impl_._has_bits_[0] &= ~0x00000400u;
 }
-inline float NetlistFile_NetPointRecord::staggeredx() const {
+inline double NetlistFile_NetPointRecord::staggeredx() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.staggeredX)
   return _internal_staggeredx();
 }
-inline void NetlistFile_NetPointRecord::set_staggeredx(float value) {
+inline void NetlistFile_NetPointRecord::set_staggeredx(double value) {
   _internal_set_staggeredx(value);
-  _impl_._has_bits_[0] |= 0x00000800u;
+  _impl_._has_bits_[0] |= 0x00000400u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.staggeredX)
 }
-inline float NetlistFile_NetPointRecord::_internal_staggeredx() const {
+inline double NetlistFile_NetPointRecord::_internal_staggeredx() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.staggeredx_;
 }
-inline void NetlistFile_NetPointRecord::_internal_set_staggeredx(float value) {
+inline void NetlistFile_NetPointRecord::_internal_set_staggeredx(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.staggeredx_ = value;
 }
 
-// optional float staggeredY = 12;
+// optional double staggeredY = 12;
 inline bool NetlistFile_NetPointRecord::has_staggeredy() const {
-  bool value = (_impl_._has_bits_[0] & 0x00001000u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000800u) != 0;
   return value;
 }
 inline void NetlistFile_NetPointRecord::clear_staggeredy() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.staggeredy_ = 0;
-  _impl_._has_bits_[0] &= ~0x00001000u;
+  _impl_._has_bits_[0] &= ~0x00000800u;
 }
-inline float NetlistFile_NetPointRecord::staggeredy() const {
+inline double NetlistFile_NetPointRecord::staggeredy() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.staggeredY)
   return _internal_staggeredy();
 }
-inline void NetlistFile_NetPointRecord::set_staggeredy(float value) {
+inline void NetlistFile_NetPointRecord::set_staggeredy(double value) {
   _internal_set_staggeredy(value);
-  _impl_._has_bits_[0] |= 0x00001000u;
+  _impl_._has_bits_[0] |= 0x00000800u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.staggeredY)
 }
-inline float NetlistFile_NetPointRecord::_internal_staggeredy() const {
+inline double NetlistFile_NetPointRecord::_internal_staggeredy() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.staggeredy_;
 }
-inline void NetlistFile_NetPointRecord::_internal_set_staggeredy(float value) {
+inline void NetlistFile_NetPointRecord::_internal_set_staggeredy(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.staggeredy_ = value;
 }
 
-// optional float staggeredRadius = 13;
+// optional double staggeredRadius = 13;
 inline bool NetlistFile_NetPointRecord::has_staggeredradius() const {
-  bool value = (_impl_._has_bits_[0] & 0x00002000u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00001000u) != 0;
   return value;
 }
 inline void NetlistFile_NetPointRecord::clear_staggeredradius() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.staggeredradius_ = 0;
-  _impl_._has_bits_[0] &= ~0x00002000u;
+  _impl_._has_bits_[0] &= ~0x00001000u;
 }
-inline float NetlistFile_NetPointRecord::staggeredradius() const {
+inline double NetlistFile_NetPointRecord::staggeredradius() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.staggeredRadius)
   return _internal_staggeredradius();
 }
-inline void NetlistFile_NetPointRecord::set_staggeredradius(float value) {
+inline void NetlistFile_NetPointRecord::set_staggeredradius(double value) {
   _internal_set_staggeredradius(value);
-  _impl_._has_bits_[0] |= 0x00002000u;
+  _impl_._has_bits_[0] |= 0x00001000u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.staggeredRadius)
 }
-inline float NetlistFile_NetPointRecord::_internal_staggeredradius() const {
+inline double NetlistFile_NetPointRecord::_internal_staggeredradius() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.staggeredradius_;
 }
-inline void NetlistFile_NetPointRecord::_internal_set_staggeredradius(float value) {
+inline void NetlistFile_NetPointRecord::_internal_set_staggeredradius(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.staggeredradius_ = value;
 }
 
-// optional float viaPoint = 14;
+// optional double viaPoint = 14;
 inline bool NetlistFile_NetPointRecord::has_viapoint() const {
-  bool value = (_impl_._has_bits_[0] & 0x00004000u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00002000u) != 0;
   return value;
 }
 inline void NetlistFile_NetPointRecord::clear_viapoint() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.viapoint_ = 0;
-  _impl_._has_bits_[0] &= ~0x00004000u;
+  _impl_._has_bits_[0] &= ~0x00002000u;
 }
-inline float NetlistFile_NetPointRecord::viapoint() const {
+inline double NetlistFile_NetPointRecord::viapoint() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.viaPoint)
   return _internal_viapoint();
 }
-inline void NetlistFile_NetPointRecord::set_viapoint(float value) {
+inline void NetlistFile_NetPointRecord::set_viapoint(double value) {
   _internal_set_viapoint(value);
-  _impl_._has_bits_[0] |= 0x00004000u;
+  _impl_._has_bits_[0] |= 0x00002000u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.viaPoint)
 }
-inline float NetlistFile_NetPointRecord::_internal_viapoint() const {
+inline double NetlistFile_NetPointRecord::_internal_viapoint() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.viapoint_;
 }
-inline void NetlistFile_NetPointRecord::_internal_set_viapoint(float value) {
+inline void NetlistFile_NetPointRecord::_internal_set_viapoint(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.viapoint_ = value;
 }
 
-// optional float fiducialPoint = 15;
+// optional double fiducialPoint = 15;
 inline bool NetlistFile_NetPointRecord::has_fiducialpoint() const {
-  bool value = (_impl_._has_bits_[0] & 0x00008000u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00004000u) != 0;
   return value;
 }
 inline void NetlistFile_NetPointRecord::clear_fiducialpoint() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.fiducialpoint_ = 0;
-  _impl_._has_bits_[0] &= ~0x00008000u;
+  _impl_._has_bits_[0] &= ~0x00004000u;
 }
-inline float NetlistFile_NetPointRecord::fiducialpoint() const {
+inline double NetlistFile_NetPointRecord::fiducialpoint() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.fiducialPoint)
   return _internal_fiducialpoint();
 }
-inline void NetlistFile_NetPointRecord::set_fiducialpoint(float value) {
+inline void NetlistFile_NetPointRecord::set_fiducialpoint(double value) {
   _internal_set_fiducialpoint(value);
-  _impl_._has_bits_[0] |= 0x00008000u;
+  _impl_._has_bits_[0] |= 0x00004000u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.fiducialPoint)
 }
-inline float NetlistFile_NetPointRecord::_internal_fiducialpoint() const {
+inline double NetlistFile_NetPointRecord::_internal_fiducialpoint() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.fiducialpoint_;
 }
-inline void NetlistFile_NetPointRecord::_internal_set_fiducialpoint(float value) {
+inline void NetlistFile_NetPointRecord::_internal_set_fiducialpoint(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.fiducialpoint_ = value;
 }
 
-// optional float testPoint = 16;
+// optional double testPoint = 16;
 inline bool NetlistFile_NetPointRecord::has_testpoint() const {
-  bool value = (_impl_._has_bits_[0] & 0x00010000u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00008000u) != 0;
   return value;
 }
 inline void NetlistFile_NetPointRecord::clear_testpoint() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.testpoint_ = 0;
-  _impl_._has_bits_[0] &= ~0x00010000u;
+  _impl_._has_bits_[0] &= ~0x00008000u;
 }
-inline float NetlistFile_NetPointRecord::testpoint() const {
+inline double NetlistFile_NetPointRecord::testpoint() const {
   // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.testPoint)
   return _internal_testpoint();
 }
-inline void NetlistFile_NetPointRecord::set_testpoint(float value) {
+inline void NetlistFile_NetPointRecord::set_testpoint(double value) {
   _internal_set_testpoint(value);
-  _impl_._has_bits_[0] |= 0x00010000u;
+  _impl_._has_bits_[0] |= 0x00008000u;
   // @@protoc_insertion_point(field_set:Odb.Lib.Protobuf.NetlistFile.NetPointRecord.testPoint)
 }
-inline float NetlistFile_NetPointRecord::_internal_testpoint() const {
+inline double NetlistFile_NetPointRecord::_internal_testpoint() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.testpoint_;
 }
-inline void NetlistFile_NetPointRecord::_internal_set_testpoint(float value) {
+inline void NetlistFile_NetPointRecord::_internal_set_testpoint(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.testpoint_ = value;
 }

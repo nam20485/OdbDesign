@@ -93,3 +93,4 @@ target_link_libraries(OdbDesign PUBLIC protobuf::libprotobuf)
 # (see https://github.com/CrowCpp/Crow/issues/661#issuecomment-1702544225)
 list(REMOVE_ITEM _CROW_ICD "_CROW_ICD-NOTFOUND")
 set_target_properties(Crow::Crow PROPERTIES INTERFACE_COMPILE_DEFINITIONS "${_CROW_ICD}")
+
