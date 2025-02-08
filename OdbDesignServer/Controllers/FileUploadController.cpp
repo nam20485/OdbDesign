@@ -1,4 +1,5 @@
 #include "FileUploadController.h"
+#include <string>
 #include "fastmove.h"
 #include <system_error>
 #include <fstream>

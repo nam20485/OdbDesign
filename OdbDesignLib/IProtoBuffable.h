@@ -2,12 +2,11 @@
 
 #include <google/protobuf/message.h>
 #include <google/protobuf/util/json_util.h>
-#include "crow_win.h"
 #include "IJsonable.h"
-#include "odbdesign_export.h"
-#include <ostream>
-#include <istream>
 #include <absl/strings/string_view.h>
+#include <string>
+#include <memory>
+#include <type_traits>
 
 
 namespace Odb::Lib
@@ -79,7 +78,7 @@ namespace Odb::Lib
 	std::string IProtoBuffable<TPbMessage>::to_json() const
 	{	
 		// use default options
-		google::protobuf::util::JsonOptions jsonOptions;
+		google::protobuf::util::JsonPrintOptions jsonOptions;
 
 		std::string json;
 		auto status = google::protobuf::util::MessageToJsonString(*to_protobuf(), &json, jsonOptions);
@@ -91,7 +90,7 @@ namespace Odb::Lib
 	inline void IProtoBuffable<TPbMessage>::from_json(const std::string& json)
 	{			
 		// use default options
-		google::protobuf::util::JsonOptions jsonOptions;
+		google::protobuf::util::JsonPrintOptions jsonOptions;
 
 		auto pMessage = std::unique_ptr<TPbMessage>();
 		auto status = google::protobuf::util::JsonStringToMessage(absl::string_view(json), pMessage.get());

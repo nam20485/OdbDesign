@@ -3,6 +3,7 @@
 #include "IOdbApp.h"
 #include "../odbdesign_export.h"
 #include "RequestAuthenticationBase.h"
+#include <memory>
 
 namespace Odb::Lib::App
 {
