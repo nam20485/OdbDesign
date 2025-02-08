@@ -39,4 +39,41 @@ namespace Odb::Lib::App
 		//			return handler(req);
 		//		});
 	}
+
+	crow::response Odb::Lib::App::RouteController::makeLoadedFileModelsResponse() const
+	{
+		auto unloadedDesignNames = m_serverApp.designs().getUnloadedDesignNames();
+		auto loadedFileArchiveNames = m_serverApp.designs().getLoadedFileArchiveNames();
+		auto loadedDesignNames = m_serverApp.designs().getLoadedDesignNames();
+
+		crow::json::wvalue::list designs;
+		for (const auto& designName : unloadedDesignNames)
+		{
+			auto loaded = false;
+			auto isDesign = false;
+			if (std::find(loadedFileArchiveNames.begin(), loadedFileArchiveNames.end(), designName) != loadedFileArchiveNames.end())
+			{
+				loaded = true;
+				isDesign = false;
+			}
+			else if (std::find(loadedDesignNames.begin(), loadedDesignNames.end(), designName) != loadedDesignNames.end())
+			{
+				loaded = true;
+				isDesign = true;
+			}
+			crow::json::wvalue design;
+			design["name"] = designName;
+			design["loaded"] = loaded;
+			design["type"] = isDesign? "Design" : "FileArchive";
+			designs.push_back(design);
+		}
+		crow::json::wvalue jsonResponse;
+		jsonResponse["filearchives"] = std::move(designs);
+
+#if defined(_DEBUG)
+		auto j = jsonResponse.dump();
+#endif
+
+		return crow::response(jsonResponse);
+	}
 }

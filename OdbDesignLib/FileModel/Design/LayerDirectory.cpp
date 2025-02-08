@@ -1,10 +1,4 @@
 #include "LayerDirectory.h"
-#include "LayerDirectory.h"
-#include "LayerDirectory.h"
-#include "LayerDirectory.h"
-#include "LayerDirectory.h"
-#include "LayerDirectory.h"
-#include "LayerDirectory.h"
 #include "Logger.h"
 
 namespace Odb::Lib::FileModel::Design
@@ -94,5 +88,31 @@ namespace Odb::Lib::FileModel::Design
 		m_componentsFile.from_protobuf(message.components());
 		m_featuresFile.from_protobuf(message.featurefile());
 		m_attrListFile.from_protobuf(message.attrlistfile());
+	}
+
+	bool LayerDirectory::Save(const std::filesystem::path& directory)
+	{
+		auto layerDir = directory / m_name;
+		if (!create_directory(layerDir)) return false;
+
+		//ComponentsFile m_componentsFile;
+		std::ofstream componentsFile(layerDir / "components");
+		if (!componentsFile.is_open()) return false;
+		if (!m_componentsFile.Save(componentsFile)) return false;
+		componentsFile.close();
+			
+		//FeaturesFile m_featuresFile;
+		std::ofstream featuresFile(layerDir / "features");
+		if (!featuresFile.is_open()) return false;
+		if (!m_featuresFile.Save(featuresFile)) return false;
+		featuresFile.close();
+		
+		//AttrListFile m_attrListFile;
+		std::ofstream attrlistFile(layerDir / "attrlist");
+		if (!attrlistFile.is_open()) return false;
+		if (!m_attrListFile.Save(attrlistFile)) return false;
+		attrlistFile.close();
+
+		return true;
 	}
 }

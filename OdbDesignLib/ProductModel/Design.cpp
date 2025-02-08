@@ -1,7 +1,13 @@
-#include <vector>
+#include "Design.h"
 #include "Design.h"
 #include "Package.h"
 #include "Logger.h"
+#include "../enums.h"
+#include "Part.h"
+#include <memory>
+#include "Net.h"
+#include "../FileModel/Design/FileArchive.h"
+#include "../FileModel/Design/EdaDataFile.h"
 
 
 namespace Odb::Lib::ProductModel
@@ -114,6 +120,9 @@ namespace Odb::Lib::ProductModel
 
 		m_pFileModel = pFileModel;
 
+		//m_productModel = m_pFileModel->GetProductName();
+		//m_name = m_pFileModel->GetProductName();
+
 		// atomic elements
 		if (! BuildNets()) return false;
 		if (! BuildPackages()) return false;
@@ -127,6 +136,11 @@ namespace Odb::Lib::ProductModel
 		//if (! BuildNoneNet()) return false;
 		//if (! BreakSinglePinNets()) return false;
 
+		if (CLIP_FILEMODEL_AFTER_BUILD)
+		{
+			ClipFileModel();
+		}
+
 		return true;
 	}
 
@@ -135,13 +149,21 @@ namespace Odb::Lib::ProductModel
 		return m_pFileModel;
 	}
 
+	void Design::ClipFileModel()
+	{
+		m_pFileModel = nullptr;
+	}
+
 	std::unique_ptr<Odb::Lib::Protobuf::ProductModel::Design> Design::to_protobuf() const
 	{
 		auto pDesignMsg = std::make_unique<Odb::Lib::Protobuf::ProductModel::Design>();
 		pDesignMsg->set_name(m_name);
 		pDesignMsg->set_productmodel(m_productModel);
 
-		pDesignMsg->mutable_filemodel()->CopyFrom(*m_pFileModel->to_protobuf());
+		if (m_pFileModel != nullptr)
+		{
+			pDesignMsg->mutable_filemodel()->CopyFrom(*m_pFileModel->to_protobuf());
+		}
 
 		for (const auto& pNet : m_nets)
 		{
@@ -191,7 +213,7 @@ namespace Odb::Lib::ProductModel
 		m_name = message.name();
 		m_productModel = message.productmodel();
 
-		m_pFileModel = std::make_shared<FileModel::Design::FileArchive>("");
+		m_pFileModel = std::make_shared<FileModel::Design::FileArchive>();
 		m_pFileModel->from_protobuf(message.filemodel());
 
 		for (const auto& pNetMsg : message.nets())
@@ -417,7 +439,7 @@ namespace Odb::Lib::ProductModel
 				//auto subnetNumber = pToeprintRecord->subnetNumber;
 
 				// -1 means no connection for the component pin
-				if (netNumber != (unsigned int)-1)
+				if (netNumber != static_cast<unsigned int>(-1))
 				{
 					if (!CreatePinConnection(refDes, netNumber, pinNumber, toeprintName)) return false;
 				}

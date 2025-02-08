@@ -27,22 +27,22 @@ message FeaturesFile {
         };
 
         optional Type type = 2;
-        optional float xs = 3;
-        optional float ys = 4;
-        optional float xe = 5;
-        optional float ye = 6;
-        optional float x = 7;
-        optional float y = 8;
+        optional double xs = 3;
+        optional double ys = 4;
+        optional double xe = 5;
+        optional double ye = 6;
+        optional double x = 7;
+        optional double y = 8;
         optional int32 apt_def = 9;
         optional int32 apt_def_symbol_num = 10;
-        optional float apt_def_resize_factor = 11;
-        optional float xc = 12;
-        optional float yc = 13;
+        optional double apt_def_resize_factor = 11;
+        optional double xc = 12;
+        optional double yc = 13;
         optional bool cw = 14;
         optional string font = 15;
-        optional float xsize = 16;
-        optional float ysize = 17;
-        optional float width_factor = 18;
+        optional double xsize = 16;
+        optional double ysize = 17;
+        optional double width_factor = 18;
         optional string text = 19;
         optional int32 version = 20;
         optional int32 sym_num = 21;
@@ -52,7 +52,7 @@ message FeaturesFile {
         optional string value = 25;
         optional uint32 id = 26;
         optional int32 orient_def = 27;
-        optional float orient_def_rotation = 28;  
+        optional double orient_def_rotation = 28;  
 
         repeated ContourPolygon contourPolygons = 1;
         map<string, string> attributeLookupTable = 29;      

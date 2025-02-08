@@ -1,8 +1,11 @@
 #include "Pin.h"
+#include <string>
+#include <memory>
+#include "../ProtoBuf/pin.pb.h"
 
 namespace Odb::Lib::ProductModel
 {	
-	Pin::Pin(std::string name, unsigned int index)
+	Pin::Pin(const std::string& name, unsigned int index)
 		: m_name(name)
 		, m_index(index)
 	{

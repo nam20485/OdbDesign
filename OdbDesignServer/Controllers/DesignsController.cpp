@@ -1,6 +1,11 @@
 #include "DesignsController.h"
 #include <JsonCrowReturnable.h>
 #include "UrlEncoding.h"
+#include "App/IOdbServerApp.h"
+#include "App/RouteController.h"
+#include <cstring>
+#include <vector>
+
 
 using namespace Odb::Lib::App;
 using namespace Utils;
@@ -147,17 +152,7 @@ namespace Odb::App::Server
 
 	crow::response DesignsController::designs_list_route_handler(const crow::request& req)
 	{
-		const auto& fileArchives = m_serverApp.designs().getUnloadedDesignNames();
-
-		crow::json::wvalue::list designNames;
-		for (const auto& designName : fileArchives)
-		{
-			designNames.push_back(designName);
-		}
-
-		crow::json::wvalue jsonResponse;
-		jsonResponse["designs"] = std::move(designNames);
-		return crow::response(jsonResponse);
+		return makeLoadedFileModelsResponse();
 	}
 
 	crow::response DesignsController::design_route_handler(std::string designName, const crow::request& req)
@@ -166,18 +161,7 @@ namespace Odb::App::Server
 		if (designNameDecoded.empty())
 		{
 			return crow::response(crow::status::BAD_REQUEST, "design name not specified");
-		}
-
-		bool excludeFileArchive = false;
-		auto szExcludeFileArchive = req.url_params.get(kszExcludeFileArchiveQueryParamName);
-		if (szExcludeFileArchive != nullptr)
-		{
-			if (std::strcmp(szExcludeFileArchive, "true") == 0 ||
-				std::strcmp(szExcludeFileArchive, "yes") == 0)
-			{
-				excludeFileArchive = true;
-			}
-		}
+		}		
 
 		auto pDesign = m_serverApp.designs().GetDesign(designNameDecoded);
 		if (pDesign == nullptr)
@@ -185,6 +169,23 @@ namespace Odb::App::Server
 			std::stringstream ss;
 			ss << "design: \"" << designNameDecoded << "\" not found";
 			return crow::response(crow::status::NOT_FOUND, ss.str());
+		}
+
+		// TODO: use excludeFileArchive
+		bool includeFileArchive = false;
+		auto szIncludeFileArchive = req.url_params.get(kszIncludeFileArchiveQueryParamName);
+		if (szIncludeFileArchive != nullptr)
+		{
+			if (std::strcmp(szIncludeFileArchive, "true") == 0 ||
+				std::strcmp(szIncludeFileArchive, "yes") == 0)
+			{
+				includeFileArchive = true;
+			}
+		}
+
+		if (!includeFileArchive)
+		{
+			pDesign->ClipFileModel();
 		}
 
 		return crow::response(JsonCrowReturnable(*pDesign));

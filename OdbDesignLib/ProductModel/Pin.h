@@ -14,7 +14,7 @@ namespace Odb::Lib::ProductModel
 	class ODBDESIGN_EXPORT Pin : public IProtoBuffable<Odb::Lib::Protobuf::ProductModel::Pin>
 	{
 	public:
-		Pin(std::string name, unsigned int index);
+		Pin(const std::string& name, unsigned int index);
 		//~Pin();
 
 		std::string GetName() const;

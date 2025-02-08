@@ -9,11 +9,13 @@
 #include "../../ProtoBuf/featuresfile.pb.h"
 #include "SymbolName.h"
 #include "AttributeLookupTable.h"
+#include "../IStreamSaveable.h"
+#include "../../odbdesign_export.h"
 
 
 namespace Odb::Lib::FileModel::Design
 {
-	class FeaturesFile : public IProtoBuffable<Odb::Lib::Protobuf::FeaturesFile>
+	class ODBDESIGN_EXPORT FeaturesFile : public IProtoBuffable<Odb::Lib::Protobuf::FeaturesFile>, public IStreamSaveable
 	{
 	public:
 		FeaturesFile();
@@ -36,22 +38,22 @@ namespace Odb::Lib::FileModel::Design
 			Type type;			
 				
 			// Line
-			float xs, ys;
-			float xe, ye;
+			double xs, ys;
+			double xe, ye;
 
 			// Pad / Text
-			float x, y;
+			double x, y;
 			int apt_def_symbol_num;
-			float apt_def_resize_factor;
+			double apt_def_resize_factor;
 
 			// Arc
-			float xc, yc;
+			double xc, yc;
 			bool cw;
 
 			// Text
 			std::string font;
-			float xsize, ysize;
-			float width_factor;
+			double xsize, ysize;
+			double width_factor;
 			std::string text;
 			int version;
 
@@ -64,7 +66,7 @@ namespace Odb::Lib::FileModel::Design
 			unsigned int id;
 
 			int orient_def;
-			float orient_def_rotation;			
+			double orient_def_rotation;			
 
 			ContourPolygon::Vector m_contourPolygons;
 
@@ -86,6 +88,8 @@ namespace Odb::Lib::FileModel::Design
 		};		
 
 		bool Parse(std::filesystem::path directory, const std::string& alternateFilename = "");
+		// Inherited via IStreamSaveable
+		bool Save(std::ostream& os) override;
 
 		std::string GetUnits() const;
 		std::filesystem::path GetPath();

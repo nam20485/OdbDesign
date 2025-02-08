@@ -366,7 +366,12 @@ namespace Odb::Lib::FileModel::Design
 			pFeatureGroupRecord->from_protobuf(featureGroupRecordMessage);
 			m_featureGroupRecords.push_back(pFeatureGroupRecord);
 		}       
-    }              
+    }
+
+    bool EdaDataFile::Save(std::ostream& os)
+    {
+        return true;
+    }
 
     bool EdaDataFile::Parse(std::filesystem::path path)
     {
@@ -569,7 +574,7 @@ namespace Odb::Lib::FileModel::Design
 
                         pPropertyRecord->value = token;
 
-                        float f;
+                        double f;
                         while (lineStream >> f)
                         {
                             pPropertyRecord->floatValues.push_back(f);

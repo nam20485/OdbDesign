@@ -1,8 +1,7 @@
 #include "BasicRequestAuthentication.h"
 #include <string>
-#include "macros.h"
-
-using namespace Utils;
+#include <cstdlib>
+#include "RequestAuthenticationBase.h"
 
 namespace Odb::Lib::App
 {
@@ -17,21 +16,20 @@ namespace Odb::Lib::App
 		if (resp.code != crow::status::OK)
 		{
 			const auto& authHeader = req.get_header_value(AUTHORIZATION_HEADER_NAME);
-			if (authHeader.empty()) return crow::response(401, "Unauthorized");
+			if (authHeader.empty()) return crow::response(crow::status::UNAUTHORIZED, "Unauthorized");
 
 			auto authValue = authHeader.substr(6);
-			if (authValue.empty()) return crow::response(401, "Unauthorized");
+			if (authValue.empty()) return crow::response(crow::status::UNAUTHORIZED, "Unauthorized");
 
 			auto authValueDecoded = crow::utility::base64decode(authValue, authValue.size());
-			if (authValueDecoded.empty()) return crow::response(401, "Unauthorized");
+			if (authValueDecoded.empty()) return crow::response(crow::status::UNAUTHORIZED, "Unauthorized");
 
 			auto seperatorPos = authValueDecoded.find(':');
-			if (seperatorPos == std::string::npos) return crow::response(401, "Unauthorized");
+			if (seperatorPos == std::string::npos) return crow::response(crow::status::UNAUTHORIZED, "Unauthorized");
 
 			auto username = authValueDecoded.substr(0, seperatorPos);
 			auto password = authValueDecoded.substr(seperatorPos + 1);
 
-			//if (! VerifyCredentials(username, password)) return crow::response(403, "Invalid username or password");
 			resp = VerifyCredentials(username, password);
 		}
 		return resp;
@@ -40,15 +38,15 @@ namespace Odb::Lib::App
 	crow::response BasicRequestAuthentication::VerifyCredentials(const std::string& username, const std::string& password)
 	{
 		// 500 - Internal Server Error
-		auto validUsername = std::getenv(USERNAME_ENV_NAME);
-		if (validUsername == nullptr)	//return crow::response(500, "Failed retrieving credentials");
+		std::string validUsername = std::getenv(USERNAME_ENV_NAME);
+		if (validUsername.empty())	//return crow::response(500, "Failed retrieving credentials");
 		{
 			// default username if none supplied in environment
 			validUsername = "odb";
 		}
 
-		auto validPassword = std::getenv(PASSWORD_ENV_NAME);
-		if (validPassword == nullptr)	//return crow::response(500, "Failed retrieving credentials");
+		std::string validPassword = std::getenv(PASSWORD_ENV_NAME);
+		if (validPassword.empty())	//return crow::response(500, "Failed retrieving credentials");
 		{
 			// default password if none supplied in environment
 			validPassword = "plusplus";
@@ -58,10 +56,10 @@ namespace Odb::Lib::App
 		if (username != validUsername ||
 			password != validPassword)
 		{
-			return crow::response(403, "Invalid username or password");
+			return crow::response(crow::status::FORBIDDEN, "Invalid username or password");
 		}
 
 		// 200 Authorized!
-		return crow::response(200, "Authorized");
+		return crow::response(crow::status::OK, "Authorized");
 	}
 }

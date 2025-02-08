@@ -1,0 +1,5 @@
+prometheus:
+  prometheusSpec:
+    serviceMonitorSelectorNilUsesHelmValues: true
+    serviceMonitorSelector: {}
+    serviceMonitorNamespaceSelector: {}

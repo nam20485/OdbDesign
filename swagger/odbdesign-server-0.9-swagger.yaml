@@ -41,6 +41,7 @@ paths:
           schema:
             type: string
       requestBody:
+        required: true
         content:
           application/octet-stream:
             schema:
@@ -56,6 +57,7 @@ paths:
       tags: ["file upload"]
       parameters: []
       requestBody:
+        required: true
         content:
           multipart/form-data:
             schema:
@@ -90,6 +92,30 @@ paths:
             type: string
       responses:
         "200":
+          description: ""
+      security:
+        - BasicAuth: []
+    post:
+      tags: ["filemodel"]      
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              format: json
+        required: true                  
+      responses:
+        "200":
+          description: ""
+        "404":
+          description: ""
+        "500":
           description: ""
       security:
         - BasicAuth: []

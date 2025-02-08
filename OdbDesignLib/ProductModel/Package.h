@@ -15,14 +15,14 @@ namespace Odb::Lib::ProductModel
 	class ODBDESIGN_EXPORT Package : public IProtoBuffable<Odb::Lib::Protobuf::ProductModel::Package>
 	{
 	public:
-		Package(std::string name, unsigned int index);
+		Package(const std::string& name, unsigned int index);
 		~Package();
 
 		std::string GetName() const;		
 		unsigned int GetIndex() const;
 
-		void AddPin(std::string name);		
-		std::shared_ptr<Pin> GetPin(std::string name) const;
+		void AddPin(const std::string& name);
+		std::shared_ptr<Pin> GetPin(const std::string& name) const;
 		std::shared_ptr<Pin> GetPin(unsigned int index) const;
 		const Pin::StringMap& GetPinsByName() const;		
 		const Pin::Vector& GetPins() const;

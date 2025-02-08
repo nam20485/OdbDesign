@@ -1,7 +1,10 @@
 #include <gtest/gtest.h>
-#include <gmock/gmock.h>
-#include "Fixtures/FileArchiveLoadFixture.h"
+//#include <gmock/gmock.h>
+#include "Fixtures/TestDataFixture.h"
 #include <filesystem>
+#include <gmock/gmock-more-matchers.h>
+#include <gmock/gmock-matchers.h>
+#include "Fixtures/FileArchiveLoadFixture.h"
 
 using namespace std::filesystem;
 using namespace Odb::Test::Fixtures;
@@ -26,13 +29,12 @@ namespace Odb::Test
 		SUCCEED();
 	}
 
-	TEST_F(FileArchiveLoadFixture, TestDataDirEnvironmentVariablesExists)
-	{
-		//ASSERT_FALSE(getTestDataDir().empty());
-		EXPECT_THAT(getTestDataDir(), Not(IsEmpty()));
+	TEST_F(TestDataFixture, TestDataDirEnvironmentVariablesExists)
+	{		
+		EXPECT_THAT(getTestDataDir().string(), Not(IsEmpty()));
 	}
 
-	TEST_F(FileArchiveLoadFixture, TestDataDirDirectoryExists)
+	TEST_F(TestDataFixture, TestDataDirDirectoryExists)
 	{
 		ASSERT_FALSE(getTestDataDir().empty());
 		EXPECT_TRUE(exists(getTestDataDir()));
@@ -43,4 +45,10 @@ namespace Odb::Test
 		ASSERT_TRUE(exists(getDesignPath("sample_design.tgz")));
 		ASSERT_TRUE(exists(getDesignPath("designodb_rigidflex.tgz")));
 	}
+
+	TEST_F(TestDataFixture, TestDataFilesDirDirectoryExists)
+	{
+		EXPECT_THAT(getTestDataFilesDir().string(), Not(IsEmpty()));
+		EXPECT_TRUE(exists(getTestDataFilesDir()));
+	}	
 }

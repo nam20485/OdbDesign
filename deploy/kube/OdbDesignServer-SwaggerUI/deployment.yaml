@@ -29,9 +29,9 @@ spec:
               name: oss-dep-port
           resources:
             limits:
-              cpu: "1"
-              memory: 1Gi
+              cpu: "8"
+              memory: 10Gi
             requests:
-              cpu: 500m
-              memory: 500Mi                 
+              cpu: "2"
+              memory: 2Gi                 
             

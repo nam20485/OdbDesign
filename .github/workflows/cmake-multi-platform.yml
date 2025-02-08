@@ -40,7 +40,7 @@ jobs:
           - os: ubuntu-22.04
             preset: linux-release
           # MacOS x64 Release
-          - os: macos-12
+          - os: macos-14
             preset: macos-release
           # Linux mingw x64 Release
           # - os: ubuntu-22.04
@@ -52,12 +52,12 @@ jobs:
     steps:   
     
     - name: Harden Runner
-      uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+      uses: step-security/harden-runner@a4aa98b93cab29d9b1101a6143fb8bce00e2eac4 # v2.7.1
       with:
         egress-policy: audit
 
     - name: Checkout Repository
-      uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
+      uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b # v4.1.5
     
     # add problem matchers by compiler
     - name: Add Problem Matchers
@@ -148,7 +148,7 @@ jobs:
       run: cmake --build --preset ${{matrix.preset}}
 
     - name: Checkout OdbDesign Test Data Repository
-      uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
+      uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b # v4.1.5
       with:
         repository: 'nam20485/OdbDesignTestData'
         path: 'OdbDesignTestData'
@@ -164,13 +164,14 @@ jobs:
       id: cmake-test
       env:
         ODB_TEST_DATA_DIR: ${{github.workspace}}/OdbDesignTestData/TEST_DATA
+        ODB_TEST_ENVIRONMENT_VARIABLE: ${{vars.ODB_TEST_ENVIRONMENT_VARIABLE}}
       run: ctest --test-dir ./out/build/${{matrix.preset}}/OdbDesignTests --output-log ${{github.workspace}}/testlog.txt --output-junit ${{github.workspace}}/testlog.xml --output-on-failure      
       # let the report step fail the job if it finds failed tests...
       continue-on-error: true
            
     # report test results
     - name: Report Test Results
-      uses: dorny/test-reporter@eaa763f6ffc21c7a37837f56cd5f9737f27fc6c8 # v1.8.0
+      uses: dorny/test-reporter@31a54ee7ebcacc03a09ea97a7e5465a47b84aea5 # v1.9.1
       if: steps.cmake-test.outcome == 'success' || steps.cmake-test.outcome == 'failure'
       with:
         name: ${{ matrix.os }}_test-results
@@ -194,7 +195,7 @@ jobs:
         zip -r ./artifacts-${{matrix.os}}.zip ./*.so ./OdbDesignServer
 
     - name: Compress Artifacts (MacOS)
-      if: matrix.os == 'macos-12'
+      if: matrix.os == 'macos-14'
       run: |
         mkdir ${{env.ARTIFACTS_DIR}}
         cp ./out/build/${{matrix.preset}}/OdbDesignLib/*.dylib ${{env.ARTIFACTS_DIR}}
@@ -212,7 +213,7 @@ jobs:
         Compress-Archive -Path "${{env.ARTIFACTS_DIR_WIN}}\*.dll","${{env.ARTIFACTS_DIR_WIN}}\*.exe"  -DestinationPath "${{env.ARTIFACTS_DIR_WIN}}\artifacts-${{matrix.os}}.zip" -Verbose -Force
 
     - name: Upload Artifacts
-      uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
+      uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
       with:
         name: ${{ matrix.os }}-artifacts
         path: ${{ env.ARTIFACTS_DIR }}/artifacts-${{matrix.os}}.zip
