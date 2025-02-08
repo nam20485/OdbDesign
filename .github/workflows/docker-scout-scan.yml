@@ -146,7 +146,7 @@ jobs:
                      
       - name: Docker Scout Compare to Latest
         id: docker-scout
-        if: ${{ github.event_name == 'pull_request' }} && ${{ steps.compare_image_exists.outcome == 'success' }}
+        if: ${{ github.event_name == 'pull_request' && steps.compare_image_exists.outcome == 'success' }}
         uses: docker/scout-action@b3dd3d6c420903eb3ff2812ac1b1d146ffb93a41 # v1.5.1
         with:
           command: compare
