@@ -6,6 +6,7 @@
 #include "Controllers/DesignsController.h"
 #include "macros.h"
 #include <App/BasicRequestAuthentication.h>
+#include <App/OdbServerAppBase.h>
 
 using namespace Odb::Lib::App;
 

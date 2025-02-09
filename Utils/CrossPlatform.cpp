@@ -8,6 +8,7 @@
 #include <mutex>
 #include <cstdio>
 #include <ctime>
+#include <malloc.h>
 
 namespace Utils
 {
