@@ -1,12 +1,14 @@
 #include "OdbServerAppBase.h"
-//#include "Logger.h"
+#include "Logger.h"
 #include "RequestAuthenticationBase.h"
 #include "crow_win.h"
+#include "macros.h"
 //#include <boost/throw_exception.hpp>
 //#include <boost/system/system_error.hpp>
 #include "OdbAppBase.h"
 #include <ExitCode.h>
 #include <memory>
+#include <string>
 //#include <filesystem>
 
 using namespace Utils;
@@ -47,6 +49,9 @@ namespace Odb::Lib::App
 
 		// call base class
 		if (ExitCode::Success != OdbAppBase::Run()) return ExitCode::FailedInit;
+
+		auto environment = "Environment: \"" + Utils::GetEnvironment() + "\"";
+		loginfo(environment);
 
 		// set Crow's log level
 		m_crowApp.loglevel(crow::LogLevel::Info);
