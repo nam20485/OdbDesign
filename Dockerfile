@@ -52,6 +52,7 @@ RUN mono `./vcpkg fetch nuget | tail -n 1` \
 RUN mkdir -p /src/OdbDesign
 WORKDIR /src/OdbDesign
 COPY ./vcpkg.json .
+COPY ./vcpkg-configuration.json .
 RUN ${VCPKG_ROOT}/vcpkg install
 # RUN --mount=type=cache,target=/root/.cache \
 #     ${VCPKG_ROOT}/vcpkg install
