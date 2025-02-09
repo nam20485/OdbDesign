@@ -84,38 +84,50 @@ namespace Utils
 
 	constexpr static const char ENVIRONMENT_VARIABLE[] = "Environment";
 
+	constexpr static const char ENVIRONMENT_LOCAL[] = "Local";
+	constexpr static const char ENVIRONMENT_DEVELOPMENT[] = "Development";
+	constexpr static const char ENVIRONMENT_TESTING[] = "Testing";
+	constexpr static const char ENVIRONMENT_STAGING[] = "Staging";
+	constexpr static const char ENVIRONMENT_PRODUCTION[] = "Production";
+
+	static inline std::string GetEnvironment()
+	{
+		const char* envValue = std::getenv(ENVIRONMENT_VARIABLE);
+		// default to "Local" environment if none set
+		if (envValue == nullptr) return ENVIRONMENT_LOCAL;
+		return std::string(envValue);
+	}
+
 	static inline bool IsEnvironment(const std::string& environmentName)
 	{
-		auto envValue = std::getenv(ENVIRONMENT_VARIABLE);
-		if (envValue == nullptr) return false;
-
+		auto envValue = GetEnvironment();
 		return Utils::str_to_lower_copy(envValue) == 
 			   Utils::str_to_lower_copy(environmentName);
 	}
 
 	static inline bool IsLocal()
 	{
-		return IsEnvironment("Local");
+		return IsEnvironment(ENVIRONMENT_LOCAL);
 	}
 
 	static inline bool IsDevelopment()
 	{
-		return IsEnvironment("Development");
+		return IsEnvironment(ENVIRONMENT_DEVELOPMENT);
 	}
 
 	static inline bool IsTesting()
 	{
-		return IsEnvironment("Testing");
+		return IsEnvironment(ENVIRONMENT_TESTING);
 	}
 
 	static inline bool IsStaging()
 	{
-		return IsEnvironment("Staging");
+		return IsEnvironment(ENVIRONMENT_STAGING);
 	}
 
 	static inline bool IsProduction()
 	{
-		return IsEnvironment("Production");
+		return IsEnvironment(ENVIRONMENT_PRODUCTION);
 	}
 
 
