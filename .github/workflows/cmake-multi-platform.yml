@@ -34,13 +34,13 @@ jobs:
       matrix:
         include:
           # Windows x64 Release
-          - os: windows-2022
+          - os: ${{ vars.WINDOWS_RUNNER_IMAGE }}
             preset: x64-release
           # Linux x64 Release          
-          - os: ubuntu-22.04
+          - os: ${{ vars.LINUX_RUNNER_IMAGE }}
             preset: linux-release
           # MacOS x64 Release
-          - os: macos-14
+          - os: ${{ vars.MACOS_RUNNER_IMAGE }}
             preset: macos-release
           # Linux mingw x64 Release
           # - os: ubuntu-22.04
@@ -62,30 +62,30 @@ jobs:
     # add problem matchers by compiler
     - name: Add Problem Matchers
       uses: ammaraskar/msvc-problem-matcher@1ebcb382869bfdc2cc645e8a2a43b6d319ea1cc0 # master
-      if: matrix.os == 'windows-2022'
+      if: matrix.os == '${{ vars.WINDOWS_RUNNER_IMAGE }}'
     - name: Add Problem Matchers
       uses: ammaraskar/gcc-problem-matcher@0f9c86f9e693db67dacf53986e1674de5f2e5f28 # master
-      if: matrix.os != 'windows-2022'
+      if: matrix.os != '${{ vars.WINDOWS_RUNNER_IMAGE }}'
     
     - name: Install vcpkg Dependencies
       run: |
         sudo apt update
         sudo apt install -y -q --no-install-recommends build-essential tar curl zip unzip
-      if: matrix.os == 'ubuntu-22.04'
+      if: matrix.os == '${{ vars.LINUX_RUNNER_IMAGE }}'
 
     #
-    #   os != windows-2022 (i.e. Linux, MacOS)
+    #   os != ${{ vars.WINDOWS_RUNNER_IMAGE }} (i.e. Linux, MacOS)
     #
     - name: Install vcpkg
       run: |               
         git clone https://github.com/Microsoft/vcpkg.git ${{env.VCPKG_ROOT}}
         "${{env.VCPKG_ROOT}}/bootstrap-vcpkg.sh"
       # (Windows comes w/ vcpkg installed as part of VS)   
-      if: matrix.os != 'windows-2022'
+      if: matrix.os != '${{ vars.WINDOWS_RUNNER_IMAGE }}'
     
     - name: Install Ninja    
       uses: seanmiddleditch/gha-setup-ninja@8b297075da4cd2a5f1fd21fe011b499edf06e9d2 # master
-      if: matrix.os != 'windows-2022'
+      if: matrix.os != '${{ vars.WINDOWS_RUNNER_IMAGE }}'
 
     # Export vcpkg Cache Variables
     - name : Export vcpkg Cache Variables
@@ -109,11 +109,11 @@ jobs:
     #
     - name: Setup VC Tools
       uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
-      if: matrix.os == 'windows-2022'
+      if: matrix.os == '${{ vars.WINDOWS_RUNNER_IMAGE }}'
       
     - name: Patch vcpkg
       run: scripts/patch-vcpkg-install.ps1
-      if: matrix.os == 'windows-2022'
+      if: matrix.os == '${{ vars.WINDOWS_RUNNER_IMAGE }}'
 
     # #
     # #  preset == python-x64-release
@@ -128,11 +128,11 @@ jobs:
     
     - name: Manual vcpkg Install (Non-Windows)
       run: "\"${{env.VCPKG_ROOT}}/vcpkg\" install"
-      if: matrix.preset != 'linux-mingw-w64-release' && matrix.os != 'windows-2022'
+      if: matrix.preset != 'linux-mingw-w64-release' && matrix.os != '${{ vars.WINDOWS_RUNNER_IMAGE }}'
 
     - name: Manual vcpkg Install (Windows)
       run: "& \"${{env.VCPKG_ROOT}}/vcpkg\" install --triplet x64-windows"
-      if: matrix.os == 'windows-2022'
+      if: matrix.os == '${{ vars.WINDOWS_RUNNER_IMAGE }}'
 
     # - name: Manual vcpkg Install (mingw-w64)
     #   run: "\"${{env.VCPKG_ROOT}}/vcpkg\" install --triplet x64-mingw-static"
@@ -185,7 +185,7 @@ jobs:
     #   Artifacts
     #
     - name: Compress Artifacts (Linux)
-      if: matrix.os == 'ubuntu-22.04'
+      if: matrix.os == '${{ vars.LINUX_RUNNER_IMAGE }}'
       run: |
         mkdir ${{env.ARTIFACTS_DIR}}
         cp ./out/build/${{matrix.preset}}/OdbDesignLib/*.so ${{env.ARTIFACTS_DIR}}
@@ -195,7 +195,7 @@ jobs:
         zip -r ./artifacts-${{matrix.os}}.zip ./*.so ./OdbDesignServer
 
     - name: Compress Artifacts (MacOS)
-      if: matrix.os == 'macos-14'
+      if: matrix.os == '${{ vars.MACOS_RUNNER_IMAGE }}'
       run: |
         mkdir ${{env.ARTIFACTS_DIR}}
         cp ./out/build/${{matrix.preset}}/OdbDesignLib/*.dylib ${{env.ARTIFACTS_DIR}}
@@ -205,7 +205,7 @@ jobs:
         zip -r ./artifacts-${{matrix.os}}.zip ./*.dylib ./OdbDesignServer
 
     - name: Compress Artifacts (Windows)
-      if: matrix.os == 'windows-2022'
+      if: matrix.os == '${{ vars.WINDOWS_RUNNER_IMAGE }}'
       run: |
         New-Item -ItemType Directory -Force -Path  ${{env.ARTIFACTS_DIR_WIN}} -Verbose
         Copy-Item -Path ".\out\build\${{matrix.preset}}\*.dll" -Destination  ${{env.ARTIFACTS_DIR_WIN}} -Force -Verbose

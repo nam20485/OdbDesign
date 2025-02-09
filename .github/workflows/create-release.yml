@@ -55,9 +55,9 @@ jobs:
     
           - name: Rename Artifacts
             run: |
-              mv ${{ github.workspace }}/artifacts/ubuntu-22.04-artifacts/artifacts-ubuntu-22.04.zip ${{ github.workspace }}/artifacts/OdbDesign-Linux-x64.zip
-              mv ${{ github.workspace }}/artifacts/windows-2022-artifacts/artifacts-windows-2022.zip ${{ github.workspace }}/artifacts/OdbDesign-Windows-x64.zip
-              mv ${{ github.workspace }}/artifacts/macos-14-artifacts/artifacts-macos-14.zip ${{ github.workspace }}/artifacts/OdbDesign-MacOS-x64.zip
+              mv ${{ github.workspace }}/artifacts/${{ vars.LINUX_RUNNER_IMAGE }}-artifacts/artifacts${{ vars.LINUX_RUNNER_IMAGE }}.zip ${{ github.workspace }}/artifacts/OdbDesign-Linux-x64.zip
+              mv ${{ github.workspace }}/artifacts/${{ vars.WINDOWS_RUNNER_IMAGE }}-artifacts/artifacts-${{ vars.WINDOWS_RUNNER_IMAGE }}.zip ${{ github.workspace }}/artifacts/OdbDesign-Windows-x64.zip
+              mv ${{ github.workspace }}/artifacts/${{ vars.MACOS_RUNNER_IMAGE }}-artifacts/artifacts-${{ vars.MACOS_RUNNER_IMAGE }}.zip ${{ github.workspace }}/artifacts/OdbDesign-MacOS-x64.zip
     
           - name: Generate SHA256 Sums
             run: |
