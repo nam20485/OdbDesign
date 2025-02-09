@@ -38,14 +38,24 @@ namespace Odb::Lib::App
 	crow::response BasicRequestAuthentication::VerifyCredentials(const std::string& username, const std::string& password)
 	{
 		// 500 - Internal Server Error
-		std::string validUsername = std::getenv(USERNAME_ENV_NAME);
+		std::string validUsername;
+		const char* val = std::getenv(USERNAME_ENV_NAME);
+		if (val != nullptr)
+		{
+			validUsername = val;
+		}
 		if (validUsername.empty())	//return crow::response(500, "Failed retrieving credentials");
 		{
 			// default username if none supplied in environment
 			validUsername = "odb";
 		}
 
-		std::string validPassword = std::getenv(PASSWORD_ENV_NAME);
+		std::string validPassword;
+		val = std::getenv(PASSWORD_ENV_NAME);
+		if (val != nullptr)
+		{
+			validPassword = val;
+		}
 		if (validPassword.empty())	//return crow::response(500, "Failed retrieving credentials");
 		{
 			// default password if none supplied in environment
