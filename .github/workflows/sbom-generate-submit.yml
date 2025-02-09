@@ -2,7 +2,7 @@ name: SBOM Generate and Submit
 
 on:
   push:
-    branches: [ "main", "release", "development", "nam20485" ]
+    branches: [ "main", "release", "development", "staging", "nam20485" ]
   workflow_dispatch:
 
 permissions:

@@ -5,7 +5,7 @@ on:
   push:
     branches: [ "nam20485" ]
   pull_request:
-    branches: [ "development", "main", "release", "nam20485" ]  
+    branches: [ "development", "staging", "main", "release", "nam20485" ]  
 
 permissions:
   contents: read  
