@@ -215,7 +215,7 @@ namespace Odb::App::Server
 					return this->steps_layers_list_route_handler(designName, stepName, req);
 				});
 
-		CROW_ROUTE(m_serverApp.crow_app(), "/filemodels/<string>/steps/<string>/layer/<string>/components")
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodels/<string>/steps/<string>/layers/<string>/components")
 			([&](const crow::request& req, std::string designName, std::string stepName, std::string layerName)
 				{
 					// authenticate request before sending to handler
