@@ -14,6 +14,8 @@ permissions:
 env:
   ARTIFACTS_DIR: ${{ github.workspace }}/artifacts
   ARTIFACTS_DIR_WIN: ${{ github.workspace }}\artifacts
+  IMAGE_NAME: ${{ github.repository }}
+  
   
 jobs:
              
@@ -79,6 +81,24 @@ jobs:
               gpg --batch --yes --detach-sign --armor OdbDesign-Linux-x64.zip
               gpg --batch --yes --detach-sign --armor OdbDesign-Windows-x64.zip
               gpg --batch --yes --detach-sign --armor OdbDesign-MacOS-x64.zip
+
+          # - name: Fetch package version ID
+          #   id: fetch_version_id
+          #   run: |
+          #     new_tag=${{ needs.fetch_previous_calculate_next_tags.outputs.new_tag }}
+          #     package_name=${{ env.IMAGE_NAME }}
+          #     repo_name=${{ github.repository }}
+          #     owner=${{ github.repository_owner }}
+          #     version_id=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+          #         "https://api.github.com/orgs/${owner}/packages/container/${package_name}/versions" | \
+          #         jq -r --arg tag "$new_tag" '.[] | select(.metadata.container.tags[] == $tag) | .id')
+          #     package_url="https://github.com/${repo_name}/pkgs/container/${package_name}/${version_id}?tag=${new_tag}"
+          #     echo "package_url=$package_url" >> $GITHUB_OUTPUT
+          
+          # - name: Write Docker image build summary
+          #   run: |
+          #     echo "### Docker Image Build Summary :whale:"  >> $GITHUB_STEP_SUMMARY
+          #     echo "Docker image built and pushed to [${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ needs.fetch_previous_calculate_next_tags.outputs.new_tag }}](${{ steps.fetch_version_id.outputs.package_url }})" >> $GITHUB_STEP_SUMMARY
     
           - name: Create Release Variables
             run: |
