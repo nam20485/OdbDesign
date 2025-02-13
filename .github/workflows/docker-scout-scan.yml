@@ -39,7 +39,7 @@ jobs:
       security-events: write
 
     # don't run on PRs into development from branches that aren't nam20485 (i.e. dependabot PRs)
-    if: github.event_name != 'pull_request' || github.base_ref != 'development' || github.head_ref == 'nam20485'
+    # if: github.event_name != 'pull_request' || github.base_ref != 'development' || github.head_ref == 'nam20485'
 
     steps:
       - name: Harden Runner
