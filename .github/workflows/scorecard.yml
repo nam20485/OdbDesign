@@ -12,10 +12,10 @@ on:
   # https://github.com/ossf/scorecard/blob/main/docs/checks.md#maintained
   schedule:
     - cron: '26 13 * * 3'
-  #push:
-  #  branches: [ "development" ]
-  pull_request:
-    branches: [ "development" ]
+  push:
+   branches: [ "development" ]
+  # pull_request:
+  #   branches: [ "development" ]
   workflow_dispatch:
 
 # Declare default permissions as read only.
@@ -24,7 +24,7 @@ permissions: read-all
 jobs:
   analysis:
     name: Scorecard analysis
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       # Needed to upload the results to code-scanning dashboard.
       security-events: write
