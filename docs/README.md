@@ -2,6 +2,8 @@
 
 A free open source cross-platform C++ library for parsing ODB++ Design archives, accessing their data, and building net list product models. Exposed via a REST API packaged inside of a Docker image.
 
+**UPDATE: LICENSE HAS CHANGED TO [AGPL V3.0](https://github.com/nam20485/OdbDesign/blob/df807d5c2c52af53b8fdec6f73605ce9ea6f6c22/LICENSE).** This is a non-permissive open source license that is not suitable for use in closed-source applications. Please contact me to obtain a license suitable for closed-source uses.
+
 ## Skip to Build and Running Instructions
 
 Sounds great! Now how do I build and run it?
@@ -225,14 +227,14 @@ Then run the commands from one or more of the sections below, based on what you 
 ###### Windows
 
 ```Bash
-$ cmake --preset x64-debug
+$ cmake --preset x64-release
 $ cmake --build --preset x64-release
 ```
 
 ###### Linux
 
 ```Bash
-$ cmake --preset linux-debug
+$ cmake --preset linux-release
 $ cmake --build --preset linux-release
 
 ```
@@ -284,7 +286,9 @@ See [docs/CONTRIBUTING.md](CONTRIBUTING.md) for more details.
 
 ## License
 
-This project is free and open source under the MIT [license](https://github.com/nam20485/OdbDesign/blob/c0c8b6e4b93e1c7d4d5e65c7ad25157c883f8bfb/LICENSE).
+This project is free and open source under the [AGPL V3.0](https://github.com/nam20485/OdbDesign/blob/df807d5c2c52af53b8fdec6f73605ce9ea6f6c22/LICENSE).
+
+> The AGPL V3.0 is a non-permissive open source license that is not suitable for use in closed-source applications. However, licenses suitable for use in closed-source applications are available. Please contact me to obtain a license suitable for your needs.
 
 ## Credit
 

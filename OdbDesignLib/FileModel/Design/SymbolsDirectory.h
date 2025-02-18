@@ -10,10 +10,11 @@
 #include <filesystem>
 #include "../../IProtoBuffable.h"
 #include "../../ProtoBuf/symbolsdirectory.pb.h"
+#include "../ISaveable.h"
 
 namespace Odb::Lib::FileModel::Design
 {
-	class ODBDESIGN_EXPORT SymbolsDirectory : public IProtoBuffable<Odb::Lib::Protobuf::SymbolsDirectory>
+	class ODBDESIGN_EXPORT SymbolsDirectory : public IProtoBuffable<Odb::Lib::Protobuf::SymbolsDirectory>, public ISaveable
 	{
 	public:
 		SymbolsDirectory(const std::filesystem::path& path);
@@ -22,6 +23,8 @@ namespace Odb::Lib::FileModel::Design
 		typedef std::map<std::string, std::shared_ptr<SymbolsDirectory>> StringMap;
 
 		bool Parse();
+		// Inherited via ISaveable
+		bool Save(const std::filesystem::path& directory) override;
 
 		std::string GetName() const;
 		std::filesystem::path GetPath() const;

@@ -1,8 +1,10 @@
 #include <gtest/gtest.h>
-#include <gmock/gmock.h>
 #include "Fixtures/FileArchiveLoadFixture.h"
-#include "OdbDesign.h"
-//#include "gtest/gtest-matchers.h"
+#include <gmock/gmock-matchers.h>
+#include "FileModel/Design/FileArchive.h"
+#include <memory>
+#include "ProductModel/Component.h"
+#include "ProductModel/Design.h"
 
 
 //using namespace Odb::Lib::App;
@@ -25,7 +27,7 @@ namespace Odb::Test
 		auto pComponentMsg = pComponent->to_protobuf();
 		ASSERT_THAT(pComponentMsg, NotNull());
 
-		auto pComponentFromMsg = std::unique_ptr<Component>(Component::MakeEmpty());
+		auto pComponentFromMsg = std::make_unique<Component>();
 		pComponentFromMsg->from_protobuf(*pComponentMsg);	
 
 		ASSERT_EQ(pComponent->GetRefDes(), pComponentFromMsg->GetRefDes());
@@ -80,7 +82,7 @@ namespace Odb::Test
 		auto pComponentMsg = pComponent->to_protobuf();
 		ASSERT_THAT(pComponentMsg, NotNull());
 
-		auto pComponentFromMsg = std::unique_ptr<Component>(Component::MakeEmpty());
+		auto pComponentFromMsg = std::make_unique<Component>();
 		pComponentFromMsg->from_protobuf(*pComponentMsg);
 
 		ASSERT_EQ(pComponent->GetRefDes(), pComponentFromMsg->GetRefDes());

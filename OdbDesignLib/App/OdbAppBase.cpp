@@ -1,7 +1,9 @@
 #include "OdbServerAppBase.h"
 #include "Logger.h"
+#include <filesystem>
 
 using namespace Utils;
+using namespace std::filesystem;
 
 namespace Odb::Lib::App
 {
@@ -46,17 +48,27 @@ namespace Odb::Lib::App
             try
             {
                 auto pFileArchive = 
-                    designs().GetDesign(args().loadDesign());
-                    //designs().GetFileArchive(args().loadDesign());
+                    //designs().GetDesign(args().loadDesign());
+                    designs().GetFileArchive(args().loadDesign());
                 if (pFileArchive == nullptr)
                 {
                     logerror("Failed to load design specified in arguments \"" + args().loadDesign() + "\"");
                     return Utils::ExitCode::FailedInitLoadDesign;
                 }
+                else
+                {
+                    //std::string filename = 
+                    pFileArchive->SaveFileModel(".", "notused");
+                }
             }
-            catch (std::exception&)
+            catch (filesystem_error& fe)
             {
-                //logexception(e);
+                logexception(fe);
+                logerror("filesystem_error: \"" + args().loadDesign() + "\" " + fe.what());
+            }
+            catch (std::exception& e)
+            {
+                logexception(e);
                 logerror("Failed to load design specified in arguments \"" + args().loadDesign() + "\"");
                 return Utils::ExitCode::FailedInitLoadDesign;
             }

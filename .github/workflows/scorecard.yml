@@ -7,14 +7,15 @@ on:
   # For Branch-Protection check. Only the default branch is supported. See
   # https://github.com/ossf/scorecard/blob/main/docs/checks.md#branch-protection
   branch_protection_rule:
+    types: [ created, edited ]
   # To guarantee Maintained check is occasionally updated. See
   # https://github.com/ossf/scorecard/blob/main/docs/checks.md#maintained
   schedule:
     - cron: '26 13 * * 3'
-  #push:
-  #  branches: [ "development" ]
-  pull_request:
-    branches: [ "development" ]
+  push:
+   branches: [ "development" ]
+  # pull_request:
+  #   branches: [ "development" ]
   workflow_dispatch:
 
 # Declare default permissions as read only.
@@ -23,7 +24,7 @@ permissions: read-all
 jobs:
   analysis:
     name: Scorecard analysis
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       # Needed to upload the results to code-scanning dashboard.
       security-events: write

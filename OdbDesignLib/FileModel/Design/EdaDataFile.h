@@ -12,11 +12,12 @@
 #include "PropertyRecord.h"
 #include "ContourPolygon.h"
 #include "AttributeLookupTable.h"
+#include "../IStreamSaveable.h"
 
 
 namespace Odb::Lib::FileModel::Design
 {	
-	class ODBDESIGN_EXPORT EdaDataFile : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile>
+	class ODBDESIGN_EXPORT EdaDataFile : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile>, public IStreamSaveable
 	{
 	public:
 		EdaDataFile(bool logAllLineParsing = false);
@@ -27,7 +28,9 @@ namespace Odb::Lib::FileModel::Design
 		const std::string& GetUnits() const;
 		const std::string& GetSource() const;
 
-		bool Parse(std::filesystem::path path);		
+		bool Parse(std::filesystem::path path);	
+		// Inherited via IStreamSaveable
+		bool Save(std::ostream& os) override;
 		
 		struct ODBDESIGN_EXPORT FeatureIdRecord : public IProtoBuffable<Odb::Lib::Protobuf::EdaDataFile::FeatureIdRecord>
 		{
@@ -93,7 +96,7 @@ namespace Odb::Lib::FileModel::Design
 				// Plane subnet type fields
 				FillType fillType;
 				CutoutType cutoutType;
-				float fillSize;
+				double fillSize;
 				unsigned int index;
 
 				inline static const std::string RECORD_TOKEN = "SNT";
@@ -147,19 +150,19 @@ namespace Odb::Lib::FileModel::Design
 				Type type;
 
 				// Rectangle
-				float lowerLeftX;
-				float lowerLeftY;
-				float width;
-				float height;
+				double lowerLeftX;
+				double lowerLeftY;
+				double width;
+				double height;
 
 				// Square/Circle
-				float xCenter;
-				float yCenter;
+				double xCenter;
+				double yCenter;
 
 				// Square
-				float halfSide;
+				double halfSide;
 				// Circle
-				float radius;
+				double radius;
 
 				ContourPolygon::Vector m_contourPolygons;
 
@@ -213,9 +216,9 @@ namespace Odb::Lib::FileModel::Design
 
 				std::string name;
 				Type type;
-				float xCenter;
-				float yCenter;
-				float finishedHoleSize;	// unused, set to 0
+				double xCenter;
+				double yCenter;
+				double finishedHoleSize;	// unused, set to 0
 				ElectricalType electricalType;
 				MountType mountType;
 				unsigned int id;
@@ -241,9 +244,9 @@ namespace Odb::Lib::FileModel::Design
 			}
 
 			std::string name;
-			float pitch;
-			float xMin, yMin;
-			float xMax, yMax;			
+			double pitch;
+			double xMin, yMin;
+			double xMax, yMax;			
 			unsigned int index;
 
 			OutlineRecord::Vector m_outlineRecords;

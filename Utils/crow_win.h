@@ -7,6 +7,11 @@
 #include "win.h"
 #include "crow.h"
 #include "crow/middlewares/cors.h"
+#include "crow/app.h"
+#include "crow/http_request.h"
+#include "crow/http_response.h"
+#include <crow/compression.h>
+#include <crow/logging.h>
 
 
 using CrowApp = crow::Crow<crow::CORSHandler>;

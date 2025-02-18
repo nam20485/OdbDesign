@@ -5,7 +5,6 @@
 #include <vector>
 #include <map>
 #include <memory>
-#include "Pin.h"
 #include "Package.h"
 #include "../enums.h"
 #include "Part.h"
@@ -18,7 +17,8 @@ namespace Odb::Lib::ProductModel
 	class ODBDESIGN_EXPORT Component : public IProtoBuffable<Odb::Lib::Protobuf::ProductModel::Component>
 	{
 	public:
-		Component(std::string refDes, std::string partName, std::shared_ptr<Package> pPackage, unsigned int index, BoardSide side, std::shared_ptr<Part> pPart);
+		Component();
+		Component(const std::string& refDes, const std::string& partName, std::shared_ptr<Package> pPackage, unsigned int index, BoardSide side, std::shared_ptr<Part> pPart);
 		~Component();
 
 		std::string GetRefDes() const;
@@ -32,14 +32,12 @@ namespace Odb::Lib::ProductModel
 		std::unique_ptr<Odb::Lib::Protobuf::ProductModel::Component> to_protobuf() const override;
 		void from_protobuf(const Odb::Lib::Protobuf::ProductModel::Component& message) override;
 
-		static Component* MakeEmpty();
+		//static Component* MakeEmpty();
 
 		typedef std::vector<std::shared_ptr<Component>> Vector;
 		typedef std::map<std::string, std::shared_ptr<Component>> StringMap;
 
 	private:
-		Component() = default;
-
 		std::string m_refDes;
 		std::string m_partName;		
 		std::shared_ptr<Package> m_pPackage;

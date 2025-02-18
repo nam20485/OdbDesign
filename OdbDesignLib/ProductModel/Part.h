@@ -13,9 +13,9 @@ namespace Odb::Lib::ProductModel
 	class ODBDESIGN_EXPORT Part : public IProtoBuffable<Odb::Lib::Protobuf::ProductModel::Part>
 	{
 	public:
-		Part(std::string name);		
+		Part(const std::string& name);
 
-		std::string GetName() const;		
+		std::string GetName() const;
 
 		typedef std::vector<std::shared_ptr<Part>> Vector;
 		typedef std::map<std::string, std::shared_ptr<Part>> StringMap;
@@ -25,7 +25,7 @@ namespace Odb::Lib::ProductModel
 		void from_protobuf(const Odb::Lib::Protobuf::ProductModel::Part& message) override;
 
 	private:
-			std::string m_name;
+		std::string m_name;
 
 	};
 }

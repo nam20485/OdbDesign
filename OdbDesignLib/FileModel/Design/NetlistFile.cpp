@@ -1,17 +1,21 @@
 #include "NetlistFile.h"
 #include "NetlistFile.h"
-#include "NetlistFile.h"
-#include "NetlistFile.h"
-#include "NetlistFile.h"
-#include "NetlistFile.h"
-#include "NetlistFile.h"
-#include "NetlistFile.h"
-#include <fstream>
-#include <sstream>
 #include <Logger.h>
 #include "../parse_error.h"
 #include "../invalid_odb_error.h"
 #include <climits>
+#include <filesystem>
+#include <ostream>
+#include "../../Constants.h"
+#include <exception>
+#include <cctype>
+#include <iosfwd>
+#include <memory>
+#include <string>
+#include "../parse_info.h"
+#include "../../ProtoBuf/netlistfile.pb.h"
+
+using namespace std::filesystem;
 
 namespace Odb::Lib::FileModel::Design
 {
@@ -109,11 +113,11 @@ namespace Odb::Lib::FileModel::Design
 				{
 					std::stringstream lineStream(line);
 
-					if (line.find(COMMENT_TOKEN) == 0)
+					if (line.find(Constants::COMMENT_TOKEN) == 0)
 					{
 						// comment line
 					}
-					else if (line.find(UNITS_TOKEN) == 0)
+					else if (line.find(Constants::UNITS_TOKEN) == 0)
 					{
 						// units line
 						std::string token;
@@ -162,7 +166,7 @@ namespace Odb::Lib::FileModel::Design
 						}
 
 						// staggered (optional)
-						if (lineStream >> token && token == "staggered")
+						if (lineStream >> token && token == STAGGERED_KEY)
 						{
 							char staggered;
 							if (!(lineStream >> staggered))
@@ -289,14 +293,14 @@ namespace Odb::Lib::FileModel::Design
 		return true;
 	}
 
-	std::unique_ptr<Odb::Lib::Protobuf::NetlistFile> NetlistFile::to_protobuf() const
+	std::unique_ptr<Protobuf::NetlistFile> NetlistFile::to_protobuf() const
 	{
-		std::unique_ptr<Odb::Lib::Protobuf::NetlistFile> pNetlistFileMessage(new Odb::Lib::Protobuf::NetlistFile);
+		std::unique_ptr<Protobuf::NetlistFile> pNetlistFileMessage(new Protobuf::NetlistFile);
 		pNetlistFileMessage->set_units(m_units);
 		pNetlistFileMessage->set_path(m_path.string());	
 		pNetlistFileMessage->set_name(m_name);
 		pNetlistFileMessage->set_optimized(m_optimized);
-		pNetlistFileMessage->set_staggered(static_cast<Odb::Lib::Protobuf::NetlistFile::Staggered>(m_staggered));
+		pNetlistFileMessage->set_staggered(static_cast<Protobuf::NetlistFile::Staggered>(m_staggered));
 
 		for (const auto& pNetRecord : m_netRecords)
 		{
@@ -318,7 +322,7 @@ namespace Odb::Lib::FileModel::Design
 		return pNetlistFileMessage;		
 	}
 
-	void NetlistFile::from_protobuf(const Odb::Lib::Protobuf::NetlistFile& message)
+	void NetlistFile::from_protobuf(const Protobuf::NetlistFile& message)
 	{
 		m_name = message.name();
 		m_path = message.path();
@@ -348,23 +352,55 @@ namespace Odb::Lib::FileModel::Design
 		}
 	}
 
-	std::unique_ptr<Odb::Lib::Protobuf::NetlistFile::NetRecord> NetlistFile::NetRecord::to_protobuf() const
+	bool NetlistFile::Save(std::ostream& os)
 	{
-		std::unique_ptr<Odb::Lib::Protobuf::NetlistFile::NetRecord> pNetRecordMessage(new Odb::Lib::Protobuf::NetlistFile::NetRecord);
+		os << 'H' << " optimize " << (m_optimized ? 'Y' : 'N') << "staggered " << (m_staggered == Staggered::Yes ? 'Y' : 'N') << std::endl;
+		os << Constants::UNITS_TOKEN << " = " << m_units << std::endl;
+
+		for (const auto& netRecord : m_netRecords)
+		{
+			os << NetRecord::FIELD_TOKEN << netRecord->serialNumber << " " << netRecord->netName << std::endl;
+		}
+
+		for (const auto& netPointRecord : m_netPointRecords)
+		{
+			netPointRecord->Save(os);
+			os << std::endl;
+		}
+
+		return true;
+	}
+
+	bool NetlistFile::Save(const std::filesystem::path& directory)
+	{
+		auto netlistDir = directory / m_name;
+		if (!create_directory(netlistDir)) return false;
+
+		std::ofstream netlistFile(netlistDir / "netlist");
+		if (!netlistFile.is_open()) return false;
+		if (! Save(netlistFile)) return false;
+		netlistFile.close();
+
+		return true;
+	}
+
+	std::unique_ptr<Protobuf::NetlistFile::NetRecord> NetlistFile::NetRecord::to_protobuf() const
+	{
+		std::unique_ptr<Protobuf::NetlistFile::NetRecord> pNetRecordMessage(new Protobuf::NetlistFile::NetRecord);
 		pNetRecordMessage->set_serialnumber(serialNumber);
 		pNetRecordMessage->set_netname(netName);
 		return pNetRecordMessage;		
 	}
 
-	void NetlistFile::NetRecord::from_protobuf(const Odb::Lib::Protobuf::NetlistFile::NetRecord& message)
+	void NetlistFile::NetRecord::from_protobuf(const Protobuf::NetlistFile::NetRecord& message)
 	{
 		serialNumber = message.serialnumber();
 		netName = message.netname();
 	}
 
-	std::unique_ptr<Odb::Lib::Protobuf::NetlistFile::NetPointRecord> NetlistFile::NetPointRecord::to_protobuf() const
+	std::unique_ptr<Protobuf::NetlistFile::NetPointRecord> NetlistFile::NetPointRecord::to_protobuf() const
 	{
-		std::unique_ptr<Odb::Lib::Protobuf::NetlistFile::NetPointRecord> pNetPointRecordMessage(new Odb::Lib::Protobuf::NetlistFile::NetPointRecord);
+		std::unique_ptr<Protobuf::NetlistFile::NetPointRecord> pNetPointRecordMessage(new Protobuf::NetlistFile::NetPointRecord);
 		pNetPointRecordMessage->set_netnumber(netNumber);
 		pNetPointRecordMessage->set_radius(radius);
 		pNetPointRecordMessage->set_x(x);
@@ -376,7 +412,7 @@ namespace Odb::Lib::FileModel::Design
 		pNetPointRecordMessage->set_height(height);
 		pNetPointRecordMessage->set_commentpoint(commentPoint);
 		pNetPointRecordMessage->set_netnumber(netNumber);
-		pNetPointRecordMessage->set_side(static_cast<Odb::Lib::Protobuf::NetlistFile::NetPointRecord::AccessSide>(side));
+		pNetPointRecordMessage->set_side(static_cast<Protobuf::NetlistFile::NetPointRecord::AccessSide>(side));
 		pNetPointRecordMessage->set_staggeredradius(staggeredRadius);
 		pNetPointRecordMessage->set_staggeredx(staggeredX);
 		pNetPointRecordMessage->set_staggeredy(staggeredY);
@@ -387,7 +423,7 @@ namespace Odb::Lib::FileModel::Design
 		return pNetPointRecordMessage;
 	}
 
-	void NetlistFile::NetPointRecord::from_protobuf(const Odb::Lib::Protobuf::NetlistFile::NetPointRecord& message)
+	void NetlistFile::NetPointRecord::from_protobuf(const Protobuf::NetlistFile::NetPointRecord& message)
 	{
 		netNumber = message.netnumber();
 		radius = message.radius();
@@ -419,5 +455,9 @@ namespace Odb::Lib::FileModel::Design
 		fiducialPoint = message.fiducialpoint();
 	}
 
+	bool NetlistFile::NetPointRecord::Save(std::ostream& os)
+	{
+		return false;
+	}
 	
 } // namespace Odb::Lib::FileModel::Design

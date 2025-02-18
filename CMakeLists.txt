@@ -12,9 +12,9 @@ set(CMAKE_CXX_STANDARD ${MY_CXX_STANDARD})
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # only use ccache locally, i.e. not in CI
-if (NOT DEFINED ENV{CI})
+#if (NOT DEFINED ENV{CI})
     set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_EXE}")
-endif()
+#endif()
 
 #
 # GoogleTest support
@@ -27,6 +27,8 @@ FetchContent_Declare(
 # For Windows: Prevent overriding the parent project's compiler/linker settings
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
+
+enable_testing()
 
 # Enable Hot Reload for MSVC compilers if supported.
 if (POLICY CMP0141)
@@ -67,7 +69,7 @@ endif()
 
 # Include sub-projects.
 add_subdirectory("OdbDesignLib")
-#add_subdirectory("OdbDesignApp")
+add_subdirectory("OdbDesignApp")
 add_subdirectory("OdbDesignServer")
 add_subdirectory("Utils")
 add_subdirectory("OdbDesignTests")

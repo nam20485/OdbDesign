@@ -27,4 +27,10 @@ namespace Odb::Lib
 		Metric,
 		Imperial
 	};
+
+	enum class DesignType
+	{
+		FileArchive,
+		Design
+	};	
 }

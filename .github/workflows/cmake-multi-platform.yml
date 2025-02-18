@@ -5,7 +5,7 @@ on:
   push:
     branches: [ "nam20485" ]
   pull_request:
-    branches: [ "development", "main", "release", "nam20485" ]  
+    branches: [ "development", "staging", "main", "release", "nam20485" ]  
 
 permissions:
   contents: read  
@@ -40,7 +40,7 @@ jobs:
           - os: ubuntu-22.04
             preset: linux-release
           # MacOS x64 Release
-          - os: macos-12
+          - os: macos-14
             preset: macos-release
           # Linux mingw x64 Release
           # - os: ubuntu-22.04
@@ -164,6 +164,7 @@ jobs:
       id: cmake-test
       env:
         ODB_TEST_DATA_DIR: ${{github.workspace}}/OdbDesignTestData/TEST_DATA
+        ODB_TEST_ENVIRONMENT_VARIABLE: ${{vars.ODB_TEST_ENVIRONMENT_VARIABLE}}
       run: ctest --test-dir ./out/build/${{matrix.preset}}/OdbDesignTests --output-log ${{github.workspace}}/testlog.txt --output-junit ${{github.workspace}}/testlog.xml --output-on-failure      
       # let the report step fail the job if it finds failed tests...
       continue-on-error: true
@@ -194,7 +195,7 @@ jobs:
         zip -r ./artifacts-${{matrix.os}}.zip ./*.so ./OdbDesignServer
 
     - name: Compress Artifacts (MacOS)
-      if: matrix.os == 'macos-12'
+      if: matrix.os == 'macos-14'
       run: |
         mkdir ${{env.ARTIFACTS_DIR}}
         cp ./out/build/${{matrix.preset}}/OdbDesignLib/*.dylib ${{env.ARTIFACTS_DIR}}

@@ -1,11 +1,10 @@
 #include "StepDirectory.h"
-#include "StepDirectory.h"
-#include "StepDirectory.h"
 #include <filesystem>
 #include "LayerDirectory.h"
 #include <fstream>
 #include <sstream>
 #include "Logger.h"
+#include <memory>
 
 
 namespace Odb::Lib::FileModel::Design
@@ -170,6 +169,52 @@ namespace Odb::Lib::FileModel::Design
         loginfo("Parsing stephdr file complete");
 
         return success;
+    }
+
+    bool StepDirectory::Save(const std::filesystem::path& directory)
+    {
+        auto stepDir = directory / m_name;
+        if (!create_directory(stepDir)) return false;
+
+        // eda/data
+        auto edaPath = stepDir / "eda";
+        if (!create_directory(edaPath)) return false;
+        std::ofstream edaDataFile(edaPath / "data");
+        if (!m_edaData.Save(edaDataFile)) return false;
+        edaDataFile.close();
+
+        // attrlist
+        std::ofstream attrlistFile(stepDir / "attrlist");
+        if (!m_attrListFile.Save(attrlistFile)) return false;
+        attrlistFile.close();
+
+        // profile
+        std::ofstream profileFile(stepDir / "profile");
+        if (!m_profileFile.Save(profileFile)) return false;
+        profileFile.close();
+
+        // StepHdrFile
+        std::ofstream stephdrFile(stepDir / "stephdr");
+        if (!m_stepHdrFile.Save(stephdrFile)) return false;
+        stephdrFile.close();
+
+        // layers
+        auto layersPath = stepDir / "layers";
+        if (!create_directory(layersPath)) return false;
+        for (auto& kvLayer : m_layersByName)
+		{
+			if (!kvLayer.second->Save(layersPath)) return false;
+		}
+        
+        // m_netlistsByName;
+        auto netlistsPath = stepDir / "netlists";
+        if (!create_directory(netlistsPath)) return false;
+        for (auto& kvNetlist : m_netlistsByName)
+		{
+			if (!kvNetlist.second->Save(netlistsPath)) return false;
+		}
+
+        return true;
     }
 
     std::unique_ptr<Odb::Lib::Protobuf::StepDirectory> StepDirectory::to_protobuf() const

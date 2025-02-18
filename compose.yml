@@ -2,17 +2,9 @@ name: odbdesign
 
 services:
 
-  server:
-    ## enable for passing in branch name as an environment variable
-    #environment:
-    #  - BRANCH=nam20485 
-    #image: ghcr.io/nam20485/odbdesign:${BRANCH}-latest
-    image: ghcr.io/nam20485/odbdesign:nam20485-latest
-    ## enable for local build via the Dockerfile (and disable "image:" key above)
-    # build:
-    #   context: .
-    #   dockerfile: Dockerfile
-    #container_name: odbdesign-server   
+  ### use remote image build from github container registry
+  server:    
+    image: ghcr.io/nam20485/odbdesign:nam20485-latest    
     volumes:
       - ./compose-designs:/OdbDesign/designs
     ports:
@@ -20,17 +12,23 @@ services:
     environment:
       - ODBDESIGN_SERVER_REQUEST_USERNAME
       - ODBDESIGN_SERVER_REQUEST_PASSWORD
-    
+
+  ### use local image built from Dockerfile
+  # server:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - ./compose-designs:/OdbDesign/designs
+  #   ports:
+  #     - 8888:8888
+  #   environment:
+  #     - ODBDESIGN_SERVER_REQUEST_USERNAME
+  #     - ODBDESIGN_SERVER_REQUEST_PASSWORD   
    
   swagger-ui:
-    ## enable for passing in branch name as an environment variable
-    # environment:
-    #   - BRANCH=nam20485 
-    # image: ghcr.io/nam20485/odbdesignserver-swaggerui:${BRANCH}-latest
-    image: ghcr.io/nam20485/odbdesignserver-swaggerui:nam20485-latest
-    #container_name: swagger-ui
+    image: ghcr.io/nam20485/odbdesignserver-swaggerui:nam20485-latest    
     depends_on:
       - server
     ports:
-      - 8080:8080    
-    
+      - 8080:8080

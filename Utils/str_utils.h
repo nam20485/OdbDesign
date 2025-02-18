@@ -2,6 +2,7 @@
 
 #include <string>
 #include "utils_export.h"
+#include <vector>
 
 
 namespace Utils
@@ -37,4 +38,17 @@ namespace Utils
 
 	UTILS_EXPORT std::string str_to_lower_copy(const std::string& s);
 	UTILS_EXPORT std::string str_to_upper_copy(const std::string& s);
+
+	//UTILS_EXPORT std::string str_replace(const std::string& s, const std::string& from, const std::string& to);	
+
+	UTILS_EXPORT bool str_iequals(const std::string& s1, const std::string& s2);	
+
+	UTILS_EXPORT std::vector<std::string>::iterator find_str_icmp(std::vector<std::string>::iterator first, 
+																  std::vector<std::string>::iterator last, 
+																  const std::string& val);
+
+	UTILS_EXPORT std::vector<std::string>::const_iterator find_str_icmp(const std::vector<std::string>::const_iterator first,
+																		const std::vector<std::string>::const_iterator last,
+																		const std::string& val);
+
 }
