@@ -163,7 +163,7 @@ Documentation for the currently-released version of the source code is available
 
 > If you are building on Windows and have a modern version of Visual Studio installed then all of the dependencies listed below are already installed on your system (except for maybe Docker). You can skip to the next section.
 
-> If you are building on a Linux system then the dependencies listed below can be installed using your package manager. For example on Ubuntu you can install them (except for vcpkg and Docker) using the following command:
+> If you are building on a Linux system then the dependencies listed below can be installed using your package manager. For example on Ubuntu/Debian/Mint you can install them (except for vcpkg and Docker) using the following command:
 
 `$ sudo apt install git cmake ninja-build build-essential`
 
