@@ -133,7 +133,7 @@ jobs:
         
       - name: Upload SARIF result
         id: upload-sarif
-        uses: github/codeql-action/upload-sarif@9e8d0789d4a0fa9ceb6b1738f7e269594bdd67f0 # v3.28.9
+        uses: github/codeql-action/upload-sarif@ff0a06e83cb2de871e5a09832bc6a81e7276941f # v3.28.18
         with:
           sarif_file: sarif.output.json
 
