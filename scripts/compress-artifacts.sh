@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/sh
 
 # COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignLib/*.so .
 # COPY --from=build /src/OdbDesign/out/build/linux-release/Utils/*.so .

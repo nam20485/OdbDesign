@@ -185,25 +185,37 @@
       "name": "x64-debug",
       "displayName": "x64 Debug",
       "inherits": "windows-base",
-      "configurePreset": "x64-debug"
+      "configurePreset": "x64-debug",
+      //"cleanFirst": true,
+      "configuration": "Debug",
+      "description": "Build Windows x64 Debug"
     },
     {
       "name": "x64-release",
       "displayName": "x64 Release",
       "inherits": "windows-base",
-      "configurePreset": "x64-release"
+      "configurePreset": "x64-release",
+      "configuration": "Release",
+      "description": "Build Windows x64 Release"
     },    
     {
       "name": "x86-debug",
       "displayName": "x86 Debug",
       "inherits": "windows-base",
-      "configurePreset": "x86-debug"
+      "configurePreset": "x86-debug",
+      //"cleanFirst": true,
+      "configuration": "Debug",
+      "description": "Build Windows x86 Debug" 
     },
     {
       "name": "x86-release",
       "displayName": "x86 Release",
       "inherits": "windows-base",
-      "configurePreset": "x86-release"
+      "configurePreset": "x86-release",
+      //"cleanFirst": true,
+      "configuration": "Release",
+      "description": "Build Windows x86 Release"
+
     },    
     {
       "name": "linux-base",
@@ -218,13 +230,19 @@
       "name": "linux-debug",
       "displayName": "Linux Debug",
       "configurePreset": "linux-debug",
-      "inherits": "linux-base"
+      "inherits": "linux-base",
+      //"cleanFirst": true,
+      "configuration": "Debug",
+      "description": "Build Linux Debug"
     },
     {
       "name": "linux-release",
       "displayName": "Linux Release",
       "configurePreset": "linux-release",
-      "inherits": "linux-base"
+      "inherits": "linux-base",
+      //"cleanFirst": true,
+      "configuration": "Release",
+      "description": "Build Linux Release"
     },   
     {
       "name": "linux-mingw-w64-base",
