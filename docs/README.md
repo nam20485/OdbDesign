@@ -316,6 +316,31 @@ If you are interested in using the parser in your application or code, or have a
 * [LinkedIn](https://www.linkedin.com/in/namiller/)
 * [OdbDesign Website](https://nam20485.github.io/OdbDesign/)
 * Gitter chat room: [odbdesign:gitter.im](https://app.gitter.im/#/room/#odbdesign:gitter.im)
+* Use the button below to schedule a video call on Google.
+
+<html>
+<p>
+<!-- Google Calendar Appointment Scheduling begin -->
+<link href="https://calendar.google.com/calendar/scheduling-button-script.css" rel="stylesheet">
+<script src="https://calendar.google.com/calendar/scheduling-button-script.js" async></script>
+</p>
+<script>
+(function() {
+  var target = document.currentScript;
+  window.addEventListener('load', function() {
+    calendar.schedulingButton.load({
+      url: 'https://calendar.google.com/calendar/appointments/schedules/AcZssZ3_P9bK4nYHmGvxLD6VuCEb4OR_n5jjNqds9-tE5MWGEl7Xx-WkrFQjAqC81DZhHdj3kRbZvyHy?gv=true',
+      color: '#0B8043',
+      label: "Schedule Video Call for Support or Discussion",
+      target,
+    });
+  });
+})();
+</script>
+<!-- end Google Calendar Appointment Scheduling -->
+</html>
+
+You can use this to get help or support, discuss any issues with integration into your system, or consulting inquiries.
 
 ## ODB++
 
