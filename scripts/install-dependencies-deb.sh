@@ -2,7 +2,8 @@
 set -e
 
 sudo apt update
-sudo apt install    git \
+sudo apt install -y -qq --no-install-recommends \
+                    git \
                     cmake \
                     ninja-build \
                     build-essential \
