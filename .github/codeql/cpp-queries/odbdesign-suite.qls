@@ -1,0 +1,17 @@
+description: OdbDesign Custom Security Analysis Query Suite
+queries:
+  - query: ./odbdesign-security.ql
+  - query: ./http-response-splitting.ql
+  - query: codeql/cpp-queries:Security/CWE/CWE-078/CommandInjection.ql
+  - query: codeql/cpp-queries:Security/CWE/CWE-079/CrossSiteScripting.ql
+  - query: codeql/cpp-queries:Security/CWE/CWE-089/SqlInjection.ql
+  - query: codeql/cpp-queries:Security/CWE/CWE-120/BufferWrite.ql
+  - query: codeql/cpp-queries:Security/CWE/CWE-121/StackBufferOverflow.ql
+  - query: codeql/cpp-queries:Security/CWE/CWE-190/IntegerOverflow.ql
+  - query: codeql/cpp-queries:Security/CWE/CWE-416/UseAfterFree.ql
+  - query: codeql/cpp-queries:Security/CWE/CWE-457/UseOfUninitializedVariable.ql
+  - query: codeql/cpp-queries:Security/CWE/CWE-476/NullPointerDereference.ql
+  - query: codeql/cpp-queries:Security/CWE/CWE-676/DangerousUncontrolledCode.ql
+  - query: codeql/cpp-queries:Correctness/Memory/UninitializedLocal.ql
+  - query: codeql/cpp-queries:Correctness/Memory/ReturnStackAllocatedMemory.ql
+  - query: codeql/cpp-queries:Best Practices/Likely Errors/OffsetUseBeforeRangeCheck.ql
