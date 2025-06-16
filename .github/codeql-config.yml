@@ -1,20 +1,44 @@
-name: CodeQL Config
+name: "CodeQL Security Analysis Configuration"
 
-# paths-ignore only works for interpreted languages (i.e. not C/C++)
+# Configure what CodeQL should analyze
+paths:
+  - "OdbDesignServer/**"
+  - "OdbDesignApp/**" 
+  - "OdbDesignLib/**"
+  - "Utils/**"
 
-# paths:
-#   - /home/runner/work/OdbDesign/OdbDesign/OdbDesignServer
-#   - /home/runner/work/OdbDesign/OdbDesign/OdbDesignApp
-#   - /home/runner/work/OdbDesign/OdbDesign/OdbDesignTests
-#   - /home/runner/work/OdbDesign/OdbDesign/OdbDesignLib
-#   - /home/runner/work/OdbDesign/OdbDesign/Utils
+# Exclude generated code, dependencies, and build artifacts
+paths-ignore:
+  - "vcpkg/**"
+  - "vcpkg_installed/**"
+  - "out/**"
+  - "build/**"
+  - "**/CMakeFiles/**"
+  - "**/_deps/**"
+  - "OdbDesignLib/ProtoBuf/Odb/**.pb.h"
+  - "OdbDesignLib/ProtoBuf/Odb/**.pb.cc"
+  - "**/*.proto"
+  - "**/protoc/**"
 
-#paths-ignore:
-#  - /home/runner/work/OdbDesign/OdbDesign/vcpkg/**/*
-#  - /home/runner/work/OdbDesign/OdbDesign/out/build/linux-release/vcpkg_installed/**/*
+# Enable comprehensive security analysis
+queries:
+  - uses: security-and-quality
+  - uses: security-extended
+  - uses: security-experimental
+  - uses: .github/codeql/cpp-queries/odbdesign-suite.qls
 
-#queries:
-#  - uses: security
-  #- uses: security-and-quality
-  #- security-experimental
-  #- security-extended
+# Disable problematic queries that may cause false positives
+disable-default-queries: false
+query-filters:
+  - exclude:
+      id: "cpp/uncontrolled-format-string"
+  - exclude:
+      id: "cpp/poorly-documented-function"
+  - exclude:
+      id: "cpp/use-of-goto"
+
+# Configure C++ specific analysis
+query-suites:
+  - codeql/cpp-queries:Security/CWE
+  - codeql/cpp-queries:Correctness
+  - codeql/cpp-queries:Performance
