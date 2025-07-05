@@ -27,6 +27,7 @@ namespace Odb::Lib::FileModel::Design
 		m_attributeNames.clear();
 		m_attributeTextValues.clear();
 		m_symbolNamesByName.clear();
+		m_symbolNames.clear();
 	}
 
 	bool FeaturesFile::Parse(std::filesystem::path directory, const std::string& alternateFilename /*= ""*/)
@@ -204,6 +205,7 @@ namespace Odb::Lib::FileModel::Design
 							throw_parse_error(m_path, line, "", lineNumber);
 						}
 						m_symbolNamesByName[pSymbolName->GetName()] = pSymbolName;
+						m_symbolNames.push_back(pSymbolName);
 					}
 					else if (line.find(FeatureRecord::LINE_TOKEN) == 0)
 					{
@@ -816,6 +818,11 @@ namespace Odb::Lib::FileModel::Design
 		return m_symbolNamesByName;
 	}
 
+	const SymbolName::Vector& FeaturesFile::GetSymbolNames() const
+	{
+		return m_symbolNames;
+	}
+
 	const FeaturesFile::FeatureRecord::Vector& FeaturesFile::GetFeatureRecords() const
 	{
 		return m_featureRecords;
@@ -835,6 +842,10 @@ namespace Odb::Lib::FileModel::Design
 		{
 			(*pFeaturesFileMessage->mutable_symbolnamesbyname())[kvSymbolName.first] = *kvSymbolName.second->to_protobuf();
 		}		
+		for (const auto& symbolName : m_symbolNames)
+		{
+			pFeaturesFileMessage->add_symbolnames()->CopyFrom(*symbolName->to_protobuf());
+		}	
 		return pFeaturesFileMessage;
 	}
 
@@ -854,7 +865,13 @@ namespace Odb::Lib::FileModel::Design
 			auto pSymbolName = std::make_shared<SymbolName>();
 			pSymbolName->from_protobuf(kvSymbolNameMessage.second);
 			m_symbolNamesByName[kvSymbolNameMessage.first] = pSymbolName;
-		}			
+		}
+		for (const auto& symbolNameMessage : message.symbolnames())
+		{
+			auto pSymbolName = std::make_shared<SymbolName>();
+			pSymbolName->from_protobuf(symbolNameMessage);
+			m_symbolNames.push_back(pSymbolName);
+		}
 	}
 
 	bool FeaturesFile::Save(std::ostream& os)
