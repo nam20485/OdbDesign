@@ -860,18 +860,28 @@ namespace Odb::Lib::FileModel::Design
 			pFeatureRecord->from_protobuf(featureRecordMessage);
 			m_featureRecords.push_back(pFeatureRecord);
 		}
-		for (const auto& kvSymbolNameMessage : message.symbolnamesbyname())
-		{
-			auto pSymbolName = std::make_shared<SymbolName>();
-			pSymbolName->from_protobuf(kvSymbolNameMessage.second);
-			m_symbolNamesByName[kvSymbolNameMessage.first] = pSymbolName;
+		if (message.symbolnames().size() > 0)
+		{		
+			// create both collections from symbolNames
+			for (const auto& symbolNameMessage : message.symbolnames())
+			{
+				auto pSymbolName = std::make_shared<SymbolName>();
+				pSymbolName->from_protobuf(symbolNameMessage);
+				m_symbolNames.push_back(pSymbolName);
+				m_symbolNamesByName[pSymbolName->GetName()] = pSymbolName;
+			}			
 		}
-		for (const auto& symbolNameMessage : message.symbolnames())
+		else if (message.symbolnamesbyname().size() > 0)
 		{
-			auto pSymbolName = std::make_shared<SymbolName>();
-			pSymbolName->from_protobuf(symbolNameMessage);
-			m_symbolNames.push_back(pSymbolName);
-		}
+			// create both collections from symbolsByName
+			for (const auto& kvSymbolNameMessage : message.symbolnamesbyname())
+			{
+				auto pSymbolName = std::make_shared<SymbolName>();
+				pSymbolName->from_protobuf(kvSymbolNameMessage.second);
+				m_symbolNamesByName[kvSymbolNameMessage.first] = pSymbolName;
+				m_symbolNames.push_back(pSymbolName);
+			}
+		}		
 	}
 
 	bool FeaturesFile::Save(std::ostream& os)
