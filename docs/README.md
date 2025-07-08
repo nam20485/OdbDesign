@@ -165,7 +165,7 @@ Documentation for the currently-released version of the source code is available
 
 > If you are building on a Linux system then the dependencies listed below can be installed using your package manager. For example on Ubuntu/Debian/Mint you can install them (except for vcpkg and Docker) using the following command:
 
-`$ sudo apt install git cmake ninja-build build-essential`
+`$ sudo apt install git cmake ninja-build build-essential pkg-config`
 
 * git ([install instructions for your platform](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git))
 * vcpkg ([install instructions for your platform](https://vcpkg.io/en/getting-started.html))

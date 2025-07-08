@@ -40,7 +40,7 @@ namespace Odb::Lib::App
 		//		});
 	}
 
-	crow::response Odb::Lib::App::RouteController::makeLoadedFileModelsResponse() const
+	crow::response Odb::Lib::App::RouteController::makeLoadedFileModelsResponse(bool created) const
 	{
 		auto unloadedDesignNames = m_serverApp.designs().getUnloadedDesignNames();
 		auto loadedFileArchiveNames = m_serverApp.designs().getLoadedFileArchiveNames();
@@ -74,6 +74,17 @@ namespace Odb::Lib::App
 		auto j = jsonResponse.dump();
 #endif
 
-		return crow::response(jsonResponse);
+		// determine type of success code
+		auto httpCode = crow::status::OK;
+		if (created)
+		{
+			httpCode = crow::status::CREATED;
+		}
+		else if (unloadedDesignNames.empty())
+		{
+			httpCode = crow::status::NO_CONTENT;
+		}
+
+		return crow::response(httpCode , jsonResponse);
 	}
 }
