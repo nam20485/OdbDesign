@@ -152,7 +152,7 @@ namespace Odb::App::Server
 
 	crow::response DesignsController::designs_list_route_handler(const crow::request& req)
 	{
-		return makeLoadedFileModelsResponse();
+		return makeLoadedFileModelsResponse(false);
 	}
 
 	crow::response DesignsController::design_route_handler(std::string designName, const crow::request& req)

@@ -27,7 +27,7 @@ namespace Odb::Lib::App
 
 		void register_route_handler(std::string route, TRouteHandlerFunction handler);	
 
-        crow::response makeLoadedFileModelsResponse() const;
+        crow::response makeLoadedFileModelsResponse(bool) const;
 
 	};
 }
