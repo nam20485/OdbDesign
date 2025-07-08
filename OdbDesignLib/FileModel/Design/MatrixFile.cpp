@@ -501,9 +501,10 @@ namespace Odb::Lib::FileModel::Design
         pLayerRecordMessage->set_row(row);
         pLayerRecordMessage->set_startname(startName);
         pLayerRecordMessage->set_type(static_cast<Odb::Lib::Protobuf::MatrixFile::LayerRecord::Type>(type));
-        //pLayerRecordMessage->mutable_color()->set_r(color.r);
-        //pLayerRecordMessage->mutable_color()->set_g(color.g);
-        //pLayerRecordMessage->mutable_color()->set_b(color.b);
+        pLayerRecordMessage->mutable_color()->set_red(color.red);
+        pLayerRecordMessage->mutable_color()->set_green(color.green);
+        pLayerRecordMessage->mutable_color()->set_blue(color.blue);
+        pLayerRecordMessage->mutable_color()->set_nopreference(color.noPreference);
 
 
         return pLayerRecordMessage;
@@ -527,8 +528,9 @@ namespace Odb::Lib::FileModel::Design
 		row = message.row();
 		startName = message.startname();
 		type = static_cast<Type>(message.type());
-		//color.r = message.color().r();
-		//color.g = message.color().g();
-		//color.b = message.color().b();
+        color.red = message.color().red();
+        color.green = message.color().green();
+        color.blue = message.color().blue();
+        color.noPreference = message.color().nopreference();
     }   
 }

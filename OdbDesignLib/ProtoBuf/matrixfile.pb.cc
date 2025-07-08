@@ -54,12 +54,13 @@ struct MatrixFile_StepRecordDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 MatrixFile_StepRecordDefaultTypeInternal _MatrixFile_StepRecord_default_instance_;
 
 inline constexpr MatrixFile_LayerRecord::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
-      : name_(
+      : _cached_size_{0},
+        name_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()),
         dielectricname_(
@@ -77,6 +78,7 @@ inline constexpr MatrixFile_LayerRecord::Impl_::Impl_(
         addtype_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()),
+        color_{nullptr},
         row_{0u},
         context_{static_cast< ::Odb::Lib::Protobuf::MatrixFile_LayerRecord_Context >(0)},
         type_{static_cast< ::Odb::Lib::Protobuf::MatrixFile_LayerRecord_Type >(0)},
@@ -86,8 +88,7 @@ inline constexpr MatrixFile_LayerRecord::Impl_::Impl_(
         cutop_{0u},
         cubottom_{0u},
         ref_{0u},
-        id_{0u},
-        _cached_size_{0} {}
+        id_{0u} {}
 
 template <typename>
 PROTOBUF_CONSTEXPR MatrixFile_LayerRecord::MatrixFile_LayerRecord(::_pbi::ConstantInitialized)
@@ -106,7 +107,7 @@ struct MatrixFile_LayerRecordDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 MatrixFile_LayerRecordDefaultTypeInternal _MatrixFile_LayerRecord_default_instance_;
 
 inline constexpr MatrixFile::Impl_::Impl_(
@@ -132,7 +133,7 @@ struct MatrixFileDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 MatrixFileDefaultTypeInternal _MatrixFile_default_instance_;
 }  // namespace Protobuf
 }  // namespace Lib
@@ -154,7 +155,7 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::MatrixFile_StepRecord, _impl_.column_),
         PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::MatrixFile_StepRecord, _impl_.id_),
         PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::MatrixFile_StepRecord, _impl_.name_),
-        ~0u,  // no _has_bits_
+        PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::MatrixFile_LayerRecord, _impl_._has_bits_),
         PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::MatrixFile_LayerRecord, _internal_metadata_),
         ~0u,  // no _extensions_
         ~0u,  // no _oneof_case_
@@ -177,7 +178,25 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::MatrixFile_LayerRecord, _impl_.endname_),
         PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::MatrixFile_LayerRecord, _impl_.oldname_),
         PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::MatrixFile_LayerRecord, _impl_.addtype_),
+        PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::MatrixFile_LayerRecord, _impl_.color_),
         PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::MatrixFile_LayerRecord, _impl_.id_),
+        ~0u,
+        ~0u,
+        ~0u,
+        ~0u,
+        ~0u,
+        ~0u,
+        ~0u,
+        ~0u,
+        ~0u,
+        ~0u,
+        ~0u,
+        ~0u,
+        ~0u,
+        ~0u,
+        ~0u,
+        0,
+        ~0u,
         ~0u,  // no _has_bits_
         PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::MatrixFile, _internal_metadata_),
         ~0u,  // no _extensions_
@@ -193,8 +212,8 @@ const ::uint32_t
 static const ::_pbi::MigrationSchema
     schemas[] ABSL_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
         {0, -1, -1, sizeof(::Odb::Lib::Protobuf::MatrixFile_StepRecord)},
-        {11, -1, -1, sizeof(::Odb::Lib::Protobuf::MatrixFile_LayerRecord)},
-        {35, -1, -1, sizeof(::Odb::Lib::Protobuf::MatrixFile)},
+        {11, 36, -1, sizeof(::Odb::Lib::Protobuf::MatrixFile_LayerRecord)},
+        {53, -1, -1, sizeof(::Odb::Lib::Protobuf::MatrixFile)},
 };
 static const ::_pb::Message* const file_default_instances[] = {
     &::Odb::Lib::Protobuf::_MatrixFile_StepRecord_default_instance_._instance,
@@ -203,48 +222,50 @@ static const ::_pb::Message* const file_default_instances[] = {
 };
 const char descriptor_table_protodef_matrixfile_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
     protodesc_cold) = {
-    "\n\020matrixfile.proto\022\020Odb.Lib.Protobuf\032\013en"
-    "ums.proto\"\350\007\n\nMatrixFile\0226\n\005steps\030\001 \003(\0132"
-    "\'.Odb.Lib.Protobuf.MatrixFile.StepRecord"
-    "\0228\n\006layers\030\002 \003(\0132(.Odb.Lib.Protobuf.Matr"
-    "ixFile.LayerRecord\0326\n\nStepRecord\022\016\n\006colu"
-    "mn\030\001 \001(\r\022\n\n\002id\030\002 \001(\r\022\014\n\004name\030\003 \001(\t\032\257\006\n\013L"
-    "ayerRecord\022\013\n\003row\030\001 \001(\r\022A\n\007context\030\002 \001(\016"
-    "20.Odb.Lib.Protobuf.MatrixFile.LayerReco"
-    "rd.Context\022;\n\004type\030\003 \001(\0162-.Odb.Lib.Proto"
-    "buf.MatrixFile.LayerRecord.Type\022\014\n\004name\030"
-    "\004 \001(\t\022,\n\010polarity\030\005 \001(\0162\032.Odb.Lib.Protob"
-    "uf.Polarity\022O\n\016dielectricType\030\006 \001(\01627.Od"
-    "b.Lib.Protobuf.MatrixFile.LayerRecord.Di"
-    "electricType\022\026\n\016dielectricName\030\007 \001(\t\022;\n\004"
-    "form\030\010 \001(\0162-.Odb.Lib.Protobuf.MatrixFile"
-    ".LayerRecord.Form\022\r\n\005cuTop\030\t \001(\r\022\020\n\010cuBo"
-    "ttom\030\n \001(\r\022\013\n\003ref\030\013 \001(\r\022\021\n\tstartName\030\014 \001"
-    "(\t\022\017\n\007endName\030\r \001(\t\022\017\n\007oldName\030\016 \001(\t\022\017\n\007"
-    "addType\030\017 \001(\t\022\n\n\002id\030\021 \001(\r\"\300\001\n\004Type\022\n\n\006Si"
-    "gnal\020\000\022\017\n\013PowerGround\020\001\022\016\n\nDielectric\020\002\022"
-    "\t\n\005Mixed\020\003\022\016\n\nSolderMask\020\004\022\017\n\013SolderPast"
-    "e\020\005\022\016\n\nSilkScreen\020\006\022\t\n\005Drill\020\007\022\010\n\004Rout\020\010"
-    "\022\014\n\010Document\020\t\022\r\n\tComponent\020\n\022\010\n\004Mask\020\013\022"
-    "\023\n\017ConductivePaste\020\014\"\036\n\007Context\022\t\n\005Board"
-    "\020\000\022\010\n\004Misc\020\001\"1\n\016DielectricType\022\010\n\004None\020\000"
-    "\022\013\n\007Prepreg\020\001\022\010\n\004Core\020\002\"\033\n\004Form\022\t\n\005Rigid"
-    "\020\000\022\010\n\004Flex\020\001b\006proto3"
+    "\n\020matrixfile.proto\022\020Odb.Lib.Protobuf\032\013co"
+    "lor.proto\032\013enums.proto\"\220\010\n\nMatrixFile\0226\n"
+    "\005steps\030\001 \003(\0132\'.Odb.Lib.Protobuf.MatrixFi"
+    "le.StepRecord\0228\n\006layers\030\002 \003(\0132(.Odb.Lib."
+    "Protobuf.MatrixFile.LayerRecord\0326\n\nStepR"
+    "ecord\022\016\n\006column\030\001 \001(\r\022\n\n\002id\030\002 \001(\r\022\014\n\004nam"
+    "e\030\003 \001(\t\032\327\006\n\013LayerRecord\022\013\n\003row\030\001 \001(\r\022A\n\007"
+    "context\030\002 \001(\01620.Odb.Lib.Protobuf.MatrixF"
+    "ile.LayerRecord.Context\022;\n\004type\030\003 \001(\0162-."
+    "Odb.Lib.Protobuf.MatrixFile.LayerRecord."
+    "Type\022\014\n\004name\030\004 \001(\t\022,\n\010polarity\030\005 \001(\0162\032.O"
+    "db.Lib.Protobuf.Polarity\022O\n\016dielectricTy"
+    "pe\030\006 \001(\01627.Odb.Lib.Protobuf.MatrixFile.L"
+    "ayerRecord.DielectricType\022\026\n\016dielectricN"
+    "ame\030\007 \001(\t\022;\n\004form\030\010 \001(\0162-.Odb.Lib.Protob"
+    "uf.MatrixFile.LayerRecord.Form\022\r\n\005cuTop\030"
+    "\t \001(\r\022\020\n\010cuBottom\030\n \001(\r\022\013\n\003ref\030\013 \001(\r\022\021\n\t"
+    "startName\030\014 \001(\t\022\017\n\007endName\030\r \001(\t\022\017\n\007oldN"
+    "ame\030\016 \001(\t\022\017\n\007addType\030\017 \001(\t\022&\n\005color\030\020 \001("
+    "\0132\027.Odb.Lib.Protobuf.Color\022\n\n\002id\030\021 \001(\r\"\300"
+    "\001\n\004Type\022\n\n\006Signal\020\000\022\017\n\013PowerGround\020\001\022\016\n\n"
+    "Dielectric\020\002\022\t\n\005Mixed\020\003\022\016\n\nSolderMask\020\004\022"
+    "\017\n\013SolderPaste\020\005\022\016\n\nSilkScreen\020\006\022\t\n\005Dril"
+    "l\020\007\022\010\n\004Rout\020\010\022\014\n\010Document\020\t\022\r\n\tComponent"
+    "\020\n\022\010\n\004Mask\020\013\022\023\n\017ConductivePaste\020\014\"\036\n\007Con"
+    "text\022\t\n\005Board\020\000\022\010\n\004Misc\020\001\"1\n\016DielectricT"
+    "ype\022\010\n\004None\020\000\022\013\n\007Prepreg\020\001\022\010\n\004Core\020\002\"\033\n\004"
+    "Form\022\t\n\005Rigid\020\000\022\010\n\004Flex\020\001b\006proto3"
 };
-static const ::_pbi::DescriptorTable* const descriptor_table_matrixfile_2eproto_deps[1] =
+static const ::_pbi::DescriptorTable* const descriptor_table_matrixfile_2eproto_deps[2] =
     {
+        &::descriptor_table_color_2eproto,
         &::descriptor_table_enums_2eproto,
 };
 static ::absl::once_flag descriptor_table_matrixfile_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_matrixfile_2eproto = {
     false,
     false,
-    1060,
+    1113,
     descriptor_table_protodef_matrixfile_2eproto,
     "matrixfile.proto",
     &descriptor_table_matrixfile_2eproto_once,
     descriptor_table_matrixfile_2eproto_deps,
-    1,
+    2,
     3,
     schemas,
     file_default_instances,
@@ -648,8 +669,17 @@ void MatrixFile_StepRecord::InternalSwap(MatrixFile_StepRecord* PROTOBUF_RESTRIC
 
 class MatrixFile_LayerRecord::_Internal {
  public:
+  using HasBits =
+      decltype(std::declval<MatrixFile_LayerRecord>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(MatrixFile_LayerRecord, _impl_._has_bits_);
 };
 
+void MatrixFile_LayerRecord::clear_color() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (_impl_.color_ != nullptr) _impl_.color_->Clear();
+  _impl_._has_bits_[0] &= ~0x00000001u;
+}
 MatrixFile_LayerRecord::MatrixFile_LayerRecord(::google::protobuf::Arena* arena)
 #if defined(PROTOBUF_CUSTOM_VTABLE)
     : ::google::protobuf::Message(arena, _class_data_.base()) {
@@ -662,13 +692,14 @@ MatrixFile_LayerRecord::MatrixFile_LayerRecord(::google::protobuf::Arena* arena)
 inline PROTOBUF_NDEBUG_INLINE MatrixFile_LayerRecord::Impl_::Impl_(
     ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
     const Impl_& from, const ::Odb::Lib::Protobuf::MatrixFile_LayerRecord& from_msg)
-      : name_(arena, from.name_),
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0},
+        name_(arena, from.name_),
         dielectricname_(arena, from.dielectricname_),
         startname_(arena, from.startname_),
         endname_(arena, from.endname_),
         oldname_(arena, from.oldname_),
-        addtype_(arena, from.addtype_),
-        _cached_size_{0} {}
+        addtype_(arena, from.addtype_) {}
 
 MatrixFile_LayerRecord::MatrixFile_LayerRecord(
     ::google::protobuf::Arena* arena,
@@ -683,6 +714,10 @@ MatrixFile_LayerRecord::MatrixFile_LayerRecord(
   _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
       from._internal_metadata_);
   new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+  ::uint32_t cached_has_bits = _impl_._has_bits_[0];
+  _impl_.color_ = (cached_has_bits & 0x00000001u) ? ::google::protobuf::Message::CopyConstruct<::Odb::Lib::Protobuf::Color>(
+                              arena, *from._impl_.color_)
+                        : nullptr;
   ::memcpy(reinterpret_cast<char *>(&_impl_) +
                offsetof(Impl_, row_),
            reinterpret_cast<const char *>(&from._impl_) +
@@ -696,21 +731,21 @@ MatrixFile_LayerRecord::MatrixFile_LayerRecord(
 inline PROTOBUF_NDEBUG_INLINE MatrixFile_LayerRecord::Impl_::Impl_(
     ::google::protobuf::internal::InternalVisibility visibility,
     ::google::protobuf::Arena* arena)
-      : name_(arena),
+      : _cached_size_{0},
+        name_(arena),
         dielectricname_(arena),
         startname_(arena),
         endname_(arena),
         oldname_(arena),
-        addtype_(arena),
-        _cached_size_{0} {}
+        addtype_(arena) {}
 
 inline void MatrixFile_LayerRecord::SharedCtor(::_pb::Arena* arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
   ::memset(reinterpret_cast<char *>(&_impl_) +
-               offsetof(Impl_, row_),
+               offsetof(Impl_, color_),
            0,
            offsetof(Impl_, id_) -
-               offsetof(Impl_, row_) +
+               offsetof(Impl_, color_) +
                sizeof(Impl_::id_));
 }
 MatrixFile_LayerRecord::~MatrixFile_LayerRecord() {
@@ -727,6 +762,7 @@ inline void MatrixFile_LayerRecord::SharedDtor(MessageLite& self) {
   this_._impl_.endname_.Destroy();
   this_._impl_.oldname_.Destroy();
   this_._impl_.addtype_.Destroy();
+  delete this_._impl_.color_;
   this_._impl_.~Impl_();
 }
 
@@ -766,17 +802,17 @@ const ::google::protobuf::internal::ClassData* MatrixFile_LayerRecord::GetClassD
   return _class_data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<5, 16, 0, 112, 2> MatrixFile_LayerRecord::_table_ = {
+const ::_pbi::TcParseTable<5, 17, 1, 112, 2> MatrixFile_LayerRecord::_table_ = {
   {
-    0,  // no _has_bits_
+    PROTOBUF_FIELD_OFFSET(MatrixFile_LayerRecord, _impl_._has_bits_),
     0, // no _extensions_
     17, 248,  // max_field_number, fast_idx_mask
     offsetof(decltype(_table_), field_lookup_table),
-    4294868992,  // skipmap
+    4294836224,  // skipmap
     offsetof(decltype(_table_), field_entries),
-    16,  // num_field_entries
-    0,  // num_aux_entries
-    offsetof(decltype(_table_), field_names),  // no aux_entries
+    17,  // num_field_entries
+    1,  // num_aux_entries
+    offsetof(decltype(_table_), aux_entries),
     _class_data_.base(),
     nullptr,  // post_loop_handler
     ::_pbi::TcParser::GenericFallback,  // fallback
@@ -830,7 +866,9 @@ const ::_pbi::TcParseTable<5, 16, 0, 112, 2> MatrixFile_LayerRecord::_table_ = {
     // string addType = 15;
     {::_pbi::TcParser::FastUS1,
      {122, 63, 0, PROTOBUF_FIELD_OFFSET(MatrixFile_LayerRecord, _impl_.addtype_)}},
-    {::_pbi::TcParser::MiniParse, {}},
+    // .Odb.Lib.Protobuf.Color color = 16;
+    {::_pbi::TcParser::FastMtS2,
+     {386, 0, 0, PROTOBUF_FIELD_OFFSET(MatrixFile_LayerRecord, _impl_.color_)}},
     // uint32 id = 17;
     {::_pbi::TcParser::FastV32S2,
      {392, 63, 0, PROTOBUF_FIELD_OFFSET(MatrixFile_LayerRecord, _impl_.id_)}},
@@ -852,56 +890,59 @@ const ::_pbi::TcParseTable<5, 16, 0, 112, 2> MatrixFile_LayerRecord::_table_ = {
     65535, 65535
   }}, {{
     // uint32 row = 1;
-    {PROTOBUF_FIELD_OFFSET(MatrixFile_LayerRecord, _impl_.row_), 0, 0,
+    {PROTOBUF_FIELD_OFFSET(MatrixFile_LayerRecord, _impl_.row_), -1, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
     // .Odb.Lib.Protobuf.MatrixFile.LayerRecord.Context context = 2;
-    {PROTOBUF_FIELD_OFFSET(MatrixFile_LayerRecord, _impl_.context_), 0, 0,
+    {PROTOBUF_FIELD_OFFSET(MatrixFile_LayerRecord, _impl_.context_), -1, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kOpenEnum)},
     // .Odb.Lib.Protobuf.MatrixFile.LayerRecord.Type type = 3;
-    {PROTOBUF_FIELD_OFFSET(MatrixFile_LayerRecord, _impl_.type_), 0, 0,
+    {PROTOBUF_FIELD_OFFSET(MatrixFile_LayerRecord, _impl_.type_), -1, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kOpenEnum)},
     // string name = 4;
-    {PROTOBUF_FIELD_OFFSET(MatrixFile_LayerRecord, _impl_.name_), 0, 0,
+    {PROTOBUF_FIELD_OFFSET(MatrixFile_LayerRecord, _impl_.name_), -1, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
     // .Odb.Lib.Protobuf.Polarity polarity = 5;
-    {PROTOBUF_FIELD_OFFSET(MatrixFile_LayerRecord, _impl_.polarity_), 0, 0,
+    {PROTOBUF_FIELD_OFFSET(MatrixFile_LayerRecord, _impl_.polarity_), -1, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kOpenEnum)},
     // .Odb.Lib.Protobuf.MatrixFile.LayerRecord.DielectricType dielectricType = 6;
-    {PROTOBUF_FIELD_OFFSET(MatrixFile_LayerRecord, _impl_.dielectrictype_), 0, 0,
+    {PROTOBUF_FIELD_OFFSET(MatrixFile_LayerRecord, _impl_.dielectrictype_), -1, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kOpenEnum)},
     // string dielectricName = 7;
-    {PROTOBUF_FIELD_OFFSET(MatrixFile_LayerRecord, _impl_.dielectricname_), 0, 0,
+    {PROTOBUF_FIELD_OFFSET(MatrixFile_LayerRecord, _impl_.dielectricname_), -1, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
     // .Odb.Lib.Protobuf.MatrixFile.LayerRecord.Form form = 8;
-    {PROTOBUF_FIELD_OFFSET(MatrixFile_LayerRecord, _impl_.form_), 0, 0,
+    {PROTOBUF_FIELD_OFFSET(MatrixFile_LayerRecord, _impl_.form_), -1, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kOpenEnum)},
     // uint32 cuTop = 9;
-    {PROTOBUF_FIELD_OFFSET(MatrixFile_LayerRecord, _impl_.cutop_), 0, 0,
+    {PROTOBUF_FIELD_OFFSET(MatrixFile_LayerRecord, _impl_.cutop_), -1, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
     // uint32 cuBottom = 10;
-    {PROTOBUF_FIELD_OFFSET(MatrixFile_LayerRecord, _impl_.cubottom_), 0, 0,
+    {PROTOBUF_FIELD_OFFSET(MatrixFile_LayerRecord, _impl_.cubottom_), -1, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
     // uint32 ref = 11;
-    {PROTOBUF_FIELD_OFFSET(MatrixFile_LayerRecord, _impl_.ref_), 0, 0,
+    {PROTOBUF_FIELD_OFFSET(MatrixFile_LayerRecord, _impl_.ref_), -1, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
     // string startName = 12;
-    {PROTOBUF_FIELD_OFFSET(MatrixFile_LayerRecord, _impl_.startname_), 0, 0,
+    {PROTOBUF_FIELD_OFFSET(MatrixFile_LayerRecord, _impl_.startname_), -1, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
     // string endName = 13;
-    {PROTOBUF_FIELD_OFFSET(MatrixFile_LayerRecord, _impl_.endname_), 0, 0,
+    {PROTOBUF_FIELD_OFFSET(MatrixFile_LayerRecord, _impl_.endname_), -1, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
     // string oldName = 14;
-    {PROTOBUF_FIELD_OFFSET(MatrixFile_LayerRecord, _impl_.oldname_), 0, 0,
+    {PROTOBUF_FIELD_OFFSET(MatrixFile_LayerRecord, _impl_.oldname_), -1, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
     // string addType = 15;
-    {PROTOBUF_FIELD_OFFSET(MatrixFile_LayerRecord, _impl_.addtype_), 0, 0,
+    {PROTOBUF_FIELD_OFFSET(MatrixFile_LayerRecord, _impl_.addtype_), -1, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // .Odb.Lib.Protobuf.Color color = 16;
+    {PROTOBUF_FIELD_OFFSET(MatrixFile_LayerRecord, _impl_.color_), _Internal::kHasBitsOffset + 0, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kMessage | ::_fl::kTvTable)},
     // uint32 id = 17;
-    {PROTOBUF_FIELD_OFFSET(MatrixFile_LayerRecord, _impl_.id_), 0, 0,
+    {PROTOBUF_FIELD_OFFSET(MatrixFile_LayerRecord, _impl_.id_), -1, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
-  }},
-  // no aux_entries
-  {{
+  }}, {{
+    {::_pbi::TcParser::GetTable<::Odb::Lib::Protobuf::Color>()},
+  }}, {{
     "\47\0\0\0\4\0\0\16\0\0\0\0\11\7\7\7\0\0\0\0\0\0\0\0"
     "Odb.Lib.Protobuf.MatrixFile.LayerRecord"
     "name"
@@ -926,9 +967,15 @@ PROTOBUF_NOINLINE void MatrixFile_LayerRecord::Clear() {
   _impl_.endname_.ClearToEmpty();
   _impl_.oldname_.ClearToEmpty();
   _impl_.addtype_.ClearToEmpty();
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000001u) {
+    ABSL_DCHECK(_impl_.color_ != nullptr);
+    _impl_.color_->Clear();
+  }
   ::memset(&_impl_.row_, 0, static_cast<::size_t>(
       reinterpret_cast<char*>(&_impl_.id_) -
       reinterpret_cast<char*>(&_impl_.row_)) + sizeof(_impl_.id_));
+  _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
@@ -1058,6 +1105,14 @@ PROTOBUF_NOINLINE void MatrixFile_LayerRecord::Clear() {
             target = stream->WriteStringMaybeAliased(15, _s, target);
           }
 
+          cached_has_bits = this_._impl_._has_bits_[0];
+          // .Odb.Lib.Protobuf.Color color = 16;
+          if (cached_has_bits & 0x00000001u) {
+            target = ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
+                16, *this_._impl_.color_, this_._impl_.color_->GetCachedSize(), target,
+                stream);
+          }
+
           // uint32 id = 17;
           if (this_._internal_id() != 0) {
             target = stream->EnsureSpace(target);
@@ -1120,6 +1175,16 @@ PROTOBUF_NOINLINE void MatrixFile_LayerRecord::Clear() {
               total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
                                               this_._internal_addtype());
             }
+          }
+           {
+            // .Odb.Lib.Protobuf.Color color = 16;
+            cached_has_bits = this_._impl_._has_bits_[0];
+            if (cached_has_bits & 0x00000001u) {
+              total_size += 2 +
+                            ::google::protobuf::internal::WireFormatLite::MessageSize(*this_._impl_.color_);
+            }
+          }
+           {
             // uint32 row = 1;
             if (this_._internal_row() != 0) {
               total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
@@ -1178,6 +1243,7 @@ PROTOBUF_NOINLINE void MatrixFile_LayerRecord::Clear() {
 void MatrixFile_LayerRecord::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
   auto* const _this = static_cast<MatrixFile_LayerRecord*>(&to_msg);
   auto& from = static_cast<const MatrixFile_LayerRecord&>(from_msg);
+  ::google::protobuf::Arena* arena = _this->GetArena();
   // @@protoc_insertion_point(class_specific_merge_from_start:Odb.Lib.Protobuf.MatrixFile.LayerRecord)
   ABSL_DCHECK_NE(&from, _this);
   ::uint32_t cached_has_bits = 0;
@@ -1200,6 +1266,16 @@ void MatrixFile_LayerRecord::MergeImpl(::google::protobuf::MessageLite& to_msg, 
   }
   if (!from._internal_addtype().empty()) {
     _this->_internal_set_addtype(from._internal_addtype());
+  }
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000001u) {
+    ABSL_DCHECK(from._impl_.color_ != nullptr);
+    if (_this->_impl_.color_ == nullptr) {
+      _this->_impl_.color_ =
+          ::google::protobuf::Message::CopyConstruct<::Odb::Lib::Protobuf::Color>(arena, *from._impl_.color_);
+    } else {
+      _this->_impl_.color_->MergeFrom(*from._impl_.color_);
+    }
   }
   if (from._internal_row() != 0) {
     _this->_impl_.row_ = from._impl_.row_;
@@ -1231,6 +1307,7 @@ void MatrixFile_LayerRecord::MergeImpl(::google::protobuf::MessageLite& to_msg, 
   if (from._internal_id() != 0) {
     _this->_impl_.id_ = from._impl_.id_;
   }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
   _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
 
@@ -1247,6 +1324,7 @@ void MatrixFile_LayerRecord::InternalSwap(MatrixFile_LayerRecord* PROTOBUF_RESTR
   auto* arena = GetArena();
   ABSL_DCHECK_EQ(arena, other->GetArena());
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.name_, &other->_impl_.name_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.dielectricname_, &other->_impl_.dielectricname_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.startname_, &other->_impl_.startname_, arena);
@@ -1256,9 +1334,9 @@ void MatrixFile_LayerRecord::InternalSwap(MatrixFile_LayerRecord* PROTOBUF_RESTR
   ::google::protobuf::internal::memswap<
       PROTOBUF_FIELD_OFFSET(MatrixFile_LayerRecord, _impl_.id_)
       + sizeof(MatrixFile_LayerRecord::_impl_.id_)
-      - PROTOBUF_FIELD_OFFSET(MatrixFile_LayerRecord, _impl_.row_)>(
-          reinterpret_cast<char*>(&_impl_.row_),
-          reinterpret_cast<char*>(&other->_impl_.row_));
+      - PROTOBUF_FIELD_OFFSET(MatrixFile_LayerRecord, _impl_.color_)>(
+          reinterpret_cast<char*>(&_impl_.color_),
+          reinterpret_cast<char*>(&other->_impl_.color_));
 }
 
 ::google::protobuf::Metadata MatrixFile_LayerRecord::GetMetadata() const {

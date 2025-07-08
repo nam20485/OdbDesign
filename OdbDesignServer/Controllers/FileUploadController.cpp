@@ -71,7 +71,7 @@ namespace Odb::App::Server
                         return authResp;
                     }
 
-                    return makeLoadedFileModelsResponse();
+                    return makeLoadedFileModelsResponse(false);
                 });
 
 //        CROW_ROUTE(m_serverApp.crow_app(), "/designs/list/<string>").methods(crow::HTTPMethod::GET)
@@ -119,7 +119,7 @@ namespace Odb::App::Server
 
         std::string responseBody = "{ \"filename\": \"" + safeName + "\" }";
 
-        return makeLoadedFileModelsResponse();
+        return makeLoadedFileModelsResponse(true);
     }
 
     crow::response FileUploadController::handleMultipartFormUpload(const crow::request& req)
@@ -195,7 +195,7 @@ namespace Odb::App::Server
             CROW_LOG_INFO << " Contents written to " << outfile_name << '\n';
         }
 
-        return makeLoadedFileModelsResponse();
+        return makeLoadedFileModelsResponse(true);
     }
 
     std::string FileUploadController::sanitizeFilename(const std::string& filename) const

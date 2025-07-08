@@ -37,6 +37,7 @@ namespace Odb::Lib::FileModel::Design
 		pPolygonPartMessage->set_xcenter(xCenter);
 		pPolygonPartMessage->set_ycenter(yCenter);
 		pPolygonPartMessage->set_isclockwise(isClockwise);
+		pPolygonPartMessage->set_type(static_cast<Odb::Lib::Protobuf::ContourPolygon::PolygonPart::Type>(type));
 		return pPolygonPartMessage;
 	}
 
@@ -47,5 +48,6 @@ namespace Odb::Lib::FileModel::Design
 		xCenter = message.xcenter();
 		yCenter = message.ycenter();
 		isClockwise = message.isclockwise();
+		type = static_cast<Type>(message.type());
 	}
 }
