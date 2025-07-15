@@ -7,22 +7,22 @@
 #include "CommandLineArgs.h"
 #include "CommandLineArgs.h"
 #include "CommandLineArgs.h"
+#include "CommandLineArgs.h"
+#include "CommandLineArgs.h"
 #include <exception>
 #include <stdexcept>
-#include "str_trim.h"
+#include "str_utils.h"
 #include <sstream>
 #include <iostream>
+#include <cstring>
 
 
 namespace Utils
 {
 	CommandLineArgs::CommandLineArgs(int argc, char* argv[])
 	{
-		// save arguments in std::string vector
-		for (int i = 0; i < argc; i++)
-		{
-			m_vecArguments.push_back(argv[i]);
-		}
+		// save arguments in std::string vector		
+		std::copy(argv, argv + argc, std::back_inserter(m_vecArguments));
 		parse();
 	}
 
@@ -75,19 +75,31 @@ namespace Utils
 		return defaultValue;
 	}
 
-	std::string CommandLineArgs::executable() const
+	std::filesystem::path CommandLineArgs::executable() const
 	{
-		return getArgValue(EXECUTABLE_ARG_NAME);
+		return std::filesystem::path(getArgValue(EXECUTABLE_ARG_NAME));
 	}
 
 	std::filesystem::path CommandLineArgs::executableDirectory() const
 	{
-		return std::filesystem::path(executable()).parent_path().string();
+		return executable().parent_path();
 	}
 
-	std::filesystem::path CommandLineArgs::executableName() const
+	std::string CommandLineArgs::executableName() const
 	{
-		return std::filesystem::path(executable()).filename().string();
+		return executable().filename().string();
+	}
+
+	bool CommandLineArgs::isWindows() const
+	{
+		auto pos = executableName().find(EXE_EXTENSION);
+		return (pos != std::string::npos && 
+				pos == executableName().length()-strlen(EXE_EXTENSION));
+	}
+
+	bool CommandLineArgs::isLinux() const
+	{
+		return !isWindows();
 	}
 
 	std::string CommandLineArgs::getArgValue(const std::string& name) const

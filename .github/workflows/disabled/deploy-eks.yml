@@ -1,0 +1,83 @@
+# This workflow will restart the deployment to affect a deployment of a new image in the EKS cluster
+
+name: Deploy to Amazon EKS
+
+on:
+  #push:
+  #  branches: [ "release" ]
+  repository_dispatch:
+    types: [ "trigger_deploy_release_event" ]
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: us-west-2
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-22.04
+    environment: 
+      name: ${{ github.event.client_payload.ref_name }}
+      url: http://default-ingress-1165108808.us-west-2.elb.amazonaws.com/swagger
+
+    steps:
+
+    - name: Harden Runner
+      uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+      with:
+        egress-policy: audit
+
+    - name: Check Dispatch ID
+      run: |
+        if [[ "${{ github.event.client_payload.dispatch_id }}" == "${{ secrets.DISPATCH_ID }}" ]]; then
+          echo "Dispatch ID is correct"
+        else
+          echo "Dispatch ID is not correct"
+          exit 1
+        fi
+
+    - name: Checkout
+      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+    
+    - name: Install AWS CLI
+      run: |
+        aws --version
+        # curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+        # unzip awscliv2.zip
+        # sudo ./aws/install
+        # aws --version
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4.0.2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}  
+
+    - name: Configure kubectl
+      run: |
+        aws --version
+        echo ${{ secrets.KUBECONFIG }} > ${{ github.workspace }}/kubeconfig
+        export KUBECONFIG=${{ github.workspace }}/kubeconfig
+        echo $KUBECONFIG
+        cat $KUBECONFIG
+        kubectl config view
+        kubectl config get-contexts
+        kubectl config use-context eks-uswest2-cluster
+        kubectl version   
+    
+    - name: Deploy to EKS
+      shell: pwsh
+      run: ${{ github.workspace }}/scripts/deploy.ps1
+         
+        
+
+

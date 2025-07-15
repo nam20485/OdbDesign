@@ -17,7 +17,8 @@
         "CMAKE_TOOLCHAIN_FILE": {
           "value": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
           "type": "FILEPATH"
-        }
+        },
+        "CMAKE_SUPPRESS_DEVELOPER_WARNINGS": "TRUE"
       },
       "condition": {
         "type": "equals",
@@ -36,15 +37,7 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug"
       }
-    },
-    {
-      "name": "python-x64-debug",
-      "displayName": "Python x64 Debug",
-      "inherits": "x64-debug",
-      "cacheVariables": {
-        "PYTHON_MODULE_BUILD": true
-      }
-    },
+    },    
     {
       "name": "x64-release",
       "displayName": "x64 Release",
@@ -52,15 +45,7 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
       }
-    },
-    {
-      "name": "python-x64-release",
-      "displayName": "Python x64 Release",
-      "inherits": "x64-release",
-      "cacheVariables": {
-        "PYTHON_MODULE_BUILD": true
-      }
-    },
+    },   
     {
       "name": "x86-debug",
       "displayName": "x86 Debug",
@@ -93,7 +78,8 @@
           "type": "FILEPATH"
         },
         "CMAKE_C_COMPILER": "cc",
-        "CMAKE_CXX_COMPILER": "c++"
+        "CMAKE_CXX_COMPILER": "c++",
+        "CMAKE_SUPPRESS_DEVELOPER_WARNINGS": "TRUE"
       },
       "condition": {
         "type": "equals",
@@ -121,23 +107,7 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"      
       }     
-    },
-    {
-      "name": "python-linux-release",
-      "displayName": "Python Linux Release",
-      "inherits": "linux-release",
-      "cacheVariables": {        
-        "PYTHON_MODULE_BUILD": true
-      }
-    },
-    {
-      "name": "python-linux-debug",
-      "displayName": "Python Linux Debug",
-      "inherits": "linux-debug",
-      "cacheVariables": {        
-        "PYTHON_MODULE_BUILD": true
-      }
-    },
+    },    
     {
       "name": "linux-mingw-w64-debug",
       "displayName": "Linux MinGW-w64 Debug",  
@@ -145,7 +115,7 @@
       "cacheVariables": {
         "CMAKE_C_COMPILER": "x86_64-w64-mingw32-gcc",
         "CMAKE_CXX_COMPILER": "x86_64-w64-mingw32-g++",
-        "CMAKE_CXX_FLAGS": "-static-libgcc -static-libstdc++"       
+        "CMAKE_CXX_FLAGS": "-static-libgcc -static-libstdc++"    
       }     
     },
     {
@@ -170,7 +140,8 @@
           "type": "FILEPATH"
         },
         "CMAKE_C_COMPILER": "cc",
-        "CMAKE_CXX_COMPILER": "c++"
+        "CMAKE_CXX_COMPILER": "c++",
+        "CMAKE_SUPPRESS_DEVELOPER_WARNINGS": "TRUE"
       },
       "condition": {
         "type": "equals",
@@ -214,38 +185,38 @@
       "name": "x64-debug",
       "displayName": "x64 Debug",
       "inherits": "windows-base",
-      "configurePreset": "x64-debug"
+      "configurePreset": "x64-debug",
+      //"cleanFirst": true,
+      "configuration": "Debug",
+      "description": "Build Windows x64 Debug"
     },
     {
       "name": "x64-release",
       "displayName": "x64 Release",
       "inherits": "windows-base",
-      "configurePreset": "x64-release"
+      "configurePreset": "x64-release",
+      "configuration": "Release",
+      "description": "Build Windows x64 Release"
     },    
     {
       "name": "x86-debug",
       "displayName": "x86 Debug",
       "inherits": "windows-base",
-      "configurePreset": "x86-debug"
+      "configurePreset": "x86-debug",
+      //"cleanFirst": true,
+      "configuration": "Debug",
+      "description": "Build Windows x86 Debug" 
     },
     {
       "name": "x86-release",
       "displayName": "x86 Release",
       "inherits": "windows-base",
-      "configurePreset": "x86-release"
-    },
-    {
-      "name": "python-x64-debug",
-      "displayName": "Python x64 Debug",
-      "inherits": "windows-base",
-      "configurePreset": "python-x64-debug"
-    },
-    {
-      "name": "python-x64-release",
-      "displayName": "Python x64 Release",
-      "inherits": "windows-base",
-      "configurePreset": "python-x64-release"
-    },
+      "configurePreset": "x86-release",
+      //"cleanFirst": true,
+      "configuration": "Release",
+      "description": "Build Windows x86 Release"
+
+    },    
     {
       "name": "linux-base",
       "hidden": true,
@@ -259,26 +230,20 @@
       "name": "linux-debug",
       "displayName": "Linux Debug",
       "configurePreset": "linux-debug",
-      "inherits": "linux-base"
+      "inherits": "linux-base",
+      //"cleanFirst": true,
+      "configuration": "Debug",
+      "description": "Build Linux Debug"
     },
     {
       "name": "linux-release",
       "displayName": "Linux Release",
       "configurePreset": "linux-release",
-      "inherits": "linux-base"
-    },
-    {
-      "name": "python-linux-debug",
-      "displayName": "Python Linux Debug",
-      "configurePreset": "python-linux-debug",
-      "inherits": "linux-base"
-    },
-    {
-      "name": "python-linux-release",
-      "displayName": "Python Linux Release",
-      "configurePreset": "python-linux-release",
-      "inherits": "linux-base"
-    },
+      "inherits": "linux-base",
+      //"cleanFirst": true,
+      "configuration": "Release",
+      "description": "Build Linux Release"
+    },   
     {
       "name": "linux-mingw-w64-base",
       "hidden": true,
@@ -355,19 +320,7 @@
       "displayName": "Test x86-Release",
       "inherits": "windows-base",
       "configurePreset": "x86-release"
-    },
-    {
-      "name": "python-x64-debug",
-      "displayName": "Test Python x64 Debug",  
-      "inherits": "windows-base",    
-      "configurePreset": "python-x64-debug"
-    },
-    {
-      "name": "python-x64-release",
-      "displayName": "Test Python x64 Release",
-      "inherits": "windows-base",
-      "configurePreset": "python-x64-release"
-    },
+    }, 
     {
       "name": "linux-base",
       "hidden": true,
@@ -388,19 +341,7 @@
       "displayName": "Test Linux Release",
       "configurePreset": "linux-release",
       "inherits": "linux-base"
-    },
-    {
-      "name": "python-linux-debug",
-      "displayName": "Test Python Linux Debug",
-      "configurePreset": "python-linux-debug",
-      "inherits": "linux-base"
-    },
-    {
-      "name": "python-linux-release",
-      "displayName": "Test Python Linux Release",
-      "configurePreset": "python-linux-release",
-      "inherits": "linux-base"
-    },
+    },   
     {
       "name": "linux-mingw-w64-base",
       "hidden": true,

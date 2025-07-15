@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+package Odb.Lib.Protobuf;
+
+//
+//  NetlistFile.h
+//
+
+message NetlistFile {
+
+    message NetRecord {
+
+        optional uint32 serialNumber = 1;
+        optional string netName = 2;
+
+    }
+
+    message NetPointRecord  {       
+
+        enum AccessSide {
+            Top = 0;
+            Down = 1;
+            Both = 2;
+            Inner = 3;
+        }
+
+        optional uint32 netNumber = 1;
+        optional double radius = 2;
+        optional double x = 3;
+        optional double y = 4;
+        optional AccessSide side = 5;
+        optional double width = 6;
+        optional double height = 7;
+        optional string epoint = 8;
+        optional string exp = 9;
+        optional bool commentPoint = 10;
+        optional double staggeredX = 11;
+        optional double staggeredY = 12;
+        optional double staggeredRadius = 13;
+        optional double viaPoint = 14;
+        optional double fiducialPoint = 15;
+        optional double testPoint = 16;
+        optional string testExecutionSide = 17;
+    }
+
+    enum Staggered {
+        Yes = 0;
+        No = 1;
+        Unknown = 2;
+    }
+
+    optional string path = 1;
+    optional string name = 2;
+    optional string units = 3;
+    optional bool optimized = 4;
+    optional Staggered staggered = 5;
+
+    repeated NetRecord netRecordss = 6;
+    map<string, NetRecord> netRecordsByName = 7;
+    repeated NetPointRecord netPointRecords = 8;
+}

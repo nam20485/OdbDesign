@@ -1,0 +1,44 @@
+name: "CodeQL Security Analysis Configuration"
+
+# Configure what CodeQL should analyze
+paths:
+  - "OdbDesignServer/**"
+  - "OdbDesignApp/**" 
+  - "OdbDesignLib/**"
+  - "Utils/**"
+
+# Exclude generated code, dependencies, and build artifacts
+paths-ignore:
+  - "vcpkg/**"
+  - "vcpkg_installed/**"
+  - "out/**"
+  - "build/**"
+  - "**/CMakeFiles/**"
+  - "**/_deps/**"
+  - "OdbDesignLib/ProtoBuf/Odb/**.pb.h"
+  - "OdbDesignLib/ProtoBuf/Odb/**.pb.cc"
+  - "**/*.proto"
+  - "**/protoc/**"
+
+# Enable comprehensive security analysis
+queries:
+  - uses: security-and-quality
+  - uses: security-extended
+  - uses: security-experimental
+  - uses: .github/codeql/cpp-queries/odbdesign-suite.qls
+
+# Disable problematic queries that may cause false positives
+disable-default-queries: false
+query-filters:
+  - exclude:
+      id: "cpp/uncontrolled-format-string"
+  - exclude:
+      id: "cpp/poorly-documented-function"
+  - exclude:
+      id: "cpp/use-of-goto"
+
+# Configure C++ specific analysis
+query-suites:
+  - codeql/cpp-queries:Security/CWE
+  - codeql/cpp-queries:Correctness
+  - codeql/cpp-queries:Performance

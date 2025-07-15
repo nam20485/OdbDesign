@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+//// https://protobuf.dev/reference/cpp/cpp-generated/#message
+//option optimize_for = CODE_SIZE;
+
+import "enums.proto";
+
+package Odb.Lib.Protobuf;
+
+//
+//  StandardFontsFile.h
+//
+
+message StandardFontsFile {
+    
+    message CharacterBlock  {
+
+        message LineRecord {
+
+            optional double xStart = 1;
+            optional double yStart = 2;
+            optional double xEnd = 3;
+            optional double yEnd = 4;
+            optional Polarity polarity = 5;
+            optional LineShape shape = 6;
+            optional double width = 7;
+        }
+
+        optional string character = 1;
+        repeated LineRecord m_lineRecords = 2;
+    }
+
+    optional double xSize = 1;
+    optional double ySize = 2;
+    optional double offset = 3;
+
+    repeated CharacterBlock m_characterBlocks = 4;
+    
+}

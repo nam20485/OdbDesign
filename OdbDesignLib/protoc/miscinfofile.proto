@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package Odb.Lib.Protobuf;
+
+import "google/protobuf/timestamp.proto";
+
+//
+//  MiscInfoFile.h
+//
+
+message MiscInfoFile {
+    
+    optional string productModelName = 1;
+    optional string jobName = 2;
+    optional string odbVersionMajor = 3;
+    optional string odbVersionMinor = 4;
+    optional string odbSource = 5;
+    optional google.protobuf.Timestamp creationDateDate = 6;    
+    optional google.protobuf.Timestamp saveDate = 7;
+    optional string saveApp = 8;
+    optional string saveUser = 9;
+    optional string units = 10;
+    optional uint32 maxUniqueId = 11;
+    
+}
+

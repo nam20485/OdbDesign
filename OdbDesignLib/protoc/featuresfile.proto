@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+//// https://protobuf.dev/reference/cpp/cpp-generated/#message
+//option optimize_for = CODE_SIZE;
+
+import "common.proto";
+import "enums.proto";
+import "symbolname.proto";
+
+package Odb.Lib.Protobuf;
+
+//
+//  EdaDataFile.h
+//
+
+message FeaturesFile {
+
+    message FeatureRecord
+    {       
+        enum Type {
+            Arc = 0;
+            Pad = 1;
+            Surface = 2;
+            Barcode = 3;
+            Text = 4;
+            Line = 5;
+        };
+
+        optional Type type = 2;
+        optional double xs = 3;
+        optional double ys = 4;
+        optional double xe = 5;
+        optional double ye = 6;
+        optional double x = 7;
+        optional double y = 8;
+        optional int32 apt_def = 9;
+        optional int32 apt_def_symbol_num = 10;
+        optional double apt_def_resize_factor = 11;
+        optional double xc = 12;
+        optional double yc = 13;
+        optional bool cw = 14;
+        optional string font = 15;
+        optional double xsize = 16;
+        optional double ysize = 17;
+        optional double width_factor = 18;
+        optional string text = 19;
+        optional int32 version = 20;
+        optional int32 sym_num = 21;
+        optional Polarity polarity = 22;
+        optional int32 dcode = 23;
+        optional int32 atr = 24;
+        optional string value = 25;
+        optional uint32 id = 26;
+        optional int32 orient_def = 27;
+        optional double orient_def_rotation = 28;  
+
+        repeated ContourPolygon contourPolygons = 1;
+        map<string, string> attributeLookupTable = 29;      
+    }
+
+    optional string units = 1;
+    optional uint32 id = 2;
+    optional string path = 5;
+    optional string directory = 6;
+    optional int32 numFeatures = 7;
+    
+    repeated FeatureRecord featureRecords = 8;
+    map<string, SymbolName> symbolNamesByName = 9;    
+
+}

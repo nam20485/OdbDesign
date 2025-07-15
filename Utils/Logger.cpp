@@ -2,6 +2,7 @@
 #include <iostream>
 #include "timestamp.h"
 #include <filesystem>
+#include <typeinfo>
 
 using namespace std::filesystem;
 
@@ -10,11 +11,21 @@ namespace Utils
 {
 	Logger::Logger()
 		: m_level(Level::Info)
-		, m_logMessageLoop([&](Message& message)
+		, m_logFilename(DEFAULT_LOG_FILENAME)
+		, m_outputTypes(OutputTypes::StdOut | OutputTypes::File)
+		//, m_enableInternalLogging(false)
+		//, m_logFileStream(m_logFilename, std::ios::out | std::ios::app)
+		, m_logMessageLoop(
+			[&](Message& message)
 			{
-				return logMessage(message);
+				return this->logMessage(message);
 			})
+	{		
+	}
+
+	Logger::~Logger()
 	{
+		if (m_logFileStream) m_logFileStream.close();
 	}
 
 	/*static*/ Logger* Logger::instance()
@@ -31,20 +42,24 @@ namespace Utils
 	Logger::Level Logger::logLevel() const { return m_level; }
 	void Logger::logLevel(Logger::Level level) { m_level = level; }
 
+	void Logger::outputTypes(int outputTypes)
+	{
+		m_outputTypes = outputTypes;				
+	}
+
+	int Logger::outputTypes() const
+	{
+		return m_outputTypes;
+	}
+
+	std::string Logger::filename() const
+	{
+		return m_logFilename;
+	}
+
 	void Logger::log(Level level, const std::string& message, const std::string& file, int line)
 	{
-		if (level >= m_level)
-		{
-			Message logMessage
-			{
-				message,
-				level,
-				file,
-				line
-			};
-
-			m_logMessageLoop.addWorkItem(std::move(logMessage));
-		}				
+		m_logMessageLoop.addWorkItem(Message { message, level, file, line });						
 	}
 
 	void Logger::error(const std::string& message, const std::string& file, int line)
@@ -54,7 +69,7 @@ namespace Utils
 
 	void Logger::warn(const std::string& message, const std::string& file, int line)
 	{
-		log(Level::Warning, message, file, line);
+		log(Level::Warn, message, file, line);
 	}
 
 	void Logger::info(const std::string& message, const std::string& file, int line)
@@ -74,24 +89,43 @@ namespace Utils
 
 	void Logger::exception(const std::exception& e, const std::string& file, int line)
 	{
-		exception(e.what(), file, line);
+		exception(e, "", file, line);
 	}
 
-	void Logger::exception(const std::string& message, const std::string& file, int line)
+	void Logger::exception(const std::exception& e, const std::string& message, const std::string& file, int line)
 	{
-		std::string s = "EXCEPTION!: " + message;
-		error(s, file, line);
+		const auto& tid = typeid(e);
+
+		std::stringstream ss;
+		ss << "EXCEPTION: "
+			<< tid.name() 
+			<< ": \""
+			<< e.what()
+			<< "\"";
+
+		if (!message.empty())
+		{
+			ss << std::endl << message;
+		}
+
+		error(ss.str(), file, line);
 	}
+
+	//void Logger::exception(const std::string& message, const std::string& file, int line)
+	//{
+	//	std::string s = "EXCEPTION!: " + message;
+	//	error(s, file, line);
+	//}
 
 	void Logger::start()
 	{
-		info("logger started");
+		loginfo("**************** logger started ****************");
 		m_logMessageLoop.startProcessing();
 	}
 
 	void Logger::stop()
 	{
-		info("logger stopping");
+		loginfo("**************** logger stopped ****************");
 		m_logMessageLoop.stopProcessing();
 	}
 
@@ -100,7 +134,7 @@ namespace Utils
 	//	return this->logMessage(logMessage);
 	//}
 
-	std::string Logger::formatLogMessage(const Message& logMessage)
+	/*static*/ std::string Logger::formatLogMessage(const Message& logMessage)
 	{
 		std::stringstream ss;
 
@@ -113,7 +147,8 @@ namespace Utils
 			logMessage.line != -1)
 		{			
 			ss << " " 
-				<< std::setw(18)
+				<< std::setw(20)
+				<< std::left
 				<< path{ logMessage.file }.filename().string()
 				<< ":"
 				<< std::setw(4)
@@ -121,8 +156,9 @@ namespace Utils
 		}
 		
 		ss << " "
-			<< std::setw(5)
-			<< logLevelToString(logMessage.level)
+			<< std::setw(6)
+			<< std::right
+			<< logLevelMap.getValue(logMessage.level)
 			<< "]";
 		
 		ss << " "
@@ -134,19 +170,45 @@ namespace Utils
 
 	bool Logger::logMessage(const Message& logMessage)
 	{
+		//std::cout << "[Logger::logMessage] enter, formatting message" << std::endl;
+
 		auto message = formatLogMessage(logMessage);
 
-		std::cout << message;
-		//if (logMessage.level >= LogLevel::Warning)
+		//std::cout << "[Logger::logMessage] message formatted, writing to cout and cerr" << std::endl;
+
+		if (logMessage.level >= m_level)
+		{
+			if (m_outputTypes & OutputTypes::StdOut) std::cout << message << std::flush;
+			if (m_outputTypes & OutputTypes::StdErr) std::cerr << message << std::flush;
+		}
+
+		//else if (logMessage.level == Level::Error ||
+		//		 logMessage.level == Level::Warn)
 		//{
-		//	std::cerr << message;
+		//	if (m_outputTypes & OutputTypes::StdErr) std::cerr << message << std::flush;
 		//}
 
-		return true;
-	}
+		//std::cout << "[Logger::logMessage] wrote to cout and cerr, writing to file..." << std::endl;
 
-	std::string Logger::logLevelToString(Level level) const
-	{		
-		return LogLevelStrings[static_cast<int>(level)];
-	}
+		if (m_outputTypes & OutputTypes::File)
+		{
+			//std::cout << "[Logger::logMessage] opening log file stream (" << m_logFilename << ")..." << std::endl;
+
+			m_logFileStream.open(m_logFilename, std::ios::out | std::ios::app);
+			if (m_logFileStream)
+			{
+				//std::cout << "[Logger::logMessage] file stream opened, writing to file..." << std::endl;
+
+				m_logFileStream << message << std::flush;
+				//m_logFileStream.flush();
+				m_logFileStream.close();
+
+				//std::cout << "[Logger::logMessage] wrote to file and closed stream" << std::endl;
+			}
+		}
+
+		//std::cout << "[Logger::logMessage] exit" << std::endl;
+
+		return true;
+	}	
 }

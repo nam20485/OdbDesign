@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+//// https://protobuf.dev/reference/cpp/cpp-generated/#message
+//option optimize_for = CODE_SIZE;
+
+package Odb.Lib.Protobuf;
+
+//
+//  StepHdrFile.h
+//
+
+message StepHdrFile {
+
+    message StepRepeatRecord
+    {
+        optional string name = 1;
+        optional double x = 2;
+        optional double y = 3;
+        optional double dx = 4;
+        optional double dy = 5;
+        optional int32 nx = 6;
+        optional int32 ny = 7;
+        optional double angle = 8;
+        optional bool flip = 9;
+        optional bool mirror = 10;
+    }
+
+    optional double xDatum = 1;
+    optional double yDatum = 2;
+    optional int32 id = 3;
+    optional double xOrigin = 4;
+    optional double yOrigin = 5;
+    optional double topActive = 6;
+    optional double bottomActive = 7;
+    optional double rightActive = 8;
+    optional double leftActive = 9;
+    optional string affectingBom = 10;
+    optional bool affectingBomChanged = 11;
+    optional string online = 12;
+    repeated StepRepeatRecord stepRepeatRecords = 13;    
+    optional string path = 14;    
+    map<string, string> onlineValues = 15;
+
+}

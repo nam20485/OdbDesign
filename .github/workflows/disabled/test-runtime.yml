@@ -1,0 +1,70 @@
+#
+# run the executable and make an authenticated call in each of the platforms:
+#
+# Windows
+# Ubuntu
+# MacOS
+# Docker
+
+name: Test Runtime
+
+on:
+  push:
+    branches: [ "nam20485" ]
+  pull_request:
+    branches: [ "development", "main", "release", "nam20485" ]  
+
+permissions:
+  contents: read  
+
+env:  
+  ARTIFACTS_DIR: ${{ github.workspace }}/artifacts
+  ARTIFACTS_DIR_WIN: ${{ github.workspace }}\artifacts
+  
+jobs:
+  build:
+    name: Test Runtime Executables
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
+      checks: write
+
+    strategy:
+      # Set fail-fast to false to ensure that feedback is delivered for all matrix combinations. Consider changing this to true when your workflow is stable.
+      fail-fast: false
+
+      matrix:
+        include:
+          # Windows x64 Release
+          - os: windows-2022
+            preset: x64-release
+          # Linux x64 Release          
+          - os: ubuntu-22.04
+            preset: linux-release
+          # MacOS x64 Release
+          - os: macos-12
+            preset: macos-release
+          # Linux mingw x64 Release
+          # - os: ubuntu-22.04
+          #   preset: linux-mingw-w64-release
+          # # Linux Python Release
+          # - os: ubuntu-22.04
+          #   preset: python-linux-release
+
+    steps:   
+    
+    - name: Harden Runner
+      uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+      with:
+        egress-policy: audit
+
+    - name: Checkout Repository
+      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+    
+    # add problem matchers by compiler
+    - name: Add Problem Matchers
+      uses: ammaraskar/msvc-problem-matcher@1ebcb382869bfdc2cc645e8a2a43b6d319ea1cc0 # master
+      if: matrix.os == 'windows-2022'
+    - name: Add Problem Matchers
+      uses: ammaraskar/gcc-problem-matcher@0f9c86f9e693db67dacf53986e1674de5f2e5f28 # master
+      if: matrix.os != 'windows-2022'

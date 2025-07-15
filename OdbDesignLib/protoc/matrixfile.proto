@@ -1,0 +1,76 @@
+syntax = "proto3";
+
+package Odb.Lib.Protobuf;
+
+//import "google/color.proto";
+import "enums.proto";
+
+//
+//  MatrixFile.h
+//
+
+message MatrixFile {
+    
+    message StepRecord {
+
+        uint32 column = 1;
+        uint32 id = 2;
+        string name = 3;
+    }
+
+    message LayerRecord {
+            
+        enum Type {
+            Signal = 0;
+            PowerGround = 1;
+            Dielectric = 2;
+            Mixed = 3;
+            SolderMask = 4;
+            SolderPaste = 5;
+            SilkScreen = 6;
+            Drill = 7;
+            Rout = 8;
+            Document = 9;
+            Component = 10;
+            Mask = 11;
+            ConductivePaste = 12;
+        }
+
+        enum Context {
+            Board = 0;
+            Misc = 1;
+        }
+
+        enum DielectricType {
+            None = 0;
+            Prepreg = 1;
+            Core = 2;
+        }
+
+        enum Form {
+            Rigid = 0;
+            Flex = 1;
+        }
+
+        uint32 row = 1;
+        Context context = 2;
+        Type type = 3;
+        string name = 4;
+        Polarity polarity = 5;
+        DielectricType dielectricType = 6;
+        string dielectricName = 7;
+        Form form = 8;
+        uint32 cuTop = 9;
+        uint32 cuBottom = 10;
+        uint32 ref = 11;
+        string startName = 12;
+        string endName = 13;
+        string oldName = 14;
+        string addType = 15;
+        //google. color = 16;
+        uint32 id = 17;
+    }
+
+    repeated StepRecord steps = 1;
+    repeated LayerRecord layers = 2;    
+}

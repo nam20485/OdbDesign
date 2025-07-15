@@ -1,0 +1,626 @@
+openapi: 3.0.1
+info:
+  title: OdbDesign Server API
+  description: OdbDesign Server REST API
+  version: "0.9"
+  contact:
+    name: Nathan Miller
+    email: nmiller217@gmail.com
+  license:
+    name: MIT
+servers:
+  - url: http://default-ingress-1165108808.us-west-2.elb.amazonaws.com
+  - url: http://localhost:8888
+  - url: http://precision5820:8081
+tags:
+  - name: "file upload"
+  - name: "filemodel"
+  #- name: "hello world"
+  - name: "health check"
+  - name: "steps"
+  - name: "layers"
+  - name: "symbols"
+  - name: "designs"
+paths:
+  /files/list:
+    get:
+      tags: ["file upload"]
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      security:
+        - BasicAuth: []
+  /files/upload/{name}:
+    post:
+      tags: ["file upload"]
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+      responses:
+        "200":
+          description: ""
+      security:
+        - BasicAuth: []
+  /files/upload:
+    post:
+      tags: ["file upload"]
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        "200":
+          description: ""
+      security:
+        - BasicAuth: []
+  /filemodels:
+    get:
+      tags: ["filemodel"]
+      responses:
+        "200":
+          description: ""
+      security:
+        - BasicAuth: []
+  /filemodels/{name}:
+    get:
+      tags: ["filemodel"]
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      security:
+        - BasicAuth: []
+    post:
+      tags: ["filemodel"]      
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              format: json
+        required: true                  
+      responses:
+        "200":
+          description: ""
+        "404":
+          description: ""
+        "500":
+          description: ""
+      security:
+        - BasicAuth: []
+  /filemodels/{name}/misc/attrlist:
+    get:
+      tags: ["filemodel"]
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      security:
+        - BasicAuth: []
+  /filemodels/{name}/misc/info:
+    get:
+      tags: ["filemodel"]
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      security:
+        - BasicAuth: []
+  /filemodels/{name}/matrix/matrix:
+    get:
+      tags: ["filemodel"]
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      security:
+        - BasicAuth: []
+  /filemodels/{name}/fonts/standard:
+    get:
+      tags: ["filemodel"]
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      security:
+        - BasicAuth: []
+  /filemodels/{name}/steps:
+    get:
+      tags: ["steps"]
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      security:
+        - BasicAuth: []
+  /filemodels/{name}/steps/{step}:
+    get:
+      tags: ["steps"]
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: step
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      security:
+        - BasicAuth: []
+  /filemodels/{name}/steps/{step}/eda_data:
+    get:
+      tags: ["steps"]
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: step
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      security:
+        - BasicAuth: []
+  /filemodels/{name}/steps/{step}/attrlist:
+    get:
+      tags: ["steps"]
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: step
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      security:
+        - BasicAuth: []
+  /filemodels/{name}/steps/{step}/profile:
+    get:
+      tags: ["steps"]
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: step
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      security:
+        - BasicAuth: []
+  /filemodels/{name}/steps/{step}/stephdr:
+    get:
+      tags: ["steps"]
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: step
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      security:
+        - BasicAuth: []
+  /filemodels/{name}/steps/{step}/netlists:
+    get:
+      tags: ["steps"]
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: step
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      security:
+        - BasicAuth: []
+  /filemodels/{name}/steps/{step}/netlists/{netlist}:
+    get:
+      tags: ["steps"]
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: step
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: netlist
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      security:
+        - BasicAuth: []
+  /filemodels/{name}/steps/{step}/layers:
+    get:
+      tags: ["layers"]
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: step
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      security:
+        - BasicAuth: []
+  /filemodels/{name}/steps/{step}/layers/{layer}:
+    get:
+      tags: ["layers"]
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: step
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: layer
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      security:
+        - BasicAuth: []
+  /filemodels/{name}/steps/{step}/layers/{layer}/components:
+    get:
+      tags: ["layers"]
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: step
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: layer
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      security:
+        - BasicAuth: []
+  /filemodels/{name}/steps/{step}/layers/{layer}/features:
+    get:
+      tags: ["layers"]
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: step
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: layer
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      security:
+        - BasicAuth: []
+  /filemodels/{name}/steps/{step}/layers/{layer}/attrlist:
+    get:
+      tags: ["layers"]
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: step
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: layer
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      security:
+        - BasicAuth: []
+  /filemodels/{name}/symbols:
+    get:
+      tags: ["symbols"]
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      security:
+        - BasicAuth: []
+  /filemodels/{name}/symbols/{symbol}:
+    get:
+      tags: ["symbols"]
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: symbol
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      security:
+        - BasicAuth: []
+  /filemodels/{name}/symbols/{symbol}/features:
+    get:
+      tags: ["symbols"]
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: symbol
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      security:
+        - BasicAuth: []
+  /filemodels/{name}/symbols/{symbol}/attrlist:
+    get:
+      tags: ["symbols"]
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: symbol
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      security:
+        - BasicAuth: []
+  /designs:
+    get:
+      tags: ["designs"]
+      responses:
+        "200":
+          description: ""
+      security:
+        - BasicAuth: []
+  /designs/{name}:
+    get:
+      tags: ["designs"]
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      security:
+        - BasicAuth: []
+  /designs/{name}/components:
+    get:
+      tags: ["designs"]
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      security:
+        - BasicAuth: []
+  /designs/{name}/nets:
+    get:
+      tags: ["designs"]
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      security:
+        - BasicAuth: []
+  /designs/{name}/parts:
+    get:
+      tags: ["designs"]
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      security:
+        - BasicAuth: []
+  /designs/{name}/packages:
+    get:
+      tags: ["designs"]
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      security:
+        - BasicAuth: []
+  /healthz/live:
+    get:
+      tags: ["health check"]
+      parameters: []
+      responses:
+        "200":
+          description: ""  
+  /healthz/started:
+    get:
+      tags: ["health check"]
+      parameters: []
+      responses:
+        "200":
+          description: "" 
+  /healthz/ready:
+    get:
+      tags: ["health check"]
+      parameters: []
+      responses:
+        "200":
+          description: ""      
+components:
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+  # schemas:
+  #   odbdesign-server-schema:
+  #     type: object
+  #     properties:
+  #       id:
+  #         type: integer
+  #         format: int64

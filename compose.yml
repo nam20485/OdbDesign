@@ -1,0 +1,34 @@
+name: odbdesign
+
+services:
+
+  ### use remote image build from github container registry
+  server:    
+    image: ghcr.io/nam20485/odbdesign:nam20485-latest    
+    volumes:
+      - ./compose-designs:/OdbDesign/designs
+    ports:
+      - 8888:8888
+    environment:
+      - ODBDESIGN_SERVER_REQUEST_USERNAME
+      - ODBDESIGN_SERVER_REQUEST_PASSWORD
+
+  ### use local image built from Dockerfile
+  # server:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - ./compose-designs:/OdbDesign/designs
+  #   ports:
+  #     - 8888:8888
+  #   environment:
+  #     - ODBDESIGN_SERVER_REQUEST_USERNAME
+  #     - ODBDESIGN_SERVER_REQUEST_PASSWORD   
+   
+  swagger-ui:
+    image: ghcr.io/nam20485/odbdesignserver-swaggerui:nam20485-latest    
+    depends_on:
+      - server
+    ports:
+      - 8080:8080

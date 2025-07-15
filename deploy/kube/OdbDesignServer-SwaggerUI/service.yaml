@@ -1,0 +1,18 @@
+##################################################################################################
+# odbdesign-server-swaggerui service
+##################################################################################################
+apiVersion: v1
+kind: Service
+metadata:
+  name: odbdesign-server-swaggerui-service
+  labels:
+    app: odbdesign-server-swaggerui
+    service: odbdesign-server-swaggerui
+spec: 
+  ports:
+    - port: 80
+      name: oss-svc-port
+      targetPort: oss-dep-port
+  selector:
+    app: odbdesign-server-swaggerui
+

@@ -21,9 +21,12 @@ namespace Utils
 		int intArg(const std::string& name, int defaultValue) const;
 		double doubleArg(const std::string& name, double defaultValue) const;
 
-		std::string executable() const;
+		std::filesystem::path executable() const;
 		std::filesystem::path executableDirectory() const;
-		std::filesystem::path executableName() const;
+		std::string executableName() const;
+
+		bool isWindows() const;
+		bool isLinux() const;
 
 		void printUsage() const;
 
@@ -38,6 +41,7 @@ namespace Utils
 		virtual std::string getUsageString() const = 0;		
 
 		const char* EXECUTABLE_ARG_NAME = "executable";
+		const char* EXE_EXTENSION = ".exe";
 				
 	};	
 }

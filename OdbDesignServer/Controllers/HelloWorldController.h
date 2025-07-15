@@ -1,15 +1,15 @@
 #pragma once
 
-#include "RouteController.h"
-#include "IOdbServerApp.h"
+#include "App/RouteController.h"
+#include "App/IOdbServerApp.h"
 
 
 namespace Odb::App::Server
 {
-	class HelloWorldController : public Odb::Lib::RouteController
+	class HelloWorldController : public Odb::Lib::App::RouteController
 	{
 	public:
-		HelloWorldController(Odb::Lib::IOdbServerApp& serverApp);
+		HelloWorldController(Odb::Lib::App::IOdbServerApp& serverApp);
 
 		void register_routes() override;
 
