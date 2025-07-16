@@ -221,11 +221,15 @@ namespace Odb::App::Server
 
         // delete content in designs directory (including files and folders)
         std::error_code ec;
-        for (const auto& entry : std::filesystem::directory_iterator(designsDir)) {
-            std::filesystem::remove_all(entry.path(), ec);
-            if (ec.value() != 0) {
-                return crow::response(crow::status::INTERNAL_SERVER_ERROR, "failed to delete: " + entry.path().string());
-            }
+        std::error_code ec;
+        std::filesystem::remove_all(designsDir, ec);
+        if (ec) {
+            return crow::response(crow::status::INTERNAL_SERVER_ERROR, "failed to remove designs directory: " + ec.message());
+        }
+
+        std::filesystem::create_directories(designsDir, ec);
+        if (ec) {
+            return crow::response(crow::status::INTERNAL_SERVER_ERROR, "failed to recreate designs directory: " + ec.message());
         }
 
         return crow::response(crow::status::OK, "all design files deleted successfully");
