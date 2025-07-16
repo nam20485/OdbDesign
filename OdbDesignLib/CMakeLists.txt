@@ -20,6 +20,7 @@ add_library(OdbDesign SHARED
         "ProtoBuf/layerdirectory.pb.h" "ProtoBuf/layerdirectory.pb.cc" 
         "ProtoBuf/design.pb.h" "ProtoBuf/design.pb.cc"
         "ProtoBuf/matrixfile.pb.h" "ProtoBuf/matrixfile.pb.cc"
+        "ProtoBuf/color.pb.h" "ProtoBuf/color.pb.cc"
         "ProtoBuf/miscinfofile.pb.h" "ProtoBuf/miscinfofile.pb.cc"
         "ProtoBuf/standardfontsfile.pb.h" "ProtoBuf/standardfontsfile.pb.cc"
         "ProtoBuf/stepdirectory.pb.h" "ProtoBuf/stepdirectory.pb.cc"
