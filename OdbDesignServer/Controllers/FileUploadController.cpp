@@ -97,6 +97,17 @@ namespace Odb::App::Server
 //
 //                    return crow::response(jsonResponse);
 //                });
+        CROW_ROUTE(m_serverApp.crow_app(), "/files/delete/all")
+                .methods(crow::HTTPMethod::Delete)
+                ([&](const crow::request &req) {
+                    // authenticate request before sending to handler
+                    auto authResp = m_serverApp.request_auth().AuthenticateRequest(req);
+                    if (authResp.code != crow::status::OK) {
+                        return authResp;
+                    }
+
+                    return handleRemoveAllDesignFiles(req);
+                });
 	}
     
     crow::response FileUploadController::handleOctetStreamUpload(const std::string& filename, const crow::request& req)
@@ -196,6 +207,28 @@ namespace Odb::App::Server
         }
 
         return makeLoadedFileModelsResponse(true);
+    }
+
+    crow::response FileUploadController::handleRemoveAllDesignFiles(const crow::request& req) {
+	    // get designs directory
+        const auto& designsDir = m_serverApp.args().designsDir();
+        if (designsDir.empty()) {
+            return crow::response(crow::status::INTERNAL_SERVER_ERROR, "designs directory not configured");
+        }
+
+	    // clean cache
+        m_serverApp.designs().Clear();
+
+        // delete content in designs directory (including files and folders)
+        std::error_code ec;
+        for (const auto& entry : std::filesystem::directory_iterator(designsDir)) {
+            std::filesystem::remove_all(entry.path(), ec);
+            if (ec.value() != 0) {
+                return crow::response(crow::status::INTERNAL_SERVER_ERROR, "failed to delete: " + entry.path().string());
+            }
+        }
+
+        return crow::response(crow::status::OK, "all design files deleted successfully");
     }
 
     std::string FileUploadController::sanitizeFilename(const std::string& filename) const
