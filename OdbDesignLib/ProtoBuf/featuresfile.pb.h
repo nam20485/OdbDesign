@@ -964,6 +964,7 @@ class ODBDESIGN_EXPORT FeaturesFile final : public ::google::protobuf::Message
   enum : int {
     kFeatureRecordsFieldNumber = 8,
     kSymbolNamesByNameFieldNumber = 9,
+    kSymbolNamesFieldNumber = 10,
     kUnitsFieldNumber = 1,
     kPathFieldNumber = 5,
     kDirectoryFieldNumber = 6,
@@ -1002,6 +1003,23 @@ class ODBDESIGN_EXPORT FeaturesFile final : public ::google::protobuf::Message
   ::google::protobuf::Map<std::string, ::Odb::Lib::Protobuf::SymbolName>* _internal_mutable_symbolnamesbyname();
 
   public:
+  // repeated .Odb.Lib.Protobuf.SymbolName symbolNames = 10;
+  int symbolnames_size() const;
+  private:
+  int _internal_symbolnames_size() const;
+
+  public:
+  void clear_symbolnames() ;
+  ::Odb::Lib::Protobuf::SymbolName* mutable_symbolnames(int index);
+  ::google::protobuf::RepeatedPtrField<::Odb::Lib::Protobuf::SymbolName>* mutable_symbolnames();
+
+  private:
+  const ::google::protobuf::RepeatedPtrField<::Odb::Lib::Protobuf::SymbolName>& _internal_symbolnames() const;
+  ::google::protobuf::RepeatedPtrField<::Odb::Lib::Protobuf::SymbolName>* _internal_mutable_symbolnames();
+  public:
+  const ::Odb::Lib::Protobuf::SymbolName& symbolnames(int index) const;
+  ::Odb::Lib::Protobuf::SymbolName* add_symbolnames();
+  const ::google::protobuf::RepeatedPtrField<::Odb::Lib::Protobuf::SymbolName>& symbolnames() const;
   // optional string units = 1;
   bool has_units() const;
   void clear_units() ;
@@ -1080,8 +1098,8 @@ class ODBDESIGN_EXPORT FeaturesFile final : public ::google::protobuf::Message
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
-      3, 7, 3,
-      73, 2>
+      4, 8, 4,
+      81, 2>
       _table_;
 
   friend class ::google::protobuf::MessageLite;
@@ -1105,6 +1123,7 @@ class ODBDESIGN_EXPORT FeaturesFile final : public ::google::protobuf::Message
                       ::google::protobuf::internal::WireFormatLite::TYPE_STRING,
                       ::google::protobuf::internal::WireFormatLite::TYPE_MESSAGE>
         symbolnamesbyname_;
+    ::google::protobuf::RepeatedPtrField< ::Odb::Lib::Protobuf::SymbolName > symbolnames_;
     ::google::protobuf::internal::ArenaStringPtr units_;
     ::google::protobuf::internal::ArenaStringPtr path_;
     ::google::protobuf::internal::ArenaStringPtr directory_;
@@ -2426,6 +2445,51 @@ inline ::google::protobuf::Map<std::string, ::Odb::Lib::Protobuf::SymbolName>* F
 inline ::google::protobuf::Map<std::string, ::Odb::Lib::Protobuf::SymbolName>* FeaturesFile::mutable_symbolnamesbyname() ABSL_ATTRIBUTE_LIFETIME_BOUND {
   // @@protoc_insertion_point(field_mutable_map:Odb.Lib.Protobuf.FeaturesFile.symbolNamesByName)
   return _internal_mutable_symbolnamesbyname();
+}
+
+// repeated .Odb.Lib.Protobuf.SymbolName symbolNames = 10;
+inline int FeaturesFile::_internal_symbolnames_size() const {
+  return _internal_symbolnames().size();
+}
+inline int FeaturesFile::symbolnames_size() const {
+  return _internal_symbolnames_size();
+}
+inline ::Odb::Lib::Protobuf::SymbolName* FeaturesFile::mutable_symbolnames(int index)
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.FeaturesFile.symbolNames)
+  return _internal_mutable_symbolnames()->Mutable(index);
+}
+inline ::google::protobuf::RepeatedPtrField<::Odb::Lib::Protobuf::SymbolName>* FeaturesFile::mutable_symbolnames()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_mutable_list:Odb.Lib.Protobuf.FeaturesFile.symbolNames)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _internal_mutable_symbolnames();
+}
+inline const ::Odb::Lib::Protobuf::SymbolName& FeaturesFile::symbolnames(int index) const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.FeaturesFile.symbolNames)
+  return _internal_symbolnames().Get(index);
+}
+inline ::Odb::Lib::Protobuf::SymbolName* FeaturesFile::add_symbolnames() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::Odb::Lib::Protobuf::SymbolName* _add = _internal_mutable_symbolnames()->Add();
+  // @@protoc_insertion_point(field_add:Odb.Lib.Protobuf.FeaturesFile.symbolNames)
+  return _add;
+}
+inline const ::google::protobuf::RepeatedPtrField<::Odb::Lib::Protobuf::SymbolName>& FeaturesFile::symbolnames() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_list:Odb.Lib.Protobuf.FeaturesFile.symbolNames)
+  return _internal_symbolnames();
+}
+inline const ::google::protobuf::RepeatedPtrField<::Odb::Lib::Protobuf::SymbolName>&
+FeaturesFile::_internal_symbolnames() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.symbolnames_;
+}
+inline ::google::protobuf::RepeatedPtrField<::Odb::Lib::Protobuf::SymbolName>*
+FeaturesFile::_internal_mutable_symbolnames() {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return &_impl_.symbolnames_;
 }
 
 #ifdef __GNUC__
