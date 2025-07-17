@@ -221,7 +221,6 @@ namespace Odb::App::Server
 
         // delete content in designs directory (including files and folders)
         std::error_code ec;
-        std::error_code ec;
         std::filesystem::remove_all(designsDir, ec);
         if (ec) {
             return crow::response(crow::status::INTERNAL_SERVER_ERROR, "failed to remove designs directory: " + ec.message());
