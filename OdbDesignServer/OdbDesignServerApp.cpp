@@ -1,3 +1,6 @@
+#include <thread>
+#include <chrono>
+#include <iostream>
 #include "OdbDesignServerApp.h"
 #include "Controllers/HelloWorldController.h"
 #include "Controllers/FileUploadController.h"
@@ -11,9 +14,13 @@ using namespace Odb::Lib::App;
 
 namespace Odb::App::Server
 {
+	OdbDesignServerApp* OdbDesignServerApp::inst_ = nullptr;
 	OdbDesignServerApp::OdbDesignServerApp(int argc, char* argv[])
 		: OdbServerAppBase(argc, argv)
-	{		
+	{
+		inst_ = this;
+		// set last heartbeat time to now
+		lastHeartbeat_.store(std::chrono::steady_clock::now(), std::memory_order_relaxed);
 	}
 
 	//OdbDesignServerApp::~OdbDesignServerApp()
@@ -44,6 +51,24 @@ namespace Odb::App::Server
 		m_vecControllers.push_back(std::make_shared<DesignsController>(*this));
 	}
 
+	void monitorHeartbeat()
+	{
+		auto lastTime = OdbDesignServerApp::inst_->lastHeartbeat_.load(std::memory_order_relaxed);
+		while (true)
+		{
+			std::this_thread::sleep_for(std::chrono::seconds(1));
+			auto now = std::chrono::steady_clock::now();
+			auto diff = now - lastTime;
+			// check heartbeat
+			if (diff > std::chrono::seconds(5))
+			{
+				std::cerr << "Heartbeat timeout, exiting..." << std::endl;
+				exit(0);
+			}
+			lastTime = OdbDesignServerApp::inst_->lastHeartbeat_.load(std::memory_order_relaxed);
+		}
+	}
+
 	bool OdbDesignServerApp::preServerRun()
 	{
 		// CORS
@@ -69,6 +94,10 @@ namespace Odb::App::Server
 		bool disableAuth = args().disableAuthentication();
 		auto basicRequestAuth = std::make_unique<BasicRequestAuthentication>(BasicRequestAuthentication(disableAuth));
 		request_auth(std::move(basicRequestAuth));
+
+		// start heart beat monitor
+		std::thread heartbeatMonitor(monitorHeartbeat);
+		heartbeatMonitor.detach(); // run in background
 
 		return true;
 	}

@@ -14,7 +14,15 @@ namespace Odb::App::Server
 				
 		//Utils::ExitCode Run() override;		
 
-	protected:												
+		static OdbDesignServerApp* inst_;
+		// store last heartbeat time
+		std::atomic<std::chrono::steady_clock::time_point> lastHeartbeat_;
+		void updateLastHeartbeat()
+		{
+			lastHeartbeat_.store(std::chrono::steady_clock::now(), std::memory_order_relaxed);
+		}
+
+	protected:
 		void add_controllers() override;
 
 
