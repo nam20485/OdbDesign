@@ -15,10 +15,12 @@ using namespace Odb::Lib::App;
 namespace Odb::App::Server
 {
 	OdbDesignServerApp* OdbDesignServerApp::inst_ = nullptr;
+	int heartbeatInterval;
 	OdbDesignServerApp::OdbDesignServerApp(int argc, char* argv[])
 		: OdbServerAppBase(argc, argv)
 	{
 		inst_ = this;
+		heartbeatInterval = args().heartbeatInterval();
 		// set last heartbeat time to now
 		lastHeartbeat_.store(std::chrono::steady_clock::now(), std::memory_order_relaxed);
 	}
@@ -60,7 +62,7 @@ namespace Odb::App::Server
 			auto now = std::chrono::steady_clock::now();
 			auto diff = now - lastTime;
 			// check heartbeat
-			if (diff > std::chrono::seconds(5))
+			if (diff > std::chrono::seconds(heartbeatInterval))
 			{
 				std::cerr << "Heartbeat timeout, exiting..." << std::endl;
 				exit(0);
