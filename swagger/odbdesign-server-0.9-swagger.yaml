@@ -611,6 +611,13 @@ paths:
       parameters: []
       responses:
         "200":
+          description: ""
+  /healthz/heartbeat:
+    get:
+      tags: ["health check"]
+      parameters: []
+      responses:
+        "200":
           description: ""      
 components:
   securitySchemes:

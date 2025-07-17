@@ -18,6 +18,7 @@ namespace Odb::App::Server
 		crow::response health_check_live(const crow::request& req);
 		crow::response health_check_ready(const crow::request& req);
 		crow::response health_check_started(const crow::request& req);
+		crow::response health_check_heartbeat(const crow::request& req);
 
 	};
 }
