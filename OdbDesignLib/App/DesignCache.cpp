@@ -190,7 +190,7 @@ namespace Odb::Lib::App
                         logexception(e);
                         if (stopOnError)
                         {
-                            throw e;
+                            throw;
                         }
                     }
                 }
