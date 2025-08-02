@@ -37,6 +37,23 @@ Make sure to restart your shell or source the profile after adding the line.
 
 `source ~/.bashrc`
 
+#### Automated Setup (Linux Only)
+
+For Linux users, you can use the automated setup script that handles all dependencies and configuration:
+
+```Bash
+$ ./setup-linux.sh
+```
+
+This script will:
+- Detect your Linux distribution and install appropriate system dependencies
+- Install and configure vcpkg
+- Set up environment variables
+- Build the project
+- Optionally run tests
+
+See `./setup-linux.sh --help` for all available options.
+
 ### Source Code
 
 Get the source code by cloning the GitHub repository:

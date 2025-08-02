@@ -163,7 +163,9 @@ Documentation for the currently-released version of the source code is available
 
 > If you are building on Windows and have a modern version of Visual Studio installed then all of the dependencies listed below are already installed on your system (except for maybe Docker). You can skip to the next section.
 
-> If you are building on a Linux system then the dependencies listed below can be installed using your package manager. For example on Ubuntu/Debian/Mint you can install them (except for vcpkg and Docker) using the following command:
+> **Linux users**: For an automated setup experience, use the provided setup script: `./setup-linux.sh` (see [README-SETUP.md](../README-SETUP.md) for details)
+
+> If you are building on a Linux system manually, the dependencies listed below can be installed using your package manager. For example on Ubuntu/Debian/Mint you can install them (except for vcpkg and Docker) using the following command:
 
 `$ sudo apt install git cmake ninja-build build-essential pkg-config`
 
@@ -191,6 +193,23 @@ Then add the following line to your shell profile (e.g. ~/.bashrc, ~/.zshrc, etc
 Make sure to restart your shell or source the profile after adding the line.
 
 `source ~/.bashrc`
+
+#### Automated Setup (Linux Only)
+
+For Linux users, you can use the automated setup script that handles all dependencies and configuration:
+
+```Bash
+$ ./setup-linux.sh
+```
+
+This script will:
+- Detect your Linux distribution and install appropriate system dependencies  
+- Install and configure vcpkg
+- Set up environment variables
+- Build the project
+- Optionally run tests
+
+See `./setup-linux.sh --help` for all available options.
 
 ### Source Code
 
