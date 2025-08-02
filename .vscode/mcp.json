@@ -1,59 +1,23 @@
 {
-  "inputs": [
-    {
-      "id": "github_pat",
-      "description": "GitHub personal access token",
-      "type": "promptString",
-      "password": true
-    }
-  ],
-  "servers": {
-    "sequential-thinking": {
-      "type": "stdio",
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-sequential-thinking"
-      ],
-      "version": "0.0.1"
-    },
-    "memory": {
-      "type": "stdio",
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-memory"
-      ],
-      "version": "0.0.1"
-    },
-    "github-remote": {
-      "type": "http",
-      "url": "https://api.githubcopilot.com/mcp/",
-      "version": "0.0.1"
-    },
-    "filesystem": {
-      "type": "stdio",
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-filesystem"
-      ],
-      "version": "0.0.1"
-    },
-    "github": {
-      "type": "stdio",
-      "command": "docker",
-      "args": [
-        "run",
-        "-i",
-        "--rm",
-        "-e",
-        "GITHUB_PERSONAL_ACCESS_TOKEN",
-        "ghcr.io/github/github-mcp-server"
-      ],
-      "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "${input:github_pat}"
-      }
-    }
-  }
+	"inputs": [],
+	"servers": {
+		"sequential-thinking": {
+			"type": "stdio",
+			"command": "npx",
+			"args": [
+				"-y",
+				"@modelcontextprotocol/server-sequential-thinking"
+			],
+			"version": "0.0.1"
+		},
+		"memory": {
+			"type": "stdio",
+			"command": "npx",
+			"args": [
+				"-y",
+				"@modelcontextprotocol/server-memory"
+			],
+			"version": "0.0.1"
+		}
+	}
 }
