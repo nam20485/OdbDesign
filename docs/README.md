@@ -159,9 +159,48 @@ If successful, the REST API server will be running and listening on port 8888. Y
 
 Documentation for the currently-released version of the source code is available [here](https://nam20485.github.io/OdbDesign/api).
 
-### Build Dependencies
+### Automated Setup Scripts
 
-> If you are building on Windows and have a modern version of Visual Studio installed then all of the dependencies listed below are already installed on your system (except for maybe Docker). You can skip to the next section.
+For a quick setup, you can use the provided platform-specific setup scripts:
+
+> **⚠️ Security Warning**: Running scripts from the internet can execute arbitrary code, so they must always be approached with caution. In these cases, transparency is important to mitigate these fears. Since this script is open-source, you can view the entire contents before running it. We encourage you to verify for yourself that a script is safe before running it on your own system.
+
+#### Windows Setup
+
+Run one of the following scripts from the `scripts` directory:
+
+**PowerShell (Recommended):**
+```PowerShell
+.\scripts\setup-windows.ps1
+```
+
+**Batch (Alternative):**
+```cmd
+.\scripts\setup-windows.bat
+```
+
+Both scripts will:
+- Check for required prerequisites (Git, CMake, Visual Studio Build Tools)
+- Install and configure vcpkg
+- Set up environment variables
+- Apply necessary patches
+- Provide build instructions
+
+Use `.\scripts\setup-windows.ps1 -Help` for additional options.
+
+#### Linux Setup
+
+```Bash
+$ ./scripts/install-dependencies-deb.sh
+```
+
+This script will install the required dependencies on Ubuntu/Debian/Mint systems.
+
+### Manual Build Dependencies
+
+If you prefer to set up the build environment manually, you'll need the following:
+
+> If you are building on Windows and have a modern version of Visual Studio installed then all of the dependencies listed below are already installed on your system (except for maybe Docker). You can use the automated setup scripts above or skip to the next section.
 
 > If you are building on a Linux system then the dependencies listed below can be installed using your package manager. For example on Ubuntu/Debian/Mint you can install them (except for vcpkg and Docker) using the following command:
 
