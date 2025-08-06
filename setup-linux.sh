@@ -4,6 +4,13 @@
 # This script sets up a complete Linux development environment for OdbDesign
 # Supports Ubuntu/Debian, CentOS/RHEL/Fedora, and Arch Linux
 
+# ⚠️  SECURITY WARNING ⚠️
+# Running scripts from the internet can execute arbitrary code on your system!
+# Always approach with caution and verify scripts are safe before running them.
+# Since this script is open-source, you can view the entire contents at:
+# https://github.com/nam20485/OdbDesign/blob/main/setup-linux.sh
+# We encourage you to review the script for yourself before running it.
+
 set -e
 
 # Colors for output

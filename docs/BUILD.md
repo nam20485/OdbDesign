@@ -41,6 +41,8 @@ Make sure to restart your shell or source the profile after adding the line.
 
 For Linux users, you can use the automated setup script that handles all dependencies and configuration:
 
+> **⚠️ Security Warning**: Running scripts from the internet can execute arbitrary code on your system! Always verify scripts are safe before running them. Since this script is open-source, you can view the entire contents at: https://github.com/nam20485/OdbDesign/blob/main/setup-linux.sh
+
 ```Bash
 $ ./setup-linux.sh
 ```
