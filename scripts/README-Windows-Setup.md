@@ -2,6 +2,10 @@
 
 This directory contains automated setup scripts for the OdbDesign project on Windows.
 
+## ⚠️ Security Warning
+
+**Running scripts from the internet can execute arbitrary code, so they must always be approached with caution.** In these cases, transparency is important to mitigate these fears. Since this script is open-source, you can view the entire contents before running it. We encourage you to verify for yourself that a script is safe before running it on your own system.
+
 ## Available Scripts
 
 ### setup-windows.ps1 (Recommended)

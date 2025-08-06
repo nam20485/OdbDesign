@@ -6,6 +6,9 @@
 # This script sets up the development environment for building OdbDesign on Windows.
 # It installs the required dependencies and configures the build environment.
 #
+# SECURITY WARNING: Running scripts from the internet can execute arbitrary code.
+# Please review this script's contents before running it on your system.
+#
 
 param(
     [string]$VcpkgRoot = "$env:USERPROFILE\vcpkg",

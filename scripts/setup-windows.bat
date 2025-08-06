@@ -5,6 +5,9 @@
 :: This script provides a simplified setup process for users who prefer batch files
 :: or don't have PowerShell execution policy configured.
 ::
+:: SECURITY WARNING: Running scripts from the internet can execute arbitrary code.
+:: Please review this script's contents before running it on your system.
+::
 
 setlocal enabledelayedexpansion
 
