@@ -2,6 +2,12 @@
 
 The `setup-linux.sh` script provides an automated way to set up a complete development environment for OdbDesign on Linux systems.
 
+## ⚠️ Security Warning
+
+**Running scripts from the internet can execute arbitrary code on your system!** Always approach with caution and verify scripts are safe before running them on your own system. Since this script is open-source, you can view the entire contents at: https://github.com/nam20485/OdbDesign/blob/main/setup-linux.sh
+
+We encourage you to review the script for yourself before running it to ensure it meets your security requirements.
+
 ## Features
 
 - **Multi-Distribution Support**: Automatically detects and supports Ubuntu/Debian, CentOS/RHEL/Fedora, Arch Linux, and openSUSE
