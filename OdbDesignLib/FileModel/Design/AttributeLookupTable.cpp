@@ -14,7 +14,8 @@ namespace Odb::Lib::FileModel::Design
 		std::string token;
 
 		// skip the content before the first semicolon
-		std::getline(ss, token, ';');
+		if (!std::getline(ss, token, ';'))
+			return false;
 
 		// attributes
 		if (std::getline(ss, token, ';'))
