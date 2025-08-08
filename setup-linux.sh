@@ -225,8 +225,8 @@ setup_docker() {
         sudo systemctl start docker || true
         
         # Add user to docker group
-        if ! groups $USER | grep -q '\bdocker\b'; then
-            sudo usermod -aG docker $USER
+        if ! groups "$USER" | grep -q '\bdocker\b'; then
+            sudo usermod -aG docker "$USER"
             print_warning "Added user to docker group. You may need to log out and back in for changes to take effect."
         fi
         
