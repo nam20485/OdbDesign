@@ -127,14 +127,13 @@ install_system_deps() {
     print_status "Installing system dependencies..."
     
     local base_packages="git cmake ninja-build pkg-config curl zip unzip tar"
-    local docker_packages=""
-    
-    if [[ "$INSTALL_DOCKER" == "true" ]]; then
-        docker_packages="docker.io docker-compose-v2"
-    fi
     
     case $DISTRO in
         ubuntu|debian|mint)
+            local docker_packages=""
+            if [[ "$INSTALL_DOCKER" == "true" ]]; then
+                docker_packages="docker.io docker-compose-v2"
+            fi
             sudo apt update
             sudo apt install -y -qq --no-install-recommends \
                 build-essential \
