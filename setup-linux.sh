@@ -26,6 +26,7 @@ BUILD_TYPE="Release"
 BUILD_TESTS=false
 INSTALL_DOCKER=true
 SKIP_BUILD=false
+MAX_EXECUTABLES_SHOWN=10  # Limit number of executables displayed to avoid cluttering output
 
 # Print colored output
 print_status() {
@@ -319,7 +320,7 @@ build_project() {
     # List built executables
     if [[ -d "$build_dir" ]]; then
         print_status "Built executables:"
-        find "$build_dir" -type f -executable -name "OdbDesign*" | head -10
+        find "$build_dir" -type f -executable -name "OdbDesign*" | head -"$MAX_EXECUTABLES_SHOWN"
     fi
 }
 
