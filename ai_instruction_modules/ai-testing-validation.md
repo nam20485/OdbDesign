@@ -10,6 +10,28 @@
 - Use `dotnet test` for unit test validation  
 - Test Docker builds with `docker build` when Dockerfile changes are made
 
+## Frameworks / Packages
+
+### For C#
+* xUnit
+* Moq
+* Bunit (Blazor)
+* Fluent Assertions
+* Coverlet
+* Coverage Reports
+* Stryker.NET
+* TesdtDriven.NET
+* [Testcontainers](https://testcontainers.com/guides/getting-started-with-testcontainers-for-dotnet/) 
+
+### Powershell
+* Pester
+
+### Docker
+* The best Docker testing frameworks you can find.
+
+### C++
+* Catch2
+
 ## Continuous Integration
 - Use GitHub Actions for CI/CD workflows.
 - Include workflows for:
