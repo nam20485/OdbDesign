@@ -90,16 +90,11 @@ Depends on DB type required:
 * Iterate, cycling between writing tests and code until the feature is complete.
 * Coverage should be substantial, aiming for at least 80% coverage. 
 
-[ai-testing-validation.md](./ai-testing-validation.md)
+#### Core Validation and Testing Guidelines
 
-* xUnit
-* FluentAssertions
-* Moq
-* Coverage w/ HTML Report
+**OBSERVE TESTING & VALIDATION GUIDELINES**
 
-* Unit Testing
-* Integration Testing
-* Substabtial Coverage % Expected
+*[ai-testing-validation.md](./ai-testing-validation.md)
 
 ### Containerization
 
@@ -109,6 +104,7 @@ Docker Compose
 ### Documentation
 
 Swagger/OpenAPI
+XML Doc comments
 
 ### Logging
 

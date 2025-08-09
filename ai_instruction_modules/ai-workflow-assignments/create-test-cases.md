@@ -45,26 +45,13 @@ You will create test coverage reports as part of the build or automated test cas
 
 It is important to the final quality of our product for everyone to perform their assignment exactly as specified.
 
-## Stack 
+## Software Stack 
 
 Your other instructions modules describe your software and libraries you will use.
 
+**OBSERVE TESTING & VALIDATION GUIDELINES**
 
-### For C#
-* xUnit
-* Moq
-* Bunit
-* Fluent Assertions
-* Test Coverage Visualization NuGet packages like Coverlet or integrated Visual Studio functionality.
-
-### Powershell
-* Pester
-
-### Docker
-* The best Docker testing frameworks you can find.
-
-### C++
-* Catch2
+*[ai-testing-validation.md](../ai-testing-validation.md)
 
 ### Completion
 
