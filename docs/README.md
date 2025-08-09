@@ -22,6 +22,32 @@ You can also create an issue: <https://github.com/nam20485/OdbDesign/issues>
 
 Or you can start a discussion: <https://github.com/nam20485/OdbDesign/discussions>
 
+* Use the button below to schedule a video call on Google.
+
+<html>
+<p>
+<!-- Google Calendar Appointment Scheduling begin -->
+<link href="https://calendar.google.com/calendar/scheduling-button-script.css" rel="stylesheet">
+<script src="https://calendar.google.com/calendar/scheduling-button-script.js" async></script>
+</p>
+<script>
+(function() {
+  var target = document.currentScript;
+  window.addEventListener('load', function() {
+    calendar.schedulingButton.load({
+      url: 'https://calendar.google.com/calendar/appointments/schedules/AcZssZ3_P9bK4nYHmGvxLD6VuCEb4OR_n5jjNqds9-tE5MWGEl7Xx-WkrFQjAqC81DZhHdj3kRbZvyHy?gv=true',
+      color: '#0B8043',
+      label: "Schedule Video Call for Support or Discussion",
+      target,
+    });
+  });
+})();
+</script>
+<!-- end Google Calendar Appointment Scheduling -->
+</html>
+
+You can use this to get help or support, discuss any issues with integration into your system, or consulting inquiries.
+
 ## Key Features
 
 OdbDesign ODB++ parser is differentiated from other offerings by these key features:
@@ -85,7 +111,6 @@ The diagram describes the current state of parser implementation and data availa
 |-----------------------------|---------|
 | Build              | [![CMake Build Multi-Platform](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml) |
 | Docker Image                | [![Docker Publish](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml) |
-| Security Code Scan          | [![CodeQL Security Scan](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml) |
 | Docker Security Scan        | [![Docker Scout Scan](https://github.com/nam20485/OdbDesign/actions/workflows/docker-scout-scan.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-scout-scan.yml) |
 | Dependency Review Scan      | [![Dependency Review](https://github.com/nam20485/OdbDesign/actions/workflows/dependency-review.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/dependency-review.yml) |
 | Upload SBOM                 | [![SBOM Generate and Submit](https://github.com/nam20485/OdbDesign/actions/workflows/sbom-generate-submit.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/sbom-generate-submit.yml) |
@@ -96,7 +121,6 @@ The diagram describes the current state of parser implementation and data availa
 |-----------------------------|----------|
 | Build                       | [![CMake Build Multi-Platform](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml) |
 | Docker Image                | [![Docker Publish](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml) |
-| Security Code Scan          | [![CodeQL Security Scan](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml) |
 | Docker Security Scan        | [![Docker Scout Scan](https://github.com/nam20485/OdbDesign/actions/workflows/docker-scout-scan.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-scout-scan.yml) |
 | Dependency Review Scan      | [![Dependency Review](https://github.com/nam20485/OdbDesign/actions/workflows/dependency-review.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/dependency-review.yml) |
 | Upload SBOM                 | [![SBOM Generate and Submit](https://github.com/nam20485/OdbDesign/actions/workflows/sbom-generate-submit.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/sbom-generate-submit.yml) |
@@ -107,7 +131,6 @@ The diagram describes the current state of parser implementation and data availa
 |-----------------------------|----------|
 | Build                       | [![CMake Build Multi-Platform](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml/badge.svg?branch=release)](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml) |
 | Docker Image                | [![Docker Publish](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml/badge.svg?branch=release)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml) |
-| Security Code Scan          | [![CodeQL Security Scan](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml) |
 | Docker Security Scan        | [![Docker Scout Scan](https://github.com/nam20485/OdbDesign/actions/workflows/docker-scout-scan.yml/badge.svg?branch=release)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-scout-scan.yml) |
 | Dependency Review Scan      | [![Dependency Review](https://github.com/nam20485/OdbDesign/actions/workflows/dependency-review.yml/badge.svg?branch=release)](https://github.com/nam20485/OdbDesign/actions/workflows/dependency-review.yml) |
 | Upload SBOM                 | [![SBOM Generate and Submit](https://github.com/nam20485/OdbDesign/actions/workflows/sbom-generate-submit.yml/badge.svg?branch=release)](https://github.com/nam20485/OdbDesign/actions/workflows/sbom-generate-submit.yml) |

@@ -1,0 +1,117 @@
+{
+  "selectedAuthType": "oauth-enterprise",
+  "theme": "Default",
+  "preferredEditor": "vscode",
+  "autoAccept": "true",
+  "contextFileName": "GEMINI.md",
+  "mcpServers": {
+    "github": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-github"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${input:github_token}"
+      }
+    },
+    "gitlab": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-gitlab"
+      ]
+    },
+    "sequential-thinking": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking"
+      ]
+    },
+    "memory": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-memory"
+      ]
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "${env:USERPROFILE}",
+        "."
+      ]
+    },
+    // "github-local-mcp-server": {
+    //   "command": "docker",
+    //   "args": [
+    //     "run",
+    //     "-i",
+    //     "--rm",
+    //     "-e",
+    //     "GITHUB_PERSONAL_ACCESS_TOKEN",
+    //     "ghcr.io/github/github-mcp-server"
+    //   ],
+    //   "env": {
+    //     "GITHUB_PERSONAL_ACCESS_TOKEN": "${input:github_token}"
+    //   }
+    // },
+    "github-remote-mcp-server": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/"
+    },
+    "puppeteer": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-puppeteer"
+      ],
+      "env": {}
+    },
+    "mcp-playwright": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@executeautomation/playwright-mcp-server"
+      ],
+      "env": {}
+    },
+    "microsoft-docs": {
+      "id": "microsoft-docs",
+      "name": "microsoft-docs",
+      "version": "0.0.1",
+      "type": "http",
+      "url": "https://learn.microsoft.com/api/mcp"
+    },
+    "context7": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@upstash/context7-mcp@latest"
+      ]
+    },
+    "web-browser": {
+      "type": "stdio",
+      "command": "uv",
+      "args": [
+        "tool",
+        "run",
+        "web-browser-mcp-server"
+      ]
+    }
+  },
+  "inputs": [
+    {
+      "id": "github_token",
+      "description": "GitHub personal access token",
+      "type": "promptString",
+      "password": true
+    }
+  ]
+}
