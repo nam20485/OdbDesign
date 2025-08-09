@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package Odb.Lib.Protobuf;
 
-//import "google/color.proto";
+import "color.proto";
 import "enums.proto";
 
 //
@@ -67,7 +67,7 @@ message MatrixFile {
         string endName = 13;
         string oldName = 14;
         string addType = 15;
-        //google. color = 16;
+        Color color = 16;
         uint32 id = 17;
     }
 

@@ -30,13 +30,14 @@
 #include "google/protobuf/extension_set.h"  // IWYU pragma: export
 #include "google/protobuf/generated_enum_reflection.h"
 #include "google/protobuf/unknown_field_set.h"
+#include "color.pb.h"
 #include "enums.pb.h"
 // @@protoc_insertion_point(includes)
 
 // Must be included last.
 #include "google/protobuf/port_def.inc"
 
-#define PROTOBUF_INTERNAL_EXPORT_matrixfile_2eproto ODBDESIGN_EXPORT
+#define PROTOBUF_INTERNAL_EXPORT_matrixfile_2eproto
 
 namespace google {
 namespace protobuf {
@@ -48,23 +49,23 @@ template <typename T>
 }  // namespace google
 
 // Internal implementation detail -- do not use these members.
-struct ODBDESIGN_EXPORT TableStruct_matrixfile_2eproto {
+struct TableStruct_matrixfile_2eproto {
   static const ::uint32_t offsets[];
 };
-ODBDESIGN_EXPORT extern const ::google::protobuf::internal::DescriptorTable
+extern const ::google::protobuf::internal::DescriptorTable
     descriptor_table_matrixfile_2eproto;
 namespace Odb {
 namespace Lib {
 namespace Protobuf {
 class MatrixFile;
 struct MatrixFileDefaultTypeInternal;
-ODBDESIGN_EXPORT extern MatrixFileDefaultTypeInternal _MatrixFile_default_instance_;
+extern MatrixFileDefaultTypeInternal _MatrixFile_default_instance_;
 class MatrixFile_LayerRecord;
 struct MatrixFile_LayerRecordDefaultTypeInternal;
-ODBDESIGN_EXPORT extern MatrixFile_LayerRecordDefaultTypeInternal _MatrixFile_LayerRecord_default_instance_;
+extern MatrixFile_LayerRecordDefaultTypeInternal _MatrixFile_LayerRecord_default_instance_;
 class MatrixFile_StepRecord;
 struct MatrixFile_StepRecordDefaultTypeInternal;
-ODBDESIGN_EXPORT extern MatrixFile_StepRecordDefaultTypeInternal _MatrixFile_StepRecord_default_instance_;
+extern MatrixFile_StepRecordDefaultTypeInternal _MatrixFile_StepRecord_default_instance_;
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
@@ -96,12 +97,12 @@ enum MatrixFile_LayerRecord_Type : int {
       std::numeric_limits<::int32_t>::max(),
 };
 
-ODBDESIGN_EXPORT bool MatrixFile_LayerRecord_Type_IsValid(int value);
-ODBDESIGN_EXPORT extern const uint32_t MatrixFile_LayerRecord_Type_internal_data_[];
+bool MatrixFile_LayerRecord_Type_IsValid(int value);
+extern const uint32_t MatrixFile_LayerRecord_Type_internal_data_[];
 constexpr MatrixFile_LayerRecord_Type MatrixFile_LayerRecord_Type_Type_MIN = static_cast<MatrixFile_LayerRecord_Type>(0);
 constexpr MatrixFile_LayerRecord_Type MatrixFile_LayerRecord_Type_Type_MAX = static_cast<MatrixFile_LayerRecord_Type>(12);
 constexpr int MatrixFile_LayerRecord_Type_Type_ARRAYSIZE = 12 + 1;
-ODBDESIGN_EXPORT const ::google::protobuf::EnumDescriptor*
+const ::google::protobuf::EnumDescriptor*
 MatrixFile_LayerRecord_Type_descriptor();
 template <typename T>
 const std::string& MatrixFile_LayerRecord_Type_Name(T value) {
@@ -129,12 +130,12 @@ enum MatrixFile_LayerRecord_Context : int {
       std::numeric_limits<::int32_t>::max(),
 };
 
-ODBDESIGN_EXPORT bool MatrixFile_LayerRecord_Context_IsValid(int value);
-ODBDESIGN_EXPORT extern const uint32_t MatrixFile_LayerRecord_Context_internal_data_[];
+bool MatrixFile_LayerRecord_Context_IsValid(int value);
+extern const uint32_t MatrixFile_LayerRecord_Context_internal_data_[];
 constexpr MatrixFile_LayerRecord_Context MatrixFile_LayerRecord_Context_Context_MIN = static_cast<MatrixFile_LayerRecord_Context>(0);
 constexpr MatrixFile_LayerRecord_Context MatrixFile_LayerRecord_Context_Context_MAX = static_cast<MatrixFile_LayerRecord_Context>(1);
 constexpr int MatrixFile_LayerRecord_Context_Context_ARRAYSIZE = 1 + 1;
-ODBDESIGN_EXPORT const ::google::protobuf::EnumDescriptor*
+const ::google::protobuf::EnumDescriptor*
 MatrixFile_LayerRecord_Context_descriptor();
 template <typename T>
 const std::string& MatrixFile_LayerRecord_Context_Name(T value) {
@@ -163,12 +164,12 @@ enum MatrixFile_LayerRecord_DielectricType : int {
       std::numeric_limits<::int32_t>::max(),
 };
 
-ODBDESIGN_EXPORT bool MatrixFile_LayerRecord_DielectricType_IsValid(int value);
-ODBDESIGN_EXPORT extern const uint32_t MatrixFile_LayerRecord_DielectricType_internal_data_[];
+bool MatrixFile_LayerRecord_DielectricType_IsValid(int value);
+extern const uint32_t MatrixFile_LayerRecord_DielectricType_internal_data_[];
 constexpr MatrixFile_LayerRecord_DielectricType MatrixFile_LayerRecord_DielectricType_DielectricType_MIN = static_cast<MatrixFile_LayerRecord_DielectricType>(0);
 constexpr MatrixFile_LayerRecord_DielectricType MatrixFile_LayerRecord_DielectricType_DielectricType_MAX = static_cast<MatrixFile_LayerRecord_DielectricType>(2);
 constexpr int MatrixFile_LayerRecord_DielectricType_DielectricType_ARRAYSIZE = 2 + 1;
-ODBDESIGN_EXPORT const ::google::protobuf::EnumDescriptor*
+const ::google::protobuf::EnumDescriptor*
 MatrixFile_LayerRecord_DielectricType_descriptor();
 template <typename T>
 const std::string& MatrixFile_LayerRecord_DielectricType_Name(T value) {
@@ -196,12 +197,12 @@ enum MatrixFile_LayerRecord_Form : int {
       std::numeric_limits<::int32_t>::max(),
 };
 
-ODBDESIGN_EXPORT bool MatrixFile_LayerRecord_Form_IsValid(int value);
-ODBDESIGN_EXPORT extern const uint32_t MatrixFile_LayerRecord_Form_internal_data_[];
+bool MatrixFile_LayerRecord_Form_IsValid(int value);
+extern const uint32_t MatrixFile_LayerRecord_Form_internal_data_[];
 constexpr MatrixFile_LayerRecord_Form MatrixFile_LayerRecord_Form_Form_MIN = static_cast<MatrixFile_LayerRecord_Form>(0);
 constexpr MatrixFile_LayerRecord_Form MatrixFile_LayerRecord_Form_Form_MAX = static_cast<MatrixFile_LayerRecord_Form>(1);
 constexpr int MatrixFile_LayerRecord_Form_Form_ARRAYSIZE = 1 + 1;
-ODBDESIGN_EXPORT const ::google::protobuf::EnumDescriptor*
+const ::google::protobuf::EnumDescriptor*
 MatrixFile_LayerRecord_Form_descriptor();
 template <typename T>
 const std::string& MatrixFile_LayerRecord_Form_Name(T value) {
@@ -226,7 +227,7 @@ inline bool MatrixFile_LayerRecord_Form_Parse(absl::string_view name, MatrixFile
 
 // -------------------------------------------------------------------
 
-class ODBDESIGN_EXPORT MatrixFile_StepRecord final : public ::google::protobuf::Message
+class MatrixFile_StepRecord final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.MatrixFile.StepRecord) */ {
  public:
   inline MatrixFile_StepRecord() : MatrixFile_StepRecord(nullptr) {}
@@ -446,7 +447,7 @@ class ODBDESIGN_EXPORT MatrixFile_StepRecord final : public ::google::protobuf::
 };
 // -------------------------------------------------------------------
 
-class ODBDESIGN_EXPORT MatrixFile_LayerRecord final : public ::google::protobuf::Message
+class MatrixFile_LayerRecord final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.MatrixFile.LayerRecord) */ {
  public:
   inline MatrixFile_LayerRecord() : MatrixFile_LayerRecord(nullptr) {}
@@ -686,6 +687,7 @@ class ODBDESIGN_EXPORT MatrixFile_LayerRecord final : public ::google::protobuf:
     kEndNameFieldNumber = 13,
     kOldNameFieldNumber = 14,
     kAddTypeFieldNumber = 15,
+    kColorFieldNumber = 16,
     kRowFieldNumber = 1,
     kContextFieldNumber = 2,
     kTypeFieldNumber = 3,
@@ -793,6 +795,21 @@ class ODBDESIGN_EXPORT MatrixFile_LayerRecord final : public ::google::protobuf:
   std::string* _internal_mutable_addtype();
 
   public:
+  // .Odb.Lib.Protobuf.Color color = 16;
+  bool has_color() const;
+  void clear_color() ;
+  const ::Odb::Lib::Protobuf::Color& color() const;
+  PROTOBUF_NODISCARD ::Odb::Lib::Protobuf::Color* release_color();
+  ::Odb::Lib::Protobuf::Color* mutable_color();
+  void set_allocated_color(::Odb::Lib::Protobuf::Color* value);
+  void unsafe_arena_set_allocated_color(::Odb::Lib::Protobuf::Color* value);
+  ::Odb::Lib::Protobuf::Color* unsafe_arena_release_color();
+
+  private:
+  const ::Odb::Lib::Protobuf::Color& _internal_color() const;
+  ::Odb::Lib::Protobuf::Color* _internal_mutable_color();
+
+  public:
   // uint32 row = 1;
   void clear_row() ;
   ::uint32_t row() const;
@@ -898,7 +915,7 @@ class ODBDESIGN_EXPORT MatrixFile_LayerRecord final : public ::google::protobuf:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
-      5, 16, 0,
+      5, 17, 1,
       112, 2>
       _table_;
 
@@ -916,12 +933,15 @@ class ODBDESIGN_EXPORT MatrixFile_LayerRecord final : public ::google::protobuf:
     inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
                           ::google::protobuf::Arena* arena, const Impl_& from,
                           const MatrixFile_LayerRecord& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
     ::google::protobuf::internal::ArenaStringPtr name_;
     ::google::protobuf::internal::ArenaStringPtr dielectricname_;
     ::google::protobuf::internal::ArenaStringPtr startname_;
     ::google::protobuf::internal::ArenaStringPtr endname_;
     ::google::protobuf::internal::ArenaStringPtr oldname_;
     ::google::protobuf::internal::ArenaStringPtr addtype_;
+    ::Odb::Lib::Protobuf::Color* color_;
     ::uint32_t row_;
     int context_;
     int type_;
@@ -932,7 +952,6 @@ class ODBDESIGN_EXPORT MatrixFile_LayerRecord final : public ::google::protobuf:
     ::uint32_t cubottom_;
     ::uint32_t ref_;
     ::uint32_t id_;
-    ::google::protobuf::internal::CachedSize _cached_size_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -940,7 +959,7 @@ class ODBDESIGN_EXPORT MatrixFile_LayerRecord final : public ::google::protobuf:
 };
 // -------------------------------------------------------------------
 
-class ODBDESIGN_EXPORT MatrixFile final : public ::google::protobuf::Message
+class MatrixFile final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.MatrixFile) */ {
  public:
   inline MatrixFile() : MatrixFile(nullptr) {}
@@ -1753,6 +1772,97 @@ inline void MatrixFile_LayerRecord::set_allocated_addtype(std::string* value) {
     _impl_.addtype_.Set("", GetArena());
   }
   // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.MatrixFile.LayerRecord.addType)
+}
+
+// .Odb.Lib.Protobuf.Color color = 16;
+inline bool MatrixFile_LayerRecord::has_color() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
+  PROTOBUF_ASSUME(!value || _impl_.color_ != nullptr);
+  return value;
+}
+inline const ::Odb::Lib::Protobuf::Color& MatrixFile_LayerRecord::_internal_color() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  const ::Odb::Lib::Protobuf::Color* p = _impl_.color_;
+  return p != nullptr ? *p : reinterpret_cast<const ::Odb::Lib::Protobuf::Color&>(::Odb::Lib::Protobuf::_Color_default_instance_);
+}
+inline const ::Odb::Lib::Protobuf::Color& MatrixFile_LayerRecord::color() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.MatrixFile.LayerRecord.color)
+  return _internal_color();
+}
+inline void MatrixFile_LayerRecord::unsafe_arena_set_allocated_color(::Odb::Lib::Protobuf::Color* value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (GetArena() == nullptr) {
+    delete reinterpret_cast<::google::protobuf::MessageLite*>(_impl_.color_);
+  }
+  _impl_.color_ = reinterpret_cast<::Odb::Lib::Protobuf::Color*>(value);
+  if (value != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000001u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000001u;
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:Odb.Lib.Protobuf.MatrixFile.LayerRecord.color)
+}
+inline ::Odb::Lib::Protobuf::Color* MatrixFile_LayerRecord::release_color() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+
+  _impl_._has_bits_[0] &= ~0x00000001u;
+  ::Odb::Lib::Protobuf::Color* released = _impl_.color_;
+  _impl_.color_ = nullptr;
+  if (::google::protobuf::internal::DebugHardenForceCopyInRelease()) {
+    auto* old = reinterpret_cast<::google::protobuf::MessageLite*>(released);
+    released = ::google::protobuf::internal::DuplicateIfNonNull(released);
+    if (GetArena() == nullptr) {
+      delete old;
+    }
+  } else {
+    if (GetArena() != nullptr) {
+      released = ::google::protobuf::internal::DuplicateIfNonNull(released);
+    }
+  }
+  return released;
+}
+inline ::Odb::Lib::Protobuf::Color* MatrixFile_LayerRecord::unsafe_arena_release_color() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.MatrixFile.LayerRecord.color)
+
+  _impl_._has_bits_[0] &= ~0x00000001u;
+  ::Odb::Lib::Protobuf::Color* temp = _impl_.color_;
+  _impl_.color_ = nullptr;
+  return temp;
+}
+inline ::Odb::Lib::Protobuf::Color* MatrixFile_LayerRecord::_internal_mutable_color() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (_impl_.color_ == nullptr) {
+    auto* p = ::google::protobuf::Message::DefaultConstruct<::Odb::Lib::Protobuf::Color>(GetArena());
+    _impl_.color_ = reinterpret_cast<::Odb::Lib::Protobuf::Color*>(p);
+  }
+  return _impl_.color_;
+}
+inline ::Odb::Lib::Protobuf::Color* MatrixFile_LayerRecord::mutable_color() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  _impl_._has_bits_[0] |= 0x00000001u;
+  ::Odb::Lib::Protobuf::Color* _msg = _internal_mutable_color();
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.MatrixFile.LayerRecord.color)
+  return _msg;
+}
+inline void MatrixFile_LayerRecord::set_allocated_color(::Odb::Lib::Protobuf::Color* value) {
+  ::google::protobuf::Arena* message_arena = GetArena();
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (message_arena == nullptr) {
+    delete reinterpret_cast<::google::protobuf::MessageLite*>(_impl_.color_);
+  }
+
+  if (value != nullptr) {
+    ::google::protobuf::Arena* submessage_arena = reinterpret_cast<::google::protobuf::MessageLite*>(value)->GetArena();
+    if (message_arena != submessage_arena) {
+      value = ::google::protobuf::internal::GetOwnedMessage(message_arena, value, submessage_arena);
+    }
+    _impl_._has_bits_[0] |= 0x00000001u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000001u;
+  }
+
+  _impl_.color_ = reinterpret_cast<::Odb::Lib::Protobuf::Color*>(value);
+  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.MatrixFile.LayerRecord.color)
 }
 
 // uint32 id = 17;
