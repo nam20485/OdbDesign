@@ -37,6 +37,8 @@ namespace Odb::Lib::App
 		const std::string& getDirectory() const;		
 
 		void Clear();		
+
+		void ensureDirectoryExists() const;
 		
 	private:
 		std::string m_directory;
@@ -45,7 +47,7 @@ namespace Odb::Lib::App
 		ProductModel::Design::StringMap m_designsByName;
 
 		std::shared_ptr<ProductModel::Design> LoadDesign(const std::string& designName);
-		std::shared_ptr<FileModel::Design::FileArchive> LoadFileArchive(const std::string& designName);
+		std::shared_ptr<FileModel::Design::FileArchive> LoadFileArchive(const std::string& designName);		
 
 		constexpr inline static const char* DESIGN_EXTENSIONS[] = { "zip", "tgz", "tar.gz", "tar", "gzip" , "gz" };
 

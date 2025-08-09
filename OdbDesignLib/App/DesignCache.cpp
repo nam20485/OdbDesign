@@ -22,6 +22,7 @@ namespace Odb::Lib::App
     DesignCache::DesignCache(std::string directory) :
         m_directory(std::move(directory))
     {
+		ensureDirectoryExists();
     }
 
     DesignCache::~DesignCache()
@@ -334,5 +335,23 @@ namespace Odb::Lib::App
         }
 
         return nullptr;
+    }
+
+    void DesignCache::ensureDirectoryExists() const
+    {
+        if (!std::filesystem::exists(m_directory))
+        {
+            // create directory
+            try
+            {
+                std::filesystem::create_directories(m_directory);
+            }
+            catch (const std::exception& e)
+            {
+                std::string msg = "Failed to create design cache directory: " + m_directory;				
+                logexception_msg(e, msg);                
+                throw e;
+			}
+        }
     }
 }

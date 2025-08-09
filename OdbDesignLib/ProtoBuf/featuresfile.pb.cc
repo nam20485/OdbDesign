@@ -128,6 +128,7 @@ inline constexpr FeaturesFile::Impl_::Impl_(
       : _cached_size_{0},
         featurerecords_{},
         symbolnamesbyname_{},
+        symbolnames_{},
         units_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()),
@@ -273,11 +274,13 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile, _impl_.numfeatures_),
         PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile, _impl_.featurerecords_),
         PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile, _impl_.symbolnamesbyname_),
+        PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::FeaturesFile, _impl_.symbolnames_),
         0,
         3,
         1,
         2,
         4,
+        ~0u,
         ~0u,
         ~0u,
 };
@@ -287,7 +290,7 @@ static const ::_pbi::MigrationSchema
         {0, 10, -1, sizeof(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse)},
         {12, 49, -1, sizeof(::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord)},
         {78, 88, -1, sizeof(::Odb::Lib::Protobuf::FeaturesFile_SymbolNamesByNameEntry_DoNotUse)},
-        {90, 105, -1, sizeof(::Odb::Lib::Protobuf::FeaturesFile)},
+        {90, 106, -1, sizeof(::Odb::Lib::Protobuf::FeaturesFile)},
 };
 static const ::_pb::Message* const file_default_instances[] = {
     &::Odb::Lib::Protobuf::_FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse_default_instance_._instance,
@@ -299,49 +302,50 @@ const char descriptor_table_protodef_featuresfile_2eproto[] ABSL_ATTRIBUTE_SECTI
     protodesc_cold) = {
     "\n\022featuresfile.proto\022\020Odb.Lib.Protobuf\032\014"
     "common.proto\032\013enums.proto\032\020symbolname.pr"
-    "oto\"\207\r\n\014FeaturesFile\022\022\n\005units\030\001 \001(\tH\000\210\001\001"
+    "oto\"\272\r\n\014FeaturesFile\022\022\n\005units\030\001 \001(\tH\000\210\001\001"
     "\022\017\n\002id\030\002 \001(\rH\001\210\001\001\022\021\n\004path\030\005 \001(\tH\002\210\001\001\022\026\n\t"
     "directory\030\006 \001(\tH\003\210\001\001\022\030\n\013numFeatures\030\007 \001("
     "\005H\004\210\001\001\022D\n\016featureRecords\030\010 \003(\0132,.Odb.Lib"
     ".Protobuf.FeaturesFile.FeatureRecord\022P\n\021"
     "symbolNamesByName\030\t \003(\01325.Odb.Lib.Protob"
-    "uf.FeaturesFile.SymbolNamesByNameEntry\032\344"
-    "\t\n\rFeatureRecord\022D\n\004type\030\002 \001(\01621.Odb.Lib"
-    ".Protobuf.FeaturesFile.FeatureRecord.Typ"
-    "eH\000\210\001\001\022\017\n\002xs\030\003 \001(\001H\001\210\001\001\022\017\n\002ys\030\004 \001(\001H\002\210\001\001"
-    "\022\017\n\002xe\030\005 \001(\001H\003\210\001\001\022\017\n\002ye\030\006 \001(\001H\004\210\001\001\022\016\n\001x\030"
-    "\007 \001(\001H\005\210\001\001\022\016\n\001y\030\010 \001(\001H\006\210\001\001\022\024\n\007apt_def\030\t "
-    "\001(\005H\007\210\001\001\022\037\n\022apt_def_symbol_num\030\n \001(\005H\010\210\001"
-    "\001\022\"\n\025apt_def_resize_factor\030\013 \001(\001H\t\210\001\001\022\017\n"
-    "\002xc\030\014 \001(\001H\n\210\001\001\022\017\n\002yc\030\r \001(\001H\013\210\001\001\022\017\n\002cw\030\016 "
-    "\001(\010H\014\210\001\001\022\021\n\004font\030\017 \001(\tH\r\210\001\001\022\022\n\005xsize\030\020 \001"
-    "(\001H\016\210\001\001\022\022\n\005ysize\030\021 \001(\001H\017\210\001\001\022\031\n\014width_fac"
-    "tor\030\022 \001(\001H\020\210\001\001\022\021\n\004text\030\023 \001(\tH\021\210\001\001\022\024\n\007ver"
-    "sion\030\024 \001(\005H\022\210\001\001\022\024\n\007sym_num\030\025 \001(\005H\023\210\001\001\0221\n"
-    "\010polarity\030\026 \001(\0162\032.Odb.Lib.Protobuf.Polar"
-    "ityH\024\210\001\001\022\022\n\005dcode\030\027 \001(\005H\025\210\001\001\022\020\n\003atr\030\030 \001("
-    "\005H\026\210\001\001\022\022\n\005value\030\031 \001(\tH\027\210\001\001\022\017\n\002id\030\032 \001(\rH\030"
-    "\210\001\001\022\027\n\norient_def\030\033 \001(\005H\031\210\001\001\022 \n\023orient_d"
-    "ef_rotation\030\034 \001(\001H\032\210\001\001\0229\n\017contourPolygon"
-    "s\030\001 \003(\0132 .Odb.Lib.Protobuf.ContourPolygo"
-    "n\022d\n\024attributeLookupTable\030\035 \003(\0132F.Odb.Li"
-    "b.Protobuf.FeaturesFile.FeatureRecord.At"
-    "tributeLookupTableEntry\032;\n\031AttributeLook"
-    "upTableEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t"
-    ":\0028\001\"F\n\004Type\022\007\n\003Arc\020\000\022\007\n\003Pad\020\001\022\013\n\007Surfac"
-    "e\020\002\022\013\n\007Barcode\020\003\022\010\n\004Text\020\004\022\010\n\004Line\020\005B\007\n\005"
-    "_typeB\005\n\003_xsB\005\n\003_ysB\005\n\003_xeB\005\n\003_yeB\004\n\002_xB"
-    "\004\n\002_yB\n\n\010_apt_defB\025\n\023_apt_def_symbol_num"
-    "B\030\n\026_apt_def_resize_factorB\005\n\003_xcB\005\n\003_yc"
-    "B\005\n\003_cwB\007\n\005_fontB\010\n\006_xsizeB\010\n\006_ysizeB\017\n\r"
-    "_width_factorB\007\n\005_textB\n\n\010_versionB\n\n\010_s"
-    "ym_numB\013\n\t_polarityB\010\n\006_dcodeB\006\n\004_atrB\010\n"
-    "\006_valueB\005\n\003_idB\r\n\013_orient_defB\026\n\024_orient"
-    "_def_rotation\032V\n\026SymbolNamesByNameEntry\022"
-    "\013\n\003key\030\001 \001(\t\022+\n\005value\030\002 \001(\0132\034.Odb.Lib.Pr"
-    "otobuf.SymbolName:\0028\001B\010\n\006_unitsB\005\n\003_idB\007"
-    "\n\005_pathB\014\n\n_directoryB\016\n\014_numFeaturesb\006p"
-    "roto3"
+    "uf.FeaturesFile.SymbolNamesByNameEntry\0221"
+    "\n\013symbolNames\030\n \003(\0132\034.Odb.Lib.Protobuf.S"
+    "ymbolName\032\344\t\n\rFeatureRecord\022D\n\004type\030\002 \001("
+    "\01621.Odb.Lib.Protobuf.FeaturesFile.Featur"
+    "eRecord.TypeH\000\210\001\001\022\017\n\002xs\030\003 \001(\001H\001\210\001\001\022\017\n\002ys"
+    "\030\004 \001(\001H\002\210\001\001\022\017\n\002xe\030\005 \001(\001H\003\210\001\001\022\017\n\002ye\030\006 \001(\001"
+    "H\004\210\001\001\022\016\n\001x\030\007 \001(\001H\005\210\001\001\022\016\n\001y\030\010 \001(\001H\006\210\001\001\022\024\n"
+    "\007apt_def\030\t \001(\005H\007\210\001\001\022\037\n\022apt_def_symbol_nu"
+    "m\030\n \001(\005H\010\210\001\001\022\"\n\025apt_def_resize_factor\030\013 "
+    "\001(\001H\t\210\001\001\022\017\n\002xc\030\014 \001(\001H\n\210\001\001\022\017\n\002yc\030\r \001(\001H\013\210"
+    "\001\001\022\017\n\002cw\030\016 \001(\010H\014\210\001\001\022\021\n\004font\030\017 \001(\tH\r\210\001\001\022\022"
+    "\n\005xsize\030\020 \001(\001H\016\210\001\001\022\022\n\005ysize\030\021 \001(\001H\017\210\001\001\022\031"
+    "\n\014width_factor\030\022 \001(\001H\020\210\001\001\022\021\n\004text\030\023 \001(\tH"
+    "\021\210\001\001\022\024\n\007version\030\024 \001(\005H\022\210\001\001\022\024\n\007sym_num\030\025 "
+    "\001(\005H\023\210\001\001\0221\n\010polarity\030\026 \001(\0162\032.Odb.Lib.Pro"
+    "tobuf.PolarityH\024\210\001\001\022\022\n\005dcode\030\027 \001(\005H\025\210\001\001\022"
+    "\020\n\003atr\030\030 \001(\005H\026\210\001\001\022\022\n\005value\030\031 \001(\tH\027\210\001\001\022\017\n"
+    "\002id\030\032 \001(\rH\030\210\001\001\022\027\n\norient_def\030\033 \001(\005H\031\210\001\001\022"
+    " \n\023orient_def_rotation\030\034 \001(\001H\032\210\001\001\0229\n\017con"
+    "tourPolygons\030\001 \003(\0132 .Odb.Lib.Protobuf.Co"
+    "ntourPolygon\022d\n\024attributeLookupTable\030\035 \003"
+    "(\0132F.Odb.Lib.Protobuf.FeaturesFile.Featu"
+    "reRecord.AttributeLookupTableEntry\032;\n\031At"
+    "tributeLookupTableEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005"
+    "value\030\002 \001(\t:\0028\001\"F\n\004Type\022\007\n\003Arc\020\000\022\007\n\003Pad\020"
+    "\001\022\013\n\007Surface\020\002\022\013\n\007Barcode\020\003\022\010\n\004Text\020\004\022\010\n"
+    "\004Line\020\005B\007\n\005_typeB\005\n\003_xsB\005\n\003_ysB\005\n\003_xeB\005\n"
+    "\003_yeB\004\n\002_xB\004\n\002_yB\n\n\010_apt_defB\025\n\023_apt_def"
+    "_symbol_numB\030\n\026_apt_def_resize_factorB\005\n"
+    "\003_xcB\005\n\003_ycB\005\n\003_cwB\007\n\005_fontB\010\n\006_xsizeB\010\n"
+    "\006_ysizeB\017\n\r_width_factorB\007\n\005_textB\n\n\010_ve"
+    "rsionB\n\n\010_sym_numB\013\n\t_polarityB\010\n\006_dcode"
+    "B\006\n\004_atrB\010\n\006_valueB\005\n\003_idB\r\n\013_orient_def"
+    "B\026\n\024_orient_def_rotation\032V\n\026SymbolNamesB"
+    "yNameEntry\022\013\n\003key\030\001 \001(\t\022+\n\005value\030\002 \001(\0132\034"
+    ".Odb.Lib.Protobuf.SymbolName:\0028\001B\010\n\006_uni"
+    "tsB\005\n\003_idB\007\n\005_pathB\014\n\n_directoryB\016\n\014_num"
+    "Featuresb\006proto3"
 };
 static const ::_pbi::DescriptorTable* const descriptor_table_featuresfile_2eproto_deps[3] =
     {
@@ -353,7 +357,7 @@ static ::absl::once_flag descriptor_table_featuresfile_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_featuresfile_2eproto = {
     false,
     false,
-    1765,
+    1816,
     descriptor_table_protodef_featuresfile_2eproto,
     "featuresfile.proto",
     &descriptor_table_featuresfile_2eproto_once,
@@ -1555,6 +1559,10 @@ void FeaturesFile::clear_symbolnamesbyname() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.symbolnamesbyname_.Clear();
 }
+void FeaturesFile::clear_symbolnames() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.symbolnames_.Clear();
+}
 FeaturesFile::FeaturesFile(::google::protobuf::Arena* arena)
 #if defined(PROTOBUF_CUSTOM_VTABLE)
     : ::google::protobuf::Message(arena, _class_data_.base()) {
@@ -1571,6 +1579,7 @@ inline PROTOBUF_NDEBUG_INLINE FeaturesFile::Impl_::Impl_(
         _cached_size_{0},
         featurerecords_{visibility, arena, from.featurerecords_},
         symbolnamesbyname_{visibility, arena, from.symbolnamesbyname_},
+        symbolnames_{visibility, arena, from.symbolnames_},
         units_(arena, from.units_),
         path_(arena, from.path_),
         directory_(arena, from.directory_) {}
@@ -1604,6 +1613,7 @@ inline PROTOBUF_NDEBUG_INLINE FeaturesFile::Impl_::Impl_(
       : _cached_size_{0},
         featurerecords_{visibility, arena},
         symbolnamesbyname_{visibility, arena},
+        symbolnames_{visibility, arena},
         units_(arena),
         path_(arena),
         directory_(arena) {}
@@ -1649,6 +1659,10 @@ constexpr auto FeaturesFile::InternalNewImpl_() {
           decltype(FeaturesFile::_impl_.symbolnamesbyname_)::
               InternalGetArenaOffsetAlt(
                   ::google::protobuf::Message::internal_visibility()),
+      PROTOBUF_FIELD_OFFSET(FeaturesFile, _impl_.symbolnames_) +
+          decltype(FeaturesFile::_impl_.symbolnames_)::
+              InternalGetArenaOffset(
+                  ::google::protobuf::Message::internal_visibility()),
   });
   if (arena_bits.has_value()) {
     return ::google::protobuf::internal::MessageCreator::CopyInit(
@@ -1687,16 +1701,16 @@ const ::google::protobuf::internal::ClassData* FeaturesFile::GetClassData() cons
   return _class_data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<3, 7, 3, 73, 2> FeaturesFile::_table_ = {
+const ::_pbi::TcParseTable<4, 8, 4, 81, 2> FeaturesFile::_table_ = {
   {
     PROTOBUF_FIELD_OFFSET(FeaturesFile, _impl_._has_bits_),
     0, // no _extensions_
-    9, 56,  // max_field_number, fast_idx_mask
+    10, 120,  // max_field_number, fast_idx_mask
     offsetof(decltype(_table_), field_lookup_table),
-    4294966796,  // skipmap
+    4294966284,  // skipmap
     offsetof(decltype(_table_), field_entries),
-    7,  // num_field_entries
-    3,  // num_aux_entries
+    8,  // num_field_entries
+    4,  // num_aux_entries
     offsetof(decltype(_table_), aux_entries),
     _class_data_.base(),
     nullptr,  // post_loop_handler
@@ -1705,9 +1719,7 @@ const ::_pbi::TcParseTable<3, 7, 3, 73, 2> FeaturesFile::_table_ = {
     ::_pbi::TcParser::GetTable<::Odb::Lib::Protobuf::FeaturesFile>(),  // to_prefetch
     #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
   }, {{
-    // repeated .Odb.Lib.Protobuf.FeaturesFile.FeatureRecord featureRecords = 8;
-    {::_pbi::TcParser::FastMtR1,
-     {66, 63, 0, PROTOBUF_FIELD_OFFSET(FeaturesFile, _impl_.featurerecords_)}},
+    {::_pbi::TcParser::MiniParse, {}},
     // optional string units = 1;
     {::_pbi::TcParser::FastUS1,
      {10, 0, 0, PROTOBUF_FIELD_OFFSET(FeaturesFile, _impl_.units_)}},
@@ -1725,6 +1737,18 @@ const ::_pbi::TcParseTable<3, 7, 3, 73, 2> FeaturesFile::_table_ = {
     // optional int32 numFeatures = 7;
     {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(FeaturesFile, _impl_.numfeatures_), 4>(),
      {56, 4, 0, PROTOBUF_FIELD_OFFSET(FeaturesFile, _impl_.numfeatures_)}},
+    // repeated .Odb.Lib.Protobuf.FeaturesFile.FeatureRecord featureRecords = 8;
+    {::_pbi::TcParser::FastMtR1,
+     {66, 63, 0, PROTOBUF_FIELD_OFFSET(FeaturesFile, _impl_.featurerecords_)}},
+    {::_pbi::TcParser::MiniParse, {}},
+    // repeated .Odb.Lib.Protobuf.SymbolName symbolNames = 10;
+    {::_pbi::TcParser::FastMtR1,
+     {82, 63, 1, PROTOBUF_FIELD_OFFSET(FeaturesFile, _impl_.symbolnames_)}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
   }}, {{
     65535, 65535
   }}, {{
@@ -1747,17 +1771,21 @@ const ::_pbi::TcParseTable<3, 7, 3, 73, 2> FeaturesFile::_table_ = {
     {PROTOBUF_FIELD_OFFSET(FeaturesFile, _impl_.featurerecords_), -1, 0,
     (0 | ::_fl::kFcRepeated | ::_fl::kMessage | ::_fl::kTvTable)},
     // map<string, .Odb.Lib.Protobuf.SymbolName> symbolNamesByName = 9;
-    {PROTOBUF_FIELD_OFFSET(FeaturesFile, _impl_.symbolnamesbyname_), -1, 1,
+    {PROTOBUF_FIELD_OFFSET(FeaturesFile, _impl_.symbolnamesbyname_), -1, 2,
     (0 | ::_fl::kFcRepeated | ::_fl::kMap)},
+    // repeated .Odb.Lib.Protobuf.SymbolName symbolNames = 10;
+    {PROTOBUF_FIELD_OFFSET(FeaturesFile, _impl_.symbolnames_), -1, 1,
+    (0 | ::_fl::kFcRepeated | ::_fl::kMessage | ::_fl::kTvTable)},
   }}, {{
     {::_pbi::TcParser::GetTable<::Odb::Lib::Protobuf::FeaturesFile_FeatureRecord>()},
+    {::_pbi::TcParser::GetTable<::Odb::Lib::Protobuf::SymbolName>()},
     {::_pbi::TcParser::GetMapAuxInfo<
         decltype(FeaturesFile()._impl_.symbolnamesbyname_)>(
         1, 0, 0, 9,
         11)},
     {::_pbi::TcParser::GetTable<::Odb::Lib::Protobuf::SymbolName>()},
   }}, {{
-    "\35\5\0\4\11\0\0\21"
+    "\35\5\0\4\11\0\0\21\0\0\0\0\0\0\0\0"
     "Odb.Lib.Protobuf.FeaturesFile"
     "units"
     "path"
@@ -1775,6 +1803,7 @@ PROTOBUF_NOINLINE void FeaturesFile::Clear() {
 
   _impl_.featurerecords_.Clear();
   _impl_.symbolnamesbyname_.Clear();
+  _impl_.symbolnames_.Clear();
   cached_has_bits = _impl_._has_bits_[0];
   if (cached_has_bits & 0x00000007u) {
     if (cached_has_bits & 0x00000001u) {
@@ -1888,6 +1917,17 @@ PROTOBUF_NOINLINE void FeaturesFile::Clear() {
             }
           }
 
+          // repeated .Odb.Lib.Protobuf.SymbolName symbolNames = 10;
+          for (unsigned i = 0, n = static_cast<unsigned>(
+                                   this_._internal_symbolnames_size());
+               i < n; i++) {
+            const auto& repfield = this_._internal_symbolnames().Get(i);
+            target =
+                ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
+                    10, repfield, repfield.GetCachedSize(),
+                    target, stream);
+          }
+
           if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
             target =
                 ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
@@ -1928,6 +1968,13 @@ PROTOBUF_NOINLINE void FeaturesFile::Clear() {
                 total_size += _pbi::MapEntryFuncs<std::string, ::Odb::Lib::Protobuf::SymbolName,
                                                _pbi::WireFormatLite::TYPE_STRING,
                                                _pbi::WireFormatLite::TYPE_MESSAGE>::ByteSizeLong(entry.first, entry.second);
+              }
+            }
+            // repeated .Odb.Lib.Protobuf.SymbolName symbolNames = 10;
+            {
+              total_size += 1UL * this_._internal_symbolnames_size();
+              for (const auto& msg : this_._internal_symbolnames()) {
+                total_size += ::google::protobuf::internal::WireFormatLite::MessageSize(msg);
               }
             }
           }
@@ -1974,6 +2021,8 @@ void FeaturesFile::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::go
   _this->_internal_mutable_featurerecords()->MergeFrom(
       from._internal_featurerecords());
   _this->_impl_.symbolnamesbyname_.MergeFrom(from._impl_.symbolnamesbyname_);
+  _this->_internal_mutable_symbolnames()->MergeFrom(
+      from._internal_symbolnames());
   cached_has_bits = from._impl_._has_bits_[0];
   if (cached_has_bits & 0x0000001fu) {
     if (cached_has_bits & 0x00000001u) {
@@ -2012,6 +2061,7 @@ void FeaturesFile::InternalSwap(FeaturesFile* PROTOBUF_RESTRICT other) {
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
   _impl_.featurerecords_.InternalSwap(&other->_impl_.featurerecords_);
   _impl_.symbolnamesbyname_.InternalSwap(&other->_impl_.symbolnamesbyname_);
+  _impl_.symbolnames_.InternalSwap(&other->_impl_.symbolnames_);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.units_, &other->_impl_.units_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.path_, &other->_impl_.path_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.directory_, &other->_impl_.directory_, arena);

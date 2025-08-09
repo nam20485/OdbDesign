@@ -37,6 +37,25 @@ Make sure to restart your shell or source the profile after adding the line.
 
 `source ~/.bashrc`
 
+#### Automated Setup (Linux Only)
+
+For Linux users, you can use the automated setup script that handles all dependencies and configuration:
+
+> **⚠️ Security Warning**: Running scripts from the internet can execute arbitrary code on your system! Always verify scripts are safe before running them. Since this script is open-source, you can view the entire contents at: https://github.com/nam20485/OdbDesign/blob/main/setup-linux.sh
+
+```Bash
+$ ./setup-linux.sh
+```
+
+This script will:
+- Detect your Linux distribution and install appropriate system dependencies
+- Install and configure vcpkg
+- Set up environment variables
+- Build the project
+- Optionally run tests
+
+See `./setup-linux.sh --help` for all available options.
+
 ### Source Code
 
 Get the source code by cloning the GitHub repository:
