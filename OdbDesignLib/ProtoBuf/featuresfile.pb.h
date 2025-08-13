@@ -41,7 +41,7 @@
 // Must be included last.
 #include "google/protobuf/port_def.inc"
 
-#define PROTOBUF_INTERNAL_EXPORT_featuresfile_2eproto ODBDESIGN_EXPORT
+#define PROTOBUF_INTERNAL_EXPORT_featuresfile_2eproto
 
 namespace google {
 namespace protobuf {
@@ -53,26 +53,26 @@ template <typename T>
 }  // namespace google
 
 // Internal implementation detail -- do not use these members.
-struct ODBDESIGN_EXPORT TableStruct_featuresfile_2eproto {
+struct TableStruct_featuresfile_2eproto {
   static const ::uint32_t offsets[];
 };
-ODBDESIGN_EXPORT extern const ::google::protobuf::internal::DescriptorTable
+extern const ::google::protobuf::internal::DescriptorTable
     descriptor_table_featuresfile_2eproto;
 namespace Odb {
 namespace Lib {
 namespace Protobuf {
 class FeaturesFile;
 struct FeaturesFileDefaultTypeInternal;
-ODBDESIGN_EXPORT extern FeaturesFileDefaultTypeInternal _FeaturesFile_default_instance_;
+extern FeaturesFileDefaultTypeInternal _FeaturesFile_default_instance_;
 class FeaturesFile_FeatureRecord;
 struct FeaturesFile_FeatureRecordDefaultTypeInternal;
-ODBDESIGN_EXPORT extern FeaturesFile_FeatureRecordDefaultTypeInternal _FeaturesFile_FeatureRecord_default_instance_;
+extern FeaturesFile_FeatureRecordDefaultTypeInternal _FeaturesFile_FeatureRecord_default_instance_;
 class FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse;
 struct FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeInternal;
-ODBDESIGN_EXPORT extern FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeInternal _FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse_default_instance_;
+extern FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeInternal _FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse_default_instance_;
 class FeaturesFile_SymbolNamesByNameEntry_DoNotUse;
 struct FeaturesFile_SymbolNamesByNameEntry_DoNotUseDefaultTypeInternal;
-ODBDESIGN_EXPORT extern FeaturesFile_SymbolNamesByNameEntry_DoNotUseDefaultTypeInternal _FeaturesFile_SymbolNamesByNameEntry_DoNotUse_default_instance_;
+extern FeaturesFile_SymbolNamesByNameEntry_DoNotUseDefaultTypeInternal _FeaturesFile_SymbolNamesByNameEntry_DoNotUse_default_instance_;
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
@@ -97,12 +97,12 @@ enum FeaturesFile_FeatureRecord_Type : int {
       std::numeric_limits<::int32_t>::max(),
 };
 
-ODBDESIGN_EXPORT bool FeaturesFile_FeatureRecord_Type_IsValid(int value);
-ODBDESIGN_EXPORT extern const uint32_t FeaturesFile_FeatureRecord_Type_internal_data_[];
+bool FeaturesFile_FeatureRecord_Type_IsValid(int value);
+extern const uint32_t FeaturesFile_FeatureRecord_Type_internal_data_[];
 constexpr FeaturesFile_FeatureRecord_Type FeaturesFile_FeatureRecord_Type_Type_MIN = static_cast<FeaturesFile_FeatureRecord_Type>(0);
 constexpr FeaturesFile_FeatureRecord_Type FeaturesFile_FeatureRecord_Type_Type_MAX = static_cast<FeaturesFile_FeatureRecord_Type>(5);
 constexpr int FeaturesFile_FeatureRecord_Type_Type_ARRAYSIZE = 5 + 1;
-ODBDESIGN_EXPORT const ::google::protobuf::EnumDescriptor*
+const ::google::protobuf::EnumDescriptor*
 FeaturesFile_FeatureRecord_Type_descriptor();
 template <typename T>
 const std::string& FeaturesFile_FeatureRecord_Type_Name(T value) {
@@ -205,7 +205,7 @@ class FeaturesFile_SymbolNamesByNameEntry_DoNotUse final
 };
 // -------------------------------------------------------------------
 
-class ODBDESIGN_EXPORT FeaturesFile_FeatureRecord final : public ::google::protobuf::Message
+class FeaturesFile_FeatureRecord final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.FeaturesFile.FeatureRecord) */ {
  public:
   inline FeaturesFile_FeatureRecord() : FeaturesFile_FeatureRecord(nullptr) {}
@@ -815,7 +815,7 @@ class ODBDESIGN_EXPORT FeaturesFile_FeatureRecord final : public ::google::proto
 };
 // -------------------------------------------------------------------
 
-class ODBDESIGN_EXPORT FeaturesFile final : public ::google::protobuf::Message
+class FeaturesFile final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.FeaturesFile) */ {
  public:
   inline FeaturesFile() : FeaturesFile(nullptr) {}

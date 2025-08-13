@@ -44,7 +44,7 @@ struct Design_PartsByNameEntry_DoNotUseDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 Design_PartsByNameEntry_DoNotUseDefaultTypeInternal _Design_PartsByNameEntry_DoNotUse_default_instance_;
               template <typename>
 PROTOBUF_CONSTEXPR Design_PackagesByNameEntry_DoNotUse::Design_PackagesByNameEntry_DoNotUse(::_pbi::ConstantInitialized)
@@ -62,7 +62,7 @@ struct Design_PackagesByNameEntry_DoNotUseDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 Design_PackagesByNameEntry_DoNotUseDefaultTypeInternal _Design_PackagesByNameEntry_DoNotUse_default_instance_;
               template <typename>
 PROTOBUF_CONSTEXPR Design_ComponentsByNameEntry_DoNotUse::Design_ComponentsByNameEntry_DoNotUse(::_pbi::ConstantInitialized)
@@ -80,7 +80,7 @@ struct Design_ComponentsByNameEntry_DoNotUseDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 Design_ComponentsByNameEntry_DoNotUseDefaultTypeInternal _Design_ComponentsByNameEntry_DoNotUse_default_instance_;
               template <typename>
 PROTOBUF_CONSTEXPR Design_NetsByNameEntry_DoNotUse::Design_NetsByNameEntry_DoNotUse(::_pbi::ConstantInitialized)
@@ -98,7 +98,7 @@ struct Design_NetsByNameEntry_DoNotUseDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 Design_NetsByNameEntry_DoNotUseDefaultTypeInternal _Design_NetsByNameEntry_DoNotUse_default_instance_;
 
 inline constexpr Design::Impl_::Impl_(
@@ -137,7 +137,7 @@ struct DesignDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 DesignDefaultTypeInternal _Design_default_instance_;
 }  // namespace ProductModel
 }  // namespace Protobuf

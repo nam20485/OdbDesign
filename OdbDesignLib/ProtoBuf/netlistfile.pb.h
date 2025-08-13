@@ -38,7 +38,7 @@
 // Must be included last.
 #include "google/protobuf/port_def.inc"
 
-#define PROTOBUF_INTERNAL_EXPORT_netlistfile_2eproto ODBDESIGN_EXPORT
+#define PROTOBUF_INTERNAL_EXPORT_netlistfile_2eproto
 
 namespace google {
 namespace protobuf {
@@ -50,26 +50,26 @@ template <typename T>
 }  // namespace google
 
 // Internal implementation detail -- do not use these members.
-struct ODBDESIGN_EXPORT TableStruct_netlistfile_2eproto {
+struct TableStruct_netlistfile_2eproto {
   static const ::uint32_t offsets[];
 };
-ODBDESIGN_EXPORT extern const ::google::protobuf::internal::DescriptorTable
+extern const ::google::protobuf::internal::DescriptorTable
     descriptor_table_netlistfile_2eproto;
 namespace Odb {
 namespace Lib {
 namespace Protobuf {
 class NetlistFile;
 struct NetlistFileDefaultTypeInternal;
-ODBDESIGN_EXPORT extern NetlistFileDefaultTypeInternal _NetlistFile_default_instance_;
+extern NetlistFileDefaultTypeInternal _NetlistFile_default_instance_;
 class NetlistFile_NetPointRecord;
 struct NetlistFile_NetPointRecordDefaultTypeInternal;
-ODBDESIGN_EXPORT extern NetlistFile_NetPointRecordDefaultTypeInternal _NetlistFile_NetPointRecord_default_instance_;
+extern NetlistFile_NetPointRecordDefaultTypeInternal _NetlistFile_NetPointRecord_default_instance_;
 class NetlistFile_NetRecord;
 struct NetlistFile_NetRecordDefaultTypeInternal;
-ODBDESIGN_EXPORT extern NetlistFile_NetRecordDefaultTypeInternal _NetlistFile_NetRecord_default_instance_;
+extern NetlistFile_NetRecordDefaultTypeInternal _NetlistFile_NetRecord_default_instance_;
 class NetlistFile_NetRecordsByNameEntry_DoNotUse;
 struct NetlistFile_NetRecordsByNameEntry_DoNotUseDefaultTypeInternal;
-ODBDESIGN_EXPORT extern NetlistFile_NetRecordsByNameEntry_DoNotUseDefaultTypeInternal _NetlistFile_NetRecordsByNameEntry_DoNotUse_default_instance_;
+extern NetlistFile_NetRecordsByNameEntry_DoNotUseDefaultTypeInternal _NetlistFile_NetRecordsByNameEntry_DoNotUse_default_instance_;
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
@@ -92,12 +92,12 @@ enum NetlistFile_NetPointRecord_AccessSide : int {
       std::numeric_limits<::int32_t>::max(),
 };
 
-ODBDESIGN_EXPORT bool NetlistFile_NetPointRecord_AccessSide_IsValid(int value);
-ODBDESIGN_EXPORT extern const uint32_t NetlistFile_NetPointRecord_AccessSide_internal_data_[];
+bool NetlistFile_NetPointRecord_AccessSide_IsValid(int value);
+extern const uint32_t NetlistFile_NetPointRecord_AccessSide_internal_data_[];
 constexpr NetlistFile_NetPointRecord_AccessSide NetlistFile_NetPointRecord_AccessSide_AccessSide_MIN = static_cast<NetlistFile_NetPointRecord_AccessSide>(0);
 constexpr NetlistFile_NetPointRecord_AccessSide NetlistFile_NetPointRecord_AccessSide_AccessSide_MAX = static_cast<NetlistFile_NetPointRecord_AccessSide>(3);
 constexpr int NetlistFile_NetPointRecord_AccessSide_AccessSide_ARRAYSIZE = 3 + 1;
-ODBDESIGN_EXPORT const ::google::protobuf::EnumDescriptor*
+const ::google::protobuf::EnumDescriptor*
 NetlistFile_NetPointRecord_AccessSide_descriptor();
 template <typename T>
 const std::string& NetlistFile_NetPointRecord_AccessSide_Name(T value) {
@@ -126,12 +126,12 @@ enum NetlistFile_Staggered : int {
       std::numeric_limits<::int32_t>::max(),
 };
 
-ODBDESIGN_EXPORT bool NetlistFile_Staggered_IsValid(int value);
-ODBDESIGN_EXPORT extern const uint32_t NetlistFile_Staggered_internal_data_[];
+bool NetlistFile_Staggered_IsValid(int value);
+extern const uint32_t NetlistFile_Staggered_internal_data_[];
 constexpr NetlistFile_Staggered NetlistFile_Staggered_Staggered_MIN = static_cast<NetlistFile_Staggered>(0);
 constexpr NetlistFile_Staggered NetlistFile_Staggered_Staggered_MAX = static_cast<NetlistFile_Staggered>(2);
 constexpr int NetlistFile_Staggered_Staggered_ARRAYSIZE = 2 + 1;
-ODBDESIGN_EXPORT const ::google::protobuf::EnumDescriptor*
+const ::google::protobuf::EnumDescriptor*
 NetlistFile_Staggered_descriptor();
 template <typename T>
 const std::string& NetlistFile_Staggered_Name(T value) {
@@ -156,7 +156,7 @@ inline bool NetlistFile_Staggered_Parse(absl::string_view name, NetlistFile_Stag
 
 // -------------------------------------------------------------------
 
-class ODBDESIGN_EXPORT NetlistFile_NetRecord final : public ::google::protobuf::Message
+class NetlistFile_NetRecord final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.NetlistFile.NetRecord) */ {
  public:
   inline NetlistFile_NetRecord() : NetlistFile_NetRecord(nullptr) {}
@@ -367,7 +367,7 @@ class ODBDESIGN_EXPORT NetlistFile_NetRecord final : public ::google::protobuf::
 };
 // -------------------------------------------------------------------
 
-class ODBDESIGN_EXPORT NetlistFile_NetPointRecord final : public ::google::protobuf::Message
+class NetlistFile_NetPointRecord final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.NetlistFile.NetPointRecord) */ {
  public:
   inline NetlistFile_NetPointRecord() : NetlistFile_NetPointRecord(nullptr) {}
@@ -845,7 +845,7 @@ class NetlistFile_NetRecordsByNameEntry_DoNotUse final
 };
 // -------------------------------------------------------------------
 
-class ODBDESIGN_EXPORT NetlistFile final : public ::google::protobuf::Message
+class NetlistFile final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.NetlistFile) */ {
  public:
   inline NetlistFile() : NetlistFile(nullptr) {}

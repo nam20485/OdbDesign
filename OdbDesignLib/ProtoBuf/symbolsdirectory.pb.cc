@@ -57,7 +57,7 @@ struct SymbolsDirectoryDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SymbolsDirectoryDefaultTypeInternal _SymbolsDirectory_default_instance_;
 }  // namespace Protobuf
 }  // namespace Lib

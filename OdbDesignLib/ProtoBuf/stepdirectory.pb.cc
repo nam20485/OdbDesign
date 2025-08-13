@@ -43,7 +43,7 @@ struct StepDirectory_NetlistsByNameEntry_DoNotUseDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 StepDirectory_NetlistsByNameEntry_DoNotUseDefaultTypeInternal _StepDirectory_NetlistsByNameEntry_DoNotUse_default_instance_;
               template <typename>
 PROTOBUF_CONSTEXPR StepDirectory_LayersByNameEntry_DoNotUse::StepDirectory_LayersByNameEntry_DoNotUse(::_pbi::ConstantInitialized)
@@ -61,7 +61,7 @@ struct StepDirectory_LayersByNameEntry_DoNotUseDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 StepDirectory_LayersByNameEntry_DoNotUseDefaultTypeInternal _StepDirectory_LayersByNameEntry_DoNotUse_default_instance_;
 
 inline constexpr StepDirectory::Impl_::Impl_(
@@ -97,7 +97,7 @@ struct StepDirectoryDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 StepDirectoryDefaultTypeInternal _StepDirectory_default_instance_;
 }  // namespace Protobuf
 }  // namespace Lib

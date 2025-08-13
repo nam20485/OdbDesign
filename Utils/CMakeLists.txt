@@ -11,11 +11,15 @@ target_include_directories(Utils
                            $<INSTALL_INTERFACE:include>)
 
 ## PCH
-#if (NOT DEFINED ENV{CI})
+if (FALSE)
     file (GLOB_RECURSE UTILS_HEADER_FILES "*.h")
     target_precompile_headers(Utils PRIVATE ${UTILS_HEADER_FILES})
-#endif()
+endif()
 
 # Link to LibArchive
 find_package(LibArchive REQUIRED)
 target_link_libraries(Utils PRIVATE LibArchive::LibArchive)
+
+# Link to Crow (needed for crow_win.h)
+find_package(Crow CONFIG REQUIRED)
+target_link_libraries(Utils PRIVATE Crow::Crow)

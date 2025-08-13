@@ -61,7 +61,7 @@ struct StepHdrFile_StepRepeatRecordDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 StepHdrFile_StepRepeatRecordDefaultTypeInternal _StepHdrFile_StepRepeatRecord_default_instance_;
               template <typename>
 PROTOBUF_CONSTEXPR StepHdrFile_OnlineValuesEntry_DoNotUse::StepHdrFile_OnlineValuesEntry_DoNotUse(::_pbi::ConstantInitialized)
@@ -79,7 +79,7 @@ struct StepHdrFile_OnlineValuesEntry_DoNotUseDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 StepHdrFile_OnlineValuesEntry_DoNotUseDefaultTypeInternal _StepHdrFile_OnlineValuesEntry_DoNotUse_default_instance_;
 
 inline constexpr StepHdrFile::Impl_::Impl_(
@@ -124,7 +124,7 @@ struct StepHdrFileDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 StepHdrFileDefaultTypeInternal _StepHdrFile_default_instance_;
 }  // namespace Protobuf
 }  // namespace Lib

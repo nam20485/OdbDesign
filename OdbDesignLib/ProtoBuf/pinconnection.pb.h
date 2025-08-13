@@ -36,7 +36,7 @@
 // Must be included last.
 #include "google/protobuf/port_def.inc"
 
-#define PROTOBUF_INTERNAL_EXPORT_pinconnection_2eproto ODBDESIGN_EXPORT
+#define PROTOBUF_INTERNAL_EXPORT_pinconnection_2eproto
 
 namespace google {
 namespace protobuf {
@@ -48,10 +48,10 @@ template <typename T>
 }  // namespace google
 
 // Internal implementation detail -- do not use these members.
-struct ODBDESIGN_EXPORT TableStruct_pinconnection_2eproto {
+struct TableStruct_pinconnection_2eproto {
   static const ::uint32_t offsets[];
 };
-ODBDESIGN_EXPORT extern const ::google::protobuf::internal::DescriptorTable
+extern const ::google::protobuf::internal::DescriptorTable
     descriptor_table_pinconnection_2eproto;
 namespace Odb {
 namespace Lib {
@@ -59,7 +59,7 @@ namespace Protobuf {
 namespace ProductModel {
 class PinConnection;
 struct PinConnectionDefaultTypeInternal;
-ODBDESIGN_EXPORT extern PinConnectionDefaultTypeInternal _PinConnection_default_instance_;
+extern PinConnectionDefaultTypeInternal _PinConnection_default_instance_;
 }  // namespace ProductModel
 }  // namespace Protobuf
 }  // namespace Lib
@@ -79,7 +79,7 @@ namespace ProductModel {
 
 // -------------------------------------------------------------------
 
-class ODBDESIGN_EXPORT PinConnection final : public ::google::protobuf::Message
+class PinConnection final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.ProductModel.PinConnection) */ {
  public:
   inline PinConnection() : PinConnection(nullptr) {}

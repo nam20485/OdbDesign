@@ -39,7 +39,7 @@
 // Must be included last.
 #include "google/protobuf/port_def.inc"
 
-#define PROTOBUF_INTERNAL_EXPORT_componentsfile_2eproto ODBDESIGN_EXPORT
+#define PROTOBUF_INTERNAL_EXPORT_componentsfile_2eproto
 
 namespace google {
 namespace protobuf {
@@ -51,38 +51,38 @@ template <typename T>
 }  // namespace google
 
 // Internal implementation detail -- do not use these members.
-struct ODBDESIGN_EXPORT TableStruct_componentsfile_2eproto {
+struct TableStruct_componentsfile_2eproto {
   static const ::uint32_t offsets[];
 };
-ODBDESIGN_EXPORT extern const ::google::protobuf::internal::DescriptorTable
+extern const ::google::protobuf::internal::DescriptorTable
     descriptor_table_componentsfile_2eproto;
 namespace Odb {
 namespace Lib {
 namespace Protobuf {
 class ComponentsFile;
 struct ComponentsFileDefaultTypeInternal;
-ODBDESIGN_EXPORT extern ComponentsFileDefaultTypeInternal _ComponentsFile_default_instance_;
+extern ComponentsFileDefaultTypeInternal _ComponentsFile_default_instance_;
 class ComponentsFile_BomDescriptionRecord;
 struct ComponentsFile_BomDescriptionRecordDefaultTypeInternal;
-ODBDESIGN_EXPORT extern ComponentsFile_BomDescriptionRecordDefaultTypeInternal _ComponentsFile_BomDescriptionRecord_default_instance_;
+extern ComponentsFile_BomDescriptionRecordDefaultTypeInternal _ComponentsFile_BomDescriptionRecord_default_instance_;
 class ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUse;
 struct ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUseDefaultTypeInternal;
-ODBDESIGN_EXPORT extern ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUseDefaultTypeInternal _ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUse_default_instance_;
+extern ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUseDefaultTypeInternal _ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUse_default_instance_;
 class ComponentsFile_ComponentRecord;
 struct ComponentsFile_ComponentRecordDefaultTypeInternal;
-ODBDESIGN_EXPORT extern ComponentsFile_ComponentRecordDefaultTypeInternal _ComponentsFile_ComponentRecord_default_instance_;
+extern ComponentsFile_ComponentRecordDefaultTypeInternal _ComponentsFile_ComponentRecord_default_instance_;
 class ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse;
 struct ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeInternal;
-ODBDESIGN_EXPORT extern ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeInternal _ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse_default_instance_;
+extern ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeInternal _ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse_default_instance_;
 class ComponentsFile_ComponentRecord_ToeprintRecord;
 struct ComponentsFile_ComponentRecord_ToeprintRecordDefaultTypeInternal;
-ODBDESIGN_EXPORT extern ComponentsFile_ComponentRecord_ToeprintRecordDefaultTypeInternal _ComponentsFile_ComponentRecord_ToeprintRecord_default_instance_;
+extern ComponentsFile_ComponentRecord_ToeprintRecordDefaultTypeInternal _ComponentsFile_ComponentRecord_ToeprintRecord_default_instance_;
 class ComponentsFile_ComponentRecordsByNameEntry_DoNotUse;
 struct ComponentsFile_ComponentRecordsByNameEntry_DoNotUseDefaultTypeInternal;
-ODBDESIGN_EXPORT extern ComponentsFile_ComponentRecordsByNameEntry_DoNotUseDefaultTypeInternal _ComponentsFile_ComponentRecordsByNameEntry_DoNotUse_default_instance_;
+extern ComponentsFile_ComponentRecordsByNameEntry_DoNotUseDefaultTypeInternal _ComponentsFile_ComponentRecordsByNameEntry_DoNotUse_default_instance_;
 class ComponentsFile_PropertyRecordsByNameEntry_DoNotUse;
 struct ComponentsFile_PropertyRecordsByNameEntry_DoNotUseDefaultTypeInternal;
-ODBDESIGN_EXPORT extern ComponentsFile_PropertyRecordsByNameEntry_DoNotUseDefaultTypeInternal _ComponentsFile_PropertyRecordsByNameEntry_DoNotUse_default_instance_;
+extern ComponentsFile_PropertyRecordsByNameEntry_DoNotUseDefaultTypeInternal _ComponentsFile_PropertyRecordsByNameEntry_DoNotUse_default_instance_;
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
@@ -100,7 +100,7 @@ namespace Protobuf {
 
 // -------------------------------------------------------------------
 
-class ODBDESIGN_EXPORT ComponentsFile_ComponentRecord_ToeprintRecord final : public ::google::protobuf::Message
+class ComponentsFile_ComponentRecord_ToeprintRecord final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord.ToeprintRecord) */ {
  public:
   inline ComponentsFile_ComponentRecord_ToeprintRecord() : ComponentsFile_ComponentRecord_ToeprintRecord(nullptr) {}
@@ -428,7 +428,7 @@ class ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse final
 };
 // -------------------------------------------------------------------
 
-class ODBDESIGN_EXPORT ComponentsFile_BomDescriptionRecord final : public ::google::protobuf::Message
+class ComponentsFile_BomDescriptionRecord final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.ComponentsFile.BomDescriptionRecord) */ {
  public:
   inline ComponentsFile_BomDescriptionRecord() : ComponentsFile_BomDescriptionRecord(nullptr) {}
@@ -803,7 +803,7 @@ class ComponentsFile_PropertyRecordsByNameEntry_DoNotUse final
 };
 // -------------------------------------------------------------------
 
-class ODBDESIGN_EXPORT ComponentsFile_ComponentRecord final : public ::google::protobuf::Message
+class ComponentsFile_ComponentRecord final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.ComponentsFile.ComponentRecord) */ {
  public:
   inline ComponentsFile_ComponentRecord() : ComponentsFile_ComponentRecord(nullptr) {}
@@ -1267,7 +1267,7 @@ class ComponentsFile_ComponentRecordsByNameEntry_DoNotUse final
 };
 // -------------------------------------------------------------------
 
-class ODBDESIGN_EXPORT ComponentsFile final : public ::google::protobuf::Message
+class ComponentsFile final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.ComponentsFile) */ {
  public:
   inline ComponentsFile() : ComponentsFile(nullptr) {}
