@@ -8,7 +8,17 @@ add_executable(OdbDesignTests
     "DesignCacheLoadTests.cpp"
     "Fixtures/DesignNameValueParamTest.h"   
     "FileArchiveTests.cpp"
-  "ProtobufSerializationTests.cpp" "FileReaderTests.cpp" "ArchiveTests.cpp" "CrossPlatformTests.cpp" "Fixtures/TestDataFixture.h" "Fixtures/TestDataFixture.cpp" "ArchiveExtractorTests.cpp")
+    "ProtobufSerializationTests.cpp" 
+    "FileReaderTests.cpp" 
+    "ArchiveTests.cpp" 
+    "CrossPlatformTests.cpp" 
+    "Fixtures/TestDataFixture.h" 
+    "Fixtures/TestDataFixture.cpp" 
+    "ArchiveExtractorTests.cpp"
+    "PerformanceTests.cpp"
+    "EnhancedTests.cpp"
+    "IntegrationTests.cpp"
+    "Fixtures/TestUtils.h")
 
 target_link_libraries(OdbDesignTests PRIVATE GTest::gtest_main GTest::gmock_main)
 
