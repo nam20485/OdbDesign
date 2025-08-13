@@ -35,7 +35,7 @@
 // Must be included last.
 #include "google/protobuf/port_def.inc"
 
-#define PROTOBUF_INTERNAL_EXPORT_common_2eproto ODBDESIGN_EXPORT
+#define PROTOBUF_INTERNAL_EXPORT_common_2eproto
 
 namespace google {
 namespace protobuf {
@@ -47,23 +47,23 @@ template <typename T>
 }  // namespace google
 
 // Internal implementation detail -- do not use these members.
-struct ODBDESIGN_EXPORT TableStruct_common_2eproto {
+struct TableStruct_common_2eproto {
   static const ::uint32_t offsets[];
 };
-ODBDESIGN_EXPORT extern const ::google::protobuf::internal::DescriptorTable
+extern const ::google::protobuf::internal::DescriptorTable
     descriptor_table_common_2eproto;
 namespace Odb {
 namespace Lib {
 namespace Protobuf {
 class ContourPolygon;
 struct ContourPolygonDefaultTypeInternal;
-ODBDESIGN_EXPORT extern ContourPolygonDefaultTypeInternal _ContourPolygon_default_instance_;
+extern ContourPolygonDefaultTypeInternal _ContourPolygon_default_instance_;
 class ContourPolygon_PolygonPart;
 struct ContourPolygon_PolygonPartDefaultTypeInternal;
-ODBDESIGN_EXPORT extern ContourPolygon_PolygonPartDefaultTypeInternal _ContourPolygon_PolygonPart_default_instance_;
+extern ContourPolygon_PolygonPartDefaultTypeInternal _ContourPolygon_PolygonPart_default_instance_;
 class PropertyRecord;
 struct PropertyRecordDefaultTypeInternal;
-ODBDESIGN_EXPORT extern PropertyRecordDefaultTypeInternal _PropertyRecord_default_instance_;
+extern PropertyRecordDefaultTypeInternal _PropertyRecord_default_instance_;
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
@@ -84,12 +84,12 @@ enum ContourPolygon_PolygonPart_Type : int {
       std::numeric_limits<::int32_t>::max(),
 };
 
-ODBDESIGN_EXPORT bool ContourPolygon_PolygonPart_Type_IsValid(int value);
-ODBDESIGN_EXPORT extern const uint32_t ContourPolygon_PolygonPart_Type_internal_data_[];
+bool ContourPolygon_PolygonPart_Type_IsValid(int value);
+extern const uint32_t ContourPolygon_PolygonPart_Type_internal_data_[];
 constexpr ContourPolygon_PolygonPart_Type ContourPolygon_PolygonPart_Type_Type_MIN = static_cast<ContourPolygon_PolygonPart_Type>(0);
 constexpr ContourPolygon_PolygonPart_Type ContourPolygon_PolygonPart_Type_Type_MAX = static_cast<ContourPolygon_PolygonPart_Type>(1);
 constexpr int ContourPolygon_PolygonPart_Type_Type_ARRAYSIZE = 1 + 1;
-ODBDESIGN_EXPORT const ::google::protobuf::EnumDescriptor*
+const ::google::protobuf::EnumDescriptor*
 ContourPolygon_PolygonPart_Type_descriptor();
 template <typename T>
 const std::string& ContourPolygon_PolygonPart_Type_Name(T value) {
@@ -117,12 +117,12 @@ enum ContourPolygon_Type : int {
       std::numeric_limits<::int32_t>::max(),
 };
 
-ODBDESIGN_EXPORT bool ContourPolygon_Type_IsValid(int value);
-ODBDESIGN_EXPORT extern const uint32_t ContourPolygon_Type_internal_data_[];
+bool ContourPolygon_Type_IsValid(int value);
+extern const uint32_t ContourPolygon_Type_internal_data_[];
 constexpr ContourPolygon_Type ContourPolygon_Type_Type_MIN = static_cast<ContourPolygon_Type>(0);
 constexpr ContourPolygon_Type ContourPolygon_Type_Type_MAX = static_cast<ContourPolygon_Type>(1);
 constexpr int ContourPolygon_Type_Type_ARRAYSIZE = 1 + 1;
-ODBDESIGN_EXPORT const ::google::protobuf::EnumDescriptor*
+const ::google::protobuf::EnumDescriptor*
 ContourPolygon_Type_descriptor();
 template <typename T>
 const std::string& ContourPolygon_Type_Name(T value) {
@@ -147,7 +147,7 @@ inline bool ContourPolygon_Type_Parse(absl::string_view name, ContourPolygon_Typ
 
 // -------------------------------------------------------------------
 
-class ODBDESIGN_EXPORT PropertyRecord final : public ::google::protobuf::Message
+class PropertyRecord final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.PropertyRecord) */ {
  public:
   inline PropertyRecord() : PropertyRecord(nullptr) {}
@@ -384,7 +384,7 @@ class ODBDESIGN_EXPORT PropertyRecord final : public ::google::protobuf::Message
 };
 // -------------------------------------------------------------------
 
-class ODBDESIGN_EXPORT ContourPolygon_PolygonPart final : public ::google::protobuf::Message
+class ContourPolygon_PolygonPart final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.ContourPolygon.PolygonPart) */ {
  public:
   inline ContourPolygon_PolygonPart() : ContourPolygon_PolygonPart(nullptr) {}
@@ -660,7 +660,7 @@ class ODBDESIGN_EXPORT ContourPolygon_PolygonPart final : public ::google::proto
 };
 // -------------------------------------------------------------------
 
-class ODBDESIGN_EXPORT ContourPolygon final : public ::google::protobuf::Message
+class ContourPolygon final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.ContourPolygon) */ {
  public:
   inline ContourPolygon() : ContourPolygon(nullptr) {}

@@ -44,7 +44,7 @@ struct Package_PinsByNameEntry_DoNotUseDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 Package_PinsByNameEntry_DoNotUseDefaultTypeInternal _Package_PinsByNameEntry_DoNotUse_default_instance_;
 
 inline constexpr Package::Impl_::Impl_(
@@ -74,7 +74,7 @@ struct PackageDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PackageDefaultTypeInternal _Package_default_instance_;
 }  // namespace ProductModel
 }  // namespace Protobuf

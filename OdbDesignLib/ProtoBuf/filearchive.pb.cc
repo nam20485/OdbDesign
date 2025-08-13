@@ -43,7 +43,7 @@ struct FileArchive_SymbolsDirectoriesByNameEntry_DoNotUseDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 FileArchive_SymbolsDirectoriesByNameEntry_DoNotUseDefaultTypeInternal _FileArchive_SymbolsDirectoriesByNameEntry_DoNotUse_default_instance_;
               template <typename>
 PROTOBUF_CONSTEXPR FileArchive_StepsByNameEntry_DoNotUse::FileArchive_StepsByNameEntry_DoNotUse(::_pbi::ConstantInitialized)
@@ -61,7 +61,7 @@ struct FileArchive_StepsByNameEntry_DoNotUseDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 FileArchive_StepsByNameEntry_DoNotUseDefaultTypeInternal _FileArchive_StepsByNameEntry_DoNotUse_default_instance_;
 
 inline constexpr FileArchive::Impl_::Impl_(
@@ -97,7 +97,7 @@ struct FileArchiveDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 FileArchiveDefaultTypeInternal _FileArchive_default_instance_;
 }  // namespace Protobuf
 }  // namespace Lib

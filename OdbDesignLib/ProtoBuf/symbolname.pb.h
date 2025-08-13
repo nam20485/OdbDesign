@@ -35,7 +35,7 @@
 // Must be included last.
 #include "google/protobuf/port_def.inc"
 
-#define PROTOBUF_INTERNAL_EXPORT_symbolname_2eproto ODBDESIGN_EXPORT
+#define PROTOBUF_INTERNAL_EXPORT_symbolname_2eproto
 
 namespace google {
 namespace protobuf {
@@ -47,17 +47,17 @@ template <typename T>
 }  // namespace google
 
 // Internal implementation detail -- do not use these members.
-struct ODBDESIGN_EXPORT TableStruct_symbolname_2eproto {
+struct TableStruct_symbolname_2eproto {
   static const ::uint32_t offsets[];
 };
-ODBDESIGN_EXPORT extern const ::google::protobuf::internal::DescriptorTable
+extern const ::google::protobuf::internal::DescriptorTable
     descriptor_table_symbolname_2eproto;
 namespace Odb {
 namespace Lib {
 namespace Protobuf {
 class SymbolName;
 struct SymbolNameDefaultTypeInternal;
-ODBDESIGN_EXPORT extern SymbolNameDefaultTypeInternal _SymbolName_default_instance_;
+extern SymbolNameDefaultTypeInternal _SymbolName_default_instance_;
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
@@ -75,7 +75,7 @@ namespace Protobuf {
 
 // -------------------------------------------------------------------
 
-class ODBDESIGN_EXPORT SymbolName final : public ::google::protobuf::Message
+class SymbolName final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.SymbolName) */ {
  public:
   inline SymbolName() : SymbolName(nullptr) {}

@@ -53,7 +53,7 @@ struct NetlistFile_NetRecordDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 NetlistFile_NetRecordDefaultTypeInternal _NetlistFile_NetRecord_default_instance_;
 
 inline constexpr NetlistFile_NetPointRecord::Impl_::Impl_(
@@ -100,7 +100,7 @@ struct NetlistFile_NetPointRecordDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 NetlistFile_NetPointRecordDefaultTypeInternal _NetlistFile_NetPointRecord_default_instance_;
               template <typename>
 PROTOBUF_CONSTEXPR NetlistFile_NetRecordsByNameEntry_DoNotUse::NetlistFile_NetRecordsByNameEntry_DoNotUse(::_pbi::ConstantInitialized)
@@ -118,7 +118,7 @@ struct NetlistFile_NetRecordsByNameEntry_DoNotUseDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 NetlistFile_NetRecordsByNameEntry_DoNotUseDefaultTypeInternal _NetlistFile_NetRecordsByNameEntry_DoNotUse_default_instance_;
 
 inline constexpr NetlistFile::Impl_::Impl_(
@@ -156,7 +156,7 @@ struct NetlistFileDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 NetlistFileDefaultTypeInternal _NetlistFile_default_instance_;
 }  // namespace Protobuf
 }  // namespace Lib

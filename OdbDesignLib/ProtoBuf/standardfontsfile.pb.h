@@ -35,7 +35,7 @@
 // Must be included last.
 #include "google/protobuf/port_def.inc"
 
-#define PROTOBUF_INTERNAL_EXPORT_standardfontsfile_2eproto ODBDESIGN_EXPORT
+#define PROTOBUF_INTERNAL_EXPORT_standardfontsfile_2eproto
 
 namespace google {
 namespace protobuf {
@@ -47,23 +47,23 @@ template <typename T>
 }  // namespace google
 
 // Internal implementation detail -- do not use these members.
-struct ODBDESIGN_EXPORT TableStruct_standardfontsfile_2eproto {
+struct TableStruct_standardfontsfile_2eproto {
   static const ::uint32_t offsets[];
 };
-ODBDESIGN_EXPORT extern const ::google::protobuf::internal::DescriptorTable
+extern const ::google::protobuf::internal::DescriptorTable
     descriptor_table_standardfontsfile_2eproto;
 namespace Odb {
 namespace Lib {
 namespace Protobuf {
 class StandardFontsFile;
 struct StandardFontsFileDefaultTypeInternal;
-ODBDESIGN_EXPORT extern StandardFontsFileDefaultTypeInternal _StandardFontsFile_default_instance_;
+extern StandardFontsFileDefaultTypeInternal _StandardFontsFile_default_instance_;
 class StandardFontsFile_CharacterBlock;
 struct StandardFontsFile_CharacterBlockDefaultTypeInternal;
-ODBDESIGN_EXPORT extern StandardFontsFile_CharacterBlockDefaultTypeInternal _StandardFontsFile_CharacterBlock_default_instance_;
+extern StandardFontsFile_CharacterBlockDefaultTypeInternal _StandardFontsFile_CharacterBlock_default_instance_;
 class StandardFontsFile_CharacterBlock_LineRecord;
 struct StandardFontsFile_CharacterBlock_LineRecordDefaultTypeInternal;
-ODBDESIGN_EXPORT extern StandardFontsFile_CharacterBlock_LineRecordDefaultTypeInternal _StandardFontsFile_CharacterBlock_LineRecord_default_instance_;
+extern StandardFontsFile_CharacterBlock_LineRecordDefaultTypeInternal _StandardFontsFile_CharacterBlock_LineRecord_default_instance_;
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
@@ -81,7 +81,7 @@ namespace Protobuf {
 
 // -------------------------------------------------------------------
 
-class ODBDESIGN_EXPORT StandardFontsFile_CharacterBlock_LineRecord final : public ::google::protobuf::Message
+class StandardFontsFile_CharacterBlock_LineRecord final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.StandardFontsFile.CharacterBlock.LineRecord) */ {
  public:
   inline StandardFontsFile_CharacterBlock_LineRecord() : StandardFontsFile_CharacterBlock_LineRecord(nullptr) {}
@@ -351,7 +351,7 @@ class ODBDESIGN_EXPORT StandardFontsFile_CharacterBlock_LineRecord final : publi
 };
 // -------------------------------------------------------------------
 
-class ODBDESIGN_EXPORT StandardFontsFile_CharacterBlock final : public ::google::protobuf::Message
+class StandardFontsFile_CharacterBlock final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.StandardFontsFile.CharacterBlock) */ {
  public:
   inline StandardFontsFile_CharacterBlock() : StandardFontsFile_CharacterBlock(nullptr) {}
@@ -569,7 +569,7 @@ class ODBDESIGN_EXPORT StandardFontsFile_CharacterBlock final : public ::google:
 };
 // -------------------------------------------------------------------
 
-class ODBDESIGN_EXPORT StandardFontsFile final : public ::google::protobuf::Message
+class StandardFontsFile final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.StandardFontsFile) */ {
  public:
   inline StandardFontsFile() : StandardFontsFile(nullptr) {}

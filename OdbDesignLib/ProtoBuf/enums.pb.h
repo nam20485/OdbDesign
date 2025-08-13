@@ -32,7 +32,7 @@
 // Must be included last.
 #include "google/protobuf/port_def.inc"
 
-#define PROTOBUF_INTERNAL_EXPORT_enums_2eproto ODBDESIGN_EXPORT
+#define PROTOBUF_INTERNAL_EXPORT_enums_2eproto
 
 namespace google {
 namespace protobuf {
@@ -44,10 +44,10 @@ template <typename T>
 }  // namespace google
 
 // Internal implementation detail -- do not use these members.
-struct ODBDESIGN_EXPORT TableStruct_enums_2eproto {
+struct TableStruct_enums_2eproto {
   static const ::uint32_t offsets[];
 };
-ODBDESIGN_EXPORT extern const ::google::protobuf::internal::DescriptorTable
+extern const ::google::protobuf::internal::DescriptorTable
     descriptor_table_enums_2eproto;
 namespace google {
 namespace protobuf {
@@ -67,12 +67,12 @@ enum BoardSide : int {
       std::numeric_limits<::int32_t>::max(),
 };
 
-ODBDESIGN_EXPORT bool BoardSide_IsValid(int value);
-ODBDESIGN_EXPORT extern const uint32_t BoardSide_internal_data_[];
+bool BoardSide_IsValid(int value);
+extern const uint32_t BoardSide_internal_data_[];
 constexpr BoardSide BoardSide_MIN = static_cast<BoardSide>(0);
 constexpr BoardSide BoardSide_MAX = static_cast<BoardSide>(2);
 constexpr int BoardSide_ARRAYSIZE = 2 + 1;
-ODBDESIGN_EXPORT const ::google::protobuf::EnumDescriptor*
+const ::google::protobuf::EnumDescriptor*
 BoardSide_descriptor();
 template <typename T>
 const std::string& BoardSide_Name(T value) {
@@ -100,12 +100,12 @@ enum LineShape : int {
       std::numeric_limits<::int32_t>::max(),
 };
 
-ODBDESIGN_EXPORT bool LineShape_IsValid(int value);
-ODBDESIGN_EXPORT extern const uint32_t LineShape_internal_data_[];
+bool LineShape_IsValid(int value);
+extern const uint32_t LineShape_internal_data_[];
 constexpr LineShape LineShape_MIN = static_cast<LineShape>(0);
 constexpr LineShape LineShape_MAX = static_cast<LineShape>(1);
 constexpr int LineShape_ARRAYSIZE = 1 + 1;
-ODBDESIGN_EXPORT const ::google::protobuf::EnumDescriptor*
+const ::google::protobuf::EnumDescriptor*
 LineShape_descriptor();
 template <typename T>
 const std::string& LineShape_Name(T value) {
@@ -133,12 +133,12 @@ enum Polarity : int {
       std::numeric_limits<::int32_t>::max(),
 };
 
-ODBDESIGN_EXPORT bool Polarity_IsValid(int value);
-ODBDESIGN_EXPORT extern const uint32_t Polarity_internal_data_[];
+bool Polarity_IsValid(int value);
+extern const uint32_t Polarity_internal_data_[];
 constexpr Polarity Polarity_MIN = static_cast<Polarity>(0);
 constexpr Polarity Polarity_MAX = static_cast<Polarity>(1);
 constexpr int Polarity_ARRAYSIZE = 1 + 1;
-ODBDESIGN_EXPORT const ::google::protobuf::EnumDescriptor*
+const ::google::protobuf::EnumDescriptor*
 Polarity_descriptor();
 template <typename T>
 const std::string& Polarity_Name(T value) {
@@ -167,12 +167,12 @@ enum UnitType : int {
       std::numeric_limits<::int32_t>::max(),
 };
 
-ODBDESIGN_EXPORT bool UnitType_IsValid(int value);
-ODBDESIGN_EXPORT extern const uint32_t UnitType_internal_data_[];
+bool UnitType_IsValid(int value);
+extern const uint32_t UnitType_internal_data_[];
 constexpr UnitType UnitType_MIN = static_cast<UnitType>(0);
 constexpr UnitType UnitType_MAX = static_cast<UnitType>(2);
 constexpr int UnitType_ARRAYSIZE = 2 + 1;
-ODBDESIGN_EXPORT const ::google::protobuf::EnumDescriptor*
+const ::google::protobuf::EnumDescriptor*
 UnitType_descriptor();
 template <typename T>
 const std::string& UnitType_Name(T value) {

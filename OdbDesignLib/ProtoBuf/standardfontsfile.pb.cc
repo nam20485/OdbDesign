@@ -56,7 +56,7 @@ struct StandardFontsFile_CharacterBlock_LineRecordDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 StandardFontsFile_CharacterBlock_LineRecordDefaultTypeInternal _StandardFontsFile_CharacterBlock_LineRecord_default_instance_;
 
 inline constexpr StandardFontsFile_CharacterBlock::Impl_::Impl_(
@@ -84,7 +84,7 @@ struct StandardFontsFile_CharacterBlockDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 StandardFontsFile_CharacterBlockDefaultTypeInternal _StandardFontsFile_CharacterBlock_default_instance_;
 
 inline constexpr StandardFontsFile::Impl_::Impl_(
@@ -112,7 +112,7 @@ struct StandardFontsFileDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 StandardFontsFileDefaultTypeInternal _StandardFontsFile_default_instance_;
 }  // namespace Protobuf
 }  // namespace Lib

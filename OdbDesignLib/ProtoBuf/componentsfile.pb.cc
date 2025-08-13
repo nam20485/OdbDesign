@@ -59,7 +59,7 @@ struct ComponentsFile_ComponentRecord_ToeprintRecordDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ComponentsFile_ComponentRecord_ToeprintRecordDefaultTypeInternal _ComponentsFile_ComponentRecord_ToeprintRecord_default_instance_;
               template <typename>
 PROTOBUF_CONSTEXPR ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse::ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse(::_pbi::ConstantInitialized)
@@ -77,7 +77,7 @@ struct ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUseDefaultT
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeInternal _ComponentsFile_ComponentRecord_AttributeLookupTableEntry_DoNotUse_default_instance_;
 
 inline constexpr ComponentsFile_BomDescriptionRecord::Impl_::Impl_(
@@ -123,7 +123,7 @@ struct ComponentsFile_BomDescriptionRecordDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ComponentsFile_BomDescriptionRecordDefaultTypeInternal _ComponentsFile_BomDescriptionRecord_default_instance_;
               template <typename>
 PROTOBUF_CONSTEXPR ComponentsFile_PropertyRecordsByNameEntry_DoNotUse::ComponentsFile_PropertyRecordsByNameEntry_DoNotUse(::_pbi::ConstantInitialized)
@@ -141,7 +141,7 @@ struct ComponentsFile_PropertyRecordsByNameEntry_DoNotUseDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ComponentsFile_PropertyRecordsByNameEntry_DoNotUseDefaultTypeInternal _ComponentsFile_PropertyRecordsByNameEntry_DoNotUse_default_instance_;
 
 inline constexpr ComponentsFile_ComponentRecord::Impl_::Impl_(
@@ -184,7 +184,7 @@ struct ComponentsFile_ComponentRecordDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ComponentsFile_ComponentRecordDefaultTypeInternal _ComponentsFile_ComponentRecord_default_instance_;
               template <typename>
 PROTOBUF_CONSTEXPR ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUse::ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUse(::_pbi::ConstantInitialized)
@@ -202,7 +202,7 @@ struct ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUseDefaultTypeInterna
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUseDefaultTypeInternal _ComponentsFile_BomDescriptionRecordsByCpnEntry_DoNotUse_default_instance_;
               template <typename>
 PROTOBUF_CONSTEXPR ComponentsFile_ComponentRecordsByNameEntry_DoNotUse::ComponentsFile_ComponentRecordsByNameEntry_DoNotUse(::_pbi::ConstantInitialized)
@@ -220,7 +220,7 @@ struct ComponentsFile_ComponentRecordsByNameEntry_DoNotUseDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ComponentsFile_ComponentRecordsByNameEntry_DoNotUseDefaultTypeInternal _ComponentsFile_ComponentRecordsByNameEntry_DoNotUse_default_instance_;
 
 inline constexpr ComponentsFile::Impl_::Impl_(
@@ -265,7 +265,7 @@ struct ComponentsFileDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ComponentsFileDefaultTypeInternal _ComponentsFile_default_instance_;
 }  // namespace Protobuf
 }  // namespace Lib

@@ -43,7 +43,7 @@ struct FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeI
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeInternal _FeaturesFile_FeatureRecord_AttributeLookupTableEntry_DoNotUse_default_instance_;
               template <typename>
 PROTOBUF_CONSTEXPR FeaturesFile_SymbolNamesByNameEntry_DoNotUse::FeaturesFile_SymbolNamesByNameEntry_DoNotUse(::_pbi::ConstantInitialized)
@@ -61,7 +61,7 @@ struct FeaturesFile_SymbolNamesByNameEntry_DoNotUseDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 FeaturesFile_SymbolNamesByNameEntry_DoNotUseDefaultTypeInternal _FeaturesFile_SymbolNamesByNameEntry_DoNotUse_default_instance_;
 
 inline constexpr FeaturesFile_FeatureRecord::Impl_::Impl_(
@@ -120,7 +120,7 @@ struct FeaturesFile_FeatureRecordDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 FeaturesFile_FeatureRecordDefaultTypeInternal _FeaturesFile_FeatureRecord_default_instance_;
 
 inline constexpr FeaturesFile::Impl_::Impl_(
@@ -158,7 +158,7 @@ struct FeaturesFileDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 FeaturesFileDefaultTypeInternal _FeaturesFile_default_instance_;
 }  // namespace Protobuf
 }  // namespace Lib

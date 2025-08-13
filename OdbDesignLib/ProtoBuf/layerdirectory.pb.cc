@@ -58,7 +58,7 @@ struct LayerDirectoryDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 LayerDirectoryDefaultTypeInternal _LayerDirectory_default_instance_;
 }  // namespace Protobuf
 }  // namespace Lib

@@ -37,7 +37,7 @@
 // Must be included last.
 #include "google/protobuf/port_def.inc"
 
-#define PROTOBUF_INTERNAL_EXPORT_stephdrfile_2eproto ODBDESIGN_EXPORT
+#define PROTOBUF_INTERNAL_EXPORT_stephdrfile_2eproto
 
 namespace google {
 namespace protobuf {
@@ -49,23 +49,23 @@ template <typename T>
 }  // namespace google
 
 // Internal implementation detail -- do not use these members.
-struct ODBDESIGN_EXPORT TableStruct_stephdrfile_2eproto {
+struct TableStruct_stephdrfile_2eproto {
   static const ::uint32_t offsets[];
 };
-ODBDESIGN_EXPORT extern const ::google::protobuf::internal::DescriptorTable
+extern const ::google::protobuf::internal::DescriptorTable
     descriptor_table_stephdrfile_2eproto;
 namespace Odb {
 namespace Lib {
 namespace Protobuf {
 class StepHdrFile;
 struct StepHdrFileDefaultTypeInternal;
-ODBDESIGN_EXPORT extern StepHdrFileDefaultTypeInternal _StepHdrFile_default_instance_;
+extern StepHdrFileDefaultTypeInternal _StepHdrFile_default_instance_;
 class StepHdrFile_OnlineValuesEntry_DoNotUse;
 struct StepHdrFile_OnlineValuesEntry_DoNotUseDefaultTypeInternal;
-ODBDESIGN_EXPORT extern StepHdrFile_OnlineValuesEntry_DoNotUseDefaultTypeInternal _StepHdrFile_OnlineValuesEntry_DoNotUse_default_instance_;
+extern StepHdrFile_OnlineValuesEntry_DoNotUseDefaultTypeInternal _StepHdrFile_OnlineValuesEntry_DoNotUse_default_instance_;
 class StepHdrFile_StepRepeatRecord;
 struct StepHdrFile_StepRepeatRecordDefaultTypeInternal;
-ODBDESIGN_EXPORT extern StepHdrFile_StepRepeatRecordDefaultTypeInternal _StepHdrFile_StepRepeatRecord_default_instance_;
+extern StepHdrFile_StepRepeatRecordDefaultTypeInternal _StepHdrFile_StepRepeatRecord_default_instance_;
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
@@ -83,7 +83,7 @@ namespace Protobuf {
 
 // -------------------------------------------------------------------
 
-class ODBDESIGN_EXPORT StepHdrFile_StepRepeatRecord final : public ::google::protobuf::Message
+class StepHdrFile_StepRepeatRecord final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.StepHdrFile.StepRepeatRecord) */ {
  public:
   inline StepHdrFile_StepRepeatRecord() : StepHdrFile_StepRepeatRecord(nullptr) {}
@@ -437,7 +437,7 @@ class StepHdrFile_OnlineValuesEntry_DoNotUse final
 };
 // -------------------------------------------------------------------
 
-class ODBDESIGN_EXPORT StepHdrFile final : public ::google::protobuf::Message
+class StepHdrFile final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.StepHdrFile) */ {
  public:
   inline StepHdrFile() : StepHdrFile(nullptr) {}

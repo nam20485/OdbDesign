@@ -40,7 +40,7 @@
 // Must be included last.
 #include "google/protobuf/port_def.inc"
 
-#define PROTOBUF_INTERNAL_EXPORT_edadatafile_2eproto ODBDESIGN_EXPORT
+#define PROTOBUF_INTERNAL_EXPORT_edadatafile_2eproto
 
 namespace google {
 namespace protobuf {
@@ -52,53 +52,53 @@ template <typename T>
 }  // namespace google
 
 // Internal implementation detail -- do not use these members.
-struct ODBDESIGN_EXPORT TableStruct_edadatafile_2eproto {
+struct TableStruct_edadatafile_2eproto {
   static const ::uint32_t offsets[];
 };
-ODBDESIGN_EXPORT extern const ::google::protobuf::internal::DescriptorTable
+extern const ::google::protobuf::internal::DescriptorTable
     descriptor_table_edadatafile_2eproto;
 namespace Odb {
 namespace Lib {
 namespace Protobuf {
 class EdaDataFile;
 struct EdaDataFileDefaultTypeInternal;
-ODBDESIGN_EXPORT extern EdaDataFileDefaultTypeInternal _EdaDataFile_default_instance_;
+extern EdaDataFileDefaultTypeInternal _EdaDataFile_default_instance_;
 class EdaDataFile_FeatureGroupRecord;
 struct EdaDataFile_FeatureGroupRecordDefaultTypeInternal;
-ODBDESIGN_EXPORT extern EdaDataFile_FeatureGroupRecordDefaultTypeInternal _EdaDataFile_FeatureGroupRecord_default_instance_;
+extern EdaDataFile_FeatureGroupRecordDefaultTypeInternal _EdaDataFile_FeatureGroupRecord_default_instance_;
 class EdaDataFile_FeatureIdRecord;
 struct EdaDataFile_FeatureIdRecordDefaultTypeInternal;
-ODBDESIGN_EXPORT extern EdaDataFile_FeatureIdRecordDefaultTypeInternal _EdaDataFile_FeatureIdRecord_default_instance_;
+extern EdaDataFile_FeatureIdRecordDefaultTypeInternal _EdaDataFile_FeatureIdRecord_default_instance_;
 class EdaDataFile_NetRecord;
 struct EdaDataFile_NetRecordDefaultTypeInternal;
-ODBDESIGN_EXPORT extern EdaDataFile_NetRecordDefaultTypeInternal _EdaDataFile_NetRecord_default_instance_;
+extern EdaDataFile_NetRecordDefaultTypeInternal _EdaDataFile_NetRecord_default_instance_;
 class EdaDataFile_NetRecord_AttributeLookupTableEntry_DoNotUse;
 struct EdaDataFile_NetRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeInternal;
-ODBDESIGN_EXPORT extern EdaDataFile_NetRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeInternal _EdaDataFile_NetRecord_AttributeLookupTableEntry_DoNotUse_default_instance_;
+extern EdaDataFile_NetRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeInternal _EdaDataFile_NetRecord_AttributeLookupTableEntry_DoNotUse_default_instance_;
 class EdaDataFile_NetRecord_SubnetRecord;
 struct EdaDataFile_NetRecord_SubnetRecordDefaultTypeInternal;
-ODBDESIGN_EXPORT extern EdaDataFile_NetRecord_SubnetRecordDefaultTypeInternal _EdaDataFile_NetRecord_SubnetRecord_default_instance_;
+extern EdaDataFile_NetRecord_SubnetRecordDefaultTypeInternal _EdaDataFile_NetRecord_SubnetRecord_default_instance_;
 class EdaDataFile_NetRecordsByNameEntry_DoNotUse;
 struct EdaDataFile_NetRecordsByNameEntry_DoNotUseDefaultTypeInternal;
-ODBDESIGN_EXPORT extern EdaDataFile_NetRecordsByNameEntry_DoNotUseDefaultTypeInternal _EdaDataFile_NetRecordsByNameEntry_DoNotUse_default_instance_;
+extern EdaDataFile_NetRecordsByNameEntry_DoNotUseDefaultTypeInternal _EdaDataFile_NetRecordsByNameEntry_DoNotUse_default_instance_;
 class EdaDataFile_PackageRecord;
 struct EdaDataFile_PackageRecordDefaultTypeInternal;
-ODBDESIGN_EXPORT extern EdaDataFile_PackageRecordDefaultTypeInternal _EdaDataFile_PackageRecord_default_instance_;
+extern EdaDataFile_PackageRecordDefaultTypeInternal _EdaDataFile_PackageRecord_default_instance_;
 class EdaDataFile_PackageRecord_AttributeLookupTableEntry_DoNotUse;
 struct EdaDataFile_PackageRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeInternal;
-ODBDESIGN_EXPORT extern EdaDataFile_PackageRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeInternal _EdaDataFile_PackageRecord_AttributeLookupTableEntry_DoNotUse_default_instance_;
+extern EdaDataFile_PackageRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeInternal _EdaDataFile_PackageRecord_AttributeLookupTableEntry_DoNotUse_default_instance_;
 class EdaDataFile_PackageRecord_OutlineRecord;
 struct EdaDataFile_PackageRecord_OutlineRecordDefaultTypeInternal;
-ODBDESIGN_EXPORT extern EdaDataFile_PackageRecord_OutlineRecordDefaultTypeInternal _EdaDataFile_PackageRecord_OutlineRecord_default_instance_;
+extern EdaDataFile_PackageRecord_OutlineRecordDefaultTypeInternal _EdaDataFile_PackageRecord_OutlineRecord_default_instance_;
 class EdaDataFile_PackageRecord_PinRecord;
 struct EdaDataFile_PackageRecord_PinRecordDefaultTypeInternal;
-ODBDESIGN_EXPORT extern EdaDataFile_PackageRecord_PinRecordDefaultTypeInternal _EdaDataFile_PackageRecord_PinRecord_default_instance_;
+extern EdaDataFile_PackageRecord_PinRecordDefaultTypeInternal _EdaDataFile_PackageRecord_PinRecord_default_instance_;
 class EdaDataFile_PackageRecord_PinRecordsByNameEntry_DoNotUse;
 struct EdaDataFile_PackageRecord_PinRecordsByNameEntry_DoNotUseDefaultTypeInternal;
-ODBDESIGN_EXPORT extern EdaDataFile_PackageRecord_PinRecordsByNameEntry_DoNotUseDefaultTypeInternal _EdaDataFile_PackageRecord_PinRecordsByNameEntry_DoNotUse_default_instance_;
+extern EdaDataFile_PackageRecord_PinRecordsByNameEntry_DoNotUseDefaultTypeInternal _EdaDataFile_PackageRecord_PinRecordsByNameEntry_DoNotUse_default_instance_;
 class EdaDataFile_PackageRecordsByNameEntry_DoNotUse;
 struct EdaDataFile_PackageRecordsByNameEntry_DoNotUseDefaultTypeInternal;
-ODBDESIGN_EXPORT extern EdaDataFile_PackageRecordsByNameEntry_DoNotUseDefaultTypeInternal _EdaDataFile_PackageRecordsByNameEntry_DoNotUse_default_instance_;
+extern EdaDataFile_PackageRecordsByNameEntry_DoNotUseDefaultTypeInternal _EdaDataFile_PackageRecordsByNameEntry_DoNotUse_default_instance_;
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
@@ -120,12 +120,12 @@ enum EdaDataFile_FeatureIdRecord_Type : int {
       std::numeric_limits<::int32_t>::max(),
 };
 
-ODBDESIGN_EXPORT bool EdaDataFile_FeatureIdRecord_Type_IsValid(int value);
-ODBDESIGN_EXPORT extern const uint32_t EdaDataFile_FeatureIdRecord_Type_internal_data_[];
+bool EdaDataFile_FeatureIdRecord_Type_IsValid(int value);
+extern const uint32_t EdaDataFile_FeatureIdRecord_Type_internal_data_[];
 constexpr EdaDataFile_FeatureIdRecord_Type EdaDataFile_FeatureIdRecord_Type_Type_MIN = static_cast<EdaDataFile_FeatureIdRecord_Type>(0);
 constexpr EdaDataFile_FeatureIdRecord_Type EdaDataFile_FeatureIdRecord_Type_Type_MAX = static_cast<EdaDataFile_FeatureIdRecord_Type>(2);
 constexpr int EdaDataFile_FeatureIdRecord_Type_Type_ARRAYSIZE = 2 + 1;
-ODBDESIGN_EXPORT const ::google::protobuf::EnumDescriptor*
+const ::google::protobuf::EnumDescriptor*
 EdaDataFile_FeatureIdRecord_Type_descriptor();
 template <typename T>
 const std::string& EdaDataFile_FeatureIdRecord_Type_Name(T value) {
@@ -155,12 +155,12 @@ enum EdaDataFile_NetRecord_SubnetRecord_Type : int {
       std::numeric_limits<::int32_t>::max(),
 };
 
-ODBDESIGN_EXPORT bool EdaDataFile_NetRecord_SubnetRecord_Type_IsValid(int value);
-ODBDESIGN_EXPORT extern const uint32_t EdaDataFile_NetRecord_SubnetRecord_Type_internal_data_[];
+bool EdaDataFile_NetRecord_SubnetRecord_Type_IsValid(int value);
+extern const uint32_t EdaDataFile_NetRecord_SubnetRecord_Type_internal_data_[];
 constexpr EdaDataFile_NetRecord_SubnetRecord_Type EdaDataFile_NetRecord_SubnetRecord_Type_Type_MIN = static_cast<EdaDataFile_NetRecord_SubnetRecord_Type>(0);
 constexpr EdaDataFile_NetRecord_SubnetRecord_Type EdaDataFile_NetRecord_SubnetRecord_Type_Type_MAX = static_cast<EdaDataFile_NetRecord_SubnetRecord_Type>(3);
 constexpr int EdaDataFile_NetRecord_SubnetRecord_Type_Type_ARRAYSIZE = 3 + 1;
-ODBDESIGN_EXPORT const ::google::protobuf::EnumDescriptor*
+const ::google::protobuf::EnumDescriptor*
 EdaDataFile_NetRecord_SubnetRecord_Type_descriptor();
 template <typename T>
 const std::string& EdaDataFile_NetRecord_SubnetRecord_Type_Name(T value) {
@@ -188,12 +188,12 @@ enum EdaDataFile_NetRecord_SubnetRecord_FillType : int {
       std::numeric_limits<::int32_t>::max(),
 };
 
-ODBDESIGN_EXPORT bool EdaDataFile_NetRecord_SubnetRecord_FillType_IsValid(int value);
-ODBDESIGN_EXPORT extern const uint32_t EdaDataFile_NetRecord_SubnetRecord_FillType_internal_data_[];
+bool EdaDataFile_NetRecord_SubnetRecord_FillType_IsValid(int value);
+extern const uint32_t EdaDataFile_NetRecord_SubnetRecord_FillType_internal_data_[];
 constexpr EdaDataFile_NetRecord_SubnetRecord_FillType EdaDataFile_NetRecord_SubnetRecord_FillType_FillType_MIN = static_cast<EdaDataFile_NetRecord_SubnetRecord_FillType>(0);
 constexpr EdaDataFile_NetRecord_SubnetRecord_FillType EdaDataFile_NetRecord_SubnetRecord_FillType_FillType_MAX = static_cast<EdaDataFile_NetRecord_SubnetRecord_FillType>(1);
 constexpr int EdaDataFile_NetRecord_SubnetRecord_FillType_FillType_ARRAYSIZE = 1 + 1;
-ODBDESIGN_EXPORT const ::google::protobuf::EnumDescriptor*
+const ::google::protobuf::EnumDescriptor*
 EdaDataFile_NetRecord_SubnetRecord_FillType_descriptor();
 template <typename T>
 const std::string& EdaDataFile_NetRecord_SubnetRecord_FillType_Name(T value) {
@@ -223,12 +223,12 @@ enum EdaDataFile_NetRecord_SubnetRecord_CutoutType : int {
       std::numeric_limits<::int32_t>::max(),
 };
 
-ODBDESIGN_EXPORT bool EdaDataFile_NetRecord_SubnetRecord_CutoutType_IsValid(int value);
-ODBDESIGN_EXPORT extern const uint32_t EdaDataFile_NetRecord_SubnetRecord_CutoutType_internal_data_[];
+bool EdaDataFile_NetRecord_SubnetRecord_CutoutType_IsValid(int value);
+extern const uint32_t EdaDataFile_NetRecord_SubnetRecord_CutoutType_internal_data_[];
 constexpr EdaDataFile_NetRecord_SubnetRecord_CutoutType EdaDataFile_NetRecord_SubnetRecord_CutoutType_CutoutType_MIN = static_cast<EdaDataFile_NetRecord_SubnetRecord_CutoutType>(0);
 constexpr EdaDataFile_NetRecord_SubnetRecord_CutoutType EdaDataFile_NetRecord_SubnetRecord_CutoutType_CutoutType_MAX = static_cast<EdaDataFile_NetRecord_SubnetRecord_CutoutType>(3);
 constexpr int EdaDataFile_NetRecord_SubnetRecord_CutoutType_CutoutType_ARRAYSIZE = 3 + 1;
-ODBDESIGN_EXPORT const ::google::protobuf::EnumDescriptor*
+const ::google::protobuf::EnumDescriptor*
 EdaDataFile_NetRecord_SubnetRecord_CutoutType_descriptor();
 template <typename T>
 const std::string& EdaDataFile_NetRecord_SubnetRecord_CutoutType_Name(T value) {
@@ -258,12 +258,12 @@ enum EdaDataFile_PackageRecord_OutlineRecord_Type : int {
       std::numeric_limits<::int32_t>::max(),
 };
 
-ODBDESIGN_EXPORT bool EdaDataFile_PackageRecord_OutlineRecord_Type_IsValid(int value);
-ODBDESIGN_EXPORT extern const uint32_t EdaDataFile_PackageRecord_OutlineRecord_Type_internal_data_[];
+bool EdaDataFile_PackageRecord_OutlineRecord_Type_IsValid(int value);
+extern const uint32_t EdaDataFile_PackageRecord_OutlineRecord_Type_internal_data_[];
 constexpr EdaDataFile_PackageRecord_OutlineRecord_Type EdaDataFile_PackageRecord_OutlineRecord_Type_Type_MIN = static_cast<EdaDataFile_PackageRecord_OutlineRecord_Type>(0);
 constexpr EdaDataFile_PackageRecord_OutlineRecord_Type EdaDataFile_PackageRecord_OutlineRecord_Type_Type_MAX = static_cast<EdaDataFile_PackageRecord_OutlineRecord_Type>(3);
 constexpr int EdaDataFile_PackageRecord_OutlineRecord_Type_Type_ARRAYSIZE = 3 + 1;
-ODBDESIGN_EXPORT const ::google::protobuf::EnumDescriptor*
+const ::google::protobuf::EnumDescriptor*
 EdaDataFile_PackageRecord_OutlineRecord_Type_descriptor();
 template <typename T>
 const std::string& EdaDataFile_PackageRecord_OutlineRecord_Type_Name(T value) {
@@ -292,12 +292,12 @@ enum EdaDataFile_PackageRecord_PinRecord_Type : int {
       std::numeric_limits<::int32_t>::max(),
 };
 
-ODBDESIGN_EXPORT bool EdaDataFile_PackageRecord_PinRecord_Type_IsValid(int value);
-ODBDESIGN_EXPORT extern const uint32_t EdaDataFile_PackageRecord_PinRecord_Type_internal_data_[];
+bool EdaDataFile_PackageRecord_PinRecord_Type_IsValid(int value);
+extern const uint32_t EdaDataFile_PackageRecord_PinRecord_Type_internal_data_[];
 constexpr EdaDataFile_PackageRecord_PinRecord_Type EdaDataFile_PackageRecord_PinRecord_Type_Type_MIN = static_cast<EdaDataFile_PackageRecord_PinRecord_Type>(0);
 constexpr EdaDataFile_PackageRecord_PinRecord_Type EdaDataFile_PackageRecord_PinRecord_Type_Type_MAX = static_cast<EdaDataFile_PackageRecord_PinRecord_Type>(2);
 constexpr int EdaDataFile_PackageRecord_PinRecord_Type_Type_ARRAYSIZE = 2 + 1;
-ODBDESIGN_EXPORT const ::google::protobuf::EnumDescriptor*
+const ::google::protobuf::EnumDescriptor*
 EdaDataFile_PackageRecord_PinRecord_Type_descriptor();
 template <typename T>
 const std::string& EdaDataFile_PackageRecord_PinRecord_Type_Name(T value) {
@@ -326,12 +326,12 @@ enum EdaDataFile_PackageRecord_PinRecord_ElectricalType : int {
       std::numeric_limits<::int32_t>::max(),
 };
 
-ODBDESIGN_EXPORT bool EdaDataFile_PackageRecord_PinRecord_ElectricalType_IsValid(int value);
-ODBDESIGN_EXPORT extern const uint32_t EdaDataFile_PackageRecord_PinRecord_ElectricalType_internal_data_[];
+bool EdaDataFile_PackageRecord_PinRecord_ElectricalType_IsValid(int value);
+extern const uint32_t EdaDataFile_PackageRecord_PinRecord_ElectricalType_internal_data_[];
 constexpr EdaDataFile_PackageRecord_PinRecord_ElectricalType EdaDataFile_PackageRecord_PinRecord_ElectricalType_ElectricalType_MIN = static_cast<EdaDataFile_PackageRecord_PinRecord_ElectricalType>(0);
 constexpr EdaDataFile_PackageRecord_PinRecord_ElectricalType EdaDataFile_PackageRecord_PinRecord_ElectricalType_ElectricalType_MAX = static_cast<EdaDataFile_PackageRecord_PinRecord_ElectricalType>(2);
 constexpr int EdaDataFile_PackageRecord_PinRecord_ElectricalType_ElectricalType_ARRAYSIZE = 2 + 1;
-ODBDESIGN_EXPORT const ::google::protobuf::EnumDescriptor*
+const ::google::protobuf::EnumDescriptor*
 EdaDataFile_PackageRecord_PinRecord_ElectricalType_descriptor();
 template <typename T>
 const std::string& EdaDataFile_PackageRecord_PinRecord_ElectricalType_Name(T value) {
@@ -365,12 +365,12 @@ enum EdaDataFile_PackageRecord_PinRecord_MountType : int {
       std::numeric_limits<::int32_t>::max(),
 };
 
-ODBDESIGN_EXPORT bool EdaDataFile_PackageRecord_PinRecord_MountType_IsValid(int value);
-ODBDESIGN_EXPORT extern const uint32_t EdaDataFile_PackageRecord_PinRecord_MountType_internal_data_[];
+bool EdaDataFile_PackageRecord_PinRecord_MountType_IsValid(int value);
+extern const uint32_t EdaDataFile_PackageRecord_PinRecord_MountType_internal_data_[];
 constexpr EdaDataFile_PackageRecord_PinRecord_MountType EdaDataFile_PackageRecord_PinRecord_MountType_MountType_MIN = static_cast<EdaDataFile_PackageRecord_PinRecord_MountType>(0);
 constexpr EdaDataFile_PackageRecord_PinRecord_MountType EdaDataFile_PackageRecord_PinRecord_MountType_MountType_MAX = static_cast<EdaDataFile_PackageRecord_PinRecord_MountType>(7);
 constexpr int EdaDataFile_PackageRecord_PinRecord_MountType_MountType_ARRAYSIZE = 7 + 1;
-ODBDESIGN_EXPORT const ::google::protobuf::EnumDescriptor*
+const ::google::protobuf::EnumDescriptor*
 EdaDataFile_PackageRecord_PinRecord_MountType_descriptor();
 template <typename T>
 const std::string& EdaDataFile_PackageRecord_PinRecord_MountType_Name(T value) {
@@ -395,7 +395,7 @@ inline bool EdaDataFile_PackageRecord_PinRecord_MountType_Parse(absl::string_vie
 
 // -------------------------------------------------------------------
 
-class ODBDESIGN_EXPORT EdaDataFile_PackageRecord_PinRecord final : public ::google::protobuf::Message
+class EdaDataFile_PackageRecord_PinRecord final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.PinRecord) */ {
  public:
   inline EdaDataFile_PackageRecord_PinRecord() : EdaDataFile_PackageRecord_PinRecord(nullptr) {}
@@ -840,7 +840,7 @@ class EdaDataFile_NetRecord_AttributeLookupTableEntry_DoNotUse final
 };
 // -------------------------------------------------------------------
 
-class ODBDESIGN_EXPORT EdaDataFile_FeatureIdRecord final : public ::google::protobuf::Message
+class EdaDataFile_FeatureIdRecord final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.EdaDataFile.FeatureIdRecord) */ {
  public:
   inline EdaDataFile_FeatureIdRecord() : EdaDataFile_FeatureIdRecord(nullptr) {}
@@ -1117,7 +1117,7 @@ class EdaDataFile_PackageRecord_PinRecordsByNameEntry_DoNotUse final
 };
 // -------------------------------------------------------------------
 
-class ODBDESIGN_EXPORT EdaDataFile_NetRecord_SubnetRecord final : public ::google::protobuf::Message
+class EdaDataFile_NetRecord_SubnetRecord final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.EdaDataFile.NetRecord.SubnetRecord) */ {
  public:
   inline EdaDataFile_NetRecord_SubnetRecord() : EdaDataFile_NetRecord_SubnetRecord(nullptr) {}
@@ -1480,7 +1480,7 @@ class ODBDESIGN_EXPORT EdaDataFile_NetRecord_SubnetRecord final : public ::googl
 };
 // -------------------------------------------------------------------
 
-class ODBDESIGN_EXPORT EdaDataFile_FeatureGroupRecord final : public ::google::protobuf::Message
+class EdaDataFile_FeatureGroupRecord final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.EdaDataFile.FeatureGroupRecord) */ {
  public:
   inline EdaDataFile_FeatureGroupRecord() : EdaDataFile_FeatureGroupRecord(nullptr) {}
@@ -1716,7 +1716,7 @@ class ODBDESIGN_EXPORT EdaDataFile_FeatureGroupRecord final : public ::google::p
 };
 // -------------------------------------------------------------------
 
-class ODBDESIGN_EXPORT EdaDataFile_PackageRecord_OutlineRecord final : public ::google::protobuf::Message
+class EdaDataFile_PackageRecord_OutlineRecord final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.EdaDataFile.PackageRecord.OutlineRecord) */ {
  public:
   inline EdaDataFile_PackageRecord_OutlineRecord() : EdaDataFile_PackageRecord_OutlineRecord(nullptr) {}
@@ -2052,7 +2052,7 @@ class ODBDESIGN_EXPORT EdaDataFile_PackageRecord_OutlineRecord final : public ::
 };
 // -------------------------------------------------------------------
 
-class ODBDESIGN_EXPORT EdaDataFile_NetRecord final : public ::google::protobuf::Message
+class EdaDataFile_NetRecord final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.EdaDataFile.NetRecord) */ {
  public:
   inline EdaDataFile_NetRecord() : EdaDataFile_NetRecord(nullptr) {}
@@ -2341,7 +2341,7 @@ class ODBDESIGN_EXPORT EdaDataFile_NetRecord final : public ::google::protobuf::
 };
 // -------------------------------------------------------------------
 
-class ODBDESIGN_EXPORT EdaDataFile_PackageRecord final : public ::google::protobuf::Message
+class EdaDataFile_PackageRecord final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.EdaDataFile.PackageRecord) */ {
  public:
   inline EdaDataFile_PackageRecord() : EdaDataFile_PackageRecord(nullptr) {}
@@ -2800,7 +2800,7 @@ class EdaDataFile_PackageRecordsByNameEntry_DoNotUse final
 };
 // -------------------------------------------------------------------
 
-class ODBDESIGN_EXPORT EdaDataFile final : public ::google::protobuf::Message
+class EdaDataFile final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.EdaDataFile) */ {
  public:
   inline EdaDataFile() : EdaDataFile(nullptr) {}

@@ -43,7 +43,7 @@
 // Must be included last.
 #include "google/protobuf/port_def.inc"
 
-#define PROTOBUF_INTERNAL_EXPORT_filearchive_2eproto ODBDESIGN_EXPORT
+#define PROTOBUF_INTERNAL_EXPORT_filearchive_2eproto
 
 namespace google {
 namespace protobuf {
@@ -55,23 +55,23 @@ template <typename T>
 }  // namespace google
 
 // Internal implementation detail -- do not use these members.
-struct ODBDESIGN_EXPORT TableStruct_filearchive_2eproto {
+struct TableStruct_filearchive_2eproto {
   static const ::uint32_t offsets[];
 };
-ODBDESIGN_EXPORT extern const ::google::protobuf::internal::DescriptorTable
+extern const ::google::protobuf::internal::DescriptorTable
     descriptor_table_filearchive_2eproto;
 namespace Odb {
 namespace Lib {
 namespace Protobuf {
 class FileArchive;
 struct FileArchiveDefaultTypeInternal;
-ODBDESIGN_EXPORT extern FileArchiveDefaultTypeInternal _FileArchive_default_instance_;
+extern FileArchiveDefaultTypeInternal _FileArchive_default_instance_;
 class FileArchive_StepsByNameEntry_DoNotUse;
 struct FileArchive_StepsByNameEntry_DoNotUseDefaultTypeInternal;
-ODBDESIGN_EXPORT extern FileArchive_StepsByNameEntry_DoNotUseDefaultTypeInternal _FileArchive_StepsByNameEntry_DoNotUse_default_instance_;
+extern FileArchive_StepsByNameEntry_DoNotUseDefaultTypeInternal _FileArchive_StepsByNameEntry_DoNotUse_default_instance_;
 class FileArchive_SymbolsDirectoriesByNameEntry_DoNotUse;
 struct FileArchive_SymbolsDirectoriesByNameEntry_DoNotUseDefaultTypeInternal;
-ODBDESIGN_EXPORT extern FileArchive_SymbolsDirectoriesByNameEntry_DoNotUseDefaultTypeInternal _FileArchive_SymbolsDirectoriesByNameEntry_DoNotUse_default_instance_;
+extern FileArchive_SymbolsDirectoriesByNameEntry_DoNotUseDefaultTypeInternal _FileArchive_SymbolsDirectoriesByNameEntry_DoNotUse_default_instance_;
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
@@ -167,7 +167,7 @@ class FileArchive_StepsByNameEntry_DoNotUse final
 };
 // -------------------------------------------------------------------
 
-class ODBDESIGN_EXPORT FileArchive final : public ::google::protobuf::Message
+class FileArchive final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.FileArchive) */ {
  public:
   inline FileArchive() : FileArchive(nullptr) {}

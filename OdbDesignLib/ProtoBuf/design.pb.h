@@ -42,7 +42,7 @@
 // Must be included last.
 #include "google/protobuf/port_def.inc"
 
-#define PROTOBUF_INTERNAL_EXPORT_design_2eproto ODBDESIGN_EXPORT
+#define PROTOBUF_INTERNAL_EXPORT_design_2eproto
 
 namespace google {
 namespace protobuf {
@@ -54,10 +54,10 @@ template <typename T>
 }  // namespace google
 
 // Internal implementation detail -- do not use these members.
-struct ODBDESIGN_EXPORT TableStruct_design_2eproto {
+struct TableStruct_design_2eproto {
   static const ::uint32_t offsets[];
 };
-ODBDESIGN_EXPORT extern const ::google::protobuf::internal::DescriptorTable
+extern const ::google::protobuf::internal::DescriptorTable
     descriptor_table_design_2eproto;
 namespace Odb {
 namespace Lib {
@@ -65,19 +65,19 @@ namespace Protobuf {
 namespace ProductModel {
 class Design;
 struct DesignDefaultTypeInternal;
-ODBDESIGN_EXPORT extern DesignDefaultTypeInternal _Design_default_instance_;
+extern DesignDefaultTypeInternal _Design_default_instance_;
 class Design_ComponentsByNameEntry_DoNotUse;
 struct Design_ComponentsByNameEntry_DoNotUseDefaultTypeInternal;
-ODBDESIGN_EXPORT extern Design_ComponentsByNameEntry_DoNotUseDefaultTypeInternal _Design_ComponentsByNameEntry_DoNotUse_default_instance_;
+extern Design_ComponentsByNameEntry_DoNotUseDefaultTypeInternal _Design_ComponentsByNameEntry_DoNotUse_default_instance_;
 class Design_NetsByNameEntry_DoNotUse;
 struct Design_NetsByNameEntry_DoNotUseDefaultTypeInternal;
-ODBDESIGN_EXPORT extern Design_NetsByNameEntry_DoNotUseDefaultTypeInternal _Design_NetsByNameEntry_DoNotUse_default_instance_;
+extern Design_NetsByNameEntry_DoNotUseDefaultTypeInternal _Design_NetsByNameEntry_DoNotUse_default_instance_;
 class Design_PackagesByNameEntry_DoNotUse;
 struct Design_PackagesByNameEntry_DoNotUseDefaultTypeInternal;
-ODBDESIGN_EXPORT extern Design_PackagesByNameEntry_DoNotUseDefaultTypeInternal _Design_PackagesByNameEntry_DoNotUse_default_instance_;
+extern Design_PackagesByNameEntry_DoNotUseDefaultTypeInternal _Design_PackagesByNameEntry_DoNotUse_default_instance_;
 class Design_PartsByNameEntry_DoNotUse;
 struct Design_PartsByNameEntry_DoNotUseDefaultTypeInternal;
-ODBDESIGN_EXPORT extern Design_PartsByNameEntry_DoNotUseDefaultTypeInternal _Design_PartsByNameEntry_DoNotUse_default_instance_;
+extern Design_PartsByNameEntry_DoNotUseDefaultTypeInternal _Design_PartsByNameEntry_DoNotUse_default_instance_;
 }  // namespace ProductModel
 }  // namespace Protobuf
 }  // namespace Lib
@@ -253,7 +253,7 @@ class Design_NetsByNameEntry_DoNotUse final
 };
 // -------------------------------------------------------------------
 
-class ODBDESIGN_EXPORT Design final : public ::google::protobuf::Message
+class Design final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.ProductModel.Design) */ {
  public:
   inline Design() : Design(nullptr) {}

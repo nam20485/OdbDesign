@@ -55,7 +55,7 @@ struct NetDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 NetDefaultTypeInternal _Net_default_instance_;
 }  // namespace ProductModel
 }  // namespace Protobuf

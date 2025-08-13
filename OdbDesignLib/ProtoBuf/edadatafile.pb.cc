@@ -60,7 +60,7 @@ struct EdaDataFile_PackageRecord_PinRecordDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 EdaDataFile_PackageRecord_PinRecordDefaultTypeInternal _EdaDataFile_PackageRecord_PinRecord_default_instance_;
               template <typename>
 PROTOBUF_CONSTEXPR EdaDataFile_PackageRecord_AttributeLookupTableEntry_DoNotUse::EdaDataFile_PackageRecord_AttributeLookupTableEntry_DoNotUse(::_pbi::ConstantInitialized)
@@ -78,7 +78,7 @@ struct EdaDataFile_PackageRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeIn
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 EdaDataFile_PackageRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeInternal _EdaDataFile_PackageRecord_AttributeLookupTableEntry_DoNotUse_default_instance_;
               template <typename>
 PROTOBUF_CONSTEXPR EdaDataFile_NetRecord_AttributeLookupTableEntry_DoNotUse::EdaDataFile_NetRecord_AttributeLookupTableEntry_DoNotUse(::_pbi::ConstantInitialized)
@@ -96,7 +96,7 @@ struct EdaDataFile_NetRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeIntern
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 EdaDataFile_NetRecord_AttributeLookupTableEntry_DoNotUseDefaultTypeInternal _EdaDataFile_NetRecord_AttributeLookupTableEntry_DoNotUse_default_instance_;
 
 inline constexpr EdaDataFile_FeatureIdRecord::Impl_::Impl_(
@@ -123,7 +123,7 @@ struct EdaDataFile_FeatureIdRecordDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 EdaDataFile_FeatureIdRecordDefaultTypeInternal _EdaDataFile_FeatureIdRecord_default_instance_;
               template <typename>
 PROTOBUF_CONSTEXPR EdaDataFile_PackageRecord_PinRecordsByNameEntry_DoNotUse::EdaDataFile_PackageRecord_PinRecordsByNameEntry_DoNotUse(::_pbi::ConstantInitialized)
@@ -141,7 +141,7 @@ struct EdaDataFile_PackageRecord_PinRecordsByNameEntry_DoNotUseDefaultTypeIntern
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 EdaDataFile_PackageRecord_PinRecordsByNameEntry_DoNotUseDefaultTypeInternal _EdaDataFile_PackageRecord_PinRecordsByNameEntry_DoNotUse_default_instance_;
 
 inline constexpr EdaDataFile_NetRecord_SubnetRecord::Impl_::Impl_(
@@ -174,7 +174,7 @@ struct EdaDataFile_NetRecord_SubnetRecordDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 EdaDataFile_NetRecord_SubnetRecordDefaultTypeInternal _EdaDataFile_NetRecord_SubnetRecord_default_instance_;
 
 inline constexpr EdaDataFile_FeatureGroupRecord::Impl_::Impl_(
@@ -203,7 +203,7 @@ struct EdaDataFile_FeatureGroupRecordDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 EdaDataFile_FeatureGroupRecordDefaultTypeInternal _EdaDataFile_FeatureGroupRecord_default_instance_;
 
 inline constexpr EdaDataFile_PackageRecord_OutlineRecord::Impl_::Impl_(
@@ -237,7 +237,7 @@ struct EdaDataFile_PackageRecord_OutlineRecordDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 EdaDataFile_PackageRecord_OutlineRecordDefaultTypeInternal _EdaDataFile_PackageRecord_OutlineRecord_default_instance_;
 
 inline constexpr EdaDataFile_NetRecord::Impl_::Impl_(
@@ -271,7 +271,7 @@ struct EdaDataFile_NetRecordDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 EdaDataFile_NetRecordDefaultTypeInternal _EdaDataFile_NetRecord_default_instance_;
 
 inline constexpr EdaDataFile_PackageRecord::Impl_::Impl_(
@@ -311,7 +311,7 @@ struct EdaDataFile_PackageRecordDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 EdaDataFile_PackageRecordDefaultTypeInternal _EdaDataFile_PackageRecord_default_instance_;
               template <typename>
 PROTOBUF_CONSTEXPR EdaDataFile_NetRecordsByNameEntry_DoNotUse::EdaDataFile_NetRecordsByNameEntry_DoNotUse(::_pbi::ConstantInitialized)
@@ -329,7 +329,7 @@ struct EdaDataFile_NetRecordsByNameEntry_DoNotUseDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 EdaDataFile_NetRecordsByNameEntry_DoNotUseDefaultTypeInternal _EdaDataFile_NetRecordsByNameEntry_DoNotUse_default_instance_;
               template <typename>
 PROTOBUF_CONSTEXPR EdaDataFile_PackageRecordsByNameEntry_DoNotUse::EdaDataFile_PackageRecordsByNameEntry_DoNotUse(::_pbi::ConstantInitialized)
@@ -347,7 +347,7 @@ struct EdaDataFile_PackageRecordsByNameEntry_DoNotUseDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 EdaDataFile_PackageRecordsByNameEntry_DoNotUseDefaultTypeInternal _EdaDataFile_PackageRecordsByNameEntry_DoNotUse_default_instance_;
 
 inline constexpr EdaDataFile::Impl_::Impl_(
@@ -389,7 +389,7 @@ struct EdaDataFileDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 EdaDataFileDefaultTypeInternal _EdaDataFile_default_instance_;
 }  // namespace Protobuf
 }  // namespace Lib

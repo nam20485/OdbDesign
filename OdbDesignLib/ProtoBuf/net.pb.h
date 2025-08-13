@@ -35,7 +35,7 @@
 // Must be included last.
 #include "google/protobuf/port_def.inc"
 
-#define PROTOBUF_INTERNAL_EXPORT_net_2eproto ODBDESIGN_EXPORT
+#define PROTOBUF_INTERNAL_EXPORT_net_2eproto
 
 namespace google {
 namespace protobuf {
@@ -47,10 +47,10 @@ template <typename T>
 }  // namespace google
 
 // Internal implementation detail -- do not use these members.
-struct ODBDESIGN_EXPORT TableStruct_net_2eproto {
+struct TableStruct_net_2eproto {
   static const ::uint32_t offsets[];
 };
-ODBDESIGN_EXPORT extern const ::google::protobuf::internal::DescriptorTable
+extern const ::google::protobuf::internal::DescriptorTable
     descriptor_table_net_2eproto;
 namespace Odb {
 namespace Lib {
@@ -58,7 +58,7 @@ namespace Protobuf {
 namespace ProductModel {
 class Net;
 struct NetDefaultTypeInternal;
-ODBDESIGN_EXPORT extern NetDefaultTypeInternal _Net_default_instance_;
+extern NetDefaultTypeInternal _Net_default_instance_;
 }  // namespace ProductModel
 }  // namespace Protobuf
 }  // namespace Lib
@@ -78,7 +78,7 @@ namespace ProductModel {
 
 // -------------------------------------------------------------------
 
-class ODBDESIGN_EXPORT Net final : public ::google::protobuf::Message
+class Net final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.ProductModel.Net) */ {
  public:
   inline Net() : Net(nullptr) {}

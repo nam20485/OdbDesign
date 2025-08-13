@@ -56,7 +56,7 @@ struct PropertyRecordDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PropertyRecordDefaultTypeInternal _PropertyRecord_default_instance_;
 
 inline constexpr ContourPolygon_PolygonPart::Impl_::Impl_(
@@ -86,7 +86,7 @@ struct ContourPolygon_PolygonPartDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ContourPolygon_PolygonPartDefaultTypeInternal _ContourPolygon_PolygonPart_default_instance_;
 
 inline constexpr ContourPolygon::Impl_::Impl_(
@@ -114,7 +114,7 @@ struct ContourPolygonDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ContourPolygonDefaultTypeInternal _ContourPolygon_default_instance_;
 }  // namespace Protobuf
 }  // namespace Lib
