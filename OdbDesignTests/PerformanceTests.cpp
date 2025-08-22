@@ -6,6 +6,7 @@
 #include <thread>
 #include "Fixtures/TestDataFixture.h"
 #include "Fixtures/FileArchiveLoadFixture.h"
+#include "Fixtures/TestUtils.h"
 
 using namespace std::chrono;
 using namespace Odb::Test::Fixtures;
@@ -13,7 +14,7 @@ using namespace testing;
 
 namespace Odb::Test::Performance
 {
-    class PerformanceTestBase : public TestDataFixture
+    class PerformanceTestBase : public TestDataFixture, public Odb::Test::Utils::PerformanceHelpers
     {
     protected:
         void SetUp() override
@@ -35,39 +36,8 @@ namespace Odb::Test::Performance
             TestDataFixture::TearDown();
         }
 
-        // Helper to measure execution time of a function
-        template<typename Func>
-        auto measureTime(Func&& func) -> decltype(func())
-        {
-            auto start = high_resolution_clock::now();
-            auto result = func();
-            auto end = high_resolution_clock::now();
-            
-            m_lastMeasuredTime = duration_cast<microseconds>(end - start);
-            return result;
-        }
-
-        // Get the last measured time in microseconds
-        microseconds getLastMeasuredTime() const { return m_lastMeasuredTime; }
-
-        // Benchmark a function multiple times and return average
-        template<typename Func>
-        microseconds benchmarkFunction(Func&& func, int iterations = 100)
-        {
-            auto totalTime = microseconds(0);
-            
-            for (int i = 0; i < iterations; ++i)
-            {
-                measureTime(func);
-                totalTime += m_lastMeasuredTime;
-            }
-            
-            return totalTime / iterations;
-        }
-
     private:
         high_resolution_clock::time_point m_startTime;
-        microseconds m_lastMeasuredTime{0};
     };
 
     // Performance test for basic operations
@@ -168,7 +138,7 @@ namespace Odb::Test::Performance
     }
 
     // Benchmark test with load testing
-    class PerformanceBenchmarkTest : public FileArchiveLoadFixture
+    class PerformanceBenchmarkTest : public FileArchiveLoadFixture, public Odb::Test::Utils::PerformanceHelpers
     {
     protected:
         void SetUp() override

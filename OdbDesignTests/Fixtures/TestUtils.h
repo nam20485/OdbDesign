@@ -10,6 +10,8 @@
 #include <filesystem>
 #include <memory>
 #include <functional>
+#include <thread>
+#include <algorithm>
 
 namespace Odb::Test::Utils
 {
@@ -27,7 +29,7 @@ namespace Odb::Test::Utils
             static const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             static std::random_device rd;
             static std::mt19937 gen(rd());
-            static std::uniform_int_distribution<> dis(0, sizeof(charset) - 2);
+            static std::uniform_int_distribution<int> dis(0, static_cast<int>(sizeof(charset) - 2));
 
             std::string result;
             result.reserve(length);
@@ -47,14 +49,14 @@ namespace Odb::Test::Utils
         {
             static std::random_device rd;
             static std::mt19937 gen(rd());
-            static std::uniform_int_distribution<uint8_t> dis(0, 255);
+            static std::uniform_int_distribution<int> dis(0, 255);
 
             std::vector<uint8_t> data;
             data.reserve(size);
             
             for (size_t i = 0; i < size; ++i)
             {
-                data.push_back(dis(gen));
+                data.push_back(static_cast<uint8_t>(dis(gen)));
             }
             
             return data;
@@ -259,6 +261,7 @@ namespace Odb::Test::Utils
             std::string result;
             result.reserve(size);
             
+            if (pattern.empty()) return result;
             size_t patternIndex = 0;
             for (size_t i = 0; i < size; ++i)
             {
@@ -328,6 +331,39 @@ namespace Odb::Test::Utils
                 return result;
             }
         };
+    };
+
+    /**
+     * @brief Common performance timing helpers mixin (no dependency on gtest)
+     */
+    class PerformanceHelpers
+    {
+    public:
+        template<typename Func>
+        std::chrono::microseconds measureTime(Func&& func)
+        {
+            auto start = std::chrono::high_resolution_clock::now();
+            std::forward<Func>(func)();
+            auto end = std::chrono::high_resolution_clock::now();
+            m_lastMeasuredTime = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+            return m_lastMeasuredTime;
+        }
+
+        template<typename Func>
+        std::chrono::microseconds benchmarkFunction(Func&& func, int iterations = 100)
+        {
+            auto totalTime = std::chrono::microseconds(0);
+            for (int i = 0; i < iterations; ++i)
+            {
+                totalTime += measureTime(func);
+            }
+            return totalTime / iterations;
+        }
+
+        std::chrono::microseconds getLastMeasuredTime() const { return m_lastMeasuredTime; }
+
+    private:
+        std::chrono::microseconds m_lastMeasuredTime{0};
     };
 
     /**
