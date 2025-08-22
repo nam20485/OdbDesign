@@ -135,8 +135,8 @@ bool TestRigidFlexDesign()
         {
             auto& pNetlist = netlistFind->second;
             auto netlistName = pNetlist->GetName();
-            auto& netRecords = pNetlist->GetNetRecords();
-            for (auto& pNetRecord : netRecords)
+            auto& netListNetRecords = pNetlist->GetNetRecords();
+            for (auto& pNetRecord : netListNetRecords)
             {
                 
             }
