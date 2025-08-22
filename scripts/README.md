@@ -54,6 +54,16 @@ This directory contains scripts for automated testing and development workflows.
 - Automatic test execution
 - Coverage summaries and detailed reports
 
+### `setup-linux.sh`
+Automated Linux environment setup. See detailed documentation in [docs/README-SETUP.md](../docs/README-SETUP.md).
+
+```bash
+# Run the setup script
+./scripts/setup-linux.sh
+
+# For full options, see docs/README-SETUP.md
+```
+
 ## Prerequisites
 
 ### System Requirements
