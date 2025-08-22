@@ -139,11 +139,13 @@ jobs:
 
       - name: Check Compare Image Exists
         id: compare_image_exists
+        env:
+          SECRET_GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         if: ${{ github.event_name == 'pull_request' }}
         continue-on-error: true
         run: |
-          curl --head --fail -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://ghcr.io/v2/${{ env.IMAGE_NAME }}/manifests/${{ github.base_ref }}-${{ env.COMPARE_TAG }}
-                     
+          curl --head --fail -H "Authorization: Bearer ${SECRET_GH_TOKEN}" https://ghcr.io/v2/${{ env.IMAGE_NAME }}/manifests/${{ github.base_ref }}-${{ env.COMPARE_TAG }}
+
       - name: Docker Scout Compare to Latest
         id: docker-scout
         if: ${{ github.event_name == 'pull_request' && steps.compare_image_exists.outcome == 'success' }}
