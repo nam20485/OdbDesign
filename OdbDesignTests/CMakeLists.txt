@@ -8,7 +8,17 @@ add_executable(OdbDesignTests
     "DesignCacheLoadTests.cpp"
     "Fixtures/DesignNameValueParamTest.h"   
     "FileArchiveTests.cpp"
-  "ProtobufSerializationTests.cpp" "FileReaderTests.cpp" "ArchiveTests.cpp" "CrossPlatformTests.cpp" "Fixtures/TestDataFixture.h" "Fixtures/TestDataFixture.cpp" "ArchiveExtractorTests.cpp")
+    "ProtobufSerializationTests.cpp" 
+    "FileReaderTests.cpp" 
+    "ArchiveTests.cpp" 
+    "CrossPlatformTests.cpp" 
+    "Fixtures/TestDataFixture.h" 
+    "Fixtures/TestDataFixture.cpp" 
+    "ArchiveExtractorTests.cpp"
+    "PerformanceTests.cpp"
+    "EnhancedTests.cpp"
+    "IntegrationTests.cpp"
+    "Fixtures/TestUtils.h")
 
 target_link_libraries(OdbDesignTests PRIVATE GTest::gtest_main GTest::gmock_main)
 
@@ -16,7 +26,10 @@ target_link_libraries(OdbDesignTests PRIVATE GTest::gtest_main GTest::gmock_main
 target_link_libraries(OdbDesignTests PRIVATE OdbDesign)
 
 include(GoogleTest)
-gtest_discover_tests(OdbDesignTests)
+# Defer test discovery to ctest time to avoid executing the test binary during build
+# This prevents build failures when runtime dependencies or environment variables
+# are not yet available at link/post-build time.
+gtest_discover_tests(OdbDesignTests DISCOVERY_MODE PRE_TEST)
 
 ## PCH
 #if (NOT DEFINED ENV{CI})
