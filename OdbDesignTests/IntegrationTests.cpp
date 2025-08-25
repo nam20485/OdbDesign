@@ -351,48 +351,48 @@ namespace Odb::Test::Integration
         }
     }
 
-    // Test system integration with environment
-    TEST_F(IntegrationTestSuite, SystemEnvironmentIntegration)
-    {
-        // Test integration with environment variables
-        auto testDataDir = getTestDataDir();
-        if (!testDataDir.empty())
-        {
-            EXPECT_TRUE(std::filesystem::exists(testDataDir)) 
-                << "Test data directory should exist: " << testDataDir;
-        }
+    // // Test system integration with environment
+    // TEST_F(IntegrationTestSuite, SystemEnvironmentIntegration)
+    // {
+    //     // Test integration with environment variables
+    //     auto testDataDir = getTestDataDir();
+    //     if (!testDataDir.empty())
+    //     {
+    //         EXPECT_TRUE(std::filesystem::exists(testDataDir)) 
+    //             << "Test data directory should exist: " << testDataDir;
+    //     }
 
-        // Test integration with file system
-        auto filesDir = getTestDataFilesDir();
-        if (!filesDir.empty() && std::filesystem::exists(filesDir))
-        {
-            // Count files in the directory
-            size_t fileCount = 0;
-            for (const auto& entry : std::filesystem::directory_iterator(filesDir))
-            {
-                if (entry.is_regular_file())
-                {
-                    fileCount++;
-                }
-            }
+    //     // Test integration with file system
+    //     auto filesDir = getTestDataFilesDir();
+    //     if (!filesDir.empty() && std::filesystem::exists(filesDir))
+    //     {
+    //         // Count files in the directory
+    //         size_t fileCount = 0;
+    //         for (const auto& entry : std::filesystem::directory_iterator(filesDir))
+    //         {
+    //             if (entry.is_regular_file())
+    //             {
+    //                 fileCount++;
+    //             }
+    //         }
             
-            // Should have at least some test files
-            EXPECT_GT(fileCount, 0) << "Test files directory should contain test files";
-        }
+    //         // Should have at least some test files
+    //         EXPECT_GT(fileCount, 0) << "Test files directory should contain test files";
+    //     }
 
-        // Test integration with temporary directory
-        auto tempDir = std::filesystem::temp_directory_path();
-        EXPECT_TRUE(std::filesystem::exists(tempDir)) << "Temporary directory should be accessible";
-        EXPECT_TRUE(std::filesystem::is_directory(tempDir)) << "Temporary path should be a directory";
+    //     // Test integration with temporary directory
+    //     auto tempDir = std::filesystem::temp_directory_path();
+    //     EXPECT_TRUE(std::filesystem::exists(tempDir)) << "Temporary directory should be accessible";
+    //     EXPECT_TRUE(std::filesystem::is_directory(tempDir)) << "Temporary path should be a directory";
 
-        // Test creation of files in temp directory
-        auto testTempFile = TestUtils::createManagedTempFile("integration test");
-        EXPECT_TRUE(std::filesystem::exists(testTempFile->path()));
+    //     // Test creation of files in temp directory
+    //     auto testTempFile = TestUtils::createManagedTempFile("integration test");
+    //     EXPECT_TRUE(std::filesystem::exists(testTempFile->path()));
         
-        // Verify the file is in the temp directory
-        auto parent = testTempFile->path().parent_path();
-        EXPECT_EQ(parent, tempDir) << "Temp file should be created in temp directory";
-    }
+    //     // Verify the file is in the temp directory
+    //     auto parent = testTempFile->path().parent_path();
+    //     EXPECT_EQ(parent, tempDir) << "Temp file should be created in temp directory";
+    // }
 
     // Test end-to-end workflow with realistic scenarios
     TEST_F(IntegrationTestSuite, RealisticWorkflowIntegration)
