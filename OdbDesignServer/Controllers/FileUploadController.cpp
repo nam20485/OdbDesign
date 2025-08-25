@@ -97,6 +97,17 @@ namespace Odb::App::Server
 //
 //                    return crow::response(jsonResponse);
 //                });
+        CROW_ROUTE(m_serverApp.crow_app(), "/files/delete/all")
+                .methods(crow::HTTPMethod::Delete)
+                ([&](const crow::request &req) {
+                    // authenticate request before sending to handler
+                    auto authResp = m_serverApp.request_auth().AuthenticateRequest(req);
+                    if (authResp.code != crow::status::OK) {
+                        return authResp;
+                    }
+
+                    return handleRemoveAllDesignFiles(req);
+                });
 	}
     
     crow::response FileUploadController::handleOctetStreamUpload(const std::string& filename, const crow::request& req)
@@ -196,6 +207,31 @@ namespace Odb::App::Server
         }
 
         return makeLoadedFileModelsResponse(true);
+    }
+
+    crow::response FileUploadController::handleRemoveAllDesignFiles(const crow::request& req) {
+	    // get designs directory
+        const auto& designsDir = m_serverApp.args().designsDir();
+        if (designsDir.empty()) {
+            return crow::response(crow::status::INTERNAL_SERVER_ERROR, "designs directory not configured");
+        }
+
+	    // clean cache
+        m_serverApp.designs().Clear();
+
+        // delete content in designs directory (including files and folders)
+        std::error_code ec;
+        std::filesystem::remove_all(designsDir, ec);
+        if (ec) {
+            return crow::response(crow::status::INTERNAL_SERVER_ERROR, "failed to remove designs directory: " + ec.message());
+        }
+
+        std::filesystem::create_directories(designsDir, ec);
+        if (ec) {
+            return crow::response(crow::status::INTERNAL_SERVER_ERROR, "failed to recreate designs directory: " + ec.message());
+        }
+
+        return crow::response(crow::status::OK, "all design files deleted successfully");
     }
 
     std::string FileUploadController::sanitizeFilename(const std::string& filename) const
