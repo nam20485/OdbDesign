@@ -22,6 +22,7 @@ namespace Odb::App::Server
 		register_route_handler("/healthz/live", std::bind(&HealthCheckController::health_check_live, this, std::placeholders::_1));
 		register_route_handler("/healthz/ready", std::bind(&HealthCheckController::health_check_ready, this, std::placeholders::_1));
 		register_route_handler("/healthz/started", std::bind(&HealthCheckController::health_check_started, this, std::placeholders::_1));
+        register_route_handler("/healthz/heartbeat", std::bind(&HealthCheckController::health_check_heartbeat, this, std::placeholders::_1));
 	}
 
 	crow::response HealthCheckController::health_check_live(const crow::request& req)
@@ -37,5 +38,12 @@ namespace Odb::App::Server
 	crow::response HealthCheckController::health_check_started(const crow::request& req)
 	{		
 		return crow::response(crow::status::OK, "txt", "healthy: started");
+	}
+
+	crow::response HealthCheckController::health_check_heartbeat(const crow::request& req)
+	{
+        // update last heartbeat
+        OdbDesignServerApp::inst_->updateLastHeartbeat();
+		return crow::response(crow::status::OK, "txt", "heartbeat received");
 	}
 }
