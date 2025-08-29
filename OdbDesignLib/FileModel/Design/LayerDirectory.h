@@ -10,6 +10,7 @@
 #include "../../ProtoBuf/layerdirectory.pb.h"
 #include "FeaturesFile.h"
 #include "AttrListFile.h"
+#include "ToolsFile.h"
 #include "../ISaveable.h"
 
 
@@ -31,10 +32,12 @@ namespace Odb::Lib::FileModel::Design
 		bool ParseComponentsFile(std::filesystem::path directory);
 		bool ParseFeaturesFile(std::filesystem::path directory);
 		bool ParseAttrListFile(std::filesystem::path directory);
+		bool ParseToolsFile(std::filesystem::path directory);
 
 		const ComponentsFile& GetComponentsFile() const;
 		const FeaturesFile& GetFeaturesFile() const;
 		const AttrListFile& GetAttrListFile() const;
+		const ToolsFile& GetToolsFile() const;
 
 		typedef std::map<std::string, std::shared_ptr<LayerDirectory>> StringMap;
 
@@ -49,6 +52,7 @@ namespace Odb::Lib::FileModel::Design
 		ComponentsFile m_componentsFile;	
 		FeaturesFile m_featuresFile;
 		AttrListFile m_attrListFile;
+		ToolsFile m_toolFile;
 
 	};
 }
