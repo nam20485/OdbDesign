@@ -12,7 +12,7 @@ message ToolsFile {
 
         enum Type {
             Plated   = 0;
-            NoPlated = 1;
+            NonPlated = 1;
             Via      = 2;
         }
 

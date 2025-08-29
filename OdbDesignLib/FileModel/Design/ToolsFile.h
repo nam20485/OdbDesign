@@ -28,7 +28,7 @@ namespace Odb::Lib::FileModel::Design
             enum class Type
             {
                 Plated,
-                NoPlated,
+                NonPlated,
                 Via,
             };
 
@@ -49,9 +49,9 @@ namespace Odb::Lib::FileModel::Design
             double minTOL;
             double maxTOL;
 
-            std::string driilBit;
-            double FinishSize;
-            double DrillSize;
+            std::string drillBit;
+            double finishSize;
+            double drillSize;
 
             inline static const char* RECORD_TOKEN = "TOOLS";
 
