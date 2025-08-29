@@ -183,28 +183,28 @@ static const ::_pb::Message* const file_default_instances[] = {
 };
 const char descriptor_table_protodef_toolsfile_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
     protodesc_cold) = {
-    "\n\017toolsfile.proto\022\020Odb.Lib.Protobuf\"\321\004\n\t"
+    "\n\017toolsfile.proto\022\020Odb.Lib.Protobuf\"\322\004\n\t"
     "ToolsFile\022\021\n\tdirectory\030\001 \001(\t\022\014\n\004path\030\002 \001"
     "(\t\022\r\n\005units\030\003 \001(\t\022\021\n\tthickness\030\004 \001(\001\022\023\n\013"
     "user_params\030\005 \001(\t\0225\n\005tools\030\006 \003(\0132&.Odb.L"
-    "ib.Protobuf.ToolsFile.ToolsEntry\032\335\002\n\013Too"
+    "ib.Protobuf.ToolsFile.ToolsEntry\032\336\002\n\013Too"
     "lsRecord\022\020\n\010tool_num\030\001 \001(\r\022:\n\004type\030\002 \001(\016"
     "2,.Odb.Lib.Protobuf.ToolsFile.ToolsRecor"
     "d.Type\022<\n\005type2\030\003 \001(\0162-.Odb.Lib.Protobuf"
     ".ToolsFile.ToolsRecord.Type2\022\017\n\007min_tol\030"
     "\004 \001(\001\022\017\n\007max_tol\030\005 \001(\001\022\021\n\tdrill_bit\030\006 \001("
     "\t\022\023\n\013finish_size\030\007 \001(\001\022\022\n\ndrill_size\030\010 \001"
-    "(\001\")\n\004Type\022\n\n\006Plated\020\000\022\014\n\010NoPlated\020\001\022\007\n\003"
-    "Via\020\002\"9\n\005Type2\022\014\n\010Standard\020\000\022\014\n\010PressFit"
-    "\020\001\022\t\n\005Photo\020\002\022\t\n\005Laser\020\003\032U\n\nToolsEntry\022\013"
-    "\n\003key\030\001 \001(\r\0226\n\005value\030\002 \001(\0132\'.Odb.Lib.Pro"
-    "tobuf.ToolsFile.ToolsRecord:\0028\001b\006proto3"
+    "(\001\"*\n\004Type\022\n\n\006Plated\020\000\022\r\n\tNonPlated\020\001\022\007\n"
+    "\003Via\020\002\"9\n\005Type2\022\014\n\010Standard\020\000\022\014\n\010PressFi"
+    "t\020\001\022\t\n\005Photo\020\002\022\t\n\005Laser\020\003\032U\n\nToolsEntry\022"
+    "\013\n\003key\030\001 \001(\r\0226\n\005value\030\002 \001(\0132\'.Odb.Lib.Pr"
+    "otobuf.ToolsFile.ToolsRecord:\0028\001b\006proto3"
 };
 static ::absl::once_flag descriptor_table_toolsfile_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_toolsfile_2eproto = {
     false,
     false,
-    639,
+    640,
     descriptor_table_protodef_toolsfile_2eproto,
     "toolsfile.proto",
     &descriptor_table_toolsfile_2eproto_once,
@@ -233,7 +233,7 @@ bool ToolsFile_ToolsRecord_Type_IsValid(int value) {
   (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
 
 constexpr ToolsFile_ToolsRecord_Type ToolsFile_ToolsRecord::Plated;
-constexpr ToolsFile_ToolsRecord_Type ToolsFile_ToolsRecord::NoPlated;
+constexpr ToolsFile_ToolsRecord_Type ToolsFile_ToolsRecord::NonPlated;
 constexpr ToolsFile_ToolsRecord_Type ToolsFile_ToolsRecord::Via;
 constexpr ToolsFile_ToolsRecord_Type ToolsFile_ToolsRecord::Type_MIN;
 constexpr ToolsFile_ToolsRecord_Type ToolsFile_ToolsRecord::Type_MAX;

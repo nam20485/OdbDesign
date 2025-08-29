@@ -62,12 +62,12 @@ namespace Odb::Lib::FileModel::Design
 			std::filesystem::path toolsFilePath;
 			for (const std::string toolsFilename : TOOLS_FILENAMES)
 			{
-				loginfo("trying attrlist file: [" + toolsFilename + "]...");
+				loginfo("trying tools file: [" + toolsFilename + "]...");
 
 				toolsFilePath = Utils::ArchiveExtractor::getUncompressedFilePath(m_directory, toolsFilename);
 				if (exists(toolsFilePath) && is_regular_file(toolsFilePath))
 				{
-					loginfo("found attrlist file: [" + toolsFilePath.string() + "]");
+					loginfo("found tools file: [" + toolsFilePath.string() + "]");
 					break;
 				}
 			}
@@ -78,21 +78,21 @@ namespace Odb::Lib::FileModel::Design
 
 			if (!std::filesystem::exists(m_path))
 			{
-				auto message = "attrlist file does not exist: [" + m_directory.string() + "]";
+				auto message = "tools file does not exist: [" + m_directory.string() + "]";
 				logwarn(message);
 				return true;
 				//throw invalid_odb_error(message.c_str());
 			}
 			else if (!std::filesystem::is_regular_file(m_path))
 			{
-				auto message = "attrlist is not a file: [" + m_path.string() + "]";
+				auto message = "tools is not a file: [" + m_path.string() + "]";
 				throw invalid_odb_error(message.c_str());
 			}
 
 			toolsFile.open(m_path.string(), std::ios::in);
 			if (!toolsFile.is_open())
 			{
-				auto message = "unable to open attrlist file: [" + m_path.string() + "]";
+				auto message = "unable to open tools file: [" + m_path.string() + "]";
 				throw invalid_odb_error(message.c_str());
 			}
 
@@ -291,15 +291,15 @@ namespace Odb::Lib::FileModel::Design
 								}
 								else if (attribute == ToolsRecord::BIT_KEY || attribute == "bit")
 								{
-									pCurrentToolsRecord->driilBit = value;
+									pCurrentToolsRecord->drillBit = value;
 								}
 								else if (attribute == ToolsRecord::FINISH_SIZE_KEY || attribute == "finish_size")
 								{
-									pCurrentToolsRecord->FinishSize = std::stod(value);
+									pCurrentToolsRecord->finishSize = std::stod(value);
 								}
 								else if (attribute == ToolsRecord::DRILL_SIZE_KEY || attribute == "drill_size")
 								{
-									pCurrentToolsRecord->DrillSize = std::stod(value);
+									pCurrentToolsRecord->drillSize = std::stod(value);
 								}
 								else
 								{
@@ -355,9 +355,9 @@ namespace Odb::Lib::FileModel::Design
 			os << '\t' << ToolsRecord::TYPE2_KEY << "=" << ToolsRecord::type2Map.getValue(tool_info->type2) << std::endl;
 			os << '\t' << ToolsRecord::MIN_TOL_KEY << "=" << tool_info->minTOL << std::endl;
 			os << '\t' << ToolsRecord::MAX_TOL_KEY << "=" << tool_info->maxTOL << std::endl;
-			os << '\t' << ToolsRecord::BIT_KEY << "=" << tool_info->driilBit << std::endl;
-			os << '\t' << ToolsRecord::FINISH_SIZE_KEY << "=" << tool_info->FinishSize << std::endl;
-			os << '\t' << ToolsRecord::DRILL_SIZE_KEY << "=" << tool_info->DrillSize << std::endl;
+			os << '\t' << ToolsRecord::BIT_KEY << "=" << tool_info->drillBit << std::endl;
+			os << '\t' << ToolsRecord::FINISH_SIZE_KEY << "=" << tool_info->finishSize << std::endl;
+			os << '\t' << ToolsRecord::DRILL_SIZE_KEY << "=" << tool_info->drillSize << std::endl;
 
 			os << Constants::ARRAY_RECORD_CLOSE_TOKEN << std::endl;
 			os << std::endl;
@@ -374,9 +374,9 @@ namespace Odb::Lib::FileModel::Design
 		pToolsRecordMessage->set_type2(static_cast<Odb::Lib::Protobuf::ToolsFile::ToolsRecord::Type2>(type2));
 		pToolsRecordMessage->set_min_tol(minTOL);
 		pToolsRecordMessage->set_max_tol(maxTOL);
-		pToolsRecordMessage->set_drill_bit(driilBit);
-		pToolsRecordMessage->set_finish_size(FinishSize);
-		pToolsRecordMessage->set_drill_size(DrillSize);
+		pToolsRecordMessage->set_drill_bit(drillBit);
+		pToolsRecordMessage->set_finish_size(finishSize);
+		pToolsRecordMessage->set_drill_size(drillSize);
 		
 		return pToolsRecordMessage;
 	}
@@ -388,9 +388,9 @@ namespace Odb::Lib::FileModel::Design
 		type2 = static_cast<Type2>(message.type2());
 		minTOL = message.min_tol();
 		maxTOL = message.max_tol();
-		driilBit = message.drill_bit();
-		FinishSize = message.finish_size();
-		DrillSize = message.drill_size();
+		drillBit = message.drill_bit();
+		finishSize = message.finish_size();
+		drillSize = message.drill_size();
 	}
 
 	std::unique_ptr<Odb::Lib::Protobuf::ToolsFile> Lib::FileModel::Design::ToolsFile::to_protobuf() const

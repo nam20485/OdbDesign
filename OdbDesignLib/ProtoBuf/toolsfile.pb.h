@@ -80,7 +80,7 @@ namespace Lib {
 namespace Protobuf {
 enum ToolsFile_ToolsRecord_Type : int {
   ToolsFile_ToolsRecord_Type_Plated = 0,
-  ToolsFile_ToolsRecord_Type_NoPlated = 1,
+  ToolsFile_ToolsRecord_Type_NonPlated = 1,
   ToolsFile_ToolsRecord_Type_Via = 2,
   ToolsFile_ToolsRecord_Type_ToolsFile_ToolsRecord_Type_INT_MIN_SENTINEL_DO_NOT_USE_ =
       std::numeric_limits<::int32_t>::min(),
@@ -298,7 +298,7 @@ class ToolsFile_ToolsRecord final : public ::google::protobuf::Message
   // nested types ----------------------------------------------------
   using Type = ToolsFile_ToolsRecord_Type;
   static constexpr Type Plated = ToolsFile_ToolsRecord_Type_Plated;
-  static constexpr Type NoPlated = ToolsFile_ToolsRecord_Type_NoPlated;
+  static constexpr Type NonPlated = ToolsFile_ToolsRecord_Type_NonPlated;
   static constexpr Type Via = ToolsFile_ToolsRecord_Type_Via;
   static inline bool Type_IsValid(int value) {
     return ToolsFile_ToolsRecord_Type_IsValid(value);
