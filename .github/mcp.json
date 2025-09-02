@@ -1,0 +1,106 @@
+{
+	"servers": {
+		"sequential-thinking": {
+			"type": "stdio",
+			"command": "npx",
+			"args": [
+				"-y",
+				"@modelcontextprotocol/server-sequential-thinking"
+			],
+			"version": "0.0.1"
+		},
+		"memory": {
+			"type": "stdio",
+			"command": "npx",
+			"args": [
+				"-y",
+				"@modelcontextprotocol/server-memory"
+			],
+			"version": "0.0.1"
+		},
+		"github": {
+			"type": "http",
+			"url": "https://api.githubcopilot.com/mcp",
+			"version": "0.0.1"
+		},
+		"filesystem": {
+			"command": "npx",
+			"args": [
+				"-y",
+				"@modelcontextprotocol/server-filesystem",
+				"${env:USERPROFILE}",
+				"."
+			],
+			"type": "stdio"
+		},
+		"gemini-cli": {
+			"command": "npx",
+			"args": [
+				"-y",
+				"gemini-mcp-tool"
+			],
+			"type": "stdio"
+		},
+		"notion": {
+			"command": "npx",
+			"args": [
+				"-y",
+				"@notionhq/notion-mcp-server"
+			],
+			"env": {
+				"OPENAPI_MCP_HEADERS": {
+					"Authorization": "Bearer ${input:NOTION_TOKEN}",
+					"Notion-Version": "2022-06-28"
+				}
+			},
+			"type": "stdio"
+		},
+		"context7": {
+			"command": "npx",
+			"args": [
+				"-y",
+				"@upstash/context7-mcp@latest"
+			],
+			"type": "stdio"
+		},
+		"microsoft-docs": {
+			"url": "https://learn.microsoft.com/api/mcp",
+			"type": "http"
+		},
+		"deepwiki": {
+			"url": "https://mcp.deepwiki.com/sse",
+			"type": "http"
+		},
+		"playwright": {
+			"command": "npx",
+			"args": [
+				"@playwright/mcp@latest"
+			]
+		}
+	},
+	"puppeteer": {
+		"command": "npx",
+		"args": [
+			"-y",
+			"@modelcontextprotocol/server-puppeteer"
+		],
+		"env": {}
+	},
+	"web-browser": {
+		"type": "stdio",
+		"command": "uv",
+		"args": [
+			"tool",
+			"run",
+			"web-browser-mcp-server"
+		]
+	},
+	"inputs": [
+		{
+			"id": "NOTION_TOKEN",
+			"type": "promptString",
+			"description": "Notion API Token (https://www.notion.so/profile/integrations)",
+			"password": true
+		}
+	]
+}

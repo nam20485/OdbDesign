@@ -1,0 +1,63 @@
+name: Validate setup scripts (Linux & Windows)
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+  workflow_dispatch:
+
+env:
+  # Mirror repo variable for linter-friendly usage in conditions
+  ENABLE_WINDOWS_SETUP_VALIDATION: ${{ vars.ENABLE_WINDOWS_SETUP_VALIDATION }}
+
+jobs:
+  validate-linux:
+    name: Validate Linux setup script
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+
+      - name: Fetch Remote Script
+        shell: pwsh
+        run: |
+          # overwrite local script with remote script
+          Invoke-WebRequest -Uri "https://raw.githubusercontent.com/nam20485/agent-instructions/main/scripts/setup-environment.sh" `
+            -OutFile "scripts/setup-environment.sh" `
+            -Headers @{"Accept"="application/vnd.github.raw"}
+
+      - name: Run Linux setup script
+        shell: bash
+        run: |
+          # Prefer repository .nvmrc; fail if neither .nvmrc nor env pin present
+          if [ ! -f .nvmrc ] && [ -z "${NODE_VERSION_PIN}" ]; then
+            echo "No .nvmrc found and NODE_VERSION_PIN not set; failing to keep determinism." >&2
+            exit 1
+          fi
+          chmod +x scripts/setup-environment.sh
+          scripts/setup-environment.sh
+
+  validate-windows:
+    if: "${{ vars.ENABLE_WINDOWS_SETUP_VALIDATION == 'true' }}"
+    name: Validate Windows setup script
+    runs-on: windows-2022
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Windows setup script
+        shell: pwsh
+        run: |
+          if (!(Test-Path ".nvmrc") -and [string]::IsNullOrWhiteSpace($env:NODE_VERSION_PIN)) {
+            Write-Error "No .nvmrc found and NODE_VERSION_PIN not set; failing to keep determinism."
+            exit 1
+          }
+          pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/setup-environment.ps1
