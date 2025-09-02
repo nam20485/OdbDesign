@@ -190,7 +190,7 @@ namespace Odb::Lib::FileModel::Design
 						{
 							throw_parse_error(m_path, line, token, lineNumber);
 						}
-						else if (!std::getline(lineStream, token, ' '))
+						else if (!std::getline(lineStream >> std::ws, token))
 						{
 							throw_parse_error(m_path, line, token, lineNumber);
 						}

@@ -27,8 +27,9 @@ namespace Utils
 				return true;
 			}
 		}
+		#elif
+			return false;
 		#endif
-		return false;
 	}
 
 	bool CrossPlatform::getenv_safe(const char* env_var, std::string& envValueOut)
