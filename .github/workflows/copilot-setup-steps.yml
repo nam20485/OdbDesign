@@ -1,0 +1,88 @@
+name: "Copilot Setup Steps - Using Devcontainer Prebuild"
+
+on:
+  workflow_dispatch:
+
+jobs:
+  copilot-setup-steps:
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      actions: read
+      packages: read
+    env:
+      TF_PLUGIN_CACHE_DIR: ~/.terraform.d/plugin-cache
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Standard caches for package managers and tooling
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ runner.os }}-${{ hashFiles('**/requirements.txt', '**/pyproject.toml') }}
+          restore-keys: |
+            pip-${{ runner.os }}-
+
+      - name: Cache npm (global cache)
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-global-${{ runner.os }}-v1
+          restore-keys: |
+            npm-global-${{ runner.os }}-
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pnpm-store
+            ~/.local/share/pnpm/store
+          key: pnpm-store-${{ runner.os }}-v1
+          restore-keys: |
+            pnpm-store-${{ runner.os }}-
+
+      - name: Cache Yarn cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/yarn
+            ~/.yarn/berry/cache
+          key: yarn-cache-${{ runner.os }}-v1
+          restore-keys: |
+            yarn-cache-${{ runner.os }}-
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', '**/*.fsproj', '**/packages.lock.json') }}
+          restore-keys: |
+            nuget-${{ runner.os }}-
+
+      - name: Cache Terraform plugins
+        uses: actions/cache@v4
+        with:
+          path: ~/.terraform.d/plugin-cache
+          key: terraform-${{ runner.os }}
+          restore-keys: |
+            terraform-${{ runner.os }}
+
+      - name: Fetch Remote Script
+        shell: pwsh
+        run: |
+          # overwrite local script with remote script
+          Invoke-WebRequest -Uri "https://raw.githubusercontent.com/nam20485/agent-instructions/main/scripts/setup-environment.sh" `
+            -OutFile "scripts/setup-environment.sh" `
+            -Headers @{"Accept"="application/vnd.github.raw"}
+
+      - name: Provision environment (single Linux script)
+        shell: bash
+        run: |
+          chmod +x scripts/setup-environment.sh
+          scripts/setup-environment.sh
+
+     
