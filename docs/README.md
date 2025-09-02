@@ -214,10 +214,10 @@ Use `.\scripts\setup-windows.ps1 -Help` for additional options.
 #### Linux Setup
 
 ```Bash
-$ ./scripts/install-dependencies-deb.sh
+$ ./scripts/setup-linux.sh
 ```
 
-This script will install the required dependencies on Ubuntu/Debian/Mint systems.
+See [Linux setup details](README-SETUP.md) for full documentation.
 
 ### Manual Build Dependencies
 
@@ -225,7 +225,7 @@ If you prefer to set up the build environment manually, you'll need the followin
 
 > If you are building on Windows and have a modern version of Visual Studio installed then all of the dependencies listed below are already installed on your system (except for maybe Docker). You can use the automated setup scripts above or skip to the next section.
 
-> **Linux users**: For an automated setup experience, use the provided setup script: `./setup-linux.sh` (see [README-SETUP.md](../README-SETUP.md) for details)
+> **Linux users**: For an automated setup experience, use the provided setup script: `./scripts/setup-linux.sh` (see [docs/README-SETUP.md](README-SETUP.md) for details)
 
 > If you are building on a Linux system manually, the dependencies listed below can be installed using your package manager. For example on Ubuntu/Debian/Mint you can install them (except for vcpkg and Docker) using the following command:
 
@@ -261,7 +261,7 @@ Make sure to restart your shell or source the profile after adding the line.
 For Linux users, you can use the automated setup script that handles all dependencies and configuration:
 
 ```Bash
-$ ./setup-linux.sh
+$ ./scripts/setup-linux.sh
 ```
 
 This script will:
@@ -271,7 +271,7 @@ This script will:
 - Build the project
 - Optionally run tests
 
-See `./setup-linux.sh --help` for all available options.
+See `./scripts/setup-linux.sh --help` for all available options.
 
 ### Source Code
 
