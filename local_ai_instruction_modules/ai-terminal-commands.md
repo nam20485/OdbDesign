@@ -25,9 +25,5 @@
 - Use `-WhatIf`/`-Confirm` for destructive cmdlets.
 - Quote paths with `-LiteralPath` and use `Join-Path`.
 
-## Search
-- Include all files in searches.
-- Include files and direcories startring with `.` in searches.
-
 ---
 This file exists to satisfy local docs linking and to standardize terminal usage when automation tools are unavailable.
