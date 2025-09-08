@@ -32,12 +32,13 @@
 #include "componentsfile.pb.h"
 #include "attrlistfile.pb.h"
 #include "featuresfile.pb.h"
+#include "toolsfile.pb.h"
 // @@protoc_insertion_point(includes)
 
 // Must be included last.
 #include "google/protobuf/port_def.inc"
 
-#define PROTOBUF_INTERNAL_EXPORT_layerdirectory_2eproto ODBDESIGN_EXPORT
+#define PROTOBUF_INTERNAL_EXPORT_layerdirectory_2eproto
 
 namespace google {
 namespace protobuf {
@@ -49,17 +50,17 @@ template <typename T>
 }  // namespace google
 
 // Internal implementation detail -- do not use these members.
-struct ODBDESIGN_EXPORT TableStruct_layerdirectory_2eproto {
+struct TableStruct_layerdirectory_2eproto {
   static const ::uint32_t offsets[];
 };
-ODBDESIGN_EXPORT extern const ::google::protobuf::internal::DescriptorTable
+extern const ::google::protobuf::internal::DescriptorTable
     descriptor_table_layerdirectory_2eproto;
 namespace Odb {
 namespace Lib {
 namespace Protobuf {
 class LayerDirectory;
 struct LayerDirectoryDefaultTypeInternal;
-ODBDESIGN_EXPORT extern LayerDirectoryDefaultTypeInternal _LayerDirectory_default_instance_;
+extern LayerDirectoryDefaultTypeInternal _LayerDirectory_default_instance_;
 }  // namespace Protobuf
 }  // namespace Lib
 }  // namespace Odb
@@ -77,7 +78,7 @@ namespace Protobuf {
 
 // -------------------------------------------------------------------
 
-class ODBDESIGN_EXPORT LayerDirectory final : public ::google::protobuf::Message
+class LayerDirectory final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:Odb.Lib.Protobuf.LayerDirectory) */ {
  public:
   inline LayerDirectory() : LayerDirectory(nullptr) {}
@@ -228,6 +229,7 @@ class ODBDESIGN_EXPORT LayerDirectory final : public ::google::protobuf::Message
     kComponentsFieldNumber = 3,
     kAttrlistFileFieldNumber = 4,
     kFeatureFileFieldNumber = 5,
+    kToolFileFieldNumber = 6,
   };
   // optional string name = 1;
   bool has_name() const;
@@ -308,12 +310,27 @@ class ODBDESIGN_EXPORT LayerDirectory final : public ::google::protobuf::Message
   ::Odb::Lib::Protobuf::FeaturesFile* _internal_mutable_featurefile();
 
   public:
+  // optional .Odb.Lib.Protobuf.ToolsFile toolFile = 6;
+  bool has_toolfile() const;
+  void clear_toolfile() ;
+  const ::Odb::Lib::Protobuf::ToolsFile& toolfile() const;
+  PROTOBUF_NODISCARD ::Odb::Lib::Protobuf::ToolsFile* release_toolfile();
+  ::Odb::Lib::Protobuf::ToolsFile* mutable_toolfile();
+  void set_allocated_toolfile(::Odb::Lib::Protobuf::ToolsFile* value);
+  void unsafe_arena_set_allocated_toolfile(::Odb::Lib::Protobuf::ToolsFile* value);
+  ::Odb::Lib::Protobuf::ToolsFile* unsafe_arena_release_toolfile();
+
+  private:
+  const ::Odb::Lib::Protobuf::ToolsFile& _internal_toolfile() const;
+  ::Odb::Lib::Protobuf::ToolsFile* _internal_mutable_toolfile();
+
+  public:
   // @@protoc_insertion_point(class_scope:Odb.Lib.Protobuf.LayerDirectory)
  private:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
-      3, 5, 3,
+      3, 6, 4,
       48, 2>
       _table_;
 
@@ -338,6 +355,7 @@ class ODBDESIGN_EXPORT LayerDirectory final : public ::google::protobuf::Message
     ::Odb::Lib::Protobuf::ComponentsFile* components_;
     ::Odb::Lib::Protobuf::AttrListFile* attrlistfile_;
     ::Odb::Lib::Protobuf::FeaturesFile* featurefile_;
+    ::Odb::Lib::Protobuf::ToolsFile* toolfile_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -769,6 +787,97 @@ inline void LayerDirectory::set_allocated_featurefile(::Odb::Lib::Protobuf::Feat
 
   _impl_.featurefile_ = reinterpret_cast<::Odb::Lib::Protobuf::FeaturesFile*>(value);
   // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.LayerDirectory.featureFile)
+}
+
+// optional .Odb.Lib.Protobuf.ToolsFile toolFile = 6;
+inline bool LayerDirectory::has_toolfile() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000020u) != 0;
+  PROTOBUF_ASSUME(!value || _impl_.toolfile_ != nullptr);
+  return value;
+}
+inline const ::Odb::Lib::Protobuf::ToolsFile& LayerDirectory::_internal_toolfile() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  const ::Odb::Lib::Protobuf::ToolsFile* p = _impl_.toolfile_;
+  return p != nullptr ? *p : reinterpret_cast<const ::Odb::Lib::Protobuf::ToolsFile&>(::Odb::Lib::Protobuf::_ToolsFile_default_instance_);
+}
+inline const ::Odb::Lib::Protobuf::ToolsFile& LayerDirectory::toolfile() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:Odb.Lib.Protobuf.LayerDirectory.toolFile)
+  return _internal_toolfile();
+}
+inline void LayerDirectory::unsafe_arena_set_allocated_toolfile(::Odb::Lib::Protobuf::ToolsFile* value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (GetArena() == nullptr) {
+    delete reinterpret_cast<::google::protobuf::MessageLite*>(_impl_.toolfile_);
+  }
+  _impl_.toolfile_ = reinterpret_cast<::Odb::Lib::Protobuf::ToolsFile*>(value);
+  if (value != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000020u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000020u;
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:Odb.Lib.Protobuf.LayerDirectory.toolFile)
+}
+inline ::Odb::Lib::Protobuf::ToolsFile* LayerDirectory::release_toolfile() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+
+  _impl_._has_bits_[0] &= ~0x00000020u;
+  ::Odb::Lib::Protobuf::ToolsFile* released = _impl_.toolfile_;
+  _impl_.toolfile_ = nullptr;
+  if (::google::protobuf::internal::DebugHardenForceCopyInRelease()) {
+    auto* old = reinterpret_cast<::google::protobuf::MessageLite*>(released);
+    released = ::google::protobuf::internal::DuplicateIfNonNull(released);
+    if (GetArena() == nullptr) {
+      delete old;
+    }
+  } else {
+    if (GetArena() != nullptr) {
+      released = ::google::protobuf::internal::DuplicateIfNonNull(released);
+    }
+  }
+  return released;
+}
+inline ::Odb::Lib::Protobuf::ToolsFile* LayerDirectory::unsafe_arena_release_toolfile() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:Odb.Lib.Protobuf.LayerDirectory.toolFile)
+
+  _impl_._has_bits_[0] &= ~0x00000020u;
+  ::Odb::Lib::Protobuf::ToolsFile* temp = _impl_.toolfile_;
+  _impl_.toolfile_ = nullptr;
+  return temp;
+}
+inline ::Odb::Lib::Protobuf::ToolsFile* LayerDirectory::_internal_mutable_toolfile() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (_impl_.toolfile_ == nullptr) {
+    auto* p = ::google::protobuf::Message::DefaultConstruct<::Odb::Lib::Protobuf::ToolsFile>(GetArena());
+    _impl_.toolfile_ = reinterpret_cast<::Odb::Lib::Protobuf::ToolsFile*>(p);
+  }
+  return _impl_.toolfile_;
+}
+inline ::Odb::Lib::Protobuf::ToolsFile* LayerDirectory::mutable_toolfile() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  _impl_._has_bits_[0] |= 0x00000020u;
+  ::Odb::Lib::Protobuf::ToolsFile* _msg = _internal_mutable_toolfile();
+  // @@protoc_insertion_point(field_mutable:Odb.Lib.Protobuf.LayerDirectory.toolFile)
+  return _msg;
+}
+inline void LayerDirectory::set_allocated_toolfile(::Odb::Lib::Protobuf::ToolsFile* value) {
+  ::google::protobuf::Arena* message_arena = GetArena();
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (message_arena == nullptr) {
+    delete reinterpret_cast<::google::protobuf::MessageLite*>(_impl_.toolfile_);
+  }
+
+  if (value != nullptr) {
+    ::google::protobuf::Arena* submessage_arena = reinterpret_cast<::google::protobuf::MessageLite*>(value)->GetArena();
+    if (message_arena != submessage_arena) {
+      value = ::google::protobuf::internal::GetOwnedMessage(message_arena, value, submessage_arena);
+    }
+    _impl_._has_bits_[0] |= 0x00000020u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000020u;
+  }
+
+  _impl_.toolfile_ = reinterpret_cast<::Odb::Lib::Protobuf::ToolsFile*>(value);
+  // @@protoc_insertion_point(field_set_allocated:Odb.Lib.Protobuf.LayerDirectory.toolFile)
 }
 
 #ifdef __GNUC__

@@ -39,7 +39,8 @@ inline constexpr LayerDirectory::Impl_::Impl_(
             ::_pbi::ConstantInitialized()),
         components_{nullptr},
         attrlistfile_{nullptr},
-        featurefile_{nullptr} {}
+        featurefile_{nullptr},
+        toolfile_{nullptr} {}
 
 template <typename>
 PROTOBUF_CONSTEXPR LayerDirectory::LayerDirectory(::_pbi::ConstantInitialized)
@@ -58,7 +59,7 @@ struct LayerDirectoryDefaultTypeInternal {
   };
 };
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ODBDESIGN_EXPORT
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 LayerDirectoryDefaultTypeInternal _LayerDirectory_default_instance_;
 }  // namespace Protobuf
 }  // namespace Lib
@@ -83,16 +84,18 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::LayerDirectory, _impl_.components_),
         PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::LayerDirectory, _impl_.attrlistfile_),
         PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::LayerDirectory, _impl_.featurefile_),
+        PROTOBUF_FIELD_OFFSET(::Odb::Lib::Protobuf::LayerDirectory, _impl_.toolfile_),
         0,
         1,
         2,
         3,
         4,
+        5,
 };
 
 static const ::_pbi::MigrationSchema
     schemas[] ABSL_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-        {0, 13, -1, sizeof(::Odb::Lib::Protobuf::LayerDirectory)},
+        {0, 14, -1, sizeof(::Odb::Lib::Protobuf::LayerDirectory)},
 };
 static const ::_pb::Message* const file_default_instances[] = {
     &::Odb::Lib::Protobuf::_LayerDirectory_default_instance_._instance,
@@ -101,32 +104,35 @@ const char descriptor_table_protodef_layerdirectory_2eproto[] ABSL_ATTRIBUTE_SEC
     protodesc_cold) = {
     "\n\024layerdirectory.proto\022\020Odb.Lib.Protobuf"
     "\032\024componentsfile.proto\032\022attrlistfile.pro"
-    "to\032\022featuresfile.proto\"\250\002\n\016LayerDirector"
-    "y\022\021\n\004name\030\001 \001(\tH\000\210\001\001\022\021\n\004path\030\002 \001(\tH\001\210\001\001\022"
-    "9\n\ncomponents\030\003 \001(\0132 .Odb.Lib.Protobuf.C"
-    "omponentsFileH\002\210\001\001\0229\n\014attrlistFile\030\004 \001(\013"
-    "2\036.Odb.Lib.Protobuf.AttrListFileH\003\210\001\001\0228\n"
-    "\013featureFile\030\005 \001(\0132\036.Odb.Lib.Protobuf.Fe"
-    "aturesFileH\004\210\001\001B\007\n\005_nameB\007\n\005_pathB\r\n\013_co"
-    "mponentsB\017\n\r_attrlistFileB\016\n\014_featureFil"
-    "eb\006proto3"
+    "to\032\022featuresfile.proto\032\017toolsfile.proto\""
+    "\351\002\n\016LayerDirectory\022\021\n\004name\030\001 \001(\tH\000\210\001\001\022\021\n"
+    "\004path\030\002 \001(\tH\001\210\001\001\0229\n\ncomponents\030\003 \001(\0132 .O"
+    "db.Lib.Protobuf.ComponentsFileH\002\210\001\001\0229\n\014a"
+    "ttrlistFile\030\004 \001(\0132\036.Odb.Lib.Protobuf.Att"
+    "rListFileH\003\210\001\001\0228\n\013featureFile\030\005 \001(\0132\036.Od"
+    "b.Lib.Protobuf.FeaturesFileH\004\210\001\001\0222\n\010tool"
+    "File\030\006 \001(\0132\033.Odb.Lib.Protobuf.ToolsFileH"
+    "\005\210\001\001B\007\n\005_nameB\007\n\005_pathB\r\n\013_componentsB\017\n"
+    "\r_attrlistFileB\016\n\014_featureFileB\013\n\t_toolF"
+    "ileb\006proto3"
 };
-static const ::_pbi::DescriptorTable* const descriptor_table_layerdirectory_2eproto_deps[3] =
+static const ::_pbi::DescriptorTable* const descriptor_table_layerdirectory_2eproto_deps[4] =
     {
         &::descriptor_table_attrlistfile_2eproto,
         &::descriptor_table_componentsfile_2eproto,
         &::descriptor_table_featuresfile_2eproto,
+        &::descriptor_table_toolsfile_2eproto,
 };
 static ::absl::once_flag descriptor_table_layerdirectory_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_layerdirectory_2eproto = {
     false,
     false,
-    409,
+    491,
     descriptor_table_protodef_layerdirectory_2eproto,
     "layerdirectory.proto",
     &descriptor_table_layerdirectory_2eproto_once,
     descriptor_table_layerdirectory_2eproto_deps,
-    3,
+    4,
     1,
     schemas,
     file_default_instances,
@@ -161,6 +167,11 @@ void LayerDirectory::clear_featurefile() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   if (_impl_.featurefile_ != nullptr) _impl_.featurefile_->Clear();
   _impl_._has_bits_[0] &= ~0x00000010u;
+}
+void LayerDirectory::clear_toolfile() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (_impl_.toolfile_ != nullptr) _impl_.toolfile_->Clear();
+  _impl_._has_bits_[0] &= ~0x00000020u;
 }
 LayerDirectory::LayerDirectory(::google::protobuf::Arena* arena)
 #if defined(PROTOBUF_CUSTOM_VTABLE)
@@ -202,6 +213,9 @@ LayerDirectory::LayerDirectory(
   _impl_.featurefile_ = (cached_has_bits & 0x00000010u) ? ::google::protobuf::Message::CopyConstruct<::Odb::Lib::Protobuf::FeaturesFile>(
                               arena, *from._impl_.featurefile_)
                         : nullptr;
+  _impl_.toolfile_ = (cached_has_bits & 0x00000020u) ? ::google::protobuf::Message::CopyConstruct<::Odb::Lib::Protobuf::ToolsFile>(
+                              arena, *from._impl_.toolfile_)
+                        : nullptr;
 
   // @@protoc_insertion_point(copy_constructor:Odb.Lib.Protobuf.LayerDirectory)
 }
@@ -217,9 +231,9 @@ inline void LayerDirectory::SharedCtor(::_pb::Arena* arena) {
   ::memset(reinterpret_cast<char *>(&_impl_) +
                offsetof(Impl_, components_),
            0,
-           offsetof(Impl_, featurefile_) -
+           offsetof(Impl_, toolfile_) -
                offsetof(Impl_, components_) +
-               sizeof(Impl_::featurefile_));
+               sizeof(Impl_::toolfile_));
 }
 LayerDirectory::~LayerDirectory() {
   // @@protoc_insertion_point(destructor:Odb.Lib.Protobuf.LayerDirectory)
@@ -234,6 +248,7 @@ inline void LayerDirectory::SharedDtor(MessageLite& self) {
   delete this_._impl_.components_;
   delete this_._impl_.attrlistfile_;
   delete this_._impl_.featurefile_;
+  delete this_._impl_.toolfile_;
   this_._impl_.~Impl_();
 }
 
@@ -273,16 +288,16 @@ const ::google::protobuf::internal::ClassData* LayerDirectory::GetClassData() co
   return _class_data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<3, 5, 3, 48, 2> LayerDirectory::_table_ = {
+const ::_pbi::TcParseTable<3, 6, 4, 48, 2> LayerDirectory::_table_ = {
   {
     PROTOBUF_FIELD_OFFSET(LayerDirectory, _impl_._has_bits_),
     0, // no _extensions_
-    5, 56,  // max_field_number, fast_idx_mask
+    6, 56,  // max_field_number, fast_idx_mask
     offsetof(decltype(_table_), field_lookup_table),
-    4294967264,  // skipmap
+    4294967232,  // skipmap
     offsetof(decltype(_table_), field_entries),
-    5,  // num_field_entries
-    3,  // num_aux_entries
+    6,  // num_field_entries
+    4,  // num_aux_entries
     offsetof(decltype(_table_), aux_entries),
     _class_data_.base(),
     nullptr,  // post_loop_handler
@@ -307,7 +322,9 @@ const ::_pbi::TcParseTable<3, 5, 3, 48, 2> LayerDirectory::_table_ = {
     // optional .Odb.Lib.Protobuf.FeaturesFile featureFile = 5;
     {::_pbi::TcParser::FastMtS1,
      {42, 4, 2, PROTOBUF_FIELD_OFFSET(LayerDirectory, _impl_.featurefile_)}},
-    {::_pbi::TcParser::MiniParse, {}},
+    // optional .Odb.Lib.Protobuf.ToolsFile toolFile = 6;
+    {::_pbi::TcParser::FastMtS1,
+     {50, 5, 3, PROTOBUF_FIELD_OFFSET(LayerDirectory, _impl_.toolfile_)}},
     {::_pbi::TcParser::MiniParse, {}},
   }}, {{
     65535, 65535
@@ -327,10 +344,14 @@ const ::_pbi::TcParseTable<3, 5, 3, 48, 2> LayerDirectory::_table_ = {
     // optional .Odb.Lib.Protobuf.FeaturesFile featureFile = 5;
     {PROTOBUF_FIELD_OFFSET(LayerDirectory, _impl_.featurefile_), _Internal::kHasBitsOffset + 4, 2,
     (0 | ::_fl::kFcOptional | ::_fl::kMessage | ::_fl::kTvTable)},
+    // optional .Odb.Lib.Protobuf.ToolsFile toolFile = 6;
+    {PROTOBUF_FIELD_OFFSET(LayerDirectory, _impl_.toolfile_), _Internal::kHasBitsOffset + 5, 3,
+    (0 | ::_fl::kFcOptional | ::_fl::kMessage | ::_fl::kTvTable)},
   }}, {{
     {::_pbi::TcParser::GetTable<::Odb::Lib::Protobuf::ComponentsFile>()},
     {::_pbi::TcParser::GetTable<::Odb::Lib::Protobuf::AttrListFile>()},
     {::_pbi::TcParser::GetTable<::Odb::Lib::Protobuf::FeaturesFile>()},
+    {::_pbi::TcParser::GetTable<::Odb::Lib::Protobuf::ToolsFile>()},
   }}, {{
     "\37\4\4\0\0\0\0\0"
     "Odb.Lib.Protobuf.LayerDirectory"
@@ -347,7 +368,7 @@ PROTOBUF_NOINLINE void LayerDirectory::Clear() {
   (void) cached_has_bits;
 
   cached_has_bits = _impl_._has_bits_[0];
-  if (cached_has_bits & 0x0000001fu) {
+  if (cached_has_bits & 0x0000003fu) {
     if (cached_has_bits & 0x00000001u) {
       _impl_.name_.ClearNonDefaultToEmpty();
     }
@@ -365,6 +386,10 @@ PROTOBUF_NOINLINE void LayerDirectory::Clear() {
     if (cached_has_bits & 0x00000010u) {
       ABSL_DCHECK(_impl_.featurefile_ != nullptr);
       _impl_.featurefile_->Clear();
+    }
+    if (cached_has_bits & 0x00000020u) {
+      ABSL_DCHECK(_impl_.toolfile_ != nullptr);
+      _impl_.toolfile_->Clear();
     }
   }
   _impl_._has_bits_.Clear();
@@ -424,6 +449,13 @@ PROTOBUF_NOINLINE void LayerDirectory::Clear() {
                 stream);
           }
 
+          // optional .Odb.Lib.Protobuf.ToolsFile toolFile = 6;
+          if (cached_has_bits & 0x00000020u) {
+            target = ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
+                6, *this_._impl_.toolfile_, this_._impl_.toolfile_->GetCachedSize(), target,
+                stream);
+          }
+
           if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
             target =
                 ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
@@ -449,7 +481,7 @@ PROTOBUF_NOINLINE void LayerDirectory::Clear() {
 
           ::_pbi::Prefetch5LinesFrom7Lines(&this_);
           cached_has_bits = this_._impl_._has_bits_[0];
-          if (cached_has_bits & 0x0000001fu) {
+          if (cached_has_bits & 0x0000003fu) {
             // optional string name = 1;
             if (cached_has_bits & 0x00000001u) {
               total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
@@ -475,6 +507,11 @@ PROTOBUF_NOINLINE void LayerDirectory::Clear() {
               total_size += 1 +
                             ::google::protobuf::internal::WireFormatLite::MessageSize(*this_._impl_.featurefile_);
             }
+            // optional .Odb.Lib.Protobuf.ToolsFile toolFile = 6;
+            if (cached_has_bits & 0x00000020u) {
+              total_size += 1 +
+                            ::google::protobuf::internal::WireFormatLite::MessageSize(*this_._impl_.toolfile_);
+            }
           }
           return this_.MaybeComputeUnknownFieldsSize(total_size,
                                                      &this_._impl_._cached_size_);
@@ -490,7 +527,7 @@ void LayerDirectory::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::
   (void) cached_has_bits;
 
   cached_has_bits = from._impl_._has_bits_[0];
-  if (cached_has_bits & 0x0000001fu) {
+  if (cached_has_bits & 0x0000003fu) {
     if (cached_has_bits & 0x00000001u) {
       _this->_internal_set_name(from._internal_name());
     }
@@ -524,6 +561,15 @@ void LayerDirectory::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::
         _this->_impl_.featurefile_->MergeFrom(*from._impl_.featurefile_);
       }
     }
+    if (cached_has_bits & 0x00000020u) {
+      ABSL_DCHECK(from._impl_.toolfile_ != nullptr);
+      if (_this->_impl_.toolfile_ == nullptr) {
+        _this->_impl_.toolfile_ =
+            ::google::protobuf::Message::CopyConstruct<::Odb::Lib::Protobuf::ToolsFile>(arena, *from._impl_.toolfile_);
+      } else {
+        _this->_impl_.toolfile_->MergeFrom(*from._impl_.toolfile_);
+      }
+    }
   }
   _this->_impl_._has_bits_[0] |= cached_has_bits;
   _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
@@ -546,8 +592,8 @@ void LayerDirectory::InternalSwap(LayerDirectory* PROTOBUF_RESTRICT other) {
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.name_, &other->_impl_.name_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.path_, &other->_impl_.path_, arena);
   ::google::protobuf::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(LayerDirectory, _impl_.featurefile_)
-      + sizeof(LayerDirectory::_impl_.featurefile_)
+      PROTOBUF_FIELD_OFFSET(LayerDirectory, _impl_.toolfile_)
+      + sizeof(LayerDirectory::_impl_.toolfile_)
       - PROTOBUF_FIELD_OFFSET(LayerDirectory, _impl_.components_)>(
           reinterpret_cast<char*>(&_impl_.components_),
           reinterpret_cast<char*>(&other->_impl_.components_));
