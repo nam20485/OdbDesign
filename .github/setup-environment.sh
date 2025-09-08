@@ -271,21 +271,31 @@ else
 	npm install -g --no-audit --no-fund firebase-tools @angular/cli create-react-app typescript eslint prettier cdktf-cli
 fi
 
-echo "[14/14] Ensuring .NET 10 Preview SDK and workloads (wasm-tools)"
-# If dotnet missing or major version < 10, install via dotnet-install script
+-echo "[14/14] Ensuring .NET 9 SDK and workloads (wasm-tools)"
+-# If dotnet missing or major version < 9, install via dotnet-install script
++echo "[14/14] Ensuring .NET 9 SDK and workloads (wasm-tools)"
++# If dotnet missing or major version < 9, install via dotnet-install script
 if command -v dotnet >/dev/null 2>&1; then
 	DOTNET_VER=$(dotnet --version || echo "0")
 else
 	DOTNET_VER="0"
 fi
-if ! echo "$DOTNET_VER" | grep -q '^10\.'; then
-	# Allow override via env:
-	#   DOTNET_VERSION_PIN: exact SDK version (e.g., 10.0.100-preview.7.XXXXX)
-	#   DOTNET_CHANNEL: channel family (default 10.0)
-	#   DOTNET_QUALITY: desired quality (default preview)
-	DOTNET_CHANNEL_VAL="${DOTNET_CHANNEL:-10.0}"
-	DOTNET_QUALITY_VAL="${DOTNET_QUALITY:-preview}"
-	echo "Installing .NET ${DOTNET_CHANNEL_VAL} (${DOTNET_QUALITY_VAL}) SDK locally (dotnet-install script)"
+-if ! echo "$DOTNET_VER" | grep -q '^9\.'; then
+-    # Allow override via env:
+-    #   DOTNET_VERSION_PIN: exact SDK version (e.g., 9.0.102)
+-    #   DOTNET_CHANNEL: channel family (default 9.0)
+-    #   DOTNET_QUALITY: desired quality (default GA)
+-    DOTNET_CHANNEL_VAL="${DOTNET_CHANNEL:-9.0}"
+-    DOTNET_QUALITY_VAL="${DOTNET_QUALITY:-GA}"
+-    echo "Installing .NET ${DOTNET_CHANNEL_VAL} (${DOTNET_QUALITY_VAL}) SDK locally (dotnet-install script)"
++if ! echo "$DOTNET_VER" | grep -q '^9\.'; then
++    # Allow override via env:
++    #   DOTNET_VERSION_PIN: exact SDK version (e.g., 9.0.102)
++    #   DOTNET_CHANNEL: channel family (default 9.0)
++    #   DOTNET_QUALITY: desired quality (default GA)
++    DOTNET_CHANNEL_VAL="${DOTNET_CHANNEL:-9.0}"
++    DOTNET_QUALITY_VAL="${DOTNET_QUALITY:-GA}"
++    echo "Installing .NET ${DOTNET_CHANNEL_VAL} (${DOTNET_QUALITY_VAL}) SDK locally (dotnet-install script)"
 	curl -sSL https://dot.net/v1/dotnet-install.sh -o /tmp/dotnet-install.sh
 	if [ -n "${DOTNET_VERSION_PIN:-}" ]; then
 		bash /tmp/dotnet-install.sh --version "$DOTNET_VERSION_PIN" --install-dir "$HOME/.dotnet" --no-path

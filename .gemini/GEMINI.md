@@ -24,7 +24,7 @@
 [ai-core-instructions.md](https://github.com/nam20485/agent-instructions/blob/main/ai_instruction_modules/ai-core-instructions.md)
 
 ## Local AI Instructions (**REQUIRED**)
-Local AI instruction moduule files are located in the [local_ai_instruction_modules](../local_ai_instruction_modules) directory.
+Local AI instruction module files are located in the [local_ai_instruction_modules](../local_ai_instruction_modules) directory.
 
 ## Dynamic Workflow Orchestration (**REQUIRED**)
 Agents MUST resolve dynamic workflows from the remote canonical repository. Do not use local mirrors.
@@ -35,7 +35,7 @@ Agents MUST resolve workflow assignments (by shortId) from the remote canonical 
 [ai-workflow-assignments.md](../local_ai_instruction_modules/ai-workflow-assignments.md)
 
 ## Terminal Commands (Optional)
-Read before running any terminal commands, of if you need Github CL.I
+Read before running any terminal commands, or if you need GitHub CLI.
 - [ai-terminal-commands.md](../local_ai_instruction_modules/ai-terminal-commands.md)
 
 ## Tools & Automation Protocol (REQUIRED)
@@ -80,7 +80,7 @@ To translate a GitHub UI URL to a RAW URL, replace `https://github.com/` with `h
 
 *https://github.com/nam20485/agent-instructions/blob/main/<file-path> --> https://raw.githubusercontent.com/nam20485/agent-instructions/main/<file-path>*
 
-For example, the followingGitHub UI URL: https://github.com/nam20485/agent-instructions/blob/main/ai_instruction_modules/ai-core-instructions.md 
+For example, the following GitHub UI URL: https://github.com/nam20485/agent-instructions/blob/main/ai_instruction_modules/ai-core-instructions.md 
 
 is translated to the following RAW URL: https://raw.githubusercontent.com/nam20485/agent-instructions/main/ai_instruction_modules/ai-core-instructions.md
 

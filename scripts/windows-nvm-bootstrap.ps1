@@ -110,7 +110,7 @@ if (-not (Set-NvmOnPath)) {
   }
 }
 
-if (-not (Ensure-NvmOnPath)) {
+if (-not (Set-NvmOnPath)) {
   Write-Host '==[bootstrap]== Falling back to portable nvm-noinstall.zip'
   Install-Nvm-PortableFallback
   Set-NvmOnPath | Out-Null
