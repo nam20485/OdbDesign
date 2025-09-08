@@ -1,5 +1,4 @@
-{
-    //"sonarlint.pathToCompileCommands": "${workspaceFolder}\\out\\build\\x64-debug\\compile_commands.json",
+{    
     "sonarlint.pathToCompileCommands": "${config:cmake.buildDirectory}/compile_commands.json",
     "sonarlint.connectedMode.project": {
         "connectionId": "nam20485",
