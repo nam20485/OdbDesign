@@ -34,24 +34,40 @@
         "value": "x64",
         "strategy": "external"
       },
+      "toolset": {
+        "value": "host=x64",
+        "strategy": "external"
+      },
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug"
       }
-    },    
+    },
     {
       "name": "x64-release",
-      "displayName": "x64 Release",
-      "inherits": "x64-debug",
+      "displayName": "x64 release",
+      "inherits": "windows-base",
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
+      "toolset": {
+        "value": "host=x64",
+        "strategy": "external"
+      },
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
       }
-    },   
+    },
     {
       "name": "x86-debug",
       "displayName": "x86 Debug",
       "inherits": "windows-base",
       "architecture": {
         "value": "x86",
+        "strategy": "external"
+      },
+      "toolset": {
+        "value": "host=x86",
         "strategy": "external"
       },
       "cacheVariables": {
@@ -61,7 +77,15 @@
     {
       "name": "x86-release",
       "displayName": "x86 Release",
-      "inherits": "x86-debug",
+      "inherits": "windows-base",
+      "architecture": {
+        "value": "x86",
+        "strategy": "external"
+      },
+      "toolset": {
+        "value": "host=x86",
+        "strategy": "external"
+      },
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
       }
@@ -72,7 +96,7 @@
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/out/build/${presetName}",
       "installDir": "${sourceDir}/out/install/${presetName}",
-      "cacheVariables": {        
+      "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": {
           "value": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
           "type": "FILEPATH"
@@ -97,36 +121,36 @@
       "displayName": "Linux Debug",
       "inherits": "linux-base",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"       
-      }   
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
     },
     {
       "name": "linux-release",
       "displayName": "Linux Release",
       "inherits": "linux-base",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"      
-      }     
-    },    
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
     {
       "name": "linux-mingw-w64-debug",
-      "displayName": "Linux MinGW-w64 Debug",  
-      "inherits": "linux-debug",   
+      "displayName": "Linux MinGW-w64 Debug",
+      "inherits": "linux-debug",
       "cacheVariables": {
         "CMAKE_C_COMPILER": "x86_64-w64-mingw32-gcc",
         "CMAKE_CXX_COMPILER": "x86_64-w64-mingw32-g++",
-        "CMAKE_CXX_FLAGS": "-static-libgcc -static-libstdc++"    
-      }     
+        "CMAKE_CXX_FLAGS": "-static-libgcc -static-libstdc++"
+      }
     },
     {
       "name": "linux-mingw-w64-release",
       "displayName": "Linux MinGW-w64 Release",
-      "inherits": "linux-release",      
-      "cacheVariables": {        
+      "inherits": "linux-release",
+      "cacheVariables": {
         "CMAKE_C_COMPILER": "x86_64-w64-mingw32-gcc",
         "CMAKE_CXX_COMPILER": "x86_64-w64-mingw32-g++",
-        "CMAKE_CXX_FLAGS": "-static-libgcc -static-libstdc++"      
-      }     
+        "CMAKE_CXX_FLAGS": "-static-libgcc -static-libstdc++"
+      }
     },
     {
       "name": "macos-base",
@@ -160,7 +184,7 @@
       "inherits": "macos-base",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug"
-      }     
+      }
     },
     {
       "name": "macos-release",
@@ -168,7 +192,7 @@
       "inherits": "macos-base",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
-      }      
+      }
     }
   ],
   "buildPresets": [
@@ -197,7 +221,7 @@
       "configurePreset": "x64-release",
       "configuration": "Release",
       "description": "Build Windows x64 Release"
-    },    
+    },
     {
       "name": "x86-debug",
       "displayName": "x86 Debug",
@@ -205,7 +229,7 @@
       "configurePreset": "x86-debug",
       "cleanFirst": false,
       "configuration": "Debug",
-      "description": "Build Windows x86 Debug" 
+      "description": "Build Windows x86 Debug"
     },
     {
       "name": "x86-release",
@@ -215,8 +239,7 @@
       "cleanFirst": false,
       "configuration": "Release",
       "description": "Build Windows x86 Release"
-
-    },    
+    },
     {
       "name": "linux-base",
       "hidden": true,
@@ -243,7 +266,7 @@
       "cleanFirst": false,
       "configuration": "Release",
       "description": "Build Linux Release"
-    },   
+    },
     {
       "name": "linux-mingw-w64-base",
       "hidden": true,
@@ -295,7 +318,7 @@
         "type": "equals",
         "lhs": "${hostSystemName}",
         "rhs": "Windows"
-      }     
+      }
     },
     {
       "name": "x64-debug",
@@ -320,7 +343,7 @@
       "displayName": "Test x86-Release",
       "inherits": "windows-base",
       "configurePreset": "x86-release"
-    }, 
+    },
     {
       "name": "linux-base",
       "hidden": true,
@@ -328,7 +351,7 @@
         "type": "equals",
         "lhs": "${hostSystemName}",
         "rhs": "Linux"
-      }      
+      }
     },
     {
       "name": "linux-debug",
@@ -341,7 +364,7 @@
       "displayName": "Test Linux Release",
       "configurePreset": "linux-release",
       "inherits": "linux-base"
-    },   
+    },
     {
       "name": "linux-mingw-w64-base",
       "hidden": true,
