@@ -56,4 +56,3 @@ Agents MUST resolve dynamic workflows from the remote canonical repository. Do n
 - GitHub UI: [sample-minimal](https://github.com/nam20485/agent-instructions/blob/main/ai_instruction_modules/ai-workflow-assignments/dynamic-workflows/sample-minimal.md)
 - Raw URL:   [sample-minimal](https://raw.githubusercontent.com/nam20485/agent-instructions/main/ai_instruction_modules/ai-workflow-assignments/dynamic-workflows/sample-minimal.md)
 - Canonical file: `ai_instruction_modules/ai-workflow-assignments/dynamic-workflows/sample-minimal.md`
-
