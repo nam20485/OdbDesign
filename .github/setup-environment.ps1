@@ -10,24 +10,71 @@ Note: Some installers may require admin rights (winget/choco).
 !#>
 
 # -----------------------------------------------------------------------------
-# Environment variables specify versions to use
+# Version Pin Configuration (supports .env.tools overrides)
 # -----------------------------------------------------------------------------
-$NODE_VERSION_PIN = '22.18.0'
-$NPM_VERSION_PIN = '10.1.0'
-$PNPM_VERSION_PIN = '8.11.0'
-$YARN_VERSION_PIN = '3.6.0'
-$PLAYWRIGHT_CLI = '1.44.1'
-$PLAYWRIGHT_BROWSERS = 'chromium, firefox, webkit'
-$PWSH_VERSION = '7.4.6'
-$GCLOUD_SDK = '463.0.0'
-$GH_CLI = '2.37.0'
-$TERRAFORM = '1.6.15'
-$ANSIBLE = '8.9.0'
-$FIREBASE_TOOLS = '11.11.0'
-$CDKTF = '0.16.0'
-$DOTNET_VERSION_PIN = '9.0.102'
-$DOTNET_CHANNEL = '9.0'
-$DOTNET_QUALITY = ''
+<%
+Priority order for each version variable:
+  1. Explicit environment variable already set in the current session (e.g. $env:NODE_VERSION_PIN or $env:NODE_VERSION)
+  2. Entry found in repository root .env.tools (e.g. NODE_VERSION_PIN= or NODE_VERSION=)
+  3. Hard-coded default below
+
+Create a file named .env.tools at the repository root with lines like:
+  NODE_VERSION=22.18.0
+  PNPM_VERSION=9.9.0
+  DOTNET_VERSION=9.0.102
+This mirrors the behavior of the Linux setup script.
+%>
+
+$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$repoRoot  = Resolve-Path (Join-Path $scriptDir '..')
+$envToolsPath = Join-Path $repoRoot '.env.tools'
+
+$envToolsMap = @{}
+if (Test-Path -LiteralPath $envToolsPath) {
+    Write-Host "[env.tools] Loading version pins from $envToolsPath" -ForegroundColor Cyan
+    Get-Content -LiteralPath $envToolsPath | ForEach-Object {
+        $line = $_.Trim()
+        if (-not $line -or $line.StartsWith('#')) { return }
+        if ($line -match '^(?<k>[A-Za-z_][A-Za-z0-9_]*)=(?<v>.*)$') {
+            $k = $Matches.k.Trim()
+            $v = $Matches.v.Trim()
+            $envToolsMap[$k] = $v
+        }
+    }
+}
+
+function Resolve-VersionPin {
+    param(
+        [Parameter(Mandatory)][string[]]$Names,
+        [Parameter(Mandatory)][string]$Default
+    )
+    foreach ($n in $Names) {
+        $val = [Environment]::GetEnvironmentVariable($n,'Process')
+        if (-not [string]::IsNullOrWhiteSpace($val)) { return $val }
+        if ($envToolsMap.ContainsKey($n)) {
+            $fromFile = $envToolsMap[$n]
+            if (-not [string]::IsNullOrWhiteSpace($fromFile)) { return $fromFile }
+        }
+    }
+    return $Default
+}
+
+$NODE_VERSION_PIN    = Resolve-VersionPin -Names @('NODE_VERSION_PIN','NODE_VERSION') -Default '22.18.0'
+$NPM_VERSION_PIN     = Resolve-VersionPin -Names @('NPM_VERSION_PIN','NPM_VERSION') -Default '10.1.0'
+$PNPM_VERSION_PIN    = Resolve-VersionPin -Names @('PNPM_VERSION_PIN','PNPM_VERSION') -Default '8.11.0'
+$YARN_VERSION_PIN    = Resolve-VersionPin -Names @('YARN_VERSION_PIN','YARN_VERSION') -Default '3.6.0'
+$PLAYWRIGHT_CLI      = Resolve-VersionPin -Names @('PLAYWRIGHT_CLI','PLAYWRIGHT_VERSION') -Default '1.44.1'
+$PLAYWRIGHT_BROWSERS = Resolve-VersionPin -Names @('PLAYWRIGHT_BROWSERS') -Default 'chromium, firefox, webkit'
+$PWSH_VERSION        = Resolve-VersionPin -Names @('PWSH_VERSION') -Default '7.4.6'
+$GCLOUD_SDK          = Resolve-VersionPin -Names @('GCLOUD_SDK') -Default '463.0.0'
+$GH_CLI              = Resolve-VersionPin -Names @('GH_CLI') -Default '2.37.0'
+$TERRAFORM           = Resolve-VersionPin -Names @('TERRAFORM_VERSION','TERRAFORM') -Default '1.6.15'
+$ANSIBLE             = Resolve-VersionPin -Names @('ANSIBLE_VERSION','ANSIBLE') -Default '8.9.0'
+$FIREBASE_TOOLS      = Resolve-VersionPin -Names @('FIREBASE_TOOLS_VERSION','FIREBASE_TOOLS') -Default '11.11.0'
+$CDKTF               = Resolve-VersionPin -Names @('CDKTF_VERSION','CDKTF') -Default '0.16.0'
+$DOTNET_VERSION_PIN  = Resolve-VersionPin -Names @('DOTNET_VERSION_PIN','DOTNET_VERSION') -Default '9.0.102'
+$DOTNET_CHANNEL      = Resolve-VersionPin -Names @('DOTNET_CHANNEL') -Default '9.0'
+$DOTNET_QUALITY      = Resolve-VersionPin -Names @('DOTNET_QUALITY') -Default ''
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
