@@ -85,7 +85,7 @@ Watching GitHub Actions (avoid Simple Browser)
 Some sites (including GitHub) block embedding in webviews/iframes using security headers (X-Frame-Options/CSP). In VS Code’s Simple Browser this often appears as a blank white page. Instead, use one of these approaches to monitor runs:
 
 1) External browser (most reliable)
-	 - Open: https://github.com/nam20485/agent-instructions/actions
+	 - Open: https://github.com/nam20485/OdbDesign/actions
 
 2) GitHub Actions extension (inside VS Code)
 	 - Install the “GitHub Actions” extension by GitHub.
@@ -94,20 +94,20 @@ Some sites (including GitHub) block embedding in webviews/iframes using security
 3) GitHub CLI (terminal; live tail when in progress)
 	 - List recent runs:
 		 ```powershell
-		 gh run list --repo nam20485/agent-instructions --limit 10
+		 gh run list --repo nam20485/OdbDesign --limit 10
 		 ```
 	 - Watch the latest in-progress run (exits if none running):
 		 ```powershell
-		 gh run watch --repo nam20485/agent-instructions --exit-status
+		 gh run watch --repo nam20485/OdbDesign --exit-status
 		 ```
 	 - Watch a specific run and stream a particular job’s logs:
 		 ```powershell
-		 gh run view <run-id> --repo nam20485/agent-instructions
-		 gh run watch <run-id> --repo nam20485/agent-instructions --job "<job-name-or-id>" --exit-status
+		 gh run view <run-id> --repo nam20485/OdbDesign
+		 gh run watch <run-id> --repo nam20485/OdbDesign --job "<job-name-or-id>" --exit-status
 		 ```
 	 - Open a run in your default browser:
 		 ```powershell
-		 gh run view <run-id> --repo nam20485/agent-instructions --web
+		 gh run view <run-id> --repo nam20485/OdbDesign --web
 		 ```
 
 Notes

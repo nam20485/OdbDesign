@@ -6,23 +6,35 @@ set -euo pipefail
 
 # -----------------------------------------------------------------------------
 # Environment variables specify versions to use
+# Will first source a repo-root .env.tools file if present for deterministic pinning.
+# Variables already set in the environment are respected (do not overwrite).
 # -----------------------------------------------------------------------------
-export NODE_VERSION_PIN=22.18.0
-export NPM_VERSION_PIN=10.1.0
-export PNPM_VERSION_PIN=8.11.0
-export YARN_VERSION_PIN=3.6.0
-export PLAYWRIGHT_CLI=1.44.1
-export PLAYWRIGHT_BROWSERS=chromium,firefox,webkit
-export PWSH_VERSION=7.4.6
-export GCLOUD_SDK=463.0.0
-export GH_CLI=2.37.0
-export TERRAFORM=1.6.15
-export ANSIBLE=8.9.0
-export FIREBASE_TOOLS=11.11.0
-export CDKTF=0.16.0
-export DOTNET_VERSION_PIN=9.0.102
-export DOTNET_CHANNEL=9.0
-export DOTNET_QUALITY=GA
+if [ -f .env.tools ]; then
+	echo "Loading version pins from .env.tools"
+	# shellcheck disable=SC2046
+	set -a
+	# Support simple KEY=VALUE lines ignoring comments
+	# shellcheck disable=SC1091,SC1090
+	. <(grep -E '^[A-Za-z_][A-Za-z0-9_]*=' .env.tools | sed 's/\r$//')
+	set +a
+fi
+
+: "${NODE_VERSION_PIN:=22.18.0}"; export NODE_VERSION_PIN
+: "${NPM_VERSION_PIN:=10.1.0}"; export NPM_VERSION_PIN
+: "${PNPM_VERSION_PIN:=8.11.0}"; export PNPM_VERSION_PIN
+: "${YARN_VERSION_PIN:=3.6.0}"; export YARN_VERSION_PIN
+: "${PLAYWRIGHT_CLI:=1.44.1}"; export PLAYWRIGHT_CLI
+: "${PLAYWRIGHT_BROWSERS:=chromium,firefox,webkit}"; export PLAYWRIGHT_BROWSERS
+: "${PWSH_VERSION:=7.4.6}"; export PWSH_VERSION
+: "${GCLOUD_SDK:=463.0.0}"; export GCLOUD_SDK
+: "${GH_CLI:=2.37.0}"; export GH_CLI
+: "${TERRAFORM:=1.6.15}"; export TERRAFORM
+: "${ANSIBLE:=8.9.0}"; export ANSIBLE
+: "${FIREBASE_TOOLS:=11.11.0}"; export FIREBASE_TOOLS
+: "${CDKTF:=0.16.0}"; export CDKTF
+: "${DOTNET_VERSION_PIN:=9.0.102}"; export DOTNET_VERSION_PIN
+: "${DOTNET_CHANNEL:=9.0}"; export DOTNET_CHANNEL
+: "${DOTNET_QUALITY:=GA}"; export DOTNET_QUALITY
 
 
 echo "=== Starting environment setup (Dockerfile -> shell script) ==="
@@ -271,20 +283,20 @@ else
 	npm install -g --no-audit --no-fund firebase-tools @angular/cli create-react-app typescript eslint prettier cdktf-cli
 fi
 
-echo "[14/14] Ensuring .NET 10 Preview SDK and workloads (wasm-tools)"
-# If dotnet missing or major version < 10, install via dotnet-install script
+echo "[14/14] Ensuring .NET 9 SDK and workloads (wasm-tools)"
+# If dotnet missing or major version < 9, install via dotnet-install script
 if command -v dotnet >/dev/null 2>&1; then
 	DOTNET_VER=$(dotnet --version || echo "0")
 else
 	DOTNET_VER="0"
 fi
-if ! echo "$DOTNET_VER" | grep -q '^10\.'; then
+if ! echo "$DOTNET_VER" | grep -q '^9\.'; then
 	# Allow override via env:
-	#   DOTNET_VERSION_PIN: exact SDK version (e.g., 10.0.100-preview.7.XXXXX)
-	#   DOTNET_CHANNEL: channel family (default 10.0)
-	#   DOTNET_QUALITY: desired quality (default preview)
-	DOTNET_CHANNEL_VAL="${DOTNET_CHANNEL:-10.0}"
-	DOTNET_QUALITY_VAL="${DOTNET_QUALITY:-preview}"
+	#   DOTNET_VERSION_PIN: exact SDK version (e.g., 9.0.102)
+	#   DOTNET_CHANNEL: channel family (default 9.0)
+	#   DOTNET_QUALITY: desired quality (default GA)
+	DOTNET_CHANNEL_VAL="${DOTNET_CHANNEL:-9.0}"
+	DOTNET_QUALITY_VAL="${DOTNET_QUALITY:-GA}"
 	echo "Installing .NET ${DOTNET_CHANNEL_VAL} (${DOTNET_QUALITY_VAL}) SDK locally (dotnet-install script)"
 	curl -sSL https://dot.net/v1/dotnet-install.sh -o /tmp/dotnet-install.sh
 	if [ -n "${DOTNET_VERSION_PIN:-}" ]; then
