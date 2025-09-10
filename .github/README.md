@@ -47,19 +47,6 @@ nvm use
 - For permission errors on Linux run the script with sudo (the script auto-uses `sudo` when available for system package installs).
 - On Windows use `scripts/setup-environment.ps1` with an elevated PowerShell session when necessary.
 
-Using `.env.tools` (repo-level pins)
------------------------------------
-
-The repository supports a canonical `.env.tools` file at the repo root that contains exact, patch-level pins for tools used by the setup scripts. The setup scripts will load this file early and export the variables so installs are deterministic.
-
-Examples of keys the scripts look for:
-- `NODE_VERSION_PIN` — exact Node.js version (e.g., `22.18.0`)
-- `NPM_VERSION_PIN` — optional exact npm version
-- `PNPM_VERSION_PIN`, `YARN_VERSION_PIN` — versions Corepack will prepare
-- `DOTNET_VERSION_PIN`, `DOTNET_CHANNEL`, `DOTNET_QUALITY` — for `dotnet-install` behavior
-
-You can either commit a canonical `.env.tools` file (recommended for reproducibility) or commit `.env.tools.example` and have developers copy it to `.env.tools` locally. See the repo root `.env.tools` for the current pinned values.
-
 Why is `uv` marked optional?
 --------------------------------
 The `uv` tool (https://astral.sh/uv/) is a small Python-based helper/dependency manager the scripts may install into the user's local bin. It's marked optional for a few reasons:
