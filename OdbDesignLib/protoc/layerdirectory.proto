@@ -6,6 +6,7 @@ syntax = "proto3";
 import "componentsfile.proto";
 import "attrlistfile.proto";
 import "featuresfile.proto";
+import "toolsfile.proto";
 
 package Odb.Lib.Protobuf;
 
@@ -21,5 +22,6 @@ message LayerDirectory  {
     optional ComponentsFile components = 3;
     optional AttrListFile attrlistFile = 4;
     optional FeaturesFile featureFile = 5;
+	optional ToolsFile toolFile = 6;
 
 } 

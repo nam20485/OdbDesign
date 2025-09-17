@@ -11,6 +11,10 @@ set(CXX_STANDARD ${MY_CXX_STANDARD})
 set(CMAKE_CXX_STANDARD ${MY_CXX_STANDARD})
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+# enable compilation database for SonarQube analysis
+# See: https://docs.sonarsource.com/sonarqube-for-ide/vs-code/getting-started/running-an-analysis/#generate-a-compilation-database
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # only use ccache locally, i.e. not in CI
 #if (NOT DEFINED ENV{CI})
     set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_EXE}")

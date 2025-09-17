@@ -5,7 +5,7 @@ Full repo URL: https://github.com/nam20485/agent-instructions
 Branch: main
 Directory: ai_instruction_modules/ai-workflow-assignments/
 
-Listed beklow are all of the active workflow assignments and their paths.
+Listed below are all of the active workflow assignments and their paths.
 
 Agents MUST resolve workflow assignments (by shortId) from the remote canonical repository. Do not use local mirrors.
 
@@ -136,4 +136,3 @@ Agents MUST resolve workflow assignments (by shortId) from the remote canonical 
 - GitHub UI: [validate-dynamic-workflow-script](https://github.com/nam20485/agent-instructions/blob/main/ai_instruction_modules/ai-workflow-assignments/validate-dynamic-workflow-script.md)
 - Raw URL:   [validate-dynamic-workflow-script](https://raw.githubusercontent.com/nam20485/agent-instructions/main/ai_instruction_modules/ai-workflow-assignments/validate-dynamic-workflow-script.md)
 - Canonical file: `ai_instruction_modules/ai-workflow-assignments/validate-dynamic-workflow-script.md`
-
