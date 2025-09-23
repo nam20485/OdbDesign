@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package Odb.Lib.Protobuf;
+
+//
+//  ToolsFile.h
+//
+
+message ToolsFile {
+
+    message ToolsRecord {
+
+        enum Type {
+            Plated   = 0;
+            NonPlated = 1;
+            Via      = 2;
+        }
+
+        enum Type2 {
+            Standard = 0;
+            PressFit = 1;
+            Photo    = 2;
+            Laser    = 3;
+        }
+
+        uint32 tool_num    = 1;
+        Type type          = 2;
+        Type2 type2        = 3;
+        double min_tol     = 4;
+        double max_tol     = 5;
+        string drill_bit   = 6;
+        double finish_size = 7;
+        double drill_size  = 8;
+		
+    }
+
+    string directory   = 1;
+    string path        = 2;
+    string units       = 3;
+    double thickness   = 4;
+    string user_params = 5;
+
+    map<uint32, ToolsRecord> tools = 6;
+}
