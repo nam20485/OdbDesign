@@ -34,11 +34,16 @@
 			"type": "stdio"
 		},
 		"gemini-cli": {
-			"command": "npx",
+			"command": "cmd",
 			"args": [
+				"/c",
+				"npx",
 				"-y",
 				"gemini-mcp-tool"
 			],
+			"env": {
+				"PATH": "${env:PATH};C:\\nvm4w\\nodejs;C:\\Users\\nmill\\AppData\\Local\\nvm\\v22.18.0"
+			},
 			"type": "stdio"
 		},
 		"notion": {
