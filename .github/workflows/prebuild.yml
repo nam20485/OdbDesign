@@ -1,0 +1,47 @@
+---
+name: Pre-build dev container image
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - development
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: nam20485/agent-instructions-devcontainer
+  VERSION_IMAGE_TAG: "${{ vars.VERSION_PREFIX }}.${{ github.run_number }}"
+
+jobs:
+  prebuild:
+    permissions:
+      contents: read
+      packages: write
+      id-token: write     
+      attestations: write
+
+    runs-on: ubuntu-22.04
+    # only build the prebuild in agent-instructions repo
+    if: github.repository == 'nam20485/agent-instructions' 
+    steps:
+        
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pre-build dev container image
+        uses: devcontainers/ci@8bf61b26e9c3a98f69cb6ce2f88d24ff59b785c6
+        id: prebuild        
+        with:
+          subFolder: .github
+          imageName: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}          
+          cacheFrom: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          imageTag: latest, ${{ env.VERSION_IMAGE_TAG }}
+          push: always
