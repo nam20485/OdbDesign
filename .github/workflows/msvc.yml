@@ -1,0 +1,155 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+#
+# Find more information at:
+# https://github.com/microsoft/msvc-code-analysis-action
+
+name: Microsoft C++ Code Analysis
+
+on:
+  push:
+    branches: [ "development" ]
+  pull_request:
+    branches: [ "development" ]
+  schedule:
+    - cron: '18 18 * * 0'
+
+permissions:
+  contents: read
+
+env:
+  VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+  VCPKG_BINARY_SOURCES: 'clear;x-gha,readwrite'
+  # support for GH dependency graph vcpkg integration
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  VCPKG_FEATURE_FLAGS: dependencygraph
+
+jobs:
+  analyze:
+    name: MSVC-Code-Analysis
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read # for actions/checkout to fetch code
+      security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
+      actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
+      checks: write
+
+    strategy:
+      # Set fail-fast to false to ensure that feedback is delivered for all matrix combinations. Consider changing this to true when your workflow is stable.
+      fail-fast: false
+
+      matrix:
+        include:
+          # Windows x64 Release
+          - os: windows-2022
+            preset: x64-release
+          # Linux x64 Release          
+          - os: ubuntu-22.04
+            preset: linux-release
+          # MacOS x64 Release
+          - os: macos-14
+            preset: macos-release
+
+    steps:   
+    
+    - name: Harden Runner
+      uses: step-security/harden-runner@4d991eb9b905ef189e4c376166672c3f2f230481 # v2.11.0
+      with:
+        egress-policy: audit
+
+    - name: Checkout Repository
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+    
+    # add problem matchers by compiler
+    - name: Add Problem Matchers
+      uses: ammaraskar/msvc-problem-matcher@1ebcb382869bfdc2cc645e8a2a43b6d319ea1cc0 # master
+      if: matrix.os == 'windows-2022'
+    - name: Add Problem Matchers
+      uses: ammaraskar/gcc-problem-matcher@0f9c86f9e693db67dacf53986e1674de5f2e5f28 # master
+      if: matrix.os != 'windows-2022'
+    
+    - name: Install vcpkg Dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y -q --no-install-recommends build-essential tar curl zip unzip
+      if: matrix.os == 'ubuntu-22.04'
+
+    #
+    #   os != windows-2022 (i.e. Linux, MacOS)
+    #
+    - name: Install vcpkg
+      run: |               
+        git clone https://github.com/Microsoft/vcpkg.git ${{env.VCPKG_ROOT}}
+        "${{env.VCPKG_ROOT}}/bootstrap-vcpkg.sh"
+      # (Windows comes w/ vcpkg installed as part of VS)   
+      if: matrix.os != 'windows-2022'
+    
+    - name: Install Ninja    
+      uses: seanmiddleditch/gha-setup-ninja@8b297075da4cd2a5f1fd21fe011b499edf06e9d2 # master
+      if: matrix.os != 'windows-2022'
+
+    # Export vcpkg Cache Variables
+    - name : Export vcpkg Cache Variables
+      uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+      with:
+        script: |
+          core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+          core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+
+    #
+    #   os == windows-2022
+    #
+    - name: Setup VC Tools
+      uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
+      if: matrix.os == 'windows-2022'
+      
+    - name: Patch vcpkg
+      run: scripts/patch-vcpkg-install.ps1
+      if: matrix.os == 'windows-2022'
+    
+    - name: Manual vcpkg Install (Non-Windows)
+      run: "\"${{env.VCPKG_ROOT}}/vcpkg\" install"
+      if: matrix.os != 'windows-2022'
+
+    - name: Manual vcpkg Install (Windows)
+      run: "& \"${{env.VCPKG_ROOT}}/vcpkg\" install --triplet x64-windows"
+      if: matrix.os == 'windows-2022'
+    
+    #
+    #   CMake Build - All platforms
+    #   
+    - name: CMake Configure      
+      run: cmake --preset ${{matrix.preset}}    
+
+    - name: CMake Build          
+      run: cmake --build --preset ${{matrix.preset}}
+
+    #
+    #   MSVC Code Analysis - Windows only
+    #
+    - name: Initialize MSVC Code Analysis
+      uses: microsoft/msvc-code-analysis-action@04825f6d9e00f87422d6bf04e1a38b1f3ed60d99
+      # Provide a unique ID to access the sarif output path
+      id: run-analysis
+      if: matrix.os == 'windows-2022'
+      with:
+        cmakeBuildDirectory: ${{ github.workspace }}/out/build/${{matrix.preset}}
+        # Ruleset file that will determine what checks will be run
+        ruleset: NativeRecommendedRules.ruleset
+
+    # Upload SARIF file to GitHub Code Scanning Alerts
+    - name: Upload SARIF to GitHub
+      uses: github/codeql-action/upload-sarif@v3
+      if: matrix.os == 'windows-2022'
+      with:
+        sarif_file: ${{ steps.run-analysis.outputs.sarif }}
+
+    # Upload SARIF file as an Artifact to download and view
+    # - name: Upload SARIF as an Artifact
+    #   uses: actions/upload-artifact@v4
+    #   if: matrix.os == 'windows-2022'
+    #   with:
+    #     name: sarif-file
+    #     path: ${{ steps.run-analysis.outputs.sarif }}
