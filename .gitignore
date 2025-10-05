@@ -31,3 +31,4 @@ docs/api/
 perfertto-tracing-span-events-SQL.md
 node_modules/
 package-lock.json
+package.json
