@@ -1,0 +1,153 @@
+# For most projects, this workflow file will not need changing; you simply need
+# to commit it to your repository.
+#
+# You may wish to alter this file to override the set of languages analyzed,
+# or to provide custom queries or build logic.
+#
+# ******** NOTE ********
+# We have attempted to detect the languages in your repository. Please check
+# the `language` matrix defined below to confirm you have the correct set of
+# supported CodeQL languages.
+#
+name: "CodeQL Security Analysis"
+
+on:
+  push:
+    branches: [ "main", "development", "staging", "nam20485" ]
+    paths:
+      - "OdbDesignServer/**"
+      - "OdbDesignApp/**" 
+      - "OdbDesignLib/**"
+      - "Utils/**"
+      - "CMakeLists.txt"
+      - "vcpkg.json"
+      - ".github/workflows/codeql.yml"
+      - ".github/codeql-config.yml"
+  pull_request:
+    branches: [ "development", "staging", "main", "release", "nam20485" ]
+    paths:
+      - "OdbDesignServer/**"
+      - "OdbDesignApp/**" 
+      - "OdbDesignLib/**"
+      - "Utils/**"
+      - "CMakeLists.txt"
+      - "vcpkg.json"
+      - ".github/workflows/codeql.yml"
+      - ".github/codeql-config.yml"
+  schedule:
+    - cron: '0 6 * * 1'  # Weekly on Monday at 6 AM UTC
+  workflow_dispatch:  # Allow manual triggering
+
+env:
+  VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+  VCPKG_BINARY_SOURCES: 'clear;x-gha,readwrite'
+  # Optimize CodeQL analysis
+  CODEQL_EXTRACTOR_CPP_TRAP_CACHING: true
+  CODEQL_EXTRACTOR_CPP_TRAP_CACHING_DIR: ${{ github.workspace }}/.codeql-trap-cache
+    
+permissions:
+  actions: read
+  contents: read
+  security-events: write
+  pull-requests: write  # Allow writing security findings to PRs
+
+jobs:
+  analyze:
+    name: CodeQL-Analysis-${{ matrix.language }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 480  # 8 hours for comprehensive analysis
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+      pull-requests: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - language: 'c-cpp'
+            os: 'ubuntu-22.04'
+            preset: 'linux-release'          
+          # Uncomment to add Windows analysis
+          # - language: 'c-cpp'
+          #   os: 'windows-2022'
+          #   preset: 'x64-release'
+
+        steps:
+        - name: Harden Runner
+          uses: step-security/harden-runner@4d991eb9b905ef189e4c376166672c3f2f230481 # v2.11.0
+          with:
+            egress-policy: audit
+
+        - name: Checkout repository
+          uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+          with:
+            fetch-depth: 0  # Full history for better analysis
+
+        # Set up CodeQL trap caching for faster analysis
+        - name: Cache CodeQL TRAP files
+          uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
+          with:
+            path: ${{ env.CODEQL_EXTRACTOR_CPP_TRAP_CACHING_DIR }}
+            key: ${{ runner.os }}-codeql-trap-${{ github.sha }}
+            restore-keys: |
+              ${{ runner.os }}-codeql-trap-
+
+        # Initializes the CodeQL tools for scanning.
+        - name: Initialize CodeQL
+          uses: github/codeql-action/init@9e8d0789d4a0fa9ceb6b1738f7e269594bdd67f0 # v3.28.9
+          with:
+            languages: ${{ matrix.language }}
+            config-file: ${{ github.workspace }}/.github/codeql-config.yml
+            # Enable threading for faster analysis
+            threads: 0  # Use all available cores
+            # Add debug mode for troubleshooting (disable for production)
+            debug: false
+
+        - name: Install vcpkg
+          run: |
+            git clone --depth 1 https://github.com/Microsoft/vcpkg.git ${{env.VCPKG_ROOT}}
+            if [ "${{ matrix.os }}" = "ubuntu-22.04" ]; then
+              "${{env.VCPKG_ROOT}}/bootstrap-vcpkg.sh"
+            else
+              "${{env.VCPKG_ROOT}}/bootstrap-vcpkg.bat"
+            fi
+
+        - name: Install Ninja
+          uses: seanmiddleditch/gha-setup-ninja@8b297075da4cd2a5f1fd21fe011b499edf06e9d2 # master
+
+        # Export vcpkg Cache Variables
+        - name: Export vcpkg Cache Variables
+          uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+          with:
+            script: |
+              core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+              core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+
+        - name: vcpkg Install Dependencies
+          run: "\"${{env.VCPKG_ROOT}}/vcpkg\" install"
+
+        - name: CMake Configure
+          run: cmake --preset ${{ matrix.preset }}
+
+        - name: CMake Build
+          run: cmake --build --preset ${{ matrix.preset }}
+
+        - name: Perform CodeQL Analysis
+          uses: github/codeql-action/analyze@9e8d0789d4a0fa9ceb6b1738f7e269594bdd67f0 # v3.28.9
+          with:
+            category: "/language:${{matrix.language}}"
+            # Upload results even if there are no findings
+            upload: true
+            # Add more detailed output
+            output: sarif-results
+
+        # Upload SARIF file for security tab visibility
+        - name: Upload SARIF results
+          if: always()
+          uses: github/codeql-action/upload-sarif@9e8d0789d4a0fa9ceb6b1738f7e269594bdd67f0 # v3.28.9
+          with:
+            sarif_file: sarif-results/results.sarif
+
+

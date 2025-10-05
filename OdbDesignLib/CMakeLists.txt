@@ -20,6 +20,7 @@ add_library(OdbDesign SHARED
         "ProtoBuf/layerdirectory.pb.h" "ProtoBuf/layerdirectory.pb.cc" 
         "ProtoBuf/design.pb.h" "ProtoBuf/design.pb.cc"
         "ProtoBuf/matrixfile.pb.h" "ProtoBuf/matrixfile.pb.cc"
+        "ProtoBuf/color.pb.h" "ProtoBuf/color.pb.cc"
         "ProtoBuf/miscinfofile.pb.h" "ProtoBuf/miscinfofile.pb.cc"
         "ProtoBuf/standardfontsfile.pb.h" "ProtoBuf/standardfontsfile.pb.cc"
         "ProtoBuf/stepdirectory.pb.h" "ProtoBuf/stepdirectory.pb.cc"
@@ -37,7 +38,7 @@ add_library(OdbDesign SHARED
         "ProtoBuf/via.pb.h" "ProtoBuf/via.pb.cc"
         "ProtoBuf/package.pb.h" "ProtoBuf/package.pb.cc"
         "FileModel/parse_error.h"    "FileModel/parse_info.h" "FileModel/parse_info.cpp" "FileModel/parse_error.cpp" "FileModel/invalid_odb_error.h" "FileModel/invalid_odb_error.cpp" "ProtoBuf/common.pb.h" "ProtoBuf/common.pb.cc" "ProtoBuf/componentsfile.pb.h" "ProtoBuf/componentsfile.pb.cc" "FileModel/Design/PropertyRecord.h" "FileModel/Design/PropertyRecord.cpp" "FileModel/Design/FeaturesFile.h" "FileModel/Design/FeaturesFile.cpp" "FileModel/Design/ContourPolygon.h" "FileModel/Design/ContourPolygon.cpp" "FileModel/Design/SymbolName.h" "FileModel/Design/SymbolName.cpp" "FileModel/Design/SymbolsDirectory.h" "FileModel/Design/SymbolsDirectory.cpp" "FileModel/Design/StepHdrFile.h" "FileModel/Design/StepHdrFile.cpp" "FileModel/Design/AttributeLookupTable.h" "FileModel/Design/AttributeLookupTable.cpp"
- "App/RequestAuthenticationBase.h" "App/RequestAuthenticationBase.cpp" "App/BasicRequestAuthentication.h" "App/BasicRequestAuthentication.cpp" "FileModel/IStreamSaveable.h" )
+ "App/RequestAuthenticationBase.h" "App/RequestAuthenticationBase.cpp" "App/BasicRequestAuthentication.h" "App/BasicRequestAuthentication.cpp" "FileModel/IStreamSaveable.h"  "FileModel/Design/ToolsFile.cpp" "FileModel/Design/ToolsFile.h" "ProtoBuf/toolsfile.pb.cc" "ProtoBuf/toolsfile.pb.h")
 
 # disable warning C4250: inheritance by dominance
 target_compile_options(OdbDesign PUBLIC

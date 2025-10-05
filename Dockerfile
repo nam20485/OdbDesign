@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM debian:bookworm-20250113-slim@sha256:f70dc8d6a8b6a06824c92471a1a258030836b26b043881358b967bf73de7c5ab AS build
+FROM --platform=$BUILDPLATFORM debian:bookworm-20250811-slim@sha256:b1a741487078b369e78119849663d7f1a5341ef2768798f7b7406c4240f86aef AS build
 
 ARG OWNER=nam20485
 ARG GITHUB_TOKEN="PASSWORD"
@@ -69,13 +69,13 @@ RUN cmake --build --preset linux-release
 # RUN cmake --build --preset linux-debug
 
 # much smaller runtime image
-FROM --platform=$BUILDPLATFORM debian:bookworm-20250113-slim@sha256:f70dc8d6a8b6a06824c92471a1a258030836b26b043881358b967bf73de7c5ab AS run
+FROM --platform=$BUILDPLATFORM debian:bookworm-20250811-slim@sha256:b1a741487078b369e78119849663d7f1a5341ef2768798f7b7406c4240f86aef AS run
 # ARG ODBDESIGN_SERVER_REQUEST_USERNAME=""
 # ARG ODBDESIGN_SERVER_REQUEST_PASSWORD=""
 LABEL org.opencontainers.image.source=https://github.com/nam20485/OdbDesign \
       org.opencontainers.image.authors=https://github.com/nam20485 \
       org.opencontainers.image.description="A free open source cross-platform C++ library for parsing ODB++ Design archives and accessing their data. Exposed via a REST API packaged inside of a Docker image. The OdbDesign Docker image runs the OdbDesignServer REST API server executable, listening on port 8888." \
-      org.opencontainers.image.licenses=MIT \    
+      org.opencontainers.image.licenses=AGPL-3.0-only \    
       org.opencontainers.image.url=https://nam20485.github.io/OdbDesign \ 
       org.opencontainers.image.documentation=https://github.com/nam20485/OdbDesign?tab=readme-ov-file \
       org.opencontainers.image.title="OdbDesign Server"
@@ -105,6 +105,9 @@ COPY --from=build /src/OdbDesign/out/build/linux-release/Utils/*.so ./bin/
 COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignServer/OdbDesignServer ./bin/
 COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignServer/*.so ./bin/
 COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignTests/OdbDesignTests ./bin/
+# COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignApp/OdbDesignApp ./bin/
+# COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignApp/*.so ./bin/
+
 
 # copy templates directory
 RUN mkdir -p ./templates

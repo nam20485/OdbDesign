@@ -1095,7 +1095,7 @@ namespace Odb::App::Server
 
 	crow::response FileModelController::filemodels_list_route_handler(const crow::request& req)
 	{
-		return makeLoadedFileModelsResponse();
+		return makeLoadedFileModelsResponse(false);
 	}
 
 	crow::response FileModelController::misc_attrlist_route_handler(const std::string& designName, const crow::request& req)

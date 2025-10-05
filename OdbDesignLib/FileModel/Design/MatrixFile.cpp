@@ -83,23 +83,21 @@ namespace Odb::Lib::FileModel::Design
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
 
-                        if (token != StepRecord::RECORD_TOKEN)
+                        // any existing previous step record
+                        if (token != StepRecord::RECORD_TOKEN || pCurrentStepRecord != nullptr)
                         {
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
 
+                        // open a new STEP array record
+                        pCurrentStepRecord = std::make_shared<StepRecord>();
+
                         if (lineStream >> token)
                         {
-                            // open brace is at the end on the same line as the step array record open token
+                            // open brace is at the end on the same line
                             if (token == Constants::ARRAY_RECORD_OPEN_TOKEN)
                             {
                                 openBraceFound = true;
-
-                                // TODO: finish any existing previous step record
-                                // (same code as finding a close brace on an empty line)
-
-                                // open a new STEP array record
-                                pCurrentStepRecord = std::make_shared<StepRecord>();
                             }
                         }
                     }
@@ -111,23 +109,21 @@ namespace Odb::Lib::FileModel::Design
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
 
-                        if (token != LayerRecord::RECORD_TOKEN)
+                        // any existing previous layer record
+                        if (token != LayerRecord::RECORD_TOKEN || pCurrentLayerRecord != nullptr)
                         {
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
 
+                        // open a new LAYER array record
+                        pCurrentLayerRecord = std::make_shared<LayerRecord>();
+
                         if (lineStream >> token)
                         {
-                            // open brace is on same line as layer record open token
+                            // open brace is on same line
                             if (token == Constants::ARRAY_RECORD_OPEN_TOKEN)
                             {
                                 openBraceFound = true;
-
-                                // TODO: finish any existing previous layer or step record
-                                // (same code as finding a close brace on an empty line)
-
-                                // open a new LAYER array record
-                                pCurrentLayerRecord = std::make_shared<LayerRecord>();
                             }
                         }
                     }
@@ -501,9 +497,10 @@ namespace Odb::Lib::FileModel::Design
         pLayerRecordMessage->set_row(row);
         pLayerRecordMessage->set_startname(startName);
         pLayerRecordMessage->set_type(static_cast<Odb::Lib::Protobuf::MatrixFile::LayerRecord::Type>(type));
-        //pLayerRecordMessage->mutable_color()->set_r(color.r);
-        //pLayerRecordMessage->mutable_color()->set_g(color.g);
-        //pLayerRecordMessage->mutable_color()->set_b(color.b);
+        pLayerRecordMessage->mutable_color()->set_red(color.red);
+        pLayerRecordMessage->mutable_color()->set_green(color.green);
+        pLayerRecordMessage->mutable_color()->set_blue(color.blue);
+        pLayerRecordMessage->mutable_color()->set_nopreference(color.noPreference);
 
 
         return pLayerRecordMessage;
@@ -527,8 +524,9 @@ namespace Odb::Lib::FileModel::Design
 		row = message.row();
 		startName = message.startname();
 		type = static_cast<Type>(message.type());
-		//color.r = message.color().r();
-		//color.g = message.color().g();
-		//color.b = message.color().b();
+        color.red = message.color().red();
+        color.green = message.color().green();
+        color.blue = message.color().blue();
+        color.noPreference = message.color().nopreference();
     }   
 }

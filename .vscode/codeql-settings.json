@@ -1,0 +1,40 @@
+{
+  "name": "OdbDesign CodeQL Configuration",
+  "database": {
+    "languages": ["cpp"],
+    "sourceRoot": ".",
+    "buildCommand": "cmake --preset linux-release && cmake --build --preset linux-release"
+  },
+  "queries": {
+    "suites": [
+      ".github/codeql/cpp-queries/odbdesign-suite.qls",
+      "codeql/cpp-queries:Security",
+      "codeql/cpp-queries:Correctness"
+    ]
+  },
+  "analysis": {
+    "threads": 0,
+    "timeout": 0,
+    "trapCaching": true,
+    "trapCachingDir": ".codeql-trap-cache"
+  },
+  "paths": {
+    "include": [
+      "OdbDesignServer/**",
+      "OdbDesignApp/**",
+      "OdbDesignLib/**", 
+      "Utils/**"
+    ],
+    "exclude": [
+      "vcpkg/**",
+      "vcpkg_installed/**",
+      "out/**",
+      "build/**",
+      "**/CMakeFiles/**",
+      "**/_deps/**",
+      "**/*.pb.h",
+      "**/*.pb.cc",
+      "**/protoc/**"
+    ]
+  }
+}

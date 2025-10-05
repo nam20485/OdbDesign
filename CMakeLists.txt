@@ -11,6 +11,10 @@ set(CXX_STANDARD ${MY_CXX_STANDARD})
 set(CMAKE_CXX_STANDARD ${MY_CXX_STANDARD})
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+# enable compilation database for SonarQube analysis
+# See: https://docs.sonarsource.com/sonarqube-for-ide/vs-code/getting-started/running-an-analysis/#generate-a-compilation-database
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # only use ccache locally, i.e. not in CI
 #if (NOT DEFINED ENV{CI})
     set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_EXE}")
@@ -22,7 +26,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 include(FetchContent)
 FetchContent_Declare(
   googletest
-  URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
+  URL https://github.com/google/googletest/archive/refs/tags/v1.16.0.zip
+  #URL https://github.com/google/googletest/archive/refs/heads/main.zip
 )
 # For Windows: Prevent overriding the parent project's compiler/linker settings
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
