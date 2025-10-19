@@ -140,9 +140,6 @@ for (auto& layer : product.getLayers()) {
         }
     }
 }
-
-// Render to SVG
-auto svg = product.renderToSvg();
 ```
 
 ### REST API Endpoints
@@ -163,13 +160,6 @@ The OdbDesign server exposes a comprehensive REST API for remote access:
   - `GET /designs/{name}/symbols` - List symbols
   - `GET /designs/{name}/symbols/{symbol}/features` - Get symbol features
 
-- **Visualization:**
-  - `GET /designs/{name}/render` - Generate PNG/SVG visualizations
-  - Query parameters: `?format=svg&layer=top&highlight=nets`
-
-- **Export:**
-  - `POST /designs/{name}/export` - Export to Gerber, DXF, or other formats
-
 **API Usage Example:**
 ```bash
 # Upload ODB++ file
@@ -179,9 +169,6 @@ curl -X POST "http://localhost:8888/files/upload" \
 # Get layer features
 curl "http://localhost:8888/designs/design1/layers/comp_+_top/features"
 
-# Render design
-curl "http://localhost:8888/designs/design1/render?format=svg" -o design.svg
-```
 
 ## Practical Guidance for Development
 
