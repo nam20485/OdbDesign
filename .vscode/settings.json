@@ -1,4 +1,18 @@
-{    
+{
+    "editor.formatOnSave": true,
+    "editor.formatOnSaveMode": "file",
+    // Helpful file hygiene on save
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    // Prefer built-in/clang-format for C/C++ if available
+    "C_Cpp.formatting": "clangFormat",
+    "C_Cpp.clang_format_style": "file",
+    "C_Cpp.clang_format_fallbackStyle": "LLVM",
+    // Run lightweight code actions on save when supported by the language
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit",
+        "source.fixAll": "explicit"
+    },
     "sonarlint.pathToCompileCommands": "${config:cmake.buildDirectory}/compile_commands.json",
     "sonarlint.connectedMode.project": {
         "connectionId": "nam20485",
