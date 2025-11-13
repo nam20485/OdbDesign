@@ -10,7 +10,8 @@
         "zlib"
       ]
     },
-    "openssl"
+    "openssl",
+    "groc"
   ],
   "overrides": [
     {
@@ -32,6 +33,10 @@
     {
       "name": "zlib",
       "version": "1.3.1"
+    },
+    {
+      "name": "groc",
+      "version": "1.71.0"
     }
   ]
 }
