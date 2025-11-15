@@ -8,7 +8,7 @@
 #include "../../odbdesign_export.h"
 #include "../parse_error.h"
 #include "../../IProtoBuffable.h"
-#include "../../ProtoBuf/symbolname.pb.h"
+#include "symbolname.pb.h"
 
 // TODO: add SymbolName serialization
 
@@ -37,3 +37,4 @@ namespace Odb::Lib::FileModel::Design
 
 	};
 }
+

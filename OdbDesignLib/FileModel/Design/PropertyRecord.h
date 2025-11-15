@@ -4,9 +4,10 @@
 #include <vector>
 #include <map>
 #include <memory>
+
 #include "../../odbdesign_export.h"
 #include "../../IProtoBuffable.h"
-#include "../../ProtoBuf/common.pb.h"
+#include "common.pb.h"
 
 namespace Odb::Lib::FileModel::Design
 {
@@ -29,3 +30,4 @@ namespace Odb::Lib::FileModel::Design
 		void from_protobuf(const Odb::Lib::Protobuf::PropertyRecord& message) override;
 	};
 }
+

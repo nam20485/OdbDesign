@@ -1,7 +1,7 @@
 #include "Pin.h"
 #include <string>
 #include <memory>
-#include "../ProtoBuf/pin.pb.h"
+#include "pin.pb.h"
 
 namespace Odb::Lib::ProductModel
 {	

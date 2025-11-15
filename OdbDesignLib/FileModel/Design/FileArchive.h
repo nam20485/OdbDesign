@@ -10,7 +10,7 @@
 #include "StandardFontsFile.h"
 #include <filesystem>
 #include "../../IProtoBuffable.h"
-#include "../../ProtoBuf/filearchive.pb.h"
+#include "filearchive.pb.h"
 #include "SymbolsDirectory.h"
 #include "AttrListFile.h"
 #include "../ISaveable.h"
@@ -23,8 +23,8 @@ namespace Odb::Lib::FileModel::Design
 	{
 	public:	
 		FileArchive();
-		FileArchive(const std::string& path);
-		~FileArchive();
+		explicit FileArchive(const std::string& path);
+		~FileArchive() override;
 
 		std::string GetRootDir() const;
 		std::string GetProductName() const;
@@ -94,21 +94,21 @@ namespace Odb::Lib::FileModel::Design
 		};
 
 		// REQUIRED (spec pg. 23):
-		//• <product_model_name> / matrix / matrix
-		//• <product_model_name> / misc	  / info
-		//• <product_model_name> / fonts  / standard
-		//• <product_model_name> / steps  / <step_name> / stephdr
-		//• <product_model_name> / steps  / <step_name> / layers / <layer_name> / features(or features.Z)
+		//ï¿½ <product_model_name> / matrix / matrix
+		//ï¿½ <product_model_name> / misc	  / info
+		//ï¿½ <product_model_name> / fonts  / standard
+		//ï¿½ <product_model_name> / steps  / <step_name> / stephdr
+		//ï¿½ <product_model_name> / steps  / <step_name> / layers / <layer_name> / features(or features.Z)
 
-		//• The length of an entity name must not exceed 64 characters.
-		//• An entity name may contain only these characters :
+		//ï¿½ The length of an entity name must not exceed 64 characters.
+		//ï¿½ An entity name may contain only these characters :
 		//	o Lower case letters(a through z).
 		//	o Digits(0 through 9).
-		//	o Punctuation—dash(-), underscore(_), dot(.) and plus(+).
-		//• Entity names must not start with a dot(.), hyphen(-), or plus(+).
+		//	o Punctuationï¿½dash(-), underscore(_), dot(.) and plus(+).
+		//ï¿½ Entity names must not start with a dot(.), hyphen(-), or plus(+).
 		//	The exception is system attribute names, which start with a dot.Names of user - defined
 		//	attributes must not start with a dot.
-		//• Entity names must not end with a dot(.).
+		//ï¿½ Entity names must not end with a dot(.).
 
 		//The default units of measurement for the product model are as defined in the UNITS directive in
 		//the file misc / info of the product model.If the default is not defined for the product model, the
@@ -118,16 +118,17 @@ namespace Odb::Lib::FileModel::Design
 		// Attriubute Lookup Tables spec pg. 30
 		//
 		//Symbol Feature / symbols / <symbol_name> / features
-		//	“<symbol_name> / features (Symbol Features)” on page 97
+		//	ï¿½<symbol_name> / features (Symbol Features)ï¿½ on page 97
 
 		//Net / steps / <step_name> / eda / data
-		//	“eda / data(EDA Data)” on page 111
+		//	ï¿½eda / data(EDA Data)ï¿½ on page 111
 
 		//Feature / steps / <step_name> / layers / <layer_name> / features
-		//	“<layer_name> / features(Graphic Features)” on page 172
+		//	ï¿½<layer_name> / features(Graphic Features)ï¿½ on page 172
 
 		//Component / steps / <step_name> / layers / //<layer_name> / components
-		//	“<layer_name> / components (Components)” on page 155
+		//	ï¿½<layer_name> / components (Components)ï¿½ on page 155
 
 	};
 }
+

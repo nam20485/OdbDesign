@@ -11,7 +11,7 @@
 #include "RgbColor.h"
 #include "../../enums.h"
 #include "../../IProtoBuffable.h"
-#include "../../ProtoBuf/matrixfile.pb.h"
+#include "matrixfile.pb.h"
 #include "../IStreamSaveable.h"
 #include "EnumMap.h"
 #include <string>
@@ -216,3 +216,4 @@ namespace Odb::Lib::FileModel::Design
         };      
     };
 }
+

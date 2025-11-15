@@ -11,7 +11,7 @@
 #include "../parse_error.h"
 #include <Logger.h>
 #include "../invalid_odb_error.h"
-#include "../../ProtoBuf/enums.pb.h"
+#include "enums.pb.h"
 #include "../../enums.h"
 #include "../OdbFile.h"
 #include <memory>

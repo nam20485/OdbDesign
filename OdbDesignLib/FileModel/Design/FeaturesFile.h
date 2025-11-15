@@ -6,7 +6,7 @@
 #include <string>
 #include "../../enums.h"
 #include "../../IProtoBuffable.h"
-#include "../../ProtoBuf/featuresfile.pb.h"
+#include "featuresfile.pb.h"
 #include "SymbolName.h"
 #include "AttributeLookupTable.h"
 #include "../IStreamSaveable.h"
@@ -137,4 +137,5 @@ namespace Odb::Lib::FileModel::Design
 
 	};
 }
+
 
