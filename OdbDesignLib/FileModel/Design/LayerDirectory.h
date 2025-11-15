@@ -7,7 +7,7 @@
 #include "../../odbdesign_export.h"
 #include "ComponentsFile.h"
 #include "../../IProtoBuffable.h"
-#include "../../ProtoBuf/layerdirectory.pb.h"
+#include "layerdirectory.pb.h"
 #include "FeaturesFile.h"
 #include "AttrListFile.h"
 #include "ToolsFile.h"

@@ -11,7 +11,7 @@
 
 #include "../../odbdesign_export.h"
 #include "../../IProtoBuffable.h"
-#include "../../ProtoBuf/toolsfile.pb.h"
+#include "toolsfile.pb.h"
 #include "../IStreamSaveable.h"
 
 namespace Odb::Lib::FileModel::Design
@@ -119,4 +119,5 @@ namespace Odb::Lib::FileModel::Design
         inline static const char* USER_PARAMS_TOKEN = "USER_PARAMS";
     };
 }
+
 

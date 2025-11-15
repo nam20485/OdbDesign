@@ -5,7 +5,7 @@
 #include <vector>
 #include <map>
 #include <memory>
-#include "../ProtoBuf/pin.pb.h"
+#include "pin.pb.h"
 #include "../IProtoBuffable.h"	
 
 

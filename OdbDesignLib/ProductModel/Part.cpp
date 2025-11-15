@@ -1,6 +1,6 @@
 #include "Part.h"
 #include <string>
-#include "../ProtoBuf/part.pb.h"
+#include "part.pb.h"
 #include <memory>
 
 namespace Odb::Lib::ProductModel

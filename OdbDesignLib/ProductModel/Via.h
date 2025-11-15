@@ -6,7 +6,7 @@
 #include <map>
 #include <memory>
 #include "../enums.h"
-#include "../ProtoBuf/via.pb.h"
+#include "via.pb.h"
 #include "../IProtoBuffable.h"	
 
 

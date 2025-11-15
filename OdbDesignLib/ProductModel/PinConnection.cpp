@@ -3,7 +3,7 @@
 #include "Pin.h"
 #include "Component.h"
 #include <string>
-#include "../ProtoBuf/pinconnection.pb.h"
+#include "pinconnection.pb.h"
 
 
 namespace Odb::Lib::ProductModel

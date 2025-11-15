@@ -5,7 +5,7 @@
 #include "../../Constants.h"
 #include "../parse_error.h"
 #include "../invalid_odb_error.h"
-#include "../../ProtoBuf/enums.pb.h"
+#include "enums.pb.h"
 
 
 namespace Odb::Lib::FileModel::Design

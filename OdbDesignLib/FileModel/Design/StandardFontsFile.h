@@ -5,7 +5,7 @@
 #include "../../enums.h"
 #include <vector>
 #include "../../IProtoBuffable.h"
-#include "../../ProtoBuf/standardfontsfile.pb.h"
+#include "standardfontsfile.pb.h"
 #include "../IStreamSaveable.h"
 
 namespace Odb::Lib::FileModel::Design
@@ -67,3 +67,4 @@ namespace Odb::Lib::FileModel::Design
 		CharacterBlock::Vector m_characterBlocks;				
 	};
 }
+

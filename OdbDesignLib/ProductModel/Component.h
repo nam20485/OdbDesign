@@ -8,7 +8,7 @@
 #include "Package.h"
 #include "../enums.h"
 #include "Part.h"
-#include "../ProtoBuf/component.pb.h"
+#include "component.pb.h"
 #include "../IProtoBuffable.h"	
 
 
