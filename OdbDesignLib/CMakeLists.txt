@@ -13,7 +13,7 @@ add_library(OdbDesign SHARED
          "FileModel/Design/RgbColor.h" "FileModel/Design/RgbColor.cpp"
          "FileModel/Design/StandardFontsFile.h" "FileModel/Design/StandardFontsFile.cpp"
          "enums.h"
-         "App/OdbDesignArgs.h" "App/OdbDesignArgs.cpp"
+         "App/OdbDesignArgs.h" "App/OdbDesignArgs.cpp"       
         "FileModel/parse_error.h"    "FileModel/parse_info.h" "FileModel/parse_info.cpp" "FileModel/parse_error.cpp" "FileModel/invalid_odb_error.h" "FileModel/invalid_odb_error.cpp"  "FileModel/Design/PropertyRecord.h" "FileModel/Design/PropertyRecord.cpp" "FileModel/Design/FeaturesFile.h" "FileModel/Design/FeaturesFile.cpp" "FileModel/Design/ContourPolygon.h" "FileModel/Design/ContourPolygon.cpp" "FileModel/Design/SymbolName.h" "FileModel/Design/SymbolName.cpp" "FileModel/Design/SymbolsDirectory.h" "FileModel/Design/SymbolsDirectory.cpp" "FileModel/Design/StepHdrFile.h" "FileModel/Design/StepHdrFile.cpp" "FileModel/Design/AttributeLookupTable.h" "FileModel/Design/AttributeLookupTable.cpp"
         "App/RequestAuthenticationBase.h" "App/RequestAuthenticationBase.cpp" "App/BasicRequestAuthentication.h" "App/BasicRequestAuthentication.cpp" "FileModel/IStreamSaveable.h"  "FileModel/Design/ToolsFile.cpp")
 
@@ -54,9 +54,9 @@ target_compile_definitions(OdbDesign PUBLIC CROW_ENABLE_SSL)
 find_package(Crow CONFIG REQUIRED)
 target_link_libraries(OdbDesign PRIVATE Crow::Crow)
 
-# populate proto files to all files in ./protoc directory
+# populate proto files cmake variable to all .proto files in "./protoc" directory (excluding subdirectories)
 set(PROTO_DIR "${CMAKE_CURRENT_SOURCE_DIR}/protoc")
-file(GLOB PROTO_FILES "${PROTO_DIR}/*")
+file(GLOB PROTO_FILES "${PROTO_DIR}/*.proto")
 message(STATUS "Found proto files: ${PROTO_FILES}")
 
 # Link to Protobuf
@@ -71,7 +71,6 @@ protobuf_generate(
 )
 
 target_link_libraries(OdbDesign PUBLIC protobuf::libprotobuf)
-
 # mark the generated Protofbuf C++ files as generated
 set_source_files_properties(${PROTO_SRC} ${PROTO_HDRS} PROPERTIES GENERATED TRUE)
 # add the generated Protobuf C++ files to the target
@@ -81,8 +80,31 @@ target_sources(OdbDesign PRIVATE ${PROTO_SRCS} ${PROTO_HDRS})
 find_package(gRPC CONFIG REQUIRED)
 target_link_libraries(OdbDesign PRIVATE gRPC::gpr gRPC::grpc gRPC::grpc++ gRPC::grpc++_alts)
 
+# populate grpc proto files cmake variable to all .proto files in "./protoc/grpc" directory
+set(GRPC_PROTO_DIR "${PROTO_DIR}/grpc")
+file(GLOB GRPC_PROTO_FILES "${GRPC_PROTO_DIR}/*.proto")
+message(STATUS "Found grpc proto files: ${GRPC_PROTO_FILES}")
+
+# Generate protobuf messages for gRPC proto files
+protobuf_generate(
+    TARGET OdbDesign
+    PROTOS ${GRPC_PROTO_FILES}
+    IMPORT_DIRS ${PROTO_DIR}
+    EXPORT_MACRO ODBDESIGN_EXPORT
+)
+
+# Generate gRPC service stubs
+protobuf_generate(
+    TARGET OdbDesign
+    LANGUAGE grpc
+    GENERATE_EXTENSIONS .grpc.pb.h .grpc.pb.cc
+    PLUGIN "protoc-gen-grpc=$<TARGET_FILE:gRPC::grpc_cpp_plugin>"
+    PROTOS ${GRPC_PROTO_FILES}
+    IMPORT_DIRS ${PROTO_DIR}
+    EXPORT_MACRO ODBDESIGN_EXPORT
+)
+
 # workaround to remove error: "C++ command-line error: invalid macro definition: _CROW_ICD-NOTFOUND"
 # (see https://github.com/CrowCpp/Crow/issues/661#issuecomment-1702544225)
 list(REMOVE_ITEM _CROW_ICD "_CROW_ICD-NOTFOUND")
 set_target_properties(Crow::Crow PROPERTIES INTERFACE_COMPILE_DEFINITIONS "${_CROW_ICD}")
-
