@@ -86,9 +86,17 @@ message(STATUS "Found proto files: ${PROTO_FILES}")
 
 # Link to Protobuf
 find_package(Protobuf CONFIG REQUIRED)
-protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_FILES})
-#target_link_libraries(OdbDesign PUBLIC protobuf::libprotoc protobuf::libprotobuf protobuf::libprotobuf-lite)
+
+# Generate protobuf files with export macro
+protobuf_generate(
+    TARGET OdbDesign
+    PROTOS ${PROTO_FILES}
+    IMPORT_DIRS ${PROTO_DIR}
+    EXPORT_MACRO ODBDESIGN_EXPORT
+)
+
 target_link_libraries(OdbDesign PUBLIC protobuf::libprotobuf)
+
 # mark the generated Protofbuf C++ files as generated
 set_source_files_properties(${PROTO_SRC} ${PROTO_HDRS} PROPERTIES GENERATED TRUE)
 # add the generated Protobuf C++ files to the target
