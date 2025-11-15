@@ -13,6 +13,8 @@ add_executable(OdbDesignServer "main.cpp"   "Controllers/HelloWorldController.h"
 find_package(gRPC CONFIG REQUIRED)
 target_link_libraries(OdbDesignServer PUBLIC gRPC::grpc++)
 
+#find_package(grpc_cpp_plugin REQUIRED)
+
 # link to OdbDesign library
 target_link_libraries(OdbDesignServer PRIVATE OdbDesign)
 
