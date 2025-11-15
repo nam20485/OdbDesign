@@ -16,9 +16,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # only use ccache locally, i.e. not in CI
+# nm, looks like we re-en-disabled it. Apparently it can speed up CI builds too. (Not sure how since its first one-off single build  everytime, but maybe it can cache within a single build run)
 #if (NOT DEFINED ENV{CI})
     set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_EXE}")
 #endif()
+
+#set(CMAKE_COLOR_DIAGNOSTICS ON)
 
 #
 # GoogleTest support
