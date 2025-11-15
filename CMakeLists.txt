@@ -21,7 +21,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
     set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_EXE}")
 #endif()
 
-#set(CMAKE_COLOR_DIAGNOSTICS ON)
+set(CMAKE_COLOR_DIAGNOSTICS ON)
 
 #
 # GoogleTest support
@@ -35,10 +35,7 @@ FetchContent_Declare(
 # For Windows: Prevent overriding the parent project's compiler/linker settings
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
-
 enable_testing()
-
-find_package(gRPC REQUIRED)
 
 # Enable Hot Reload for MSVC compilers if supported.
 if (POLICY CMP0141)
