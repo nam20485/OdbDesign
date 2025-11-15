@@ -4,5 +4,31 @@
 			"path": "."
 		}
 	],
-	"settings": {}
+	"settings": {
+		"cmake.configureArgs": [
+			"-DVCPKG_APPLOCAL_DEPS=ON",
+			"-DX_VCPKG_APPLOCAL_DEPS_INSTALL=ON",
+			"-DVCPKG_TARGET_TRIPLET=x64-windows",
+			"-DVCPKG_MANIFEST_MODE=ON"
+		],
+		"vcpkg.general.enable": true,
+		"cmake.configureSettings": {
+			"CMAKE_TOOLCHAIN_FILE": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Professional\\VC\\vcpkg/scripts/buildsystems/vcpkg.cmake"
+		},
+		"vcpkg.target.installDependencies": true,
+		"vcpkg.target.preferSystemLibs": false,
+		"vcpkg.target.useManifest": true
+	},
+	"launch": {
+		"configurations": [
+			{
+				"type": "cmake",
+				"request": "launch",
+				"name": "Debug portfile(s)",
+				"cmakeDebugType": "external",
+				"pipeName": "\\\\.\\pipe\\vcpkg_ext_portfile_dbg",
+				"preLaunchTask": "Debug vcpkg commands"
+			}
+		]
+	}
 }
