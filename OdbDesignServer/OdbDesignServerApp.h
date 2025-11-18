@@ -17,6 +17,8 @@ namespace Odb::App::Server
 	protected:												
 		void add_controllers() override;
 
+		// Override to implement gRPC service
+		void RunGrpcServer(const std::string& server_address, std::shared_ptr<Odb::Lib::App::DesignCache> cache) override;
 
 		// Inherited via OdbServerAppBase
 		bool preServerRun() override;
