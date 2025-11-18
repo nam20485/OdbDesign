@@ -11,6 +11,10 @@ set(CXX_STANDARD ${MY_CXX_STANDARD})
 set(CMAKE_CXX_STANDARD ${MY_CXX_STANDARD})
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+# export all class and method symbols when building shared libraries on Windows
+# mandatory to enable export of grpc service protoc-generated classes/methods
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+
 # enable compilation database for SonarQube analysis
 # See: https://docs.sonarsource.com/sonarqube-for-ide/vs-code/getting-started/running-an-analysis/#generate-a-compilation-database
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -66,7 +70,7 @@ if (MSVC)
     add_compile_options(/wd4100)
     #add_compile_options(/sdl)
 else()
-    # additional warnings    
+    # additional warnings
     add_compile_options(-Wall -Wextra -Wpedantic)
     # treat warnings as errors
     #add_compile_options(-Werror)
