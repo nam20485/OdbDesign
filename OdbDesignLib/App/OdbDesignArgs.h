@@ -11,6 +11,7 @@ namespace Odb::Lib::App
 		OdbDesignArgs(int argc, char* argv[]);
 
 		int port() const;
+		int grpcPort() const;
 		bool useHttps() const;
 		std::string sslDir() const;
 		std::string designsDir() const;
@@ -26,6 +27,7 @@ namespace Odb::Lib::App
 
 	private:
 		constexpr static const int		DEFAULT_PORT =			8888;
+		constexpr static const int		DEFAULT_GRPC_PORT =		50051;
 		constexpr static const bool		DEFAULT_USE_HTTPS =		false;
 		constexpr static const char*	DEFAULT_SSL_DIR =		"./ssl";
 		constexpr static const char*	DEFAULT_DESIGNS_DIR =	"designs";

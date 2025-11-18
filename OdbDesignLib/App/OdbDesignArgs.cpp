@@ -13,6 +13,11 @@ namespace Odb::Lib::App
 		return intArg("port", DEFAULT_PORT);
 	}
 
+	int OdbDesignArgs::grpcPort() const
+	{
+		return intArg("grpc-port", DEFAULT_GRPC_PORT);
+	}
+
 	bool OdbDesignArgs::useHttps() const
 	{
 		return boolArg("use-https", DEFAULT_USE_HTTPS);
@@ -59,6 +64,7 @@ namespace Odb::Lib::App
 		ss << "Usage: " << executableName() << " [options]\n";
 		ss << "Options:\n";
 		ss << "  --port <port>            Port to listen on (default: " << DEFAULT_PORT << ")\n";
+		ss << "  --grpc-port <port>       gRPC port to listen on (default: " << DEFAULT_GRPC_PORT << ")\n";
 		ss << "  --use-https              Use HTTPS (default: " << (DEFAULT_USE_HTTPS ? "true" : "false") << ")\n";
 		ss << "  --ssl-dir <dir>          Directory containing SSL certificate and key files (default: " << DEFAULT_SSL_DIR << ")\n";
 		ss << "  --designs-dir <dir>      Directory containing design files (default: " << DEFAULT_DESIGNS_DIR << ")\n";
