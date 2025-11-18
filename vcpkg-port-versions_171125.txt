@@ -1,0 +1,18 @@
+17:41:43:206	1> [CMake]   * abseil:x64-windows@20250512.1#1 -- git+https://github.com/microsoft/vcpkg@20bbb665cad5889db5e5f4beebad235d0d91a0bf
+17:41:43:206	1> [CMake]   * asio:x64-windows@1.32.0 -- git+https://github.com/microsoft/vcpkg@d1b402afe0e4c5b8efb08dcc8be6b0c90900a55e
+17:41:43:206	1> [CMake]   * bzip2[core,tool]:x64-windows@1.0.8#6 -- git+https://github.com/microsoft/vcpkg@2d029da682847c5ebdc54e4dbea001331a02207e
+17:41:43:206	1> [CMake]   * c-ares:x64-windows@1.34.5#1 -- git+https://github.com/microsoft/vcpkg@d733716f373cf3ccd5da4f42ea1369064853d751
+17:41:43:206	1> [CMake]     crow:x64-windows@1.3.0 -- git+https://github.com/microsoft/vcpkg@967d7ceb1140975fd062171ec90f1be240c59d63
+17:41:43:206	1> [CMake]     grpc[codegen,core]:x64-windows@1.71.0#3 -- git+https://github.com/microsoft/vcpkg@daebe29c41aa900ce183614afe15c73b3ca4f643
+17:41:43:206	1> [CMake]     libarchive[bzip2,core,crypto,lz4,lzma,xar,zstd]:x64-windows@3.8.2 -- git+https://github.com/microsoft/vcpkg@aa11cf7a588bfab1d9c3b555902c09056176183c
+17:41:43:206	1> [CMake]   * liblzma:x64-windows@5.8.1 -- git+https://github.com/microsoft/vcpkg@55eb3803f1d0388aebca8fd293963721bbf0092c
+17:41:43:206	1> [CMake]   * lz4:x64-windows@1.10.0 -- git+https://github.com/microsoft/vcpkg@4f01eec10f515a428e914107c5188366380f8dd9
+17:41:43:206	1> [CMake]     openssl:x64-windows@3.6.0#3 -- git+https://github.com/microsoft/vcpkg@21c1dabbf149eaa75b6c8b6ba9c3c6edb4f47ea7
+17:41:43:206	1> [CMake]     protobuf[core,zlib]:x64-windows@5.29.5#2 -- git+https://github.com/microsoft/vcpkg@b71ee5bb425cd832ed1615601bd92573f07e9206
+17:41:43:206	1> [CMake]   * re2:x64-windows@2025-11-05 -- git+https://github.com/microsoft/vcpkg@cdb3c6b427f023ec6af6433f0494e2e7ec0f708f
+17:41:43:206	1> [CMake]   * utf8-range:x64-windows@5.29.5 -- git+https://github.com/microsoft/vcpkg@5d28e170bfcc212d629bb070520e72492240ce65
+17:41:43:206	1> [CMake]   * vcpkg-cmake:x64-windows@2024-04-23 -- git+https://github.com/microsoft/vcpkg@e74aa1e8f93278a8e71372f1fa08c3df420eb840
+17:41:43:206	1> [CMake]   * vcpkg-cmake-config:x64-windows@2024-05-23 -- git+https://github.com/microsoft/vcpkg@97a63e4bc1a17422ffe4eff71da53b4b561a7841
+17:41:43:206	1> [CMake]   * vcpkg-cmake-get-vars:x64-windows@2025-05-29 -- git+https://github.com/microsoft/vcpkg@d6510f888dd526c7828f6b973349e7f30be51254
+17:41:43:206	1> [CMake]     zlib:x64-windows@1.3.1 -- git+https://github.com/microsoft/vcpkg@3f05e04b9aededb96786a911a16193cdb711f0c9
+17:41:43:206	1> [CMake]   * zstd:x64-windows@1.5.7 -- git+https://github.com/microsoft/vcpkg@31b7320fab13790c6861cb3c2d50dc8f60ca3602
