@@ -4,8 +4,22 @@
 #include "Controllers/FileModelController.h"
 #include "Controllers/HealthCheckController.h"
 #include "Controllers/DesignsController.h"
+#include "Services/OdbDesignServiceImpl.h"
 #include "macros.h"
 #include <App/BasicRequestAuthentication.h>
+#include <grpcpp/grpcpp.h>
+#include <grpcpp/health_check_service_interface.h>
+#include <grpcpp/ext/proto_server_reflection_plugin.h>
+#include <iostream>
+#include <utility>
+#include <memory>
+#include <string>
+#include <App/DesignCache.h>
+#include <App/OdbServerAppBase.h>
+#include <crow/middlewares/cors.h>
+#include <grpcpp/security/server_credentials.h>
+#include <grpcpp/server.h>
+#include <grpcpp/server_builder.h>
 
 using namespace Odb::Lib::App;
 
@@ -16,25 +30,6 @@ namespace Odb::App::Server
 	{		
 	}
 
-	//OdbDesignServerApp::~OdbDesignServerApp()
-	//{					
-	//}
-
-	//Utils::ExitCode OdbDesignServerApp::Run()
-	//{
-	//	//
-	//	// do any initialization here
-	//	//		
-
-	//	auto result = OdbServerAppBase::Run();
-
-	//	//
-	//	// do any cleanup here
-	//	//
-
-	//	return result;
-	//}
-
 	void OdbDesignServerApp::add_controllers()
 	{
 		m_vecControllers.push_back(std::make_shared<HelloWorldController>(*this));		
@@ -42,6 +37,31 @@ namespace Odb::App::Server
 		m_vecControllers.push_back(std::make_shared<FileModelController>(*this));
 		m_vecControllers.push_back(std::make_shared<HealthCheckController>(*this));
 		m_vecControllers.push_back(std::make_shared<DesignsController>(*this));
+	}
+
+	void OdbDesignServerApp::RunGrpcServer(const std::string& server_address, std::shared_ptr<Odb::Lib::App::DesignCache> cache)
+	{
+		if (!cache)
+		{
+			std::cerr << "ERROR: DesignCache is null, cannot start gRPC server" << std::endl;
+			return;
+		}
+
+		OdbDesignServer::Services::OdbDesignServiceImpl service(cache);
+
+		grpc::EnableDefaultHealthCheckService(true);
+		grpc::reflection::InitProtoReflectionServerBuilderPlugin();
+		
+		grpc::ServerBuilder builder;
+		builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
+		builder.RegisterService(&service);
+
+		std::unique_ptr<grpc::Server> server(builder.BuildAndStart());
+		std::cout << "gRPC server listening on " << server_address << std::endl;
+
+		// Wait for shutdown signal
+		server->Wait();
+		std::cout << "gRPC server shut down." << std::endl;
 	}
 
 	bool OdbDesignServerApp::preServerRun()
@@ -53,16 +73,12 @@ namespace Odb::App::Server
 			cors.global()
 				.headers("*")
 				.origin("*");
-			//cors.global().methods(crow::HTTPMethod::Get, crow::HTTPMethod::Post);
-			//cors.global().origin("73.157.184.219");			
 		}
 		else
 		{
 			cors.global()
 				.headers("*")
 				.origin("*");
-			//cors.global().methods(crow::HTTPMethod::Get);
-			//cors.global().origin("73.157.184.219");
 		}
 
 		// add authentication
