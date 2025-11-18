@@ -76,14 +76,13 @@ set_source_files_properties(${PROTO_SRC} ${PROTO_HDRS} PROPERTIES GENERATED TRUE
 # add the generated Protobuf C++ files to the target
 target_sources(OdbDesign PRIVATE ${PROTO_SRCS} ${PROTO_HDRS})
 
-# grpc
-find_package(gRPC CONFIG REQUIRED)
-target_link_libraries(OdbDesign PRIVATE gRPC::gpr gRPC::grpc gRPC::grpc++ gRPC::grpc++_alts)
-
 # populate grpc proto files cmake variable to all .proto files in "./protoc/grpc" directory
 set(GRPC_PROTO_DIR "${PROTO_DIR}/grpc")
 file(GLOB GRPC_PROTO_FILES "${GRPC_PROTO_DIR}/*.proto")
 message(STATUS "Found grpc proto files: ${GRPC_PROTO_FILES}")
+
+# grpc
+find_package(gRPC CONFIG REQUIRED)
 
 # Generate protobuf messages for gRPC proto files
 protobuf_generate(
@@ -99,10 +98,16 @@ protobuf_generate(
     LANGUAGE grpc
     GENERATE_EXTENSIONS .grpc.pb.h .grpc.pb.cc
     PLUGIN "protoc-gen-grpc=$<TARGET_FILE:gRPC::grpc_cpp_plugin>"
+    #PLUGIN_OPTIONS "dllexport_decl=ODBDESIGN_EXPORT"
     PROTOS ${GRPC_PROTO_FILES}
-    IMPORT_DIRS ${PROTO_DIR}
-    EXPORT_MACRO ODBDESIGN_EXPORT
+    IMPORT_DIRS ${PROTO_DIR}    
 )
+
+target_link_libraries(OdbDesign PUBLIC gRPC::gpr gRPC::grpc gRPC::grpc++)
+# mark the generated Protofbuf C++ files as generated
+set_source_files_properties(${GRPC_PROTO_SRC} ${GRPC_PROTO_HDRS} PROPERTIES GENERATED TRUE)
+# add the generated Protobuf C++ files to the target
+target_sources(OdbDesign PRIVATE ${GRPC_PROTO_SRC} ${GRPC_PROTO_HDRS})
 
 # workaround to remove error: "C++ command-line error: invalid macro definition: _CROW_ICD-NOTFOUND"
 # (see https://github.com/CrowCpp/Crow/issues/661#issuecomment-1702544225)

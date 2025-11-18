@@ -1,7 +1,24 @@
 ﻿# CMakeList.txt : CMake project for OdbDesignServer
 #
 
-add_executable(OdbDesignServer "main.cpp"   "Controllers/HelloWorldController.h" "Controllers/HelloWorldController.cpp"     "OdbDesignServerApp.h" "OdbDesignServerApp.cpp" "OdbDesignServer.h"      "Controllers/FileUploadController.h" "Controllers/FileUploadController.cpp" "Controllers/FileModelController.h" "Controllers/FileModelController.cpp" "Controllers/HealthCheckController.h" "Controllers/HealthCheckController.cpp" "Controllers/DesignsController.h" "Controllers/DesignsController.cpp")
+add_executable(OdbDesignServer 
+    "main.cpp"   
+    "Controllers/HelloWorldController.h" 
+    "Controllers/HelloWorldController.cpp"     
+    "OdbDesignServerApp.h" 
+    "OdbDesignServerApp.cpp" 
+    "OdbDesignServer.h"      
+    "Controllers/FileUploadController.h" 
+    "Controllers/FileUploadController.cpp" 
+    "Controllers/FileModelController.h" 
+    "Controllers/FileModelController.cpp" 
+    "Controllers/HealthCheckController.h" 
+    "Controllers/HealthCheckController.cpp" 
+    "Controllers/DesignsController.h" 
+    "Controllers/DesignsController.cpp" 
+    "Services/OdbDesignServiceImpl.h"
+    "Services/OdbDesignServiceImpl.cpp"
+)
 
 ## PCH
 #if (NOT DEFINED ENV{CI})
@@ -9,10 +26,10 @@ add_executable(OdbDesignServer "main.cpp"   "Controllers/HelloWorldController.h"
 	target_precompile_headers(OdbDesignServer PRIVATE ${ODBDESIGN_SERVER_HEADER_FILES})
 #endif()
 
-# gRPC
-#find_package(gRPC CONFIG REQUIRED)
-#target_link_libraries(OdbDesignServer PUBLIC gRPC::grpc++)
+# link to OdbDesign library (which includes gRPC)
+target_link_libraries(OdbDesignServer PUBLIC OdbDesign)
 
-# link to OdbDesign library
-target_link_libraries(OdbDesignServer PRIVATE OdbDesign)
+# gRPC - link directly to ensure all symbols are available
+find_package(gRPC CONFIG REQUIRED)
+target_link_libraries(OdbDesignServer PRIVATE gRPC::grpc++ gRPC::grpc++_reflection)
 
