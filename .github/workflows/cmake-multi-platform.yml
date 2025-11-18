@@ -3,12 +3,12 @@ name: CMake Build Multi-Platform
 
 on:
   push:
-    branches: [ "nam20485" ]
+    branches: [ "nam20485", "feature/grpc" ]
   pull_request:
-    branches: [ "development", "staging", "main", "release", "nam20485" ]  
+    branches: [ "development", "staging", "main", "release", "nam20485" ]
 
 permissions:
-  contents: read  
+  contents: read
 
 env:
   VCPKG_ROOT: ${{ github.workspace }}/vcpkg
@@ -18,7 +18,7 @@ env:
   VCPKG_FEATURE_FLAGS: dependencygraph
   ARTIFACTS_DIR: ${{ github.workspace }}/artifacts
   ARTIFACTS_DIR_WIN: ${{ github.workspace }}\artifacts
-  
+
 jobs:
   build:
     name: CMake-Multi-Platform-Build
@@ -36,7 +36,7 @@ jobs:
           # Windows x64 Release
           - os: windows-2022
             preset: x64-release
-          # Linux x64 Release          
+          # Linux x64 Release
           - os: ubuntu-22.04
             preset: linux-release
           # MacOS x64 Release
@@ -49,8 +49,8 @@ jobs:
           # - os: ubuntu-22.04
           #   preset: python-linux-release
 
-    steps:   
-    
+    steps:
+
     - name: Harden Runner
       uses: step-security/harden-runner@4d991eb9b905ef189e4c376166672c3f2f230481 # v2.11.0
       with:
@@ -58,7 +58,7 @@ jobs:
 
     - name: Checkout Repository
       uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-    
+
     # add problem matchers by compiler
     - name: Add Problem Matchers
       uses: ammaraskar/msvc-problem-matcher@1ebcb382869bfdc2cc645e8a2a43b6d319ea1cc0 # master
@@ -66,7 +66,7 @@ jobs:
     - name: Add Problem Matchers
       uses: ammaraskar/gcc-problem-matcher@0f9c86f9e693db67dacf53986e1674de5f2e5f28 # master
       if: matrix.os != 'windows-2022'
-    
+
     - name: Install vcpkg Dependencies
       run: |
         sudo apt update
@@ -77,13 +77,13 @@ jobs:
     #   os != windows-2022 (i.e. Linux, MacOS)
     #
     - name: Install vcpkg
-      run: |               
+      run: |
         git clone https://github.com/Microsoft/vcpkg.git ${{env.VCPKG_ROOT}}
         "${{env.VCPKG_ROOT}}/bootstrap-vcpkg.sh"
-      # (Windows comes w/ vcpkg installed as part of VS)   
+      # (Windows comes w/ vcpkg installed as part of VS)
       if: matrix.os != 'windows-2022'
-    
-    - name: Install Ninja    
+
+    - name: Install Ninja
       uses: seanmiddleditch/gha-setup-ninja@8b297075da4cd2a5f1fd21fe011b499edf06e9d2 # master
       if: matrix.os != 'windows-2022'
 
@@ -97,20 +97,20 @@ jobs:
 
     # #
     # #   preset == linux-mingw-w64-release
-    # #   
+    # #
     # - name: Install mingw-w64
     #   run: |
     #     sudo apt-get update
-    #     sudo apt-get install -y --no-install-recommends mingw-w64        
+    #     sudo apt-get install -y --no-install-recommends mingw-w64
     #   if: matrix.preset == 'linux-mingw-w64-release'
-  
+
     #
     #   os == windows-2022
     #
     - name: Setup VC Tools
       uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
       if: matrix.os == 'windows-2022'
-      
+
     - name: Patch vcpkg
       run: scripts/patch-vcpkg-install.ps1
       if: matrix.os == 'windows-2022'
@@ -119,13 +119,13 @@ jobs:
     # #  preset == python-x64-release
     # #
     # - name: Generate SWIG Bindings
-    #   run: | 
+    #   run: |
     #     sudo apt-get update
     #     sudo apt-get install -y --no-install-recommends swig
     #     chmod +x ./scripts/generate-python-module.sh
     #     ./scripts/generate-python-module.sh
     #   if: matrix.preset == 'python-linux-release'
-    
+
     - name: Manual vcpkg Install (Non-Windows)
       run: "\"${{env.VCPKG_ROOT}}/vcpkg\" install"
       if: matrix.preset != 'linux-mingw-w64-release' && matrix.os != 'windows-2022'
@@ -137,14 +137,14 @@ jobs:
     # - name: Manual vcpkg Install (mingw-w64)
     #   run: "\"${{env.VCPKG_ROOT}}/vcpkg\" install --triplet x64-mingw-static"
     #   if: matrix.preset == 'linux-mingw-w64-release'
-    
+
     #
     #   CMake Build - All platforms
-    #   
-    - name: CMake Configure      
-      run: cmake --preset ${{matrix.preset}}    
+    #
+    - name: CMake Configure
+      run: cmake --preset ${{matrix.preset}}
 
-    - name: CMake Build          
+    - name: CMake Build
       run: cmake --build --preset ${{matrix.preset}}
 
     - name: Checkout OdbDesign Test Data Repository
@@ -154,21 +154,21 @@ jobs:
         path: 'OdbDesignTestData'
         ref: 'main'
         #token: ${{ secrets.ODBDESIGN_TESTDATA_ACCESS_TOKEN }}
-        
-    - name : Export ODB_TEST_DATA_DIR    
+
+    - name : Export ODB_TEST_DATA_DIR
       uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
       with:
-        script: core.exportVariable('ODB_TEST_DATA_DIR', "${{github.workspace}}/OdbDesignTestData/TEST_DATA" || '');                
+        script: core.exportVariable('ODB_TEST_DATA_DIR', "${{github.workspace}}/OdbDesignTestData/TEST_DATA" || '');
 
     - name: CMake Test
       id: cmake-test
       env:
         ODB_TEST_DATA_DIR: ${{github.workspace}}/OdbDesignTestData/TEST_DATA
         ODB_TEST_ENVIRONMENT_VARIABLE: ${{vars.ODB_TEST_ENVIRONMENT_VARIABLE}}
-      run: ctest --test-dir ./out/build/${{matrix.preset}}/OdbDesignTests --output-log ${{github.workspace}}/testlog.txt --output-junit ${{github.workspace}}/testlog.xml --output-on-failure      
+      run: ctest --test-dir ./out/build/${{matrix.preset}}/OdbDesignTests --output-log ${{github.workspace}}/testlog.txt --output-junit ${{github.workspace}}/testlog.xml --output-on-failure
       # let the report step fail the job if it finds failed tests...
       continue-on-error: true
-           
+
     # report test results
     - name: Report Test Results
       uses: dorny/test-reporter@31a54ee7ebcacc03a09ea97a7e5465a47b84aea5 # v1.9.1
@@ -179,7 +179,7 @@ jobs:
         reporter: java-junit
         path-replace-backslashes: true
         # fail job based on report results
-        fail-on-error: true     
+        fail-on-error: true
 
     #
     #   Artifacts
@@ -190,7 +190,7 @@ jobs:
         mkdir ${{env.ARTIFACTS_DIR}}
         cp ./out/build/${{matrix.preset}}/OdbDesignLib/*.so ${{env.ARTIFACTS_DIR}}
         cp ./out/build/${{matrix.preset}}/Utils/*.so ${{env.ARTIFACTS_DIR}}
-        cp ./out/build/${{matrix.preset}}/OdbDesignServer/OdbDesignServer ${{env.ARTIFACTS_DIR}}       
+        cp ./out/build/${{matrix.preset}}/OdbDesignServer/OdbDesignServer ${{env.ARTIFACTS_DIR}}
         cd ${{env.ARTIFACTS_DIR}}
         zip -r ./artifacts-${{matrix.os}}.zip ./*.so ./OdbDesignServer
 
@@ -200,7 +200,7 @@ jobs:
         mkdir ${{env.ARTIFACTS_DIR}}
         cp ./out/build/${{matrix.preset}}/OdbDesignLib/*.dylib ${{env.ARTIFACTS_DIR}}
         cp ./out/build/${{matrix.preset}}/Utils/*.dylib ${{env.ARTIFACTS_DIR}}
-        cp ./out/build/${{matrix.preset}}/OdbDesignServer/OdbDesignServer ${{env.ARTIFACTS_DIR}}       
+        cp ./out/build/${{matrix.preset}}/OdbDesignServer/OdbDesignServer ${{env.ARTIFACTS_DIR}}
         cd ${{env.ARTIFACTS_DIR}}
         zip -r ./artifacts-${{matrix.os}}.zip ./*.dylib ./OdbDesignServer
 
@@ -209,7 +209,7 @@ jobs:
       run: |
         New-Item -ItemType Directory -Force -Path  ${{env.ARTIFACTS_DIR_WIN}} -Verbose
         Copy-Item -Path ".\out\build\${{matrix.preset}}\*.dll" -Destination  ${{env.ARTIFACTS_DIR_WIN}} -Force -Verbose
-        Copy-Item -Path ".\out\build\${{matrix.preset}}\OdbDesignServer.exe" -Destination  ${{env.ARTIFACTS_DIR_WIN}} -Force -Verbose    
+        Copy-Item -Path ".\out\build\${{matrix.preset}}\OdbDesignServer.exe" -Destination  ${{env.ARTIFACTS_DIR_WIN}} -Force -Verbose
         Compress-Archive -Path "${{env.ARTIFACTS_DIR_WIN}}\*.dll","${{env.ARTIFACTS_DIR_WIN}}\*.exe"  -DestinationPath "${{env.ARTIFACTS_DIR_WIN}}\artifacts-${{matrix.os}}.zip" -Verbose -Force
 
     - name: Upload Artifacts
