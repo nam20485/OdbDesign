@@ -1,3 +1,5 @@
+#pragma once
+
 //
 // Created by nmill on 10/13/2023.
 //
@@ -9,8 +11,6 @@
 #include "../IStreamSaveable.h"
 #include <memory>
 #include "../../odbdesign_export.h"
-
-#pragma once
 
 namespace Odb::Lib::FileModel::Design
 {
