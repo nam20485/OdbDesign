@@ -110,7 +110,7 @@
         "lhs": "${hostSystemName}",
         "rhs": "Linux"
       },
-      "environment": { "VCPKG_ROOT": "$env{HOME}/src/microsoft/vcpkg" },
+      "environment": {},
       "vendor": {
         "microsoft.com/VisualStudioRemoteSettings/CMake/1.0": {
           "sourceDir": "$env{HOME}/.vs/$ms{projectDirName}"
