@@ -13,82 +13,101 @@
   - `vcpkg-configuration.json` (current repo registry configuration)
 
 ### Objectives
-1. Enable vcpkg binary caching through GitHub Packages for both Windows and Linux GitHub Actions runners.
-2. Ensure authentication leverages `GITHUB_TOKEN` (or PAT fallback) with least-effort secrets management.
+1. Enable vcpkg binary caching through GitHub Packages for Windows, Linux, and macOS GitHub Actions runners.
+2. Ensure robust authentication using a dedicated Personal Access Token (PAT) for write access in CI, while allowing read-only access for other scenarios.
 3. Keep existing `vcpkg-configuration.json` registries untouched while guaranteeing every invocation of vcpkg inside CI uses the new cache.
-4. Document environment/workflow changes so developers and automation stay in sync.
+4. Provide clear, secure documentation for both CI and local development setup.
 
 ### Implementation Plan
-1. **Workflow Permissions & Tokens**
-   - Add `permissions: packages: write` at the workflow/job root (`.github/workflows/cmake-multi-platform.yml`). Source: `github-packages.md`, lines 40-48 & 121-184.
-   - Prefer `${{ secrets.GITHUB_TOKEN }}`; if repo needs cross-repo cache access, add PAT secret (`VCPKG_PAT_TOKEN`) with `packages:read`, `packages:write`. Source: `github-packages.md`, lines 188-199.
+
+1. **Workflow Permissions & Authentication**
+   - Add `permissions: packages: write` at the workflow/job root (`.github/workflows/cmake-multi-platform.yml`) to allow `GITHUB_TOKEN` to read packages.
+   - **Primary Authentication:** For writing to the cache, a **Personal Access Token (PAT)** with `packages:read` and `packages:write` scopes is required.
+     - Create a PAT and add it as a repository secret named `VCPKG_PAT_TOKEN`.
+     - **Security:** The workflow will be configured to only grant write access on trusted events (e.g., pushes to `main` or `develop`). Pull requests from forks will use the read-only `GITHUB_TOKEN`, allowing them to consume, but not write to, the cache.
 
 2. **Shared Environment Block**
-   - Define workflow-level `env` entries per tutorial (`github-packages.md`, lines 92-109):
+   - Define workflow-level `env` entries in `cmake-multi-platform.yml`:
      ```yaml
      env:
-       USERNAME: <org-or-user>
-       VCPKG_EXE: ${{ github.workspace }}/vcpkg/vcpkg
-       FEED_URL: https://nuget.pkg.github.com/<org-or-user>/index.json
-       VCPKG_BINARY_SOURCES: "clear;nuget,https://nuget.pkg.github.com/<org-or-user>/index.json,readwrite"
+       USERNAME: ${{ github.repository_owner }}
+       VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+       FEED_URL: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
+       # Hybrid approach: Use GitHub Actions Cache (x-gha) first for speed, then GitHub Packages (nuget) for persistence.
+       # CI will use a dynamically generated config file.
+       VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite;nugetconfig,${{ github.workspace }}/nuget.generated.config,readwrite"
      ```
-   - If we decide to version a `nuget.config`, switch to `clear;nugetconfig,<path>` per `binary-caching-nuget.md`, lines 229-243.
 
 3. **Bootstrap vcpkg**
-   - Windows step: PowerShell invoking `bootstrap-vcpkg.bat`. Linux step: bash invoking `bootstrap-vcpkg.sh`. Source: `github-packages.md`, lines 67-90.
+   - The existing workflow step that clones and bootstraps vcpkg will be used for all platforms.
 
 4. **NuGet CLI Availability**
-   - Windows: `vcpkg fetch nuget` returns `nuget.exe`; run directly in PowerShell.
-   - Linux: install/use `mono` for `nuget.exe` (`github-packages.md`, lines 148-181). Add `apt install mono-complete` for ubuntu-24.04+ runners.
+   - **Windows:** `vcpkg fetch nuget` provides `nuget.exe`, which can be run directly.
+   - **Linux/macOS:** `mono` is required to run `nuget.exe`.
+     - **Ubuntu:** Add a step to run `sudo apt-get update && sudo apt-get install -y mono-devel`.
+     - **macOS:** Add a step to run `brew install mono`.
 
-5. **Configure NuGet Source in Workflow**
-   - Windows step (PowerShell):
-     ```pwsh
-     .$($env:VCPKG_EXE fetch nuget) sources add `
-       -Source "$env:FEED_URL" `
-       -StorePasswordInClearText `
-       -Name GitHubPackages `
-       -UserName "$env:USERNAME" `
-       -Password "${{ secrets.GITHUB_TOKEN }}"
-     .$($env:VCPKG_EXE fetch nuget) setapikey "${{ secrets.GITHUB_TOKEN }}" `
-       -Source "$env:FEED_URL"
-     ```
-   - Linux step (bash):
+5. **CI NuGet Configuration**
+   - **Dynamically generate `nuget.generated.config` in the workflow.** This avoids committing any credentials.
+   - Add a workflow step to create the file with the necessary content, injecting the PAT from secrets.
      ```bash
-     mono "$(${ { env.VCPKG_EXE }} fetch nuget | tail -n 1)" \
-       sources add \
-       -Source "$FEED_URL" \
-       -StorePasswordInClearText \
-       -Name GitHubPackages \
-       -UserName "$USERNAME" \
-       -Password "${{ secrets.GITHUB_TOKEN }}"
-     mono "$(${ { env.VCPKG_EXE }} fetch nuget | tail -n 1)" \
-       setapikey "${{ secrets.GITHUB_TOKEN }}" \
-       -Source "$FEED_URL"
+     # This script runs for all OS types in the matrix
+     echo '<?xml version="1.0" encoding="utf-8"?>
+     <configuration>
+       <packageSources>
+         <clear />
+         <add key="GitHubPackages" value="${{ env.FEED_URL }}" />
+       </packageSources>
+       <packageSourceCredentials>
+         <GitHubPackages>
+           <add key="Username" value="${{ env.USERNAME }}" />
+           <add key="ClearTextPassword" value="${{ secrets.VCPKG_PAT_TOKEN }}" />
+         </GitHubPackages>
+       </packageSourceCredentials>
+       <apiKeys>
+         <add key="${{ env.FEED_URL }}" value="${{ secrets.VCPKG_PAT_TOKEN }}" />
+       </apiKeys>
+     </configuration>' > nuget.generated.config
      ```
-   - Replace password argument with `${{ secrets.VCPKG_PAT_TOKEN }}` if PAT required.
-   - Reference: `github-packages.md`, lines 113-184.
+   - This single step replaces the platform-specific `nuget sources update` and `setapikey` commands, simplifying the workflow.
 
-6. **Optional `nuget.config` for Shared Settings**
-   - Add file (e.g., `ci/nuget/github-packages.config`) matching template from `binary-caching-nuget.md`, lines 174-214.
-   - Include `<packageSources>`, `<packageSourceCredentials>`, `<defaultPushSource>` entries with placeholders. Keep credentials blank; workflow populates via CLI.
-   - Update `VCPKG_BINARY_SOURCES` to `clear;nugetconfig,${{ github.workspace }}/ci/nuget/github-packages.config`.
+6. **Repository `nuget.config` (for Local Development)**
+   - A minimal, **credential-less** `nuget.config` will be committed to the repository root. Its sole purpose is to define the package source URL for local users.
+     ```xml
+     <?xml version="1.0" encoding="utf-8"?>
+     <configuration>
+       <packageSources>
+         <clear />
+         <add key="GitHubPackages" value="https://nuget.pkg.github.com/nam20485/index.json" />
+       </packageSources>
+     </configuration>
+     ```
 
-7. **Integrate with `vcpkg-configuration.json`**
-   - No schema support for binary caches; maintain current registry definitions (`vcpkg-configuration.json`, lines 1-9).
-   - Document in README/plan that binary caching is controlled via workflow env vars; local developers should run `export/set VCPKG_BINARY_SOURCES=...` mirroring CI (`binary-caching-nuget.md`, lines 229-269).
+7. **Local Development Setup**
+   - To use the binary cache, developers must first authenticate their local NuGet client to GitHub Packages. **This is a one-time setup.**
+     - **Instructions:**
+       1. Create a **Personal Access Token (PAT)** with `packages:read` scope.
+       2. Add the credentials to your **user-level** NuGet configuration (do NOT modify the file in the repository):
+          ```bash
+          # For Linux/macOS/PowerShell. Get nuget.exe via `vcpkg fetch nuget`
+          # Replace <USER> with your GitHub username and <PAT> with your token.
+          nuget sources Add -Name "GitHubPackages" -Source "https://nuget.pkg.github.com/nam20485/index.json" -UserName <USER> -Password <PAT> -StorePasswordInClearText
+          ```
+   - **To enable the cache for the project:**
+     - Set the `VCPKG_BINARY_SOURCES` environment variable to point to the repository's `nuget.config` file. NuGet will automatically find the credentials in your user-level config.
+       - **Linux/macOS:** `export VCPKG_BINARY_SOURCES="clear;nugetconfig,$(pwd)/nuget.config,read"`
+       - **PowerShell:** `$env:VCPKG_BINARY_SOURCES="clear;nugetconfig,$(pwd)/nuget.config,read"`
+     - Note: Local access is configured as `read`-only by default to prevent accidental uploads.
 
-8. **Validation & Next Steps**
-   - After workflow updates, trigger CI runs on both runners to confirm packages upload/download from GitHub feed.
-   - Monitor for `mono` availability issues on Linux; cache `nuget.exe` path using workflow outputs if repeated invocations become costly.
+8. **`vcpkg-configuration.json` Integration**
+   - No changes are needed. Binary caching is controlled entirely by environment variables and is independent of port registries.
 
-### Review Feedback (2025-11-17)
-- **macOS runner coverage** – The current plan only calls out Windows + Linux but the workflow runs on `macos-14`. Document whether macOS will adopt the cache (and how NuGet CLI/mono is installed) or explicitly scope it out.
-- **Permissions & forked PRs** – Root workflow lacks `packages: write` while the job block sets it; forked pull requests still get read-only tokens. Clarify how cache publishing is gated (e.g., trusted events only) and whether fork builds fall back to `x-gha` caching.
-- **Environment values** – Replace `<org-or-user>` placeholders with `${{ github.repository_owner }}` (lowercase as required by feeds) and make `VCPKG_EXE` path OS-aware so Windows resolves `vcpkg.exe` correctly.
-- **Binary source strategy** – Instead of dropping `x-gha`, keep it as the first entry (e.g., `clear;x-gha,readwrite;nuget,...`) so NuGet is only hit on cache misses.
-- **Bootstrap flow** – The workflow already clones vcpkg once for every matrix entry and runs the Unix bootstrap script even on Windows. Spell out platform-specific bootstrap commands and whether cloning can be shared to avoid redundant work.
-- **NuGet CLI commands** – The snippets should use tested syntax (`& "$env:VCPKG_EXE" fetch nuget`, `mono "$VCPKG_EXE" fetch nuget`) and handle idempotency (`sources update` or removing existing sources) to avoid failures on reruns.
-- **NuGet tooling footprint** – Installing `mono-complete` on Ubuntu adds significant runtime. Consider lighter alternatives (`mono-runtime`, `dotnet nuget`, or caching `nuget.exe`) and capture the trade-offs.
-- **nuget.config option** – If a shared config is committed, document its location, how credentials remain out of source control, and how local developers consume it; if generated dynamically, note the workflow steps.
-- **Validation signals** – Expand Step 8 with explicit acceptance criteria (logs that show upload/download, artifact count in GitHub Packages, sample run IDs) so we know the cache is working before relying on it.
+9. **Validation & Next Steps**
+   - After updating the workflow, trigger a run on a trusted branch (e.g., `main`).
+   - **Acceptance Criteria:**
+     - Verify that the workflow logs show packages being downloaded from the NuGet source (`Uploading binaries to nuget cache...` and `Restored 0 packages from nuget cache...` messages).
+     - Check the repository's "Packages" section on GitHub to confirm that new packages have been published.
+     - Subsequent runs should show packages being restored from the cache (`Restored X packages from nuget cache...`).
+
+10. **Future Considerations**
+    - **`mono` Dependency:** To reduce workflow setup time on Linux and macOS, investigate using the `dotnet nuget` command if the .NET SDK is available on runners, as this would remove the `mono` dependency.
