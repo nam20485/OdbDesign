@@ -21,11 +21,14 @@ using namespace std::filesystem;
 
 namespace Odb::Lib::App
 {
+	std::atomic<OdbServerAppBase *> OdbServerAppBase::s_activeInstance{nullptr};
+
 	OdbServerAppBase::OdbServerAppBase(int argc, char *argv[])
 		: OdbAppBase(argc, argv), m_shutdownFlag(false)
 	{
 		// Initialize the design cache shared pointer to point to the base class's design cache
 		m_pDesignCache = std::shared_ptr<DesignCache>(&m_designCache, [](DesignCache *) {});
+		s_activeInstance.store(this, std::memory_order_release);
 	}
 
 	bool OdbServerAppBase::preServerRun()
@@ -44,6 +47,16 @@ namespace Odb::Lib::App
 	{
 		stop_servers();
 		m_vecControllers.clear();
+		s_activeInstance.store(nullptr, std::memory_order_release);
+	}
+
+	void OdbServerAppBase::HandleSignal(int signum)
+	{
+		auto *instance = s_activeInstance.load(std::memory_order_acquire);
+		if (instance != nullptr)
+		{
+			instance->signal_handler(signum);
+		}
 	}
 
 	void OdbServerAppBase::RunGrpcServer(const std::string &server_address, std::shared_ptr<DesignCache> cache)
@@ -121,6 +134,13 @@ namespace Odb::Lib::App
 		// set server to use multiple threads
 		m_crowApp.multithreaded();
 
+		// Register signal handlers to support graceful shutdown
+		std::signal(SIGINT, &OdbServerAppBase::HandleSignal);
+		std::signal(SIGTERM, &OdbServerAppBase::HandleSignal);
+#ifdef SIGBREAK
+		std::signal(SIGBREAK, &OdbServerAppBase::HandleSignal);
+#endif
+
 		if (!preServerRun())
 			return ExitCode::PreServerRunFailed;
 
@@ -176,7 +196,10 @@ namespace Odb::Lib::App
 			pController->register_routes();
 		}
 	}
+
 	void OdbServerAppBase::signal_handler(int signum)
 	{
+		std::cout << "\nSignal " << signum << " received. Initiating graceful shutdown..." << std::endl;
+		stop_servers();
 	}
 }

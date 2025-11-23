@@ -42,6 +42,19 @@ message(STATUS "Found grpc proto files for OdbDesignServer: ${GRPC_PROTO_FILES}"
 
 set(GRPC_CODEGEN_DIR "${CMAKE_CURRENT_BINARY_DIR}/grpc")
 
+# Precompute generated source/header file paths for later use
+set(GRPC_PROTO_SRCS "")
+set(GRPC_PROTO_HDRS "")
+foreach(proto_file ${GRPC_PROTO_FILES})
+    get_filename_component(proto_name ${proto_file} NAME_WE)
+    list(APPEND GRPC_PROTO_SRCS
+        ${GRPC_CODEGEN_DIR}/${proto_name}.pb.cc
+        ${GRPC_CODEGEN_DIR}/${proto_name}.grpc.pb.cc)
+    list(APPEND GRPC_PROTO_HDRS
+        ${GRPC_CODEGEN_DIR}/${proto_name}.pb.h
+        ${GRPC_CODEGEN_DIR}/${proto_name}.grpc.pb.h)
+endforeach()
+
 # Find packages
 find_package(Protobuf CONFIG REQUIRED)
 find_package(gRPC CONFIG REQUIRED)
@@ -73,26 +86,17 @@ target_link_libraries(OdbDesignServer PUBLIC gRPC::gpr gRPC::grpc gRPC::grpc++ g
 target_include_directories(OdbDesignServer PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 # mark the generated Protobuf C++ files as generated
-set_source_files_properties(${GRPC_PROTO_SRC} ${GRPC_PROTO_HDRS} PROPERTIES GENERATED TRUE)
+set_source_files_properties(${GRPC_PROTO_SRCS} ${GRPC_PROTO_HDRS} PROPERTIES GENERATED TRUE)
 
 if (WIN32)
     # Ensure the generated sources compile with the import macro defined
-    set(GRPC_GENERATED_SOURCES "")
-    foreach(proto_file ${GRPC_PROTO_FILES})
-        get_filename_component(proto_name ${proto_file} NAME_WE)
-        list(APPEND GRPC_GENERATED_SOURCES
-            ${GRPC_CODEGEN_DIR}/${proto_name}.pb.cc
-            ${GRPC_CODEGEN_DIR}/${proto_name}.grpc.pb.cc
-        )
-    endforeach()
-
     set_source_files_properties(
-        ${GRPC_GENERATED_SOURCES}
+        ${GRPC_PROTO_SRCS}
         PROPERTIES COMPILE_DEFINITIONS "ODBDESIGN_EXPORT=__declspec(dllimport)"
     )
 
 endif()
 
 # add the generated Protobuf C++ files to the target
-target_sources(OdbDesignServer PRIVATE ${GRPC_PROTO_SRC} ${GRPC_PROTO_HDRS})
+target_sources(OdbDesignServer PRIVATE ${GRPC_PROTO_SRCS} ${GRPC_PROTO_HDRS})
 
