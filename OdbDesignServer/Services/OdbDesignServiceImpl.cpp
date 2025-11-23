@@ -12,7 +12,7 @@
 #include <memory>
 #include <App/DesignCache.h>
 #include <design.pb.h>
-#include <grpc/service.pb.h>
+
 #include <grpcpp/server_context.h>
 
 namespace OdbDesignServer
@@ -30,20 +30,20 @@ namespace OdbDesignServer
         {
             try
             {
-                auto design = m_designCache->GetDesign(request->design_name());
+                const auto design = m_designCache->GetDesign(request->design_name());
                 if (design == nullptr)
                 {
-                    return grpc::Status(grpc::StatusCode::NOT_FOUND, "Design not found: " + request->design_name());
+                    return {grpc::StatusCode::NOT_FOUND, "Design not found: " + request->design_name()};
                 }
 
-                // Convert the design to protobuf message
-                design->to_protobuf();
+                // Convert the design to protobuf message and populate the response
+                *response = *(design->to_protobuf());
                 return grpc::Status::OK;
             }
             catch (const std::exception &e)
             {
                 std::string error = "Internal server error: " + std::string(e.what());
-                return grpc::Status(grpc::StatusCode::INTERNAL, error);
+                return {grpc::StatusCode::INTERNAL, error};
             }
         }
 
@@ -54,44 +54,55 @@ namespace OdbDesignServer
         {
             try
             {
-                auto fileArchive = m_designCache->GetFileArchive(request->design_name());
+                const auto fileArchive = m_designCache->GetFileArchive(request->design_name());
                 if (fileArchive == nullptr)
                 {
-                    return grpc::Status(grpc::StatusCode::NOT_FOUND, "Design not found");
+                    return {grpc::StatusCode::NOT_FOUND, "Design not found"};
                 }
 
-                auto pStep = fileArchive->GetStepDirectory(request->step_name());
+                const auto pStep = fileArchive->GetStepDirectory(request->step_name());
                 if (pStep == nullptr)
                 {
-                    return grpc::Status(grpc::StatusCode::NOT_FOUND, "Step not found");
+                    return {grpc::StatusCode::NOT_FOUND, "Step not found"};
                 }
 
-                auto pLayersByName = pStep->GetLayersByName();
-                auto layerIt = pLayersByName.find(request->layer_name());
+                const auto pLayersByName = pStep->GetLayersByName();
+                const auto layerIt = pLayersByName.find(request->layer_name());
                 if (layerIt == pLayersByName.end())
                 {
-                    return grpc::Status(grpc::StatusCode::NOT_FOUND, "Layer not found");
+                    return {grpc::StatusCode::NOT_FOUND, "Layer not found"};
                 }
 
                 const auto &featuresFile = layerIt->second->GetFeaturesFile();
                 const auto &featureRecords = featuresFile.GetFeatureRecords();
+
+                // Reuse a single protobuf message instance to avoid per-iteration heap allocations.
+                Odb::Lib::Protobuf::FeaturesFile::FeatureRecord featureRecordMsg;
+
                 for (const auto &featureRecord : featureRecords)
                 {
-                    if (featureRecord == nullptr)
+                    if (!featureRecord)
                         continue;
 
-                    // Efficiently populate the *reused* message
-                    // This avoids heap allocation inside the loop.
+                    // Populate reused message: obtain per-feature proto and swap into reusable instance.
                     auto pFeatureRecordMsg = featureRecord->to_protobuf();
+                    if (pFeatureRecordMsg != nullptr)
+                    {
+                        featureRecordMsg.Swap(pFeatureRecordMsg.get()); // Efficient move of fields.
+                    }
+                    else
+                    {
+                        continue; // Skip if conversion failed or returned nullptr.
+                    }
 
-                    if (!writer->Write(*pFeatureRecordMsg))
+                    if (!writer->Write(featureRecordMsg))
                     {
                         // Client disconnected
                         break;
                     }
 
-                    // Clear the message for reuse
-                    pFeatureRecordMsg->Clear();
+                    // Clear for reuse while retaining allocated capacity.
+                    featureRecordMsg.Clear();
                 }
 
                 return grpc::Status::OK;
@@ -99,7 +110,7 @@ namespace OdbDesignServer
             catch (const std::exception &e)
             {
                 std::string error = "Internal server error: " + std::string(e.what());
-                return grpc::Status(grpc::StatusCode::INTERNAL, error);
+                return {grpc::StatusCode::INTERNAL, error};
             }
         }
 
@@ -123,7 +134,7 @@ namespace OdbDesignServer
             catch (const std::exception &e)
             {
                 std::string error = "Internal server error: " + std::string(e.what());
-                return grpc::Status(grpc::StatusCode::INTERNAL, error);
+                return {grpc::StatusCode::INTERNAL, error};
             }
         }
 
