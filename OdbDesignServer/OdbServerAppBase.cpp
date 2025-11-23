@@ -1,26 +1,34 @@
 #include "OdbServerAppBase.h"
-//#include "Logger.h"
-#include "RequestAuthenticationBase.h"
-#include "crow_win.h"
-//#include <boost/throw_exception.hpp>
-//#include <boost/system/system_error.hpp>
-#include "OdbAppBase.h"
+// #include "Logger.h"
+#include <App/RequestAuthenticationBase.h>
+#include <crow_win.h>
+// #include <boost/throw_exception.hpp>
+// #include <boost/system/system_error.hpp>
+#include <App/OdbAppBase.h>
 #include <ExitCode.h>
 #include <memory>
 #include <csignal>
 #include <iostream>
+#include <string>
+#include <thread>
+#include <utility>
+#include <App/DesignCache.h>
+#include <crow/compression.h>
+#include <crow/logging.h>
 
 using namespace Utils;
 using namespace std::filesystem;
 
 namespace Odb::Lib::App
 {
-	OdbServerAppBase::OdbServerAppBase(int argc, char* argv[])
-		: OdbAppBase(argc, argv)
-		, m_shutdownFlag(false)
+	std::atomic<OdbServerAppBase *> OdbServerAppBase::s_activeInstance{nullptr};
+
+	OdbServerAppBase::OdbServerAppBase(int argc, char *argv[])
+		: OdbAppBase(argc, argv), m_shutdownFlag(false)
 	{
 		// Initialize the design cache shared pointer to point to the base class's design cache
-		m_pDesignCache = std::shared_ptr<DesignCache>(&m_designCache, [](DesignCache*){});
+		m_pDesignCache = std::shared_ptr<DesignCache>(&m_designCache, [](DesignCache *) {});
+		s_activeInstance.store(this, std::memory_order_release);
 	}
 
 	bool OdbServerAppBase::preServerRun()
@@ -39,9 +47,19 @@ namespace Odb::Lib::App
 	{
 		stop_servers();
 		m_vecControllers.clear();
+		s_activeInstance.store(nullptr, std::memory_order_release);
 	}
 
-	void OdbServerAppBase::RunGrpcServer(const std::string& server_address, std::shared_ptr<DesignCache> cache)
+	void OdbServerAppBase::HandleSignal(int signum)
+	{
+		auto *instance = s_activeInstance.load(std::memory_order_acquire);
+		if (instance != nullptr)
+		{
+			instance->signal_handler(signum);
+		}
+	}
+
+	void OdbServerAppBase::RunGrpcServer(const std::string &server_address, std::shared_ptr<DesignCache> cache)
 	{
 		// Default implementation does nothing
 		// Override in subclass to implement gRPC service
@@ -95,7 +113,8 @@ namespace Odb::Lib::App
 		}
 
 		// call base class
-		if (ExitCode::Success != OdbAppBase::Run()) return ExitCode::FailedInit;
+		if (ExitCode::Success != OdbAppBase::Run())
+			return ExitCode::FailedInit;
 
 		// set Crow's log level
 		m_crowApp.loglevel(crow::LogLevel::Info);
@@ -115,7 +134,15 @@ namespace Odb::Lib::App
 		// set server to use multiple threads
 		m_crowApp.multithreaded();
 
-		if (!preServerRun()) return ExitCode::PreServerRunFailed;
+		// Register signal handlers to support graceful shutdown
+		std::signal(SIGINT, &OdbServerAppBase::HandleSignal);
+		std::signal(SIGTERM, &OdbServerAppBase::HandleSignal);
+#ifdef SIGBREAK
+		std::signal(SIGBREAK, &OdbServerAppBase::HandleSignal);
+#endif
+
+		if (!preServerRun())
+			return ExitCode::PreServerRunFailed;
 
 		// Start gRPC server in a separate thread
 		start_grpc_server();
@@ -130,18 +157,19 @@ namespace Odb::Lib::App
 			m_grpcThread->join();
 		}
 
-		if (!postServerRun()) return ExitCode::PostServerRunFailed;
+		if (!postServerRun())
+			return ExitCode::PostServerRunFailed;
 
 		// success!
 		return ExitCode::Success;
 	}
 
-	CrowApp& OdbServerAppBase::crow_app()
+	CrowApp &OdbServerAppBase::crow_app()
 	{
 		return m_crowApp;
 	}
 
-	RequestAuthenticationBase& OdbServerAppBase::request_auth()
+	RequestAuthenticationBase &OdbServerAppBase::request_auth()
 	{
 		return *m_pRequestAuthentication;
 	}
@@ -163,9 +191,15 @@ namespace Odb::Lib::App
 
 	void OdbServerAppBase::register_routes()
 	{
-		for (const auto& pController : m_vecControllers)
+		for (const auto &pController : m_vecControllers)
 		{
 			pController->register_routes();
 		}
+	}
+
+	void OdbServerAppBase::signal_handler(int signum)
+	{
+		std::cout << "\nSignal " << signum << " received. Initiating graceful shutdown..." << std::endl;
+		stop_servers();
 	}
 }
