@@ -15,7 +15,7 @@
 #include <memory>
 #include <string>
 #include <App/DesignCache.h>
-#include <App/OdbServerAppBase.h>
+#include "OdbServerAppBase.h"
 #include <crow/middlewares/cors.h>
 #include <grpcpp/security/server_credentials.h>
 #include <grpcpp/server.h>
