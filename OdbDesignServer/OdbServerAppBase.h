@@ -47,6 +47,9 @@ namespace Odb::Lib::App
 		virtual bool postServerRun();
 
 	private:
+		static std::atomic<OdbServerAppBase *> s_activeInstance;
+		static void HandleSignal(int signum);
+
 		CrowApp m_crowApp;
 		std::unique_ptr<RequestAuthenticationBase> m_pRequestAuthentication;
 		std::shared_ptr<DesignCache> m_pDesignCache;
