@@ -397,3 +397,5 @@ build-win/_deps/googletest-subbuild/x64/Debug/googletest-populate/googlete.FFEA6
 build-win/_deps/googletest-subbuild/x64/Debug/googletest-populate/googlete.FFEA6440.tlog/CustomBuild.read.1.tlog
 build-win/_deps/googletest-subbuild/x64/Debug/googletest-populate/googlete.FFEA6440.tlog/CustomBuild.write.1.tlog
 build-win/_deps/googletest-subbuild/x64/Debug/googletest-populate/googlete.FFEA6440.tlog/googletest-populate.lastbuildstate
+.gemini/settings.json.orig
+/.gemini/settings.json.orig
