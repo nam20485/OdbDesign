@@ -1,9 +1,9 @@
 #include "OdbServerAppBase.h"
-//#include "Logger.h"
+// #include "Logger.h"
 #include <App/RequestAuthenticationBase.h>
 #include <crow_win.h>
-//#include <boost/throw_exception.hpp>
-//#include <boost/system/system_error.hpp>
+// #include <boost/throw_exception.hpp>
+// #include <boost/system/system_error.hpp>
 #include <App/OdbAppBase.h>
 #include <ExitCode.h>
 #include <memory>
@@ -21,12 +21,11 @@ using namespace std::filesystem;
 
 namespace Odb::Lib::App
 {
-	OdbServerAppBase::OdbServerAppBase(int argc, char* argv[])
-		: OdbAppBase(argc, argv)
-		, m_shutdownFlag(false)
+	OdbServerAppBase::OdbServerAppBase(int argc, char *argv[])
+		: OdbAppBase(argc, argv), m_shutdownFlag(false)
 	{
 		// Initialize the design cache shared pointer to point to the base class's design cache
-		m_pDesignCache = std::shared_ptr<DesignCache>(&m_designCache, [](DesignCache*){});
+		m_pDesignCache = std::shared_ptr<DesignCache>(&m_designCache, [](DesignCache *) {});
 	}
 
 	bool OdbServerAppBase::preServerRun()
@@ -47,7 +46,7 @@ namespace Odb::Lib::App
 		m_vecControllers.clear();
 	}
 
-	void OdbServerAppBase::RunGrpcServer(const std::string& server_address, std::shared_ptr<DesignCache> cache)
+	void OdbServerAppBase::RunGrpcServer(const std::string &server_address, std::shared_ptr<DesignCache> cache)
 	{
 		// Default implementation does nothing
 		// Override in subclass to implement gRPC service
@@ -60,7 +59,6 @@ namespace Odb::Lib::App
 		{
 			std::string grpc_server_address = "0.0.0.0:" + std::to_string(args().grpcPort());
 			m_grpcThread = std::make_unique<std::thread>(&OdbServerAppBase::RunGrpcServer, this, grpc_server_address, m_pDesignCache);
-			m_grpcThread->detach();
 			std::cout << "gRPC server thread started on port " << args().grpcPort() << std::endl;
 		}
 	}
@@ -102,7 +100,8 @@ namespace Odb::Lib::App
 		}
 
 		// call base class
-		if (ExitCode::Success != OdbAppBase::Run()) return ExitCode::FailedInit;
+		if (ExitCode::Success != OdbAppBase::Run())
+			return ExitCode::FailedInit;
 
 		// set Crow's log level
 		m_crowApp.loglevel(crow::LogLevel::Info);
@@ -122,7 +121,8 @@ namespace Odb::Lib::App
 		// set server to use multiple threads
 		m_crowApp.multithreaded();
 
-		if (!preServerRun()) return ExitCode::PreServerRunFailed;
+		if (!preServerRun())
+			return ExitCode::PreServerRunFailed;
 
 		// Start gRPC server in a separate thread
 		start_grpc_server();
@@ -137,18 +137,19 @@ namespace Odb::Lib::App
 			m_grpcThread->join();
 		}
 
-		if (!postServerRun()) return ExitCode::PostServerRunFailed;
+		if (!postServerRun())
+			return ExitCode::PostServerRunFailed;
 
 		// success!
 		return ExitCode::Success;
 	}
 
-	CrowApp& OdbServerAppBase::crow_app()
+	CrowApp &OdbServerAppBase::crow_app()
 	{
 		return m_crowApp;
 	}
 
-	RequestAuthenticationBase& OdbServerAppBase::request_auth()
+	RequestAuthenticationBase &OdbServerAppBase::request_auth()
 	{
 		return *m_pRequestAuthentication;
 	}
@@ -170,7 +171,7 @@ namespace Odb::Lib::App
 
 	void OdbServerAppBase::register_routes()
 	{
-		for (const auto& pController : m_vecControllers)
+		for (const auto &pController : m_vecControllers)
 		{
 			pController->register_routes();
 		}
