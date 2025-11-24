@@ -34,7 +34,7 @@ target_link_libraries(OdbDesignServer PUBLIC OdbDesign)
 
 # ===== gRPC Configuration (moved from OdbDesignLib) =====
 
-# populate grpc proto files cmake variable to all .proto files in "../OdbDesignLib/protoc/grpc" directory
+# populate grpc proto files cmake variable to all .proto files in "${CMAKE_CURRENT_SOURCE_DIR}/protoc/grpc" directory
 set(PROTO_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../OdbDesignLib/protoc")
 set(GRPC_PROTO_DIR "${CMAKE_CURRENT_SOURCE_DIR}/protoc/grpc")
 file(GLOB GRPC_PROTO_FILES "${GRPC_PROTO_DIR}/*.proto")
