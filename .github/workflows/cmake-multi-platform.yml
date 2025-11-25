@@ -3,7 +3,10 @@ name: CMake Build Multi-Platform
 
 on:
   workflow_dispatch:
-  # No push triggers - PR workflow gates merges, Docker workflow handles post-merge builds
+  # Push triggers only for protected branches (post-merge builds for Docker)
+  # Feature branch pushes are NOT built - only PRs gate those
+  push:
+    branches: ["development", "staging", "main", "release"]
   pull_request:
     branches: ["development", "staging", "main", "release"]
 
