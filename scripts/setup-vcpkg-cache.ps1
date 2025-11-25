@@ -26,8 +26,9 @@
 
 .NOTES
     After running this script, set the environment variable before building:
-    $env:VCPKG_BINARY_SOURCES = "clear;nugetconfig,$pwd/nuget.config,read"
+    $env:VCPKG_BINARY_SOURCES = "clear;nugetconfig,$repoRoot/nuget.config,read"
     
+    (where $repoRoot is the path to the OdbDesign repository root)
     Or add it permanently to your PowerShell profile.
 #>
 
@@ -35,6 +36,8 @@ param(
     [Parameter(Mandatory = $false)]
     [string]$PAT,
     
+    # Default username matches repository owner. Use your own GitHub username if downloading
+    # from your own fork's packages, or keep default to download from main OdbDesign cache.
     [Parameter(Mandatory = $false)]
     [string]$Username = "nam20485",
     
@@ -51,18 +54,17 @@ Write-Host "=== vcpkg Binary Cache Setup for OdbDesign ===" -ForegroundColor Cya
 Write-Host ""
 
 # Prompt for PAT if not provided
+# Note: PAT will be stored in NuGet config as clear text (required by NuGet CLI)
 if (-not $PAT)
 {
     Write-Host "Enter your GitHub Personal Access Token (needs read:packages scope):" -ForegroundColor Yellow
-    $secureToken = Read-Host -AsSecureString
-    $PAT = [Runtime.InteropServices.Marshal]::PtrToStringAuto(
-        [Runtime.InteropServices.Marshal]::SecureStringToBSTR($secureToken)
-    )
+    Write-Host "(Input will be visible - this is intentional as the token will be stored in clear text)" -ForegroundColor DarkYellow
+    $PAT = Read-Host
 }
 
 if (-not $PAT)
 {
-    Write-Error "PAT is required. Create one at https://github.com/settings/tokens with read:packages scope."
+    Write-Error "PAT is required. Create one at https://github.com/settings/tokens/new with read:packages scope (classic token), or use a fine-grained token with package read access."
     exit 1
 }
 
@@ -74,15 +76,26 @@ if (-not $vcpkgRoot)
     $possiblePaths = @(
         "C:\vcpkg",
         "C:\src\vcpkg",
-        "$env:USERPROFILE\vcpkg",
-        "${env:ProgramFiles}\Microsoft Visual Studio\2022\*\VC\vcpkg"
+        "$env:USERPROFILE\vcpkg"
     )
+    
+    # Check Visual Studio editions in order of preference
+    $vsEditions = @("Enterprise", "Professional", "Community")
+    foreach ($edition in $vsEditions)
+    {
+        $vsVcpkgPath = "${env:ProgramFiles}\Microsoft Visual Studio\2022\$edition\VC\vcpkg"
+        if (Test-Path $vsVcpkgPath)
+        {
+            $possiblePaths += $vsVcpkgPath
+            break  # Use first found VS edition
+        }
+    }
+    
     foreach ($path in $possiblePaths)
     {
-        $resolved = Resolve-Path $path -ErrorAction SilentlyContinue
-        if ($resolved -and (Test-Path "$resolved\vcpkg.exe"))
+        if ((Test-Path $path) -and (Test-Path "$path\vcpkg.exe"))
         {
-            $vcpkgRoot = $resolved.Path
+            $vcpkgRoot = $path
             break
         }
     }
@@ -139,6 +152,11 @@ for ($i = 0; $i -lt $sourceLines.Count; $i++)
 }
 
 # Add the NuGet source with credentials
+Write-Host ""
+Write-Host "SECURITY WARNING: Your PAT will be stored in clear text in the NuGet configuration." -ForegroundColor Red
+Write-Host "This is required by NuGet CLI. Ensure your PAT has minimal scopes (read:packages only)." -ForegroundColor Red
+Write-Host ""
+
 Write-Host "Adding NuGet source '$SourceName'..." -ForegroundColor Cyan
 & $nugetPath sources Add `
     -Name $SourceName `
@@ -153,15 +171,37 @@ if ($LASTEXITCODE -ne 0)
     exit 1
 }
 
+# Verify the source was actually added
+$sourcesAfterAdd = & $nugetPath sources List 2>&1
+if ($sourcesAfterAdd -notmatch $SourceName)
+{
+    Write-Error "NuGet source '$SourceName' was not found after adding. Please check for errors above."
+    exit 1
+}
+
 Write-Host ""
-Write-Host "=== NuGet Source Added! ===" -ForegroundColor Green
+Write-Host "=== NuGet Source Added and Verified! ===" -ForegroundColor Green
 Write-Host ""
 
-# Get the repo root (where nuget.config is)
-$repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
-if (-not (Test-Path "$repoRoot\nuget.config"))
+# Get the repo root (where nuget.config is) by searching up the directory tree
+$repoRoot = $PSScriptRoot
+while (-not (Test-Path (Join-Path $repoRoot "nuget.config")))
 {
-    $repoRoot = (Get-Location).Path
+    $parent = Split-Path -Parent $repoRoot
+    if ($parent -eq $repoRoot -or [string]::IsNullOrEmpty($parent))
+    {
+        # Reached filesystem root, fallback to current location
+        $repoRoot = (Get-Location).Path
+        break
+    }
+    $repoRoot = $parent
+}
+
+# Validate nuget.config exists at final location
+if (-not (Test-Path (Join-Path $repoRoot "nuget.config")))
+{
+    Write-Error "Could not find nuget.config in either the repository root or the current directory. Please ensure nuget.config exists."
+    exit 1
 }
 $nugetConfigPath = Join-Path $repoRoot "nuget.config"
 $envVarValue = "clear;nugetconfig,$nugetConfigPath,read"
