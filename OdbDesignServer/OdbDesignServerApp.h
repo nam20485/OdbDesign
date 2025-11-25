@@ -1,7 +1,9 @@
 #pragma once
 
-#include "OdbDesignServer.h"
-#include "App/OdbServerAppBase.h"
+#include "OdbServerAppBase.h"
+#include <memory>
+#include <string>
+#include <App/DesignCache.h>
 
 
 namespace Odb::App::Server

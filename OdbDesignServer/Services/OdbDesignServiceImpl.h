@@ -1,11 +1,12 @@
 #pragma once
 
-#include "grpc/service.grpc.pb.h"
+#include "odbdesign_export.h"
+#include "service.grpc.pb.h"
 #include "App/DesignCache.h"
 #include <memory>
 #include <design.pb.h>
 #include <featuresfile.pb.h>
-#include <grpc/service.pb.h>
+#include <service.pb.h>
 #include <grpcpp/impl/status.h>
 #include <grpcpp/server_context.h>
 #include <grpcpp/support/sync_stream.h>

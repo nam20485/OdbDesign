@@ -2,7 +2,7 @@
 #
 
 add_library(OdbDesign SHARED 
-        "odbdesign_export.h" "FileModel/Design/ComponentsFile.cpp" "FileModel/Design/ComponentsFile.h" "FileModel/Design/EdaDataFile.cpp" "FileModel/Design/EdaDataFile.h" "FileModel/Design/LayerDirectory.cpp" "FileModel/Design/LayerDirectory.h" "FileModel/Design/NetlistFile.cpp" "FileModel/Design/NetlistFile.h" "FileModel/Design/FileArchive.cpp" "FileModel/Design/FileArchive.h" "FileModel/Design/StepDirectory.cpp" "FileModel/Design/StepDirectory.h" "ProductModel/Net.h" "ProductModel/Net.cpp" "ProductModel/Component.h" "ProductModel/Component.cpp" "ProductModel/Pin.h" "ProductModel/Pin.cpp" "ProductModel/PinConnection.h" "ProductModel/PinConnection.cpp" "ProductModel/Package.h" "ProductModel/Package.cpp" "ProductModel/Part.h" "ProductModel/Part.cpp" "ProductModel/Via.h" "ProductModel/Via.cpp" "ProductModel/Design.h" "ProductModel/Design.cpp"  "OdbDesign.h" "App/DesignCache.h" "App/DesignCache.cpp"   "../Utils/win.h" "IProtoBuffable.h" "../Utils/crow_win.h" "FileModel/OdbFile.h" "FileModel/OdbFile.cpp"      "App/IOdbApp.h" "App/IOdbApp.cpp" "App/OdbAppBase.h" "App/OdbAppBase.cpp" "App/RouteController.h" "App/RouteController.cpp" "App/IOdbServerApp.h" "App/OdbServerAppBase.h" "App/OdbServerAppBase.cpp" "App/IOdbServerApp.cpp"
+        "odbdesign_export.h" "FileModel/Design/ComponentsFile.cpp" "FileModel/Design/ComponentsFile.h" "FileModel/Design/EdaDataFile.cpp" "FileModel/Design/EdaDataFile.h" "FileModel/Design/LayerDirectory.cpp" "FileModel/Design/LayerDirectory.h" "FileModel/Design/NetlistFile.cpp" "FileModel/Design/NetlistFile.h" "FileModel/Design/FileArchive.cpp" "FileModel/Design/FileArchive.h" "FileModel/Design/StepDirectory.cpp" "FileModel/Design/StepDirectory.h" "ProductModel/Net.h" "ProductModel/Net.cpp" "ProductModel/Component.h" "ProductModel/Component.cpp" "ProductModel/Pin.h" "ProductModel/Pin.cpp" "ProductModel/PinConnection.h" "ProductModel/PinConnection.cpp" "ProductModel/Package.h" "ProductModel/Package.cpp" "ProductModel/Part.h" "ProductModel/Part.cpp" "ProductModel/Via.h" "ProductModel/Via.cpp" "ProductModel/Design.h" "ProductModel/Design.cpp"  "OdbDesign.h" "App/DesignCache.h" "App/DesignCache.cpp"   "../Utils/win.h" "IProtoBuffable.h" "../Utils/crow_win.h" "FileModel/OdbFile.h" "FileModel/OdbFile.cpp"      "App/IOdbApp.h" "App/IOdbApp.cpp" "App/OdbAppBase.h" "App/OdbAppBase.cpp" "App/RouteController.h" "App/RouteController.cpp" "App/IOdbServerApp.h" "App/IOdbServerApp.cpp"
         FileModel/Design/MatrixFile.cpp
         FileModel/Design/MatrixFile.h
         FileModel/Design/MiscInfoFile.cpp
@@ -19,9 +19,6 @@ add_library(OdbDesign SHARED
 
 # disable warning C4250: inheritance by dominance
 target_compile_options(OdbDesign PUBLIC
-#    $<$<OR:
-#        $<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>:
-#            >
         $<$<CXX_COMPILER_ID:MSVC>:
             /wd4250>)
 
@@ -44,11 +41,7 @@ target_include_directories(OdbDesign
 find_package(ZLIB REQUIRED)
 target_link_libraries(OdbDesign PRIVATE ZLIB::ZLIB)
 
-find_package(OpenSSL REQUIRED)
-target_link_libraries(OdbDesign PUBLIC OpenSSL::SSL OpenSSL::Crypto)
-
 target_compile_definitions(OdbDesign PUBLIC CROW_ENABLE_COMPRESSION)
-target_compile_definitions(OdbDesign PUBLIC CROW_ENABLE_SSL)
 
 # link to Crow
 find_package(Crow CONFIG REQUIRED)
@@ -71,43 +64,6 @@ protobuf_generate(
 )
 
 target_link_libraries(OdbDesign PUBLIC protobuf::libprotobuf)
-# mark the generated Protofbuf C++ files as generated
-set_source_files_properties(${PROTO_SRC} ${PROTO_HDRS} PROPERTIES GENERATED TRUE)
-# add the generated Protobuf C++ files to the target
-target_sources(OdbDesign PRIVATE ${PROTO_SRCS} ${PROTO_HDRS})
-
-# populate grpc proto files cmake variable to all .proto files in "./protoc/grpc" directory
-set(GRPC_PROTO_DIR "${PROTO_DIR}/grpc")
-file(GLOB GRPC_PROTO_FILES "${GRPC_PROTO_DIR}/*.proto")
-message(STATUS "Found grpc proto files: ${GRPC_PROTO_FILES}")
-
-# grpc
-find_package(gRPC CONFIG REQUIRED)
-
-# Generate protobuf messages for gRPC proto files
-protobuf_generate(
-    TARGET OdbDesign
-    PROTOS ${GRPC_PROTO_FILES}
-    IMPORT_DIRS ${PROTO_DIR}
-    EXPORT_MACRO ODBDESIGN_EXPORT
-)
-
-# Generate gRPC service stubs
-protobuf_generate(
-    TARGET OdbDesign
-    LANGUAGE grpc
-    GENERATE_EXTENSIONS .grpc.pb.h .grpc.pb.cc
-    PLUGIN "protoc-gen-grpc=$<TARGET_FILE:gRPC::grpc_cpp_plugin>"
-    #PLUGIN_OPTIONS "dllexport_decl=ODBDESIGN_EXPORT"
-    PROTOS ${GRPC_PROTO_FILES}
-    IMPORT_DIRS ${PROTO_DIR}    
-)
-
-target_link_libraries(OdbDesign PUBLIC gRPC::gpr gRPC::grpc gRPC::grpc++)
-# mark the generated Protofbuf C++ files as generated
-set_source_files_properties(${GRPC_PROTO_SRC} ${GRPC_PROTO_HDRS} PROPERTIES GENERATED TRUE)
-# add the generated Protobuf C++ files to the target
-target_sources(OdbDesign PRIVATE ${GRPC_PROTO_SRC} ${GRPC_PROTO_HDRS})
 
 # workaround to remove error: "C++ command-line error: invalid macro definition: _CROW_ICD-NOTFOUND"
 # (see https://github.com/CrowCpp/Crow/issues/661#issuecomment-1702544225)
