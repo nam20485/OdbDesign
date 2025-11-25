@@ -41,11 +41,7 @@ target_include_directories(OdbDesign
 find_package(ZLIB REQUIRED)
 target_link_libraries(OdbDesign PRIVATE ZLIB::ZLIB)
 
-find_package(OpenSSL REQUIRED)
-target_link_libraries(OdbDesign PUBLIC OpenSSL::SSL OpenSSL::Crypto)
-
 target_compile_definitions(OdbDesign PUBLIC CROW_ENABLE_COMPRESSION)
-target_compile_definitions(OdbDesign PUBLIC CROW_ENABLE_SSL)
 
 # link to Crow
 find_package(Crow CONFIG REQUIRED)

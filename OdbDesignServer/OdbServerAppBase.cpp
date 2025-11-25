@@ -44,23 +44,29 @@ namespace {
 	std::atomic<bool> s_consoleLoopStop{ false };
 	std::thread s_consoleThread;
 
-	void start_interactive_quit_if_tty() {
+	void start_interactive_quit_if_tty()
+	{
 		if (s_consoleLoopStarted.exchange(true)) return;
-		if (!ISATTY(FILENO(stdin))) {
+		if (!ISATTY(FILENO(stdin)))
+		{
 			return; // non-interactive (containers/k8s) -> no console loop
 		}
+
 		s_consoleLoopStop.store(false);
-		s_consoleThread = std::thread([] {
-			std::fprintf(stderr, "[interactive] Type 'q' then Enter to quit gracefully...\n");
-			std::string line;
-			while (!s_consoleLoopStop.load() && std::getline(std::cin, line)) {
-				for (auto& ch : line) ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
-				if (line == "q" || line == "quit" || line == "exit" || line == "shutdown") {
-					// Unify with the SIGINT path your class already exposes
-					Odb::Lib::App::OdbServerAppBase::HandleSignal(SIGINT);
-					break;
+		s_consoleThread = std::thread([]
+			{
+				std::fprintf(stderr, "[interactive] Type 'q' then Enter to quit gracefully...\n");
+				std::string line;
+				while (!s_consoleLoopStop.load() && std::getline(std::cin, line))
+				{
+					for (auto& ch : line) ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
+					if (line == "q" || line == "quit" || line == "exit" || line == "shutdown")
+					{
+						// Unify with the SIGINT path your class already exposes
+						Odb::Lib::App::OdbServerAppBase::HandleSignal(SIGINT);
+						break;
+					}
 				}
-			}
 			});
 	}
 

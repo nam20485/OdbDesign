@@ -9,8 +9,7 @@
       "features": [
         "zlib"
       ]
-    },
-    "openssl",
+    },    
     "grpc"
   ]
 }
