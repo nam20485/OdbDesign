@@ -1,5 +1,11 @@
 #include "Logger.h"
 #include <filesystem>
+#include <exception>
+#include "DesignCache.h"
+#include "OdbAppBase.h"
+#include "OdbDesignArgs.h"
+#include <google/protobuf/stubs/common.h>
+#include <ExitCode.h>
 
 using namespace Utils;
 using namespace std::filesystem;

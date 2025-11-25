@@ -134,12 +134,13 @@ namespace Odb::Lib::App
 		// set server to use multiple threads
 		m_crowApp.multithreaded();
 
-		// Register signal handlers to support graceful shutdown
-		std::signal(SIGINT, &OdbServerAppBase::HandleSignal);
-		std::signal(SIGTERM, &OdbServerAppBase::HandleSignal);
-#ifdef SIGBREAK
-		std::signal(SIGBREAK, &OdbServerAppBase::HandleSignal);
-#endif
+		// crow handles signals, wait for crow to shutdown as "signal" to init graceful shutdown
+//		// Register signal handlers to support graceful shutdown
+//		std::signal(SIGINT, &OdbServerAppBase::HandleSignal);
+//		std::signal(SIGTERM, &OdbServerAppBase::HandleSignal);
+//#ifdef SIGBREAK
+//		std::signal(SIGBREAK, &OdbServerAppBase::HandleSignal);
+//#endif
 
 		if (!preServerRun())
 			return ExitCode::PreServerRunFailed;
@@ -150,6 +151,12 @@ namespace Odb::Lib::App
 		// run the Crow server (blocks until stop() is called)
 		std::cout << "Crow REST server starting on port " << args().port() << std::endl;
 		m_crowApp.run();
+
+		// Stop gRPC
+		if (m_grpcServer)
+		{
+			m_grpcServer->Shutdown();
+		}
 
 		// Wait for gRPC thread to finish
 		if (m_grpcThread && m_grpcThread->joinable())
