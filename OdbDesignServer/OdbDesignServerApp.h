@@ -1,6 +1,5 @@
 #pragma once
 
-#include "OdbDesignServer.h"
 #include "OdbServerAppBase.h"
 #include <memory>
 #include <string>
