@@ -56,12 +56,24 @@ namespace Odb::App::Server
 		builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
 		builder.RegisterService(&service);
 
-		std::unique_ptr<grpc::Server> server(builder.BuildAndStart());
-		std::cout << "gRPC server listening on " << server_address << std::endl;
+		 // Build server and transfer ownership to base via shared_ptr
+		std::unique_ptr<grpc::Server> serverUnique = builder.BuildAndStart();
+		if (!serverUnique) {
+			std::cerr << "ERROR: Failed to start gRPC server on " << server_address << std::endl;
+			return;
+		}
+		std::cout << "gRPC server listening on " << server_address << std::endl;		
+
+		  // Share ownership so base class can Shutdown() it from another thread
+		std::shared_ptr<grpc::Server> serverShared(std::move(serverUnique));
+		set_grpc_server(serverShared);
 
 		// Wait for shutdown signal
-		server->Wait();
+		serverShared->Wait();
 		std::cout << "gRPC server shut down." << std::endl;
+
+		// Release ownership after shutdown (base will also reset on its side)
+		set_grpc_server(nullptr);
 	}
 
 	bool OdbDesignServerApp::preServerRun()

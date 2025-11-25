@@ -16,8 +16,58 @@
 #include <crow/compression.h>
 #include <crow/logging.h>
 
+#if defined(_WIN32)
+#include <io.h>
+#define ISATTY _isatty
+#define FILENO _fileno
+#else
+#include <unistd.h>
+#define ISATTY isatty
+#define FILENO fileno
+#include <sys/select.h>
+#include <sys/time.h>
+#endif
+#include <atomic>
+#include <cctype>
+#include <cstdio>
+#include <crow/app.h>
+#include <crow/http_response.h>
+#include <grpcpp/server.h>
+
 using namespace Utils;
 using namespace std::filesystem;
+
+namespace {
+
+// Interactive console quit helper (TTY-only)
+	std::atomic<bool> s_consoleLoopStarted{ false };
+	std::atomic<bool> s_consoleLoopStop{ false };
+	std::thread s_consoleThread;
+
+	void start_interactive_quit_if_tty() {
+		if (s_consoleLoopStarted.exchange(true)) return;
+		if (!ISATTY(FILENO(stdin))) {
+			return; // non-interactive (containers/k8s) -> no console loop
+		}
+		s_consoleLoopStop.store(false);
+		s_consoleThread = std::thread([] {
+			std::fprintf(stderr, "[interactive] Type 'q' then Enter to quit gracefully...\n");
+			std::string line;
+			while (!s_consoleLoopStop.load() && std::getline(std::cin, line)) {
+				for (auto& ch : line) ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
+				if (line == "q" || line == "quit" || line == "exit" || line == "shutdown") {
+					// Unify with the SIGINT path your class already exposes
+					Odb::Lib::App::OdbServerAppBase::HandleSignal(SIGINT);
+					break;
+				}
+			}
+			});
+	}
+
+	void stop_interactive_quit() { s_consoleLoopStop.store(true); }
+	void join_interactive_quit() { if (s_consoleThread.joinable()) s_consoleThread.join(); }
+
+} // anonymous namespace
 
 namespace Odb::Lib::App
 {
@@ -76,6 +126,13 @@ namespace Odb::Lib::App
 		}
 	}
 
+	void OdbServerAppBase::set_grpc_server(std::shared_ptr<grpc::Server> server) {
+		m_grpcServer = std::move(server);
+	}
+
+	// Accessor if needed by controllers/services
+	inline std::shared_ptr<grpc::Server> OdbServerAppBase::grpc_server() const { return m_grpcServer; }
+
 	void OdbServerAppBase::stop_servers()
 	{
 		if (m_shutdownFlag.exchange(true))
@@ -128,19 +185,20 @@ namespace Odb::Lib::App
 		// register all added controllers' routes
 		register_routes();
 
+		// minimal health/readiness routes
+		CROW_ROUTE(m_crowApp, "/healthz")([] {
+			return crow::response{ 200, "ok" };
+			});
+		CROW_ROUTE(m_crowApp, "/ready")([this] {
+			if (m_shutdownFlag.load()) return crow::response{ 503, "not ready" };
+			return crow::response{ 200, "ready" };
+			});
+
 		// set port to passed-in port or default if none supplied
 		m_crowApp.port(static_cast<unsigned short>(args().port()));
 
 		// set server to use multiple threads
-		m_crowApp.multithreaded();
-
-		// crow handles signals, wait for crow to shutdown as "signal" to init graceful shutdown
-//		// Register signal handlers to support graceful shutdown
-//		std::signal(SIGINT, &OdbServerAppBase::HandleSignal);
-//		std::signal(SIGTERM, &OdbServerAppBase::HandleSignal);
-//#ifdef SIGBREAK
-//		std::signal(SIGBREAK, &OdbServerAppBase::HandleSignal);
-//#endif
+		m_crowApp.multithreaded();		
 
 		if (!preServerRun())
 			return ExitCode::PreServerRunFailed;
@@ -148,9 +206,16 @@ namespace Odb::Lib::App
 		// Start gRPC server in a separate thread
 		start_grpc_server();
 
+		// Start interactive quit (TTY only). Type 'q' + Enter to stop.
+		start_interactive_quit_if_tty();
+
 		// run the Crow server (blocks until stop() is called)
 		std::cout << "Crow REST server starting on port " << args().port() << std::endl;
 		m_crowApp.run();
+
+		// Stop interactive watcher and join
+		stop_interactive_quit();
+		join_interactive_quit();
 
 		// Stop gRPC
 		if (m_grpcServer)
