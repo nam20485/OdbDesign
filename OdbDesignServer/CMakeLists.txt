@@ -83,7 +83,8 @@ protobuf_generate(
 # Link gRPC libraries
 target_link_libraries(OdbDesignServer PUBLIC gRPC::gpr gRPC::grpc gRPC::grpc++ gRPC::grpc++_reflection)
 
-target_include_directories(OdbDesignServer PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+# Include generated gRPC files directory
+target_include_directories(OdbDesignServer PRIVATE ${CMAKE_CURRENT_BINARY_DIR} ${GRPC_CODEGEN_DIR})
 
 # mark the generated Protobuf C++ files as generated
 set_source_files_properties(${GRPC_PROTO_SRCS} ${GRPC_PROTO_HDRS} PROPERTIES GENERATED TRUE)
