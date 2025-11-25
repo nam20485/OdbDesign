@@ -3,10 +3,9 @@ name: CMake Build Multi-Platform
 
 on:
   workflow_dispatch:
-  push:
-    branches: ["nam20485", "feature/grpc", "main", "develop", "development"]
+  # No push triggers - PR workflow gates merges, Docker workflow handles post-merge builds
   pull_request:
-    branches: ["development", "staging", "main", "release", "nam20485"]
+    branches: ["development", "staging", "main", "release"]
 
 permissions:
   contents: read
