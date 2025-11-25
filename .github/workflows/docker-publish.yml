@@ -44,7 +44,7 @@ jobs:
     permissions:
       # write required for sending repository dispatch event
       contents: write
-      # write required for uploading docker image to packages   
+      # write required for uploading docker image to packages
       packages: write
       # Required for downloading artifacts from other workflow runs
       actions: read
@@ -66,7 +66,7 @@ jobs:
         if: github.event_name == 'workflow_run' || (github.event_name == 'workflow_dispatch' && inputs.use_prebuilt == 'true')
         uses: actions/download-artifact@v4
         with:
-          name: ubuntu-22.04-artifacts
+          name: ubuntu-24.04-artifacts
           path: ./artifacts-zip
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id }}
@@ -75,7 +75,7 @@ jobs:
         if: github.event_name == 'workflow_run' || (github.event_name == 'workflow_dispatch' && inputs.use_prebuilt == 'true')
         run: |
           mkdir -p ./artifacts
-          unzip ./artifacts-zip/artifacts-ubuntu-22.04.zip -d ./artifacts
+          unzip ./artifacts-zip/artifacts-ubuntu-24.04.zip -d ./artifacts
           ls -la ./artifacts
 
       # add problem matchers
