@@ -86,7 +86,7 @@ jobs:
       - name: Install vcpkg Dependencies (Ubuntu)
         run: |
           sudo apt update
-          sudo apt install -y -q --no-install-recommends build-essential tar curl zip unzip mono-devel
+          sudo apt install -y -q --no-install-recommends build-essential tar curl zip unzip mono-devel linux-libc-dev
         if: matrix.os == 'ubuntu-24.04'
 
       - name: Install mono (macOS)
