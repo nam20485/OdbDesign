@@ -7,7 +7,7 @@ add_executable(OdbDesignServer
     "Controllers/HelloWorldController.cpp"     
     "OdbDesignServerApp.h" 
     "OdbDesignServerApp.cpp" 
-    "OdbDesignServer.h"      
+          
     "Controllers/FileUploadController.h" 
     "Controllers/FileUploadController.cpp" 
     "Controllers/FileModelController.h" 
