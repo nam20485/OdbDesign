@@ -14,19 +14,19 @@ on:
     branches: [development, staging, main, release]
   schedule:
     # Weekly scan on Sunday at midnight for new CVE updates
-    - cron: '0 0 * * 0'
+    - cron: "0 0 * * 0"
   workflow_dispatch:
     inputs:
       branch:
-        description: 'Branch tag to scan (e.g., main, development)'
+        description: "Branch tag to scan (e.g., main, development)"
         required: false
-        default: 'development'
-   
+        default: "development"
+
 env:
   # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
-  IMAGE_NAME: ${{ github.repository }}  
+  IMAGE_NAME: ${{ github.repository }}
   # Use `latest` as the tag to compare to if empty, assuming that it's already pushed
   COMPARE_TAG: latest
 
@@ -72,9 +72,9 @@ jobs:
           fi
 
       # Login against Docker Hub to allow running Docker Scout
-      - name: Log into Docker Hub registry        
+      - name: Log into Docker Hub registry
         uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567
-        with:          
+        with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
@@ -95,7 +95,7 @@ jobs:
           image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.SCAN_TAG }}
           sarif-file: sarif.output.json
           summary: true
-        
+
       - name: Upload SARIF result
         id: upload-sarif
         uses: github/codeql-action/upload-sarif@3c3833e0f8c1c83d449a7478aa59c036a9165498 # v3.29.11
@@ -120,4 +120,3 @@ jobs:
           to: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main-${{ env.COMPARE_TAG }}
           ignore-unchanged: true
           only-severities: critical,high
- 
