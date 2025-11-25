@@ -74,8 +74,5 @@ namespace Odb::Lib::App
 		void signal_handler(int signum);
 		void start_grpc_server();
 		void stop_servers();
-
-		static constexpr auto *SSL_CERT_FILE = "ssl.crt";
-		static constexpr auto *SSL_KEY_FILE = "ssl.key";
 	};
 }
