@@ -20,15 +20,15 @@ namespace Odb::Lib::App
 	class OdbServerAppBase : public OdbAppBase, public IOdbServerApp
 	{
 	public:
-		virtual ~OdbServerAppBase();
+		~OdbServerAppBase() override;
 
 		CrowApp &crow_app() override;
 
 		RequestAuthenticationBase &request_auth() override;
 		void request_auth(std::unique_ptr<RequestAuthenticationBase> pRequestAuthentication) override;
 
-		std::shared_ptr<DesignCache> design_cache();
-		void design_cache(std::shared_ptr<DesignCache> pDesignCache);
+		std::shared_ptr<DesignCache> design_cache() override;
+		void design_cache(std::shared_ptr<DesignCache> pDesignCache) override;
 
 		Utils::ExitCode Run() override;
 
