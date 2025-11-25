@@ -68,10 +68,6 @@ protobuf_generate(
 )
 
 target_link_libraries(OdbDesign PUBLIC protobuf::libprotobuf)
-# mark the generated Protofbuf C++ files as generated
-set_source_files_properties(${PROTO_SRC} ${PROTO_HDRS} PROPERTIES GENERATED TRUE)
-# add the generated Protobuf C++ files to the target
-target_sources(OdbDesign PRIVATE ${PROTO_SRCS} ${PROTO_HDRS})
 
 # workaround to remove error: "C++ command-line error: invalid macro definition: _CROW_ICD-NOTFOUND"
 # (see https://github.com/CrowCpp/Crow/issues/661#issuecomment-1702544225)
