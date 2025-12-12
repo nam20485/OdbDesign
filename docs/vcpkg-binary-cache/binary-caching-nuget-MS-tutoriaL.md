@@ -233,7 +233,7 @@ Set the `VCPKG_BINARY_SOURCES` environment variable as follows:
 ::: zone pivot="shell-powershell"
 
 ```PowerShell
-$env:VCPKG_BINARY_SOURCES="clear;nuget,<feed url>,readwrite"
+$env:VCPKG_BINARY_SOURCES="clear;nuget,<feed url>,readwrite;interactive"
 ```
 
 If you're using a `nuget.config` file, instead do:
@@ -246,7 +246,7 @@ $env:VCPKG_BINARY_SOURCES="clear;nugetconfig,<path to nuget.config>"
 ::: zone pivot="shell-cmd"
 
 ```console
-set "VCPKG_BINARY_SOURCES=clear;nuget,<feed url>,readwrite"
+set "VCPKG_BINARY_SOURCES=clear;nuget,<feed url>,readwrite;interactive"
 ```
 
 If you're using a `nuget.config` file, instead do:
@@ -264,7 +264,7 @@ set "VCPKG_BINARY_SOURCES=clear;nugetconfig,<path to nuget.config>"
 > your shell's profile script (e.g., `~/.bashrc` or `~/.zshrc`).
 
 ```bash
-export VCPKG_BINARY_SOURCES="clear;nuget,<feed url>,readwrite"
+export VCPKG_BINARY_SOURCES="clear;nuget,<feed url>,readwrite;interactive"
 ```
 
 If you're using a `nuget.config` file, instead do:
