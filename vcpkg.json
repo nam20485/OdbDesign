@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "$scheme": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
   "dependencies": [
     "libarchive",
     "zlib",
@@ -9,7 +9,9 @@
       "features": [
         "zlib"
       ]
-    },    
-    "grpc"
+    },
+    {
+      "name": "grpc"
+    }
   ]
 }
