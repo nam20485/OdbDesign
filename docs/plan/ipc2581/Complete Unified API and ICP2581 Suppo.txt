@@ -1,0 +1,28 @@
+# Complete Unified API and IPC-2581 Support Migration
+
+This folder contains the notes/plans for completing the client migration
+from direct ODB++ parsing to the Unified Server API the client implementation expects.
+
+It also tracks the work needed to add IPC-2581 (DPMX) support on the backend
+so the same client code path works for both ODB++ and IPC-2581 inputs.
+
+## Files in this folder
+
+- `Client Migration Guide_ ODB++ to Unified API.md`
+  Client-facing migration guide and checklist describing what the client must stop
+  doing (ODB++ directory/feature parsing, symbol/unit handling) and what it should
+  do instead (consume Unified REST/gRPC models/streams).
+
+- `IPC-2581 Implementation Plan for OdbDesign.md`
+  Backend/library implementation plan to import IPC-2581 XML and populate the unified
+  ProductModel so existing REST/gRPC endpoints can serve IPC designs without
+  changing the public API surface.
+
+- `odb-file-references.md`
+  A targeted inventory of remaining ODB++ file/FeaturesFile coupling in the
+  current plans, with concrete “update needed” notes to replace those assumptions
+  with Unified API calls/streams.
+
+- `Complete Unified API and ICP2581 Suppo.txt`
+  This index file: an entry point that states the goal of the migration and links
+  to the related documents above.
