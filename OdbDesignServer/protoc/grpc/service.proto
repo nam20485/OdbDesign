@@ -4,6 +4,7 @@ package Odb.Grpc;
 // Import existing data models defined in OdbDesignLib
 import "design.proto";
 import "featuresfile.proto";
+import "symbolname.proto";
 //import "common.proto";
 
 // Service definition for ODB++ data
@@ -15,6 +16,9 @@ service OdbDesignService {
   // Server-streaming call for high-performance streaming of layer features.
   // This is the primary performance-critical endpoint.
   rpc GetLayerFeaturesStream(GetLayerFeaturesRequest) returns (stream .Odb.Lib.Protobuf.FeaturesFile.FeatureRecord); 
+
+  // Returns symbol list + units metadata for a layer.
+  rpc GetLayerSymbols(GetLayerSymbolsRequest) returns (GetLayerSymbolsResponse);
 
   // A simple health check for the gRPC server
   rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
@@ -29,6 +33,25 @@ message GetLayerFeaturesRequest {
   string design_name = 1;
   string step_name = 2; 
   string layer_name = 3;
+}
+
+message GetLayerSymbolsRequest {
+  string design_name = 1;
+  string step_name = 2;
+  string layer_name = 3;
+}
+
+message GetLayerSymbolsResponse {
+  // Indexing contract for FeatureRecord.sym_num.
+  // Required for this phase: 0
+  int32 sym_num_base = 1;
+
+  // Minimal units contract
+  string units = 2;        // e.g. "mm", "micron", "mil", "inch"
+  double units_to_mm = 3;  // multiply numeric values by this to get millimeters
+
+  // Mapping: symbol_names[i] corresponds to sym_num == (i + sym_num_base)
+  repeated .Odb.Lib.Protobuf.SymbolName symbol_names = 4;
 }
 
 message HealthCheckRequest { 

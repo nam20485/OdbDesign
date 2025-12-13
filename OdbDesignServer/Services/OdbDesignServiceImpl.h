@@ -7,6 +7,7 @@
 #include <design.pb.h>
 #include <featuresfile.pb.h>
 #include <service.pb.h>
+#include <symbolname.pb.h>
 #include <grpcpp/impl/status.h>
 #include <grpcpp/server_context.h>
 #include <grpcpp/support/sync_stream.h>
@@ -26,6 +27,10 @@ namespace OdbDesignServer {
             grpc::Status GetLayerFeaturesStream(grpc::ServerContext* context,
                 const Odb::Grpc::GetLayerFeaturesRequest* request,
                 grpc::ServerWriter<Odb::Lib::Protobuf::FeaturesFile::FeatureRecord>* writer) override;
+
+            grpc::Status GetLayerSymbols(grpc::ServerContext* context,
+                const Odb::Grpc::GetLayerSymbolsRequest* request,
+                Odb::Grpc::GetLayerSymbolsResponse* response) override;
 
             grpc::Status HealthCheck(grpc::ServerContext* context,
                 const Odb::Grpc::HealthCheckRequest* request,

@@ -12,12 +12,18 @@ namespace Odb::Lib::FileModel::Design
 	SymbolName::SymbolName()
 		: m_name("")
 		, m_unitType(UnitType::None)
+		, m_index(-1)
 	{
 	}
 
 	std::string SymbolName::GetName() const
 	{
 		return m_name;
+	}
+
+	int SymbolName::GetIndex() const
+	{
+		return m_index;
 	}
 
 	UnitType SymbolName::GetUnitType() const
@@ -34,6 +40,18 @@ namespace Odb::Lib::FileModel::Design
 		if (!std::getline(lineStream, token, ' '))
 		{
 			throw_parse_error(path, line, token, lineNumber);
+		}
+
+		if (!token.empty() && token[0] == '$')
+		{
+			try
+			{
+				m_index = std::stoi(token.substr(1));
+			}
+			catch (...)
+			{
+				m_index = -1;
+			}
 		}
 
 		if (std::getline(lineStream, token, ' '))
@@ -73,6 +91,7 @@ namespace Odb::Lib::FileModel::Design
 	{
 		m_name = message.name();
 		m_unitType = static_cast<UnitType>(message.unittype());
+		m_index = -1;
 	}
 
 	//std::shared_ptr<SymbolName> SymbolName::Parse(const std::string& line)
