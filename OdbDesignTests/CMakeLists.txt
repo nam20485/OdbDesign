@@ -18,7 +18,8 @@ add_executable(OdbDesignTests
     "PerformanceTests.cpp"
     "EnhancedTests.cpp"
     "IntegrationTests.cpp"
-    "Fixtures/TestUtils.h")
+    "Fixtures/TestUtils.h"
+    "FeatureRecordSurfaceTests.cpp")
 
 target_link_libraries(OdbDesignTests PRIVATE GTest::gtest_main GTest::gmock_main)
 
