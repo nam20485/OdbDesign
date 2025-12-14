@@ -5,6 +5,8 @@
 #include <FileModel/Design/FileArchive.h>
 #include <sstream>
 #include <string>
+#include <algorithm>
+#include <cctype>
 #include "crow_win.h"
 #include "App/RouteController.h"
 
@@ -15,6 +17,43 @@ using namespace Utils;
 
 namespace Odb::App::Server
 {
+	namespace
+	{
+		std::string to_lower_copy(const std::string& s)
+		{
+			std::string out = s;
+			std::transform(out.begin(), out.end(), out.begin(), [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+			return out;
+		}
+
+		Odb::Lib::UnitType expected_symbol_unit_type_from_features_units(const std::string& rawUnits)
+		{
+			auto u = to_lower_copy(rawUnits);
+			if (u == "mm" || u == "millimeter" || u == "millimeters" || u == "micron" || u == "microns" || u == "um" || u == "µm")
+			{
+				return Odb::Lib::UnitType::Metric;
+			}
+			if (u == "inch" || u == "inches" || u == "in" || u == "mil" || u == "mils")
+			{
+				return Odb::Lib::UnitType::Imperial;
+			}
+			return Odb::Lib::UnitType::None;
+		}
+
+		SymbolName::Vector collect_symbols(const FeaturesFile& featuresFile)
+		{
+			const auto& vec = featuresFile.GetSymbolNames();
+			if (!vec.empty()) return vec;
+
+			SymbolName::Vector collected;
+			for (const auto& kv : featuresFile.GetSymbolNamesByName())
+			{
+				collected.push_back(kv.second);
+			}
+			return collected;
+		}
+	}
+
 	FileModelController::FileModelController(Odb::Lib::App::IOdbServerApp& serverApp)
 		: RouteController(serverApp)
 	{
@@ -213,6 +252,19 @@ namespace Odb::App::Server
 					}
 
 					return this->steps_layers_list_route_handler(designName, stepName, req);
+				});
+
+		CROW_ROUTE(m_serverApp.crow_app(), "/filemodels/<string>/steps/<string>/diagnostics/symbol_units")
+			([&](const crow::request& req, std::string designName, std::string stepName)
+				{
+					// authenticate request before sending to handler
+					auto authResp = m_serverApp.request_auth().AuthenticateRequest(req);
+					if (authResp.code != crow::status::OK)
+					{
+						return authResp;
+					}
+
+					return this->steps_diagnostics_symbol_units_route_handler(designName, stepName, req);
 				});
 
 		CROW_ROUTE(m_serverApp.crow_app(), "/filemodels/<string>/steps/<string>/layers/<string>/components")
@@ -921,6 +973,89 @@ namespace Odb::App::Server
 		crow::json::wvalue jsonResponse;
 		jsonResponse["layers"] = std::move(layerNames);
 		return crow::response(jsonResponse);
+	}
+
+	crow::response FileModelController::steps_diagnostics_symbol_units_route_handler(const std::string& designName, const std::string& stepName, const crow::request& req)
+	{
+		auto designNameDecoded = UrlEncoding::decode(designName);
+		if (designNameDecoded.empty())
+		{
+			return crow::response(crow::status::BAD_REQUEST, "design name not specified");
+		}
+
+		auto stepNameDecoded = UrlEncoding::decode(stepName);
+		if (stepNameDecoded.empty())
+		{
+			return crow::response(crow::status::BAD_REQUEST, "step name not specified");
+		}
+
+		auto pFileArchive = m_serverApp.designs().GetFileArchive(designNameDecoded);
+		if (pFileArchive == nullptr)
+		{
+			std::stringstream ss;
+			ss << "design: \"" << designNameDecoded << "\" not found";
+			return crow::response(crow::status::NOT_FOUND, ss.str());
+		}
+
+		auto& stepsByName = pFileArchive->GetStepsByName();
+		auto findIt = stepsByName.find(stepNameDecoded);
+		if (findIt == stepsByName.end())
+		{
+			std::stringstream ss;
+			ss << "(design: \"" << designNameDecoded << "\")" << " step: \"" << stepNameDecoded << "\" not found";
+			return crow::response(crow::status::NOT_FOUND, ss.str());
+		}
+		auto& step = findIt->second;
+
+		const auto& layersByName = step->GetLayersByName();
+		crow::json::wvalue::list layers;
+		for (const auto& kv : layersByName)
+		{
+			const auto& layerName = kv.first;
+			auto pLayer = kv.second;
+			if (!pLayer) continue;
+
+			const auto& featuresFile = pLayer->GetFeaturesFile();
+			const auto symbols = collect_symbols(featuresFile);
+
+			int metricCount = 0;
+			int imperialCount = 0;
+			int noneCount = 0;
+			for (const auto& sym : symbols)
+			{
+				if (!sym) continue;
+				switch (sym->GetUnitType())
+				{
+				case Odb::Lib::UnitType::Metric: metricCount++; break;
+				case Odb::Lib::UnitType::Imperial: imperialCount++; break;
+				case Odb::Lib::UnitType::None: noneCount++; break;
+				}
+			}
+
+			const auto rawUnits = featuresFile.GetUnits();
+			const auto expected = expected_symbol_unit_type_from_features_units(rawUnits);
+			const auto hasMixed = (metricCount > 0 && imperialCount > 0);
+			const auto hasMismatch =
+				(expected == Odb::Lib::UnitType::Metric && imperialCount > 0) ||
+				(expected == Odb::Lib::UnitType::Imperial && metricCount > 0);
+
+			crow::json::wvalue layer;
+			layer["layer"] = layerName;
+			layer["features_units_raw"] = rawUnits;
+			layer["symbols_total"] = static_cast<int>(symbols.size());
+			layer["symbol_unit_counts"]["metric"] = metricCount;
+			layer["symbol_unit_counts"]["imperial"] = imperialCount;
+			layer["symbol_unit_counts"]["none"] = noneCount;
+			layer["has_mixed_symbol_unit_types"] = hasMixed;
+			layer["has_mismatch_vs_features_units"] = hasMismatch;
+			layers.push_back(layer);
+		}
+
+		crow::json::wvalue result;
+		result["design"] = designNameDecoded;
+		result["step"] = stepNameDecoded;
+		result["layers"] = std::move(layers);
+		return crow::response(result);
 	}
 
 	crow::response FileModelController::steps_route_handler(const std::string& designName, const std::string& stepName, const crow::request& req)
