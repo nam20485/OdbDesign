@@ -31,6 +31,14 @@ namespace Odb::Lib::FileModel::Design
 		return m_unitType;
 	}
 
+	void SymbolName::ApplyDefaultUnitTypeIfNone(UnitType unitType)
+	{
+		if (m_unitType == UnitType::None)
+		{
+			m_unitType = unitType;
+		}
+	}
+
 	bool SymbolName::Parse(const std::filesystem::path& path, const std::string& line, int lineNumber)
 	{
 		std::stringstream lineStream(line);
