@@ -9,15 +9,46 @@
 #include "equals_within.h"
 #include "macros.h"
 
+#include <algorithm>
+#include <cctype>
+
 
 namespace Odb::Lib::FileModel::Design
 {
+	namespace
+	{
+		UnitType inferred_unit_type_from_features_units(const std::string& rawUnits)
+		{
+			if (rawUnits.empty()) return UnitType::None;
+			std::string u = rawUnits;
+			std::transform(u.begin(), u.end(), u.begin(), [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+			if (u == "mm" || u == "millimeter" || u == "millimeters" || u == "micron" || u == "microns" || u == "um" || u == "µm")
+			{
+				return UnitType::Metric;
+			}
+			if (u == "inch" || u == "inches" || u == "in" || u == "mil" || u == "mils")
+			{
+				return UnitType::Imperial;
+			}
+			return UnitType::None;
+		}
+
+		void apply_default_units_to_symbols(const std::string& rawUnits, SymbolName::Vector& symbols)
+		{
+			const auto inferred = inferred_unit_type_from_features_units(rawUnits);
+			if (inferred == UnitType::None) return;
+			for (const auto& sym : symbols)
+			{
+				if (sym) sym->ApplyDefaultUnitTypeIfNone(inferred);
+			}
+		}
+	}
+
 	FeaturesFile::FeaturesFile()
-		: m_units("")
-		, m_path("")
-		, m_directory("")
-		, m_numFeatures(0)
-		, m_id((unsigned) -1)		
+		: m_path("")
+		  , m_directory("")
+		  , m_numFeatures(0)
+		  , m_id(static_cast<unsigned>(-1))		
 	{
 	}
 
@@ -119,6 +150,7 @@ namespace Odb::Lib::FileModel::Design
 						}
 
 						m_units = token;
+						apply_default_units_to_symbols(m_units, m_symbolNames);
 					}
 					else if (line.find("U") == 0)
 					{
@@ -133,6 +165,7 @@ namespace Odb::Lib::FileModel::Design
 						}
 
 						m_units = token;
+						apply_default_units_to_symbols(m_units, m_symbolNames);
 					}
 					else if (line.find(ID_TOKEN) == 0)
 					{
@@ -204,6 +237,7 @@ namespace Odb::Lib::FileModel::Design
 						{
 							throw_parse_error(m_path, line, "", lineNumber);
 						}
+						pSymbolName->ApplyDefaultUnitTypeIfNone(inferred_unit_type_from_features_units(m_units));
 						m_symbolNamesByName[pSymbolName->GetName()] = pSymbolName;
 						m_symbolNames.push_back(pSymbolName);
 					}
@@ -302,6 +336,13 @@ namespace Odb::Lib::FileModel::Design
 								throw_parse_error(m_path, line, token, lineNumber);
 							}
 						}
+
+					// Contract: Pads reference a symbol by FeatureRecord.sym_num.
+					// In ODB++ pad records this comes from apt_def_symbol_num; keep sym_num unset when apt_def_symbol_num == -1.
+					if (pFeatureRecord->apt_def_symbol_num >= 0)
+					{
+						pFeatureRecord->sym_num = pFeatureRecord->apt_def_symbol_num;
+					}
 
 						char polarity;
 						if (!(lineStream >> polarity))
@@ -912,7 +953,10 @@ namespace Odb::Lib::FileModel::Design
 		pFeatureRecordMessage->set_width_factor(width_factor);
 		pFeatureRecordMessage->set_text(text);
 		pFeatureRecordMessage->set_version(version);
-		pFeatureRecordMessage->set_sym_num(sym_num);
+		if (sym_num >= 0)
+		{
+			pFeatureRecordMessage->set_sym_num(sym_num);
+		}
 		pFeatureRecordMessage->set_polarity(static_cast<Odb::Lib::Protobuf::Polarity>(polarity));
 		pFeatureRecordMessage->set_dcode(dcode);
 		pFeatureRecordMessage->set_id(id);
@@ -925,7 +969,10 @@ namespace Odb::Lib::FileModel::Design
 		pFeatureRecordMessage->set_ye(ye);
 		pFeatureRecordMessage->set_x(x);
 		pFeatureRecordMessage->set_y(y);
-		pFeatureRecordMessage->set_apt_def_symbol_num(apt_def_symbol_num);
+		if (apt_def_symbol_num >= 0)
+		{
+			pFeatureRecordMessage->set_apt_def_symbol_num(apt_def_symbol_num);
+		}
 		for (const auto& pContourPolygon : m_contourPolygons)
 		{
 			pFeatureRecordMessage->add_contourpolygons()->CopyFrom(*pContourPolygon->to_protobuf());
@@ -949,7 +996,7 @@ namespace Odb::Lib::FileModel::Design
 		width_factor = message.width_factor();
 		text = message.text();
 		version = message.version();
-		sym_num = message.sym_num();
+		sym_num = message.has_sym_num() ? message.sym_num() : -1;
 		polarity = static_cast<Polarity>(message.polarity());
 		dcode = message.dcode();
 		id = message.id();
@@ -962,7 +1009,7 @@ namespace Odb::Lib::FileModel::Design
 		ye = message.ye();
 		x = message.x();
 		y = message.y();
-		apt_def_symbol_num = message.apt_def_symbol_num();
+		apt_def_symbol_num = message.has_apt_def_symbol_num() ? message.apt_def_symbol_num() : -1;
 		for (const auto& contourPolygonMessage : message.contourpolygons())
 		{
 			std::shared_ptr<ContourPolygon> pContourPolygon(new ContourPolygon);

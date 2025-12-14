@@ -43,7 +43,7 @@ namespace Odb::Lib::FileModel::Design
 
 			// Pad / Text
 			double x, y;
-			int apt_def_symbol_num;
+			int apt_def_symbol_num = -1;
 			double apt_def_resize_factor;
 
 			// Arc
@@ -60,7 +60,7 @@ namespace Odb::Lib::FileModel::Design
 			//TODO: Barcode			
 
 			// common
-			int sym_num;
+			int sym_num = -1;
 			Polarity polarity;
 			int dcode;
 			unsigned int id;
@@ -106,7 +106,7 @@ namespace Odb::Lib::FileModel::Design
 		void from_protobuf(const Odb::Lib::Protobuf::FeaturesFile& message) override;
 		
 	private:
-		std::string m_units;
+		std::string m_units = "";
 		std::filesystem::path m_path;
 		std::filesystem::path m_directory;
 		int m_numFeatures;					// from field in file
