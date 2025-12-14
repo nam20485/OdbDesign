@@ -82,6 +82,21 @@ namespace OdbDesignServer
                 return info;
             }
 
+            Odb::Lib::UnitType expected_symbol_unit_type_from_normalized_units(const std::string& normalizedUnits)
+            {
+                // Contract requires symbol numeric parameters to be in same unit system as feature coordinates.
+                auto u = to_lower_copy(normalizedUnits);
+                if (u == "mm" || u == "micron")
+                {
+                    return Odb::Lib::UnitType::Metric;
+                }
+                if (u == "inch" || u == "mil")
+                {
+                    return Odb::Lib::UnitType::Imperial;
+                }
+                return Odb::Lib::UnitType::None;
+            }
+
             // Extract symbols as a vector irrespective of whether the source is a vector or map.
             Odb::Lib::FileModel::Design::SymbolName::Vector collect_symbols(const Odb::Lib::FileModel::Design::FeaturesFile& featuresFile)
             {
@@ -232,18 +247,55 @@ namespace OdbDesignServer
                 const auto symbols = collect_symbols(featuresFile);
                 const auto& featureRecords = featuresFile.GetFeatureRecords();
 
+                // Strict contract enforcement (S2): symbol unit types must match the layer units.
+                const auto expectedSymbolUnitType = expected_symbol_unit_type_from_normalized_units(unitsInfo.units);
+                int metricCount = 0;
+                int imperialCount = 0;
+                int noneCount = 0;
+                for (const auto& sym : symbols)
+                {
+                    if (!sym) continue;
+                    switch (sym->GetUnitType())
+                    {
+                    case Odb::Lib::UnitType::Metric: metricCount++; break;
+                    case Odb::Lib::UnitType::Imperial: imperialCount++; break;
+                    case Odb::Lib::UnitType::None: noneCount++; break;
+                    }
+                }
+
+                const bool hasMixedSymbolUnitTypes = metricCount > 0 && imperialCount > 0;
+                // Spec: if the symbol record omits its unit, it inherits the enclosing features file unit system.
+                // So UnitType::None is treated as compatible with the layer units.
+                const bool hasMismatchVsLayerUnits =
+                    (expectedSymbolUnitType == Odb::Lib::UnitType::Metric && imperialCount > 0) ||
+                    (expectedSymbolUnitType == Odb::Lib::UnitType::Imperial && metricCount > 0);
+
+                if (hasMixedSymbolUnitTypes || hasMismatchVsLayerUnits)
+                {
+                    std::string msg =
+                        "symbol UnitType mismatch vs layer units (strict): layer_units=" + unitsInfo.units +
+                        ", symbol_counts(metric=" + std::to_string(metricCount) +
+                        ", imperial=" + std::to_string(imperialCount) +
+                        ", none=" + std::to_string(noneCount) + ")";
+                    return { grpc::StatusCode::FAILED_PRECONDITION, msg };
+                }
+
                 constexpr int kMaxReasonableIndex = 10'000'000;
                 int maxSymRef = -1;
                 for (const auto& fr : featureRecords)
                 {
                     if (!fr) continue;
+
+                    // Strict contract enforcement (S1): Pads must reference symbols via FeatureRecord.sym_num.
+                    if (fr->type == Odb::Lib::FileModel::Design::FeaturesFile::FeatureRecord::Type::Pad &&
+                        fr->apt_def_symbol_num >= 0 && fr->sym_num != fr->apt_def_symbol_num)
+                    {
+                        return { grpc::StatusCode::FAILED_PRECONDITION, "pad sym_num does not match apt_def_symbol_num (contract violation)" };
+                    }
+
                     if (fr->sym_num >= 0 && fr->sym_num < kMaxReasonableIndex)
                     {
                         maxSymRef = std::max(maxSymRef, fr->sym_num);
-                    }
-                    if (fr->apt_def_symbol_num >= 0 && fr->apt_def_symbol_num < kMaxReasonableIndex)
-                    {
-                        maxSymRef = std::max(maxSymRef, fr->apt_def_symbol_num);
                     }
                 }
 
@@ -315,6 +367,10 @@ namespace OdbDesignServer
                     if (sym)
                     {
                         auto pb = sym->to_protobuf();
+                        if (pb && pb->unittype() == Odb::Lib::Protobuf::UnitType::None)
+                        {
+                            pb->set_unittype(static_cast<Odb::Lib::Protobuf::UnitType>(expectedSymbolUnitType));
+                        }
                         response->add_symbol_names()->CopyFrom(*pb);
                     }
                     else
