@@ -18,11 +18,6 @@ namespace Odb::Lib::App
 		return intArg("grpc-port", DEFAULT_GRPC_PORT);
 	}
 
-	bool OdbDesignArgs::useHttps() const
-	{
-		return boolArg("use-https", DEFAULT_USE_HTTPS);
-	}
-
 	std::string OdbDesignArgs::designsDir() const
 	{
 		return stringArg("designs-dir", DEFAULT_DESIGNS_DIR);
@@ -60,7 +55,6 @@ namespace Odb::Lib::App
 		ss << "Options:\n";
 		ss << "  --port <port>            Port to listen on (default: " << DEFAULT_PORT << ")\n";
 		ss << "  --grpc-port <port>       gRPC port to listen on (default: " << DEFAULT_GRPC_PORT << ")\n";
-		ss << "  --use-https              Use HTTPS (default: " << (DEFAULT_USE_HTTPS ? "true" : "false") << ")\n";		
 		ss << "  --designs-dir <dir>      Directory containing design files (default: " << DEFAULT_DESIGNS_DIR << ")\n";
 		ss << "  --templates-dir <dir>    Directory containing template files (default: " << DEFAULT_TEMPLATES_DIR << ")\n";
 		ss << "  --load-design <design>   Design to load on startup (default: " << DEFAULT_LOAD_DESIGN << ")\n";
