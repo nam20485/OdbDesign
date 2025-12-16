@@ -26,32 +26,7 @@ namespace Odb::App::Server
 			return out;
 		}
 
-		Odb::Lib::UnitType expected_symbol_unit_type_from_features_units(const std::string& rawUnits)
-		{
-			auto u = to_lower_copy(rawUnits);
-			if (u == "mm" || u == "millimeter" || u == "millimeters" || u == "micron" || u == "microns" || u == "um" || u == "µm")
-			{
-				return Odb::Lib::UnitType::Metric;
-			}
-			if (u == "inch" || u == "inches" || u == "in" || u == "mil" || u == "mils")
-			{
-				return Odb::Lib::UnitType::Imperial;
-			}
-			return Odb::Lib::UnitType::None;
-		}
 
-		SymbolName::Vector collect_symbols(const FeaturesFile& featuresFile)
-		{
-			const auto& vec = featuresFile.GetSymbolNames();
-			if (!vec.empty()) return vec;
-
-			SymbolName::Vector collected;
-			for (const auto& kv : featuresFile.GetSymbolNamesByName())
-			{
-				collected.push_back(kv.second);
-			}
-			return collected;
-		}
 	}
 
 	FileModelController::FileModelController(Odb::Lib::App::IOdbServerApp& serverApp)
@@ -1016,7 +991,7 @@ namespace Odb::App::Server
 			if (!pLayer) continue;
 
 			const auto& featuresFile = pLayer->GetFeaturesFile();
-			const auto symbols = collect_symbols(featuresFile);
+			const auto symbols = Odb::Lib::FileModel::Design::collect_symbols(featuresFile);
 
 			int metricCount = 0;
 			int imperialCount = 0;
@@ -1033,7 +1008,7 @@ namespace Odb::App::Server
 			}
 
 			const auto rawUnits = featuresFile.GetUnits();
-			const auto expected = expected_symbol_unit_type_from_features_units(rawUnits);
+			const auto expected = Odb::Lib::FileModel::Design::inferred_unit_type_from_features_units(rawUnits);
 			const auto hasMixed = (metricCount > 0 && imperialCount > 0);
 			const auto hasMismatch =
 				(expected == Odb::Lib::UnitType::Metric && imperialCount > 0) ||

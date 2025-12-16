@@ -97,21 +97,6 @@ namespace OdbDesignServer
                 return Odb::Lib::UnitType::None;
             }
 
-            // Extract symbols as a vector irrespective of whether the source is a vector or map.
-            // When the features file already stores symbols in a vector, preserve that ordering;
-            // otherwise collect the map values in insertion order.
-            Odb::Lib::FileModel::Design::SymbolName::Vector collect_symbols(const Odb::Lib::FileModel::Design::FeaturesFile& featuresFile)
-            {
-                const auto& vec = featuresFile.GetSymbolNames();
-                if (!vec.empty()) return vec;
-
-                Odb::Lib::FileModel::Design::SymbolName::Vector collected;
-                for (const auto& kv : featuresFile.GetSymbolNamesByName())
-                {
-                    collected.push_back(kv.second);
-                }
-                return collected;
-            }
         }
 
 
@@ -246,7 +231,7 @@ namespace OdbDesignServer
                 response->set_units(unitsInfo.units);
                 response->set_units_to_mm(unitsInfo.unitsToMm);
 
-                const auto symbols = collect_symbols(featuresFile);
+                const auto symbols = Odb::Lib::FileModel::Design::collect_symbols(featuresFile);
                 const auto& featureRecords = featuresFile.GetFeatureRecords();
 
                 // Strict contract enforcement (S2): symbol unit types must match the layer units.
@@ -282,7 +267,10 @@ namespace OdbDesignServer
                     return { grpc::StatusCode::FAILED_PRECONDITION, msg };
                 }
 
-                // Filter out clearly corrupt symbol references; realistic designs stay far below this bound.
+                // Sanity check: limit symbol indices to avoid excessive memory allocation or logic errors due to invalid/corrupted data.
+                // 10,000,000 is chosen as a very high upper bound, far exceeding any realistic symbol count in production designs.
+                // If a valid symbol index exceeds this limit, it will be ignored, which may cause rendering or data issues.
+                // Adjust this value with caution and ensure all code using symbol indices is reviewed if changed.
                 constexpr int kMaxReasonableIndex = 10'000'000;
                 int maxSymRef = -1;
                 // Single pass to validate pad contracts and capture the max referenced symbol id without extra traversals.
@@ -335,26 +323,29 @@ namespace OdbDesignServer
                 }
 
                 // Then, fill remaining slots with symbols lacking indices in deterministic order.
-                int nextSlot = 0;
+                // Precompute available slots for O(n) filling instead of O(n²) linear search.
+                std::vector<size_t> availableSlots;
+                for (size_t i = 0; i < ordered.size(); ++i)
+                {
+                    if (!ordered[i])
+                    {
+                        availableSlots.push_back(i);
+                    }
+                }
+                size_t slotIdx = 0;
                 for (const auto& sym : symbols)
                 {
                     if (!sym) continue;
                     if (sym->GetIndex() >= 0) continue;
 
-                    while (nextSlot < static_cast<int>(ordered.size()) && ordered[static_cast<size_t>(nextSlot)])
+                    if (slotIdx < availableSlots.size())
                     {
-                        nextSlot++;
-                    }
-
-                    if (nextSlot >= static_cast<int>(ordered.size()))
-                    {
-                        ordered.push_back(sym);
-                        nextSlot = static_cast<int>(ordered.size());
+                        ordered[availableSlots[slotIdx]] = sym;
+                        ++slotIdx;
                     }
                     else
                     {
-                        ordered[static_cast<size_t>(nextSlot)] = sym;
-                        nextSlot++;
+                        ordered.push_back(sym);
                     }
                 }
 

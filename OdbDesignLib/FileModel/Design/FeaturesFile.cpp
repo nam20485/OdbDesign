@@ -17,25 +17,9 @@ namespace Odb::Lib::FileModel::Design
 {
 	namespace
 	{
-		UnitType inferred_unit_type_from_features_units(const std::string& rawUnits)
-		{
-			if (rawUnits.empty()) return UnitType::None;
-			std::string u = rawUnits;
-			std::transform(u.begin(), u.end(), u.begin(), [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
-			if (u == "mm" || u == "millimeter" || u == "millimeters" || u == "micron" || u == "microns" || u == "um" || u == "µm")
-			{
-				return UnitType::Metric;
-			}
-			if (u == "inch" || u == "inches" || u == "in" || u == "mil" || u == "mils")
-			{
-				return UnitType::Imperial;
-			}
-			return UnitType::None;
-		}
-
 		void apply_default_units_to_symbols(const std::string& rawUnits, SymbolName::Vector& symbols)
 		{
-			const auto inferred = inferred_unit_type_from_features_units(rawUnits);
+			const auto inferred = Odb::Lib::FileModel::Design::inferred_unit_type_from_features_units(rawUnits);
 			if (inferred == UnitType::None) return;
 			for (const auto& sym : symbols)
 			{
@@ -48,6 +32,8 @@ namespace Odb::Lib::FileModel::Design
 		: m_path("")
 		  , m_directory("")
 		  , m_numFeatures(0)
+		  , m_id(static_cast<unsigned>(-1))
+		  , m_units(UnitType::None)
 		  , m_id(static_cast<unsigned>(-1))		
 	{
 	}
@@ -237,7 +223,7 @@ namespace Odb::Lib::FileModel::Design
 						{
 							throw_parse_error(m_path, line, "", lineNumber);
 						}
-						pSymbolName->ApplyDefaultUnitTypeIfNone(inferred_unit_type_from_features_units(m_units));
+						pSymbolName->ApplyDefaultUnitTypeIfNone(Odb::Lib::FileModel::Design::inferred_unit_type_from_features_units(m_units));
 						m_symbolNamesByName[pSymbolName->GetName()] = pSymbolName;
 						m_symbolNames.push_back(pSymbolName);
 					}
@@ -338,11 +324,11 @@ namespace Odb::Lib::FileModel::Design
 						}
 
 					// Contract: Pads reference a symbol by FeatureRecord.sym_num.
-					// In ODB++ pad records this comes from apt_def_symbol_num; keep sym_num unset when apt_def_symbol_num == -1.
-					if (pFeatureRecord->apt_def_symbol_num >= 0)
-					{
-						pFeatureRecord->sym_num = pFeatureRecord->apt_def_symbol_num;
-					}
+				// In ODB++ pad records this comes from apt_def_symbol_num; keep sym_num unset when apt_def_symbol_num == -1.
+				if (pFeatureRecord->apt_def_symbol_num >= 0 && pFeatureRecord->sym_num == -1)
+				{
+					pFeatureRecord->sym_num = pFeatureRecord->apt_def_symbol_num;
+				}
 
 						char polarity;
 						if (!(lineStream >> polarity))
@@ -1020,5 +1006,34 @@ namespace Odb::Lib::FileModel::Design
 		{
 			m_attributeLookupTable[kvAttributeAssignment.first] = kvAttributeAssignment.second;
 		}
+	}
+
+	SymbolName::Vector collect_symbols(const FeaturesFile& featuresFile)
+	{
+		const auto& vec = featuresFile.GetSymbolNames();
+		if (!vec.empty()) return vec;
+
+		SymbolName::Vector collected;
+		for (const auto& kv : featuresFile.GetSymbolNamesByName())
+		{
+			collected.push_back(kv.second);
+		}
+		return collected;
+	}
+
+	UnitType inferred_unit_type_from_features_units(const std::string& rawUnits)
+	{
+		if (rawUnits.empty()) return UnitType::None;
+		std::string u = rawUnits;
+		std::transform(u.begin(), u.end(), u.begin(), [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+		if (u == "mm" || u == "millimeter" || u == "millimeters" || u == "micron" || u == "microns" || u == "um" || u == "µm")
+		{
+			return UnitType::Metric;
+		}
+		if (u == "inch" || u == "inches" || u == "in" || u == "mil" || u == "mils")
+		{
+			return UnitType::Imperial;
+		}
+		return UnitType::None;
 	}
 }

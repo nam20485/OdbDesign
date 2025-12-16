@@ -56,9 +56,14 @@ namespace Odb::Lib::FileModel::Design
 			{
 				m_index = std::stoi(token.substr(1));
 			}
-			catch (const std::exception&)
+			catch (const std::invalid_argument&)
 			{
 				// Surface malformed index tokens instead of silently defaulting.
+				throw_parse_error(path, line, token, lineNumber);
+			}
+			catch (const std::out_of_range&)
+			{
+				// Surface index tokens that exceed integer range.
 				throw_parse_error(path, line, token, lineNumber);
 			}
 		}
