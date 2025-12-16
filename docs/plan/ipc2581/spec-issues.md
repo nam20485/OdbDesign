@@ -13,10 +13,10 @@ DO NOT pre-load Ipc2581 files. ODB++ does not pre-load files, so these should no
 
 Open Questions:
 
-1. Yes, a FIleModel is the file representation of a design class. A FileArchive is one filemodle type and IpcXmlFile is another. So yes /filemodels/<name> should also load ipc2581 xml files. If the steam matches, then it should be loaded, whether its an ODB++ or an IPC-2581 file.
+1. Yes, a FileModel is the file representation of a design class. A FileArchive is one filemodle type and IpcXmlFile is another. So yes /filemodels/<name> should also load ipc2581 xml files. If the stream matches, then it should be loaded, whether its an ODB++ or an IPC-2581 file.
 
-2. Keep the exsiting behavior, DO NOT pre-l;oad. Keep lazy loading behavior.
+2. Keep the existing behavior, DO NOT pre-load. Keep lazy loading behavior.
 
-3. Not yet. I wil obtain some IPC-2581 files later.
+3. Not yet. I will obtain some IPC-2581 files later.
 
-Add som test coverage for the new behavior.
+Add some test coverage for the new behavior.
