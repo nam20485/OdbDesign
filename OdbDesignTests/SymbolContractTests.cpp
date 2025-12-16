@@ -144,6 +144,12 @@ TEST(SymbolNameParsingTests, InvalidIndexTokenThrowsParseError)
 	EXPECT_THROW(s.Parse(std::filesystem::path("/tmp"), "$abc sym I", 1), Odb::Lib::FileModel::parse_error);
 }
 
+TEST(SymbolNameParsingTests, NegativeIndexTokenThrowsParseError)
+{
+	SymbolName s;
+	EXPECT_THROW(s.Parse(std::filesystem::path("/tmp"), "$-1 sym I", 1), Odb::Lib::FileModel::parse_error);
+}
+
 TEST(SymbolNameParsingTests, MissingIndexDefaultsToMinusOne)
 {
 	SymbolName s;
