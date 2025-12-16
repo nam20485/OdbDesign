@@ -98,6 +98,8 @@ namespace OdbDesignServer
             }
 
             // Extract symbols as a vector irrespective of whether the source is a vector or map.
+            // When the features file already stores symbols in a vector, preserve that ordering;
+            // otherwise collect the map values in insertion order.
             Odb::Lib::FileModel::Design::SymbolName::Vector collect_symbols(const Odb::Lib::FileModel::Design::FeaturesFile& featuresFile)
             {
                 const auto& vec = featuresFile.GetSymbolNames();
@@ -280,8 +282,10 @@ namespace OdbDesignServer
                     return { grpc::StatusCode::FAILED_PRECONDITION, msg };
                 }
 
+                // Filter out clearly corrupt symbol references; realistic designs stay far below this bound.
                 constexpr int kMaxReasonableIndex = 10'000'000;
                 int maxSymRef = -1;
+                // Single pass to validate pad contracts and capture the max referenced symbol id without extra traversals.
                 for (const auto& fr : featureRecords)
                 {
                     if (!fr) continue;
@@ -297,34 +301,36 @@ namespace OdbDesignServer
                     {
                         maxSymRef = std::max(maxSymRef, fr->sym_num);
                     }
+                    if (fr->apt_def_symbol_num >= 0 && fr->apt_def_symbol_num < kMaxReasonableIndex)
+                    {
+                        maxSymRef = std::max(maxSymRef, fr->apt_def_symbol_num);
+                    }
                 }
 
+                int resultSize = maxSymRef + 1;
+                if (resultSize < 0) resultSize = 0;
+
+                std::vector<std::shared_ptr<Odb::Lib::FileModel::Design::SymbolName>> ordered(static_cast<size_t>(resultSize), nullptr);
+
+                // Ordering strategy:
+                // 1) Place symbols that declare explicit indices; keep the first occurrence on duplicates.
+                // 2) Fill remaining gaps with symbols lacking indices in deterministic input order.
+                // This preserves stable ordering for callers that rely on sym_num alignment.
                 int maxIndex = -1;
                 for (const auto& sym : symbols)
                 {
                     if (!sym) continue;
-                    maxIndex = std::max(maxIndex, sym->GetIndex());
-                }
-
-                int resultSize = std::max(maxSymRef, maxIndex) + 1;
-                if (resultSize < 0) resultSize = 0;
-
-                using SymbolPtr = std::shared_ptr<Odb::Lib::FileModel::Design::SymbolName>;
-                std::vector<SymbolPtr> ordered(static_cast<size_t>(resultSize), nullptr);
-
-                // First, place all symbols with explicit indices.
-                for (const auto& sym : symbols)
-                {
-                    if (!sym) continue;
-                    auto idx = sym->GetIndex();
+                    const auto idx = sym->GetIndex();
+                    maxIndex = std::max(maxIndex, idx);
                     if (idx < 0) continue;
+                    const auto idxSize = static_cast<size_t>(idx);
                     if (idx >= static_cast<int>(ordered.size()))
                     {
-                        ordered.resize(static_cast<size_t>(idx + 1), nullptr);
+                        ordered.resize(idxSize + 1, nullptr);
                     }
-                    if (!ordered[static_cast<size_t>(idx)])
+                    if (!ordered[idxSize])
                     {
-                        ordered[static_cast<size_t>(idx)] = sym;
+                        ordered[idxSize] = sym;
                     }
                 }
 
@@ -353,9 +359,10 @@ namespace OdbDesignServer
                 }
 
                 // Pad to cover all referenced sym_num values.
-                if (resultSize > static_cast<int>(ordered.size()))
+                const int requiredSize = std::max(maxSymRef, maxIndex) + 1;
+                if (requiredSize > static_cast<int>(ordered.size()))
                 {
-                    ordered.resize(static_cast<size_t>(resultSize), nullptr);
+                    ordered.resize(static_cast<size_t>(requiredSize), nullptr);
                 }
 
                 Odb::Lib::Protobuf::SymbolName placeholder;
