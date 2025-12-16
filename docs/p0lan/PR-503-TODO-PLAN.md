@@ -14,6 +14,15 @@
 - [x] 2616116007 — Consider removing local alias or justify; prefer explicit type for ordered symbols.
 - [x] 2616116008 — Add tests for GetLayerSymbols endpoint (success, errors, units, ordering).
 - [x] 2616116009 — Add inline documentation for symbol placement logic (explicit indices first, etc.).
+- [x] 2621579264 — SymbolName exception handling: use specific exceptions (std::invalid_argument, std::out_of_range) instead of generic std::exception.
+- [x] 2621579274 — Code duplication: extract `collect_symbols` function to shared utility.
+- [x] 2621579278 — Code duplication: centralize unit type inference logic.
+- [x] 2621579287 — Test coverage: add edge cases for FeatureRecordSurfaceTests (no polygons, multiple polygons, different types).
+- [x] 2621579298 — Algorithm optimization: optimize symbol placement from O(n²) to O(n) by pre-computing available slots.
+- [x] 2621579307 — Code duplication: centralize unit normalization logic (similar unit mapping in multiple files).
+- [x] 2621579316 — Constructor initialization consistency: add explicit initialization for m_id and m_units.
+- [x] 2621579324 — SymNum assignment logic: verify sym_num is unset before assigning from apt_def_symbol_num.
+- [x] 2621579338 — kMaxReasonableIndex documentation: add inline comment explaining sanity check purpose.
 
 ## Unresolved Comments List
 - [x] 2616115986 — Fix typo “FIleModel” → “FileModel” in IPC-2581 spec issues doc. *Plan:* apply suggested text replacement.
@@ -31,4 +40,13 @@
 - [x] 2616116007 — Replace local alias or justify. *Plan:* use explicit vector type for readability.
 - [x] 2616116008 — Add GetLayerSymbols tests. *Plan:* add service tests using existing design cache fixture to cover success and error cases plus units normalization.
 - [x] 2616116009 — Document symbol placement ordering rules. *Plan:* add inline comments before ordering loops.
+- [x] 2621579264 — Replace generic exception catch with specific std::invalid_argument and std::out_of_range handlers in SymbolName.cpp. *Plan:* update catch blocks to handle specific exceptions.
+- [x] 2621579274 — Extract `collect_symbols` to shared utility in FeaturesFile namespace. *Plan:* move function to OdbDesignLib/FileModel/Design/FeaturesFile.h and .cpp, update both call sites.
+- [x] 2621579278 — Centralize unit type inference logic in FeaturesFile utilities. *Plan:* export inferred_unit_type_from_features_units function, update all call sites.
+- [x] 2621579287 — Add edge case tests for FeatureRecordSurfaceTests. *Plan:* add tests for surfaces with no polygons, multiple polygons, and different polygon types (Island vs Hole).
+- [x] 2621579298 — Optimize symbol placement algorithm from O(n²) to O(n). *Plan:* pre-compute available slots vector before filling loop.
+- [x] 2621579307 — Centralize unit normalization logic. *Plan:* unit normalization already handled via centralized unit type inference; normalize_units function is more complex (returns UnitsInfo) and appropriately kept separate.
+- [x] 2621579316 — Fix constructor initialization consistency. *Plan:* add explicit initialization for m_id and m_units in FeaturesFile constructor.
+- [x] 2621579324 — Add sym_num == -1 guard before assignment. *Plan:* verify sym_num is unset before assigning from apt_def_symbol_num to avoid overwriting valid data.
+- [x] 2621579338 — Add kMaxReasonableIndex documentation. *Plan:* enhance inline comment explaining sanity check purpose and rationale.
 
