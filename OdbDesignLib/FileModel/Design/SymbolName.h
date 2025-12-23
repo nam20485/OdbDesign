@@ -20,7 +20,9 @@ namespace Odb::Lib::FileModel::Design
 		SymbolName();		
 
 		std::string GetName() const;
+		int GetIndex() const;
 		UnitType GetUnitType() const;
+		void ApplyDefaultUnitTypeIfNone(UnitType unitType);
 
 		bool Parse(const std::filesystem::path& path, const std::string& line, int lineNumber);
 
@@ -34,6 +36,7 @@ namespace Odb::Lib::FileModel::Design
 	private:
 		std::string m_name;
 		UnitType m_unitType;		
+		int m_index;
 
 	};
 }

@@ -12,6 +12,7 @@ namespace Odb::Lib::FileModel::Design
 	SymbolName::SymbolName()
 		: m_name("")
 		, m_unitType(UnitType::None)
+		, m_index(-1)
 	{
 	}
 
@@ -20,9 +21,22 @@ namespace Odb::Lib::FileModel::Design
 		return m_name;
 	}
 
+	int SymbolName::GetIndex() const
+	{
+		return m_index;
+	}
+
 	UnitType SymbolName::GetUnitType() const
 	{
 		return m_unitType;
+	}
+
+	void SymbolName::ApplyDefaultUnitTypeIfNone(UnitType unitType)
+	{
+		if (m_unitType == UnitType::None)
+		{
+			m_unitType = unitType;
+		}
 	}
 
 	bool SymbolName::Parse(const std::filesystem::path& path, const std::string& line, int lineNumber)
@@ -34,6 +48,24 @@ namespace Odb::Lib::FileModel::Design
 		if (!std::getline(lineStream, token, ' '))
 		{
 			throw_parse_error(path, line, token, lineNumber);
+		}
+
+		if (!token.empty() && token[0] == '$')
+		{
+			try
+			{
+				m_index = std::stoi(token.substr(1));
+			}
+			catch (const std::invalid_argument&)
+			{
+				// Surface malformed index tokens instead of silently defaulting.
+				throw_parse_error(path, line, token, lineNumber);
+			}
+			catch (const std::out_of_range&)
+			{
+				// Surface index tokens that exceed integer range.
+				throw_parse_error(path, line, token, lineNumber);
+			}
 		}
 
 		if (std::getline(lineStream, token, ' '))
@@ -73,6 +105,7 @@ namespace Odb::Lib::FileModel::Design
 	{
 		m_name = message.name();
 		m_unitType = static_cast<UnitType>(message.unittype());
+		m_index = -1;
 	}
 
 	//std::shared_ptr<SymbolName> SymbolName::Parse(const std::string& line)
