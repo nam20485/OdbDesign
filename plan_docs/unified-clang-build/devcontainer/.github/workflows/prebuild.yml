@@ -1,0 +1,14 @@
+name: Pre-Build Checks
+on:
+  push:
+    branches: [ "main", "develop", "release/*" ]
+jobs:
+  static-analysis:
+    runs-on: ubuntu-latest
+    container: ghcr.io/${{ github.repository }}-build-env:latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run CppCheck
+        run: |
+          cmake --preset linux-release
+          cppcheck --project=out/build/linux-release/compile_commands.json --enable=all --error-exitcode=1

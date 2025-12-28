@@ -1,0 +1,33 @@
+{
+  "name": "OdbDesign Unified Build Env (Clang/UCRT)",
+  "build": {
+    "dockerfile": "../Dockerfile",
+    "context": ".."
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.cpptools",
+        "ms-vscode.cmake-tools",
+        "llvm-vs-code-extensions.vscode-clangd",
+        "ms-azuretools.vscode-docker",
+        "twxs.cmake"
+      ],
+      "settings": {
+        "cmake.generator": "Ninja",
+        "cmake.configureOnOpen": false,
+        "cmake.copyCompileCommands": "${workspaceFolder}/compile_commands.json"
+      }
+    }
+  },
+  "remoteUser": "root",
+  "containerEnv": {
+    "VCPKG_ROOT": "/opt/vcpkg"
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": true,
+      "upgradePackages": true
+    }
+  }
+}

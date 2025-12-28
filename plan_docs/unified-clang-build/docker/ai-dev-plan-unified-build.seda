@@ -1,0 +1,281 @@
+import os
+import json
+import base64
+import zlib
+from pathlib import Path
+
+# ==============================================================================
+# SEDA ARCHIVE: OdbDesign Unified Clang Build
+# Architecture: Type 1+5 (1 Master Strategy + 5 Staged Events)
+# Usage: Run 'python unified_clang_build.seda.py' to extract.
+# ==============================================================================
+
+def extract_seda():
+    # File content map for the 1+5 SEDA implementation
+    files = {
+        "local_ai_instruction_modules/ai-dev-plan-unified-build-seda.md": r"""# OdbDesign CI Modernization: 1+5 SEDA Execution Plan
+
+## Stage 0: Global Orchestration Strategy (Type 1)
+**Objective:** Unify OdbDesign's multi-platform build system into a single Clang-based toolchain running in a Linux container. Establish a 'Chain of Verified Artifacts' where binaries tested natively are the exact ones released.
+
+**Orchestrator Mandate:**
+- **Branching:** Work must be performed on `feat/unified-clang-build`.
+- **Short Rein:** Dispatch one stage at a time. Validate AC before merging.
+- **Context Handover:** Provide agents only with stage-relevant files.
+
+---
+
+## Stage 1: Toolchain Infrastructure Event
+**Sub-agent:** DevOps Specialist.
+**Context:** `Dockerfile`, `vcpkg.json`.
+**Tasks:** Update Dockerfile to Ubuntu 24.04; Install Clang/LLVM/MinGW-w64 (UCRT); Integrate vcpkg bootstrap.
+**AC:** `docker build` succeeds; `x86_64-w64-mingw32-clang++ --version` works inside.
+
+---
+
+## Stage 2: Build Logic Normalization Event
+**Sub-agent:** C++/CMake Specialist.
+**Context:** `CMakeLists.txt`, `CMakePresets.json`.
+**Tasks:** Unify CMake flags to Clang-standard (-Wall -Wextra); Standardize bin/lib output dirs; Implement linux/windows-cross/macos-cross presets.
+**AC:** Project configures for all targets; Windows .exe generated via cross-compile.
+
+---
+
+## Stage 3: Unified Compilation Pipeline Event
+**Sub-agent:** GitHub Actions Specialist.
+**Context:** `.github/workflows/docker-publish.yml`, `.github/workflows/cmake-multi-platform.yml`.
+**Tasks:** Optimize image rebuilds with path filters; Create containerized multi-platform build workflow.
+**AC:** Parallel compilation on single Linux runner; Artifacts uploaded.
+
+---
+
+## Stage 4: Native Verification Event
+**Sub-agent:** QA/SDET.
+**Context:** `.github/workflows/cmake-test-native.yml`.
+**Tasks:** Run binaries on native OS runners; Re-upload successful binaries as `verified-{artifact}`.
+**AC:** Linux-built .exe runs successfully on native `windows-latest` runner.
+
+---
+
+## Stage 5: Verified Release Event
+**Sub-agent:** Release Engineer.
+**Context:** `.github/workflows/create-release.yml`.
+**Tasks:** Packaging of `verified-*` bits; Zero-build release creation for release/staging/develop branches.
+**AC:** Release created with bit-for-bit identical tested binaries.""",
+
+        "Dockerfile": r"""FROM ubuntu:24.04 AS build-env
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y \
+    clang lld llvm cmake ninja-build git curl zip unzip tar pkg-config python3 \
+    gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 libssl-dev lzma-dev libxml2-dev patch xz-utils \
+    && rm -rf /var/lib/apt/lists/*
+ENV VCPKG_ROOT=/opt/vcpkg
+RUN git clone https://github.com/microsoft/vcpkg.git $VCPKG_ROOT && $VCPKG_ROOT/bootstrap-vcpkg.sh
+WORKDIR /src""",
+
+        "CMakeLists.txt": r"""cmake_minimum_required(VERSION 3.21)
+project("OdbDesign")
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    add_compile_options(-Wall -Wextra -Wpedantic)
+    if(WIN32)
+        add_compile_options(-D_CRT_SECURE_NO_WARNINGS)
+    endif()
+else()
+    add_compile_options(/W4)
+endif()
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
+
+add_subdirectory("OdbDesignLib")
+add_subdirectory("OdbDesignApp")
+add_subdirectory("OdbDesignServer")
+add_subdirectory("Utils")
+add_subdirectory("OdbDesignTests")""",
+
+        "CMakePresets.json": r"""{
+  "version": 3,
+  "cmakeMinimumRequired": { "major": 3, "minor": 21 },
+  "configurePresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/out/build/${presetName}",
+      "cacheVariables": { "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" }
+    },
+    { "name": "linux-release", "inherits": "base", "cacheVariables": { "CMAKE_BUILD_TYPE": "Release", "VCPKG_TARGET_TRIPLET": "x64-linux" } },
+    { 
+      "name": "windows-cross-release", 
+      "inherits": "base", 
+      "cacheVariables": { 
+        "CMAKE_SYSTEM_NAME": "Windows", 
+        "VCPKG_TARGET_TRIPLET": "x64-mingw-dynamic",
+        "CMAKE_C_COMPILER": "x86_64-w64-mingw32-clang",
+        "CMAKE_CXX_COMPILER": "x86_64-w64-mingw32-clang++"
+      } 
+    },
+    { 
+      "name": "macos-cross-release", 
+      "inherits": "base", 
+      "cacheVariables": { 
+        "CMAKE_SYSTEM_NAME": "Darwin", 
+        "VCPKG_TARGET_TRIPLET": "x64-osx",
+        "CMAKE_C_COMPILER": "x86_64-apple-darwin23-clang",
+        "CMAKE_CXX_COMPILER": "x86_64-apple-darwin23-clang++"
+      } 
+    }
+  ]
+}""",
+
+        ".github/workflows/cmake-multi-platform.yml": r"""name: Unified Multi-Platform Build
+on:
+  push:
+    branches: [ "main", "develop", "staging", "release/*" ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: ghcr.io/${{ github.repository }}-build-env:latest
+    strategy:
+      matrix:
+        preset: [linux-release, windows-cross-release, macos-cross-release]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Build
+        run: |
+          cmake --preset ${{ matrix.preset }}
+          cmake --build --preset ${{ matrix.preset }}
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: odbdesign-${{ matrix.preset }}
+          path: out/build/${{ matrix.preset }}/bin/
+          retention-days: 30""",
+
+        ".github/workflows/cmake-test-native.yml": r"""name: Multi-Platform Native Testing
+on:
+  workflow_run:
+    workflows: ["Unified Multi-Platform Build"]
+    types: [completed]
+jobs:
+  test:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact: odbdesign-linux-release
+          - os: windows-latest
+            artifact: odbdesign-windows-cross-release
+          - os: macos-latest
+            artifact: odbdesign-macos-cross-release
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: ./bin
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run Native Tests
+        shell: bash
+        run: |
+          chmod +x ./bin/* || true
+          ./bin/OdbDesignTests*
+      - name: Verify and Re-upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: verified-${{ matrix.artifact }}
+          path: ./bin/""",
+
+        ".github/workflows/create-release.yml": r"""name: Create Release
+on:
+  workflow_run:
+    workflows: ["Multi-Platform Native Testing"]
+    types: [completed]
+jobs:
+  release:
+    if: >
+      github.event.workflow_run.conclusion == 'success' && 
+      (startsWith(github.event.workflow_run.head_branch, 'release/') || 
+       github.event.workflow_run.head_branch == 'staging' || 
+       github.event.workflow_run.head_branch == 'develop')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: verified-*
+          path: release_assets/
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.event.workflow_run.head_branch }}-${{ github.run_number }}
+          name: Build ${{ github.event.workflow_run.head_branch }}
+          files: release_assets/**/*
+          prerelease: ${{ !startsWith(github.event.workflow_run.head_branch, 'release/') }}""",
+
+        ".github/workflows/docker-publish.yml": r"""name: Publish Toolchain Image
+on:
+  push:
+    branches: ["main"]
+    paths: ["Dockerfile", "vcpkg.json"]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions: { packages: write, contents: read }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with: { registry: ghcr.io, username: ${{ github.actor }}, password: ${{ secrets.GITHUB_TOKEN }} }
+      - uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/${{ github.repository }}-build-env:latest
+          cache-from: type=ghcr,ref=${{ github.repository }}-buildcache
+          cache-to: type=ghcr,ref=${{ github.repository }}-buildcache,mode=max""",
+
+        ".github/workflows/prebuild.yml": r"""name: Pre-Build Checks
+on:
+  push:
+    branches: [ "main", "develop", "release/*" ]
+jobs:
+  static-analysis:
+    runs-on: ubuntu-latest
+    container: ghcr.io/${{ github.repository }}-build-env:latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run CppCheck
+        run: |
+          cmake --preset linux-release
+          cppcheck --project=out/build/linux-release/compile_commands.json --enable=all --error-exitcode=1"""
+    }
+
+    print("--- Rehydrating OdbDesign SEDA Archive (1+5) ---")
+    
+    # Payload encoding for "Self-Extracting" behavior
+    # In a real SEDA we would use base64/zlib, but for readability in this chat, 
+    # we use a direct map.
+    
+    for path_str, content in files.items():
+        p = Path(path_str)
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(content)
+        print(f"  [+] Extracted: {path_str}")
+
+    print("\nExtraction Complete.")
+    print("Orchestrator Mandate: Follow local_ai_instruction_modules/ai-dev-plan-unified-build-seda.md")
+
+if __name__ == "__main__":
+    extract_seda()

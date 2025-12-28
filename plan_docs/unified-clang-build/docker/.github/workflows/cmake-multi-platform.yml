@@ -1,0 +1,25 @@
+name: Unified Multi-Platform Build
+on:
+  push:
+    branches: [ "main", "develop", "staging", "release/*" ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: ghcr.io/${{ github.repository }}-build-env:latest
+    strategy:
+      matrix:
+        preset: [linux-release, windows-cross-release, macos-cross-release]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Build
+        run: |
+          cmake --preset ${{ matrix.preset }}
+          cmake --build --preset ${{ matrix.preset }}
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: odbdesign-${{ matrix.preset }}
+          path: out/build/${{ matrix.preset }}/bin/
+          retention-days: 30

@@ -1,0 +1,35 @@
+name: Multi-Platform Native Testing
+on:
+  workflow_run:
+    workflows: ["Unified Multi-Platform Build"]
+    types: [completed]
+jobs:
+  test:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact: odbdesign-linux-release
+          - os: windows-latest
+            artifact: odbdesign-windows-cross-release
+          - os: macos-latest
+            artifact: odbdesign-macos-cross-release
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: ./bin
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run Native Tests
+        shell: bash
+        run: |
+          chmod +x ./bin/* || true
+          ./bin/OdbDesignTests*
+      - name: Verify and Re-upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: verified-${{ matrix.artifact }}
+          path: ./bin/

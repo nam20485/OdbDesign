@@ -1,0 +1,27 @@
+name: Create Release
+on:
+  workflow_run:
+    workflows: ["Multi-Platform Native Testing"]
+    types: [completed]
+jobs:
+  release:
+    if: >
+      github.event.workflow_run.conclusion == 'success' && 
+      (startsWith(github.event.workflow_run.head_branch, 'release/') || 
+       github.event.workflow_run.head_branch == 'staging' || 
+       github.event.workflow_run.head_branch == 'develop')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: verified-*
+          path: release_assets/
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.event.workflow_run.head_branch }}-${{ github.run_number }}
+          name: Build ${{ github.event.workflow_run.head_branch }}
+          files: release_assets/**/*
+          prerelease: ${{ !startsWith(github.event.workflow_run.head_branch, 'release/') }}
