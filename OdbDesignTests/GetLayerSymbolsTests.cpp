@@ -18,9 +18,14 @@ protected:
 	void SetUp() override
 	{
 		FileArchiveLoadFixture::SetUp();
-		m_service = std::make_unique<OdbDesignServer::Services::OdbDesignServiceImpl>(m_pDesignCache);
+		// Convert unique_ptr to shared_ptr for the service constructor
+		std::shared_ptr<Odb::Lib::App::DesignCache> sharedCache(m_pDesignCache.release());
+		m_service = std::make_unique<OdbDesignServer::Services::OdbDesignServiceImpl>(sharedCache);
+		// Store shared_ptr so it stays alive
+		m_sharedDesignCache = sharedCache;
 	}
 
+	std::shared_ptr<Odb::Lib::App::DesignCache> m_sharedDesignCache;
 	std::unique_ptr<OdbDesignServer::Services::OdbDesignServiceImpl> m_service;
 };
 
@@ -42,7 +47,7 @@ TEST_F(GetLayerSymbolsFixture, ReturnsSymbolsWithNormalizedUnits)
 	EXPECT_EQ(resp.sym_num_base(), 0);
 	EXPECT_GT(resp.symbol_names_size(), 0);
 
-	auto pFileArchive = m_pDesignCache->GetFileArchive("designodb_rigidflex");
+	auto pFileArchive = m_sharedDesignCache->GetFileArchive("designodb_rigidflex");
 	ASSERT_NE(pFileArchive, nullptr);
 	const auto pStep = pFileArchive->GetStepDirectory("cellular_flip-phone");
 	ASSERT_NE(pStep, nullptr);
