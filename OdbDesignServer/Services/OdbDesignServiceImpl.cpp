@@ -273,7 +273,8 @@ namespace OdbDesignServer
                     {
                         if (!writer->Write(batch))
                         {
-                            // Client disconnected
+                            // Client disconnected during batch write
+                            std::cerr << "DEBUG: Client disconnected while sending batch" << std::endl;
                             return grpc::Status::OK;
                         }
                         batch.Clear();
@@ -286,15 +287,13 @@ namespace OdbDesignServer
                 {
                     if (!writer->Write(batch))
                     {
-                        // Client disconnected
+                        // Client disconnected during final batch write
+                        std::cerr << "DEBUG: Client disconnected while sending final batch" << std::endl;
                         return grpc::Status::OK;
                     }
                 }
 
-                // Send empty batch to indicate stream end (per contract)
-                batch.Clear();
-                writer->Write(batch);
-
+                // Stream completion is indicated by normal gRPC end-of-stream semantics
                 return grpc::Status::OK;
             }
             catch (const std::exception &e)

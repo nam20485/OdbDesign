@@ -21,7 +21,6 @@ add_executable(OdbDesignTests
     "Fixtures/TestUtils.h"
     "FeatureRecordSurfaceTests.cpp"
     "SymbolContractTests.cpp"
-    #"GetLayerSymbolsTests.cpp"
     "MatrixFileTests.cpp"
     
     "../OdbDesignServer/Config/GrpcServiceConfig.cpp"

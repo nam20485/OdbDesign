@@ -8,15 +8,17 @@ namespace OdbDesignServer
 {
     namespace Config
     {
-        std::shared_ptr<GrpcServiceConfig> GrpcServiceConfig::LoadFromFile(const std::string& configPath)
+        GrpcServiceConfig::LoadResult GrpcServiceConfig::LoadFromFile(const std::string& configPath)
         {
-            auto config = std::make_shared<GrpcServiceConfig>();
+            LoadResult result;
+            result.config = std::make_shared<GrpcServiceConfig>();
 
             // Check if file exists
             if (!std::filesystem::exists(configPath))
             {
-                // Return default config if file doesn't exist
-                return config;
+                result.loadedFromFile = false;
+                result.message = "Using default gRPC config (" + configPath + " not found)";
+                return result;
             }
 
             try
@@ -25,7 +27,9 @@ namespace OdbDesignServer
                 std::ifstream file(configPath);
                 if (!file.is_open())
                 {
-                    return config; // Return default if can't open
+                    result.loadedFromFile = false;
+                    result.message = "Using default gRPC config (could not open " + configPath + ")";
+                    return result;
                 }
 
                 std::stringstream buffer;
@@ -35,14 +39,18 @@ namespace OdbDesignServer
                 std::string jsonContent = buffer.str();
                 if (jsonContent.empty())
                 {
-                    return config; // Return default if empty
+                    result.loadedFromFile = false;
+                    result.message = "Using default gRPC config (" + configPath + " is empty)";
+                    return result;
                 }
 
                 // Parse JSON using Crow
                 auto json = crow::json::load(jsonContent);
                 if (!json)
                 {
-                    return config; // Return default if parsing fails
+                    result.loadedFromFile = false;
+                    result.message = "Using default gRPC config (failed to parse JSON in " + configPath + ")";
+                    return result;
                 }
 
                 // Extract grpc.batch_streaming configuration
@@ -55,24 +63,36 @@ namespace OdbDesignServer
 
                         if (batchSection.has("enabled"))
                         {
-                            config->enable_batch_streaming = batchSection["enabled"].b();
+                            result.config->enable_batch_streaming = batchSection["enabled"].b();
                         }
 
                         if (batchSection.has("batch_size"))
                         {
-                            config->batch_size = static_cast<int>(batchSection["batch_size"].i());
-                            config->ClampBatchSize(); // Ensure valid range
+                            result.config->batch_size = static_cast<int>(batchSection["batch_size"].i());
+                            result.config->ClampBatchSize(); // Ensure valid range
                         }
                     }
                 }
+
+                result.loadedFromFile = true;
+                result.message = "Loaded gRPC config from: " + configPath;
+            }
+            catch (const std::exception& e)
+            {
+                // Log exception and return default config
+                result.config = std::make_shared<GrpcServiceConfig>();
+                result.loadedFromFile = false;
+                result.message = "Using default gRPC config (exception loading " + configPath + ": " + e.what() + ")";
             }
             catch (...)
             {
-                // On any exception, return default config
-                return std::make_shared<GrpcServiceConfig>();
+                // Log unknown exception and return default config
+                result.config = std::make_shared<GrpcServiceConfig>();
+                result.loadedFromFile = false;
+                result.message = "Using default gRPC config (unknown exception loading " + configPath + ")";
             }
 
-            return config;
+            return result;
         }
     }
 }
