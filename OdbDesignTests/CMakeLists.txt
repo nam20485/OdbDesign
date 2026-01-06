@@ -38,10 +38,11 @@ target_link_libraries(OdbDesignTests PRIVATE gRPC::gpr gRPC::grpc gRPC::grpc++ g
 
 # Include directories for OdbDesignServer sources and generated gRPC files
 # The generated gRPC files are in OdbDesignServer's binary directory
+get_filename_component(REPO_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/.." ABSOLUTE)
 set(ODBDESIGN_SERVER_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/../OdbDesignServer")
 set(GRPC_CODEGEN_DIR "${ODBDESIGN_SERVER_BINARY_DIR}/grpc")
 target_include_directories(OdbDesignTests PRIVATE 
-    ${CMAKE_CURRENT_SOURCE_DIR}/..                   # For OdbDesignServer/Services/... includes (repo root)
+    ${REPO_ROOT}                                      # For OdbDesignServer/Services/... includes (repo root)
     ${ODBDESIGN_SERVER_BINARY_DIR}                   # For service.grpc.pb.h (generated files)
     ${GRPC_CODEGEN_DIR})                             # For grpc generated files
 
