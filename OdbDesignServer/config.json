@@ -1,0 +1,8 @@
+{
+  "grpc": {
+    "batch_streaming": {
+      "enabled": true,
+      "batch_size": 500
+    }
+  }
+}

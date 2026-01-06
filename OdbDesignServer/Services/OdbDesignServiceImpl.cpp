@@ -100,8 +100,10 @@ namespace OdbDesignServer
         }
 
 
-        OdbDesignServiceImpl::OdbDesignServiceImpl(std::shared_ptr<Odb::Lib::App::DesignCache> cache)
-            : m_designCache(std::move(cache)) {}
+        OdbDesignServiceImpl::OdbDesignServiceImpl(std::shared_ptr<Odb::Lib::App::DesignCache> cache,
+            std::shared_ptr<Config::GrpcServiceConfig> config)
+            : m_designCache(std::move(cache)),
+              m_config(config ? config : Config::GrpcServiceConfig::CreateDefault()) {}
 
         grpc::Status OdbDesignServiceImpl::GetDesign(
             grpc::ServerContext *context,
@@ -184,6 +186,114 @@ namespace OdbDesignServer
                     // Clear for reuse while retaining allocated capacity.
                     featureRecordMsg.Clear();
                 }
+
+                return grpc::Status::OK;
+            }
+            catch (const std::exception &e)
+            {
+                std::string error = "Internal server error: " + std::string(e.what());
+                return {grpc::StatusCode::INTERNAL, error};
+            }
+        }
+
+        grpc::Status OdbDesignServiceImpl::GetLayerFeaturesBatchStream(
+            grpc::ServerContext *context,
+            const Odb::Grpc::GetLayerFeaturesRequest *request,
+            grpc::ServerWriter<Odb::Grpc::FeatureRecordBatch> *writer)
+        {
+            try
+            {
+                // Feature flag check: return UNIMPLEMENTED if batch streaming is disabled
+                if (!m_config->enable_batch_streaming)
+                {
+                    return {grpc::StatusCode::UNIMPLEMENTED, "Batch streaming is not enabled"};
+                }
+
+                // Reuse validation logic from GetLayerFeaturesStream
+                const auto fileArchive = m_designCache->GetFileArchive(request->design_name());
+                if (fileArchive == nullptr)
+                {
+                    return {grpc::StatusCode::NOT_FOUND, "Design not found"};
+                }
+
+                const auto pStep = fileArchive->GetStepDirectory(request->step_name());
+                if (pStep == nullptr)
+                {
+                    return {grpc::StatusCode::NOT_FOUND, "Step not found"};
+                }
+
+                const auto pLayersByName = pStep->GetLayersByName();
+                const auto layerIt = pLayersByName.find(request->layer_name());
+                if (layerIt == pLayersByName.end())
+                {
+                    return {grpc::StatusCode::NOT_FOUND, "Layer not found"};
+                }
+
+                const auto &featuresFile = layerIt->second->GetFeaturesFile();
+                const auto &featureRecords = featuresFile.GetFeatureRecords();
+
+                // Reuse a single protobuf message instance to avoid per-iteration heap allocations.
+                Odb::Lib::Protobuf::FeaturesFile::FeatureRecord featureRecordMsg;
+                Odb::Grpc::FeatureRecordBatch batch;
+
+                const int batchSize = m_config->batch_size;
+                int currentBatchCount = 0;
+
+                for (const auto &featureRecord : featureRecords)
+                {
+                    // Check for cancellation
+                    if (context->IsCancelled())
+                    {
+                        return {grpc::StatusCode::CANCELLED, "Request cancelled"};
+                    }
+
+                    if (!featureRecord)
+                        continue;
+
+                    // Populate reused message: obtain per-feature proto and swap into reusable instance.
+                    auto pFeatureRecordMsg = featureRecord->to_protobuf();
+                    if (pFeatureRecordMsg != nullptr)
+                    {
+                        featureRecordMsg.Swap(pFeatureRecordMsg.get()); // Efficient move of fields.
+                    }
+                    else
+                    {
+                        continue; // Skip if conversion failed or returned nullptr.
+                    }
+
+                    // Add feature to current batch
+                    batch.add_features()->CopyFrom(featureRecordMsg);
+                    currentBatchCount++;
+
+                    // Clear for reuse while retaining allocated capacity.
+                    featureRecordMsg.Clear();
+
+                    // Send batch when it reaches the configured size
+                    if (currentBatchCount >= batchSize)
+                    {
+                        if (!writer->Write(batch))
+                        {
+                            // Client disconnected
+                            return grpc::Status::OK;
+                        }
+                        batch.Clear();
+                        currentBatchCount = 0;
+                    }
+                }
+
+                // Send final batch if there are remaining features
+                if (currentBatchCount > 0)
+                {
+                    if (!writer->Write(batch))
+                    {
+                        // Client disconnected
+                        return grpc::Status::OK;
+                    }
+                }
+
+                // Send empty batch to indicate stream end (per contract)
+                batch.Clear();
+                writer->Write(batch);
 
                 return grpc::Status::OK;
             }

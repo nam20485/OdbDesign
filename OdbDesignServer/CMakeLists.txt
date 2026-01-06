@@ -1,4 +1,4 @@
-﻿# CMakeList.txt : CMake project for OdbDesignServer
+# CMakeList.txt : CMake project for OdbDesignServer
 #
 
 add_executable(OdbDesignServer 
@@ -18,6 +18,8 @@ add_executable(OdbDesignServer
     "Controllers/DesignsController.cpp" 
     "Services/OdbDesignServiceImpl.h"
     "Services/OdbDesignServiceImpl.cpp"
+    "Config/GrpcServiceConfig.h"
+    "Config/GrpcServiceConfig.cpp"
     "OdbServerAppBase.h"
     "OdbServerAppBase.cpp"
 )
@@ -66,6 +68,7 @@ protobuf_generate(
     IMPORT_DIRS ${GRPC_PROTO_DIR} ${PROTO_DIR}
     PROTOC_OUT_DIR ${GRPC_CODEGEN_DIR}
     APPEND_PATH
+    #EXPORT_MACRO ODBDESIGN_EXPORT
 )
 
 # Generate gRPC service stubs
