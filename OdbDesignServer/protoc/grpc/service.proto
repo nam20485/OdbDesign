@@ -22,7 +22,7 @@ service OdbDesignService {
   // Client should use this when server supports it, falling back to GetLayerFeaturesStream if unavailable.
   rpc GetLayerFeaturesBatchStream(GetLayerFeaturesRequest) returns (stream FeatureRecordBatch);
 
-  // Unary call to get the symbol list used by a layer.
+  // Unary call to get the symbol list and units metadata for a layer.
   // Required to resolve FeatureRecord.sym_num into a SymbolName.
   rpc GetLayerSymbols(GetLayerSymbolsRequest) returns (GetLayerSymbolsResponse);
 

@@ -28,9 +28,17 @@ namespace OdbDesignServer
                 return std::make_shared<GrpcServiceConfig>();
             }
 
+            // Load result containing config and status
+            struct LoadResult
+            {
+                std::shared_ptr<GrpcServiceConfig> config;
+                bool loadedFromFile = false;  // true if loaded from file, false if using defaults
+                std::string message;          // Status message for logging
+            };
+
             // Load configuration from JSON file
-            // Returns default config if file doesn't exist or parsing fails
-            static std::shared_ptr<GrpcServiceConfig> LoadFromFile(const std::string& configPath);
+            // Returns LoadResult containing config and whether it was loaded from file
+            static LoadResult LoadFromFile(const std::string& configPath);
         };
     }
 }

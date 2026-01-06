@@ -52,17 +52,10 @@ namespace Odb::App::Server
 		// Load gRPC service configuration
 		// Try config.json in current directory
 		std::string configPath = "config.json";
-		auto config = OdbDesignServer::Config::GrpcServiceConfig::LoadFromFile(configPath);
-		if (std::filesystem::exists(configPath))
-		{
-			std::cout << "Loaded gRPC config from: " << configPath << std::endl;
-		}
-		else
-		{
-			std::cout << "Using default gRPC config (config.json not found)" << std::endl;
-		}
+		auto loadResult = OdbDesignServer::Config::GrpcServiceConfig::LoadFromFile(configPath);
+		std::cout << loadResult.message << std::endl;
 
-		OdbDesignServer::Services::OdbDesignServiceImpl service(cache, config);
+		OdbDesignServer::Services::OdbDesignServiceImpl service(cache, loadResult.config);
 
 		grpc::EnableDefaultHealthCheckService(true);
 		grpc::reflection::InitProtoReflectionServerBuilderPlugin();

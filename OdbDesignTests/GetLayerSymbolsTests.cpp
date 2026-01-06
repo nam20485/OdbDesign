@@ -19,10 +19,9 @@ protected:
 	{
 		FileArchiveLoadFixture::SetUp();
 		// Convert unique_ptr to shared_ptr for the service constructor
-		std::shared_ptr<Odb::Lib::App::DesignCache> sharedCache(m_pDesignCache.release());
-		m_service = std::make_unique<OdbDesignServer::Services::OdbDesignServiceImpl>(sharedCache);
-		// Store shared_ptr so it stays alive
-		m_sharedDesignCache = sharedCache;
+		// Store shared_ptr first to ensure ownership is captured before any potential exceptions
+		m_sharedDesignCache = std::shared_ptr<Odb::Lib::App::DesignCache>(m_pDesignCache.release());
+		m_service = std::make_unique<OdbDesignServer::Services::OdbDesignServiceImpl>(m_sharedDesignCache);
 	}
 
 	std::shared_ptr<Odb::Lib::App::DesignCache> m_sharedDesignCache;
