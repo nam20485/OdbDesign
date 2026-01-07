@@ -1,7 +1,7 @@
 # Server-Client Requirements Contract v2.0
 **Version**: 2.0  
 **Status**: FINAL  
-**Last Updated**: January 2025
+**Last Updated**: January 7, 2025
 
 ## Overview & Goals
 

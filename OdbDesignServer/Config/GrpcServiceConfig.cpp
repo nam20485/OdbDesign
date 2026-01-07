@@ -79,6 +79,9 @@ namespace OdbDesignServer
             }
             catch (const std::exception& e)
             {
+                // TODO: Refactor config error handling - preserve partially loaded config instead of silently falling back to defaults
+                // Issue: When JSON parsing fails, any successfully parsed values are lost
+                // Proposed: Store config values as parsed, only reset fields that failed, or fail explicitly
                 // Log exception and return default config
                 result.config = std::make_shared<GrpcServiceConfig>();
                 result.loadedFromFile = false;
@@ -86,6 +89,9 @@ namespace OdbDesignServer
             }
             catch (...)
             {
+                // TODO: Refactor config error handling - preserve partially loaded config instead of silently falling back to defaults
+                // Issue: When JSON parsing fails, any successfully parsed values are lost
+                // Proposed: Store config values as parsed, only reset fields that failed, or fail explicitly
                 // Log unknown exception and return default config
                 result.config = std::make_shared<GrpcServiceConfig>();
                 result.loadedFromFile = false;

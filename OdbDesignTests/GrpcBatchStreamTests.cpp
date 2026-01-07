@@ -12,11 +12,6 @@ using namespace OdbDesignServer::Services;
 using namespace OdbDesignServer::Config;
 using namespace Odb::Grpc;
 
-namespace OdbDesignServer::Services
-{
-    class OdbDesignServiceImpl;
-}
-
 // Note: ServerWriter is final, so we can't mock it for unit tests
 // Detailed batching logic tests should be done via integration tests
 // These unit tests focus on error handling and configuration
@@ -30,10 +25,9 @@ protected:
         // Create default config
         m_config = GrpcServiceConfig::CreateDefault();
         // Convert unique_ptr to shared_ptr for the service constructor
-        std::shared_ptr<Odb::Lib::App::DesignCache> sharedCache(m_pDesignCache.release());
-        m_service = std::make_unique<OdbDesignServiceImpl>(sharedCache, m_config);
-        // Store shared_ptr so it stays alive
-        m_sharedDesignCache = sharedCache;
+        // Assign to member first for exception safety
+        m_sharedDesignCache = std::shared_ptr<Odb::Lib::App::DesignCache>(m_pDesignCache.release());
+        m_service = std::make_unique<OdbDesignServiceImpl>(m_sharedDesignCache, m_config);
     }
 
     std::shared_ptr<Odb::Lib::App::DesignCache> m_sharedDesignCache;
