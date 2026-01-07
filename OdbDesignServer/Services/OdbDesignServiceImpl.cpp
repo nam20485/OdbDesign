@@ -15,6 +15,7 @@
 #include <App/DesignCache.h>
 #include <design.pb.h>
 #include <vector>
+#include <Logger.h>
 
 #include <grpcpp/server_context.h>
 
@@ -139,20 +140,20 @@ namespace OdbDesignServer
                 const auto fileArchive = m_designCache->GetFileArchive(request->design_name());
                 if (fileArchive == nullptr)
                 {
-                    return {grpc::StatusCode::NOT_FOUND, "Design not found"};
+                    return {grpc::StatusCode::NOT_FOUND, "Design not found: " + request->design_name()};
                 }
 
                 const auto pStep = fileArchive->GetStepDirectory(request->step_name());
                 if (pStep == nullptr)
                 {
-                    return {grpc::StatusCode::NOT_FOUND, "Step not found"};
+                    return {grpc::StatusCode::NOT_FOUND, "Step not found: " + request->step_name()};
                 }
 
                 const auto pLayersByName = pStep->GetLayersByName();
                 const auto layerIt = pLayersByName.find(request->layer_name());
                 if (layerIt == pLayersByName.end())
                 {
-                    return {grpc::StatusCode::NOT_FOUND, "Layer not found"};
+                    return {grpc::StatusCode::NOT_FOUND, "Layer not found: " + request->layer_name()};
                 }
 
                 const auto &featuresFile = layerIt->second->GetFeaturesFile();
@@ -213,20 +214,20 @@ namespace OdbDesignServer
                 const auto fileArchive = m_designCache->GetFileArchive(request->design_name());
                 if (fileArchive == nullptr)
                 {
-                    return {grpc::StatusCode::NOT_FOUND, "Design not found"};
+                    return {grpc::StatusCode::NOT_FOUND, "Design not found: " + request->design_name()};
                 }
 
                 const auto pStep = fileArchive->GetStepDirectory(request->step_name());
                 if (pStep == nullptr)
                 {
-                    return {grpc::StatusCode::NOT_FOUND, "Step not found"};
+                    return {grpc::StatusCode::NOT_FOUND, "Step not found: " + request->step_name()};
                 }
 
                 const auto pLayersByName = pStep->GetLayersByName();
                 const auto layerIt = pLayersByName.find(request->layer_name());
                 if (layerIt == pLayersByName.end())
                 {
-                    return {grpc::StatusCode::NOT_FOUND, "Layer not found"};
+                    return {grpc::StatusCode::NOT_FOUND, "Layer not found: " + request->layer_name()};
                 }
 
                 const auto &featuresFile = layerIt->second->GetFeaturesFile();
@@ -271,10 +272,16 @@ namespace OdbDesignServer
                     // Send batch when it reaches the configured size
                     if (currentBatchCount >= batchSize)
                     {
+                        // Check for cancellation before writing
+                        if (context->IsCancelled())
+                        {
+                            return {grpc::StatusCode::CANCELLED, "Request cancelled"};
+                        }
+                        
                         if (!writer->Write(batch))
                         {
                             // Client disconnected during batch write
-                            std::cerr << "DEBUG: Client disconnected while sending batch" << std::endl;
+                            logdebug("Client disconnected while sending batch");
                             return grpc::Status::OK;
                         }
                         batch.Clear();
@@ -285,10 +292,16 @@ namespace OdbDesignServer
                 // Send final batch if there are remaining features
                 if (currentBatchCount > 0)
                 {
+                    // Check for cancellation before writing final batch
+                    if (context->IsCancelled())
+                    {
+                        return {grpc::StatusCode::CANCELLED, "Request cancelled"};
+                    }
+                    
                     if (!writer->Write(batch))
                     {
                         // Client disconnected during final batch write
-                        std::cerr << "DEBUG: Client disconnected while sending final batch" << std::endl;
+                        logdebug("Client disconnected while sending final batch");
                         return grpc::Status::OK;
                     }
                 }

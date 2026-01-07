@@ -22,6 +22,10 @@
 #include <grpcpp/server.h>
 #include <grpcpp/server_builder.h>
 #include <filesystem>
+#include <cstdlib>
+#include <cstring>
+#include <cstdlib>
+#include <cstring>
 
 using namespace Odb::Lib::App;
 
@@ -50,8 +54,13 @@ namespace Odb::App::Server
 		}
 
 		// Load gRPC service configuration
-		// Try config.json in current directory
+		// Check GRPC_CONFIG_PATH environment variable first, default to config.json
 		std::string configPath = "config.json";
+		const char* envConfig = std::getenv("GRPC_CONFIG_PATH");
+		if (envConfig != nullptr && strlen(envConfig) > 0)
+		{
+			configPath = envConfig;
+		}
 		auto loadResult = OdbDesignServer::Config::GrpcServiceConfig::LoadFromFile(configPath);
 		std::cout << loadResult.message << std::endl;
 
