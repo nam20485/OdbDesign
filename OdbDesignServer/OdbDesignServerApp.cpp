@@ -5,6 +5,7 @@
 #include "Controllers/HealthCheckController.h"
 #include "Controllers/DesignsController.h"
 #include "Services/OdbDesignServiceImpl.h"
+#include "Config/GrpcServiceConfig.h"
 #include "macros.h"
 #include <App/BasicRequestAuthentication.h>
 #include <grpcpp/grpcpp.h>
@@ -20,6 +21,11 @@
 #include <grpcpp/security/server_credentials.h>
 #include <grpcpp/server.h>
 #include <grpcpp/server_builder.h>
+#include <filesystem>
+#include <cstdlib>
+#include <cstring>
+#include <cstdlib>
+#include <cstring>
 
 using namespace Odb::Lib::App;
 
@@ -47,7 +53,18 @@ namespace Odb::App::Server
 			return;
 		}
 
-		OdbDesignServer::Services::OdbDesignServiceImpl service(cache);
+		// Load gRPC service configuration
+		// Check GRPC_CONFIG_PATH environment variable first, default to config.json
+		std::string configPath = "config.json";
+		const char* envConfig = std::getenv("GRPC_CONFIG_PATH");
+		if (envConfig != nullptr && strlen(envConfig) > 0)
+		{
+			configPath = envConfig;
+		}
+		auto loadResult = OdbDesignServer::Config::GrpcServiceConfig::LoadFromFile(configPath);
+		std::cout << loadResult.message << std::endl;
+
+		OdbDesignServer::Services::OdbDesignServiceImpl service(cache, loadResult.config);
 
 		grpc::EnableDefaultHealthCheckService(true);
 		grpc::reflection::InitProtoReflectionServerBuilderPlugin();

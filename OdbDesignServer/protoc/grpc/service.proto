@@ -17,7 +17,13 @@ service OdbDesignService {
   // This is the primary performance-critical endpoint.
   rpc GetLayerFeaturesStream(GetLayerFeaturesRequest) returns (stream .Odb.Lib.Protobuf.FeaturesFile.FeatureRecord); 
 
-  // Returns symbol list + units metadata for a layer.
+  // Batched server-streaming call for high-performance streaming of layer features.
+  // Sends features in batches to reduce stream overhead for layers with 10k+ features.
+  // Client should use this when server supports it, falling back to GetLayerFeaturesStream if unavailable.
+  rpc GetLayerFeaturesBatchStream(GetLayerFeaturesRequest) returns (stream FeatureRecordBatch);
+
+  // Unary call to get the symbol list and units metadata for a layer.
+  // Required to resolve FeatureRecord.sym_num into a SymbolName.
   rpc GetLayerSymbols(GetLayerSymbolsRequest) returns (GetLayerSymbolsResponse);
 
   // A simple health check for the gRPC server
@@ -43,12 +49,14 @@ message GetLayerSymbolsRequest {
 
 message GetLayerSymbolsResponse {
   // Indexing contract for FeatureRecord.sym_num.
-  // Required for this phase: 0
+  // For this implementation phase, sym_num_base must be 0 so FeatureRecord.sym_num
+  // directly indexes symbol_names (sym_num == i). Future protocol versions may allow
+  // non-zero bases; clients would need to offset sym_num by sym_num_base in that case.
   int32 sym_num_base = 1;
 
-  // Minimal units contract
-  string units = 2;        // e.g. "mm", "micron", "mil", "inch"
-  double units_to_mm = 3;  // multiply numeric values by this to get millimeters
+  // Minimal units contract: multiply values by units_to_mm to get millimeters.
+  string units = 2;
+  double units_to_mm = 3;
 
   // Mapping: symbol_names[i] corresponds to sym_num == (i + sym_num_base)
   repeated .Odb.Lib.Protobuf.SymbolName symbol_names = 4;
@@ -65,4 +73,9 @@ message HealthCheckResponse {
     NOT_SERVING = 2; 
   } 
   ServingStatus status = 1;
+}
+
+// Batch container for feature records to reduce stream overhead
+message FeatureRecordBatch {
+  repeated .Odb.Lib.Protobuf.FeaturesFile.FeatureRecord features = 1;
 }
