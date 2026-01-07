@@ -160,10 +160,11 @@ if (currentBatchCount > 0) {
    - **Purpose**: Allows gradual rollout via feature flag
 
 2. **NOT_FOUND** (grpc::StatusCode::NOT_FOUND)
-   - Design not found: "Design not found"
-   - Step not found: "Step not found"
-   - Layer not found: "Layer not found"
-   - **Matches**: Same validation logic as `GetLayerFeaturesStream`
+   - Design not found: "Design not found: {design_name}"
+   - Step not found: "Step not found: {step_name}"
+   - Layer not found: "Layer not found: {layer_name}"
+   - **Note**: Error messages include the resource name for better debugging
+   - **Matches**: Same validation logic and error message format as `GetLayerFeaturesStream`
 
 3. **CANCELLED** (grpc::StatusCode::CANCELLED)
    - Returned when `context->IsCancelled()` is true
@@ -422,15 +423,17 @@ config->ClampBatchSize(); // Ensures 100 <= batch_size <= 1000
 **Default Location**: Server's current working directory
 
 **Loading Logic**:
-- Server looks for `config.json` in current working directory
-- Falls back to defaults if file doesn't exist
-- Logs status message indicating whether config was loaded
+- Server checks `GRPC_CONFIG_PATH` environment variable first
+- If not set, looks for `config.json` in current working directory
+- Falls back to defaults if file doesn't exist or parsing fails
+- Logs status message indicating whether config was loaded and from where
 
 **Client Verification Checklist**:
-- [ ] Verify config file location is accessible
-- [ ] Verify server loads config correctly
+- [ ] Verify config file location is accessible (or `GRPC_CONFIG_PATH` env var is set)
+- [ ] Verify server loads config correctly from file or environment variable
 - [ ] Verify defaults are used if config missing
 - [ ] Verify config changes take effect (may require server restart)
+- [ ] Note: Server supports `GRPC_CONFIG_PATH` environment variable for deployment flexibility
 
 ---
 
@@ -497,8 +500,9 @@ config->ClampBatchSize(); // Ensures 100 <= batch_size <= 1000
 **Impact**: Functionally equivalent, but clients should not expect an explicit empty batch. Stream completion is detected when `Read()` returns `false` or stream ends.
 
 **Client Action Required**: 
-- Verify client handles stream completion correctly without expecting empty batch
-- Update client code if it was written expecting explicit empty batch
+- ✅ **VERIFIED**: Client correctly handles stream completion without expecting empty batch
+- Client uses `MoveNext()` to detect stream completion, which is the correct approach
+- No changes needed - client implementation is compatible
 
 ---
 
@@ -534,8 +538,9 @@ config->ClampBatchSize(); // Ensures 100 <= batch_size <= 1000
 - Uses configured `batch_size` value
 
 **Client Action Required**:
-- Verify capability detection handles `UNIMPLEMENTED` correctly
-- Verify fallback logic works seamlessly
+- ✅ **VERIFIED**: Client handles `UNIMPLEMENTED` correctly via `SupportsBatchStreamingAsync()`
+- ✅ **VERIFIED**: Client fallback logic works seamlessly
+- **Note**: Client caches capability result for performance - this is expected and acceptable behavior
 
 ---
 
