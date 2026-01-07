@@ -37,3 +37,5 @@ designs/
 /OdbDesignServer/yaak
 /log.txt
 .cursor\rules\openmemory.mdc
+/local.nuget.config
+/docs/vcpkg-binary-cache/gemini-instructions.md
