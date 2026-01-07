@@ -17,7 +17,7 @@ Testing/
 testlog.txt
 testlog.txt.tmp*
 testlog.xml
-/OdbDesignTests/
+#/OdbDesignTests/
 /output
 /TEST_DATA.zip
 deploy/kubeconfig
@@ -36,3 +36,4 @@ build-win/
 designs/
 /OdbDesignServer/yaak
 /log.txt
+.cursor\rules\openmemory.mdc
