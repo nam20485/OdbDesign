@@ -39,3 +39,4 @@ designs/
 .cursor\rules\openmemory.mdc
 /local.nuget.config
 /docs/vcpkg-binary-cache/gemini-instructions.md
+.cursor\rules\openmemory.mdc
