@@ -32,17 +32,19 @@
 
 ### 2. Configured gRPC Message Size Limits ✅
 
-**Problem**: Large designs caused `ResourceExhausted` errors due to 4MB default limit.
+**Problem**: Large designs caused `ResourceExhausted` errors due to 4MB default limit. Profile responses are 116MB.
 
-**Solution**: Configured server to support 100MB message size limits (matching client).
+**Solution**: Configured server to support 150MB message size limits (increased from 100MB to accommodate large profile files).
 
 **Files Changed**:
 - `OdbDesignServer/Config/GrpcServiceConfig.h` (added fields)
 - `OdbDesignServer/Config/GrpcServiceConfig.cpp` (added parsing)
 - `OdbDesignServer/OdbDesignServerApp.cpp` (applied to ServerBuilder)
-- `OdbDesignServer/config.json` (added configuration)
+- `OdbDesignServer/config.json` (updated to 150MB)
 
-**Result**: Server now accepts messages up to 100MB.
+**Result**: Server now accepts messages up to 150MB. **Note**: Client must also update to 150MB (157,286,400 bytes).
+
+**Long-Term**: Plan to implement `GetStepProfileStream` RPC for proper streaming solution.
 
 ### 3. Verified gRPC Compression Support ✅
 
