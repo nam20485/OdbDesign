@@ -46,12 +46,12 @@ namespace Odb::Lib::App
     {
         std::stringstream ss;
         ss << "Retrieving design \"" << designName << "\" from cache... ";
-        loginfo(ss.str());
+        logdebug(ss.str());  // Changed to DEBUG level - cache hits are frequent and not critical
 
         auto findIt = m_fileArchivesByName.find(designName);
         if (findIt == m_fileArchivesByName.end())
         {
-            loginfo("Not found in cache, attempting to load from file...");
+            loginfo("Not found in cache, attempting to load from file...");  // Keep INFO for cache misses
 
             auto pFileArchive = LoadFileArchive(designName);
             if (pFileArchive == nullptr)
@@ -60,13 +60,13 @@ namespace Odb::Lib::App
             }
             else
             {
-				loginfo("Loaded from file");
+				loginfo("Loaded from file");  // Keep INFO for successful loads
 			}
             return pFileArchive;
         }
         else
         {
-            loginfo("Found. Returning from cache.");
+            logdebug("Found. Returning from cache.");  // Changed to DEBUG level - cache hits are frequent
         }
 
         return m_fileArchivesByName[designName];        
