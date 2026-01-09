@@ -1,5 +1,11 @@
 {
   "grpc": {
+    "max_receive_message_size_mb": 100,
+    "max_send_message_size_mb": 100,
+    "compression": {
+      "enabled": true,
+      "algorithm": "gzip"
+    },
     "batch_streaming": {
       "enabled": true,
       "batch_size": 500
