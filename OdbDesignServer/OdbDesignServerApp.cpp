@@ -54,12 +54,36 @@ namespace Odb::App::Server
 		}
 
 		// Load gRPC service configuration
-		// Check GRPC_CONFIG_PATH environment variable first, default to config.json
-		std::string configPath = "config.json";
+		// Check GRPC_CONFIG_PATH environment variable first, then try executable directory, then current directory
+		std::string configPath;
 		const char* envConfig = std::getenv("GRPC_CONFIG_PATH");
 		if (envConfig != nullptr && strlen(envConfig) > 0)
 		{
 			configPath = envConfig;
+		}
+		else
+		{
+			// Try executable directory first (where config.json should be)
+			std::filesystem::path exeDir = args().executableDirectory();
+			std::filesystem::path configInExeDir = exeDir / "config.json";
+			
+			// Try current working directory as fallback
+			std::filesystem::path configInCwd = "config.json";
+			
+			// Check executable directory first, then current directory
+			if (std::filesystem::exists(configInExeDir))
+			{
+				configPath = configInExeDir.string();
+			}
+			else if (std::filesystem::exists(configInCwd))
+			{
+				configPath = configInCwd.string();
+			}
+			else
+			{
+				// Default to executable directory (will show "not found" message)
+				configPath = configInExeDir.string();
+			}
 		}
 		auto loadResult = OdbDesignServer::Config::GrpcServiceConfig::LoadFromFile(configPath);
 		std::cout << loadResult.message << std::endl;
