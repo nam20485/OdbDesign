@@ -10,8 +10,8 @@ namespace OdbDesignServer
         struct GrpcServiceConfig
         {
             // Message size limits (in MB)
-            int max_receive_message_size_mb = 100;  // Default 100MB
-            int max_send_message_size_mb = 100;     // Default 100MB
+            int max_receive_message_size_mb = 150;  // Default 150MB (updated to handle large profile files)
+            int max_send_message_size_mb = 150;     // Default 150MB (updated to handle large profile files)
 
             // Compression configuration
             bool compression_enabled = true;         // Default enabled (gRPC handles automatically)
