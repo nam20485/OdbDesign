@@ -70,6 +70,14 @@ namespace Odb::App::Server
 		grpc::reflection::InitProtoReflectionServerBuilderPlugin();
 		
 		grpc::ServerBuilder builder;
+		
+		// Apply message size limits from configuration
+		// Convert MB to bytes (multiply by 1024*1024)
+		int maxReceiveBytes = loadResult.config->max_receive_message_size_mb * 1024 * 1024;
+		int maxSendBytes = loadResult.config->max_send_message_size_mb * 1024 * 1024;
+		builder.SetMaxReceiveMessageSize(maxReceiveBytes);
+		builder.SetMaxSendMessageSize(maxSendBytes);
+		
 		builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
 		builder.RegisterService(&service);
 

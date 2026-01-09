@@ -9,6 +9,13 @@ namespace OdbDesignServer
     {
         struct GrpcServiceConfig
         {
+            // Message size limits (in MB)
+            int max_receive_message_size_mb = 100;  // Default 100MB
+            int max_send_message_size_mb = 100;     // Default 100MB
+
+            // Compression configuration
+            bool compression_enabled = true;         // Default enabled (gRPC handles automatically)
+
             // Batch streaming configuration
             bool enable_batch_streaming = true;  // Feature flag for gradual rollout
             int batch_size = 500;                // Features per batch (100-1000)

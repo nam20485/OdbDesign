@@ -1,4 +1,5 @@
 #include "GrpcServiceConfig.h"
+#include <algorithm>
 #include <fstream>
 #include <sstream>
 #include <crow/json.h>
@@ -53,10 +54,37 @@ namespace OdbDesignServer
                     return result;
                 }
 
-                // Extract grpc.batch_streaming configuration
+                // Extract grpc configuration
                 if (json.has("grpc"))
                 {
                     auto grpcSection = json["grpc"];
+
+                    // Extract message size limits
+                    if (grpcSection.has("max_receive_message_size_mb"))
+                    {
+                        int value = static_cast<int>(grpcSection["max_receive_message_size_mb"].i());
+                        // Clamp to reasonable range: 1MB minimum, 1000MB maximum
+                        result.config->max_receive_message_size_mb = std::max(1, std::min(1000, value));
+                    }
+
+                    if (grpcSection.has("max_send_message_size_mb"))
+                    {
+                        int value = static_cast<int>(grpcSection["max_send_message_size_mb"].i());
+                        // Clamp to reasonable range: 1MB minimum, 1000MB maximum
+                        result.config->max_send_message_size_mb = std::max(1, std::min(1000, value));
+                    }
+
+                    // Extract compression configuration
+                    if (grpcSection.has("compression"))
+                    {
+                        auto compressionSection = grpcSection["compression"];
+                        if (compressionSection.has("enabled"))
+                        {
+                            result.config->compression_enabled = compressionSection["enabled"].b();
+                        }
+                    }
+
+                    // Extract batch streaming configuration
                     if (grpcSection.has("batch_streaming"))
                     {
                         auto batchSection = grpcSection["batch_streaming"];

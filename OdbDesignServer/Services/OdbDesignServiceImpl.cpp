@@ -46,7 +46,12 @@ namespace OdbDesignServer
                 UnitsInfo info{};
                 if (rawUnits.empty())
                 {
-                    info.error = "layer units not set";
+                    // Return default "mm" units instead of error to allow client to handle gracefully
+                    // This prevents FAILED_PRECONDITION errors for component layers (comp_+_top, comp_+_bot)
+                    // that may lack units metadata in ODB++ files
+                    info.units = "mm";
+                    info.unitsToMm = 1.0;
+                    info.ok = true;
                     return info;
                 }
 
