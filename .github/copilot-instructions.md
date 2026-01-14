@@ -2,7 +2,7 @@
 
 ## Where to Find Your Instructions
 - Your custom instructions are located in the files inside of the [nam20485/agent-instructions](https://github.com/nam20485/agent-instructions/tree/main) repository
-- Look at the files in the `main` branch
+- Look at the files in the `optimized` branch
 - Start with your core instructions (linked below)
 - Then follow the links to the other instruction files in that repo as required or needed.
 - You will need to follow the links and read the files to understand your instructions
