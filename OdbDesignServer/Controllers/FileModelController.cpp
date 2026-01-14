@@ -3,6 +3,7 @@
 #include "UrlEncoding.h"
 #include <memory>
 #include <FileModel/Design/FileArchive.h>
+#include <FileModel/Design/ComponentHeightTracer.h>
 #include <sstream>
 #include <string>
 #include <algorithm>
@@ -799,6 +800,17 @@ namespace Odb::App::Server
 		auto& layer = findIt2->second;
 
 		auto& componentsFile = layer->GetComponentsFile();
+
+		// Trace REST response for target components / failures
+		const auto &attributeNames = componentsFile.GetAttributeNames();
+		for (const auto &pComponentRecord : componentsFile.GetComponentRecords())
+		{
+			ComponentHeightTracer::instance().logRestResponse(
+				pComponentRecord->compName,
+				pComponentRecord->pkgRef,
+				pComponentRecord->GetAttributeLookupTable(),
+				attributeNames);
+		}
 		return crow::response(JsonCrowReturnable(componentsFile));
 	}
 

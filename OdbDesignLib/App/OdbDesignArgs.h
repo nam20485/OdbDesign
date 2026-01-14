@@ -12,11 +12,13 @@ namespace Odb::Lib::App
 		OdbDesignArgs(int argc, char* argv[]);
 
 		int port() const;
+		std::string bindAddress() const;
 		int grpcPort() const;
 		bool useHttps() const;		
 		std::string designsDir() const;
 		std::string templatesDir() const;
 		bool help() const;
+		bool httpTrace() const;
 		std::string loadDesign() const;
 		bool loadAll() const;
 		bool disableAuthentication() const;
@@ -27,10 +29,12 @@ namespace Odb::Lib::App
 
 	private:
 		constexpr static const int		DEFAULT_PORT =			8888;
+		constexpr static const char *DEFAULT_BIND_ADDRESS = "0.0.0.0";
 		constexpr static const int		DEFAULT_GRPC_PORT =		50051;
 		constexpr static const char*	DEFAULT_DESIGNS_DIR =	"designs";
 		constexpr static const char*	DEFAULT_TEMPLATES_DIR = "templates";
 		constexpr static const bool		DEFAULT_HELP =			false;
+		constexpr static const bool DEFAULT_HTTP_TRACE = false;
 		constexpr static const char*	DEFAULT_LOAD_DESIGN =	"";		
 		constexpr static const bool		DEFAULT_LOAD_ALL =		false;
 		constexpr static const bool		DEFAULT_DISABLE_AUTH = false;

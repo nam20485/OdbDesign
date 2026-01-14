@@ -10,6 +10,15 @@
 
 This document provides specific logging guidance to help identify root causes of three critical issues identified in the latest integration test run. Add the suggested logging, run tests, and share logs with server team for analysis.
 
+### Test data (canonical)
+
+The test designs referenced throughout this debugging effort are published as archives in:
+
+- Repo: `https://github.com/nam20485/OdbDesignTestData` (branch: `development`)
+- Directory: `TEST_DATA/`
+    - `designodb_rigidflex.tgz`: `https://github.com/nam20485/OdbDesignTestData/raw/refs/heads/development/TEST_DATA/designodb_rigidflex.tgz`
+    - `sample_design.tgz`: `https://github.com/nam20485/OdbDesignTestData/raw/refs/heads/development/TEST_DATA/sample_design.tgz`
+
 ---
 
 ## Issue 1: Batch Streaming Not Being Used 🔴 **CRITICAL**

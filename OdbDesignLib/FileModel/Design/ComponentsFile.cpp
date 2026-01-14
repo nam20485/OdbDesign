@@ -9,6 +9,7 @@
 #include "str_utils.h"
 #include "../invalid_odb_error.h"
 #include <climits>
+#include "ComponentHeightTracer.h"
 
 using namespace std::filesystem;
 
@@ -102,6 +103,13 @@ namespace Odb::Lib::FileModel::Design
 
 		for (const auto& pComponentRecord : m_componentRecords)
 		{
+			// Log component height serialization
+			ComponentHeightTracer::instance().logSerialization(
+				pComponentRecord->compName,
+				pComponentRecord->pkgRef,
+				pComponentRecord->GetAttributeLookupTable(),
+				m_attributeNames);
+
 			auto pComponentRecordMessage = pComponentRecord->to_protobuf();
 			pComponentsFileMessage->add_componentrecords()->CopyFrom(*pComponentRecordMessage);
 		}
@@ -471,10 +479,23 @@ namespace Odb::Lib::FileModel::Design
 						std::string attrIdString;
 						lineStream >> attrIdString;
 
+						// Log component height parsing start
+						ComponentHeightTracer::instance().logParseStart(
+							pCurrentComponentRecord->compName,
+							pCurrentComponentRecord->pkgRef,
+							attrIdString);
+
 						if (!pCurrentComponentRecord->ParseAttributeLookupTable(attrIdString))
 						{
 							throw_parse_error(m_path, line, token, lineNumber);
-						}						
+						}
+
+						// Log component height parsing result
+						ComponentHeightTracer::instance().logParseResult(
+							pCurrentComponentRecord->compName,
+							pCurrentComponentRecord->pkgRef,
+							pCurrentComponentRecord->GetAttributeLookupTable(),
+							m_attributeNames);						
 					}
 					else if (line.find(PropertyRecord::RECORD_TOKEN) == 0)
 					{
