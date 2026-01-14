@@ -84,10 +84,17 @@ Added two new test cases:
 ### Testing Notes
 
 **Manual Testing Required**:
+
 - Test with `designodb_rigidflex/cellular_flip-phone` design
 - Request `GetLayerSymbols` for `comp_+_top` layer - should succeed with `units="mm"`
 - Request `GetLayerSymbols` for `comp_+_bot` layer - should succeed with `units="mm"`
 - Verify no `FailedPrecondition` errors occur
+
+**Test data source (canonical)**:
+- Repo: `https://github.com/nam20485/OdbDesignTestData` (branch: `development`)
+- Directory: `TEST_DATA/`
+   - `designodb_rigidflex.tgz`: `https://github.com/nam20485/OdbDesignTestData/raw/refs/heads/development/TEST_DATA/designodb_rigidflex.tgz`
+   - `sample_design.tgz`: `https://github.com/nam20485/OdbDesignTestData/raw/refs/heads/development/TEST_DATA/sample_design.tgz`
 
 **Unit Test Command**:
 ```bash

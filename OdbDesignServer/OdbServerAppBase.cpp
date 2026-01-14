@@ -200,6 +200,12 @@ namespace Odb::Lib::App
 			return crow::response{ 200, "ready" };
 			});
 
+		// enable optional per-request HTTP tracing
+		Utils::Tracing::HttpTraceMiddleware::SetEnabled(args().httpTrace());
+
+		// make the bind address explicit (avoid ambiguity across platforms/containers)
+		m_crowApp.bindaddr(args().bindAddress());
+
 		// set port to passed-in port or default if none supplied
 		m_crowApp.port(static_cast<unsigned short>(args().port()));
 
@@ -216,7 +222,8 @@ namespace Odb::Lib::App
 		start_interactive_quit_if_tty();
 
 		// run the Crow server (blocks until stop() is called)
-		std::cout << "Crow REST server starting on port " << args().port() << std::endl;
+		std::cout << "Crow REST server starting on " << args().bindAddress() << ":" << args().port()
+				  << " (http-trace=" << (args().httpTrace() ? "true" : "false") << ")" << std::endl;
 		m_crowApp.run();
 
 		// Stop interactive watcher and join

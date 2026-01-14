@@ -25,7 +25,8 @@
 			"thread": "cpp",
 			"exception": "cpp",
 			"cstdlib": "cpp"
-		}
+		},
+		"markdown.validate.enabled": true
 	},
 	"launch": {
 		"configurations": [

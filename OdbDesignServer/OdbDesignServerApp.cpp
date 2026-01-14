@@ -101,7 +101,10 @@ namespace Odb::App::Server
 		int maxSendBytes = loadResult.config->max_send_message_size_mb * 1024 * 1024;
 		builder.SetMaxReceiveMessageSize(maxReceiveBytes);
 		builder.SetMaxSendMessageSize(maxSendBytes);
-		
+
+		std::cout << "gRPC max message sizes: receive=" << loadResult.config->max_receive_message_size_mb
+				  << "MB, send=" << loadResult.config->max_send_message_size_mb << "MB" << std::endl;
+
 		builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
 		builder.RegisterService(&service);
 

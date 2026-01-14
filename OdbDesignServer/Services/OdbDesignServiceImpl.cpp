@@ -18,6 +18,7 @@
 #include <Logger.h>
 
 #include <grpcpp/server_context.h>
+#include <FileModel/Design/ComponentHeightTracer.h>
 
 namespace OdbDesignServer
 {
@@ -118,6 +119,7 @@ namespace OdbDesignServer
         {
             try
             {
+                loginfo("[ConnTrace] GetDesign start: design_name=\"" + request->design_name() + "\"");
                 const auto design = m_designCache->GetDesign(request->design_name());
                 if (design == nullptr)
                 {
@@ -126,6 +128,48 @@ namespace OdbDesignServer
 
                 // Convert the design to protobuf message and populate the response
                 *response = *(design->to_protobuf());
+
+                loginfo("[ConnTrace] GetDesign ok: design_name=\"" + request->design_name() +
+                    "\" approx_bytes=" + std::to_string(response->ByteSizeLong()));
+
+                // Log component height data in gRPC response for traced components
+                if (response->has_filemodel())
+                {
+                    const auto& fileModel = response->filemodel();
+                    for (const auto& kvStep : fileModel.stepsbyname())
+                    {
+                        const auto& step = kvStep.second;
+                        for (const auto& kvLayer : step.layersbyname())
+                        {
+                            const auto& layer = kvLayer.second;
+                            if (layer.has_components())
+                            {
+                                const auto& componentsFile = layer.components();
+                                std::vector<std::string> attributeNames;
+                                for (const auto& attrName : componentsFile.attributenames())
+                                {
+                                    attributeNames.push_back(attrName);
+                                }
+
+                                for (const auto& compRecord : componentsFile.componentrecords())
+                                {
+                                    std::map<std::string, std::string> lookupTable;
+                                    for (const auto& kv : compRecord.attributelookuptable())
+                                    {
+                                        lookupTable[kv.first] = kv.second;
+                                    }
+
+									Odb::Lib::FileModel::Design::ComponentHeightTracer::instance().logGrpcResponse(
+                                        compRecord.compname(),
+                                        compRecord.pkgref(),
+                                        lookupTable,
+                                        attributeNames);
+                                }
+                            }
+                        }
+                    }
+                }
+
                 return grpc::Status::OK;
             }
             catch (const std::exception &e)
@@ -142,6 +186,8 @@ namespace OdbDesignServer
         {
             try
             {
+                loginfo("[ConnTrace] GetLayerFeaturesStream start: design=\"" + request->design_name() +
+                    "\" step=\"" + request->step_name() + "\" layer=\"" + request->layer_name() + "\"");
                 const auto fileArchive = m_designCache->GetFileArchive(request->design_name());
                 if (fileArchive == nullptr)
                 {
@@ -167,6 +213,7 @@ namespace OdbDesignServer
                 // Reuse a single protobuf message instance to avoid per-iteration heap allocations.
                 Odb::Lib::Protobuf::FeaturesFile::FeatureRecord featureRecordMsg;
 
+                size_t sentCount = 0;
                 for (const auto &featureRecord : featureRecords)
                 {
                     if (!featureRecord)
@@ -185,14 +232,21 @@ namespace OdbDesignServer
 
                     if (!writer->Write(featureRecordMsg))
                     {
-                        // Client disconnected
+                        loginfo("[ConnTrace] GetLayerFeaturesStream client_disconnected: design=\"" + request->design_name() +
+                            "\" step=\"" + request->step_name() + "\" layer=\"" + request->layer_name() +
+                            "\" sent=" + std::to_string(sentCount));
                         break;
                     }
+
+                    ++sentCount;
 
                     // Clear for reuse while retaining allocated capacity.
                     featureRecordMsg.Clear();
                 }
 
+                loginfo("[ConnTrace] GetLayerFeaturesStream done: design=\"" + request->design_name() +
+                    "\" step=\"" + request->step_name() + "\" layer=\"" + request->layer_name() +
+                    "\" sent=" + std::to_string(sentCount));
                 return grpc::Status::OK;
             }
             catch (const std::exception &e)
@@ -209,9 +263,12 @@ namespace OdbDesignServer
         {
             try
             {
+                loginfo("[ConnTrace] GetLayerFeaturesBatchStream start: design=\"" + request->design_name() +
+                    "\" step=\"" + request->step_name() + "\" layer=\"" + request->layer_name() + "\"");
                 // Feature flag check: return UNIMPLEMENTED if batch streaming is disabled
                 if (!m_config->enable_batch_streaming)
                 {
+                    loginfo("[ConnTrace] GetLayerFeaturesBatchStream disabled: returning UNIMPLEMENTED");
                     return {grpc::StatusCode::UNIMPLEMENTED, "Batch streaming is not enabled"};
                 }
 
@@ -244,6 +301,8 @@ namespace OdbDesignServer
 
                 const int batchSize = m_config->batch_size;
                 int currentBatchCount = 0;
+                size_t batchesSent = 0;
+                size_t featuresSent = 0;
 
                 for (const auto &featureRecord : featureRecords)
                 {
@@ -270,6 +329,7 @@ namespace OdbDesignServer
                     // Add feature to current batch
                     batch.add_features()->CopyFrom(featureRecordMsg);
                     currentBatchCount++;
+                    featuresSent++;
 
                     // Clear for reuse while retaining allocated capacity.
                     featureRecordMsg.Clear();
@@ -285,10 +345,12 @@ namespace OdbDesignServer
                         
                         if (!writer->Write(batch))
                         {
-                            // Client disconnected during batch write
-                            logdebug("Client disconnected while sending batch");
+                            loginfo("[ConnTrace] GetLayerFeaturesBatchStream client_disconnected: design=\"" + request->design_name() +
+                                "\" step=\"" + request->step_name() + "\" layer=\"" + request->layer_name() +
+                                "\" batches=" + std::to_string(batchesSent) + " features=" + std::to_string(featuresSent));
                             return grpc::Status::OK;
                         }
+                        batchesSent++;
                         batch.Clear();
                         currentBatchCount = 0;
                     }
@@ -305,13 +367,19 @@ namespace OdbDesignServer
                     
                     if (!writer->Write(batch))
                     {
-                        // Client disconnected during final batch write
-                        logdebug("Client disconnected while sending final batch");
+                        loginfo("[ConnTrace] GetLayerFeaturesBatchStream client_disconnected(final): design=\"" + request->design_name() +
+                            "\" step=\"" + request->step_name() + "\" layer=\"" + request->layer_name() +
+                            "\" batches=" + std::to_string(batchesSent) + " features=" + std::to_string(featuresSent));
                         return grpc::Status::OK;
                     }
+                    batchesSent++;
                 }
 
                 // Stream completion is indicated by normal gRPC end-of-stream semantics
+                loginfo("[ConnTrace] GetLayerFeaturesBatchStream done: design=\"" + request->design_name() +
+                    "\" step=\"" + request->step_name() + "\" layer=\"" + request->layer_name() +
+                    "\" batches=" + std::to_string(batchesSent) + " features=" + std::to_string(featuresSent) +
+                    " batch_size=" + std::to_string(batchSize));
                 return grpc::Status::OK;
             }
             catch (const std::exception &e)
@@ -328,6 +396,8 @@ namespace OdbDesignServer
         {
             try
             {
+                loginfo("[ConnTrace] GetLayerSymbols start: design=\"" + request->design_name() +
+                    "\" step=\"" + request->step_name() + "\" layer=\"" + request->layer_name() + "\"");
                 const auto fileArchive = m_designCache->GetFileArchive(request->design_name());
                 if (fileArchive == nullptr)
                 {
@@ -357,6 +427,9 @@ namespace OdbDesignServer
                 response->set_sym_num_base(0);
                 response->set_units(unitsInfo.units);
                 response->set_units_to_mm(unitsInfo.unitsToMm);
+
+                loginfo("[ConnTrace] GetLayerSymbols units: layer=\"" + request->layer_name() + "\" units=\"" +
+                    unitsInfo.units + "\" units_to_mm=" + std::to_string(unitsInfo.unitsToMm));
 
                 const auto symbols = Odb::Lib::FileModel::Design::collect_symbols(featuresFile);
                 const auto& featureRecords = featuresFile.GetFeatureRecords();
@@ -503,6 +576,10 @@ namespace OdbDesignServer
                         response->add_symbol_names()->CopyFrom(placeholder);
                     }
                 }
+
+                loginfo("[ConnTrace] GetLayerSymbols done: design=\"" + request->design_name() +
+                    "\" step=\"" + request->step_name() + "\" layer=\"" + request->layer_name() +
+                    "\" symbol_names=" + std::to_string(response->symbol_names_size()));
 
                 return grpc::Status::OK;
             }
