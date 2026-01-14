@@ -29,3 +29,5 @@ scripts/create-release-invoker.js
 /compose-designs
 docs/api/
 perfertto-tracing-span-events-SQL.md
+# Corrected spelling to ensure both variants are ignored
+perfetto-tracing-span-events-SQL.md
