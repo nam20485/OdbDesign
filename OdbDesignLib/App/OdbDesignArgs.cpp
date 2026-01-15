@@ -53,6 +53,11 @@ namespace Odb::Lib::App
 		return boolArg("disable-authentication", DEFAULT_DISABLE_AUTH);
 	}
 
+	int OdbDesignArgs::heartbeatInterval() const
+	{
+		return intArg("heartbeat-interval", DEFAULT_HEARTBEAT_INTERVAL);
+	}
+
 	std::string OdbDesignArgs::getUsageString() const
 	{
 		std::stringstream ss;
@@ -66,6 +71,7 @@ namespace Odb::Lib::App
 		ss << "  --load-design <design>   Design to load on startup (default: " << DEFAULT_LOAD_DESIGN << ")\n";
 		ss << "  --load-all               Load all designs on startup (default: " << (DEFAULT_LOAD_ALL ? "true" : "false") << ")\n";
 		ss << "  --disable-authentication Disable authentication (default: " << (DEFAULT_DISABLE_AUTH ? "true" : "false") << ")\n";
+		ss << "  --heartbeat-interval <interval>             Heartbeat interval in seconds (default: " << DEFAULT_HEARTBEAT_INTERVAL << ")\n";
 		ss << "  --help                   Print this help message\n";
 		return ss.str();		
 	}	

@@ -19,6 +19,7 @@ namespace Odb::Lib::App
 		std::string loadDesign() const;
 		bool loadAll() const;
 		bool disableAuthentication() const;
+		int  heartbeatInterval() const;
 
 	protected:
 		// Inherited via CommandLineArgs
@@ -34,6 +35,7 @@ namespace Odb::Lib::App
 		constexpr static const char*	DEFAULT_LOAD_DESIGN =	"";		
 		constexpr static const bool		DEFAULT_LOAD_ALL =		false;
 		constexpr static const bool		DEFAULT_DISABLE_AUTH = false;
+		constexpr static const int		DEFAULT_HEARTBEAT_INTERVAL = 5;
 
 	};
 }
