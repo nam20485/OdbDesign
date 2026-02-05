@@ -92,6 +92,23 @@ target_include_directories(OdbDesignServer PRIVATE ${CMAKE_CURRENT_BINARY_DIR} $
 # mark the generated Protobuf C++ files as generated
 set_source_files_properties(${GRPC_PROTO_SRCS} ${GRPC_PROTO_HDRS} PROPERTIES GENERATED TRUE)
 
+# Copy config.json to executable directory so it can be found at runtime
+# Use CMAKE_RUNTIME_OUTPUT_DIRECTORY if set (for MSVC), otherwise use executable's output directory
+if(CMAKE_RUNTIME_OUTPUT_DIRECTORY)
+    set(CONFIG_DEST_DIR "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+else()
+    # Get the executable's output directory
+    get_target_property(CONFIG_DEST_DIR OdbDesignServer RUNTIME_OUTPUT_DIRECTORY)
+    if(NOT CONFIG_DEST_DIR)
+        # Fallback to binary directory if RUNTIME_OUTPUT_DIRECTORY not set
+        set(CONFIG_DEST_DIR "${CMAKE_CURRENT_BINARY_DIR}")
+    endif()
+endif()
+
+file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/config.json"
+     DESTINATION "${CONFIG_DEST_DIR}"
+     FILE_PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
+
 if (WIN32)
     # Ensure the generated sources compile with the import macro defined
     set_source_files_properties(

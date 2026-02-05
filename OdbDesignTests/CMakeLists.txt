@@ -22,6 +22,7 @@ add_executable(OdbDesignTests
     "FeatureRecordSurfaceTests.cpp"
     "SymbolContractTests.cpp"
     "MatrixFileTests.cpp"
+    "ComponentHeightPipelineTests.cpp"
     
     # NOTE: GrpcBatchStreamTests.cpp temporarily disabled due to CMake coupling concerns
     # Server source files are compiled directly into test executable, creating tight coupling

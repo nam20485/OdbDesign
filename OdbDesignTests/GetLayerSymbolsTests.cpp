@@ -122,3 +122,100 @@ TEST_F(GetLayerSymbolsFixture, ReturnsNotFoundForMissingLayer)
 	EXPECT_EQ(status.error_code(), grpc::StatusCode::NOT_FOUND);
 }
 
+TEST_F(GetLayerSymbolsFixture, ReturnsDefaultUnitsWhenEmpty)
+{
+	// Test that GetLayerSymbols returns default "mm" units when layer has empty units
+	// This prevents FAILED_PRECONDITION errors for component layers (comp_+_top, comp_+_bot)
+	// that may lack units metadata in ODB++ files
+	
+	grpc::ServerContext ctx;
+	Odb::Grpc::GetLayerSymbolsRequest req;
+	Odb::Grpc::GetLayerSymbolsResponse resp;
+
+	// Try component layers that may have empty units
+	// Note: This test verifies the fix works - if these layers exist and have empty units,
+	// they should return default "mm" units instead of FAILED_PRECONDITION
+	req.set_design_name("designodb_rigidflex");
+	req.set_step_name("cellular_flip-phone");
+	
+	// Test comp_+_top layer (component placement layer)
+	req.set_layer_name("comp_+_top");
+	auto status1 = m_service->GetLayerSymbols(&ctx, &req, &resp);
+	
+	// If layer exists, verify it doesn't return FAILED_PRECONDITION for empty units
+	if (status1.ok())
+	{
+		// Verify response always has units populated (even if default)
+		EXPECT_FALSE(resp.units().empty()) << "Units field should always be populated";
+		EXPECT_GT(resp.units_to_mm(), 0.0) << "units_to_mm should always be set";
+		EXPECT_NE(status1.error_code(), grpc::StatusCode::FAILED_PRECONDITION) 
+			<< "Should not return FAILED_PRECONDITION for empty units";
+	}
+	else if (status1.error_code() == grpc::StatusCode::NOT_FOUND)
+	{
+		// Layer doesn't exist in test design - that's okay, test passes
+		EXPECT_TRUE(true) << "Layer not found in test design (expected)";
+	}
+	else
+	{
+		// Any other error should not be FAILED_PRECONDITION for "layer units not set"
+		EXPECT_NE(status1.error_code(), grpc::StatusCode::FAILED_PRECONDITION)
+			<< "Should not return FAILED_PRECONDITION for empty units";
+		EXPECT_FALSE(status1.error_message().find("layer units not set") != std::string::npos)
+			<< "Should not return 'layer units not set' error";
+	}
+	
+	// Test comp_+_bot layer (component placement layer)
+	req.set_layer_name("comp_+_bot");
+	auto status2 = m_service->GetLayerSymbols(&ctx, &req, &resp);
+	
+	// If layer exists, verify it doesn't return FAILED_PRECONDITION for empty units
+	if (status2.ok())
+	{
+		// Verify response always has units populated (even if default)
+		EXPECT_FALSE(resp.units().empty()) << "Units field should always be populated";
+		EXPECT_GT(resp.units_to_mm(), 0.0) << "units_to_mm should always be set";
+		EXPECT_NE(status2.error_code(), grpc::StatusCode::FAILED_PRECONDITION)
+			<< "Should not return FAILED_PRECONDITION for empty units";
+	}
+	else if (status2.error_code() == grpc::StatusCode::NOT_FOUND)
+	{
+		// Layer doesn't exist in test design - that's okay, test passes
+		EXPECT_TRUE(true) << "Layer not found in test design (expected)";
+	}
+	else
+	{
+		// Any other error should not be FAILED_PRECONDITION for "layer units not set"
+		EXPECT_NE(status2.error_code(), grpc::StatusCode::FAILED_PRECONDITION)
+			<< "Should not return FAILED_PRECONDITION for empty units";
+		EXPECT_FALSE(status2.error_message().find("layer units not set") != std::string::npos)
+			<< "Should not return 'layer units not set' error";
+	}
+}
+
+TEST_F(GetLayerSymbolsFixture, AlwaysPopulatesUnitsFields)
+{
+	// Verify that GetLayerSymbols always populates units and units_to_mm fields
+	// even when units are empty (should default to "mm")
+	
+	grpc::ServerContext ctx;
+	Odb::Grpc::GetLayerSymbolsRequest req;
+	Odb::Grpc::GetLayerSymbolsResponse resp;
+
+	req.set_design_name("designodb_rigidflex");
+	req.set_step_name("cellular_flip-phone");
+	req.set_layer_name("signal_2");
+
+	auto status = m_service->GetLayerSymbols(&ctx, &req, &resp);
+	EXPECT_TRUE(status.ok()) << status.error_message();
+
+	// Verify units fields are always populated
+	EXPECT_FALSE(resp.units().empty()) << "Units field must always be populated";
+	EXPECT_GT(resp.units_to_mm(), 0.0) << "units_to_mm must always be set";
+	
+	// Verify units are normalized (should be "inch", "mm", "mil", or "micron")
+	EXPECT_TRUE(
+		resp.units() == "inch" || resp.units() == "mm" || 
+		resp.units() == "mil" || resp.units() == "micron"
+	) << "Units should be normalized to one of: inch, mm, mil, micron";
+}

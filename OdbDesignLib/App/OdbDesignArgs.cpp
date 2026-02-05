@@ -13,6 +13,11 @@ namespace Odb::Lib::App
 		return intArg("port", DEFAULT_PORT);
 	}
 
+	std::string OdbDesignArgs::bindAddress() const
+	{
+		return stringArg("bind", DEFAULT_BIND_ADDRESS);
+	}
+
 	int OdbDesignArgs::grpcPort() const
 	{
 		return intArg("grpc-port", DEFAULT_GRPC_PORT);
@@ -31,6 +36,11 @@ namespace Odb::Lib::App
 	bool OdbDesignArgs::help() const
 	{
 		return boolArg("help", DEFAULT_HELP);
+	}
+
+	bool OdbDesignArgs::httpTrace() const
+	{
+		return boolArg("http-trace", DEFAULT_HTTP_TRACE);
 	}
 
 	std::string OdbDesignArgs::loadDesign() const
@@ -53,10 +63,12 @@ namespace Odb::Lib::App
 		std::stringstream ss;
 		ss << "Usage: " << executableName() << " [options]\n";
 		ss << "Options:\n";
+		ss << "  --bind <ip|host>        Bind address for REST server (default: " << DEFAULT_BIND_ADDRESS << ")\n";
 		ss << "  --port <port>            Port to listen on (default: " << DEFAULT_PORT << ")\n";
 		ss << "  --grpc-port <port>       gRPC port to listen on (default: " << DEFAULT_GRPC_PORT << ")\n";
 		ss << "  --designs-dir <dir>      Directory containing design files (default: " << DEFAULT_DESIGNS_DIR << ")\n";
 		ss << "  --templates-dir <dir>    Directory containing template files (default: " << DEFAULT_TEMPLATES_DIR << ")\n";
+		ss << "  --http-trace             Enable per-request HTTP tracing (default: " << (DEFAULT_HTTP_TRACE ? "true" : "false") << ")\n";
 		ss << "  --load-design <design>   Design to load on startup (default: " << DEFAULT_LOAD_DESIGN << ")\n";
 		ss << "  --load-all               Load all designs on startup (default: " << (DEFAULT_LOAD_ALL ? "true" : "false") << ")\n";
 		ss << "  --disable-authentication Disable authentication (default: " << (DEFAULT_DISABLE_AUTH ? "true" : "false") << ")\n";

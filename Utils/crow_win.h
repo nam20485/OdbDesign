@@ -13,5 +13,6 @@
 #include <crow/compression.h>
 #include <crow/logging.h>
 
+#include "HttpTraceMiddleware.h"
 
-using CrowApp = crow::Crow<crow::CORSHandler>;
+using CrowApp = crow::Crow<crow::CORSHandler, Utils::Tracing::HttpTraceMiddleware>;
