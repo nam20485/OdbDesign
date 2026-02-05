@@ -3,6 +3,7 @@
 #include <gmock/gmock-matchers.h>
 #include "FileModel/Design/FileArchive.h"
 #include <string>
+#include "FileModel/Design/ComponentsFile.h"
 
 using namespace Odb::Lib::FileModel;
 using namespace Odb::Lib::FileModel::Design;
@@ -18,7 +19,7 @@ namespace
         std::vector<std::string> attributeNames;
     };
 
-    ComponentLookup FindComponent(const FileModel::Design::FileArchive &fileArchive, const std::string &compName)
+    ComponentLookup FindComponent(const FileArchive &fileArchive, const std::string &compName)
     {
         ComponentLookup result;
 
@@ -65,7 +66,7 @@ namespace Odb::Test
         EXPECT_EQ(".comp_height", lookup.attributeNames.front());
 
         const auto &table = lookup.record->GetAttributeLookupTable();
-        ASSERT_TRUE(table.contains("0"));
+        ASSERT_TRUE(table.find("0") != table.end());
         EXPECT_EQ("0.022000", table.at("0"));
 
         // Protobuf stage
