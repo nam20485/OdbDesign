@@ -20,7 +20,8 @@ param(
 
 # $clusterName="k3dcluster"
 #$hostIp = "10.0.0.185"
-$hostIp = "192.168.1.30"
+#$hostIp = "192.168.1.30"
+$hostIp = "192.168.1.101"
 # $numAgents=3
 # $ingressHostPort=8081
 
@@ -49,7 +50,7 @@ Write-Host "Creating cluster '$ClusterName'..."
 
 k3d cluster create $ClusterName `
     --agents $NumAgents `
-    --k3s-arg="--tls-san=${hostIp}@server:0" `
+    --k3s-arg="--tls-san=${hostIp}@server:0" `    
     --k3s-arg="--tls-san=precision5820@server:0" `
     --port "${IngressHostPort}:80@loadbalancer" `
     --port "8443:443@loadbalancer" `
