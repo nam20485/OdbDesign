@@ -1,9 +1,8 @@
-#pragma once
-
 //
 // Created by nmill on 10/13/2023.
 //
 
+#pragma once
 #include "../OdbFile.h"
 #include <chrono>
 #include "../../IProtoBuffable.h"
