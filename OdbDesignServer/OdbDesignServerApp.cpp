@@ -104,7 +104,16 @@ namespace Odb::App::Server
 
 		std::cout << "gRPC max message sizes: receive=" << loadResult.config->max_receive_message_size_mb
 				  << "MB, send=" << loadResult.config->max_send_message_size_mb << "MB" << std::endl;
-
+	// Apply compression configuration
+	if (loadResult.config->compression_enabled)
+	{
+		builder.SetDefaultCompressionAlgorithm(GRPC_COMPRESS_GZIP);
+		std::cout << "gRPC compression enabled (gzip)" << std::endl;
+	}
+	else
+	{
+		std::cout << "gRPC compression disabled" << std::endl;
+	}
 		builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
 		builder.RegisterService(&service);
 
