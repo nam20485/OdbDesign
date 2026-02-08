@@ -15,4 +15,5 @@
 
 #include "HttpTraceMiddleware.h"
 
-using CrowApp = crow::Crow<crow::CORSHandler, Utils::Tracing::HttpTraceMiddleware>;
+// using CrowApp = crow::Crow<crow::CORSHandler, Utils::Tracing::HttpTraceMiddleware>;
+using CrowApp = crow::Crow<crow::CORSHandler>;
