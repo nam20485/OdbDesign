@@ -23,11 +23,13 @@ add_executable(OdbDesignTests
     "SymbolContractTests.cpp"
     "MatrixFileTests.cpp"
     "ComponentHeightPipelineTests.cpp"
+    "DesignCacheThreadSafetyTests.cpp"
+    "GrpcServiceConfigTests.cpp"
+    "../OdbDesignServer/Config/GrpcServiceConfig.cpp"
     
     # NOTE: GrpcBatchStreamTests.cpp temporarily disabled due to CMake coupling concerns
     # Server source files are compiled directly into test executable, creating tight coupling
     # Future: Will create separate test target for server component tests
-    # "../OdbDesignServer/Config/GrpcServiceConfig.cpp"
     # "../OdbDesignServer/Services/OdbDesignServiceImpl.cpp"
     # "GrpcBatchStreamTests.cpp"
      "FileArchiveLoadTests.cpp")
@@ -48,6 +50,7 @@ set(ODBDESIGN_SERVER_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/../OdbDesignServer"
 set(GRPC_CODEGEN_DIR "${ODBDESIGN_SERVER_BINARY_DIR}/grpc")
 target_include_directories(OdbDesignTests PRIVATE 
     ${REPO_ROOT}                                      # For OdbDesignServer/Services/... includes (repo root)
+    ${REPO_ROOT}/OdbDesignServer                     # For Config/GrpcServiceConfig.h
     ${ODBDESIGN_SERVER_BINARY_DIR}                   # For service.grpc.pb.h (generated files)
     ${GRPC_CODEGEN_DIR})                             # For grpc generated files
 

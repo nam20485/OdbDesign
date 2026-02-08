@@ -13,6 +13,7 @@
 #include <string>
 #include <type_traits>
 #include <StringVector.h>
+#include <shared_mutex>
 
 using namespace Utils;
 using namespace std::filesystem;
@@ -32,51 +33,85 @@ namespace Odb::Lib::App
 
     std::shared_ptr<ProductModel::Design> DesignCache::GetDesign(const std::string& designName)
     {
-        auto findIt = m_designsByName.find(designName);
-        if (findIt == m_designsByName.end())
+        // Fast path: shared (read) lock for cache hit
         {
-            auto pDesign = LoadDesign(designName);             
-            return pDesign;
-		}
+            std::shared_lock readLock(m_cacheMutex);
+            auto findIt = m_designsByName.find(designName);
+            if (findIt != m_designsByName.end())
+            {
+                return findIt->second;
+            }
+        }
 
-        return m_designsByName[designName];
+        // Slow path: load from disk without holding lock (LoadDesign may call GetFileArchive)
+        auto pDesign = LoadDesign(designName);
+
+        // Insert into cache under exclusive lock (double-check another thread didn't load it)
+        if (pDesign != nullptr)
+        {
+            std::unique_lock writeLock(m_cacheMutex);
+            auto findIt = m_designsByName.find(designName);
+            if (findIt != m_designsByName.end())
+            {
+                return findIt->second;  // Another thread loaded it first
+            }
+            m_designsByName[designName] = pDesign;
+        }
+        return pDesign;
     }
 
     std::shared_ptr<FileModel::Design::FileArchive> DesignCache::GetFileArchive(const std::string& designName)
     {
         std::stringstream ss;
         ss << "Retrieving design \"" << designName << "\" from cache... ";
-        logdebug(ss.str());  // Changed to DEBUG level - cache hits are frequent and not critical
+        logdebug(ss.str());
 
-        auto findIt = m_fileArchivesByName.find(designName);
-        if (findIt == m_fileArchivesByName.end())
+        // Fast path: shared (read) lock for cache hit
         {
-            loginfo("Not found in cache, attempting to load from file...");  // Keep INFO for cache misses
-
-            auto pFileArchive = LoadFileArchive(designName);
-            if (pFileArchive == nullptr)
+            std::shared_lock readLock(m_cacheMutex);
+            auto findIt = m_fileArchivesByName.find(designName);
+            if (findIt != m_fileArchivesByName.end())
             {
-                logwarn("Failed loading from file");
+                logdebug("Found. Returning from cache.");
+                return findIt->second;
             }
-            else
-            {
-				loginfo("Loaded from file");  // Keep INFO for successful loads
-			}
-            return pFileArchive;
+        }
+
+        loginfo("Not found in cache, attempting to load from file...");
+
+        // Slow path: load from disk without holding lock
+        auto pFileArchive = LoadFileArchive(designName);
+
+        if (pFileArchive == nullptr)
+        {
+            logwarn("Failed loading from file");
         }
         else
         {
-            logdebug("Found. Returning from cache.");  // Changed to DEBUG level - cache hits are frequent
-        }
+            loginfo("Loaded from file");
 
-        return m_fileArchivesByName[designName];        
+            // Insert into cache under exclusive lock (double-check)
+            std::unique_lock writeLock(m_cacheMutex);
+            auto findIt = m_fileArchivesByName.find(designName);
+            if (findIt != m_fileArchivesByName.end())
+            {
+                logdebug("Found. Returning from cache (loaded by another thread).");
+                return findIt->second;  // Another thread loaded it first
+            }
+            m_fileArchivesByName[designName] = pFileArchive;
+        }
+        return pFileArchive;
     }
 
     void DesignCache::AddFileArchive(const std::string& designName, std::shared_ptr<FileModel::Design::FileArchive> fileArchive, bool save)
     {
+        std::unique_lock writeLock(m_cacheMutex);
         m_fileArchivesByName[designName] = fileArchive;
         if (save)
         {
+            // SaveFileArchive calls GetFileArchive internally, which takes the lock.
+            // We must release before calling to avoid deadlock.
+            writeLock.unlock();
             SaveFileArchive(designName);
         }
     }
@@ -86,13 +121,19 @@ namespace Odb::Lib::App
         auto fileArchive = GetFileArchive(designName);
         if (fileArchive != nullptr)
         {
-            return fileArchive->SaveFileModel(m_directory);
+            std::string directory;
+            {
+                std::shared_lock readLock(m_cacheMutex);
+                directory = m_directory;
+            }
+            return fileArchive->SaveFileModel(directory);
         }
         return false;
     }
 
     std::vector<std::string> DesignCache::getLoadedDesignNames(const std::string& filter) const
     {
+        std::shared_lock readLock(m_cacheMutex);
         std::vector<std::string> loadedDesigns;
         for (const auto& kv : m_designsByName)
         {
@@ -103,6 +144,7 @@ namespace Odb::Lib::App
 
     std::vector<std::string> DesignCache::getLoadedFileArchiveNames(const std::string& filter) const
     {
+        std::shared_lock readLock(m_cacheMutex);
         std::vector<std::string> loadedFileArchives;
         for (const auto& kv : m_fileArchivesByName)
 		{
@@ -113,11 +155,17 @@ namespace Odb::Lib::App
 
     std::vector<std::string> DesignCache::getUnloadedDesignNames(const std::string& filter) const
     {        
+        std::string directory;
+        {
+            std::shared_lock readLock(m_cacheMutex);
+            directory = m_directory;
+        }
+
         std::vector<std::string> unloadedNames;
 
         //try
         {
-            path dir(m_directory);
+            path dir(directory);
             for (const auto& entry : directory_iterator(dir))
             {
                 if (entry.is_regular_file())
@@ -140,7 +188,13 @@ namespace Odb::Lib::App
     {
         int loaded = 0;
 
-        for (const auto& entry : directory_iterator(m_directory))
+        std::string directory;
+        {
+            std::shared_lock readLock(m_cacheMutex);
+            directory = m_directory;
+        }
+
+        for (const auto& entry : directory_iterator(directory))
         {
             if (entry.is_regular_file())
             {
@@ -148,7 +202,7 @@ namespace Odb::Lib::App
                 {
                     try
                     {
-                        auto pFileArchive = LoadFileArchive(entry.path().stem().string());
+                        auto pFileArchive = GetFileArchive(entry.path().stem().string());
                         if (pFileArchive != nullptr)
                         {
                             loaded++;
@@ -171,7 +225,13 @@ namespace Odb::Lib::App
     {
         int loaded = 0;
 
-        for (const auto& entry : directory_iterator(m_directory))
+        std::string directory;
+        {
+            std::shared_lock readLock(m_cacheMutex);
+            directory = m_directory;
+        }
+
+        for (const auto& entry : directory_iterator(directory))
         {
             if (entry.is_regular_file())
             {
@@ -179,7 +239,7 @@ namespace Odb::Lib::App
                 {
                     try
                     {
-                        auto pDesign = LoadDesign(entry.path().stem().string());
+                        auto pDesign = GetDesign(entry.path().stem().string());
                         if (pDesign != nullptr)
                         {
                             loaded++;
@@ -208,7 +268,7 @@ namespace Odb::Lib::App
         {
             try
             {
-                auto pFileArchive = LoadFileArchive(name);
+                auto pFileArchive = GetFileArchive(name);
                 if (pFileArchive != nullptr)
                 {
                     loaded++;
@@ -232,7 +292,7 @@ namespace Odb::Lib::App
         {
             try
             {
-                auto pDesign = LoadDesign(name);
+                auto pDesign = GetDesign(name);
                 if (pDesign != nullptr)
                 {
                     loaded++;
@@ -250,36 +310,46 @@ namespace Odb::Lib::App
 
     void DesignCache::setDirectory(const std::string& directory)
     {
+        std::unique_lock writeLock(m_cacheMutex);
         m_directory = directory;
     }
 
     const std::string& DesignCache::getDirectory() const
     {
+        std::shared_lock readLock(m_cacheMutex);
         return m_directory;
     }
 
     void DesignCache::Clear()
     {
+        std::unique_lock writeLock(m_cacheMutex);
         m_fileArchivesByName.clear();
         m_designsByName.clear();
     }
 
     std::shared_ptr<ProductModel::Design> DesignCache::LoadDesign(const std::string& designName)
-    { 
-        for (const auto& entry : directory_iterator(m_directory))
+    {
+        // NOTE: This is a lock-free I/O helper. It does NOT modify the cache maps.
+        // Cache insertion is handled by GetDesign().
+        std::string directory;
+        {
+            std::shared_lock readLock(m_cacheMutex);
+            directory = m_directory;
+        }
+
+        for (const auto& entry : directory_iterator(directory))
         {
             if (entry.is_regular_file())
             {
                 if (entry.path().stem() == designName)
                 {
+                    // GetFileArchive is thread-safe, manages its own locking
                     auto pFileModel = GetFileArchive(designName);
                     if (pFileModel != nullptr)
                     {
                         auto pDesign = std::make_shared<ProductModel::Design>();
                         if (pDesign->Build(pFileModel))
                         {
-                            // overwrite any existing design with the same name
-                            m_designsByName[designName] =  pDesign;
                             return pDesign;
                         }
                         else
@@ -300,11 +370,19 @@ namespace Odb::Lib::App
 
     std::shared_ptr<FileModel::Design::FileArchive> DesignCache::LoadFileArchive(const std::string& designName)
     {
+        // NOTE: This is a lock-free I/O helper. It does NOT modify the cache maps.
+        // Cache insertion is handled by GetFileArchive().
         auto fileFound = false;
+
+        std::string directory;
+        {
+            std::shared_lock readLock(m_cacheMutex);
+            directory = m_directory;
+        }
 
         // skip inaccessible files and do not follow symlinks
         const auto options = directory_options::skip_permission_denied;
-        for (const auto& entry : directory_iterator(m_directory, options))
+        for (const auto& entry : directory_iterator(directory, options))
         {
             if (entry.is_regular_file())
             {
@@ -317,8 +395,6 @@ namespace Odb::Lib::App
                     auto pFileArchive = std::make_shared<FileModel::Design::FileArchive>(entry.path().string());
                     if (pFileArchive->ParseFileModel())
                     {
-                        // overwrite any existing file archive with the same name
-                        m_fileArchivesByName[designName] = pFileArchive;
                         return pFileArchive;
                     }
                     else
