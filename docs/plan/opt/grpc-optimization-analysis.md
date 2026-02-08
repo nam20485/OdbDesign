@@ -273,51 +273,55 @@ option cc_enable_arenas = true;  // ✅ Enable arena allocation
 
 > | Field | Details |
 > |:------|:--------|
-> | **Status** | ⏳ **NOT IMPLEMENTED** — Planned for Phase 2. (Note: compression itself was fixed — GZIP `SetDefaultCompressionAlgorithm` applied — but granular level 1-9 tuning is not yet configurable.) |
+> | **Status** | ⏳ **NOT IMPLEMENTED** — Planned for Phase 2. (Note: compression itself was fixed — GZIP `SetDefaultCompressionAlgorithm` applied — but abstract level tuning via `SetDefaultCompressionLevel` is not yet configurable.) |
 > | **Result** | — |
-> | **Notes** | |
+> | **Notes** | gRPC C++ exposes `grpc_compression_level` enum (NONE/LOW/MED/HIGH), not raw zlib levels 1-9. `SetDefaultCompressionLevel` and `SetDefaultCompressionAlgorithm` are mutually exclusive — the algorithm call overrides any level setting. Phase 2 will switch to level-based control. |
 > | **Client Dev Team** | No client changes needed. Client already uses `CompressionLevel.Optimal`. |
 
-**Location**: `OdbDesignServerApp.cpp`
+**Location**: `OdbDesignServerApp.cpp`, `GrpcServiceConfig.h/.cpp`
 
-**Problem**: Using default compression level (no control)
+**Problem**: Currently hardcodes `SetDefaultCompressionAlgorithm(GRPC_COMPRESS_GZIP)` which forces GZIP regardless of environment. No way to configure compression intensity or disable it without a code change.
 ```cpp
 builder.SetDefaultCompressionAlgorithm(GRPC_COMPRESS_GZIP);
-// ❌ No level control - using default (6)
+// ❌ Hardcoded algorithm — overrides any level setting, no config control
 ```
 
-**Enhancement**: Add compression level tuning
+**Enhancement**: Switch to `SetDefaultCompressionLevel` with configurable level
 ```cpp
-// Add to config.json
+// config.json — string maps to grpc_compression_level enum
 {
   "grpc": {
     "compression": {
-      "enabled": true,
-      "algorithm": "gzip",
-      "level": 6  // 1=fastest, 9=best compression, 6=balanced
+      "level": "high"   // "none" | "low" | "medium" | "high"
     }
   }
 }
 
-// In code:
-grpc::ChannelArguments args;
-args.SetInt(GRPC_COMPRESSION_CHANNEL_DEFAULT_LEVEL, loadResult.config->compression_level);
-builder.SetOption(grpc::MakeChannelArgumentOption(GRPC_ARG_COMPRESSION_LEVEL_SET, 
-                                                    loadResult.config->compression_level));
+// In GrpcServiceConfig:
+grpc_compression_level compression_level = GRPC_COMPRESS_LEVEL_HIGH;
+
+// In OdbDesignServerApp.cpp:
+builder.SetDefaultCompressionLevel(config->compression_level);
+// NOTE: Do NOT also call SetDefaultCompressionAlgorithm — it overrides level
 ```
 
+**API Facts** (verified against gRPC C++ 1.71.0):
+- `grpc_compression_level` enum: `NONE(0)`, `LOW(1)`, `MED(2)`, `HIGH(3)`
+- These are **abstract quality levels** — gRPC internally selects the best algorithm and parameters per peer
+- Raw zlib levels 1-9 are **not exposed** by the public API; internal zlib level is hardcoded to `Z_DEFAULT_COMPRESSION`
+- `SetDefaultCompressionAlgorithm` **overrides** `SetDefaultCompressionLevel` — they are mutually exclusive
+
 **Trade-offs**:
-| Level | Speed | Compression | Use Case |
-|-------|-------|-------------|----------|
-| 1-3   | Fast  | ~40%        | LAN, low CPU |
-| 6     | Balanced | ~55%     | **Default (good)** |
-| 9     | Slow  | ~65%        | WAN, high CPU |
+| Level | Behavior | Use Case |
+|-------|----------|----------|
+| `none` | No compression | LAN / 2.5 GbE, CPU-constrained |
+| `low` | Minimal compression, fastest | Low-latency LAN |
+| `medium` | Balanced | General purpose |
+| `high` | Best compression | WAN / internet clients |
 
-**Priority**: 🟡 **MEDIUM** - Nice to have for tuning
+**Priority**: 🟡 **MEDIUM** - Nice to have for environment-specific tuning
 
-**Performance Benefit**: 
-- 10-20% CPU reduction with level 3 (LAN environments)
-- 10-15% better compression with level 9 (WAN environments)
+**Recommendation**: Default to `"none"` or `"low"` for on-prem LAN deployments (2.5 GbE); use `"high"` for WAN/cloud deployments where bandwidth matters more than CPU
 
 ---
 
