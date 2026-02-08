@@ -100,6 +100,47 @@ namespace OdbDesignServer
                             result.config->ClampBatchSize(); // Ensure valid range
                         }
                     }
+
+                    // Extract thread pool configuration
+                    if (grpcSection.has("thread_pool"))
+                    {
+                        auto threadSection = grpcSection["thread_pool"];
+
+                        if (threadSection.has("max_threads"))
+                        {
+                            int value = static_cast<int>(threadSection["max_threads"].i());
+                            result.config->max_threads = std::max(1, std::min(64, value));
+                        }
+
+                        if (threadSection.has("min_pollers"))
+                        {
+                            int value = static_cast<int>(threadSection["min_pollers"].i());
+                            result.config->min_pollers = std::max(1, std::min(16, value));
+                        }
+                    }
+
+                    // Extract keepalive configuration
+                    if (grpcSection.has("keepalive"))
+                    {
+                        auto keepaliveSection = grpcSection["keepalive"];
+
+                        if (keepaliveSection.has("time_s"))
+                        {
+                            int value = static_cast<int>(keepaliveSection["time_s"].i());
+                            result.config->keepalive_time_s = std::max(1, std::min(3600, value));
+                        }
+
+                        if (keepaliveSection.has("timeout_s"))
+                        {
+                            int value = static_cast<int>(keepaliveSection["timeout_s"].i());
+                            result.config->keepalive_timeout_s = std::max(1, std::min(300, value));
+                        }
+
+                        if (keepaliveSection.has("permit_without_calls"))
+                        {
+                            result.config->keepalive_permit_without_calls = keepaliveSection["permit_without_calls"].b();
+                        }
+                    }
                 }
 
                 result.loadedFromFile = true;

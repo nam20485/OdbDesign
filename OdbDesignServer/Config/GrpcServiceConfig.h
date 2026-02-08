@@ -20,6 +20,15 @@ namespace OdbDesignServer
             bool enable_batch_streaming = true;  // Feature flag for gradual rollout
             int batch_size = 500;                // Features per batch (100-1000)
 
+            // Thread pool configuration
+            int max_threads = 8;       // Maximum gRPC server threads (ResourceQuota)
+            int min_pollers = 1;       // Minimum polling threads
+
+            // Keepalive configuration (seconds)
+            int keepalive_time_s = 30;       // Send keepalive ping every N seconds on idle connections
+            int keepalive_timeout_s = 10;    // Close connection if no response within N seconds
+            bool keepalive_permit_without_calls = true;  // Send pings even with no active RPCs
+
             // Clamp batch_size to valid range [100, 1000]
             void ClampBatchSize()
             {

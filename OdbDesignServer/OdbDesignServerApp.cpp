@@ -21,6 +21,7 @@
 #include <grpcpp/security/server_credentials.h>
 #include <grpcpp/server.h>
 #include <grpcpp/server_builder.h>
+#include <grpcpp/resource_quota.h>
 #include <filesystem>
 #include <cstdlib>
 #include <cstring>
@@ -114,6 +115,33 @@ namespace Odb::App::Server
 	{
 		std::cout << "gRPC compression disabled" << std::endl;
 	}
+
+		// Apply thread pool limits via ResourceQuota
+		grpc::ResourceQuota quota;
+		quota.SetMaxThreads(loadResult.config->max_threads);
+		builder.SetResourceQuota(quota);
+		builder.SetSyncServerOption(grpc::ServerBuilder::SyncServerOption::MIN_POLLERS,
+		                            loadResult.config->min_pollers);
+
+		std::cout << "gRPC thread pool: max_threads=" << loadResult.config->max_threads
+				  << ", min_pollers=" << loadResult.config->min_pollers << std::endl;
+
+		// Apply keepalive channel arguments
+		builder.AddChannelArgument(GRPC_ARG_KEEPALIVE_TIME_MS,
+		                           loadResult.config->keepalive_time_s * 1000);
+		builder.AddChannelArgument(GRPC_ARG_KEEPALIVE_TIMEOUT_MS,
+		                           loadResult.config->keepalive_timeout_s * 1000);
+		builder.AddChannelArgument(GRPC_ARG_KEEPALIVE_PERMIT_WITHOUT_CALLS,
+		                           loadResult.config->keepalive_permit_without_calls ? 1 : 0);
+		builder.AddChannelArgument(GRPC_ARG_HTTP2_MIN_RECV_PING_INTERVAL_WITHOUT_DATA_MS,
+		                           (loadResult.config->keepalive_time_s * 1000) / 2);
+
+		std::cout << "gRPC keepalive: time=" << loadResult.config->keepalive_time_s
+				  << "s, timeout=" << loadResult.config->keepalive_timeout_s
+				  << "s, permit_without_calls="
+				  << (loadResult.config->keepalive_permit_without_calls ? "true" : "false")
+				  << std::endl;
+
 		builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
 		builder.RegisterService(&service);
 
