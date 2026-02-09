@@ -19,6 +19,15 @@ namespace Odb::Lib
 		virtual std::unique_ptr<TPbMessage> to_protobuf() const = 0;
 		virtual void from_protobuf(const TPbMessage& message) = 0;
 
+		// Arena-based serialization: populate a pre-allocated message in-place.
+		// Default implementation delegates to to_protobuf() + Swap for backward compatibility.
+		// Override in hot-path classes (e.g. FeatureRecord) to avoid heap allocation entirely.
+		virtual void to_protobuf(TPbMessage* pMessage) const
+		{
+			auto pTemp = to_protobuf();
+			if (pTemp) pMessage->Swap(pTemp.get());
+		}
+
 		// to and from Protocol Buffer string
 		bool to_pbstring(std::string& pb_string) const;
 		bool from_pbstring(const std::string& pb_string);

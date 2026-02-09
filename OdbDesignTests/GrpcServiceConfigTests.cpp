@@ -6,6 +6,7 @@
 #include <filesystem>
 #include <string>
 #include <memory>
+#include <grpc/impl/compression_types.h>
 
 using namespace OdbDesignServer::Config;
 using namespace Odb::Test::Utils;
@@ -57,7 +58,7 @@ namespace Odb::Test::Config
         // Pre-existing defaults
         EXPECT_EQ(config->max_receive_message_size_mb, 150);
         EXPECT_EQ(config->max_send_message_size_mb, 150);
-        EXPECT_TRUE(config->compression_enabled);
+        EXPECT_EQ(config->compression_level, GRPC_COMPRESS_LEVEL_HIGH);
         EXPECT_TRUE(config->enable_batch_streaming);
         EXPECT_EQ(config->batch_size, 500);
 
@@ -264,7 +265,7 @@ namespace Odb::Test::Config
                 "max_receive_message_size_mb": 200,
                 "max_send_message_size_mb": 200,
                 "compression": {
-                    "enabled": false
+                    "level": "low"
                 },
                 "batch_streaming": {
                     "enabled": false,
@@ -289,7 +290,7 @@ namespace Odb::Test::Config
         // Pre-existing fields
         EXPECT_EQ(result.config->max_receive_message_size_mb, 200);
         EXPECT_EQ(result.config->max_send_message_size_mb, 200);
-        EXPECT_FALSE(result.config->compression_enabled);
+        EXPECT_EQ(result.config->compression_level, GRPC_COMPRESS_LEVEL_LOW);
         EXPECT_FALSE(result.config->enable_batch_streaming);
         EXPECT_EQ(result.config->batch_size, 250);
 
@@ -470,6 +471,115 @@ namespace Odb::Test::Config
         auto result = GrpcServiceConfig::LoadFromFile("/fake/path/config.json");
         EXPECT_FALSE(result.loadedFromFile);
         EXPECT_THAT(result.message, HasSubstr("/fake/path/config.json"));
+    }
+
+    // ---- Compression level parsing ----
+
+    TEST_F(GrpcServiceConfigTest, ParseCompressionLevel_None)
+    {
+        EXPECT_EQ(GrpcServiceConfig::ParseCompressionLevel("none"), GRPC_COMPRESS_LEVEL_NONE);
+        EXPECT_EQ(GrpcServiceConfig::ParseCompressionLevel("NONE"), GRPC_COMPRESS_LEVEL_NONE);
+        EXPECT_EQ(GrpcServiceConfig::ParseCompressionLevel("None"), GRPC_COMPRESS_LEVEL_NONE);
+    }
+
+    TEST_F(GrpcServiceConfigTest, ParseCompressionLevel_Low)
+    {
+        EXPECT_EQ(GrpcServiceConfig::ParseCompressionLevel("low"), GRPC_COMPRESS_LEVEL_LOW);
+        EXPECT_EQ(GrpcServiceConfig::ParseCompressionLevel("LOW"), GRPC_COMPRESS_LEVEL_LOW);
+    }
+
+    TEST_F(GrpcServiceConfigTest, ParseCompressionLevel_Medium)
+    {
+        EXPECT_EQ(GrpcServiceConfig::ParseCompressionLevel("medium"), GRPC_COMPRESS_LEVEL_MED);
+        EXPECT_EQ(GrpcServiceConfig::ParseCompressionLevel("MEDIUM"), GRPC_COMPRESS_LEVEL_MED);
+    }
+
+    TEST_F(GrpcServiceConfigTest, ParseCompressionLevel_High)
+    {
+        EXPECT_EQ(GrpcServiceConfig::ParseCompressionLevel("high"), GRPC_COMPRESS_LEVEL_HIGH);
+        EXPECT_EQ(GrpcServiceConfig::ParseCompressionLevel("HIGH"), GRPC_COMPRESS_LEVEL_HIGH);
+    }
+
+    TEST_F(GrpcServiceConfigTest, ParseCompressionLevel_UnknownFallsBackToHigh)
+    {
+        EXPECT_EQ(GrpcServiceConfig::ParseCompressionLevel("unknown"), GRPC_COMPRESS_LEVEL_HIGH);
+        EXPECT_EQ(GrpcServiceConfig::ParseCompressionLevel("gzip"), GRPC_COMPRESS_LEVEL_HIGH);
+        EXPECT_EQ(GrpcServiceConfig::ParseCompressionLevel(""), GRPC_COMPRESS_LEVEL_HIGH);
+    }
+
+    TEST_F(GrpcServiceConfigTest, CompressionLevelToString_AllValues)
+    {
+        EXPECT_EQ(GrpcServiceConfig::CompressionLevelToString(GRPC_COMPRESS_LEVEL_NONE), "none");
+        EXPECT_EQ(GrpcServiceConfig::CompressionLevelToString(GRPC_COMPRESS_LEVEL_LOW), "low");
+        EXPECT_EQ(GrpcServiceConfig::CompressionLevelToString(GRPC_COMPRESS_LEVEL_MED), "medium");
+        EXPECT_EQ(GrpcServiceConfig::CompressionLevelToString(GRPC_COMPRESS_LEVEL_HIGH), "high");
+    }
+
+    TEST_F(GrpcServiceConfigTest, LoadFromFile_CompressionLevel_ParsesAllLevels)
+    {
+        // Test "none"
+        {
+            auto path = writeConfigFile(R"({"grpc": {"compression": {"level": "none"}}})");
+            auto result = GrpcServiceConfig::LoadFromFile(path);
+            EXPECT_TRUE(result.loadedFromFile);
+            EXPECT_EQ(result.config->compression_level, GRPC_COMPRESS_LEVEL_NONE);
+        }
+        // Test "low"
+        {
+            auto path = writeConfigFile(R"({"grpc": {"compression": {"level": "low"}}})", "config_low.json");
+            auto result = GrpcServiceConfig::LoadFromFile(path);
+            EXPECT_TRUE(result.loadedFromFile);
+            EXPECT_EQ(result.config->compression_level, GRPC_COMPRESS_LEVEL_LOW);
+        }
+        // Test "medium"
+        {
+            auto path = writeConfigFile(R"({"grpc": {"compression": {"level": "medium"}}})", "config_med.json");
+            auto result = GrpcServiceConfig::LoadFromFile(path);
+            EXPECT_TRUE(result.loadedFromFile);
+            EXPECT_EQ(result.config->compression_level, GRPC_COMPRESS_LEVEL_MED);
+        }
+        // Test "high"
+        {
+            auto path = writeConfigFile(R"({"grpc": {"compression": {"level": "high"}}})", "config_high.json");
+            auto result = GrpcServiceConfig::LoadFromFile(path);
+            EXPECT_TRUE(result.loadedFromFile);
+            EXPECT_EQ(result.config->compression_level, GRPC_COMPRESS_LEVEL_HIGH);
+        }
+    }
+
+    TEST_F(GrpcServiceConfigTest, LoadFromFile_CompressionLevel_UnknownValueDefaultsToHigh)
+    {
+        auto path = writeConfigFile(R"({"grpc": {"compression": {"level": "turbo"}}})");
+        auto result = GrpcServiceConfig::LoadFromFile(path);
+        EXPECT_TRUE(result.loadedFromFile);
+        EXPECT_EQ(result.config->compression_level, GRPC_COMPRESS_LEVEL_HIGH);
+    }
+
+    TEST_F(GrpcServiceConfigTest, LoadFromFile_CompressionLegacyEnabled_BackwardCompatible)
+    {
+        // Legacy "enabled: true" should map to HIGH
+        {
+            auto path = writeConfigFile(R"({"grpc": {"compression": {"enabled": true}}})");
+            auto result = GrpcServiceConfig::LoadFromFile(path);
+            EXPECT_TRUE(result.loadedFromFile);
+            EXPECT_EQ(result.config->compression_level, GRPC_COMPRESS_LEVEL_HIGH);
+        }
+        // Legacy "enabled: false" should map to NONE
+        {
+            auto path = writeConfigFile(R"({"grpc": {"compression": {"enabled": false}}})", "config_disabled.json");
+            auto result = GrpcServiceConfig::LoadFromFile(path);
+            EXPECT_TRUE(result.loadedFromFile);
+            EXPECT_EQ(result.config->compression_level, GRPC_COMPRESS_LEVEL_NONE);
+        }
+    }
+
+    TEST_F(GrpcServiceConfigTest, LoadFromFile_CompressionLevelTakesPrecedenceOverEnabled)
+    {
+        // When both "level" and "enabled" are present, "level" wins
+        auto path = writeConfigFile(R"({"grpc": {"compression": {"level": "low", "enabled": false}}})");
+        auto result = GrpcServiceConfig::LoadFromFile(path);
+        EXPECT_TRUE(result.loadedFromFile);
+        EXPECT_EQ(result.config->compression_level, GRPC_COMPRESS_LEVEL_LOW);
     }
 
 } // namespace Odb::Test::Config

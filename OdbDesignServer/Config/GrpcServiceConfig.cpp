@@ -4,11 +4,38 @@
 #include <sstream>
 #include <crow/json.h>
 #include <filesystem>
+#include <cctype>
 
 namespace OdbDesignServer
 {
     namespace Config
     {
+        grpc_compression_level GrpcServiceConfig::ParseCompressionLevel(const std::string& value)
+        {
+            // Case-insensitive comparison
+            std::string lower = value;
+            std::transform(lower.begin(), lower.end(), lower.begin(),
+                [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+
+            if (lower == "none")   return GRPC_COMPRESS_LEVEL_NONE;
+            if (lower == "low")    return GRPC_COMPRESS_LEVEL_LOW;
+            if (lower == "medium") return GRPC_COMPRESS_LEVEL_MED;
+            if (lower == "high")   return GRPC_COMPRESS_LEVEL_HIGH;
+            // Unknown value → default to high (matches current gzip behavior)
+            return GRPC_COMPRESS_LEVEL_HIGH;
+        }
+
+        std::string GrpcServiceConfig::CompressionLevelToString(grpc_compression_level level)
+        {
+            switch (level)
+            {
+                case GRPC_COMPRESS_LEVEL_NONE: return "none";
+                case GRPC_COMPRESS_LEVEL_LOW:  return "low";
+                case GRPC_COMPRESS_LEVEL_MED:  return "medium";
+                case GRPC_COMPRESS_LEVEL_HIGH: return "high";
+                default: return "unknown";
+            }
+        }
         GrpcServiceConfig::LoadResult GrpcServiceConfig::LoadFromFile(const std::string& configPath)
         {
             LoadResult result;
@@ -78,9 +105,18 @@ namespace OdbDesignServer
                     if (grpcSection.has("compression"))
                     {
                         auto compressionSection = grpcSection["compression"];
-                        if (compressionSection.has("enabled"))
+                        if (compressionSection.has("level"))
                         {
-                            result.config->compression_enabled = compressionSection["enabled"].b();
+                            result.config->compression_level = ParseCompressionLevel(
+                                static_cast<std::string>(compressionSection["level"].s()));
+                        }
+                        // Backward compatibility: support legacy "enabled" boolean
+                        // If "level" is present, it takes precedence
+                        else if (compressionSection.has("enabled"))
+                        {
+                            result.config->compression_level = compressionSection["enabled"].b()
+                                ? GRPC_COMPRESS_LEVEL_HIGH
+                                : GRPC_COMPRESS_LEVEL_NONE;
                         }
                     }
 

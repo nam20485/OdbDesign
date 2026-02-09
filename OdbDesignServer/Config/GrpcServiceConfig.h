@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <string>
+#include <grpc/impl/compression_types.h>
 
 namespace OdbDesignServer
 {
@@ -13,8 +14,9 @@ namespace OdbDesignServer
             int max_receive_message_size_mb = 150;  // Default 150MB (updated to handle large profile files)
             int max_send_message_size_mb = 150;     // Default 150MB (updated to handle large profile files)
 
-            // Compression configuration
-            bool compression_enabled = true;         // Default enabled (gRPC handles automatically)
+            // Compression configuration — abstract quality level (gRPC selects algorithm per peer)
+            // "none" = GRPC_COMPRESS_LEVEL_NONE, "low" = LOW, "medium" = MED, "high" = HIGH
+            grpc_compression_level compression_level = GRPC_COMPRESS_LEVEL_HIGH;
 
             // Batch streaming configuration
             bool enable_batch_streaming = true;  // Feature flag for gradual rollout
@@ -55,6 +57,12 @@ namespace OdbDesignServer
             // Load configuration from JSON file
             // Returns LoadResult containing config and whether it was loaded from file
             static LoadResult LoadFromFile(const std::string& configPath);
+
+            // Parse compression level string to gRPC enum
+            static grpc_compression_level ParseCompressionLevel(const std::string& value);
+
+            // Convert compression level enum to human-readable string
+            static std::string CompressionLevelToString(grpc_compression_level level);
         };
     }
 }

@@ -210,8 +210,9 @@ namespace OdbDesignServer
                 const auto &featuresFile = layerIt->second->GetFeaturesFile();
                 const auto &featureRecords = featuresFile.GetFeatureRecords();
 
-                // Reuse a single protobuf message instance to avoid per-iteration heap allocations.
-                Odb::Lib::Protobuf::FeaturesFile::FeatureRecord featureRecordMsg;
+                // Arena allocation: amortize heap allocation across all messages.
+                // All messages created on the arena are freed in one shot when the arena goes out of scope.
+                google::protobuf::Arena arena;
 
                 size_t sentCount = 0;
                 for (const auto &featureRecord : featureRecords)
@@ -219,18 +220,14 @@ namespace OdbDesignServer
                     if (!featureRecord)
                         continue;
 
-                    // Populate reused message: obtain per-feature proto and swap into reusable instance.
-                    auto pFeatureRecordMsg = featureRecord->to_protobuf();
-                    if (pFeatureRecordMsg != nullptr)
-                    {
-                        featureRecordMsg.Swap(pFeatureRecordMsg.get()); // Efficient move of fields.
-                    }
-                    else
-                    {
-                        continue; // Skip if conversion failed or returned nullptr.
-                    }
+                    // Allocate message on arena (no per-iteration heap allocation)
+                    auto* pMsg = google::protobuf::Arena::CreateMessage<
+                        Odb::Lib::Protobuf::FeaturesFile::FeatureRecord>(&arena);
 
-                    if (!writer->Write(featureRecordMsg))
+                    // Populate in-place via arena-friendly overload
+                    featureRecord->to_protobuf(pMsg);
+
+                    if (!writer->Write(*pMsg))
                     {
                         loginfo("[ConnTrace] GetLayerFeaturesStream client_disconnected: design=\"" + request->design_name() +
                             "\" step=\"" + request->step_name() + "\" layer=\"" + request->layer_name() +
@@ -239,9 +236,6 @@ namespace OdbDesignServer
                     }
 
                     ++sentCount;
-
-                    // Clear for reuse while retaining allocated capacity.
-                    featureRecordMsg.Clear();
                 }
 
                 loginfo("[ConnTrace] GetLayerFeaturesStream done: design=\"" + request->design_name() +
@@ -295,9 +289,10 @@ namespace OdbDesignServer
                 const auto &featuresFile = layerIt->second->GetFeaturesFile();
                 const auto &featureRecords = featuresFile.GetFeatureRecords();
 
-                // Reuse a single protobuf message instance to avoid per-iteration heap allocations.
-                Odb::Lib::Protobuf::FeaturesFile::FeatureRecord featureRecordMsg;
-                Odb::Grpc::FeatureRecordBatch batch;
+                // Arena allocation: amortize heap allocation across all messages in the batch stream.
+                google::protobuf::Arena arena;
+
+                auto* batch = google::protobuf::Arena::CreateMessage<Odb::Grpc::FeatureRecordBatch>(&arena);
 
                 const int batchSize = m_config->batch_size;
                 int currentBatchCount = 0;
@@ -315,24 +310,10 @@ namespace OdbDesignServer
                     if (!featureRecord)
                         continue;
 
-                    // Populate reused message: obtain per-feature proto and swap into reusable instance.
-                    auto pFeatureRecordMsg = featureRecord->to_protobuf();
-                    if (pFeatureRecordMsg != nullptr)
-                    {
-                        featureRecordMsg.Swap(pFeatureRecordMsg.get()); // Efficient move of fields.
-                    }
-                    else
-                    {
-                        continue; // Skip if conversion failed or returned nullptr.
-                    }
-
-                    // Add feature to current batch
-                    batch.add_features()->CopyFrom(featureRecordMsg);
+                    // Add feature to current batch via arena-friendly in-place populate
+                    featureRecord->to_protobuf(batch->add_features());
                     currentBatchCount++;
                     featuresSent++;
-
-                    // Clear for reuse while retaining allocated capacity.
-                    featureRecordMsg.Clear();
 
                     // Send batch when it reaches the configured size
                     if (currentBatchCount >= batchSize)
@@ -343,7 +324,7 @@ namespace OdbDesignServer
                             return {grpc::StatusCode::CANCELLED, "Request cancelled"};
                         }
                         
-                        if (!writer->Write(batch))
+                        if (!writer->Write(*batch))
                         {
                             loginfo("[ConnTrace] GetLayerFeaturesBatchStream client_disconnected: design=\"" + request->design_name() +
                                 "\" step=\"" + request->step_name() + "\" layer=\"" + request->layer_name() +
@@ -351,7 +332,9 @@ namespace OdbDesignServer
                             return grpc::Status::OK;
                         }
                         batchesSent++;
-                        batch.Clear();
+
+                        // Create a fresh batch on the arena for the next iteration
+                        batch = google::protobuf::Arena::CreateMessage<Odb::Grpc::FeatureRecordBatch>(&arena);
                         currentBatchCount = 0;
                     }
                 }
@@ -365,7 +348,7 @@ namespace OdbDesignServer
                         return {grpc::StatusCode::CANCELLED, "Request cancelled"};
                     }
                     
-                    if (!writer->Write(batch))
+                    if (!writer->Write(*batch))
                     {
                         loginfo("[ConnTrace] GetLayerFeaturesBatchStream client_disconnected(final): design=\"" + request->design_name() +
                             "\" step=\"" + request->step_name() + "\" layer=\"" + request->layer_name() +

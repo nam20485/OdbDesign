@@ -997,6 +997,48 @@ namespace Odb::Lib::FileModel::Design
 		return pFeatureRecordMessage;
 	}
 
+	void Odb::Lib::FileModel::Design::FeaturesFile::FeatureRecord::to_protobuf(Odb::Lib::Protobuf::FeaturesFile::FeatureRecord* pMessage) const
+	{
+		pMessage->set_apt_def_resize_factor(apt_def_resize_factor);
+		pMessage->set_xc(xc);
+		pMessage->set_yc(yc);
+		pMessage->set_cw(cw);
+		pMessage->set_font(font);
+		pMessage->set_xsize(xsize);
+		pMessage->set_ysize(ysize);
+		pMessage->set_width_factor(width_factor);
+		pMessage->set_text(text);
+		pMessage->set_version(version);
+		if (sym_num >= 0)
+		{
+			pMessage->set_sym_num(sym_num);
+		}
+		pMessage->set_polarity(static_cast<Odb::Lib::Protobuf::Polarity>(polarity));
+		pMessage->set_dcode(dcode);
+		pMessage->set_id(id);
+		pMessage->set_orient_def(orient_def);
+		pMessage->set_orient_def_rotation(orient_def_rotation);
+		pMessage->set_type(static_cast<Odb::Lib::Protobuf::FeaturesFile::FeatureRecord::Type>(type));
+		pMessage->set_xs(xs);
+		pMessage->set_ys(ys);
+		pMessage->set_xe(xe);
+		pMessage->set_ye(ye);
+		pMessage->set_x(x);
+		pMessage->set_y(y);
+		if (apt_def_symbol_num >= 0)
+		{
+			pMessage->set_apt_def_symbol_num(apt_def_symbol_num);
+		}
+		for (const auto& pContourPolygon : m_contourPolygons)
+		{
+			pContourPolygon->to_protobuf(pMessage->add_contourpolygons());
+		}
+		for (const auto& kvAttributeAssignment : m_attributeLookupTable)
+		{
+			(*pMessage->mutable_attributelookuptable())[kvAttributeAssignment.first] = kvAttributeAssignment.second;
+		}
+	}
+
 	void Odb::Lib::FileModel::Design::FeaturesFile::FeatureRecord::from_protobuf(const Odb::Lib::Protobuf::FeaturesFile::FeatureRecord &message)
 	{
 		apt_def_resize_factor = message.apt_def_resize_factor();

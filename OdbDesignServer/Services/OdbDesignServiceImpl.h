@@ -12,6 +12,7 @@
 #include <grpcpp/impl/status.h>
 #include <grpcpp/server_context.h>
 #include <grpcpp/support/sync_stream.h>
+#include <google/protobuf/arena.h>
 
 
 namespace OdbDesignServer {

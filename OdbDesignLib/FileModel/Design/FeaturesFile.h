@@ -76,6 +76,7 @@ namespace Odb::Lib::FileModel::Design
 
 			// Inherited via IProtoBuffable
 			std::unique_ptr<Odb::Lib::Protobuf::FeaturesFile::FeatureRecord> to_protobuf() const override;
+			void to_protobuf(Odb::Lib::Protobuf::FeaturesFile::FeatureRecord* pMessage) const override;
 			void from_protobuf(const Odb::Lib::Protobuf::FeaturesFile::FeatureRecord& message) override;
 
 			constexpr inline static const char* LINE_TOKEN = "L";
