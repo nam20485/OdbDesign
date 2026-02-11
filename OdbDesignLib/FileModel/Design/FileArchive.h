@@ -78,7 +78,7 @@ namespace Odb::Lib::FileModel::Design
 		bool ParseSymbolsDirectories(const std::filesystem::path& path);
 		bool ParseMiscAttrListFile(const std::filesystem::path& path);
 
-		bool Save(const std::filesystem::path& directory);
+		bool Save(const std::filesystem::path& directory) override;
 
 		bool ExtractDesignArchive(const std::filesystem::path& path, std::filesystem::path& extractedPath);
 

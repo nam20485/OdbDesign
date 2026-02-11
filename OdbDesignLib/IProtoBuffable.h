@@ -89,12 +89,9 @@ namespace Odb::Lib
 	template<typename TPbMessage>
 	inline void IProtoBuffable<TPbMessage>::from_json(const std::string& json)
 	{			
-		// use default options
-		google::protobuf::util::JsonPrintOptions jsonOptions;
-
 		auto pMessage = std::unique_ptr<TPbMessage>();
 		auto status = google::protobuf::util::JsonStringToMessage(absl::string_view(json), pMessage.get());
 		if (!status.ok()) return;		
 		from_protobuf(*pMessage);		
-	}	
+	}
 }
