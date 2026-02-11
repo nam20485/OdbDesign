@@ -1,21 +1,21 @@
 # CMakeList.txt : CMake project for OdbDesignServer
 #
 
-add_executable(OdbDesignServer 
-    "main.cpp"   
-    "Controllers/HelloWorldController.h" 
-    "Controllers/HelloWorldController.cpp"     
-    "OdbDesignServerApp.h" 
-    "OdbDesignServerApp.cpp" 
-          
-    "Controllers/FileUploadController.h" 
-    "Controllers/FileUploadController.cpp" 
-    "Controllers/FileModelController.h" 
-    "Controllers/FileModelController.cpp" 
-    "Controllers/HealthCheckController.h" 
-    "Controllers/HealthCheckController.cpp" 
-    "Controllers/DesignsController.h" 
-    "Controllers/DesignsController.cpp" 
+add_executable(OdbDesignServer
+    "main.cpp"
+    "Controllers/HelloWorldController.h"
+    "Controllers/HelloWorldController.cpp"
+    "OdbDesignServerApp.h"
+    "OdbDesignServerApp.cpp"
+
+    "Controllers/FileUploadController.h"
+    "Controllers/FileUploadController.cpp"
+    "Controllers/FileModelController.h"
+    "Controllers/FileModelController.cpp"
+    "Controllers/HealthCheckController.h"
+    "Controllers/HealthCheckController.cpp"
+    "Controllers/DesignsController.h"
+    "Controllers/DesignsController.cpp"
     "Services/OdbDesignServiceImpl.h"
     "Services/OdbDesignServiceImpl.cpp"
     "Config/GrpcServiceConfig.h"
