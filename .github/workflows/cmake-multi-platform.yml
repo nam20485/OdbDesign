@@ -16,6 +16,8 @@ permissions:
 
 env:
   VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+  # Override vcpkg's default binary cache to a known path for actions/cache
+  VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}/.vcpkg-binary-cache
   # GitHub Packages NuGet feed URL and binary cache
   FEED_URL: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
   # support for GH dependency graph vcpkg integration
@@ -38,6 +40,7 @@ jobs:
     permissions:
       contents: write
       checks: write
+      packages: write
 
     strategy:
       # Set fail-fast to false to ensure that feedback is delivered for all matrix combinations. Consider changing this to true when your workflow is stable.
@@ -105,7 +108,8 @@ jobs:
         shell: bash
         run: |
           # Use $GITHUB_WORKSPACE to avoid Windows path backslash escaping issues in bash
-          cat > "$GITHUB_WORKSPACE/nuget.config" << 'EOF'
+          # Write to nuget.generated.config to avoid overwriting the repo's nuget.config
+          cat > "$GITHUB_WORKSPACE/nuget.generated.config" << 'EOF'
           <?xml version="1.0" encoding="utf-8"?>
           <configuration>
             <packageSources>
@@ -118,14 +122,37 @@ jobs:
                 <add key="ClearTextPassword" value="${{ secrets.VCPKG_PAT_TOKEN }}" />
               </GitHubPackages>
             </packageSourceCredentials>
+            <apiKeys>
+              <add key="${{ env.FEED_URL }}" value="${{ secrets.VCPKG_PAT_TOKEN }}" />
+            </apiKeys>
             <config>
               <add key="defaultPushSource" value="${{ env.FEED_URL }}" />
               <add key="signatureValidationMode" value="accept" />
             </config>
           </configuration>
           EOF
-          # Export the binary sources environment variable with the correct path
-          echo "VCPKG_BINARY_SOURCES=clear;nugetconfig,$GITHUB_WORKSPACE/nuget.config,readwrite" >> $GITHUB_ENV
+          # Hybrid binary cache strategy (vcpkg 2025+ compatible):
+          #   1. 'default' = local file cache (~/.cache/vcpkg/archives or %LOCALAPPDATA%\vcpkg\archives)
+          #      Persisted across runs via actions/cache step below — fast same-branch restore.
+          #   2. 'nugetconfig' = GitHub Packages NuGet feed (persistent, shared across branches/PRs)
+          #      Survives actions/cache eviction, provides cross-branch sharing.
+          # Note: The x-gha and actions backends were removed in vcpkg 2025+.
+          echo "VCPKG_BINARY_SOURCES=clear;default,readwrite;nugetconfig,$GITHUB_WORKSPACE/nuget.generated.config,readwrite" >> $GITHUB_ENV
+
+      # Persist vcpkg's default local binary cache across workflow runs.
+      # This is the fast ephemeral layer — same-branch builds hit this first (< 1 min restore).
+      # Cross-branch and cache-evicted builds fall through to NuGet (persistent layer).
+      - name: Create vcpkg Binary Cache Directory
+        shell: bash
+        run: mkdir -p "$VCPKG_DEFAULT_BINARY_CACHE"
+
+      - name: Restore vcpkg Binary Cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+          key: vcpkg-archives-${{ matrix.preset }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
+          restore-keys: |
+            vcpkg-archives-${{ matrix.preset }}-
 
       - name: Setup NuGet Credential Provider (Windows)
         if: matrix.os == 'windows-2022'
@@ -147,13 +174,6 @@ jobs:
         run: |
           # Set API key for NuGet push to GitHub Packages
           mono $(which nuget) setApiKey "${{ secrets.VCPKG_PAT_TOKEN }}" -Source "${{ env.FEED_URL }}" -NonInteractive || true
-
-      - name: Export vcpkg Cache Variables
-        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
-        with:
-          script: |
-            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
-            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
 
       #
       #   os != windows-2022 (i.e. Linux, MacOS)

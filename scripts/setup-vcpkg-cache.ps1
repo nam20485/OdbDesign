@@ -204,7 +204,7 @@ if (-not (Test-Path (Join-Path $repoRoot "nuget.config")))
     exit 1
 }
 $nugetConfigPath = Join-Path $repoRoot "nuget.config"
-$envVarValue = "clear;nugetconfig,$nugetConfigPath,read"
+$envVarValue = "clear;nuget,$FeedUrl,read;interactive"
 
 Write-Host "To use the binary cache, you need to set VCPKG_BINARY_SOURCES environment variable." -ForegroundColor Yellow
 Write-Host ""
