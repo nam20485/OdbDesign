@@ -1,6 +1,7 @@
 #include "FileArchive.h"
 #include <filesystem>
 #include "ArchiveExtractor.h"
+#include "CrossPlatform.h"
 #include "MiscInfoFile.h"
 #include "Logger.h"
 #include "StopWatch.h"
@@ -126,10 +127,10 @@ namespace Odb::Lib::FileModel::Design
 		// gzip with archiveName
 		// move archive to directory
 
-		char szTmpNameBuff[L_tmpnam] = { 0 };
-		if (nullptr == std::tmpnam(szTmpNameBuff)) return false;
+		std::string tempName;
+		if (!CrossPlatform::tmpnam_safe(tempName)) return false;
 		
-		auto tempPath = temp_directory_path() / szTmpNameBuff;
+		auto tempPath = temp_directory_path() / tempName;
 		if (!create_directory(tempPath)) return false;
 
 		auto rootPath = tempPath / archiveName;
