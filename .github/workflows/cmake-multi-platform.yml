@@ -17,9 +17,7 @@ permissions:
 env:
   VCPKG_ROOT: ${{ github.workspace }}/vcpkg
   # GitHub Packages NuGet binary cache (persistent across branches)
-  # Using 'nuget' backend with explicit source URL instead of 'nugetconfig'
-  # due to NuGet 7.0.1 requiring -Source parameter for push operations
-  VCPKG_BINARY_SOURCES: "clear;nuget,GitHubPackages,readwrite,${{ github.workspace }}/nuget.generated.config"
+  VCPKG_BINARY_SOURCES: "clear;nuget,${{ env.FEED_URL }},readwrite"
   # support for GH dependency graph vcpkg integration
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   VCPKG_FEATURE_FLAGS: dependencygraph
