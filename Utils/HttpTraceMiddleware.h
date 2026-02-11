@@ -96,14 +96,16 @@ namespace Utils::Tracing
         {
             return r.remote_ip_address;
         }
-        static std::string remote_ip_field(...) { return {}; }
+        template <typename T>
+        static std::string remote_ip_field(const T &) { return {}; }
 
         template <typename T>
         static auto remote_ip_method(const T &r) -> decltype(r.remote_ip_address(), std::string{})
         {
             return r.remote_ip_address();
         }
-        static std::string remote_ip_method(...) { return {}; }
+        template <typename T>
+        static std::string remote_ip_method(const T &) { return {}; }
 
         template <typename T>
         static auto remote_endpoint(const T &r) -> decltype(r.remote_endpoint, std::string{})
@@ -112,7 +114,8 @@ namespace Utils::Tracing
             ss << r.remote_endpoint;
             return ss.str();
         }
-        static std::string remote_endpoint(...) { return {}; }
+        template <typename T>
+        static std::string remote_endpoint(const T &) { return {}; }
 
         static std::string method_to_string(const crow::request &req)
         {

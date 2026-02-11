@@ -64,6 +64,12 @@ protobuf_generate(
     EXPORT_MACRO ODBDESIGN_EXPORT
 )
 
+# The generated protobuf files use ODBDESIGN_EXPORT but don't include odbdesign_export.h.
+# On non-Windows platforms, define it as empty since symbols are exported by default.
+if(NOT WIN32)
+    target_compile_definitions(OdbDesign PUBLIC ODBDESIGN_EXPORT=)
+endif()
+
 target_link_libraries(OdbDesign PUBLIC protobuf::libprotobuf)
 
 # workaround to remove error: "C++ command-line error: invalid macro definition: _CROW_ICD-NOTFOUND"
