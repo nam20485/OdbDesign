@@ -18,8 +18,6 @@ env:
   VCPKG_ROOT: ${{ github.workspace }}/vcpkg
   # GitHub Packages NuGet feed URL and binary cache
   FEED_URL: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
-  # Use nugetconfig backend with explicit config file path for non-interactive authentication
-  VCPKG_BINARY_SOURCES: "clear;nugetconfig,${{ github.workspace }}/nuget.config,readwrite"
   # support for GH dependency graph vcpkg integration
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   VCPKG_FEATURE_FLAGS: dependencygraph
@@ -104,7 +102,8 @@ jobs:
       - name: Generate NuGet Config for Binary Cache
         shell: bash
         run: |
-          cat > ${{ github.workspace }}/nuget.config << 'EOF'
+          # Use $GITHUB_WORKSPACE to avoid Windows path backslash escaping issues in bash
+          cat > "$GITHUB_WORKSPACE/nuget.config" << 'EOF'
           <?xml version="1.0" encoding="utf-8"?>
           <configuration>
             <packageSources>
@@ -125,6 +124,8 @@ jobs:
             </config>
           </configuration>
           EOF
+          # Export the binary sources environment variable with the correct path
+          echo "VCPKG_BINARY_SOURCES=clear;nugetconfig,$GITHUB_WORKSPACE/nuget.config,readwrite" >> $GITHUB_ENV
 
       - name: Setup NuGet Credential Provider (Windows)
         if: matrix.os == 'windows-2022'
