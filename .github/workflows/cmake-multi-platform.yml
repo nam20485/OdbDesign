@@ -92,6 +92,12 @@ jobs:
         run: brew install mono
         if: matrix.os == 'macos-14'
 
+      - name: Configure Mono Certificates (Non-Windows)
+        run: |
+          cert-sync --sync --quiet
+          mozroots --import --quiet || true
+        if: matrix.os != 'windows-2022'
+
       # Generate NuGet config with PAT for GitHub Packages binary cache
       # Uses VCPKG_PAT_TOKEN secret for write access on trusted events
       # Note: The ${{ }} syntax is GitHub Actions expression interpolation, which happens
@@ -119,6 +125,20 @@ jobs:
           </configuration>
           EOF
 
+      - name: Set NuGet Environment Variables
+        shell: bash
+        run: |
+          echo "NUGET_HOME=${{ github.workspace }}/.nuget" >> $GITHUB_ENV
+          mkdir -p ${{ github.workspace }}/.nuget
+          cp nuget.generated.config ${{ github.workspace }}/.nuget/NuGet.config
+
+      - name: Export vcpkg Cache Variables
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+
       #
       #   os != windows-2022 (i.e. Linux, MacOS)
       #
@@ -132,14 +152,6 @@ jobs:
       - name: Install Ninja
         uses: seanmiddleditch/gha-setup-ninja@8b297075da4cd2a5f1fd21fe011b499edf06e9d2 # master
         if: matrix.os != 'windows-2022'
-
-      # Export vcpkg Cache Variables
-      - name: Export vcpkg Cache Variables
-        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
-        with:
-          script: |
-            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
-            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
 
       # #
       # #   preset == linux-mingw-w64-release
