@@ -203,8 +203,33 @@ if (-not (Test-Path (Join-Path $repoRoot "nuget.config")))
     Write-Error "Could not find nuget.config in either the repository root or the current directory. Please ensure nuget.config exists."
     exit 1
 }
-$nugetConfigPath = Join-Path $repoRoot "nuget.config"
-$envVarValue = "clear;nuget,$FeedUrl,read;interactive"
+$nugetConfigPath = Join-Path $repoRoot "local.nuget.config"
+
+# Generate local.nuget.config with embedded credentials for vcpkg
+# This is the most reliable approach for GitHub Packages since the VS credential
+# provider (CredentialProvider.Microsoft) doesn't support GitHub Packages feeds.
+$localNugetConfig = @"
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+    <packageSources>
+        <clear />
+        <add key="GitHubPackages-OdbDesign" value="$FeedUrl" />
+    </packageSources>
+    <packageSourceCredentials>
+        <GitHubPackages-OdbDesign>
+            <add key="Username" value="$Username" />
+            <add key="ClearTextPassword" value="$PAT" />
+        </GitHubPackages-OdbDesign>
+    </packageSourceCredentials>
+</configuration>
+"@
+
+Set-Content -Path $nugetConfigPath -Value $localNugetConfig -Encoding UTF8
+Write-Host "Generated local.nuget.config with embedded credentials." -ForegroundColor Green
+
+$envVarValue = "clear;nugetconfig,$nugetConfigPath,read"
+# Disable VS credential provider which doesn't support GitHub Packages
+$pluginPathLine = "`$env:NUGET_PLUGIN_PATHS = ' '"
 
 Write-Host "To use the binary cache, you need to set VCPKG_BINARY_SOURCES environment variable." -ForegroundColor Yellow
 Write-Host ""
@@ -231,7 +256,7 @@ if ($addToProfile -eq '' -or $addToProfile -match '^[Yy]')
         $profileContent = Get-Content $PROFILE -Raw -ErrorAction SilentlyContinue
     }
     
-    $lineToAdd = "`$env:VCPKG_BINARY_SOURCES = `"$envVarValue`""
+    $lineToAdd = "`$env:VCPKG_BINARY_SOURCES = `"$envVarValue`"`n$pluginPathLine"
     
     if ($profileContent -match "VCPKG_BINARY_SOURCES")
     {
@@ -255,6 +280,7 @@ if ($addToProfile -eq '' -or $addToProfile -match '^[Yy]')
     
     # Also set it for current session
     $env:VCPKG_BINARY_SOURCES = $envVarValue
+    $env:NUGET_PLUGIN_PATHS = ' '
     Write-Host "Also set for current session." -ForegroundColor Green
 }
 else
