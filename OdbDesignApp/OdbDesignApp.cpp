@@ -133,13 +133,13 @@ bool TestRigidFlexDesign()
         auto netlistFind = netlistsByName.find("cadnet");
         if (netlistFind != netlistsByName.end())
         {
-            auto& pNetlist = netlistFind->second;
-            auto netlistName = pNetlist->GetName();
-            auto& netListNetRecords = pNetlist->GetNetRecords();
-			for (auto& /*pNetRecord*/ : netListNetRecords)
-			{
+            // auto& pNetlist = netlistFind->second;
+            // auto netlistName = pNetlist->GetName();
+            // auto& netListNetRecords = pNetlist->GetNetRecords();
+			// for (auto& pNetRecord : netListNetRecords)
+			// {
 				
-			}
+			// }
         }
     }
 
