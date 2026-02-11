@@ -16,8 +16,9 @@ permissions:
 
 env:
   VCPKG_ROOT: ${{ github.workspace }}/vcpkg
-  # GitHub Packages NuGet binary cache (persistent across branches)
-  VCPKG_BINARY_SOURCES: "clear;nuget,${{ env.FEED_URL }},readwrite"
+  # GitHub Packages NuGet feed URL and binary cache
+  FEED_URL: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
+  VCPKG_BINARY_SOURCES: "clear;nuget,https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json,readwrite"
   # support for GH dependency graph vcpkg integration
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   VCPKG_FEATURE_FLAGS: dependencygraph
@@ -25,7 +26,6 @@ env:
   ARTIFACTS_DIR_WIN: ${{ github.workspace }}\artifacts
   # GitHub Packages NuGet feed configuration
   USERNAME: ${{ github.repository_owner }}
-  FEED_URL: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
 
 jobs:
   build:
