@@ -16,13 +16,16 @@ permissions:
 
 env:
   VCPKG_ROOT: ${{ github.workspace }}/vcpkg
-  # GitHub Actions cache for vcpkg binaries (x-gha is deprecated)
-  VCPKG_BINARY_SOURCES: "clear;actions,readwrite"
+  # Hybrid cache: GH Actions cache (fast) + GitHub Packages NuGet (persistent)
+  VCPKG_BINARY_SOURCES: "clear;actions,readwrite;nugetconfig,${{ github.workspace }}/nuget.generated.config,readwrite"
   # support for GH dependency graph vcpkg integration
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   VCPKG_FEATURE_FLAGS: dependencygraph
   ARTIFACTS_DIR: ${{ github.workspace }}/artifacts
   ARTIFACTS_DIR_WIN: ${{ github.workspace }}\artifacts
+  # GitHub Packages NuGet feed configuration
+  USERNAME: ${{ github.repository_owner }}
+  FEED_URL: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
 
 jobs:
   build:
@@ -88,6 +91,33 @@ jobs:
       - name: Install mono (macOS)
         run: brew install mono
         if: matrix.os == 'macos-14'
+
+      # Generate NuGet config with PAT for GitHub Packages binary cache
+      # Uses VCPKG_PAT_TOKEN secret for write access on trusted events
+      # Note: The ${{ }} syntax is GitHub Actions expression interpolation, which happens
+      # BEFORE the bash script runs. The 'EOF' heredoc marker is quoted only to prevent
+      # bash variable interpolation; it does not affect GitHub Actions expression interpolation.
+      - name: Generate NuGet Config for Binary Cache
+        shell: bash
+        run: |
+          cat > nuget.generated.config << 'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <configuration>
+            <packageSources>
+              <clear />
+              <add key="GitHubPackages" value="${{ env.FEED_URL }}" />
+            </packageSources>
+            <packageSourceCredentials>
+              <GitHubPackages>
+                <add key="Username" value="${{ env.USERNAME }}" />
+                <add key="ClearTextPassword" value="${{ secrets.VCPKG_PAT_TOKEN }}" />
+              </GitHubPackages>
+            </packageSourceCredentials>
+            <apiKeys>
+              <add key="${{ env.FEED_URL }}" value="${{ secrets.VCPKG_PAT_TOKEN }}" />
+            </apiKeys>
+          </configuration>
+          EOF
 
       #
       #   os != windows-2022 (i.e. Linux, MacOS)
