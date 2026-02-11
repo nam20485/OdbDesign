@@ -18,17 +18,7 @@ using namespace Utils;
 
 namespace Odb::App::Server
 {
-	namespace
-	{
-		std::string to_lower_copy(const std::string& s)
-		{
-			std::string out = s;
-			std::transform(out.begin(), out.end(), out.begin(), [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
-			return out;
-		}
 
-
-	}
 
 	FileModelController::FileModelController(Odb::Lib::App::IOdbServerApp& serverApp)
 		: RouteController(serverApp)
