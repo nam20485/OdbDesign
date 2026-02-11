@@ -16,8 +16,8 @@ permissions:
 
 env:
   VCPKG_ROOT: ${{ github.workspace }}/vcpkg
-  # Hybrid cache: GH Actions cache (fast) + GitHub Packages NuGet (persistent)
-  VCPKG_BINARY_SOURCES: "clear;actions,readwrite;nugetconfig,${{ github.workspace }}/nuget.generated.config,readwrite"
+  # GitHub Packages NuGet binary cache (persistent across branches)
+  VCPKG_BINARY_SOURCES: "clear;nugetconfig,${{ github.workspace }}/nuget.generated.config,readwrite"
   # support for GH dependency graph vcpkg integration
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   VCPKG_FEATURE_FLAGS: dependencygraph
