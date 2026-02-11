@@ -28,6 +28,8 @@ env:
   # Disable NuGet interactive mode
   NUGET_XMLDOC_MODE: skip
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  # Increase NuGet push timeout (default is 300 seconds) to fix macOS timeout errors
+  NUGET_TIMEOUT: 600
 
 jobs:
   build:
