@@ -186,7 +186,17 @@ namespace Odb::Lib::FileModel::Design
         // Inherited via IStreamSaveable
         bool Save(std::ostream& os) override;
 
-        static inline bool attributeValueIsOptional(const std::string& attribute);
+        static inline bool attributeValueIsOptional(const std::string& attribute)
+        {
+            for (const auto& optionalAttribute : OPTIONAL_ATTRIBUTES)
+            {
+                if (attribute == optionalAttribute)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
 
         // Inherited via IProtoBuffable
         std::unique_ptr<Odb::Lib::Protobuf::MatrixFile> to_protobuf() const override;

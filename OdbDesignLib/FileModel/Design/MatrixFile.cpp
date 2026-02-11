@@ -359,18 +359,6 @@ namespace Odb::Lib::FileModel::Design
         return true;
 	}
 
-    /*static*/ bool MatrixFile::attributeValueIsOptional(const std::string& attribute)
-    {
-        for (const auto& optionalAttribute : OPTIONAL_ATTRIBUTES)
-        {
-            if (attribute == optionalAttribute)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
     std::unique_ptr<Odb::Lib::Protobuf::MatrixFile> Odb::Lib::FileModel::Design::MatrixFile::to_protobuf() const
     {
         std::unique_ptr<Odb::Lib::Protobuf::MatrixFile> pMatrixFileMessage(new Odb::Lib::Protobuf::MatrixFile);
