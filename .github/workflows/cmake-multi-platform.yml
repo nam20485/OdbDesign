@@ -18,7 +18,8 @@ env:
   VCPKG_ROOT: ${{ github.workspace }}/vcpkg
   # GitHub Packages NuGet feed URL and binary cache
   FEED_URL: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
-  VCPKG_BINARY_SOURCES: "clear;nuget,https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json,readwrite"
+  # Use nugetconfig backend with explicit config file path for non-interactive authentication
+  VCPKG_BINARY_SOURCES: "clear;nugetconfig,${{ github.workspace }}/nuget.config,readwrite"
   # support for GH dependency graph vcpkg integration
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   VCPKG_FEATURE_FLAGS: dependencygraph
@@ -26,6 +27,9 @@ env:
   ARTIFACTS_DIR_WIN: ${{ github.workspace }}\artifacts
   # GitHub Packages NuGet feed configuration
   USERNAME: ${{ github.repository_owner }}
+  # Disable NuGet interactive mode
+  NUGET_XMLDOC_MODE: skip
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
 
 jobs:
   build:
@@ -100,7 +104,7 @@ jobs:
       - name: Generate NuGet Config for Binary Cache
         shell: bash
         run: |
-          cat > nuget.generated.config << 'EOF'
+          cat > ${{ github.workspace }}/nuget.config << 'EOF'
           <?xml version="1.0" encoding="utf-8"?>
           <configuration>
             <packageSources>
@@ -116,15 +120,20 @@ jobs:
             <apiKeys>
               <add key="${{ env.FEED_URL }}" value="${{ secrets.VCPKG_PAT_TOKEN }}" />
             </apiKeys>
+            <config>
+              <add key="defaultPushSource" value="${{ env.FEED_URL }}" />
+            </config>
           </configuration>
           EOF
 
-      - name: Set NuGet Environment Variables
-        shell: bash
+      - name: Setup NuGet Credential Provider (Windows)
+        if: matrix.os == 'windows-2022'
         run: |
-          echo "NUGET_HOME=${{ github.workspace }}/.nuget" >> $GITHUB_ENV
-          mkdir -p ${{ github.workspace }}/.nuget
-          cp nuget.generated.config ${{ github.workspace }}/.nuget/NuGet.config
+          # Install Azure Artifacts credential provider for non-interactive NuGet auth
+          Invoke-Expression "& { $(Invoke-RestMethod https://aka.ms/install-artifacts-credprovider.ps1) } -AddNetfx"
+          # Set environment variable to allow credential provider to work non-interactively
+          echo "NUGET_CREDENTIALPROVIDER_SESSIONTOKENCACHE_ENABLED=true" >> $env:GITHUB_ENV
+          echo "VSS_NUGET_EXTERNAL_FEED_ENDPOINTS={""endpointCredentials"": [{""endpoint"":""${{ env.FEED_URL }}"", ""username"":""${{ env.USERNAME }}"", ""password"":""${{ secrets.VCPKG_PAT_TOKEN }}""}]}" >> $env:GITHUB_ENV
 
       - name: Export vcpkg Cache Variables
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
