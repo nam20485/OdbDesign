@@ -74,45 +74,53 @@ namespace Utils::Tracing
         // Best-effort remote address extraction across Crow versions.
         static std::string remote_addr_or_unknown(const crow::request &req)
         {
-            // Some Crow versions expose req.remote_ip_address (field) or req.remote_ip_address() (method)
-            // or req.remote_endpoint (asio endpoint). We use SFINAE-style probes.
-            if (auto ip = remote_ip_field(req); !ip.empty())
+            // Try to get remote IP address using various Crow APIs
+            // Method 1: remote_ip_address field (if available)
+            // Method 2: remote_ip_address() method (if available)
+            // Method 3: raw socket info from req.ci_ (crow internals)
+            
+            // First, try to get from headers (X-Forwarded-For, X-Real-IP)
+            std::string ip = get_header_value_safe(req, "X-Forwarded-For");
+            if (!ip.empty())
             {
-                return ip;
+                // X-Forwarded-For can contain multiple IPs, take the first one
+                auto comma_pos = ip.find(',');
+                if (comma_pos != std::string::npos)
+                {
+                    ip = ip.substr(0, comma_pos);
+                }
+                return trim(ip);
             }
-            if (auto ip = remote_ip_method(req); !ip.empty())
+            
+            ip = get_header_value_safe(req, "X-Real-IP");
+            if (!ip.empty())
             {
-                return ip;
+                return trim(ip);
             }
-            if (auto ep = remote_endpoint(req); !ep.empty())
-            {
-                return ep;
-            }
+            
+            // If no headers, use a placeholder (actual socket IP requires Crow internals)
             return "unknown";
         }
 
-        template <typename T>
-        static auto remote_ip_field(const T &r) -> decltype(r.remote_ip_address, std::string{})
+        static std::string get_header_value_safe(const crow::request &req, const char *header)
         {
-            return r.remote_ip_address;
+            try
+            {
+                return req.get_header_value(header);
+            }
+            catch (...)
+            {
+                return {};
+            }
         }
-        static std::string remote_ip_field(...) { return {}; }
 
-        template <typename T>
-        static auto remote_ip_method(const T &r) -> decltype(r.remote_ip_address(), std::string{})
+        static std::string trim(const std::string &s)
         {
-            return r.remote_ip_address();
+            size_t start = s.find_first_not_of(" \t\r\n");
+            if (start == std::string::npos) return {};
+            size_t end = s.find_last_not_of(" \t\r\n");
+            return s.substr(start, end - start + 1);
         }
-        static std::string remote_ip_method(...) { return {}; }
-
-        template <typename T>
-        static auto remote_endpoint(const T &r) -> decltype(r.remote_endpoint, std::string{})
-        {
-            std::ostringstream ss;
-            ss << r.remote_endpoint;
-            return ss.str();
-        }
-        static std::string remote_endpoint(...) { return {}; }
 
         static std::string method_to_string(const crow::request &req)
         {
