@@ -116,11 +116,9 @@ jobs:
                 <add key="ClearTextPassword" value="${{ secrets.VCPKG_PAT_TOKEN }}" />
               </GitHubPackages>
             </packageSourceCredentials>
-            <apiKeys>
-              <add key="${{ env.FEED_URL }}" value="${{ secrets.VCPKG_PAT_TOKEN }}" />
-            </apiKeys>
             <config>
               <add key="defaultPushSource" value="${{ env.FEED_URL }}" />
+              <add key="signatureValidationMode" value="accept" />
             </config>
           </configuration>
           EOF
@@ -129,12 +127,24 @@ jobs:
 
       - name: Setup NuGet Credential Provider (Windows)
         if: matrix.os == 'windows-2022'
+        shell: pwsh
         run: |
           # Install Azure Artifacts credential provider for non-interactive NuGet auth
           Invoke-Expression "& { $(Invoke-RestMethod https://aka.ms/install-artifacts-credprovider.ps1) } -AddNetfx"
           # Set environment variable to allow credential provider to work non-interactively
           echo "NUGET_CREDENTIALPROVIDER_SESSIONTOKENCACHE_ENABLED=true" >> $env:GITHUB_ENV
-          echo "VSS_NUGET_EXTERNAL_FEED_ENDPOINTS={""endpointCredentials"": [{""endpoint"":""${{ env.FEED_URL }}"", ""username"":""${{ env.USERNAME }}"", ""password"":""${{ secrets.VCPKG_PAT_TOKEN }}""}]}" >> $env:GITHUB_ENV
+          # Set API key for NuGet push to GitHub Packages
+          $env:NUGET_API_KEY = "${{ secrets.VCPKG_PAT_TOKEN }}"
+          nuget setApiKey $env:NUGET_API_KEY -Source "${{ env.FEED_URL }}" -NonInteractive
+          # Also set in environment for vcpkg to use
+          echo "NUGET_API_KEY=${{ secrets.VCPKG_PAT_TOKEN }}" >> $env:GITHUB_ENV
+
+      - name: Setup NuGet API Key (Non-Windows)
+        if: matrix.os != 'windows-2022'
+        shell: bash
+        run: |
+          # Set API key for NuGet push to GitHub Packages
+          mono $(which nuget) setApiKey "${{ secrets.VCPKG_PAT_TOKEN }}" -Source "${{ env.FEED_URL }}" -NonInteractive || true
 
       - name: Export vcpkg Cache Variables
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
