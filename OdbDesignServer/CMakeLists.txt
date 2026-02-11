@@ -115,7 +115,6 @@ if (WIN32)
         ${GRPC_PROTO_SRCS}
         PROPERTIES COMPILE_DEFINITIONS "ODBDESIGN_EXPORT=__declspec(dllimport)"
     )
-
 endif()
 
 # add the generated Protobuf C++ files to the target
