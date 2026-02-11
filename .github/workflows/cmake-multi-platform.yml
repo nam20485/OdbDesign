@@ -96,8 +96,8 @@ jobs:
       # Generate NuGet config with PAT for GitHub Packages binary cache
       # Uses VCPKG_PAT_TOKEN secret for write access on trusted events
       # Note: The ${{ }} syntax is GitHub Actions expression interpolation, which happens
-      # BEFORE the bash script runs. The 'EOF' heredoc marker is quoted to prevent bash
-      # variable interpolation, but GHA expressions are already resolved at that point.
+      # BEFORE the bash script runs. The 'EOF' heredoc marker is quoted only to prevent
+      # bash variable interpolation; it does not affect GitHub Actions expression interpolation.
       - name: Generate NuGet Config for Binary Cache
         shell: bash
         run: |

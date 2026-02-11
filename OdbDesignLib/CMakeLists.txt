@@ -15,7 +15,7 @@ add_library(OdbDesign SHARED
          "enums.h"
          "App/OdbDesignArgs.h" "App/OdbDesignArgs.cpp"       
         "FileModel/parse_error.h"    "FileModel/parse_info.h" "FileModel/parse_info.cpp" "FileModel/parse_error.cpp" "FileModel/invalid_odb_error.h" "FileModel/invalid_odb_error.cpp"  "FileModel/Design/PropertyRecord.h" "FileModel/Design/PropertyRecord.cpp" "FileModel/Design/FeaturesFile.h" "FileModel/Design/FeaturesFile.cpp" "FileModel/Design/ContourPolygon.h" "FileModel/Design/ContourPolygon.cpp" "FileModel/Design/SymbolName.h" "FileModel/Design/SymbolName.cpp" "FileModel/Design/SymbolsDirectory.h" "FileModel/Design/SymbolsDirectory.cpp"         "FileModel/Design/StepHdrFile.h" "FileModel/Design/StepHdrFile.cpp" "FileModel/Design/AttributeLookupTable.h" "FileModel/Design/AttributeLookupTable.cpp" "FileModel/Design/ComponentHeightTracer.h" "FileModel/Design/ComponentHeightTracer.cpp"
-        "App/RequestAuthenticationBase.h" "App/RequestAuthenticationBase.cpp" "App/BasicRequestAuthentication.h" "App/BasicRequestAuthentication.cpp" "FileModel/IStreamSaveable.h"  "FileModel/Design/ToolsFile.cpp")
+        "App/RequestAuthenticationBase.h" "App/RequestAuthenticationBase.cpp" "App/BasicRequestAuthentication.h" "App/BasicRequestAuthentication.cpp" "FileModel/IStreamSaveable.h"  "FileModel/Design/ToolsFile.h" "FileModel/Design/ToolsFile.cpp")
 
 # disable warning C4250: inheritance by dominance
 target_compile_options(OdbDesign PUBLIC
@@ -24,7 +24,8 @@ target_compile_options(OdbDesign PUBLIC
 
 target_link_libraries(OdbDesign PUBLIC Utils)
 
-# state that anybody linking to us needs to include the current source dir, while we don't.
+# Include dirs are PUBLIC so both OdbDesign and consumers get the source/binary dirs
+# (needed for protobuf-generated headers that live in the binary dir).
 target_include_directories(OdbDesign
                            PUBLIC
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
