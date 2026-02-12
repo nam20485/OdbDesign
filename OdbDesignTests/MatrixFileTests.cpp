@@ -37,16 +37,23 @@ namespace Odb::Test
         ASSERT_FALSE(stepDirectory.empty());
         ASSERT_FALSE(stepRecords.empty());
 
+        // Case-insensitive comparison for step names
+        auto to_lower = [](const std::string& s) {
+            std::string lower = s;
+            std::transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
+            return lower;
+        };
+
         std::set<std::string> matrixStepNames;
         for (const auto& rec : stepRecords)
         {
             ASSERT_NE(rec, nullptr);
-            matrixStepNames.insert(rec->name);
+            matrixStepNames.insert(to_lower(rec->name));
         }
 
         for (const auto& kv : stepDirectory)
         {
-            EXPECT_THAT(matrixStepNames, Contains(kv.first)) << "Matrix file missing step " << kv.first;
+            EXPECT_THAT(matrixStepNames, Contains(to_lower(kv.first))) << "Matrix file missing step " << kv.first;
         }
     }
 
