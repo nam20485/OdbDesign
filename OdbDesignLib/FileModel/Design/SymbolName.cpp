@@ -83,10 +83,6 @@ namespace Odb::Lib::FileModel::Design
 			// No index token, use the first token as the name
 			m_name = token;
 		}
-		else
-		{
-			throw_parse_error(path, line, token, lineNumber);
-		}
 
 		if (std::getline(lineStream, token, ' '))
 		{
