@@ -137,7 +137,8 @@ jobs:
           #   2. 'nugetconfig' = GitHub Packages NuGet feed (persistent, shared across branches/PRs)
           #      Survives actions/cache eviction, provides cross-branch sharing.
           # Note: The x-gha and actions backends were removed in vcpkg 2025+.
-          echo "VCPKG_BINARY_SOURCES=clear;default,readwrite;nugetconfig,$GITHUB_WORKSPACE/nuget.generated.config,readwrite" >> $GITHUB_ENV
+          # nugettimeout overrides vcpkg's default 100s NuGet CLI timeout (large packages need more time).
+          echo "VCPKG_BINARY_SOURCES=clear;default,readwrite;nugetconfig,$GITHUB_WORKSPACE/nuget.generated.config,readwrite;nugettimeout,600" >> $GITHUB_ENV
 
       # Persist vcpkg's default local binary cache across workflow runs.
       # This is the fast ephemeral layer — same-branch builds hit this first (< 1 min restore).
