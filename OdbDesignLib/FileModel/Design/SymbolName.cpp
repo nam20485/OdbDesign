@@ -55,6 +55,11 @@ namespace Odb::Lib::FileModel::Design
 			try
 			{
 				m_index = std::stoi(token.substr(1));
+				// Reject negative index values
+				if (m_index < 0)
+				{
+					throw_parse_error(path, line, token, lineNumber);
+				}
 			}
 			catch (const std::invalid_argument&)
 			{
@@ -66,10 +71,16 @@ namespace Odb::Lib::FileModel::Design
 				// Surface index tokens that exceed integer range.
 				throw_parse_error(path, line, token, lineNumber);
 			}
+			
+			// Get the name token after the index
+			if (std::getline(lineStream, token, ' '))
+			{
+				m_name = token;
+			}
 		}
-
-		if (std::getline(lineStream, token, ' '))
+		else
 		{
+			// No index token, use the first token as the name
 			m_name = token;
 		}
 		else
