@@ -5,6 +5,7 @@
 #include <fstream>
 #include <App/RouteController.h>
 #include <crow/json.h>
+#include "CrossPlatform.h"
 
 using namespace std::filesystem;
 using namespace Odb::Lib::App;
