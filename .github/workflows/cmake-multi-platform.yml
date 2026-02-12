@@ -138,7 +138,15 @@ jobs:
           #      Survives actions/cache eviction, provides cross-branch sharing.
           # Note: The x-gha and actions backends were removed in vcpkg 2025+.
           # nugettimeout overrides vcpkg's default 100s NuGet CLI timeout (large packages need more time).
-          echo "VCPKG_BINARY_SOURCES=clear;default,readwrite;nugetconfig,$GITHUB_WORKSPACE/nuget.generated.config,readwrite;nugettimeout,600" >> $GITHUB_ENV
+          # Note: nugettimeout must come BEFORE nugetconfig to be applied to it
+          # Use read-only mode for PRs to avoid upload timeouts; write only on main branch builds
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "Using read-only NuGet cache for PR build"
+            echo "VCPKG_BINARY_SOURCES=clear;default,readwrite;nugettimeout,900;nugetconfig,$GITHUB_WORKSPACE/nuget.generated.config,read" >> $GITHUB_ENV
+          else
+            echo "Using read-write NuGet cache for main branch build"
+            echo "VCPKG_BINARY_SOURCES=clear;default,readwrite;nugettimeout,900;nugetconfig,$GITHUB_WORKSPACE/nuget.generated.config,readwrite" >> $GITHUB_ENV
+          fi
 
       # Persist vcpkg's default local binary cache across workflow runs.
       # This is the fast ephemeral layer — same-branch builds hit this first (< 1 min restore).
