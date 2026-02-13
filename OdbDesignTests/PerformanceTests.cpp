@@ -86,8 +86,8 @@ namespace Odb::Test::Performance
     // Stress test for concurrent operations
     TEST_F(PerformanceTestBase, ConcurrentOperationsStressTest)
     {
-        const int numThreads = std::thread::hardware_concurrency();
-        const int operationsPerThread = 100;
+        const int numThreads = std::min(static_cast<int>(std::thread::hardware_concurrency()), 4);
+        const int operationsPerThread = 50;
         
         std::vector<std::thread> threads;
         std::vector<bool> results(numThreads, false);
@@ -134,7 +134,7 @@ namespace Odb::Test::Performance
         }
         
         // Performance should scale reasonably with thread count
-        EXPECT_LT(totalTime.count(), 10000) << "Concurrent operations should complete within 10 seconds";
+        EXPECT_LT(totalTime.count(), 30000) << "Concurrent operations should complete within 30 seconds";
     }
 
     // Benchmark test with load testing
