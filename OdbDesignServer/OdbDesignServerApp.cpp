@@ -24,7 +24,6 @@
 #include <grpcpp/resource_quota.h>
 #include <filesystem>
 #include <cstdlib>
-#include <cstring>
 
 using namespace Odb::Lib::App;
 
@@ -56,7 +55,7 @@ namespace Odb::App::Server
 		// Check GRPC_CONFIG_PATH environment variable first, then try executable directory, then current directory
 		std::string configPath;
 		const char* envConfig = std::getenv("GRPC_CONFIG_PATH");
-		if (envConfig != nullptr && strlen(envConfig) > 0)
+		if (envConfig != nullptr && envConfig[0] != '\0')
 		{
 			configPath = envConfig;
 		}
