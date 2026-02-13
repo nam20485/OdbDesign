@@ -1,7 +1,5 @@
 #include "DesignCache.h"
-#include "DesignCache.h"
 #include "ArchiveExtractor.h"
-#include "DesignCache.h"
 #include "Logger.h"
 #include <exception>
 #include <filesystem>

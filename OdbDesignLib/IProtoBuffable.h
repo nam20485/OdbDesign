@@ -51,7 +51,7 @@ namespace Odb::Lib
 	template<typename TPbMessage>
 	inline bool IProtoBuffable<TPbMessage>::from_pbstring(const std::string& pb_string)
 	{
-		auto pMessage = std::unique_ptr<TPbMessage>();
+		auto pMessage = std::make_unique<TPbMessage>();
 		if (!pMessage->ParseFromString(pb_string)) return false;
 		from_protobuf(*pMessage);
 		return true;
@@ -68,7 +68,7 @@ namespace Odb::Lib
 	template<typename TPbMessage>
 	inline bool IProtoBuffable<TPbMessage>::from_stream(std::istream& inputStream)
 	{
-		auto pMessage = std::unique_ptr<TPbMessage>();
+		auto pMessage = std::make_unique<TPbMessage>();
 		if (!pMessage->ParseFromIstream(&inputStream)) return false;
 		from_protobuf(*pMessage);
 		return true;
@@ -89,7 +89,7 @@ namespace Odb::Lib
 	template<typename TPbMessage>
 	inline void IProtoBuffable<TPbMessage>::from_json(const std::string& json)
 	{			
-		auto pMessage = std::unique_ptr<TPbMessage>();
+		auto pMessage = std::make_unique<TPbMessage>();
 		auto status = google::protobuf::util::JsonStringToMessage(absl::string_view(json), pMessage.get());
 		if (!status.ok()) return;		
 		from_protobuf(*pMessage);		

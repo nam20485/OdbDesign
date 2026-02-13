@@ -260,10 +260,6 @@ namespace Odb::Lib::FileModel::Design
 											bool invalid = false;
 											switch (type2)
 											{
-											case ToolsRecord::Type2::Standard:
-												// Standard type2 doesn't require validation
-												break;
-
 											case ToolsRecord::Type2::PressFit:
 												invalid = (type != ToolsRecord::Type::Plated);
 												break;
