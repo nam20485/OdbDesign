@@ -30,8 +30,11 @@ env:
   # Disable NuGet interactive mode
   NUGET_XMLDOC_MODE: skip
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
-  # Increase NuGet push timeout (default is 300 seconds) to fix macOS timeout errors
-  NUGET_TIMEOUT: 600
+  # Increase NuGet push timeout (default is 300 seconds) to fix Linux/macOS mono timeout errors.
+  # NUGET_PUSH_TIMEOUT_IN_SECONDS is respected by nuget.exe directly (including under mono).
+  # NUGET_TIMEOUT is a legacy variable kept for compatibility.
+  NUGET_TIMEOUT: 1200
+  NUGET_PUSH_TIMEOUT_IN_SECONDS: 1200
 
 jobs:
   build:
