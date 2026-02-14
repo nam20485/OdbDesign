@@ -9,7 +9,7 @@
 #include "../../enums.h"
 #include "../../IProtoBuffable.h"
 #include "PropertyRecord.h"
-#include "../../ProtoBuf/componentsfile.pb.h"
+#include "componentsfile.pb.h"
 #include "AttributeLookupTable.h"
 #include "../IStreamSaveable.h"
 

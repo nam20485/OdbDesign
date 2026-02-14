@@ -44,7 +44,7 @@ namespace Odb::Test::Enhanced
 #endif
         // Just verify we can handle it without crashing
         EXPECT_NO_THROW({
-            std::filesystem::exists(invalidPath);
+            (void)std::filesystem::exists(invalidPath);
         });
     }
 

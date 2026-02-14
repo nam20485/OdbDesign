@@ -1,7 +1,7 @@
 #include "Via.h"
 #include <memory>
-#include "../ProtoBuf/via.pb.h"
-#include "../ProtoBuf/enums.pb.h"
+#include "via.pb.h"
+#include "enums.pb.h"
 #include "../enums.h"
 #include <string>
 

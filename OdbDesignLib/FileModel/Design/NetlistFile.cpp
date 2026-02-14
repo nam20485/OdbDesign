@@ -13,7 +13,7 @@
 #include <memory>
 #include <string>
 #include "../parse_info.h"
-#include "../../ProtoBuf/netlistfile.pb.h"
+#include "netlistfile.pb.h"
 
 using namespace std::filesystem;
 

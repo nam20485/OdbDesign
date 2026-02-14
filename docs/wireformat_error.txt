@@ -1,0 +1,4 @@
+E0000 00:00:1770400244.988817    6092 wire_format_lite.cc:610] String field 'Odb.Lib.Protobuf.PropertyRecord.value' contains invalid UTF-8 data when serializing a protocol buffer. Use the 'bytes' type if you intend to send raw bytes.
+E0000 00:00:1770400244.989521    6092 wire_format_lite.cc:610] String field 'Odb.Lib.Protobuf.PropertyRecord.value' contains invalid UTF-8 data when serializing a protocol buffer. Use the 'bytes' type if you intend to send raw bytes.
+
+*from OdbDesign run console output
