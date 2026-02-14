@@ -11,14 +11,21 @@ set(CXX_STANDARD ${MY_CXX_STANDARD})
 set(CMAKE_CXX_STANDARD ${MY_CXX_STANDARD})
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+# export all class and method symbols when building shared libraries on Windows
+# mandatory to enable export of grpc service protoc-generated classes/methods
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+
 # enable compilation database for SonarQube analysis
 # See: https://docs.sonarsource.com/sonarqube-for-ide/vs-code/getting-started/running-an-analysis/#generate-a-compilation-database
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # only use ccache locally, i.e. not in CI
+# nm, looks like we re-en-disabled it. Apparently it can speed up CI builds too. (Not sure how since its first one-off single build  everytime, but maybe it can cache within a single build run)
 #if (NOT DEFINED ENV{CI})
     set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_EXE}")
 #endif()
+
+set(CMAKE_COLOR_DIAGNOSTICS ON)
 
 #
 # GoogleTest support
@@ -26,13 +33,12 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 include(FetchContent)
 FetchContent_Declare(
   googletest
-  URL https://github.com/google/googletest/archive/refs/tags/v1.16.0.zip
+  URL https://github.com/google/googletest/archive/refs/tags/v1.17.0.zip
   #URL https://github.com/google/googletest/archive/refs/heads/main.zip
 )
 # For Windows: Prevent overriding the parent project's compiler/linker settings
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
-
 enable_testing()
 
 # Enable Hot Reload for MSVC compilers if supported.
@@ -64,7 +70,7 @@ if (MSVC)
     add_compile_options(/wd4100)
     #add_compile_options(/sdl)
 else()
-    # additional warnings    
+    # additional warnings
     add_compile_options(-Wall -Wextra -Wpedantic)
     # treat warnings as errors
     #add_compile_options(-Werror)

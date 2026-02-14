@@ -26,8 +26,9 @@ namespace Utils
 			{
 				return true;
 			}
+			return false;
 		}
-		#elif
+		#else
 			return false;
 		#endif
 	}

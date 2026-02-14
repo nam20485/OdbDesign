@@ -19,7 +19,9 @@ param(
 )
 
 # $clusterName="k3dcluster"
-$hostIp = "10.0.0.185"
+#$hostIp = "10.0.0.185"
+$hostIp = "192.168.1.30"
+#$hostIp = "192.168.1.101"
 # $numAgents=3
 # $ingressHostPort=8081
 

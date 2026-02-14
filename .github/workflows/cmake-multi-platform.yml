@@ -2,23 +2,40 @@
 name: CMake Build Multi-Platform
 
 on:
+  workflow_dispatch:
+  # Push triggers for protected branches (post-merge builds for Docker) + personal branch
+  # Feature branch pushes are NOT built - only PRs gate those
   push:
-    branches: [ "nam20485" ]
+    branches: ["development", "staging", "main", "release", "nam20485"]
   pull_request:
-    branches: [ "development", "staging", "main", "release", "nam20485" ]  
+    branches: ["development", "staging", "main", "release", "nam20485"]
 
 permissions:
-  contents: read  
+  contents: read
+  packages: write
 
 env:
   VCPKG_ROOT: ${{ github.workspace }}/vcpkg
-  VCPKG_BINARY_SOURCES: 'clear;x-gha,readwrite'
+  # Override vcpkg's default binary cache to a known path for actions/cache
+  VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}/.vcpkg-binary-cache
+  # GitHub Packages NuGet feed URL and binary cache
+  FEED_URL: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
   # support for GH dependency graph vcpkg integration
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   VCPKG_FEATURE_FLAGS: dependencygraph
   ARTIFACTS_DIR: ${{ github.workspace }}/artifacts
   ARTIFACTS_DIR_WIN: ${{ github.workspace }}\artifacts
-  
+  # GitHub Packages NuGet feed configuration
+  USERNAME: ${{ github.repository_owner }}
+  # Disable NuGet interactive mode
+  NUGET_XMLDOC_MODE: skip
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  # Increase NuGet push timeout (default is 300 seconds) to fix Linux/macOS mono timeout errors.
+  # NUGET_PUSH_TIMEOUT_IN_SECONDS is respected by nuget.exe directly (including under mono).
+  # NUGET_TIMEOUT is a legacy variable kept for compatibility.
+  NUGET_TIMEOUT: 1200
+  NUGET_PUSH_TIMEOUT_IN_SECONDS: 1200
+
 jobs:
   build:
     name: CMake-Multi-Platform-Build
@@ -26,6 +43,7 @@ jobs:
     permissions:
       contents: write
       checks: write
+      packages: write
 
     strategy:
       # Set fail-fast to false to ensure that feedback is delivered for all matrix combinations. Consider changing this to true when your workflow is stable.
@@ -36,8 +54,8 @@ jobs:
           # Windows x64 Release
           - os: windows-2022
             preset: x64-release
-          # Linux x64 Release          
-          - os: ubuntu-22.04
+          # Linux x64 Release (upgraded to 24.04 for newer toolchain)
+          - os: ubuntu-24.04
             preset: linux-release
           # MacOS x64 Release
           - os: macos-14
@@ -49,172 +67,245 @@ jobs:
           # - os: ubuntu-22.04
           #   preset: python-linux-release
 
-    steps:   
-    
-    - name: Harden Runner
-      uses: step-security/harden-runner@4d991eb9b905ef189e4c376166672c3f2f230481 # v2.11.0
-      with:
-        egress-policy: audit
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@4d991eb9b905ef189e4c376166672c3f2f230481 # v2.11.0
+        with:
+          egress-policy: audit
 
-    - name: Checkout Repository
-      uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-    
-    # add problem matchers by compiler
-    - name: Add Problem Matchers
-      uses: ammaraskar/msvc-problem-matcher@1ebcb382869bfdc2cc645e8a2a43b6d319ea1cc0 # master
-      if: matrix.os == 'windows-2022'
-    - name: Add Problem Matchers
-      uses: ammaraskar/gcc-problem-matcher@0f9c86f9e693db67dacf53986e1674de5f2e5f28 # master
-      if: matrix.os != 'windows-2022'
-    
-    - name: Install vcpkg Dependencies
-      run: |
-        sudo apt update
-        sudo apt install -y -q --no-install-recommends build-essential tar curl zip unzip
-      if: matrix.os == 'ubuntu-22.04'
+      - name: Checkout Repository
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
 
-    #
-    #   os != windows-2022 (i.e. Linux, MacOS)
-    #
-    - name: Install vcpkg
-      run: |               
-        git clone https://github.com/Microsoft/vcpkg.git ${{env.VCPKG_ROOT}}
-        "${{env.VCPKG_ROOT}}/bootstrap-vcpkg.sh"
-      # (Windows comes w/ vcpkg installed as part of VS)   
-      if: matrix.os != 'windows-2022'
-    
-    - name: Install Ninja    
-      uses: seanmiddleditch/gha-setup-ninja@8b297075da4cd2a5f1fd21fe011b499edf06e9d2 # master
-      if: matrix.os != 'windows-2022'
+      # Checkout test data early (parallel with build prep for better cache locality)
+      - name: Checkout OdbDesign Test Data Repository
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          repository: "nam20485/OdbDesignTestData"
+          path: "OdbDesignTestData"
+          ref: "main"
 
-    # Export vcpkg Cache Variables
-    - name : Export vcpkg Cache Variables
-      uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
-      with:
-        script: |
-          core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
-          core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+      # add problem matchers by compiler
+      - name: Add Problem Matchers
+        uses: ammaraskar/msvc-problem-matcher@1ebcb382869bfdc2cc645e8a2a43b6d319ea1cc0 # master
+        if: matrix.os == 'windows-2022'
+      - name: Add Problem Matchers
+        uses: ammaraskar/gcc-problem-matcher@0f9c86f9e693db67dacf53986e1674de5f2e5f28 # master
+        if: matrix.os != 'windows-2022'
 
-    # #
-    # #   preset == linux-mingw-w64-release
-    # #   
-    # - name: Install mingw-w64
-    #   run: |
-    #     sudo apt-get update
-    #     sudo apt-get install -y --no-install-recommends mingw-w64        
-    #   if: matrix.preset == 'linux-mingw-w64-release'
-  
-    #
-    #   os == windows-2022
-    #
-    - name: Setup VC Tools
-      uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
-      if: matrix.os == 'windows-2022'
-      
-    - name: Patch vcpkg
-      run: scripts/patch-vcpkg-install.ps1
-      if: matrix.os == 'windows-2022'
+      - name: Install vcpkg Dependencies (Ubuntu)
+        run: |
+          sudo apt update
+          sudo apt install -y -q --no-install-recommends build-essential tar curl zip unzip mono-devel linux-libc-dev
+        if: matrix.os == 'ubuntu-24.04'
 
-    # #
-    # #  preset == python-x64-release
-    # #
-    # - name: Generate SWIG Bindings
-    #   run: | 
-    #     sudo apt-get update
-    #     sudo apt-get install -y --no-install-recommends swig
-    #     chmod +x ./scripts/generate-python-module.sh
-    #     ./scripts/generate-python-module.sh
-    #   if: matrix.preset == 'python-linux-release'
-    
-    - name: Manual vcpkg Install (Non-Windows)
-      run: "\"${{env.VCPKG_ROOT}}/vcpkg\" install"
-      if: matrix.preset != 'linux-mingw-w64-release' && matrix.os != 'windows-2022'
+      - name: Install mono (macOS)
+        run: brew install mono
+        if: matrix.os == 'macos-14'
 
-    - name: Manual vcpkg Install (Windows)
-      run: "& \"${{env.VCPKG_ROOT}}/vcpkg\" install --triplet x64-windows"
-      if: matrix.os == 'windows-2022'
+      # Generate NuGet config with PAT for GitHub Packages binary cache
+      # Uses VCPKG_PAT_TOKEN secret for write access on trusted events
+      # Note: The ${{ }} syntax is GitHub Actions expression interpolation, which happens
+      # BEFORE the bash script runs. The 'EOF' heredoc marker is quoted only to prevent
+      # bash variable interpolation; it does not affect GitHub Actions expression interpolation.
+      - name: Generate NuGet Config for Binary Cache
+        shell: bash
+        run: |
+          # Use $GITHUB_WORKSPACE to avoid Windows path backslash escaping issues in bash
+          # Write to nuget.generated.config to avoid overwriting the repo's nuget.config
+          cat > "$GITHUB_WORKSPACE/nuget.generated.config" << 'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <configuration>
+            <packageSources>
+              <clear />
+              <add key="GitHubPackages" value="${{ env.FEED_URL }}" />
+            </packageSources>
+            <packageSourceCredentials>
+              <GitHubPackages>
+                <add key="Username" value="${{ env.USERNAME }}" />
+                <add key="ClearTextPassword" value="${{ secrets.VCPKG_PAT_TOKEN }}" />
+              </GitHubPackages>
+            </packageSourceCredentials>
+            <apiKeys>
+              <add key="${{ env.FEED_URL }}" value="${{ secrets.VCPKG_PAT_TOKEN }}" />
+            </apiKeys>
+            <config>
+              <add key="defaultPushSource" value="${{ env.FEED_URL }}" />
+              <add key="signatureValidationMode" value="accept" />
+            </config>
+          </configuration>
+          EOF
+          # Hybrid binary cache strategy (vcpkg 2025+ compatible):
+          #   1. 'default' = local file cache (~/.cache/vcpkg/archives or %LOCALAPPDATA%\vcpkg\archives)
+          #      Persisted across runs via actions/cache step below — fast same-branch restore.
+          #   2. 'nugetconfig' = GitHub Packages NuGet feed (persistent, shared across branches/PRs)
+          #      Survives actions/cache eviction, provides cross-branch sharing.
+          # Note: The x-gha and actions backends were removed in vcpkg 2025+.
+          # nugettimeout overrides vcpkg's default 100s NuGet CLI timeout (large packages need more time).
+          # Note: nugettimeout must come BEFORE nugetconfig to be applied to it
+          echo "VCPKG_BINARY_SOURCES=clear;default,readwrite;nugettimeout,900;nugetconfig,$GITHUB_WORKSPACE/nuget.generated.config,readwrite" >> $GITHUB_ENV
 
-    # - name: Manual vcpkg Install (mingw-w64)
-    #   run: "\"${{env.VCPKG_ROOT}}/vcpkg\" install --triplet x64-mingw-static"
-    #   if: matrix.preset == 'linux-mingw-w64-release'
-    
-    #
-    #   CMake Build - All platforms
-    #   
-    - name: CMake Configure      
-      run: cmake --preset ${{matrix.preset}}    
+      # Persist vcpkg's default local binary cache across workflow runs.
+      # This is the fast ephemeral layer — same-branch builds hit this first (< 1 min restore).
+      # Cross-branch and cache-evicted builds fall through to NuGet (persistent layer).
+      - name: Create vcpkg Binary Cache Directory
+        shell: bash
+        run: mkdir -p "$VCPKG_DEFAULT_BINARY_CACHE"
 
-    - name: CMake Build          
-      run: cmake --build --preset ${{matrix.preset}}
+      - name: Restore vcpkg Binary Cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+          key: vcpkg-archives-${{ matrix.preset }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
+          restore-keys: |
+            vcpkg-archives-${{ matrix.preset }}-
 
-    - name: Checkout OdbDesign Test Data Repository
-      uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-      with:
-        repository: 'nam20485/OdbDesignTestData'
-        path: 'OdbDesignTestData'
-        ref: 'main'
-        #token: ${{ secrets.ODBDESIGN_TESTDATA_ACCESS_TOKEN }}
-        
-    - name : Export ODB_TEST_DATA_DIR    
-      uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
-      with:
-        script: core.exportVariable('ODB_TEST_DATA_DIR', "${{github.workspace}}/OdbDesignTestData/TEST_DATA" || '');                
+      - name: Setup NuGet Credential Provider (Windows)
+        if: matrix.os == 'windows-2022'
+        shell: pwsh
+        run: |
+          # Install Azure Artifacts credential provider for non-interactive NuGet auth
+          Invoke-Expression "& { $(Invoke-RestMethod https://aka.ms/install-artifacts-credprovider.ps1) } -AddNetfx"
+          # Set environment variable to allow credential provider to work non-interactively
+          echo "NUGET_CREDENTIALPROVIDER_SESSIONTOKENCACHE_ENABLED=true" >> $env:GITHUB_ENV
+          # Set API key for NuGet push to GitHub Packages
+          $env:NUGET_API_KEY = "${{ secrets.VCPKG_PAT_TOKEN }}"
+          nuget setApiKey $env:NUGET_API_KEY -Source "${{ env.FEED_URL }}" -NonInteractive
+          # Also set in environment for vcpkg to use
+          echo "NUGET_API_KEY=${{ secrets.VCPKG_PAT_TOKEN }}" >> $env:GITHUB_ENV
 
-    - name: CMake Test
-      id: cmake-test
-      env:
-        ODB_TEST_DATA_DIR: ${{github.workspace}}/OdbDesignTestData/TEST_DATA
-        ODB_TEST_ENVIRONMENT_VARIABLE: ${{vars.ODB_TEST_ENVIRONMENT_VARIABLE}}
-      run: ctest --test-dir ./out/build/${{matrix.preset}}/OdbDesignTests --output-log ${{github.workspace}}/testlog.txt --output-junit ${{github.workspace}}/testlog.xml --output-on-failure      
-      # let the report step fail the job if it finds failed tests...
-      continue-on-error: true
-           
-    # report test results
-    - name: Report Test Results
-      uses: dorny/test-reporter@31a54ee7ebcacc03a09ea97a7e5465a47b84aea5 # v1.9.1
-      if: steps.cmake-test.outcome == 'success' || steps.cmake-test.outcome == 'failure'
-      with:
-        name: ${{ matrix.os }}_test-results
-        path: ${{github.workspace}}/testlog.xml
-        reporter: java-junit
-        path-replace-backslashes: true
-        # fail job based on report results
-        fail-on-error: true     
+      - name: Setup NuGet API Key (Non-Windows)
+        if: matrix.os != 'windows-2022'
+        shell: bash
+        run: |
+          # Set API key for NuGet push to GitHub Packages
+          mono $(which nuget) setApiKey "${{ secrets.VCPKG_PAT_TOKEN }}" -Source "${{ env.FEED_URL }}" -NonInteractive || true
 
-    #
-    #   Artifacts
-    #
-    - name: Compress Artifacts (Linux)
-      if: matrix.os == 'ubuntu-22.04'
-      run: |
-        mkdir ${{env.ARTIFACTS_DIR}}
-        cp ./out/build/${{matrix.preset}}/OdbDesignLib/*.so ${{env.ARTIFACTS_DIR}}
-        cp ./out/build/${{matrix.preset}}/Utils/*.so ${{env.ARTIFACTS_DIR}}
-        cp ./out/build/${{matrix.preset}}/OdbDesignServer/OdbDesignServer ${{env.ARTIFACTS_DIR}}       
-        cd ${{env.ARTIFACTS_DIR}}
-        zip -r ./artifacts-${{matrix.os}}.zip ./*.so ./OdbDesignServer
+      #
+      #   os != windows-2022 (i.e. Linux, MacOS)
+      #
+      - name: Install vcpkg
+        run: |
+          git clone https://github.com/Microsoft/vcpkg.git ${{env.VCPKG_ROOT}}
+          "${{env.VCPKG_ROOT}}/bootstrap-vcpkg.sh"
+        # (Windows comes w/ vcpkg installed as part of VS)
+        if: matrix.os != 'windows-2022'
 
-    - name: Compress Artifacts (MacOS)
-      if: matrix.os == 'macos-14'
-      run: |
-        mkdir ${{env.ARTIFACTS_DIR}}
-        cp ./out/build/${{matrix.preset}}/OdbDesignLib/*.dylib ${{env.ARTIFACTS_DIR}}
-        cp ./out/build/${{matrix.preset}}/Utils/*.dylib ${{env.ARTIFACTS_DIR}}
-        cp ./out/build/${{matrix.preset}}/OdbDesignServer/OdbDesignServer ${{env.ARTIFACTS_DIR}}       
-        cd ${{env.ARTIFACTS_DIR}}
-        zip -r ./artifacts-${{matrix.os}}.zip ./*.dylib ./OdbDesignServer
+      - name: Install Ninja
+        uses: seanmiddleditch/gha-setup-ninja@8b297075da4cd2a5f1fd21fe011b499edf06e9d2 # master
+        if: matrix.os != 'windows-2022'
 
-    - name: Compress Artifacts (Windows)
-      if: matrix.os == 'windows-2022'
-      run: |
-        New-Item -ItemType Directory -Force -Path  ${{env.ARTIFACTS_DIR_WIN}} -Verbose
-        Copy-Item -Path ".\out\build\${{matrix.preset}}\*.dll" -Destination  ${{env.ARTIFACTS_DIR_WIN}} -Force -Verbose
-        Copy-Item -Path ".\out\build\${{matrix.preset}}\OdbDesignServer.exe" -Destination  ${{env.ARTIFACTS_DIR_WIN}} -Force -Verbose    
-        Compress-Archive -Path "${{env.ARTIFACTS_DIR_WIN}}\*.dll","${{env.ARTIFACTS_DIR_WIN}}\*.exe"  -DestinationPath "${{env.ARTIFACTS_DIR_WIN}}\artifacts-${{matrix.os}}.zip" -Verbose -Force
+      # #
+      # #   preset == linux-mingw-w64-release
+      # #
+      # - name: Install mingw-w64
+      #   run: |
+      #     sudo apt-get update
+      #     sudo apt-get install -y --no-install-recommends mingw-w64
+      #   if: matrix.preset == 'linux-mingw-w64-release'
 
-    - name: Upload Artifacts
-      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-      with:
-        name: ${{ matrix.os }}-artifacts
-        path: ${{ env.ARTIFACTS_DIR }}/artifacts-${{matrix.os}}.zip
-        retention-days: 365 # 1 year
+      #
+      #   os == windows-2022
+      #
+      - name: Setup VC Tools
+        uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
+        if: matrix.os == 'windows-2022'
+
+      - name: Patch vcpkg
+        run: scripts/patch-vcpkg-install.ps1
+        if: matrix.os == 'windows-2022'
+
+      # #
+      # #  preset == python-x64-release
+      # #
+      # - name: Generate SWIG Bindings
+      #   run: |
+      #     sudo apt-get update
+      #     sudo apt-get install -y --no-install-recommends swig
+      #     chmod +x ./scripts/generate-python-module.sh
+      #     ./scripts/generate-python-module.sh
+      #   if: matrix.preset == 'python-linux-release'
+
+      - name: Manual vcpkg Install (Non-Windows)
+        run: '"${{env.VCPKG_ROOT}}/vcpkg" install'
+        if: matrix.preset != 'linux-mingw-w64-release' && matrix.os != 'windows-2022'
+
+      - name: Manual vcpkg Install (Windows)
+        run: '& "${{env.VCPKG_ROOT}}/vcpkg" install --triplet x64-windows'
+        if: matrix.os == 'windows-2022'
+
+      # - name: Manual vcpkg Install (mingw-w64)
+      #   run: "\"${{env.VCPKG_ROOT}}/vcpkg\" install --triplet x64-mingw-static"
+      #   if: matrix.preset == 'linux-mingw-w64-release'
+
+      #
+      #   CMake Build - All platforms
+      #
+      - name: CMake Configure
+        run: cmake --preset ${{matrix.preset}}
+
+      - name: CMake Build
+        run: cmake --build --preset ${{matrix.preset}}
+
+      - name: Export ODB_TEST_DATA_DIR
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: core.exportVariable('ODB_TEST_DATA_DIR', "${{github.workspace}}/OdbDesignTestData/TEST_DATA" || '');
+
+      - name: CMake Test
+        id: cmake-test
+        env:
+          ODB_TEST_DATA_DIR: ${{github.workspace}}/OdbDesignTestData/TEST_DATA
+          ODB_TEST_ENVIRONMENT_VARIABLE: ${{vars.ODB_TEST_ENVIRONMENT_VARIABLE}}
+        run: ctest --test-dir ./out/build/${{matrix.preset}}/OdbDesignTests --output-log ${{github.workspace}}/testlog.txt --output-junit ${{github.workspace}}/testlog.xml --output-on-failure
+        # let the report step fail the job if it finds failed tests...
+        continue-on-error: true
+
+      # report test results
+      - name: Report Test Results
+        uses: dorny/test-reporter@31a54ee7ebcacc03a09ea97a7e5465a47b84aea5 # v1.9.1
+        if: steps.cmake-test.outcome == 'success' || steps.cmake-test.outcome == 'failure'
+        with:
+          name: ${{ matrix.os }}_test-results
+          path: ${{github.workspace}}/testlog.xml
+          reporter: java-junit
+          path-replace-backslashes: true
+          # fail job based on report results
+          fail-on-error: true
+
+      #
+      #   Artifacts
+      #
+      - name: Compress Artifacts (Linux)
+        if: matrix.os == 'ubuntu-24.04'
+        run: |
+          mkdir ${{env.ARTIFACTS_DIR}}
+          cp ./out/build/${{matrix.preset}}/OdbDesignLib/*.so ${{env.ARTIFACTS_DIR}}
+          cp ./out/build/${{matrix.preset}}/Utils/*.so ${{env.ARTIFACTS_DIR}}
+          cp ./out/build/${{matrix.preset}}/OdbDesignServer/OdbDesignServer ${{env.ARTIFACTS_DIR}}
+          cd ${{env.ARTIFACTS_DIR}}
+          zip -r ./artifacts-${{matrix.os}}.zip ./*.so ./OdbDesignServer
+
+      - name: Compress Artifacts (MacOS)
+        if: matrix.os == 'macos-14'
+        run: |
+          mkdir ${{env.ARTIFACTS_DIR}}
+          cp ./out/build/${{matrix.preset}}/OdbDesignLib/*.dylib ${{env.ARTIFACTS_DIR}}
+          cp ./out/build/${{matrix.preset}}/Utils/*.dylib ${{env.ARTIFACTS_DIR}}
+          cp ./out/build/${{matrix.preset}}/OdbDesignServer/OdbDesignServer ${{env.ARTIFACTS_DIR}}
+          cd ${{env.ARTIFACTS_DIR}}
+          zip -r ./artifacts-${{matrix.os}}.zip ./*.dylib ./OdbDesignServer
+
+      - name: Compress Artifacts (Windows)
+        if: matrix.os == 'windows-2022'
+        run: |
+          New-Item -ItemType Directory -Force -Path  ${{env.ARTIFACTS_DIR_WIN}} -Verbose
+          Copy-Item -Path ".\out\build\${{matrix.preset}}\*.dll" -Destination  ${{env.ARTIFACTS_DIR_WIN}} -Force -Verbose
+          Copy-Item -Path ".\out\build\${{matrix.preset}}\OdbDesignServer.exe" -Destination  ${{env.ARTIFACTS_DIR_WIN}} -Force -Verbose
+          Compress-Archive -Path "${{env.ARTIFACTS_DIR_WIN}}\*.dll","${{env.ARTIFACTS_DIR_WIN}}\*.exe"  -DestinationPath "${{env.ARTIFACTS_DIR_WIN}}\artifacts-${{matrix.os}}.zip" -Verbose -Force
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ${{ matrix.os }}-artifacts
+          path: ${{ env.ARTIFACTS_DIR }}/artifacts-${{matrix.os}}.zip
+          retention-days: 365 # 1 year

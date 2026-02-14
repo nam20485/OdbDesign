@@ -13,14 +13,11 @@ build/
 ssl/
 artifacts/
 /TEST_DATA
-OdbDesignTests/Testing/
 Testing/
 testlog.txt
 testlog.txt.tmp*
 testlog.xml
-/OdbDesignTests/FileArchiveLoadTests_Local.cpp
-/OdbDesignTests/CMakeLists_Local.txt
-/OdbDesignTests/DesignNameTests_Local.cpp
+#/OdbDesignTests/
 /output
 /TEST_DATA.zip
 deploy/kubeconfig
@@ -31,3 +28,16 @@ docs/api/
 perfertto-tracing-span-events-SQL.md
 # Corrected spelling to ensure both variants are ignored
 perfetto-tracing-span-events-SQL.md
+build-win/
+.gemini/settings.json.origg
+
+# OpenMemory - IDE/Assistant specific rules
+.cursor\rules\openmemory.mdc
+designs/
+/OdbDesignServer/yaak
+/log.txt
+.cursor\rules\openmemory.mdc
+/local.nuget.config
+/nuget.generated.config
+/docs/vcpkg-binary-cache/gemini-instructions.md
+.cursor\rules\openmemory.mdc

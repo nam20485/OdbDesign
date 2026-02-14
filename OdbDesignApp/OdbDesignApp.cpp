@@ -1,4 +1,4 @@
-﻿// OdbDesignApp.cpp : Defines the entry point for the application.
+// OdbDesignApp.cpp : Defines the entry point for the application.
 //
 #include "OdbDesignApp.h"
 #include "OdbDesign.h"
@@ -133,13 +133,13 @@ bool TestRigidFlexDesign()
         auto netlistFind = netlistsByName.find("cadnet");
         if (netlistFind != netlistsByName.end())
         {
-            auto& pNetlist = netlistFind->second;
-            auto netlistName = pNetlist->GetName();
-            auto& netListNetRecords = pNetlist->GetNetRecords();
-            for (auto& pNetRecord : netListNetRecords)
-            {
-                
-            }
+            // auto& pNetlist = netlistFind->second;
+            // auto netlistName = pNetlist->GetName();
+            // auto& netListNetRecords = pNetlist->GetNetRecords();
+			// for (auto& pNetRecord : netListNetRecords)
+			// {
+				
+			// }
         }
     }
 

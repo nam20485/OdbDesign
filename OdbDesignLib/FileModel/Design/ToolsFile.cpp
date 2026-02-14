@@ -14,8 +14,8 @@
 namespace Odb::Lib::FileModel::Design
 {
 	ToolsFile::ToolsFile()
-		: m_path("")
-		, m_directory("")
+		: m_directory("")
+		, m_path("")
 		, m_units("")
 		, m_thickness(0)
 		, m_user_params("")
