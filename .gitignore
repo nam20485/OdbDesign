@@ -31,3 +31,7 @@ docs/api/
 perfertto-tracing-span-events-SQL.md
 # Corrected spelling to ensure both variants are ignored
 perfetto-tracing-span-events-SQL.md
+designs/
+log.txt
+local.nuget.config
+local.nuget.config
