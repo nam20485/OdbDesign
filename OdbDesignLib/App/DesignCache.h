@@ -35,7 +35,7 @@ namespace Odb::Lib::App
 		int loadDesigns(const Utils::StringVector& names);
 
 		void setDirectory(const std::string& directory);
-		const std::string& getDirectory() const;		
+		std::string getDirectory() const;		
 
 		void Clear();		
 

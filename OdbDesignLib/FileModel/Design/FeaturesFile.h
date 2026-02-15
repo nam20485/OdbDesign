@@ -139,7 +139,7 @@ namespace Odb::Lib::FileModel::Design
 
 	// Extract symbols as a vector irrespective of whether the source is a vector or map.
 	// When the features file already stores symbols in a vector, preserve that ordering;
-	// otherwise collect the map values in insertion order.
+	// otherwise collect the map values using the map's natural iteration order (typically key-sorted).
 	ODBDESIGN_EXPORT SymbolName::Vector collect_symbols(const FeaturesFile& featuresFile);
 
 	// Infer unit type from a unit string. Handles various unit name formats (mm, millimeter, inches, etc.)

@@ -72,11 +72,14 @@ namespace Odb::Lib::FileModel::Design
 				throw_parse_error(path, line, token, lineNumber);
 			}
 			
-			// Get the name token after the index
-			if (std::getline(lineStream, token, ' '))
+			// Get the name token after the index; it must be present and non-empty
+			if (!std::getline(lineStream, token, ' ') || token.empty())
 			{
-				m_name = token;
+				// Missing or empty name after a valid index is treated as a parse error
+				throw_parse_error(path, line, token, lineNumber);
 			}
+
+			m_name = token;
 		}
 		else
 		{
