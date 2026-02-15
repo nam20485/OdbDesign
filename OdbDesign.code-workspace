@@ -7,7 +7,7 @@
 	"settings": {
 		"vcpkg.general.enable": true,
 		"cmake.configureSettings": {
-			"CMAKE_TOOLCHAIN_FILE": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Professional\\VC\\vcpkg/scripts/buildsystems/vcpkg.cmake"
+			"CMAKE_TOOLCHAIN_FILE": "${env:VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
 		},
 		"vcpkg.target.installDependencies": true,
 		"vcpkg.target.preferSystemLibs": false,
