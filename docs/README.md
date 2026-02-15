@@ -427,6 +427,7 @@ You can use this to get help or support, discuss any issues with integration int
 
 * [ODB++ Format Home](https://odbplusplus.com/design/)
 * [ODB++ Format Documentation & Resources](https://odbplusplus.com/design/our-resources/)
-* [ODB++ Format Specification v8.1 update 3](https://odbplusplus.com//wp-content/uploads/sites/2/2021/02/odb_spec_user.pdf)
+* ODB++ Format Specification (included in this repo): `docs/odb_spec_user.pdf`
+* [ODB++ Format Specification v8.1 update 4 (public PDF)](https://odbplusplus.com/wp-content/uploads/sites/2/2024/08/odb_spec_user.pdf)
 
-*ODB++ is a registered trademark of Siemens and © Siemens 2021*
+*ODB++ is a registered trademark of Siemens*

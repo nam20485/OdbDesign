@@ -5,9 +5,7 @@
 #include <memory>
 #include "../../odbdesign_export.h"
 #include "../../IProtoBuffable.h"
-#include "../../ProtoBuf/common.pb.h"
-#include "../../odbdesign_export.h"
-
+#include "common.pb.h"
 
 namespace Odb::Lib::FileModel::Design
 {

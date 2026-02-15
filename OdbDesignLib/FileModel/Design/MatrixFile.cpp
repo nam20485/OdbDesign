@@ -11,7 +11,7 @@
 #include "../parse_error.h"
 #include <Logger.h>
 #include "../invalid_odb_error.h"
-#include "../../ProtoBuf/enums.pb.h"
+#include "enums.pb.h"
 #include "../../enums.h"
 #include "../OdbFile.h"
 #include <memory>
@@ -358,18 +358,6 @@ namespace Odb::Lib::FileModel::Design
 
         return true;
 	}
-
-    /*static*/ bool MatrixFile::attributeValueIsOptional(const std::string& attribute)
-    {
-        for (const auto& optionalAttribute : OPTIONAL_ATTRIBUTES)
-        {
-            if (attribute == optionalAttribute)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
 
     std::unique_ptr<Odb::Lib::Protobuf::MatrixFile> Odb::Lib::FileModel::Design::MatrixFile::to_protobuf() const
     {

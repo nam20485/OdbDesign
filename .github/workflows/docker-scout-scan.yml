@@ -5,41 +5,49 @@ name: Docker Scout Scan
 # separate terms of service, privacy policy, and support
 # documentation.
 
+# Scans published Docker images instead of rebuilding (~90% time savings)
+# Triggered after Docker Publish completes successfully, or weekly for CVE updates
 on:
-  push:
-    branches: [ "nam20485" ]
-  pull_request:
-    branches: [ "development", "staging", "main", "release", "nam20485" ]
-   
+  workflow_run:
+    workflows: ["Docker Publish"]
+    types: [completed]
+    branches: [development, staging, main, release]
+  schedule:
+    # Weekly scan on Sunday at midnight for new CVE updates
+    - cron: "0 0 * * 0"
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Branch tag to scan (e.g., main, development)"
+        required: false
+        default: "development"
+
 env:
   # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
-  IMAGE_NAME: ${{ github.repository }}  
-  #VCPKG_BINARY_SOURCES: 'clear;nuget,GitHub,readwrite'
+  IMAGE_NAME: ${{ github.repository }}
   # Use `latest` as the tag to compare to if empty, assuming that it's already pushed
   COMPARE_TAG: latest
-  DOCKERFILE: Dockerfile
 
 permissions:
   contents: read
 
 jobs:
-  build:
+  scan:
     name: Docker-Scout-Scan
 
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write
-      # This is used to complete the identity challenge
-      # with sigstore/fulcio when running outside of PRs.
-      id-token: write
-      pull-requests: write
+      packages: read
       security-events: write
 
-    # don't run on PRs into development from branches that aren't nam20485 (i.e. dependabot PRs)
-    if: github.event_name != 'pull_request' || github.base_ref != 'development' || github.head_ref == 'nam20485'
+    # Only run if triggered manually, scheduled, OR if Docker Publish succeeded
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'schedule' ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
 
     steps:
       - name: Harden Runner
@@ -47,115 +55,68 @@ jobs:
         with:
           egress-policy: audit
 
-      - name: Checkout repository
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-
-      # add problem matchers
-      - name: Add Problem Matchers
-        uses: ammaraskar/gcc-problem-matcher@0f9c86f9e693db67dacf53986e1674de5f2e5f28 # master
-
-    #   # Install the cosign tool except on PR
-    #   # https://github.com/sigstore/cosign-installer
-    #   - name: Install cosign
-    #     if: github.event_name != 'pull_request'
-    #     uses: sigstore/cosign-installer@f3c664df7af409cb4873aa5068053ba9d61a57b6 #v2.6.0
-    #     with:
-    #       cosign-release: 'v1.13.1'
-
-      # Workaround: https://github.com/docker/build-push-action/issues/461
-      - name: Setup Docker buildx
-        uses: docker/setup-buildx-action@d70bba72b1f3fd22344832f00baa16ece964efeb
+      # Determine which branch/tag to scan
+      - name: Set Image Tag
+        id: set-tag
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_run" ]; then
+            echo "SCAN_TAG=${{ github.event.workflow_run.head_branch }}-latest" >> $GITHUB_ENV
+            echo "BRANCH_NAME=${{ github.event.workflow_run.head_branch }}" >> $GITHUB_ENV
+          elif [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "SCAN_TAG=${{ inputs.branch }}-latest" >> $GITHUB_ENV
+            echo "BRANCH_NAME=${{ inputs.branch }}" >> $GITHUB_ENV
+          else
+            # Scheduled run - scan development by default
+            echo "SCAN_TAG=development-latest" >> $GITHUB_ENV
+            echo "BRANCH_NAME=development" >> $GITHUB_ENV
+          fi
 
       # Login against Docker Hub to allow running Docker Scout
-      # https://github.com/docker/login-action
-      - name: Log into Docker Hub registry        
+      - name: Log into Docker Hub registry
         uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567
-        with:          
+        with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # Extract metadata (tags, labels) for Docker
-      # https://github.com/docker/metadata-action
-      - name: Extract Docker metadata
-        id: meta
-        uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d19755c6f78e81
+      # Login to GHCR to pull the image
+      - name: Log into GHCR registry
+        uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567
         with:
-          images: ${{ env.IMAGE_NAME }}
-          tags: |
-            type=ref,event=pr
-            type=ref,event=branch,suffix=-${{github.run_number}}              
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Build Docker image with Buildx (don't push)
-      # https://github.com/docker/build-push-action
-      - name: Build and push Docker image
-        id: build-and-push
-        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83
-        with:
-          context: .          
-          push: false
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          file: ${{ env.DOCKERFILE }}
-          load: true          
-          build-args: |
-            OWNER=nam20485
-            GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
-            VCPKG_BINARY_SOURCES=clear;nuget,GitHub,readwrite
-
-      # - name: List Local Images
-      #   run: docker image ls
-
-    #   # Sign the resulting Docker image digest except on PRs.
-    #   # This will only write to the public Rekor transparency log when the Docker
-    #   # repository is public to avoid leaking data.  If you would like to publish
-    #   # transparency data even for private images, pass --force to cosign below.
-    #   # https://github.com/sigstore/cosign
-    #   - name: Sign the published Docker image
-    #     if: ${{ github.event_name != 'pull_request' }}
-    #     env:
-    #       COSIGN_EXPERIMENTAL: "true"
-    #     # This step uses the identity token to provision an ephemeral certificate
-    #     # against the sigstore community Fulcio instance.
-    #     run: echo "${{ steps.meta.outputs.tags }}" | xargs -I {} cosign sign {}@${{ steps.build-and-push.outputs.digest }}
-
-      - name: Analyze for critical and high CVEs
-        id: docker-scout-cves       
-        # if: ${{ github.event_name != 'pull_request_target' }} 
+      # Scan the published image directly (no rebuild needed - ~90% time savings)
+      - name: Analyze Published Image for CVEs
+        id: docker-scout-cves
         uses: docker/scout-action@b3dd3d6c420903eb3ff2812ac1b1d146ffb93a41 # v1.5.1
         with:
           command: cves,recommendations
-          image: ${{ steps.meta.outputs.tags }}
+          image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.SCAN_TAG }}
           sarif-file: sarif.output.json
           summary: true
-          keep-previous-comments: true
-        
+
       - name: Upload SARIF result
         id: upload-sarif
         uses: github/codeql-action/upload-sarif@3c3833e0f8c1c83d449a7478aa59c036a9165498 # v3.29.11
         with:
           sarif_file: sarif.output.json
 
+      # Compare against main branch image (if scanning non-main branch)
       - name: Check Compare Image Exists
         id: compare_image_exists
-        env:
-          SECRET_GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        if: ${{ github.event_name == 'pull_request' }}
+        if: env.BRANCH_NAME != 'main'
         continue-on-error: true
         run: |
-          curl --head --fail -H "Authorization: Bearer ${SECRET_GH_TOKEN}" https://ghcr.io/v2/${{ env.IMAGE_NAME }}/manifests/${{ github.base_ref }}-${{ env.COMPARE_TAG }}
+          docker manifest inspect ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main-${{ env.COMPARE_TAG }} > /dev/null 2>&1
 
-      - name: Docker Scout Compare to Latest
-        id: docker-scout
-        if: ${{ github.event_name == 'pull_request' && steps.compare_image_exists.outcome == 'success' }}
+      - name: Docker Scout Compare to Main
+        id: docker-scout-compare
+        if: env.BRANCH_NAME != 'main' && steps.compare_image_exists.outcome == 'success'
         uses: docker/scout-action@b3dd3d6c420903eb3ff2812ac1b1d146ffb93a41 # v1.5.1
         with:
           command: compare
-          image: ${{ steps.meta.outputs.tags }}
-          to: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.base_ref }}-${{ env.COMPARE_TAG }}
+          image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.SCAN_TAG }}
+          to: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main-${{ env.COMPARE_TAG }}
           ignore-unchanged: true
           only-severities: critical,high
-          write-comment: true
-          github-token: ${{ secrets.GITHUB_TOKEN }} # to be able to write the comment
- 

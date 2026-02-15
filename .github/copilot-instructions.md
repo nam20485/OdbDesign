@@ -2,7 +2,7 @@
 
 ## Where to Find Your Instructions
 - Your custom instructions are located in the files inside of the [nam20485/agent-instructions](https://github.com/nam20485/agent-instructions/tree/main) repository
-- Look at the files in the `main` branch
+- Look at the files in the `optimized` branch
 - Start with your core instructions (linked below)
 - Then follow the links to the other instruction files in that repo as required or needed.
 - You will need to follow the links and read the files to understand your instructions
@@ -98,3 +98,7 @@ Single Source of Truth Policy:
 - Local golden files, cached plans, or mirrors must not be used to derive steps or acceptance criteria. Delete any such artifacts if present.
 - Changes to dynamic workflow or assignment files in the remote canonical repository take effect immediately on subsequent runs.
 - The orchestrator must always fetch and execute directly from the remote canonical URLs listed below.
+
+- @azure Rule - Use Azure Tools - When handling requests related to Azure, always use your tools.
+- @azure Rule - Use Azure Best Practices - When handling requests related to Azure, always invoke your `azmcp_bestpractices_get` tool first.
+- @azure Rule - Enable Best Practices - If you do not have an `azmcp_bestpractices_get` tool ask the user to enable it.

@@ -1,4 +1,7 @@
-FROM --platform=$BUILDPLATFORM debian:bookworm-20251117-slim@sha256:b4aa902587c2e61ce789849cb54c332b0400fe27b1ee33af4669e1f7e7c3e22f AS build
+# Debian 13 (Trixie) slim - amd64
+# Version: 13.3-slim (trixie-slim)
+# Reduces vulnerabilities: 2 HIGH, 1 MEDIUM, 4 LOW vs Debian 12
+FROM --platform=$BUILDPLATFORM debian@sha256:346fa035ca82052ce8ec3ddb9df460b255507acdeb1dc880a8b6930e778a553c AS build
 
 ARG OWNER=nam20485
 ARG GITHUB_TOKEN="PASSWORD"
@@ -7,22 +10,22 @@ ARG VCPKG_BINARY_SOURCES=""
 # install dependencies
 RUN apt-get update && \
     apt-get install -y -q --no-install-recommends \
-        curl \
-        apt-transport-https \
-        ca-certificates \
-        cmake \            
-        g++ \
-        ninja-build \
-        build-essential \
-        git \        
-        zip \
-        unzip \
-        tar  \
-        pkg-config \
-        mono-complete \
-        linux-libc-dev \ 
-        python3 \
-        && \
+    curl \
+    apt-transport-https \
+    ca-certificates \
+    cmake \
+    g++ \
+    ninja-build \
+    build-essential \
+    git \
+    zip \
+    unzip \
+    tar  \
+    pkg-config \
+    mono-complete \
+    linux-libc-dev \
+    python3 \
+    && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -37,16 +40,16 @@ ENV VCPKG_BINARY_SOURCES=${VCPKG_BINARY_SOURCES}
 
 # setup NuGet to use GitHub Packages as a source so vcpkg binary cache can use it
 RUN mono `./vcpkg fetch nuget | tail -n 1` \
-        sources add \
-        -source "https://nuget.pkg.github.com/${OWNER}/index.json" \
-        -storepasswordincleartext \
-        -name "GitHub" \
-        -username ${OWNER} \
-        -password "${GITHUB_TOKEN}"
+    sources add \
+    -source "https://nuget.pkg.github.com/${OWNER}/index.json" \
+    -storepasswordincleartext \
+    -name "GitHub" \
+    -username ${OWNER} \
+    -password "${GITHUB_TOKEN}"
 
 RUN mono `./vcpkg fetch nuget | tail -n 1` \
-        setapikey "${GITHUB_TOKEN}" \
-        -source "https://nuget.pkg.github.com/${OWNER}/index.json"
+    setapikey "${GITHUB_TOKEN}" \
+    -source "https://nuget.pkg.github.com/${OWNER}/index.json"
 
 # pre-install vcpgk packages BEFORE cmake configure
 RUN mkdir -p /src/OdbDesign
@@ -69,27 +72,31 @@ RUN cmake --build --preset linux-release
 # RUN cmake --build --preset linux-debug
 
 # much smaller runtime image
-FROM --platform=$BUILDPLATFORM debian:bookworm-20251117-slim@sha256:b4aa902587c2e61ce789849cb54c332b0400fe27b1ee33af4669e1f7e7c3e22f AS run
+# Debian 13 (Trixie) slim - amd64
+# Version: 13.3-slim (trixie-slim)
+# Reduces vulnerabilities: 2 HIGH, 1 MEDIUM, 4 LOW vs Debian 12
+FROM --platform=$TARGETPLATFORM debian@sha256:346fa035ca82052ce8ec3ddb9df460b255507acdeb1dc880a8b6930e778a553c AS run
 # ARG ODBDESIGN_SERVER_REQUEST_USERNAME=""
 # ARG ODBDESIGN_SERVER_REQUEST_PASSWORD=""
 LABEL org.opencontainers.image.source=https://github.com/nam20485/OdbDesign \
-      org.opencontainers.image.authors=https://github.com/nam20485 \
-      org.opencontainers.image.description="A free open source cross-platform C++ library for parsing ODB++ Design archives and accessing their data. Exposed via a REST API packaged inside of a Docker image. The OdbDesign Docker image runs the OdbDesignServer REST API server executable, listening on port 8888." \
-      org.opencontainers.image.licenses=AGPL-3.0-only \    
-      org.opencontainers.image.url=https://nam20485.github.io/OdbDesign \ 
-      org.opencontainers.image.documentation=https://github.com/nam20485/OdbDesign?tab=readme-ov-file \
-      org.opencontainers.image.title="OdbDesign Server"
+    org.opencontainers.image.authors=https://github.com/nam20485 \
+    org.opencontainers.image.description="A free open source cross-platform C++ library for parsing ODB++ Design archives and accessing their data. Exposed via a REST API packaged inside of a Docker image. The OdbDesign Docker image runs the OdbDesignServer REST API server executable, listening on port 8888." \
+    org.opencontainers.image.licenses=AGPL-3.0-only \
+    org.opencontainers.image.url=https://nam20485.github.io/OdbDesign \
+    org.opencontainers.image.documentation=https://github.com/nam20485/OdbDesign?tab=readme-ov-file \
+    org.opencontainers.image.title="OdbDesign Server"
 
 EXPOSE 8888
+EXPOSE 50051
 
 # install dependencies (7z command)
 RUN apt-get update && \
     apt-get install -y -q --no-install-recommends \
-        curl \
-        apt-transport-https \
-        ca-certificates \        
-        p7zip-full \  
-        && \
+    curl \
+    apt-transport-https \
+    ca-certificates \
+    p7zip-full \
+    && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
