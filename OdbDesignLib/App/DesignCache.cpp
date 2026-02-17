@@ -312,7 +312,7 @@ namespace Odb::Lib::App
         m_directory = directory;
     }
 
-    const std::string& DesignCache::getDirectory() const
+    std::string DesignCache::getDirectory() const
     {
         std::shared_lock readLock(m_cacheMutex);
         return m_directory;

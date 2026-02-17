@@ -2,6 +2,7 @@
 #include <Logger.h>
 #include <sstream>
 #include <algorithm>
+#include <cstdlib>
 
 namespace Odb::Lib::FileModel::Design
 {
@@ -13,16 +14,53 @@ namespace Odb::Lib::FileModel::Design
 
     ComponentHeightTracer::ComponentHeightTracer()
     {
-        // Initialize with test components from both designs
-        // designodb_rigidflex: R70 (has height), R56 (has height), N5 (no height)
-        m_componentsToTrace.insert("R70");
-        m_componentsToTrace.insert("R56");
-        m_componentsToTrace.insert("N5");
-        // sample_design: MTG1 (has height), TP5 (has height), J11 (no height)
-        m_componentsToTrace.insert("MTG1");
-        m_componentsToTrace.insert("TP5");
-        m_componentsToTrace.insert("J11");
-        m_maxFailuresToTrace = 20;
+        // Default: empty trace set. Use addComponentToTrace() or set
+        // ODBDESIGN_TRACE_COMPONENTS env var (comma-separated) to enable.
+        const char* envComponents = std::getenv("ODBDESIGN_TRACE_COMPONENTS");
+        if (envComponents != nullptr && envComponents[0] != '\0')
+        {
+            std::istringstream stream(envComponents);
+            std::string name;
+            while (std::getline(stream, name, ','))
+            {
+                // Trim whitespace
+                const auto firstNonWs = name.find_first_not_of(" \t");
+                if (firstNonWs == std::string::npos)
+                {
+                    name.clear();
+                }
+                else
+                {
+                    const auto lastNonWs = name.find_last_not_of(" \t");
+                    name.erase(lastNonWs + 1);
+                    name.erase(0, firstNonWs);
+                }
+                if (!name.empty())
+                {
+                    m_componentsToTrace.insert(name);
+                }
+            }
+        }
+
+        const char* envMaxFailures = std::getenv("ODBDESIGN_TRACE_MAX_FAILURES");
+        if (envMaxFailures != nullptr)
+        {
+            try
+            {
+                m_maxFailuresToTrace = std::stoi(envMaxFailures);
+                // Validate bounds
+                if (m_maxFailuresToTrace <= 0)
+                {
+                    logwarn("[ComponentHeightTracer] ODBDESIGN_TRACE_MAX_FAILURES must be positive, using default value 20");
+                    m_maxFailuresToTrace = 20;
+                }
+            }
+            catch (...)
+            {
+                logwarn("[ComponentHeightTracer] Failed to parse ODBDESIGN_TRACE_MAX_FAILURES env var, using default value 20");
+                m_maxFailuresToTrace = 20;
+            }
+        }
     }
 
     bool ComponentHeightTracer::shouldTrace(const std::string &compName, unsigned int pkgRef) const

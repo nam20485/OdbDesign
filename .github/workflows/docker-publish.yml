@@ -64,7 +64,7 @@ jobs:
       # Download pre-built Linux artifacts from CMake workflow
       - name: Download Linux Artifacts
         if: github.event_name == 'workflow_run' || (github.event_name == 'workflow_dispatch' && inputs.use_prebuilt == 'true')
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@8caf195ad4b1dee92908e23f56eeb0696f1dd42d # v4.1.8
         with:
           name: ubuntu-24.04-artifacts
           path: ./artifacts-zip
