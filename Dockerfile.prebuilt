@@ -35,7 +35,6 @@ WORKDIR /OdbDesign
 # copy pre-built binaries from artifacts (extracted from zip in workflow)
 COPY ./artifacts/*.so ./bin/
 COPY ./artifacts/OdbDesignServer ./bin/
-COPY ./artifacts/OdbDesignTests ./bin/
 
 # copy templates directory from source
 COPY ./OdbDesignServer/templates/* ./templates/
