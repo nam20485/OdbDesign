@@ -24,8 +24,17 @@ namespace Odb::Lib::FileModel::Design
             while (std::getline(stream, name, ','))
             {
                 // Trim whitespace
-                name.erase(0, name.find_first_not_of(" \t"));
-                name.erase(name.find_last_not_of(" \t") + 1);
+                const auto firstNonWs = name.find_first_not_of(" \t");
+                if (firstNonWs == std::string::npos)
+                {
+                    name.clear();
+                }
+                else
+                {
+                    const auto lastNonWs = name.find_last_not_of(" \t");
+                    name.erase(lastNonWs + 1);
+                    name.erase(0, firstNonWs);
+                }
                 if (!name.empty())
                 {
                     m_componentsToTrace.insert(name);
@@ -39,9 +48,16 @@ namespace Odb::Lib::FileModel::Design
             try
             {
                 m_maxFailuresToTrace = std::stoi(envMaxFailures);
+                // Validate bounds
+                if (m_maxFailuresToTrace <= 0)
+                {
+                    logwarn("[ComponentHeightTracer] ODBDESIGN_TRACE_MAX_FAILURES must be positive, using default value 20");
+                    m_maxFailuresToTrace = 20;
+                }
             }
             catch (...)
             {
+                logwarn("[ComponentHeightTracer] Failed to parse ODBDESIGN_TRACE_MAX_FAILURES env var, using default value 20");
                 m_maxFailuresToTrace = 20;
             }
         }
