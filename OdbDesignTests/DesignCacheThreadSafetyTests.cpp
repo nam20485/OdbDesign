@@ -73,7 +73,7 @@ namespace Odb::Test::ThreadSafety
             {
                 for (int j = 0; j < readsPerThread; ++j)
                 {
-                    const auto& dir = m_cache->getDirectory();
+                    const auto dir = m_cache->getDirectory();
                     if (dir != expectedDir)
                     {
                         failures.fetch_add(1);
