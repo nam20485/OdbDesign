@@ -2,7 +2,7 @@
 # This Dockerfile is used by the Docker Publish workflow to create images from
 # artifacts built by the CMake Multi-Platform workflow, avoiding a full rebuild.
 
-FROM debian:bookworm-20250908-slim@sha256:df52e55e3361a81ac1bead266f3373ee55d29aa50cf0975d440c2be3483d8ed3 AS run
+FROM debian:bookworm-20260202-slim@sha256:98f4b71de414932439ac6ac690d7060df1f27161073c5036a7553723881bffbe AS run
 
 LABEL org.opencontainers.image.source=https://github.com/nam20485/OdbDesign \
     org.opencontainers.image.authors=https://github.com/nam20485 \
