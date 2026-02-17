@@ -156,7 +156,8 @@ install_system_deps() {
                     sudo dnf install -y docker-compose-plugin
                 else
                     print_status "Installing docker-compose via pip3 (Fedora)..."
-                    pip3 install --user docker-compose
+                    # Pin docker-compose version for reproducibility
+                    pip3 install --user docker-compose==1.29.2
                     # Add ~/.local/bin to PATH if not already present
                     if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
                         export PATH="$HOME/.local/bin:$PATH"

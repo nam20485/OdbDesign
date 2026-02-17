@@ -12,7 +12,6 @@ on:
 
 permissions:
   contents: read
-  packages: write
 
 env:
   VCPKG_ROOT: ${{ github.workspace }}/vcpkg
@@ -152,7 +151,7 @@ jobs:
         run: mkdir -p "$VCPKG_DEFAULT_BINARY_CACHE"
 
       - name: Restore vcpkg Binary Cache
-        uses: actions/cache@v4
+        uses: actions/cache@5a9f627be1b9c32e0476a3a2f9f3c17b00ddff37 # v4.2.0
         with:
           path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
           key: vcpkg-archives-${{ matrix.preset }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}

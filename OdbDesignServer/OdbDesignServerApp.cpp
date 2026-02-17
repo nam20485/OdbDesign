@@ -83,6 +83,29 @@ namespace Odb::App::Server
 				configPath = configInExeDir.string();
 			}
 		}
+
+		// Validate the config path to prevent path traversal attacks
+		auto validateConfigPath = [](const std::string& path) -> bool {
+			// Check for path traversal attempts
+			if (path.find("..") != std::string::npos) {
+				return false;
+			}
+			// Ensure path is not empty and contains no null bytes
+			if (path.empty() || path.find('\0') != std::string::npos) {
+				return false;
+			}
+			// Check for potentially dangerous characters that could be used in injection
+			if (path.find('\n') != std::string::npos || path.find('\r') != std::string::npos) {
+				return false;
+			}
+			return true;
+		};
+
+		if (!validateConfigPath(configPath)) {
+			std::cerr << "ERROR: Invalid config path (security violation detected): " << configPath << std::endl;
+			return;
+		}
+
 		auto loadResult = OdbDesignServer::Config::GrpcServiceConfig::LoadFromFile(configPath);
 		std::cout << loadResult.message << std::endl;
 

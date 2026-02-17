@@ -8,6 +8,9 @@ on:
       - main
       - development
 
+permissions:
+  contents: read
+
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: nam20485/agent-instructions-devcontainer

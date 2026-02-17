@@ -109,7 +109,11 @@ jobs:
       - name: Set Branch Name
         run: |
           if [ "${{ github.event_name }}" == "workflow_run" ]; then
-            echo "BRANCH_NAME=${{ github.event.workflow_run.head_branch }}" >> $GITHUB_ENV
+            # Sanitize branch name to prevent code injection
+            BRANCH_NAME="${{ github.event.workflow_run.head_branch }}"
+            # Remove any characters that aren't alphanumeric, dash, underscore, or dot
+            BRANCH_NAME=$(echo "$BRANCH_NAME" | sed 's/[^a-zA-Z0-9._-]//g')
+            echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
             echo "COMMIT_SHA=${{ github.event.workflow_run.head_sha }}" >> $GITHUB_ENV
           else
             echo "BRANCH_NAME=${{ github.ref_name }}" >> $GITHUB_ENV

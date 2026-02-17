@@ -60,8 +60,12 @@ jobs:
         id: set-tag
         run: |
           if [ "${{ github.event_name }}" == "workflow_run" ]; then
-            echo "SCAN_TAG=${{ github.event.workflow_run.head_branch }}-latest" >> $GITHUB_ENV
-            echo "BRANCH_NAME=${{ github.event.workflow_run.head_branch }}" >> $GITHUB_ENV
+            # Sanitize branch name to prevent code injection
+            BRANCH_NAME="${{ github.event.workflow_run.head_branch }}"
+            # Remove any characters that aren't alphanumeric, dash, underscore, or dot
+            BRANCH_NAME=$(echo "$BRANCH_NAME" | sed 's/[^a-zA-Z0-9._-]//g')
+            echo "SCAN_TAG=${BRANCH_NAME}-latest" >> $GITHUB_ENV
+            echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
           elif [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
             echo "SCAN_TAG=${{ inputs.branch }}-latest" >> $GITHUB_ENV
             echo "BRANCH_NAME=${{ inputs.branch }}" >> $GITHUB_ENV
