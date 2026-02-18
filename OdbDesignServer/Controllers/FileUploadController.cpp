@@ -5,6 +5,7 @@
 #include <fstream>
 #include <App/RouteController.h>
 #include <crow/json.h>
+#include "CrossPlatform.h"
 
 using namespace std::filesystem;
 using namespace Odb::Lib::App;
@@ -71,7 +72,7 @@ namespace Odb::App::Server
                         return authResp;
                     }
 
-                    return makeLoadedFileModelsResponse();
+                    return makeLoadedFileModelsResponse(false);
                 });
 
 //        CROW_ROUTE(m_serverApp.crow_app(), "/designs/list/<string>").methods(crow::HTTPMethod::GET)
@@ -101,7 +102,12 @@ namespace Odb::App::Server
     
     crow::response FileUploadController::handleOctetStreamUpload(const std::string& filename, const crow::request& req)
     {
-        const auto tempPath = temp_directory_path() / std::tmpnam(nullptr);
+        std::string tempName;
+        if (!CrossPlatform::tmpnam_safe(tempName))
+        {
+            return crow::response(crow::status::INTERNAL_SERVER_ERROR, "failed to generate temp file name");
+        }
+        const auto tempPath = temp_directory_path() / tempName;
         std::ofstream outfile(tempPath, std::ofstream::binary);
         outfile << req.body;
         outfile.close();
@@ -119,7 +125,7 @@ namespace Odb::App::Server
 
         std::string responseBody = "{ \"filename\": \"" + safeName + "\" }";
 
-        return makeLoadedFileModelsResponse();
+        return makeLoadedFileModelsResponse(true);
     }
 
     crow::response FileUploadController::handleMultipartFormUpload(const crow::request& req)
@@ -171,7 +177,13 @@ namespace Odb::App::Server
             }
 
             // Create a new file with the extracted file name and write file contents to it
-            const auto tempPath = temp_directory_path() / std::tmpnam(nullptr);
+            std::string tempName;
+            if (!CrossPlatform::tmpnam_safe(tempName))
+            {
+                CROW_LOG_ERROR << " Failed to generate temp file name\n";
+                continue;
+            }
+            const auto tempPath = temp_directory_path() / tempName;
             std::ofstream out_file(tempPath, std::ofstream::binary);
             if (!out_file)
             {
@@ -195,7 +207,7 @@ namespace Odb::App::Server
             CROW_LOG_INFO << " Contents written to " << outfile_name << '\n';
         }
 
-        return makeLoadedFileModelsResponse();
+        return makeLoadedFileModelsResponse(true);
     }
 
     std::string FileUploadController::sanitizeFilename(const std::string& filename) const

@@ -66,5 +66,6 @@ message FeaturesFile {
     
     repeated FeatureRecord featureRecords = 8;
     map<string, SymbolName> symbolNamesByName = 9;    
+    repeated SymbolName symbolNames = 10;
 
 }

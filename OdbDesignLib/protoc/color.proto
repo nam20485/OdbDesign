@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+//// https://protobuf.dev/reference/cpp/cpp-generated/#message
+//option optimize_for = CODE_SIZE;
+
+package Odb.Lib.Protobuf;
+
+message Color {
+  optional float red = 1;
+  optional float green = 2;
+  optional float blue = 3;
+
+  optional bool noPreference = 4;
+}

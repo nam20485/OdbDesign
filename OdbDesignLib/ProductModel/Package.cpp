@@ -1,6 +1,6 @@
 #include "Package.h"
 #include <string>
-#include "../ProtoBuf/package.pb.h"
+#include "package.pb.h"
 #include "Pin.h"
 #include <memory>
 

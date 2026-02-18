@@ -22,6 +22,32 @@ You can also create an issue: <https://github.com/nam20485/OdbDesign/issues>
 
 Or you can start a discussion: <https://github.com/nam20485/OdbDesign/discussions>
 
+* Use the button below to schedule a video call on Google.
+
+<html>
+<p>
+<!-- Google Calendar Appointment Scheduling begin -->
+<link href="https://calendar.google.com/calendar/scheduling-button-script.css" rel="stylesheet">
+<script src="https://calendar.google.com/calendar/scheduling-button-script.js" async></script>
+</p>
+<script>
+(function() {
+  var target = document.currentScript;
+  window.addEventListener('load', function() {
+    calendar.schedulingButton.load({
+      url: 'https://calendar.google.com/calendar/appointments/schedules/AcZssZ3_P9bK4nYHmGvxLD6VuCEb4OR_n5jjNqds9-tE5MWGEl7Xx-WkrFQjAqC81DZhHdj3kRbZvyHy?gv=true',
+      color: '#0B8043',
+      label: "Schedule Video Call for Support or Discussion",
+      target,
+    });
+  });
+})();
+</script>
+<!-- end Google Calendar Appointment Scheduling -->
+</html>
+
+You can use this to get help or support, discuss any issues with integration into your system, or consulting inquiries.
+
 ## Key Features
 
 OdbDesign ODB++ parser is differentiated from other offerings by these key features:
@@ -85,7 +111,6 @@ The diagram describes the current state of parser implementation and data availa
 |-----------------------------|---------|
 | Build              | [![CMake Build Multi-Platform](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml) |
 | Docker Image                | [![Docker Publish](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml) |
-| Security Code Scan          | [![CodeQL Security Scan](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml) |
 | Docker Security Scan        | [![Docker Scout Scan](https://github.com/nam20485/OdbDesign/actions/workflows/docker-scout-scan.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-scout-scan.yml) |
 | Dependency Review Scan      | [![Dependency Review](https://github.com/nam20485/OdbDesign/actions/workflows/dependency-review.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/dependency-review.yml) |
 | Upload SBOM                 | [![SBOM Generate and Submit](https://github.com/nam20485/OdbDesign/actions/workflows/sbom-generate-submit.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/sbom-generate-submit.yml) |
@@ -96,7 +121,6 @@ The diagram describes the current state of parser implementation and data availa
 |-----------------------------|----------|
 | Build                       | [![CMake Build Multi-Platform](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml) |
 | Docker Image                | [![Docker Publish](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml) |
-| Security Code Scan          | [![CodeQL Security Scan](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml) |
 | Docker Security Scan        | [![Docker Scout Scan](https://github.com/nam20485/OdbDesign/actions/workflows/docker-scout-scan.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-scout-scan.yml) |
 | Dependency Review Scan      | [![Dependency Review](https://github.com/nam20485/OdbDesign/actions/workflows/dependency-review.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/dependency-review.yml) |
 | Upload SBOM                 | [![SBOM Generate and Submit](https://github.com/nam20485/OdbDesign/actions/workflows/sbom-generate-submit.yml/badge.svg?branch=main)](https://github.com/nam20485/OdbDesign/actions/workflows/sbom-generate-submit.yml) |
@@ -107,7 +131,6 @@ The diagram describes the current state of parser implementation and data availa
 |-----------------------------|----------|
 | Build                       | [![CMake Build Multi-Platform](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml/badge.svg?branch=release)](https://github.com/nam20485/OdbDesign/actions/workflows/cmake-multi-platform.yml) |
 | Docker Image                | [![Docker Publish](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml/badge.svg?branch=release)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-publish.yml) |
-| Security Code Scan          | [![CodeQL Security Scan](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml/badge.svg?branch=development)](https://github.com/nam20485/OdbDesign/actions/workflows/codeql.yml) |
 | Docker Security Scan        | [![Docker Scout Scan](https://github.com/nam20485/OdbDesign/actions/workflows/docker-scout-scan.yml/badge.svg?branch=release)](https://github.com/nam20485/OdbDesign/actions/workflows/docker-scout-scan.yml) |
 | Dependency Review Scan      | [![Dependency Review](https://github.com/nam20485/OdbDesign/actions/workflows/dependency-review.yml/badge.svg?branch=release)](https://github.com/nam20485/OdbDesign/actions/workflows/dependency-review.yml) |
 | Upload SBOM                 | [![SBOM Generate and Submit](https://github.com/nam20485/OdbDesign/actions/workflows/sbom-generate-submit.yml/badge.svg?branch=release)](https://github.com/nam20485/OdbDesign/actions/workflows/sbom-generate-submit.yml) |
@@ -159,13 +182,54 @@ If successful, the REST API server will be running and listening on port 8888. Y
 
 Documentation for the currently-released version of the source code is available [here](https://nam20485.github.io/OdbDesign/api).
 
-### Build Dependencies
+### Automated Setup Scripts
 
-> If you are building on Windows and have a modern version of Visual Studio installed then all of the dependencies listed below are already installed on your system (except for maybe Docker). You can skip to the next section.
+For a quick setup, you can use the provided platform-specific setup scripts:
 
-> If you are building on a Linux system then the dependencies listed below can be installed using your package manager. For example on Ubuntu/Debian/Mint you can install them (except for vcpkg and Docker) using the following command:
+> **⚠️ Security Warning**: Running scripts from the internet can execute arbitrary code, so they must always be approached with caution. In these cases, transparency is important to mitigate these fears. Since this script is open-source, you can view the entire contents before running it. We encourage you to verify for yourself that a script is safe before running it on your own system.
 
-`$ sudo apt install git cmake ninja-build build-essential`
+#### Windows Setup
+
+Run one of the following scripts from the `scripts` directory:
+
+**PowerShell (Recommended):**
+```PowerShell
+.\scripts\setup-windows.ps1
+```
+
+**Batch (Alternative):**
+```cmd
+.\scripts\setup-windows.bat
+```
+
+Both scripts will:
+- Check for required prerequisites (Git, CMake, Visual Studio Build Tools)
+- Install and configure vcpkg
+- Set up environment variables
+- Apply necessary patches
+- Provide build instructions
+
+Use `.\scripts\setup-windows.ps1 -Help` for additional options.
+
+#### Linux Setup
+
+```Bash
+$ ./scripts/setup-linux.sh
+```
+
+See [Linux setup details](README-SETUP.md) for full documentation.
+
+### Manual Build Dependencies
+
+If you prefer to set up the build environment manually, you'll need the following:
+
+> If you are building on Windows and have a modern version of Visual Studio installed then all of the dependencies listed below are already installed on your system (except for maybe Docker). You can use the automated setup scripts above or skip to the next section.
+
+> **Linux users**: For an automated setup experience, use the provided setup script: `./scripts/setup-linux.sh` (see [docs/README-SETUP.md](README-SETUP.md) for details)
+
+> If you are building on a Linux system manually, the dependencies listed below can be installed using your package manager. For example on Ubuntu/Debian/Mint you can install them (except for vcpkg and Docker) using the following command:
+
+`$ sudo apt install git cmake ninja-build build-essential pkg-config`
 
 * git ([install instructions for your platform](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git))
 * vcpkg ([install instructions for your platform](https://vcpkg.io/en/getting-started.html))
@@ -191,6 +255,23 @@ Then add the following line to your shell profile (e.g. ~/.bashrc, ~/.zshrc, etc
 Make sure to restart your shell or source the profile after adding the line.
 
 `source ~/.bashrc`
+
+#### Automated Setup (Linux Only)
+
+For Linux users, you can use the automated setup script that handles all dependencies and configuration:
+
+```Bash
+$ ./scripts/setup-linux.sh
+```
+
+This script will:
+- Detect your Linux distribution and install appropriate system dependencies  
+- Install and configure vcpkg
+- Set up environment variables
+- Build the project
+- Optionally run tests
+
+See `./scripts/setup-linux.sh --help` for all available options.
 
 ### Source Code
 
@@ -346,6 +427,7 @@ You can use this to get help or support, discuss any issues with integration int
 
 * [ODB++ Format Home](https://odbplusplus.com/design/)
 * [ODB++ Format Documentation & Resources](https://odbplusplus.com/design/our-resources/)
-* [ODB++ Format Specification v8.1 update 3](https://odbplusplus.com//wp-content/uploads/sites/2/2021/02/odb_spec_user.pdf)
+* ODB++ Format Specification (included in this repo): `docs/odb_spec_user.pdf`
+* [ODB++ Format Specification v8.1 update 4 (public PDF)](https://odbplusplus.com/wp-content/uploads/sites/2/2024/08/odb_spec_user.pdf)
 
-*ODB++ is a registered trademark of Siemens and © Siemens 2021*
+*ODB++ is a registered trademark of Siemens*

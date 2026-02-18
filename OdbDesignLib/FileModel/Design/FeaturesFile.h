@@ -6,7 +6,7 @@
 #include <string>
 #include "../../enums.h"
 #include "../../IProtoBuffable.h"
-#include "../../ProtoBuf/featuresfile.pb.h"
+#include "featuresfile.pb.h"
 #include "SymbolName.h"
 #include "AttributeLookupTable.h"
 #include "../IStreamSaveable.h"
@@ -43,7 +43,7 @@ namespace Odb::Lib::FileModel::Design
 
 			// Pad / Text
 			double x, y;
-			int apt_def_symbol_num;
+			int apt_def_symbol_num = -1;
 			double apt_def_resize_factor;
 
 			// Arc
@@ -60,7 +60,7 @@ namespace Odb::Lib::FileModel::Design
 			//TODO: Barcode			
 
 			// common
-			int sym_num;
+			int sym_num = -1;
 			Polarity polarity;
 			int dcode;
 			unsigned int id;
@@ -98,6 +98,7 @@ namespace Odb::Lib::FileModel::Design
 		unsigned int GetId() const;
 
 		const SymbolName::StringMap& GetSymbolNamesByName() const;
+		const SymbolName::Vector& GetSymbolNames() const;
 		const FeatureRecord::Vector& GetFeatureRecords() const;
 
 		// Inherited via IProtoBuffable
@@ -105,7 +106,7 @@ namespace Odb::Lib::FileModel::Design
 		void from_protobuf(const Odb::Lib::Protobuf::FeaturesFile& message) override;
 		
 	private:
-		std::string m_units;
+		std::string m_units = "";
 		std::filesystem::path m_path;
 		std::filesystem::path m_directory;
 		int m_numFeatures;					// from field in file
@@ -113,6 +114,8 @@ namespace Odb::Lib::FileModel::Design
 
 		FeatureRecord::Vector m_featureRecords;
 		SymbolName::StringMap m_symbolNamesByName;
+		SymbolName::Vector m_symbolNames; // for serialization
+
 
 		std::vector<std::string> m_attributeNames;
 		std::vector<std::string> m_attributeTextValues;			
@@ -133,5 +136,16 @@ namespace Odb::Lib::FileModel::Design
 		constexpr inline static const char* NUM_FEATURES_TOKEN = "F";		
 
 	};
+
+	// Extract symbols as a vector irrespective of whether the source is a vector or map.
+	// When the features file already stores symbols in a vector, preserve that ordering;
+	// otherwise collect the map values using the map's natural iteration order (typically key-sorted).
+	ODBDESIGN_EXPORT SymbolName::Vector collect_symbols(const FeaturesFile& featuresFile);
+
+	// Infer unit type from a unit string. Handles various unit name formats (mm, millimeter, inches, etc.)
+	// Returns UnitType::Metric for metric units, UnitType::Imperial for imperial units, UnitType::None otherwise.
+	// If rawUnits is empty, returns UnitType::None.
+	ODBDESIGN_EXPORT UnitType inferred_unit_type_from_features_units(const std::string& rawUnits);
 }
+
 
