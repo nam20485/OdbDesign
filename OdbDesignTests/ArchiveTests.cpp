@@ -12,8 +12,6 @@ using namespace Utils;
 
 namespace Odb::Test
 {
-	static inline constexpr char FILE_CONTENTS[] = "Hello, World!";
-
 	TEST_F(TestDataFixture, Test_LibArchive_CompressDir)
 	{
 		std::string fileArchiveOut;
