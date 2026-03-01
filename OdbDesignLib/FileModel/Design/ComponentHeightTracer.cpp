@@ -32,8 +32,7 @@ namespace Odb::Lib::FileModel::Design
                 else
                 {
                     const auto lastNonWs = name.find_last_not_of(" \t");
-                    name.erase(lastNonWs + 1);
-                    name.erase(0, firstNonWs);
+                    name = name.substr(firstNonWs, lastNonWs - firstNonWs + 1);
                 }
                 if (!name.empty())
                 {
