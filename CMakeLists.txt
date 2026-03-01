@@ -5,6 +5,9 @@ cmake_minimum_required(VERSION 3.21)
 
 project ("OdbDesign")
 
+# enable static linking of CRT：/MT (Release), /MTd (Debug)
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+
 # require C++0x17 compiler
 set(MY_CXX_STANDARD 17)
 set(CXX_STANDARD ${MY_CXX_STANDARD})
