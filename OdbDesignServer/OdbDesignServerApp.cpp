@@ -57,9 +57,18 @@ namespace Odb::App::Server
 		const char* envConfig = std::getenv("GRPC_CONFIG_PATH");
 		if (envConfig != nullptr && envConfig[0] != '\0')
 		{
-			configPath = envConfig;
+			std::filesystem::path p(envConfig);
+			std::error_code ec;
+			p = std::filesystem::weakly_canonical(p, ec);
+			if (!ec && p.extension() == ".json") {
+				configPath = p.string();
+			} else {
+				std::cerr << "WARNING: GRPC_CONFIG_PATH must be a valid path to a .json file. Falling back to default locations." << std::endl;
+				envConfig = nullptr; // trigger fallback
+			}
 		}
-		else
+        
+		if (envConfig == nullptr || envConfig[0] == '\0')
 		{
 			// Try executable directory first (where config.json should be)
 			std::filesystem::path exeDir = args().executableDirectory();
