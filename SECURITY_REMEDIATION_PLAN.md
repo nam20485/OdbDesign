@@ -146,11 +146,11 @@ std::string make_timestamp(const system_clock::time_point& timepoint)
 
 *Please provide your feedback, decisions, or notes below:*
 
-- **Approval Status:** [ ] Approved [ ] Needs Discussion [ ] Alternative Approach Needed
+- **Approval Status:** [x] Approved [ ] Needs Discussion [ ] Alternative Approach Needed
 - **Your Notes:**
 
 ```
-[Enter your feedback here]
+Approved. The proposed fix using #ifdef _WIN32 to switch between localtime_s (Windows) and localtime_r (POSIX) is the standard C++ way to fix this exact data-race vulnerability.
 ```
 
 - **Alternative Approach (if any):**
@@ -298,11 +298,11 @@ if (envConfig == nullptr || envConfig[0] == '\0') {
 
 *Please provide your feedback, decisions, or notes below:*
 
-- **Approval Status:** [ ] Approved [ ] Needs Discussion [ ] Alternative Approach Needed
+- **Approval Status:** [x] Approved [ ] Needs Discussion [x] Alternative Approach Needed
 - **Your Notes:**
 
 ```
-[Enter your feedback here]
+Instead of blindly rejecting `..`, we will use `std::filesystem::weakly_canonical` to resolve the true path and then verify the `.json` extension.
 ```
 
 - **Alternative Approach (if any):**
@@ -378,11 +378,11 @@ FROM debian:bookworm-20250908-slim@sha256:NEW_SHA_WITH_PATCHES AS run
 
 *Please provide your feedback, decisions, or notes below:*
 
-- **Approval Status:** [ ] Approved [ ] Needs Discussion [ ] Alternative Approach Needed
+- **Approval Status:** [x] Approved [ ] Needs Discussion [x] Alternative Approach Needed
 - **Your Notes:**
 
 ```
-[Enter your feedback here]
+We will update the base Docker image (simply use debian:bookworm-slim to fetch latest layers) instead of using apt-get upgrade.
 ```
 
 - **Alternative Approach (if any):**
@@ -510,11 +510,11 @@ jobs:
 
 *Please provide your feedback, decisions, or notes below:*
 
-- **Approval Status:** [ ] Approved [ ] Needs Discussion [ ] Alternative Approach Needed
+- **Approval Status:** [x] Approved [ ] Needs Discussion [ ] Alternative Approach Needed
 - **Your Notes:**
 
 ```
-[Enter your feedback here]
+Approved. Securing workflow permissions.
 ```
 
 - **Alternative Approach (if any):**
