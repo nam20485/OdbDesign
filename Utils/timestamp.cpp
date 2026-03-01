@@ -18,13 +18,19 @@ namespace Utils
     std::string make_timestamp(const system_clock::time_point& timepoint)
     {
         auto tp_time_t = system_clock::to_time_t(timepoint);        
-        struct tm* p_tm = localtime(&tp_time_t);
-        if (p_tm == nullptr) return "";
+        
+        struct tm tm_result;
+#ifdef _WIN32
+        if (localtime_s(&tm_result, &tp_time_t) != 0) return "";
+#else
+        if (localtime_r(&tp_time_t, &tm_result) == nullptr) return "";
+#endif
+        
         auto ms = duration_cast<milliseconds>(timepoint.time_since_epoch()) % MS_PER_S;
 
         std::stringstream ss;
         // date and time
-        ss << std::put_time(p_tm, "%D %T");
+        ss << std::put_time(&tm_result, "%D %T");
         // add ms
         ss << '.' << std::setfill('0') << std::setw(3) << ms.count();
         return ss.str();
