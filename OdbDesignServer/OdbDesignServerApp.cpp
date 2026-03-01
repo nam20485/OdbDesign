@@ -57,9 +57,33 @@ namespace Odb::App::Server
 		const char* envConfig = std::getenv("GRPC_CONFIG_PATH");
 		if (envConfig != nullptr && envConfig[0] != '\0')
 		{
-			configPath = envConfig;
+			std::filesystem::path p(envConfig);
+			std::error_code ec;
+			p = std::filesystem::weakly_canonical(p, ec);
+
+			std::filesystem::path exeDir = std::filesystem::weakly_canonical(args().executableDirectory(), ec);
+			std::filesystem::path currentDir = std::filesystem::current_path(ec);
+
+			bool isValidPath = false;
+			// Check if p is contained within exeDir or currentDir
+			if (std::filesystem::proximate(p, exeDir, ec).string().find("..") == std::string::npos || 
+				std::filesystem::proximate(p, currentDir, ec).string().find("..") == std::string::npos)
+			{
+				isValidPath = true;
+			}
+
+			if (!ec && p.extension() == ".json" && isValidPath && std::filesystem::is_regular_file(p, ec))
+			{
+				configPath = p.string();
+			}
+			else
+			{
+				std::cerr << "WARNING: GRPC_CONFIG_PATH must be a valid path to an existing .json file within allowed directories. Falling back to default locations." << std::endl;
+				envConfig = nullptr; // trigger fallback
+			}
 		}
-		else
+        
+		if (envConfig == nullptr || envConfig[0] == '\0')
 		{
 			// Try executable directory first (where config.json should be)
 			std::filesystem::path exeDir = args().executableDirectory();
