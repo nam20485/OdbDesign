@@ -22,6 +22,10 @@ on:
         options:
           - "true"
           - "false"
+      run_id:
+        description: "Workflow run ID to download artifacts from (required when use_prebuilt=true via workflow_dispatch)"
+        required: false
+        type: string
 
 env:
   # Use docker.io for Docker Hub if empty
@@ -69,7 +73,7 @@ jobs:
           name: ubuntu-24.04-artifacts
           path: ./artifacts-zip
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          run-id: ${{ github.event.workflow_run.id }}
+          run-id: ${{ github.event.workflow_run.id || inputs.run_id }}
 
       - name: Extract Artifacts
         if: github.event_name == 'workflow_run' || (github.event_name == 'workflow_dispatch' && inputs.use_prebuilt == 'true')
