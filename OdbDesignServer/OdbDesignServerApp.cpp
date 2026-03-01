@@ -65,8 +65,9 @@ namespace Odb::App::Server
 			std::filesystem::path currentDir = std::filesystem::current_path(ec);
 
 			bool isValidPath = false;
-			std::string pStr = p.string();
-			if (pStr.find(exeDir.string()) == 0 || pStr.find(currentDir.string()) == 0)
+			// Check if p is contained within exeDir or currentDir
+			if (std::filesystem::proximate(p, exeDir, ec).string().find("..") == std::string::npos || 
+				std::filesystem::proximate(p, currentDir, ec).string().find("..") == std::string::npos)
 			{
 				isValidPath = true;
 			}
