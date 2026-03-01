@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 #include <string>
+#include <shared_mutex>
 
 
 namespace Odb::Lib::App
@@ -34,7 +35,7 @@ namespace Odb::Lib::App
 		int loadDesigns(const Utils::StringVector& names);
 
 		void setDirectory(const std::string& directory);
-		const std::string& getDirectory() const;		
+		std::string getDirectory() const;		
 
 		void Clear();		
 
@@ -45,6 +46,10 @@ namespace Odb::Lib::App
 
 		FileModel::Design::FileArchive::StringMap m_fileArchivesByName;
 		ProductModel::Design::StringMap m_designsByName;
+
+		// Protects m_fileArchivesByName, m_designsByName, and m_directory
+		// Use shared_lock for reads, unique_lock for writes
+		mutable std::shared_mutex m_cacheMutex;
 
 		std::shared_ptr<ProductModel::Design> LoadDesign(const std::string& designName);
 		std::shared_ptr<FileModel::Design::FileArchive> LoadFileArchive(const std::string& designName);		

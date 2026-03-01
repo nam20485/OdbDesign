@@ -6,7 +6,7 @@
 #include <map>
 #include <memory>
 #include "../../IProtoBuffable.h"
-#include "../../ProtoBuf/stephdrfile.pb.h"
+#include "stephdrfile.pb.h"
 #include "../OdbFile.h"
 #include "../IStreamSaveable.h"
 
@@ -66,3 +66,4 @@ namespace Odb::Lib::FileModel::Design
 
 	};
 }
+

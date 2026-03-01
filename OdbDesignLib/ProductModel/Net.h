@@ -8,7 +8,7 @@
 #include "PinConnection.h"
 #include "Component.h"
 #include "Pin.h"
-#include "../ProtoBuf/net.pb.h"
+#include "net.pb.h"
 #include "../IProtoBuffable.h"	
 
 

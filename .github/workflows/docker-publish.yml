@@ -5,18 +5,29 @@ name: Docker Publish
 # separate terms of service, privacy policy, and support
 # documentation.
 
+# Triggered after successful CMake build to use pre-built artifacts
+# This avoids rebuilding everything inside Docker (~1hr savings)
 on:
-  push:
-    branches: [ "development", "staging", "main", "release", "nam20485" ]
-  #pull_request:
-  #  branches: [ "development", "main", "release", "nam20485" ]
-   
+  workflow_run:
+    workflows: ["CMake Build Multi-Platform"]
+    types: [completed]
+    branches: [development, staging, main, release]
+  workflow_dispatch:
+    inputs:
+      use_prebuilt:
+        description: "Use pre-built artifacts (false = full Docker build)"
+        required: false
+        default: "true"
+        type: choice
+        options:
+          - "true"
+          - "false"
+
 env:
   # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
-  #VCPKG_BINARY_SOURCES: 'clear;nuget,GitHub,readwrite'
 
 permissions:
   contents: read
@@ -26,32 +37,56 @@ jobs:
     name: Docker-Build-and-Publish
 
     runs-on: ubuntu-latest
+    # Only run if triggered manually OR if CMake workflow succeeded
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_run' && 
+       github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event != 'pull_request')
     permissions:
       # write required for sending repository dispatch event
       contents: write
-      # write required for uploading docker image to packages   
-      packages: write   
+      # write required for uploading docker image to packages
+      packages: write
+      # Required for downloading artifacts from other workflow runs
+      actions: read
       # This is used to complete the identity challenge
       # with sigstore/fulcio when running outside of PRs.
       id-token: write
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@4d991eb9b905ef189e4c376166672c3f2f230481 # v2.11.0
+        uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.1
         with:
           egress-policy: audit
 
       - name: Checkout repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      # Download pre-built Linux artifacts from CMake workflow
+      - name: Download Linux Artifacts
+        if: github.event_name == 'workflow_run' || (github.event_name == 'workflow_dispatch' && inputs.use_prebuilt == 'true')
+        uses: actions/download-artifact@8caf195ad4b1dee92908e23f56eeb0696f1dd42d # v4.1.8
+        with:
+          name: ubuntu-24.04-artifacts
+          path: ./artifacts-zip
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+
+      - name: Extract Artifacts
+        if: github.event_name == 'workflow_run' || (github.event_name == 'workflow_dispatch' && inputs.use_prebuilt == 'true')
+        run: |
+          mkdir -p ./artifacts
+          unzip ./artifacts-zip/artifacts-ubuntu-24.04.zip -d ./artifacts
+          ls -la ./artifacts
 
       # add problem matchers
       - name: Add Problem Matchers
         uses: ammaraskar/gcc-problem-matcher@0f9c86f9e693db67dacf53986e1674de5f2e5f28 # master
 
-        # Install the cosign tool except on PR
-        # https://github.com/sigstore/cosign-installer
+      # Install the cosign tool
+      # https://github.com/sigstore/cosign-installer
       - name: cosign-installer
-        if: github.event_name != 'pull_request'
         uses: sigstore/cosign-installer@59acb6260d9c0ba8f4a2f9d9b48431a222b68e20 # v3.5.0
 
       # Workaround: https://github.com/docker/build-push-action/issues/461
@@ -68,15 +103,26 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-          
       - name: Create CURRENT_DATETIME Environment Variable
-        run: | 
+        run: |
           echo "CURRENT_DATETIME=$(date +"%Y-%m-%d %H:%M:%S")" >> $GITHUB_ENV
-      
-      - name: Echo CURRENT_DATETIME Environment Variable
-        env:        
-          CURRENT_DATETIME: ${{ env.CURRENT_DATETIME }}
-        run: echo ${{ env.CURRENT_DATETIME }}
+
+      # Set branch name for workflow_run events (uses triggering workflow's branch)
+      - name: Set Branch Name
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_run" ]; then
+            echo "BRANCH_NAME=${{ github.event.workflow_run.head_branch }}" >> $GITHUB_ENV
+            echo "COMMIT_SHA=${{ github.event.workflow_run.head_sha }}" >> $GITHUB_ENV
+          else
+            echo "BRANCH_NAME=${{ github.ref_name }}" >> $GITHUB_ENV
+            echo "COMMIT_SHA=${{ github.sha }}" >> $GITHUB_ENV
+          fi
+
+      - name: Echo Environment Variables
+        run: |
+          echo "CURRENT_DATETIME: ${{ env.CURRENT_DATETIME }}"
+          echo "BRANCH_NAME: ${{ env.BRANCH_NAME }}"
+          echo "COMMIT_SHA: ${{ env.COMMIT_SHA }}"
 
       # Extract metadata (tags, labels) for Docker
       # https://github.com/docker/metadata-action
@@ -89,9 +135,8 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=ref,event=pr
-            type=ref,event=branch,suffix=-${{github.run_number}}
-            type=ref,event=branch,suffix=-latest
+            type=raw,value=${{ env.BRANCH_NAME }}-${{ github.run_number }}
+            type=raw,value=${{ env.BRANCH_NAME }}-latest
           annotations: |
             org.opencontainers.image.source=https://github.com/nam20485/OdbDesign
             org.opencontainers.image.description=A free open source cross-platform C++ library for parsing ODB++ Design archives and accessing their data. Exposed via a REST API and packaged inside of a Docker image. The OdbDesign Docker image runs the OdbDesign Server REST API server executable listening on port 8888.
@@ -99,49 +144,65 @@ jobs:
             org.opencontainers.image.authors=https://github.com/nam20485
             org.opencontainers.image.url=https://nam20485.github.io/OdbDesign
             org.opencontainers.image.documentation=https://github.com/nam20485/OdbDesign?tab=readme-ov-file
-            org.opencontainers.image.version=${{ github.ref_name }}-${{github.run_number}}
-            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.version=${{ env.BRANCH_NAME }}-${{ github.run_number }}
+            org.opencontainers.image.revision=${{ env.COMMIT_SHA }}
             org.opencontainers.image.created=${{ env.CURRENT_DATETIME }}
             org.opencontainers.image.title=OdbDesign Server
           labels: |
-            org.opencontainers.image.version=${{ github.ref_name }}-${{github.run_number}}
-            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.version=${{ env.BRANCH_NAME }}-${{ github.run_number }}
+            org.opencontainers.image.revision=${{ env.COMMIT_SHA }}
             org.opencontainers.image.created=${{ env.CURRENT_DATETIME }}
-          
-      # Build and push Docker image with Buildx (don't push on PR)
+
+      # Build and push Docker image with Buildx
+      # Uses Dockerfile.prebuilt when artifacts are available (fast path)
+      # Falls back to full Dockerfile for manual builds without artifacts
       # https://github.com/docker/build-push-action
-      - name: Build and push Docker image
+      - name: Build and push Docker image (prebuilt)
         id: build-and-push
-        uses: docker/build-push-action@2cdde995de11925a030ce8070c3d77a52ffcf1c0
+        if: github.event_name == 'workflow_run' || (github.event_name == 'workflow_dispatch' && inputs.use_prebuilt == 'true')
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83
         with:
-          context: .          
-          push: ${{ github.event_name != 'pull_request' }}
+          context: .
+          push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
-          cache-to: type=gha,mode=max          
+          cache-to: type=gha,mode=max
+          file: Dockerfile.prebuilt
+          annotations: ${{ steps.meta.outputs.annotations }}
+
+      - name: Build and push Docker image (full build)
+        id: build-and-push-full
+        if: github.event_name == 'workflow_dispatch' && inputs.use_prebuilt == 'false'
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           file: Dockerfile
-          annotations: ${{ steps.meta.outputs.annotations }}                      
+          annotations: ${{ steps.meta.outputs.annotations }}
           build-args: |
             OWNER=nam20485
             GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
             VCPKG_BINARY_SOURCES=clear;nuget,GitHub,readwrite
-            # ODBDESIGN_SERVER_REQUEST_USERNAME=${{ secrets.ODBDESIGN_SERVER_REQUEST_USERNAME }}
-            # ODBDESIGN_SERVER_REQUEST_PASSWORD=${{ secrets.ODBDESIGN_SERVER_REQUEST_PASSWORD }}
-          
-      # Sign the resulting Docker image digest except on PRs.
+
+      # Sign the resulting Docker image digest
       # This will only write to the public Rekor transparency log when the Docker
       # repository is public to avoid leaking data.  If you would like to publish
       # transparency data even for private images, pass --force to cosign below.
       # https://github.com/sigstore/cosign
       - name: Sign the published Docker image
-        if: ${{ github.event_name != 'pull_request' }}    
         # This step uses the identity token to provision an ephemeral certificate
         # against the sigstore community Fulcio instance.
-        run: echo "${{ steps.meta.outputs.tags }}" | xargs -I {} cosign sign --yes {}@${{ steps.build-and-push.outputs.digest }}
+        run: |
+          DIGEST="${{ steps.build-and-push.outputs.digest }}${{ steps.build-and-push-full.outputs.digest }}"
+          echo "${{ steps.meta.outputs.tags }}" | xargs -I {} cosign sign --yes {}@${DIGEST}
 
       - name: Trigger Deploy and Release Workflows
-        if: github.ref_name == 'release' && github.event_name == 'push' 
+        if: (github.event.workflow_run.head_branch == 'release') || (github.event_name == 'workflow_dispatch' && github.ref_name == 'release')
         uses: peter-evans/repository-dispatch@ff45666b9427631e3450c54a1bcbee4d9ff4d7c0 # v3.0.0
         with:
           repository: ${{ github.repository }}

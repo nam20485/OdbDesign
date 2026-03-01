@@ -67,8 +67,7 @@ namespace Utils
 
 	double CommandLineArgs::doubleArg(const std::string& name, double defaultValue) const
 	{
-		auto strD = getArgValue(name);
-		if (strD.length() > 0)
+		if (const auto strD = getArgValue(name); !strD.empty())
 		{
 			return std::stod(strD);
 		}
