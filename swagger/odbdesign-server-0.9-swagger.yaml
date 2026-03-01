@@ -73,6 +73,14 @@ paths:
           description: ""
       security:
         - BasicAuth: []
+  /files/delete/all:
+    delete:
+      tags: [ "file upload" ]
+      responses:
+        "200":
+          description: ""
+      security:
+        - BasicAuth: [ ]
   /filemodels:
     get:
       tags: ["filemodel"]
