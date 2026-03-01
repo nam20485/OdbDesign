@@ -60,10 +60,24 @@ namespace Odb::App::Server
 			std::filesystem::path p(envConfig);
 			std::error_code ec;
 			p = std::filesystem::weakly_canonical(p, ec);
-			if (!ec && p.extension() == ".json") {
+
+			std::filesystem::path exeDir = std::filesystem::weakly_canonical(args().executableDirectory(), ec);
+			std::filesystem::path currentDir = std::filesystem::current_path(ec);
+
+			bool isValidPath = false;
+			std::string pStr = p.string();
+			if (pStr.find(exeDir.string()) == 0 || pStr.find(currentDir.string()) == 0)
+			{
+				isValidPath = true;
+			}
+
+			if (!ec && p.extension() == ".json" && isValidPath && std::filesystem::is_regular_file(p, ec))
+			{
 				configPath = p.string();
-			} else {
-				std::cerr << "WARNING: GRPC_CONFIG_PATH must be a valid path to a .json file. Falling back to default locations." << std::endl;
+			}
+			else
+			{
+				std::cerr << "WARNING: GRPC_CONFIG_PATH must be a valid path to an existing .json file within allowed directories. Falling back to default locations." << std::endl;
 				envConfig = nullptr; // trigger fallback
 			}
 		}
