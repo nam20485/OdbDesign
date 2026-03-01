@@ -61,11 +61,11 @@ ctest --preset linux-debug -R Test_DesignOdb
 ctest --preset linux-debug -R <TestName> -V
 
 # Run test executable directly
-./out/build/linux-debug/OdbDesignTests --gtest_filter=<TestSuite>.<TestName>
+./out/build/linux-debug/OdbDesignTests/OdbDesignTests --gtest_filter=<TestSuite>.<TestName>
 
 # Example: Run single test directly
-./out/build/linux-debug/OdbDesignTests --gtest_filter=TestTest.BasicAssertions
-./out/build/linux-debug/OdbDesignTests --gtest_filter=FileArchiveLoadFixture.Test_SampleDesign*
+./out/build/linux-debug/OdbDesignTests/OdbDesignTests --gtest_filter=TestTest.BasicAssertions
+./out/build/linux-debug/OdbDesignTests/OdbDesignTests --gtest_filter=FileArchiveLoadFixture.Test_SampleDesign*
 ```
 
 ### Run Tests in Parallel
@@ -155,7 +155,7 @@ namespace Odb::Lib::ProductModel
 1. Corresponding header (e.g., `Design.cpp` includes `"Design.h"` first)
 2. Project headers (relative paths)
 3. System/STL headers (`<string>`, `<vector>`, `<memory>`)
-3. External library headers (`<gtest/gtest.h>`)
+4. External library headers (`<gtest/gtest.h>`)
 
 ### Smart Pointers
 
