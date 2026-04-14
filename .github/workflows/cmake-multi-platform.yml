@@ -168,8 +168,13 @@ jobs:
           # Set environment variable to allow credential provider to work non-interactively
           echo "NUGET_CREDENTIALPROVIDER_SESSIONTOKENCACHE_ENABLED=true" >> $env:GITHUB_ENV
           # Set API key for NuGet push to GitHub Packages
+          # Only call setApiKey if the token is available (Dependabot PRs cannot access secrets)
           $env:NUGET_API_KEY = "${{ secrets.VCPKG_PAT_TOKEN }}"
-          nuget setApiKey $env:NUGET_API_KEY -Source "${{ env.FEED_URL }}" -NonInteractive
+          if ($env:NUGET_API_KEY) {
+            nuget setApiKey $env:NUGET_API_KEY -Source "${{ env.FEED_URL }}" -NonInteractive
+          } else {
+            Write-Host "Skipping nuget setApiKey: VCPKG_PAT_TOKEN is not available (likely a Dependabot PR)"
+          }
           # Also set in environment for vcpkg to use
           echo "NUGET_API_KEY=${{ secrets.VCPKG_PAT_TOKEN }}" >> $env:GITHUB_ENV
 
