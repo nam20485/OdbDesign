@@ -103,7 +103,7 @@ namespace Odb::Test::Enhanced
         const int operationsPerThread = 50;
         
         std::vector<std::thread> threads;
-        std::vector<bool> results(numThreads, true);
+        std::vector<int> results(numThreads, 1);
         
         // Launch threads that concurrently access test data
         for (int i = 0; i < numThreads; ++i)
@@ -119,7 +119,7 @@ namespace Odb::Test::Enhanced
                         
                         if (testDir.empty() || !std::filesystem::exists(testDir))
                         {
-                            results[i] = false;
+                            results[i] = 0;
                             break;
                         }
                         
@@ -129,7 +129,7 @@ namespace Odb::Test::Enhanced
                 }
                 catch (...)
                 {
-                    results[i] = false;
+                    results[i] = 0;
                 }
             });
         }

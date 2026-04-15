@@ -90,7 +90,7 @@ namespace Odb::Test::Performance
         const int operationsPerThread = 50;
         
         std::vector<std::thread> threads;
-        std::vector<bool> results(numThreads, false);
+        std::vector<int> results(numThreads, 0);
         
         auto startTime = high_resolution_clock::now();
         
@@ -114,7 +114,7 @@ namespace Odb::Test::Performance
                     std::this_thread::sleep_for(std::chrono::microseconds(10));
                 }
                 
-                results[i] = allSuccess;
+                results[i] = allSuccess ? 1 : 0;
             });
         }
         
