@@ -75,9 +75,10 @@ jobs:
         shell: pwsh
         run: |
           # overwrite local script with remote script
-          Invoke-WebRequest -Uri "https://raw.githubusercontent.com/nam20485/agent-instructions/main/scripts/setup-environment.sh" `
+          Invoke-WebRequest -Uri "https://raw.githubusercontent.com/nam20485/agent-instructions/refs/heads/main/scripts/setup-environment.sh" `
             -OutFile "scripts/setup-environment.sh" `
             -Headers @{"Accept"="application/vnd.github.raw"}
+          # TODO: Pin to a specific commit SHA and verify checksum for supply-chain security
 
       - name: Provision environment (single Linux script)
         shell: bash
