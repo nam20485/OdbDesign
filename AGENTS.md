@@ -9,23 +9,27 @@ OdbDesign is a C++ library for parsing and working with ODB++ design files (PCB 
 ## Build Commands
 
 ### Prerequisites
+
 - CMake 3.21+
 - vcpkg (set `VCPKG_ROOT` environment variable)
 - C++17 compiler (MSVC, GCC, or Clang)
 
 ### Configure (Linux)
+
 ```bash
 cmake --preset linux-debug      # Debug build
 cmake --preset linux-release    # Release build
 ```
 
 ### Configure (Windows)
+
 ```bash
 cmake --preset x64-debug        # Debug build
 cmake --preset x64-release      # Release build
 ```
 
 ### Build
+
 ```bash
 cmake --build --preset linux-debug
 cmake --build --preset linux-release
@@ -33,6 +37,7 @@ cmake --build --preset x64-release
 ```
 
 ### Clean Build
+
 ```bash
 cmake --build --preset linux-debug --clean-first
 ```
@@ -42,6 +47,7 @@ cmake --build --preset linux-debug --clean-first
 ## Test Commands
 
 ### Run All Tests
+
 ```bash
 ctest --preset linux-debug
 ctest --preset linux-release
@@ -49,6 +55,7 @@ ctest --preset x64-debug
 ```
 
 ### Run Single Test
+
 ```bash
 # Using ctest with test name pattern
 ctest --preset linux-debug -R <TestName>
@@ -69,6 +76,7 @@ ctest --preset linux-debug -R <TestName> -V
 ```
 
 ### Run Tests in Parallel
+
 ```bash
 ctest --preset linux-debug -j$(nproc)
 ```
@@ -264,10 +272,13 @@ Test designs are in `.tgz` format (ODB++ archives).
 ## External Rules & Instructions
 
 ### Cursor Rules
+
 See `.cursor/rules/openmemory.mdc` for memory-based development workflow instructions.
 
 ### Copilot Instructions
+
 See `.github/copilot-instructions.md` for:
+
 - Remote instruction modules at `nam20485/agent-instructions`
 - Tool and automation protocols
 - Dynamic workflow orchestration
