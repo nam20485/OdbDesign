@@ -55,7 +55,7 @@ This document analyzes all GitHub Actions workflows in the OdbDesign repository 
 **Implementation:**
 ```yaml
 - name: Free Disk Space (Ubuntu)
-  if: matrix.os == 'ubuntu-22.04'
+  if: matrix.os == 'ubuntu-24.04'
   uses: jlumbroso/free-disk-space@main
   with:
     tool-cache: false
@@ -122,7 +122,7 @@ This document analyzes all GitHub Actions workflows in the OdbDesign repository 
 - name: Download Linux Artifacts
   uses: actions/download-artifact@v4
   with:
-    name: ubuntu-22.04-artifacts
+    name: ubuntu-24.04-artifacts
     path: ./artifacts
 
 - name: Build Docker Image (artifacts-based)
