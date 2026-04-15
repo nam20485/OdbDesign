@@ -158,7 +158,7 @@ namespace Odb::Test::Integration
 
         const int numWorkers = std::min(4, static_cast<int>(availableDesigns.size()));
         std::vector<std::thread> workers;
-        std::vector<bool> results(numWorkers, false);
+        std::vector<int> results(numWorkers, 0);
         
         // Launch concurrent workers
         for (int i = 0; i < numWorkers; ++i)
@@ -175,11 +175,11 @@ namespace Odb::Test::Integration
                     // Simulate some processing work
                     std::this_thread::sleep_for(std::chrono::milliseconds(50));
                     
-                    results[i] = true;
+                    results[i] = 1;
                 }
                 catch (...)
                 {
-                    results[i] = false;
+                    results[i] = 0;
                 }
             });
         }
