@@ -21,14 +21,12 @@ on:
 
 permissions:
   contents: read
-  packages: write
 
 env:
   VCPKG_ROOT: ${{ github.workspace }}/vcpkg
   VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}/.vcpkg-binary-cache
   FEED_URL: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
   FEED_PUSH_URL: https://nuget.pkg.github.com/${{ github.repository_owner }}
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   VCPKG_FEATURE_FLAGS: dependencygraph
   USERNAME: ${{ github.repository_owner }}
   NUGET_XMLDOC_MODE: skip
