@@ -158,7 +158,7 @@ jobs:
       - name: Build and push Docker image (prebuilt)
         id: build-and-push
         if: github.event_name == 'workflow_run' || (github.event_name == 'workflow_dispatch' && inputs.use_prebuilt == 'true')
-        uses: docker/build-push-action@2cdde995de11925a030ce8070c3d77a52ffcf1c0
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83
         with:
           context: .
           push: true
