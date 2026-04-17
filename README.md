@@ -1,0 +1,2 @@
+# OdbDesign
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/8b756f4130f24713aac015ce941d98b3)](https://app.codacy.com/gh/nam20485/OdbDesign?utm_source=github.com&utm_medium=referral&utm_content=nam20485/OdbDesign&utm_campaign=Badge_Grade)
