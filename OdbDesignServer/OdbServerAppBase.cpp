@@ -1,14 +1,20 @@
 #include "OdbServerAppBase.h"
 //#include "Logger.h"
-#include "RequestAuthenticationBase.h"
-#include "crow_win.h"
+#include <App/RequestAuthenticationBase.h>
+#include <crow_win.h>
 //#include <boost/throw_exception.hpp>
 //#include <boost/system/system_error.hpp>
-#include "OdbAppBase.h"
+#include <App/OdbAppBase.h>
 #include <ExitCode.h>
 #include <memory>
 #include <csignal>
 #include <iostream>
+#include <string>
+#include <thread>
+#include <utility>
+#include <App/DesignCache.h>
+#include <crow/compression.h>
+#include <crow/logging.h>
 
 using namespace Utils;
 using namespace std::filesystem;
@@ -54,6 +60,7 @@ namespace Odb::Lib::App
 		{
 			std::string grpc_server_address = "0.0.0.0:" + std::to_string(args().grpcPort());
 			m_grpcThread = std::make_unique<std::thread>(&OdbServerAppBase::RunGrpcServer, this, grpc_server_address, m_pDesignCache);
+			m_grpcThread->detach();
 			std::cout << "gRPC server thread started on port " << args().grpcPort() << std::endl;
 		}
 	}
@@ -167,5 +174,8 @@ namespace Odb::Lib::App
 		{
 			pController->register_routes();
 		}
+	}
+	void OdbServerAppBase::signal_handler(int signum)
+	{
 	}
 }
