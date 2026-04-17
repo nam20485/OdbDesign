@@ -7,7 +7,7 @@
 #include <filesystem>
 #include "../../odbdesign_export.h"
 #include "../../IProtoBuffable.h"
-#include "../../ProtoBuf/netlistfile.pb.h"
+#include "netlistfile.pb.h"
 #include "../ISaveable.h"
 #include "../IStreamSaveable.h"
 #include "EnumMap.h"

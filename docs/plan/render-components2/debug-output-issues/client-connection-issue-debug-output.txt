@@ -1,0 +1,313 @@
+# Client Configuration Verification Report
+
+**Date:** 2026-01-03  
+**Issue:** Client attempting to connect to `localhost` instead of configured server address  
+**Status:** ✅ **CLIENT CONFIGURATION VERIFIED CORRECT** - Network connectivity issue identified
+
+---
+
+## Executive Summary
+
+The client application has been verified to be correctly configured to use `192.168.1.187:8888` for REST API calls and `192.168.1.187:50051` for gRPC calls. The configuration is loading correctly from `appsettings.json`. 
+
+**The issue is NOT a client configuration problem** - it is a **network connectivity issue** between the client machine (`192.168.1.30`) and the server machine (`192.168.1.187`).
+
+---
+
+## Client Configuration Verification
+
+### Configuration File
+**File:** `src/OdbDesign3DClient.Desktop/appsettings.json`
+
+```json
+{
+  "OdbDesign": {
+    "ServerEndpoint": "http://192.168.1.187:50051",
+    "RestEndpoint": "http://192.168.1.187:8888",
+    "RestUsername": "odb",
+    "RestPassword": "plusplus"
+  }
+}
+```
+
+### Runtime Verification (from Debug Logs)
+
+**Configuration Loading (Lines 64-78):**
+```
+[Config] ServerEndpoint: http://192.168.1.187:50051
+[Config] RestEndpoint: http://192.168.1.187:8888
+[Config] OdbDesign section exists: True
+[Config] OdbDesign.RestEndpoint = http://192.168.1.187:8888
+[Config] OdbDesign.ServerEndpoint = http://192.168.1.187:50051
+```
+
+**Post-Configuration Binding (Lines 111-112):**
+```
+[Config] PostConfigure - ServerEndpoint: http://192.168.1.187:50051
+[Config] PostConfigure - RestEndpoint: http://192.168.1.187:8888
+```
+
+**Service Initialization (Lines 113-123):**
+```
+[GrpcChannelFactory] CONSTRUCTOR: ServerEndpoint from settings: http://192.168.1.187:50051
+[RestDesignListService] CONSTRUCTOR: RestEndpoint from settings: http://192.168.1.187:8888
+[RestDesignListService] CONSTRUCTOR: ServerEndpoint from settings: http://192.168.1.187:50051
+[RestDesignListService] CONSTRUCTOR: Using REST endpoint: http://192.168.1.187:8888 (fallback used: False)
+[RestDesignListService] CONSTRUCTOR: HttpClient.BaseAddress set to: http://192.168.1.187:8888/
+```
+
+**HTTP Request Execution (Lines 131-134):**
+```
+[RestDesignListService] GetDesignsAsync: HttpClient.BaseAddress = http://192.168.1.187:8888/
+[RestDesignListService] GetDesignsAsync: Settings.RestEndpoint = http://192.168.1.187:8888
+Start processing HTTP request GET http://192.168.1.187:8888/designs
+Sending HTTP request GET http://192.168.1.187:8888/designs
+```
+
+**✅ CONCLUSION:** The client is correctly configured and attempting to connect to `192.168.1.187:8888`, NOT `localhost`.
+
+---
+
+## Network Connectivity Analysis
+
+### Client Machine (192.168.1.30)
+**Test Results:**
+```powershell
+Test-NetConnection -ComputerName 192.168.1.187 -Port 8888
+WARNING: TCP connect to (192.168.1.187 : 8888) failed
+WARNING: Ping to 192.168.1.187 failed with status: TimedOut
+TcpTestSucceeded: False
+PingSucceeded: False
+```
+
+```bash
+curl http://192.168.1.187:8888/designs -i
+curl: (28) Failed to connect to 192.168.1.187 port 8888 after 21041 ms: Could not connect to server
+```
+
+### Server Machine (192.168.1.187)
+**Test Results:**
+```powershell
+Test-NetConnection -ComputerName 192.168.1.187 -Port 8888
+TcpTestSucceeded: True
+```
+
+```bash
+curl http://192.168.1.187:8888/designs -i
+HTTP/1.1 401 Unauthorized
+Server: Crow/master
+Unauthorized
+```
+
+**✅ CONCLUSION:** The server is accessible from itself (`localhost`), but NOT accessible from the client machine (`192.168.1.30`).
+
+---
+
+## Root Cause Analysis
+
+The server is responding correctly when accessed from `localhost` (returns `401 Unauthorized`, which is expected for unauthenticated requests). However, the client machine cannot establish a connection.
+
+### Possible Causes:
+
+1. **Server Binding Configuration**
+   - Server may be listening only on `127.0.0.1` (localhost) instead of `0.0.0.0` (all interfaces)
+   - Server needs to bind to `0.0.0.0:8888` to accept connections from other machines
+
+2. **Firewall Configuration**
+   - Windows Firewall or other firewall software may be blocking incoming connections on port 8888
+   - Firewall rules may need to be added to allow TCP port 8888 from the client subnet
+
+3. **Network Routing**
+   - Network routing issue preventing packets from `192.168.1.30` from reaching `192.168.1.187`
+   - Both machines are on the same subnet (`192.168.1.0/24`), so routing should not be an issue
+
+4. **Server Application Configuration**
+   - The server application (Crow framework) may have a configuration setting that restricts which interfaces it listens on
+   - Check server configuration for host binding settings
+
+---
+
+## Required Server-Side Actions
+
+### 1. Verify Server Binding Configuration
+
+**Check if server is listening on all interfaces:**
+```powershell
+# On server machine (192.168.1.187)
+netstat -an | Select-String "8888"
+```
+
+**Expected output if correctly configured:**
+```
+TCP    0.0.0.0:8888           0.0.0.0:0              LISTENING
+```
+
+**If output shows:**
+```
+TCP    127.0.0.1:8888         0.0.0.0:0              LISTENING
+```
+**Then the server is only listening on localhost and needs to be reconfigured.**
+
+### 2. Configure Server to Listen on All Interfaces
+
+The server application needs to be configured to bind to `0.0.0.0:8888` instead of `127.0.0.1:8888` or `localhost:8888`.
+
+**For Crow framework (C++), check:**
+- Server initialization code
+- Configuration files
+- Command-line arguments
+- Environment variables
+
+**Example configuration:**
+```cpp
+// Should be:
+app.bindaddr("0.0.0.0").port(8888).run();
+
+// NOT:
+app.bindaddr("127.0.0.1").port(8888).run();
+// or
+app.bindaddr("localhost").port(8888).run();
+```
+
+### 3. Configure Firewall Rules
+
+**On server machine (192.168.1.187), add firewall rule:**
+```powershell
+# Allow incoming TCP connections on port 8888
+New-NetFirewallRule -DisplayName "OdbDesign REST API" `
+    -Direction Inbound `
+    -LocalPort 8888 `
+    -Protocol TCP `
+    -Action Allow
+```
+
+**Or allow from specific subnet:**
+```powershell
+New-NetFirewallRule -DisplayName "OdbDesign REST API" `
+    -Direction Inbound `
+    -LocalPort 8888 `
+    -Protocol TCP `
+    -RemoteAddress 192.168.1.0/24 `
+    -Action Allow
+```
+
+### 4. Verify Network Connectivity
+
+**On server machine, test connectivity to client:**
+```powershell
+Test-NetConnection -ComputerName 192.168.1.30 -Port 8888
+ping 192.168.1.30
+```
+
+---
+
+## Client Error Details
+
+**Error Message:**
+```
+System.Net.Http.HttpRequestException: A connection attempt failed because the connected party 
+did not properly respond after a period of time, or established connection failed because 
+connected host has failed to respond. (192.168.1.187:8888)
+ ---> System.Net.Sockets.SocketException (10060): A connection attempt failed because the 
+connected party did not properly respond after a period of time, or established connection 
+failed because connected host has failed to respond.
+```
+
+**Error Code:** `10060` - Connection timeout  
+**Meaning:** The client can reach the network layer but cannot establish a TCP connection, indicating:
+- Server is not listening on the expected interface
+- Firewall is blocking the connection
+- Server is not running/responding
+
+---
+
+## Test Cases for Server Team
+
+### Test 1: Verify Server Binding
+```powershell
+# On server machine
+netstat -an | Select-String "8888"
+# Should show: TCP    0.0.0.0:8888   0.0.0.0:0   LISTENING
+```
+
+### Test 2: Verify Firewall Rules
+```powershell
+# On server machine
+Get-NetFirewallRule | Where-Object {$_.LocalPort -eq 8888}
+# Should show an Allow rule for port 8888
+```
+
+### Test 3: Test from Client Machine
+```powershell
+# On client machine (192.168.1.30)
+Test-NetConnection -ComputerName 192.168.1.187 -Port 8888
+# Should show: TcpTestSucceeded: True
+```
+
+### Test 4: Test HTTP Request
+```powershell
+# On client machine (192.168.1.30)
+curl http://192.168.1.187:8888/designs -u odb:plusplus
+# Should return: HTTP/1.1 200 OK (or 401 if auth not working, but connection should succeed)
+```
+
+---
+
+## Client Configuration Summary
+
+✅ **Configuration File:** Correctly set to `192.168.1.187:8888`  
+✅ **Configuration Loading:** Verified working in runtime logs  
+✅ **Service Initialization:** HttpClient correctly configured with `192.168.1.187:8888`  
+✅ **HTTP Requests:** Correctly targeting `http://192.168.1.187:8888/designs`  
+✅ **Authentication:** Credentials configured (`odb`/`plusplus`)
+
+**No client-side changes required.** The client is functioning correctly.
+
+---
+
+## Next Steps
+
+1. **Server Team:** Verify server binding configuration and firewall rules
+2. **Server Team:** Configure server to listen on `0.0.0.0:8888` if currently bound to `127.0.0.1:8888`
+3. **Server Team:** Add firewall rule to allow incoming connections on port 8888
+4. **Server Team:** Test connectivity from client machine (`192.168.1.30`) to server (`192.168.1.187:8888`)
+5. **Client Team:** Re-test after server configuration changes
+
+---
+
+## Contact Information
+
+**Client Configuration Verified By:** AI Assistant  
+**Client Code Repository:** `nam20485/odbdesign-3d-client-prototype`  
+**Configuration File:** `src/OdbDesign3DClient.Desktop/appsettings.json`  
+**Debug Logs:** `docs/render-components/render-componentsd-finish/server-implementation/response/host-setting-debug-output.txt`
+
+---
+
+## Appendix: Full Debug Log Excerpts
+
+### Configuration Loading (Lines 53-78)
+```
+[Config] Base directory: E:\src\github\intel-agency\odbdesign-3d-client-prototype\src\OdbDesign3DClient.Desktop\bin\Debug\net10.0\
+[Config] Looking for appsettings.json at: E:\src\github\intel-agency\odbdesign-3d-client-prototype\src\OdbDesign3DClient.Desktop\bin\Debug\net10.0\appsettings.json
+[Config] File exists: True
+[Config] ServerEndpoint: http://192.168.1.187:50051
+[Config] RestEndpoint: http://192.168.1.187:8888
+[Config] OdbDesign.RestEndpoint = http://192.168.1.187:8888
+[Config] OdbDesign.ServerEndpoint = http://192.168.1.187:50051
+```
+
+### Service Initialization (Lines 113-123)
+```
+[GrpcChannelFactory] CONSTRUCTOR: ServerEndpoint from settings: http://192.168.1.187:50051
+[RestDesignListService] CONSTRUCTOR: RestEndpoint from settings: http://192.168.1.187:8888
+[RestDesignListService] CONSTRUCTOR: Using REST endpoint: http://192.168.1.187:8888 (fallback used: False)
+[RestDesignListService] CONSTRUCTOR: HttpClient.BaseAddress set to: http://192.168.1.187:8888/
+```
+
+### HTTP Request (Lines 131-134)
+```
+[RestDesignListService] GetDesignsAsync: HttpClient.BaseAddress = http://192.168.1.187:8888/
+Start processing HTTP request GET http://192.168.1.187:8888/designs
+Sending HTTP request GET http://192.168.1.187:8888/designs
+```

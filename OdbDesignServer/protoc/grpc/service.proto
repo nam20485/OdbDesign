@@ -1,0 +1,81 @@
+syntax = "proto3";
+package Odb.Grpc;
+
+// Import existing data models defined in OdbDesignLib
+import "design.proto";
+import "featuresfile.proto";
+import "symbolname.proto";
+//import "common.proto";
+
+// Service definition for ODB++ data
+service OdbDesignService { 
+  // Unary call to get the full design (similar to existing REST endpoint)
+  // Used for initial load by a client.
+  rpc GetDesign(GetDesignRequest) returns (.Odb.Lib.Protobuf.ProductModel.Design); 
+
+  // Server-streaming call for high-performance streaming of layer features.
+  // This is the primary performance-critical endpoint.
+  rpc GetLayerFeaturesStream(GetLayerFeaturesRequest) returns (stream .Odb.Lib.Protobuf.FeaturesFile.FeatureRecord); 
+
+  // Batched server-streaming call for high-performance streaming of layer features.
+  // Sends features in batches to reduce stream overhead for layers with 10k+ features.
+  // Client should use this when server supports it, falling back to GetLayerFeaturesStream if unavailable.
+  rpc GetLayerFeaturesBatchStream(GetLayerFeaturesRequest) returns (stream FeatureRecordBatch);
+
+  // Unary call to get the symbol list and units metadata for a layer.
+  // Required to resolve FeatureRecord.sym_num into a SymbolName.
+  rpc GetLayerSymbols(GetLayerSymbolsRequest) returns (GetLayerSymbolsResponse);
+
+  // A simple health check for the gRPC server
+  rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
+}
+
+// === Request/Response Messages ===
+message GetDesignRequest { 
+  string design_name = 1;
+}
+
+message GetLayerFeaturesRequest { 
+  string design_name = 1;
+  string step_name = 2; 
+  string layer_name = 3;
+}
+
+message GetLayerSymbolsRequest {
+  string design_name = 1;
+  string step_name = 2;
+  string layer_name = 3;
+}
+
+message GetLayerSymbolsResponse {
+  // Indexing contract for FeatureRecord.sym_num.
+  // For this implementation phase, sym_num_base must be 0 so FeatureRecord.sym_num
+  // directly indexes symbol_names (sym_num == i). Future protocol versions may allow
+  // non-zero bases; clients would need to offset sym_num by sym_num_base in that case.
+  int32 sym_num_base = 1;
+
+  // Minimal units contract: multiply values by units_to_mm to get millimeters.
+  string units = 2;
+  double units_to_mm = 3;
+
+  // Mapping: symbol_names[i] corresponds to sym_num == (i + sym_num_base)
+  repeated .Odb.Lib.Protobuf.SymbolName symbol_names = 4;
+}
+
+message HealthCheckRequest { 
+  string service = 1;
+}
+
+message HealthCheckResponse { 
+  enum ServingStatus { 
+    UNKNOWN = 0;
+    SERVING = 1; 
+    NOT_SERVING = 2; 
+  } 
+  ServingStatus status = 1;
+}
+
+// Batch container for feature records to reduce stream overhead
+message FeatureRecordBatch {
+  repeated .Odb.Lib.Protobuf.FeaturesFile.FeatureRecord features = 1;
+}

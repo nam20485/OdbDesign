@@ -6,8 +6,8 @@
 #include <map>
 #include "../../odbdesign_export.h"
 #include "../../enums.h"
-#include "../../ProtoBuf/edadatafile.pb.h"
-#include "../../ProtoBuf/common.pb.h"
+#include "edadatafile.pb.h"
+#include "common.pb.h"
 #include "../../IProtoBuffable.h"
 #include "PropertyRecord.h"
 #include "ContourPolygon.h"

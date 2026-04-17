@@ -7,7 +7,7 @@
 #include <memory>
 #include "Component.h"
 #include "Pin.h"
-#include "../ProtoBuf/pinconnection.pb.h"
+#include "pinconnection.pb.h"
 #include "../IProtoBuffable.h"	
 
 

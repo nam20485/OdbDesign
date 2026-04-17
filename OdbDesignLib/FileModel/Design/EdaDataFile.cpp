@@ -3,7 +3,7 @@
 #include <sstream>
 #include "str_utils.h"
 #include "../../enums.h"
-#include "../../ProtoBuf/edadatafile.pb.h"
+#include "edadatafile.pb.h"
 #include "ArchiveExtractor.h"
 #include "Logger.h"
 #include "../parse_info.h"

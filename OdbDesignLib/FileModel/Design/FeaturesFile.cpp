@@ -9,15 +9,30 @@
 #include "equals_within.h"
 #include "macros.h"
 
+#include <algorithm>
+#include <cctype>
 
 namespace Odb::Lib::FileModel::Design
 {
+	namespace
+	{
+		void apply_default_units_to_symbols(const std::string &rawUnits, SymbolName::Vector &symbols)
+		{
+			const auto inferred = Odb::Lib::FileModel::Design::inferred_unit_type_from_features_units(rawUnits);
+			if (inferred == UnitType::None)
+				return;
+			for (const auto &sym : symbols)
+			{
+				if (sym)
+				{
+					sym->ApplyDefaultUnitTypeIfNone(inferred);
+				}
+			}
+		}
+	}
+
 	FeaturesFile::FeaturesFile()
-		: m_units("")
-		, m_path("")
-		, m_directory("")
-		, m_numFeatures(0)
-		, m_id((unsigned) -1)		
+		: m_path(""), m_directory(""), m_numFeatures(0), m_id(static_cast<unsigned>(-1))
 	{
 	}
 
@@ -30,7 +45,7 @@ namespace Odb::Lib::FileModel::Design
 		m_symbolNames.clear();
 	}
 
-	bool FeaturesFile::Parse(std::filesystem::path directory, const std::string& alternateFilename /*= ""*/)
+	bool FeaturesFile::Parse(std::filesystem::path directory, const std::string &alternateFilename /*= ""*/)
 	{
 		std::ifstream featuresFile;
 		int lineNumber = 0;
@@ -38,7 +53,7 @@ namespace Odb::Lib::FileModel::Design
 
 		try
 		{
-			m_directory = directory;			
+			m_directory = directory;
 
 			loginfo("checking for extraction...");
 
@@ -46,14 +61,14 @@ namespace Odb::Lib::FileModel::Design
 			if (alternateFilename.empty())
 			{
 				std::copy(std::begin(FEATURES_FILENAMES), std::end(FEATURES_FILENAMES), std::back_inserter(filenames));
-			}			
+			}
 			else
 			{
 				filenames.push_back(alternateFilename);
 			}
 
 			std::filesystem::path featuresFilePath;
-			for (const auto& featuresFilename : filenames)
+			for (const auto &featuresFilename : filenames)
 			{
 				loginfo("trying features file: [" + featuresFilename + "]...");
 
@@ -99,7 +114,7 @@ namespace Odb::Lib::FileModel::Design
 				if (!line.empty())
 				{
 					std::stringstream lineStream(line);
-					//char firstChar = line[0];			
+					// char firstChar = line[0];
 
 					if (line.find(COMMENT_TOKEN) == 0)
 					{
@@ -119,6 +134,7 @@ namespace Odb::Lib::FileModel::Design
 						}
 
 						m_units = token;
+						apply_default_units_to_symbols(m_units, m_symbolNames);
 					}
 					else if (line.find("U") == 0)
 					{
@@ -133,6 +149,7 @@ namespace Odb::Lib::FileModel::Design
 						}
 
 						m_units = token;
+						apply_default_units_to_symbols(m_units, m_symbolNames);
 					}
 					else if (line.find(ID_TOKEN) == 0)
 					{
@@ -156,7 +173,7 @@ namespace Odb::Lib::FileModel::Design
 						{
 							throw_parse_error(m_path, line, token, lineNumber);
 						}
-						
+
 						if (token != NUM_FEATURES_TOKEN)
 						{
 							throw_parse_error(m_path, line, token, lineNumber);
@@ -169,7 +186,7 @@ namespace Odb::Lib::FileModel::Design
 					}
 					else if (line.find(ATTRIBUTE_NAME_TOKEN) == 0)
 					{
-						// component attribute name line	
+						// component attribute name line
 						std::string token;
 						// TODO: continue on failing line parse, to make a less strict/more robust parser (make a flag: enum ParseStrictness { strict, lax })
 						if (!std::getline(lineStream, token, ' '))
@@ -184,13 +201,13 @@ namespace Odb::Lib::FileModel::Design
 					}
 					else if (line.find(ATTRIBUTE_VALUE_TOKEN) == 0)
 					{
-						// component attribute text string values	
+						// component attribute text string values
 						std::string token;
 						if (!std::getline(lineStream, token, ' '))
 						{
 							throw_parse_error(m_path, line, token, lineNumber);
 						}
-						else if (!std::getline(lineStream, token, ' '))
+						else if (!std::getline(lineStream >> std::ws, token))
 						{
 							throw_parse_error(m_path, line, token, lineNumber);
 						}
@@ -198,12 +215,13 @@ namespace Odb::Lib::FileModel::Design
 					}
 					else if (line.find(SYMBOL_NAME_TOKEN) == 0)
 					{
-						// component attribute text string values	
-						auto pSymbolName = std::make_shared<SymbolName>();						
+						// component attribute text string values
+						auto pSymbolName = std::make_shared<SymbolName>();
 						if (!pSymbolName->SymbolName::Parse(m_path, line, lineNumber))
 						{
 							throw_parse_error(m_path, line, "", lineNumber);
 						}
+						pSymbolName->ApplyDefaultUnitTypeIfNone(Odb::Lib::FileModel::Design::inferred_unit_type_from_features_units(m_units));
 						m_symbolNamesByName[pSymbolName->GetName()] = pSymbolName;
 						m_symbolNames.push_back(pSymbolName);
 					}
@@ -250,9 +268,14 @@ namespace Odb::Lib::FileModel::Design
 						}
 						switch (polarity)
 						{
-						case 'P': pFeatureRecord->polarity = Polarity::Positive; break;
-						case 'N': pFeatureRecord->polarity = Polarity::Negative; break;
-						default: throw_parse_error(m_path, line, token, lineNumber);
+						case 'P':
+							pFeatureRecord->polarity = Polarity::Positive;
+							break;
+						case 'N':
+							pFeatureRecord->polarity = Polarity::Negative;
+							break;
+						default:
+							throw_parse_error(m_path, line, token, lineNumber);
 						}
 
 						if (!(lineStream >> pFeatureRecord->dcode))
@@ -266,7 +289,7 @@ namespace Odb::Lib::FileModel::Design
 						if (!pFeatureRecord->ParseAttributeLookupTable(attrIdString))
 						{
 							throw_parse_error(m_path, line, token, lineNumber);
-						}						
+						}
 
 						m_featureRecords.push_back(pFeatureRecord);
 					}
@@ -303,6 +326,13 @@ namespace Odb::Lib::FileModel::Design
 							}
 						}
 
+						// Contract: Pads reference a symbol by FeatureRecord.sym_num.
+						// In ODB++ pad records this comes from apt_def_symbol_num; keep sym_num unset when apt_def_symbol_num == -1.
+						if (pFeatureRecord->apt_def_symbol_num >= 0 && pFeatureRecord->sym_num == -1)
+						{
+							pFeatureRecord->sym_num = pFeatureRecord->apt_def_symbol_num;
+						}
+
 						char polarity;
 						if (!(lineStream >> polarity))
 						{
@@ -310,9 +340,14 @@ namespace Odb::Lib::FileModel::Design
 						}
 						switch (polarity)
 						{
-						case 'P': pFeatureRecord->polarity = Polarity::Positive; break;
-						case 'N': pFeatureRecord->polarity = Polarity::Negative; break;
-						default: throw_parse_error(m_path, line, token, lineNumber);
+						case 'P':
+							pFeatureRecord->polarity = Polarity::Positive;
+							break;
+						case 'N':
+							pFeatureRecord->polarity = Polarity::Negative;
+							break;
+						default:
+							throw_parse_error(m_path, line, token, lineNumber);
 						}
 
 						if (!(lineStream >> pFeatureRecord->dcode))
@@ -368,9 +403,14 @@ namespace Odb::Lib::FileModel::Design
 						}
 						switch (polarity)
 						{
-						case 'P': pFeatureRecord->polarity = Polarity::Positive; break;
-						case 'N': pFeatureRecord->polarity = Polarity::Negative; break;
-						default: throw_parse_error(m_path, line, token, lineNumber);
+						case 'P':
+							pFeatureRecord->polarity = Polarity::Positive;
+							break;
+						case 'N':
+							pFeatureRecord->polarity = Polarity::Negative;
+							break;
+						default:
+							throw_parse_error(m_path, line, token, lineNumber);
 						}
 
 						if (!(lineStream >> pFeatureRecord->orient_def))
@@ -410,7 +450,7 @@ namespace Odb::Lib::FileModel::Design
 						if (!(lineStream >> pFeatureRecord->version))
 						{
 							throw_parse_error(m_path, line, token, lineNumber);
-						}						
+						}
 
 						std::string attrIdString;
 						lineStream >> attrIdString;
@@ -421,7 +461,7 @@ namespace Odb::Lib::FileModel::Design
 						}
 
 						m_featureRecords.push_back(pFeatureRecord);
-					}					
+					}
 					else if (line.find(FeatureRecord::ARC_TOKEN) == 0)
 					{
 						std::string token;
@@ -462,7 +502,6 @@ namespace Odb::Lib::FileModel::Design
 						{
 							throw_parse_error(m_path, line, token, lineNumber);
 						}
-						
 
 						if (!(lineStream >> pFeatureRecord->sym_num))
 						{
@@ -476,9 +515,14 @@ namespace Odb::Lib::FileModel::Design
 						}
 						switch (polarity)
 						{
-						case 'P': pFeatureRecord->polarity = Polarity::Positive; break;
-						case 'N': pFeatureRecord->polarity = Polarity::Negative; break;
-						default: throw_parse_error(m_path, line, token, lineNumber);
+						case 'P':
+							pFeatureRecord->polarity = Polarity::Positive;
+							break;
+						case 'N':
+							pFeatureRecord->polarity = Polarity::Negative;
+							break;
+						default:
+							throw_parse_error(m_path, line, token, lineNumber);
 						}
 
 						if (!(lineStream >> pFeatureRecord->dcode))
@@ -493,10 +537,15 @@ namespace Odb::Lib::FileModel::Design
 						}
 						switch (cw)
 						{
-						case 'Y': pFeatureRecord->cw = true; break;
-						case 'N': pFeatureRecord->cw = false; break;
-						default: throw_parse_error(m_path, line, token, lineNumber);
-						}						
+						case 'Y':
+							pFeatureRecord->cw = true;
+							break;
+						case 'N':
+							pFeatureRecord->cw = false;
+							break;
+						default:
+							throw_parse_error(m_path, line, token, lineNumber);
+						}
 
 						std::string attrIdString;
 						lineStream >> attrIdString;
@@ -518,18 +567,18 @@ namespace Odb::Lib::FileModel::Design
 
 						auto pFeatureRecord = std::make_shared<FeatureRecord>();
 						pFeatureRecord->type = FeatureRecord::Type::Barcode;
-						
+
 						// TODO: barcode feature record type
 
-						//std::string attrIdString;
-						//lineStream >> attrIdString;
+						// std::string attrIdString;
+						// lineStream >> attrIdString;
 
-						//if (!pFeatureRecord->ParseAttributeLookupTable(attrIdString))
+						// if (!pFeatureRecord->ParseAttributeLookupTable(attrIdString))
 						//{
 						//	throw_parse_error(m_path, line, token, lineNumber);
-						//}
+						// }
 
-						m_featureRecords.push_back(pFeatureRecord);						
+						m_featureRecords.push_back(pFeatureRecord);
 					}
 					else if (line.find(FeatureRecord::SURFACE_START_TOKEN) == 0 &&
 							 line.size() > 1 && line[1] == ' ')
@@ -550,15 +599,20 @@ namespace Odb::Lib::FileModel::Design
 						}
 						switch (polarity)
 						{
-						case 'P': pCurrentFeatureRecord->polarity = Polarity::Positive; break;
-						case 'N': pCurrentFeatureRecord->polarity = Polarity::Negative; break;
-						default: throw_parse_error(m_path, line, token, lineNumber);
+						case 'P':
+							pCurrentFeatureRecord->polarity = Polarity::Positive;
+							break;
+						case 'N':
+							pCurrentFeatureRecord->polarity = Polarity::Negative;
+							break;
+						default:
+							throw_parse_error(m_path, line, token, lineNumber);
 						}
 
 						if (!(lineStream >> pCurrentFeatureRecord->dcode))
 						{
 							throw_parse_error(m_path, line, token, lineNumber);
-						}						
+						}
 
 						std::string attrIdString;
 						lineStream >> attrIdString;
@@ -769,14 +823,14 @@ namespace Odb::Lib::FileModel::Design
 
 			featuresFile.close();
 		}
-		catch (parse_error& pe)
+		catch (parse_error &pe)
 		{
 			auto m = pe.toString("Parse Error:");
 			logerror(m);
 			featuresFile.close();
 			throw pe;
 		}
-		catch (std::exception& e)
+		catch (std::exception &e)
 		{
 			parse_info pi(m_path, line, lineNumber);
 			const auto m = pi.toString();
@@ -813,17 +867,17 @@ namespace Odb::Lib::FileModel::Design
 		return m_id;
 	}
 
-	const SymbolName::StringMap& FeaturesFile::GetSymbolNamesByName() const
+	const SymbolName::StringMap &FeaturesFile::GetSymbolNamesByName() const
 	{
 		return m_symbolNamesByName;
 	}
 
-	const SymbolName::Vector& FeaturesFile::GetSymbolNames() const
+	const SymbolName::Vector &FeaturesFile::GetSymbolNames() const
 	{
 		return m_symbolNames;
 	}
 
-	const FeaturesFile::FeatureRecord::Vector& FeaturesFile::GetFeatureRecords() const
+	const FeaturesFile::FeatureRecord::Vector &FeaturesFile::GetFeatureRecords() const
 	{
 		return m_featureRecords;
 	}
@@ -834,57 +888,57 @@ namespace Odb::Lib::FileModel::Design
 		pFeaturesFileMessage->set_id(m_id);
 		pFeaturesFileMessage->set_numfeatures(m_numFeatures);
 		pFeaturesFileMessage->set_units(m_units);
-		for (const auto& pFeatureRecord : m_featureRecords)
+		for (const auto &pFeatureRecord : m_featureRecords)
 		{
 			pFeaturesFileMessage->add_featurerecords()->CopyFrom(*pFeatureRecord->to_protobuf());
 		}
-		for (const auto& kvSymbolName : m_symbolNamesByName)
+		for (const auto &kvSymbolName : m_symbolNamesByName)
 		{
 			(*pFeaturesFileMessage->mutable_symbolnamesbyname())[kvSymbolName.first] = *kvSymbolName.second->to_protobuf();
-		}		
-		for (const auto& symbolName : m_symbolNames)
+		}
+		for (const auto &symbolName : m_symbolNames)
 		{
 			pFeaturesFileMessage->add_symbolnames()->CopyFrom(*symbolName->to_protobuf());
-		}	
+		}
 		return pFeaturesFileMessage;
 	}
 
-	void FeaturesFile::from_protobuf(const Odb::Lib::Protobuf::FeaturesFile& message)
+	void FeaturesFile::from_protobuf(const Odb::Lib::Protobuf::FeaturesFile &message)
 	{
 		m_id = message.id();
 		m_numFeatures = message.numfeatures();
 		m_units = message.units();
-		for (const auto& featureRecordMessage : message.featurerecords())
+		for (const auto &featureRecordMessage : message.featurerecords())
 		{
 			std::shared_ptr<FeatureRecord> pFeatureRecord(new FeatureRecord);
 			pFeatureRecord->from_protobuf(featureRecordMessage);
 			m_featureRecords.push_back(pFeatureRecord);
 		}
 		if (message.symbolnames().size() > 0)
-		{		
+		{
 			// create both collections from symbolNames
-			for (const auto& symbolNameMessage : message.symbolnames())
+			for (const auto &symbolNameMessage : message.symbolnames())
 			{
 				auto pSymbolName = std::make_shared<SymbolName>();
 				pSymbolName->from_protobuf(symbolNameMessage);
 				m_symbolNames.push_back(pSymbolName);
 				m_symbolNamesByName[pSymbolName->GetName()] = pSymbolName;
-			}			
+			}
 		}
 		else if (message.symbolnamesbyname().size() > 0)
 		{
 			// create both collections from symbolsByName
-			for (const auto& kvSymbolNameMessage : message.symbolnamesbyname())
+			for (const auto &kvSymbolNameMessage : message.symbolnamesbyname())
 			{
 				auto pSymbolName = std::make_shared<SymbolName>();
 				pSymbolName->from_protobuf(kvSymbolNameMessage.second);
 				m_symbolNamesByName[kvSymbolNameMessage.first] = pSymbolName;
 				m_symbolNames.push_back(pSymbolName);
 			}
-		}		
+		}
 	}
 
-	bool FeaturesFile::Save(std::ostream& os)
+	bool FeaturesFile::Save(std::ostream &os)
 	{
 		return true;
 	}
@@ -894,14 +948,14 @@ namespace Odb::Lib::FileModel::Design
 		m_contourPolygons.clear();
 	}
 
-	const ContourPolygon::Vector& FeaturesFile::FeatureRecord::GetContourPolygons() const
+	const ContourPolygon::Vector &FeaturesFile::FeatureRecord::GetContourPolygons() const
 	{
 		return m_contourPolygons;
 	}
 
 	std::unique_ptr<Odb::Lib::Protobuf::FeaturesFile::FeatureRecord> Odb::Lib::FileModel::Design::FeaturesFile::FeatureRecord::to_protobuf() const
 	{
-		std::unique_ptr<Odb::Lib::Protobuf::FeaturesFile::FeatureRecord> pFeatureRecordMessage(new Odb::Lib::Protobuf::FeaturesFile::FeatureRecord);		
+		std::unique_ptr<Odb::Lib::Protobuf::FeaturesFile::FeatureRecord> pFeatureRecordMessage(new Odb::Lib::Protobuf::FeaturesFile::FeatureRecord);
 		pFeatureRecordMessage->set_apt_def_resize_factor(apt_def_resize_factor);
 		pFeatureRecordMessage->set_xc(xc);
 		pFeatureRecordMessage->set_yc(yc);
@@ -912,7 +966,10 @@ namespace Odb::Lib::FileModel::Design
 		pFeatureRecordMessage->set_width_factor(width_factor);
 		pFeatureRecordMessage->set_text(text);
 		pFeatureRecordMessage->set_version(version);
-		pFeatureRecordMessage->set_sym_num(sym_num);
+		if (sym_num >= 0)
+		{
+			pFeatureRecordMessage->set_sym_num(sym_num);
+		}
 		pFeatureRecordMessage->set_polarity(static_cast<Odb::Lib::Protobuf::Polarity>(polarity));
 		pFeatureRecordMessage->set_dcode(dcode);
 		pFeatureRecordMessage->set_id(id);
@@ -925,19 +982,22 @@ namespace Odb::Lib::FileModel::Design
 		pFeatureRecordMessage->set_ye(ye);
 		pFeatureRecordMessage->set_x(x);
 		pFeatureRecordMessage->set_y(y);
-		pFeatureRecordMessage->set_apt_def_symbol_num(apt_def_symbol_num);
-		for (const auto& pContourPolygon : m_contourPolygons)
+		if (apt_def_symbol_num >= 0)
+		{
+			pFeatureRecordMessage->set_apt_def_symbol_num(apt_def_symbol_num);
+		}
+		for (const auto &pContourPolygon : m_contourPolygons)
 		{
 			pFeatureRecordMessage->add_contourpolygons()->CopyFrom(*pContourPolygon->to_protobuf());
-		}		
-		for (const auto& kvAttributeAssignment : m_attributeLookupTable)
+		}
+		for (const auto &kvAttributeAssignment : m_attributeLookupTable)
 		{
 			(*pFeatureRecordMessage->mutable_attributelookuptable())[kvAttributeAssignment.first] = kvAttributeAssignment.second;
 		}
 		return pFeatureRecordMessage;
 	}
 
-	void Odb::Lib::FileModel::Design::FeaturesFile::FeatureRecord::from_protobuf(const Odb::Lib::Protobuf::FeaturesFile::FeatureRecord& message)
+	void Odb::Lib::FileModel::Design::FeaturesFile::FeatureRecord::from_protobuf(const Odb::Lib::Protobuf::FeaturesFile::FeatureRecord &message)
 	{
 		apt_def_resize_factor = message.apt_def_resize_factor();
 		xc = message.xc();
@@ -949,7 +1009,7 @@ namespace Odb::Lib::FileModel::Design
 		width_factor = message.width_factor();
 		text = message.text();
 		version = message.version();
-		sym_num = message.sym_num();
+		sym_num = message.has_sym_num() ? message.sym_num() : -1;
 		polarity = static_cast<Polarity>(message.polarity());
 		dcode = message.dcode();
 		id = message.id();
@@ -962,16 +1022,48 @@ namespace Odb::Lib::FileModel::Design
 		ye = message.ye();
 		x = message.x();
 		y = message.y();
-		apt_def_symbol_num = message.apt_def_symbol_num();
-		for (const auto& contourPolygonMessage : message.contourpolygons())
+		apt_def_symbol_num = message.has_apt_def_symbol_num() ? message.apt_def_symbol_num() : -1;
+		for (const auto &contourPolygonMessage : message.contourpolygons())
 		{
 			std::shared_ptr<ContourPolygon> pContourPolygon(new ContourPolygon);
 			pContourPolygon->from_protobuf(contourPolygonMessage);
 			m_contourPolygons.push_back(pContourPolygon);
 		}
-		for (const auto& kvAttributeAssignment : message.attributelookuptable())
+		for (const auto &kvAttributeAssignment : message.attributelookuptable())
 		{
 			m_attributeLookupTable[kvAttributeAssignment.first] = kvAttributeAssignment.second;
 		}
+	}
+
+	SymbolName::Vector collect_symbols(const FeaturesFile &featuresFile)
+	{
+		const auto &vec = featuresFile.GetSymbolNames();
+		if (!vec.empty())
+			return vec;
+
+		SymbolName::Vector collected;
+		for (const auto &kv : featuresFile.GetSymbolNamesByName())
+		{
+			collected.push_back(kv.second);
+		}
+		return collected;
+	}
+
+	UnitType inferred_unit_type_from_features_units(const std::string &rawUnits)
+	{
+		if (rawUnits.empty())
+			return UnitType::None;
+		std::string u = rawUnits;
+		std::transform(u.begin(), u.end(), u.begin(), [](unsigned char c)
+					   { return static_cast<char>(std::tolower(c)); });
+		if (u == "mm" || u == "millimeter" || u == "millimeters" || u == "micron" || u == "microns" || u == "um" || u == "µm")
+		{
+			return UnitType::Metric;
+		}
+		if (u == "inch" || u == "inches" || u == "in" || u == "mil" || u == "mils")
+		{
+			return UnitType::Imperial;
+		}
+		return UnitType::None;
 	}
 }

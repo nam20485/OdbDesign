@@ -1,0 +1,14 @@
+name: Disabled - goldens removed (SSOT)
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  noop:
+    runs-on: ubuntu-latest
+    steps:
+      - name: No-op
+        run: echo "Plan validation via goldens is disabled. Dynamic workflows and assignments are the single source of truth."

@@ -13,11 +13,16 @@ namespace Odb::Lib::FileModel::Design
 		std::stringstream ss(attributeLookupTableString);
 		std::string token;
 
+		// skip the content before the first semicolon
+		if (!std::getline(ss, token, ';'))
+			return false;
+
 		// attributes
 		if (std::getline(ss, token, ';'))
 		{
+			std::stringstream attributesStream(token);
 			std::string attributeAssignment;
-			while (std::getline(ss, attributeAssignment, ','))
+			while (std::getline(attributesStream, attributeAssignment, ','))
 			{
 				if (!attributeAssignment.empty())
 				{

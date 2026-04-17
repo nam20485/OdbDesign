@@ -1,6 +1,6 @@
 #include "Component.h"
-#include "../ProtoBuf/component.pb.h"
-#include "../ProtoBuf/enums.pb.h"
+#include "component.pb.h"
+#include "enums.pb.h"
 #include <string>
 #include <memory>
 #include "../enums.h"

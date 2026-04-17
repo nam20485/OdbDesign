@@ -5,7 +5,7 @@
 #include <vector>
 #include <map>
 #include <memory>
-#include "../ProtoBuf/part.pb.h"
+#include "part.pb.h"
 #include "../IProtoBuffable.h"	
 
 namespace Odb::Lib::ProductModel

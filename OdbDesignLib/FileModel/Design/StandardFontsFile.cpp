@@ -5,7 +5,7 @@
 #include "../../Constants.h"
 #include "../parse_error.h"
 #include "../invalid_odb_error.h"
-#include "../../ProtoBuf/enums.pb.h"
+#include "enums.pb.h"
 
 
 namespace Odb::Lib::FileModel::Design
@@ -23,20 +23,24 @@ namespace Odb::Lib::FileModel::Design
 
         try
         {
-            if (!OdbFile::Parse(path)) return false;
+            if (!OdbFile::Parse(path))
+            {
+                auto message = "fonts directory does not exist: [" + path.string() + "]";
+                throw invalid_odb_error(message);
+            }
 
             auto fontsStandardFile = path / "standard";
             if (!std::filesystem::exists(fontsStandardFile))
             {
                 auto message = "fonts/standard file does not exist: [" + fontsStandardFile.string() + "]";
-                throw invalid_odb_error(message.c_str());
+                throw invalid_odb_error(message);
             }
 
             standardFile.open(fontsStandardFile, std::ios::in);
             if (!standardFile.is_open())
             {
                 auto message = "unable to open fonts/standard file: [" + fontsStandardFile.string() + "]";
-                throw invalid_odb_error(message.c_str());
+                throw invalid_odb_error(message);
             }
 
             std::shared_ptr<CharacterBlock> pCurrentCharacterBlock;

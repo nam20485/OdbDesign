@@ -32,6 +32,7 @@ namespace Odb::App::Server
 		crow::response steps_layers_features_route_handler(const std::string& designName, const std::string& stepName, const std::string& layerName, const crow::request& req);
 		crow::response steps_layers_attrlist_route_handler(const std::string& designName, const std::string& stepName, const std::string& layerName, const crow::request& req);
 		crow::response steps_layers_list_route_handler(const std::string& designName, const std::string& stepName, const crow::request& req);
+		crow::response steps_diagnostics_symbol_units_route_handler(const std::string& designName, const std::string& stepName, const crow::request& req);
 
 		crow::response symbols_route_handler(const std::string& designName, const std::string& symbolName, const crow::request& req);
 		crow::response symbols_features_route_handler(const std::string& designName, const std::string& symbolName, const crow::request& req);

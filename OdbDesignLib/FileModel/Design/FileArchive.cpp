@@ -1,8 +1,10 @@
 #include "FileArchive.h"
 #include <filesystem>
 #include "ArchiveExtractor.h"
+#include "CrossPlatform.h"
 #include "MiscInfoFile.h"
 #include "Logger.h"
+#include "../invalid_odb_error.h"
 #include "StopWatch.h"
 #include "fastmove.h"
 #include <system_error>
@@ -126,10 +128,10 @@ namespace Odb::Lib::FileModel::Design
 		// gzip with archiveName
 		// move archive to directory
 
-		char szTmpNameBuff[L_tmpnam] = { 0 };
-		if (nullptr == std::tmpnam(szTmpNameBuff)) return false;
+		std::string tempName;
+		if (!CrossPlatform::tmpnam_safe(tempName)) return false;
 		
-		auto tempPath = temp_directory_path() / szTmpNameBuff;
+		auto tempPath = temp_directory_path() / tempName;
 		if (!create_directory(tempPath)) return false;
 
 		auto rootPath = tempPath / archiveName;
@@ -354,8 +356,16 @@ namespace Odb::Lib::FileModel::Design
 		loginfo("Parsing misc/info file...");
 
         auto miscDirectory = path / "misc";
-        if (!exists(miscDirectory)) return false;
-        if (!is_directory(miscDirectory)) return false;
+        if (!exists(miscDirectory))
+        {
+            auto message = "misc directory does not exist: [" + miscDirectory.string() + "]";
+            throw invalid_odb_error(message);
+        }
+        if (!is_directory(miscDirectory))
+        {
+            auto message = "misc path is not a directory: [" + miscDirectory.string() + "]";
+            throw invalid_odb_error(message);
+        }
 
         if (!m_miscInfoFile.Parse(miscDirectory)) return false;
 
@@ -369,8 +379,16 @@ namespace Odb::Lib::FileModel::Design
 		loginfo("Parsing misc/attrlist file...");
 
 		auto miscDirectory = path / "misc";
-		if (!exists(miscDirectory)) return false;
-		if (!is_directory(miscDirectory)) return false;
+		if (!exists(miscDirectory))
+		{
+			auto message = "misc directory does not exist: [" + miscDirectory.string() + "]";
+			throw invalid_odb_error(message);
+		}
+		if (!is_directory(miscDirectory))
+		{
+			auto message = "misc path is not a directory: [" + miscDirectory.string() + "]";
+			throw invalid_odb_error(message);
+		}
 
 		if (!m_miscAttrListFile.Parse(miscDirectory)) return false;
 
@@ -384,8 +402,16 @@ namespace Odb::Lib::FileModel::Design
 		loginfo("Parsing matrix/matrix file...");
 
 		auto matrixDir = path / "matrix";
-		if (!exists(matrixDir)) return false;
-		if (!is_directory(matrixDir)) return false;
+		if (!exists(matrixDir))
+		{
+			auto message = "matrix directory does not exist: [" + matrixDir.string() + "]";
+			throw invalid_odb_error(message);
+		}
+		if (!is_directory(matrixDir))
+		{
+			auto message = "matrix path is not a directory: [" + matrixDir.string() + "]";
+			throw invalid_odb_error(message);
+		}
 
 		if (!m_matrixFile.Parse(matrixDir)) return false;
 
@@ -398,8 +424,16 @@ namespace Odb::Lib::FileModel::Design
 		loginfo("Parsing fonts/standard file...");
 
 		auto fontsDir = path / "fonts";
-		if (!exists(fontsDir)) return false;
-		if (!is_directory(fontsDir)) return false;
+		if (!exists(fontsDir))
+		{
+			auto message = "fonts directory does not exist: [" + fontsDir.string() + "]";
+			throw invalid_odb_error(message);
+		}
+		if (!is_directory(fontsDir))
+		{
+			auto message = "fonts path is not a directory: [" + fontsDir.string() + "]";
+			throw invalid_odb_error(message);
+		}
 
 		if (!m_standardFontsFile.Parse(fontsDir)) return false;
 
