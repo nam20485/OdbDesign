@@ -117,7 +117,7 @@ jobs:
       - name: Configure CMake with Coverage Flags
         run: >
           cmake --preset linux-debug
-          -DCMAKE_CXX_FLAGS="--coverage -g -O0"
+          -DCMAKE_CXX_FLAGS="--coverage -g -O0 -fprofile-update=atomic"
           -DCMAKE_EXE_LINKER_FLAGS="--coverage"
           -DCMAKE_SHARED_LINKER_FLAGS="--coverage"
           -DCMAKE_MODULE_LINKER_FLAGS="--coverage"
