@@ -26,21 +26,21 @@ namespace Odb::Lib::FileModel::Design
             if (!OdbFile::Parse(path))
             {
                 auto message = "fonts directory does not exist: [" + path.string() + "]";
-                throw invalid_odb_error(message.c_str());
+                throw invalid_odb_error(message);
             }
 
             auto fontsStandardFile = path / "standard";
             if (!std::filesystem::exists(fontsStandardFile))
             {
                 auto message = "fonts/standard file does not exist: [" + fontsStandardFile.string() + "]";
-                throw invalid_odb_error(message.c_str());
+                throw invalid_odb_error(message);
             }
 
             standardFile.open(fontsStandardFile, std::ios::in);
             if (!standardFile.is_open())
             {
                 auto message = "unable to open fonts/standard file: [" + fontsStandardFile.string() + "]";
-                throw invalid_odb_error(message.c_str());
+                throw invalid_odb_error(message);
             }
 
             std::shared_ptr<CharacterBlock> pCurrentCharacterBlock;

@@ -3,6 +3,7 @@
 #include <sstream>
 #include <algorithm>
 #include <cstdlib>
+#include "str_utils.h"
 
 namespace Odb::Lib::FileModel::Design
 {
@@ -24,17 +25,7 @@ namespace Odb::Lib::FileModel::Design
             while (std::getline(stream, name, ','))
             {
                 // Trim whitespace
-                const auto firstNonWs = name.find_first_not_of(" \t");
-                if (firstNonWs == std::string::npos)
-                {
-                    name.clear();
-                }
-                else
-                {
-                    const auto lastNonWs = name.find_last_not_of(" \t");
-                    name.erase(lastNonWs + 1);
-                    name.erase(0, firstNonWs);
-                }
+                Utils::str_trim(name);
                 if (!name.empty())
                 {
                     m_componentsToTrace.insert(name);

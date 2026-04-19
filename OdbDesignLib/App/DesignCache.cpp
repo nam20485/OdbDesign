@@ -407,13 +407,12 @@ namespace Odb::Lib::App
         {
             logwarn("Failed to find file for design \"" + designName + "\"");
             
-            // DEBUG: List all files in directory
-            logwarn("DEBUG: Listing all files in directory: " + directory);
+            logdebug("Listing all files in directory: " + directory);
             for (const auto& entry : directory_iterator(directory, options))
             {
                 if (entry.is_regular_file())
                 {
-                    logwarn("DEBUG: Found file: " + entry.path().filename().string() + " (stem: " + entry.path().stem().string() + ")");
+                    logdebug("Found file: " + entry.path().filename().string() + " (stem: " + entry.path().stem().string() + ")");
                 }
             }
         }

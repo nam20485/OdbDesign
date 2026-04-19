@@ -18,8 +18,9 @@ env:
   VCPKG_ROOT: ${{ github.workspace }}/vcpkg
   # Override vcpkg's default binary cache to a known path for actions/cache
   VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}/.vcpkg-binary-cache
-  # GitHub Packages NuGet feed URL and binary cache
+  # GitHub Packages NuGet feed URLs used for package source resolution and push/API key association.
   FEED_URL: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
+  FEED_PUSH_URL: https://nuget.pkg.github.com/${{ github.repository_owner }}
   # support for GH dependency graph vcpkg integration
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   VCPKG_FEATURE_FLAGS: dependencygraph
@@ -127,9 +128,10 @@ jobs:
             </packageSourceCredentials>
             <apiKeys>
               <add key="${{ env.FEED_URL }}" value="${{ secrets.VCPKG_PAT_TOKEN }}" />
+              <add key="${{ env.FEED_PUSH_URL }}" value="${{ secrets.VCPKG_PAT_TOKEN }}" />
             </apiKeys>
             <config>
-              <add key="defaultPushSource" value="${{ env.FEED_URL }}" />
+              <add key="defaultPushSource" value="${{ env.FEED_PUSH_URL }}" />
               <add key="signatureValidationMode" value="accept" />
             </config>
           </configuration>
@@ -139,10 +141,15 @@ jobs:
           #      Persisted across runs via actions/cache step below — fast same-branch restore.
           #   2. 'nugetconfig' = GitHub Packages NuGet feed (persistent, shared across branches/PRs)
           #      Survives actions/cache eviction, provides cross-branch sharing.
+          #      Windows writes to the feed; Linux/macOS read only to avoid slow/fragile mono-based push operations.
           # Note: The x-gha and actions backends were removed in vcpkg 2025+.
           # nugettimeout overrides vcpkg's default 100s NuGet CLI timeout (large packages need more time).
           # Note: nugettimeout must come BEFORE nugetconfig to be applied to it
-          echo "VCPKG_BINARY_SOURCES=clear;default,readwrite;nugettimeout,900;nugetconfig,$GITHUB_WORKSPACE/nuget.generated.config,readwrite" >> $GITHUB_ENV
+          if [ "${{ matrix.os }}" = "windows-2022" ]; then
+            echo "VCPKG_BINARY_SOURCES=clear;default,readwrite;nugettimeout,900;nugetconfig,$GITHUB_WORKSPACE/nuget.generated.config,readwrite" >> $GITHUB_ENV
+          else
+            echo "VCPKG_BINARY_SOURCES=clear;default,readwrite;nugettimeout,900;nugetconfig,$GITHUB_WORKSPACE/nuget.generated.config,read" >> $GITHUB_ENV
+          fi
 
       # Persist vcpkg's default local binary cache across workflow runs.
       # This is the fast ephemeral layer — same-branch builds hit this first (< 1 min restore).
@@ -151,7 +158,17 @@ jobs:
         shell: bash
         run: mkdir -p "$VCPKG_DEFAULT_BINARY_CACHE"
 
-      - name: Restore vcpkg Binary Cache
+      - name: Restore vcpkg Binary Cache (Linux)
+        if: matrix.os == 'ubuntu-24.04'
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+          key: vcpkg-archives-linux-x64-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
+          restore-keys: |
+            vcpkg-archives-linux-x64-
+
+      - name: Restore vcpkg Binary Cache (Non-Linux)
+        if: matrix.os != 'ubuntu-24.04'
         uses: actions/cache@v4
         with:
           path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
@@ -168,8 +185,13 @@ jobs:
           # Set environment variable to allow credential provider to work non-interactively
           echo "NUGET_CREDENTIALPROVIDER_SESSIONTOKENCACHE_ENABLED=true" >> $env:GITHUB_ENV
           # Set API key for NuGet push to GitHub Packages
+          # Only call setApiKey if the token is available (Dependabot PRs cannot access secrets)
           $env:NUGET_API_KEY = "${{ secrets.VCPKG_PAT_TOKEN }}"
-          nuget setApiKey $env:NUGET_API_KEY -Source "${{ env.FEED_URL }}" -NonInteractive
+          if ($env:NUGET_API_KEY) {
+            nuget setApiKey $env:NUGET_API_KEY -Source "${{ env.FEED_PUSH_URL }}" -NonInteractive
+          } else {
+            Write-Host "Skipping nuget setApiKey: VCPKG_PAT_TOKEN is not available (likely a Dependabot PR)"
+          }
           # Also set in environment for vcpkg to use
           echo "NUGET_API_KEY=${{ secrets.VCPKG_PAT_TOKEN }}" >> $env:GITHUB_ENV
 
@@ -178,7 +200,7 @@ jobs:
         shell: bash
         run: |
           # Set API key for NuGet push to GitHub Packages
-          mono $(which nuget) setApiKey "${{ secrets.VCPKG_PAT_TOKEN }}" -Source "${{ env.FEED_URL }}" -NonInteractive || true
+          mono $(which nuget) setApiKey "${{ secrets.VCPKG_PAT_TOKEN }}" -Source "${{ env.FEED_PUSH_URL }}" -NonInteractive || true
 
       #
       #   os != windows-2022 (i.e. Linux, MacOS)

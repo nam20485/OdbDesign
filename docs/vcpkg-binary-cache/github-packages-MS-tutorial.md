@@ -152,7 +152,7 @@ system package manager:
 apt install mono-complete
 ```
 
-Note that `ubuntu-22.04` GitHub Actions runners come with `mono` preinstalled, but starting with
+Note that `ubuntu-22.04` GitHub Actions runners came with `mono` preinstalled, but starting with
 `ubuntu-24.04` (which `ubuntu-latest` currently points to), `mono` no longer comes preinstalled.
 
 ```YAML
