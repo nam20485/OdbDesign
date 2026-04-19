@@ -1,0 +1,199 @@
+name: Code Coverage
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["development", "staging", "main", "release", "nam20485"]
+  pull_request:
+    branches: ["development", "staging", "main", "release", "nam20485"]
+
+concurrency:
+  group: code-coverage-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  checks: write
+  packages: write
+
+env:
+  VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+  VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}/.vcpkg-binary-cache
+  FEED_URL: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
+  FEED_PUSH_URL: https://nuget.pkg.github.com/${{ github.repository_owner }}
+  VCPKG_FEATURE_FLAGS: dependencygraph
+  USERNAME: ${{ github.repository_owner }}
+  NUGET_XMLDOC_MODE: skip
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  NUGET_TIMEOUT: 1200
+  NUGET_PUSH_TIMEOUT_IN_SECONDS: 1200
+
+jobs:
+  coverage-linux:
+    name: Linux Coverage
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.1
+        with:
+          egress-policy: audit
+
+      - name: Checkout Repository
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      - name: Checkout OdbDesign Test Data Repository
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          repository: "nam20485/OdbDesignTestData"
+          path: "OdbDesignTestData"
+          ref: "main"
+
+      - name: Add Problem Matchers
+        uses: ammaraskar/gcc-problem-matcher@0f9c86f9e693db67dacf53986e1674de5f2e5f28 # master
+
+      - name: Install Coverage Dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y -q --no-install-recommends build-essential tar curl zip unzip mono-devel linux-libc-dev lcov
+
+      - name: Generate NuGet Config for Binary Cache
+        shell: bash
+        run: |
+          cat > "$GITHUB_WORKSPACE/nuget.generated.config" << 'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <configuration>
+            <packageSources>
+              <clear />
+              <add key="GitHubPackages" value="${{ env.FEED_URL }}" />
+            </packageSources>
+            <packageSourceCredentials>
+              <GitHubPackages>
+                <add key="Username" value="${{ env.USERNAME }}" />
+                <add key="ClearTextPassword" value="${{ secrets.VCPKG_PAT_TOKEN }}" />
+              </GitHubPackages>
+            </packageSourceCredentials>
+            <apiKeys>
+              <add key="${{ env.FEED_URL }}" value="${{ secrets.VCPKG_PAT_TOKEN }}" />
+              <add key="${{ env.FEED_PUSH_URL }}" value="${{ secrets.VCPKG_PAT_TOKEN }}" />
+            </apiKeys>
+            <config>
+              <add key="defaultPushSource" value="${{ env.FEED_PUSH_URL }}" />
+              <add key="signatureValidationMode" value="accept" />
+            </config>
+          </configuration>
+          EOF
+          echo "VCPKG_BINARY_SOURCES=clear;default,readwrite;nugettimeout,900;nugetconfig,$GITHUB_WORKSPACE/nuget.generated.config,read" >> $GITHUB_ENV
+
+      - name: Create vcpkg Binary Cache Directory
+        shell: bash
+        run: mkdir -p "$VCPKG_DEFAULT_BINARY_CACHE"
+
+      - name: Restore vcpkg Binary Cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+          key: vcpkg-archives-linux-x64-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
+          restore-keys: |
+            vcpkg-archives-linux-x64-
+
+      - name: Setup NuGet API Key
+        shell: bash
+        run: |
+          mono $(which nuget) setApiKey "${{ secrets.VCPKG_PAT_TOKEN }}" -Source "${{ env.FEED_PUSH_URL }}" -NonInteractive || true
+
+      - name: Install vcpkg
+        run: |
+          git clone https://github.com/Microsoft/vcpkg.git ${{ env.VCPKG_ROOT }}
+          "${{ env.VCPKG_ROOT }}/bootstrap-vcpkg.sh"
+
+      - name: Install Ninja
+        uses: seanmiddleditch/gha-setup-ninja@8b297075da4cd2a5f1fd21fe011b499edf06e9d2 # master
+
+      - name: Install vcpkg Dependencies
+        run: '"${{ env.VCPKG_ROOT }}/vcpkg" install'
+
+      - name: Configure CMake with Coverage Flags
+        run: >
+          cmake --preset linux-debug
+          -DCMAKE_CXX_FLAGS="--coverage -g -O0 -fprofile-update=atomic"
+          -DCMAKE_EXE_LINKER_FLAGS="--coverage"
+          -DCMAKE_SHARED_LINKER_FLAGS="--coverage"
+          -DCMAKE_MODULE_LINKER_FLAGS="--coverage"
+
+      - name: Build Coverage Configuration
+        run: cmake --build --preset linux-debug
+
+      - name: Run Tests
+        env:
+          ODB_TEST_DATA_DIR: ${{ github.workspace }}/OdbDesignTestData/TEST_DATA
+          ODB_TEST_ENVIRONMENT_VARIABLE: ${{ vars.ODB_TEST_ENVIRONMENT_VARIABLE }}
+        run: >
+          ctest --test-dir ./out/build/linux-debug/OdbDesignTests
+          --output-log ${{ github.workspace }}/coverage-testlog.txt
+          --output-junit ${{ github.workspace }}/coverage-testlog.xml
+          --output-on-failure
+
+      - name: Report Test Results
+        uses: dorny/test-reporter@31a54ee7ebcacc03a09ea97a7e5465a47b84aea5 # v1.9.1
+        if: ${{ !cancelled() }}
+        with:
+          name: linux-coverage-test-results
+          path: ${{ github.workspace }}/coverage-testlog.xml
+          reporter: java-junit
+          fail-on-error: true
+
+      - name: Generate Coverage Report
+        shell: bash
+        run: |
+          mkdir -p coverage/html
+          lcov --capture \
+            --directory ./out/build/linux-debug \
+            --output-file coverage/coverage.info \
+            --quiet \
+            --ignore-errors mismatch \
+            --rc geninfo_unexecuted_blocks=1
+          lcov --remove coverage/coverage.info \
+            '/usr/*' \
+            '*/vcpkg/*' \
+            '*/_deps/*' \
+            '*/OdbDesignTests/*' \
+            --output-file coverage/coverage.info \
+            --quiet \
+            --ignore-errors unused
+          lcov --summary coverage/coverage.info > coverage/coverage_summary.txt
+          genhtml coverage/coverage.info \
+            --output-directory coverage/html \
+            --quiet \
+            --title "OdbDesign Test Coverage" \
+            --show-details \
+            --legend
+
+      - name: Upload Coverage Artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: linux-coverage-report
+          path: coverage/
+          retention-days: 14
+
+      - name: Upload Coverage to Codacy
+        if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
+        env:
+          CODACY_API_TOKEN: ${{ secrets.CODACY_API_TOKEN }}
+          CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
+          CODACY_ORGANIZATION_PROVIDER: gh
+          CODACY_USERNAME: ${{ github.repository_owner }}
+          CODACY_PROJECT_NAME: ${{ github.event.repository.name }}
+        shell: bash
+        run: |
+          if [[ -z "${CODACY_API_TOKEN}" && -z "${CODACY_PROJECT_TOKEN}" ]]; then
+            echo "No Codacy token configured; skipping coverage upload."
+            exit 0
+          fi
+
+          # Avoid passing empty token values through the uploader wrapper.
+          [[ -n "${CODACY_PROJECT_TOKEN}" ]] || unset CODACY_PROJECT_TOKEN
+          [[ -n "${CODACY_API_TOKEN}" ]] || unset CODACY_API_TOKEN
+
+          bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r coverage/coverage.info
