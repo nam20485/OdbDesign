@@ -192,4 +192,8 @@ jobs:
             exit 0
           fi
 
+          # Avoid passing empty token values through the uploader wrapper.
+          [[ -n "${CODACY_PROJECT_TOKEN}" ]] || unset CODACY_PROJECT_TOKEN
+          [[ -n "${CODACY_API_TOKEN}" ]] || unset CODACY_API_TOKEN
+
           bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r coverage/coverage.info
