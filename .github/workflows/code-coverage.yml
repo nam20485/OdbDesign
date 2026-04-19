@@ -159,7 +159,9 @@ jobs:
             '*/vcpkg/*' \
             '*/_deps/*' \
             '*/OdbDesignTests/*' \
-            --output-file coverage/coverage.info --quiet
+            --output-file coverage/coverage.info \
+            --quiet \
+            --ignore-errors unused
           lcov --summary coverage/coverage.info > coverage/coverage_summary.txt
           genhtml coverage/coverage.info \
             --output-directory coverage/html \
