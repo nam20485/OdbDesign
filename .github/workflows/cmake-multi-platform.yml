@@ -158,7 +158,17 @@ jobs:
         shell: bash
         run: mkdir -p "$VCPKG_DEFAULT_BINARY_CACHE"
 
-      - name: Restore vcpkg Binary Cache
+      - name: Restore vcpkg Binary Cache (Linux)
+        if: matrix.os == 'ubuntu-24.04'
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+          key: vcpkg-archives-linux-x64-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
+          restore-keys: |
+            vcpkg-archives-linux-x64-
+
+      - name: Restore vcpkg Binary Cache (Non-Linux)
+        if: matrix.os != 'ubuntu-24.04'
         uses: actions/cache@v4
         with:
           path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
