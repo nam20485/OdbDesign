@@ -148,7 +148,12 @@ jobs:
         shell: bash
         run: |
           mkdir -p coverage/html
-          lcov --capture --directory ./out/build/linux-debug --output-file coverage/coverage.info --quiet
+          lcov --capture \
+            --directory ./out/build/linux-debug \
+            --output-file coverage/coverage.info \
+            --quiet \
+            --ignore-errors mismatch \
+            --rc geninfo_unexecuted_blocks=1
           lcov --remove coverage/coverage.info \
             '/usr/*' \
             '*/vcpkg/*' \
