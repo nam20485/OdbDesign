@@ -1,10 +1,10 @@
 param(
     # Cluster name
-    [Parameter(Mandatory=$true)]    
-    [string]$ClusterName,
+    [Parameter(Mandatory=$false)]    
+    [string]$ClusterName = "k3d-k3dcluster",
     # Deployment name
-    [Parameter(Mandatory=$true)]
-    [string]$DeploymentName
+    [Parameter(Mandatory=$false)]
+    [string]$DeploymentName = "odbdesign-server-v1"
 )
 
 # set kubeconfig
