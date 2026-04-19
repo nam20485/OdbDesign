@@ -42,3 +42,8 @@ designs/
 /docs/vcpkg-binary-cache/gemini-instructions.md
 .cursor\rules\openmemory.mdc
 .vscode/c_cpp_properties.json
+gpg_keys/
+
+
+#Ignore insiders AI rules
+.github\instructions\codacy.instructions.md
