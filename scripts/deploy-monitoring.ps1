@@ -1,4 +1,12 @@
+param(
+    [switch]$Wait,
+    [int]$WaitTimeoutSeconds = 600
+)
+
 $ErrorActionPreference = "Stop"
+
+$RepoRoot = Split-Path -Parent $PSScriptRoot
+Set-Location $RepoRoot
 
 function Test-Command {
     param([string]$Name)
@@ -43,6 +51,23 @@ function Ensure-Helm {
     Write-Host "helm installed: $version"
 }
 
+function Wait-RolloutInNamespace {
+    param(
+        [string]$Namespace,
+        [int]$TimeoutSeconds
+    )
+    $kinds = @("deploy", "sts", "ds")
+    foreach ($k in $kinds) {
+        $names = kubectl get $k -n $Namespace -o name 2>$null
+        if (-not $names) { continue }
+        foreach ($line in $names) {
+            if ([string]::IsNullOrWhiteSpace($line)) { continue }
+            Write-Host "  rollout status $line (namespace $Namespace)..."
+            kubectl rollout status $line -n $Namespace --timeout="${TimeoutSeconds}s"
+        }
+    }
+}
+
 Ensure-Helm
 
 kubectl create namespace monitoring --dry-run=client -o yaml | kubectl apply -f -
@@ -54,5 +79,15 @@ helm repo update
 helm upgrade --install prom prometheus-community/kube-prometheus-stack -n monitoring --values ./deploy/helm/values-prom.yaml
 kubectl --namespace monitoring get pods -l "release=prom"
 
+if ($Wait) {
+    Write-Host "Waiting for monitoring stack rollouts (timeout ${WaitTimeoutSeconds}s)..."
+    Wait-RolloutInNamespace -Namespace "monitoring" -TimeoutSeconds $WaitTimeoutSeconds
+}
+
 #kubectl delete -f https://raw.githubusercontent.com/aquasecurity/trivy-operator/v0.1.5/deploy/static/trivy-operator.yaml
 helm upgrade --install trivy-operator aqua/trivy-operator --namespace trivy-system --create-namespace --version 0.11.0 --values ./deploy/helm/values-trivy.yaml
+
+if ($Wait) {
+    Write-Host "Waiting for Trivy Operator rollouts (timeout ${WaitTimeoutSeconds}s)..."
+    Wait-RolloutInNamespace -Namespace "trivy-system" -TimeoutSeconds $WaitTimeoutSeconds
+}

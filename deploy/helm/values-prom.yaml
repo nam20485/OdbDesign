@@ -1,5 +1,32 @@
+# kube-prometheus-stack overrides.
+# Grafana and Prometheus are exposed on the same host/port as Traefik (see create-k3d-cluster / local-ingress).
+
 prometheus:
   prometheusSpec:
     serviceMonitorSelectorNilUsesHelmValues: true
     serviceMonitorSelector: {}
     serviceMonitorNamespaceSelector: {}
+    # Must match prometheus.ingress.paths (Traefik forwards /prometheus → Prometheus).
+    routePrefix: /prometheus
+    externalUrl: http://precision5820:8081/prometheus
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    hosts:
+      - precision5820
+    paths:
+      - /prometheus
+    pathType: Prefix
+
+grafana:
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    hosts:
+      - precision5820
+    path: /grafana
+  # Required when serving Grafana behind a sub-path (same Traefik entrypoint as :8081).
+  grafana.ini:
+    server:
+      root_url: http://precision5820:8081/grafana/
+      serve_from_sub_path: true

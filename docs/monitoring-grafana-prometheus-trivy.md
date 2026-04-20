@@ -1,0 +1,153 @@
+# Grafana, Prometheus, and Trivy (how to open and verify)
+
+This repo deploys **kube-prometheus-stack** (Prometheus + Grafana) into the `monitoring` namespace and the **Trivy Operator** into `trivy-system`. Monitoring is wired to the same Traefik HTTP entrypoint as the app (host `precision5820`, port **8081** on your k3d setup).
+
+## 1. Deploy or refresh the stack
+
+From the repository root:
+
+```powershell
+.\scripts\deploy-monitoring.ps1 -Wait
+```
+
+- **`-Wait`** waits for Deployments, StatefulSets, and DaemonSets in `monitoring` and `trivy-system` to finish rolling out (default timeout **600** seconds). Omit it if you only want Helm to apply and exit.
+- If your cluster hostname or Traefik port is not `precision5820` / `8081`, edit `deploy/helm/values-prom.yaml` first: set `grafana.ingress.hosts`, `grafana.grafana.ini.server.root_url`, `prometheus.ingress.hosts`, and `prometheus.prometheusSpec.externalUrl` to match, then rerun the script.
+
+Ensure Traefik is running and your ingress for the host exists (for the app you use `deploy/kube/local-ingress.yaml`). Grafana and Prometheus get **their own Ingress objects** in `monitoring` from Helm; they share the same host and port as long as Traefik listens on `8081` for that host.
+
+## 2. URLs (browser)
+
+| What | URL |
+|------|-----|
+| **Grafana** | `http://precision5820:8081/grafana/` |
+| **Prometheus** | `http://precision5820:8081/prometheus/` |
+| **OdbDesign** (same Traefik) | `http://precision5820:8081/` |
+
+Use the hostname or IP that actually resolves from your machine (for example `http://192.168.1.30:8081/grafana/` if you use the LAN IP). Paths are **prefix** routes: Grafana is under `/grafana`, Prometheus under `/prometheus`, so they do not clash with `/` or `/swagger`.
+
+If a page returns 404, check:
+
+1. `kubectl get ingress -n monitoring` — you should see Grafana and Prometheus ingresses with host `precision5820` (or your edited host).
+2. `kubectl get pods -n kube-system` (or wherever Traefik runs) — Traefik must be Ready.
+3. Firewall / k3d port mapping still exposes **8081** to the client you are browsing from.
+
+## 3. Grafana (web UI)
+
+### 3.1 Log in
+
+1. Open `http://precision5820:8081/grafana/` (or your equivalent).
+2. User is **`admin`** unless you changed `grafana.adminUser` in Helm values.
+3. Password comes from the Grafana secret (release name `prom` → secret name **`prom-grafana`**):
+
+```powershell
+kubectl get secret prom-grafana -n monitoring -o jsonpath='{.data.admin-password}' | ForEach-Object { [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($_)) }
+```
+
+Copy the printed string and paste it into the Grafana password field.
+
+### 3.2 Confirm Prometheus data source
+
+1. After login, go to **Connections → Data sources** (or **Configuration → Data sources** in older layouts).
+2. Open the **Prometheus** data source. URL should point at the in-cluster Prometheus service (the chart provisions this). Click **Save & test** — you want a green success message.
+
+### 3.3 Open a dashboard
+
+1. Go to **Dashboards** and open one of the preloaded Kubernetes / Node dashboards (for example **Kubernetes / Compute Resources / Cluster**).
+2. Set time range to **Last 15 minutes** and confirm panels show data. If everything is empty, see §5 (Prometheus targets).
+
+### 3.4 Optional: Explore (PromQL)
+
+1. Open **Explore** (compass icon).
+2. Choose data source **Prometheus**.
+3. Run a simple query, e.g. `up` or `node_cpu_seconds_total`. You should see a graph or table if scraping works.
+
+## 4. Prometheus (web UI)
+
+### 4.1 Graph
+
+1. Open `http://precision5820:8081/prometheus/`.
+2. Open the **Graph** tab.
+3. Enter `up` and click **Execute**. You should see time series with value `1` for healthy scrape targets.
+
+### 4.2 Targets (most important health check)
+
+1. In Prometheus, open **Status → Targets**.
+2. You should see many jobs (e.g. `node-exporter`, `kubelet`, `kubernetes-pods`, `kube-prometheus-stack`). **State** should be **UP** for the ones that apply to your cluster.
+3. If the Trivy Operator ServiceMonitor is enabled (`deploy/helm/values-trivy.yaml`), look for a target related to **trivy** (name may vary by version). If it is **DOWN**, check the pod in `trivy-system` and ServiceMonitor labels.
+
+### 4.3 Alerts
+
+Open **Alerts** to see firing / pending Prometheus alerts from the stack.
+
+### 4.4 Fallback: port-forward (no Traefik)
+
+If you need to bypass the ingress:
+
+```powershell
+kubectl port-forward -n monitoring svc/prom-kube-prometheus-stack-prometheus 9090:9090
+```
+
+Then open `http://127.0.0.1:9090` (or `http://127.0.0.1:9090/prometheus/graph` if your Prometheus instance uses a non-root `routePrefix`). List services with `kubectl get svc -n monitoring` if your release name is not `prom`.
+
+## 5. Trivy (what to open — mostly CRs and metrics)
+
+The **Trivy Operator** does **not** ship a full “scanner web app” like a standalone Trivy UI. You work with **Kubernetes APIs and reports**, and optionally **metrics** in Prometheus / Grafana.
+
+### 5.1 Check the operator is running
+
+```powershell
+kubectl get pods -n trivy-system
+kubectl get deployment -n trivy-system
+```
+
+All pods should be **Running** / **Ready**.
+
+### 5.2 View vulnerability reports (CLI)
+
+After workloads are scanned, reports appear as CRs:
+
+```powershell
+kubectl get vulnerabilityreports -A
+kubectl get vulnerabilityreports -A -o wide
+```
+
+Pick one:
+
+```powershell
+kubectl describe vulnerabilityreport <name> -n <namespace>
+```
+
+For YAML detail (CVE lists, severity):
+
+```powershell
+kubectl get vulnerabilityreport <name> -n <namespace> -o yaml
+```
+
+Other report types (depending on operator version and config) may include **ConfigAuditReport**, **ExposedSecretReport**, **RbacAssessmentReport** — use `kubectl api-resources | grep trivy` to see names in your cluster.
+
+### 5.3 See Trivy in Prometheus / Grafana
+
+With `serviceMonitor.enabled: true` in `values-trivy.yaml`, the operator exposes metrics that Prometheus can scrape.
+
+1. In Prometheus (**Status → Targets**), find the scrape job for Trivy.
+2. In Grafana **Explore**, try metrics with prefix like `trivy_operator_` (exact names vary by version). Use **Metrics browser** or Prometheus **Graph** with autocomplete.
+
+### 5.4 Optional: metrics port-forward
+
+If you need raw Prometheus metrics from the operator:
+
+```powershell
+kubectl get pods -n trivy-system
+kubectl port-forward -n trivy-system pod/<trivy-operator-pod-name> 8080:8080
+```
+
+Then open `http://127.0.0.1:8080/metrics` in a browser (port may differ; check the pod spec for the metrics port). This is **text**, not a dashboard.
+
+## 6. Quick checklist: “everything works”
+
+- [ ] `http://precision5820:8081/grafana/` loads and login works.
+- [ ] Grafana **Prometheus** data source **Save & test** succeeds.
+- [ ] Prometheus **Status → Targets** shows most targets **UP**.
+- [ ] `kubectl get vulnerabilityreports -A` returns (possibly empty until scans run; operator Ready is what matters first).
+
+If Grafana loads but assets look broken, confirm you are using the **subpath** URL (`/grafana/`) and that `serve_from_sub_path` is set in `deploy/helm/values-prom.yaml` as in this repo.
