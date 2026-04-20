@@ -40,6 +40,9 @@ spec:
           ports:
             - containerPort: 8888
               name: ods-dep-port
+            - containerPort: 50051
+              name: ods-grpc-port
+              protocol: TCP
           volumeMounts:
             - mountPath: /OdbDesign/designs
               name: odbdesign-server-storage
