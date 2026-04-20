@@ -9,6 +9,7 @@ services:
       - ./compose-designs:/OdbDesign/designs
     ports:
       - 8888:8888
+      - 50051:50051
     environment:
       - ODBDESIGN_SERVER_REQUEST_USERNAME
       - ODBDESIGN_SERVER_REQUEST_PASSWORD
@@ -22,6 +23,7 @@ services:
   #     - ./compose-designs:/OdbDesign/designs
   #   ports:
   #     - 8888:8888
+  #     - 50051:50051
   #   environment:
   #     - ODBDESIGN_SERVER_REQUEST_USERNAME
   #     - ODBDESIGN_SERVER_REQUEST_PASSWORD   

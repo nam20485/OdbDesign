@@ -8,6 +8,9 @@ param(
     # Ingress host port
     [Parameter(Mandatory=$true)]
     [int]$IngressHostPort = 8081,
+    # gRPC host port (LAN access to OdbDesignServer gRPC)
+    [Parameter(Mandatory=$false)]
+    [int]$GrpcHostPort = 50051,
     # When set to true, the cluster will be deleted first
     [switch]$DeleteClusterFirst = $false,
     # When set to true, the cluster will be deleted without asking for confirmation
@@ -27,6 +30,7 @@ $hostIp = "192.168.1.30"
 # $hostIp = "192.168.1.101"
 $ingressHostName = "precision5820"
 $firewallRuleDisplayName = "k3d $ClusterName ingress $IngressHostPort"
+$grpcFirewallRuleDisplayName = "k3d $ClusterName grpc $GrpcHostPort"
 
 function Ensure-IngressFirewallRule {
     param(
@@ -80,12 +84,14 @@ k3d cluster create $ClusterName `
     --k3s-arg="--tls-san=${ingressHostName}@server:0" `
     --port "${IngressHostPort}:80@loadbalancer" `
     --port "8443:443@loadbalancer" `
+    --port "${GrpcHostPort}:50051@loadbalancer" `
     --volume ${HostVolumePath}:/k3dvolume@all
     # --volume ${HostVolumePath}:/tmp/k3dvolume@all
 
 Write-Host "Cluster '$ClusterName' created."
 
 Ensure-IngressFirewallRule -DisplayName $firewallRuleDisplayName -Port $IngressHostPort
+Ensure-IngressFirewallRule -DisplayName $grpcFirewallRuleDisplayName -Port $GrpcHostPort
 
 if ($StartWithWindows) {
     $registerScriptPath = Join-Path $PSScriptRoot "register-k3d-startup-task.ps1"

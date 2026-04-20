@@ -86,8 +86,7 @@ LABEL org.opencontainers.image.source=https://github.com/nam20485/OdbDesign \
     org.opencontainers.image.documentation=https://github.com/nam20485/OdbDesign?tab=readme-ov-file \
     org.opencontainers.image.title="OdbDesign Server"
 
-EXPOSE 8888
-EXPOSE 50051
+EXPOSE 8888 50051
 
 # install dependencies (7z command)
 RUN apt-get update && \

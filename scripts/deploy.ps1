@@ -31,6 +31,7 @@ kubectl apply -f deploy/kube/k3d-volume-pvc.yaml
 # apply deployment/service manifests
 kubectl apply -f deploy/kube/OdbDesignServer/deployment.yaml
 kubectl apply -f deploy/kube/OdbDesignServer/service.yaml
+kubectl apply -f deploy/kube/OdbDesignServer/service-grpc.yaml
 
 # restart deployment
 kubectl rollout restart deployment/$DeploymentName
