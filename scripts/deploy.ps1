@@ -4,7 +4,9 @@ param(
     [string]$ClusterName = "k3d-k3dcluster",
     # Deployment name
     [Parameter(Mandatory=$false)]
-    [string]$DeploymentName = "odbdesign-server-v1"
+    [string]$DeploymentName = "odbdesign-server-v1",
+    # Skip post-deploy gRPC validation
+    [switch]$SkipGrpcValidation = $false
 )
 
 # set kubeconfig
@@ -56,3 +58,9 @@ kubectl rollout status deployment/odbdesign-server-swaggerui-v1
 
 # apply ingress manifest
 kubectl apply -f deploy/kube/local-ingress.yaml
+
+if (-not $SkipGrpcValidation) {
+    & "$PSScriptRoot\validate-grpc-exposure.ps1" `
+        -ClusterName $ClusterName `
+        -DeploymentName $DeploymentName
+}

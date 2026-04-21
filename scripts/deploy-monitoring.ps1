@@ -72,6 +72,9 @@ Ensure-Helm
 
 kubectl create namespace monitoring --dry-run=client -o yaml | kubectl apply -f -
 
+# Traefik strips /prometheus on ingress so Prometheus can keep API at / (Freelens, Grafana).
+kubectl apply -f ./deploy/kube/traefik-middleware-prometheus-stripprefix.yaml
+
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm repo add aqua https://aquasecurity.github.io/helm-charts/
 helm repo update

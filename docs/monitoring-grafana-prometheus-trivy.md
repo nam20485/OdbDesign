@@ -15,6 +15,8 @@ From the repository root:
 
 Ensure Traefik is running and your ingress for the host exists (for the app you use `deploy/kube/local-ingress.yaml`). Grafana and Prometheus get **their own Ingress objects** in `monitoring` from Helm; they share the same host and port as long as Traefik listens on `8081` for that host.
 
+**Prometheus path vs in-cluster clients:** Prometheus must answer the HTTP API at **`http://<prometheus-service>:9090/api/v1/...`** (path `/`, not `/prometheus/...`). Tools such as **Freelens/Lens** use that URL inside the cluster. The deploy script applies **`deploy/kube/traefik-middleware-prometheus-stripprefix.yaml`**, which strips the **`/prometheus`** prefix on Traefik so the browser can still use `http://precision5820:8081/prometheus/` without breaking in-cluster queries. If the Middleware fails to apply (wrong Traefik API version), see the comments in that YAML file.
+
 ## 2. URLs (browser)
 
 | What | URL |

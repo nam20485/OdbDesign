@@ -6,12 +6,15 @@ prometheus:
     serviceMonitorSelectorNilUsesHelmValues: true
     serviceMonitorSelector: {}
     serviceMonitorNamespaceSelector: {}
-    # Must match prometheus.ingress.paths (Traefik forwards /prometheus → Prometheus).
-    routePrefix: /prometheus
-    externalUrl: http://precision5820:8081/prometheus
+    # Do NOT set routePrefix to a subpath here: Prometheus must serve /api/v1 at the
+    # Service root (port 9090) so Freelens/Lens and Grafana’s datasource work in-cluster.
+    # External URL http://precision5820:8081/prometheus uses Traefik StripPrefix (see
+    # deploy/kube/traefik-middleware-prometheus-stripprefix.yaml + ingress annotations).
   ingress:
     enabled: true
     ingressClassName: traefik
+    annotations:
+      traefik.ingress.kubernetes.io/router.middlewares: monitoring-prometheus-stripprefix@kubernetescrd
     hosts:
       - precision5820
     paths:

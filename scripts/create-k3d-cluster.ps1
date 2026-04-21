@@ -94,6 +94,7 @@ k3d cluster create $ClusterName `
     # --volume ${HostVolumePath}:/tmp/k3dvolume@all
 
 Write-Host "Cluster '$ClusterName' created."
+Write-Host "If this cluster existed before gRPC host-port support was added, it must be recreated to publish TCP/$GrpcHostPort on the load balancer."
 
 Ensure-IngressFirewallRule -DisplayName $firewallRuleDisplayName -Port $IngressHostPort
 Ensure-IngressFirewallRule -DisplayName $grpcFirewallRuleDisplayName -Port $GrpcHostPort
