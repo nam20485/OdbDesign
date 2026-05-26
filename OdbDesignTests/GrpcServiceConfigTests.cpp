@@ -55,8 +55,8 @@ namespace Odb::Test::Config
         ASSERT_NE(config, nullptr);
 
         // Pre-existing defaults
-        EXPECT_EQ(config->max_receive_message_size_mb, 150);
-        EXPECT_EQ(config->max_send_message_size_mb, 150);
+        EXPECT_EQ(config->max_receive_message_size_mb, 250);
+        EXPECT_EQ(config->max_send_message_size_mb, 250);
         EXPECT_TRUE(config->compression_enabled);
         EXPECT_TRUE(config->enable_batch_streaming);
         EXPECT_EQ(config->batch_size, 500);
