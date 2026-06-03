@@ -8,6 +8,7 @@
 #include "SymbolName.h"
 #include "equals_within.h"
 #include "macros.h"
+#include "../../Text/Utf8Sanitizer.h"
 
 #include <algorithm>
 #include <cctype>
@@ -887,14 +888,14 @@ namespace Odb::Lib::FileModel::Design
 		std::unique_ptr<Odb::Lib::Protobuf::FeaturesFile> pFeaturesFileMessage(new Odb::Lib::Protobuf::FeaturesFile);
 		pFeaturesFileMessage->set_id(m_id);
 		pFeaturesFileMessage->set_numfeatures(m_numFeatures);
-		pFeaturesFileMessage->set_units(m_units);
+		pFeaturesFileMessage->set_units(Odb::Lib::Text::ToUtf8(m_units));
 		for (const auto &pFeatureRecord : m_featureRecords)
 		{
 			pFeaturesFileMessage->add_featurerecords()->CopyFrom(*pFeatureRecord->to_protobuf());
 		}
 		for (const auto &kvSymbolName : m_symbolNamesByName)
 		{
-			(*pFeaturesFileMessage->mutable_symbolnamesbyname())[kvSymbolName.first] = *kvSymbolName.second->to_protobuf();
+			(*pFeaturesFileMessage->mutable_symbolnamesbyname())[Odb::Lib::Text::ToUtf8(kvSymbolName.first)] = *kvSymbolName.second->to_protobuf();
 		}
 		for (const auto &symbolName : m_symbolNames)
 		{

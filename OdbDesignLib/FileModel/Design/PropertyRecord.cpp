@@ -1,4 +1,5 @@
 #include "PropertyRecord.h"
+#include "../../Text/Utf8Sanitizer.h"
 
 namespace Odb::Lib::FileModel::Design
 {
@@ -7,8 +8,8 @@ namespace Odb::Lib::FileModel::Design
     PropertyRecord::to_protobuf() const
     {
         std::unique_ptr<Odb::Lib::Protobuf::PropertyRecord> pPropertyRecordMessage(new Odb::Lib::Protobuf::PropertyRecord);
-        pPropertyRecordMessage->set_name(name);
-        pPropertyRecordMessage->set_value(value);
+        pPropertyRecordMessage->set_name(Odb::Lib::Text::ToUtf8(name));
+        pPropertyRecordMessage->set_value(Odb::Lib::Text::ToUtf8(value));
         for (const auto& f : floatValues)
         {
             pPropertyRecordMessage->add_floatvalues(f);

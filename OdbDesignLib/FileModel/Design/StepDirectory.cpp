@@ -5,6 +5,7 @@
 #include <sstream>
 #include "Logger.h"
 #include <memory>
+#include "../../Text/Utf8Sanitizer.h"
 
 
 namespace Odb::Lib::FileModel::Design
@@ -220,8 +221,8 @@ namespace Odb::Lib::FileModel::Design
     std::unique_ptr<Odb::Lib::Protobuf::StepDirectory> StepDirectory::to_protobuf() const
     {
         std::unique_ptr<Odb::Lib::Protobuf::StepDirectory> pStepDirectoryMessage(new Odb::Lib::Protobuf::StepDirectory);
-        pStepDirectoryMessage->set_name(m_name);
-        pStepDirectoryMessage->set_path(m_path.string());
+        pStepDirectoryMessage->set_name(Odb::Lib::Text::ToUtf8(m_name));
+        pStepDirectoryMessage->set_path(Odb::Lib::Text::ToUtf8(m_path.string()));
         pStepDirectoryMessage->mutable_edadatafile()->CopyFrom(*m_edaData.to_protobuf());
         pStepDirectoryMessage->mutable_attrlistfile()->CopyFrom(*m_attrListFile.to_protobuf());
         pStepDirectoryMessage->mutable_profilefile()->CopyFrom(*m_profileFile.to_protobuf());
@@ -229,14 +230,14 @@ namespace Odb::Lib::FileModel::Design
 
         for (const auto& kvNetlistFile : m_netlistsByName)
         {
-            (*pStepDirectoryMessage->mutable_netlistsbyname())[kvNetlistFile.first] = *kvNetlistFile.second->to_protobuf();
-        }        
+            (*pStepDirectoryMessage->mutable_netlistsbyname())[Odb::Lib::Text::ToUtf8(kvNetlistFile.first)] = *kvNetlistFile.second->to_protobuf();
+        }
 
         for (const auto& kvLayerDirectoryRecord : m_layersByName)
         {
-            (*pStepDirectoryMessage->mutable_layersbyname())[kvLayerDirectoryRecord.first] = *kvLayerDirectoryRecord.second->to_protobuf();
+            (*pStepDirectoryMessage->mutable_layersbyname())[Odb::Lib::Text::ToUtf8(kvLayerDirectoryRecord.first)] = *kvLayerDirectoryRecord.second->to_protobuf();
         }
-        
+
         return pStepDirectoryMessage;
     }
 
