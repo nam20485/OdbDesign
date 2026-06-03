@@ -10,6 +10,7 @@
 #include "../invalid_odb_error.h"
 #include <climits>
 #include "ComponentHeightTracer.h"
+#include "../../Text/Utf8Sanitizer.h"
 
 using namespace std::filesystem;
 
@@ -84,21 +85,21 @@ namespace Odb::Lib::FileModel::Design
 	std::unique_ptr<Odb::Lib::Protobuf::ComponentsFile> ComponentsFile::to_protobuf() const
 	{
 		std::unique_ptr<Odb::Lib::Protobuf::ComponentsFile> pComponentsFileMessage(new Odb::Lib::Protobuf::ComponentsFile);
-		pComponentsFileMessage->set_units(m_units);
+		pComponentsFileMessage->set_units(Odb::Lib::Text::ToUtf8(m_units));
 		pComponentsFileMessage->set_id(m_id);
 		pComponentsFileMessage->set_side(static_cast<Odb::Lib::Protobuf::BoardSide>(m_side));
-		pComponentsFileMessage->set_layername(m_layerName);
+		pComponentsFileMessage->set_layername(Odb::Lib::Text::ToUtf8(m_layerName));
 		pComponentsFileMessage->set_path(m_path.string());
 		pComponentsFileMessage->set_directory(m_directory.string());
 
 		for (const auto& attributeName : m_attributeNames)
 		{
-			pComponentsFileMessage->add_attributenames(attributeName);
+			pComponentsFileMessage->add_attributenames(Odb::Lib::Text::ToUtf8(attributeName));
 		}
 
 		for (const auto& attributeTextValue : m_attributeTextValues)
 		{
-			pComponentsFileMessage->add_attributetextvalues(attributeTextValue);
+			pComponentsFileMessage->add_attributetextvalues(Odb::Lib::Text::ToUtf8(attributeTextValue));
 		}
 
 		for (const auto& pComponentRecord : m_componentRecords)
@@ -117,7 +118,7 @@ namespace Odb::Lib::FileModel::Design
 		for (const auto& kvBomDescriptionRecord : m_bomDescriptionRecordsByCpn)
 		{
 			auto pBomDescriptionRecordMessage = kvBomDescriptionRecord.second->to_protobuf();
-			(*pComponentsFileMessage->mutable_bomdescriptionrecordsbycpn())[kvBomDescriptionRecord.first] = *pBomDescriptionRecordMessage;
+			(*pComponentsFileMessage->mutable_bomdescriptionrecordsbycpn())[Odb::Lib::Text::ToUtf8(kvBomDescriptionRecord.first)] = *pBomDescriptionRecordMessage;
 		}
 
 		return pComponentsFileMessage;		
@@ -165,17 +166,17 @@ namespace Odb::Lib::FileModel::Design
 	std::unique_ptr<Odb::Lib::Protobuf::ComponentsFile::BomDescriptionRecord> ComponentsFile::BomDescriptionRecord::to_protobuf() const
 	{
 		std::unique_ptr<Odb::Lib::Protobuf::ComponentsFile::BomDescriptionRecord> pBomDescriptionRecordMessage(new Odb::Lib::Protobuf::ComponentsFile::BomDescriptionRecord);
-		pBomDescriptionRecordMessage->set_cpn(cpn);
-		pBomDescriptionRecordMessage->set_pkg(pkg);
-		pBomDescriptionRecordMessage->set_ipn(ipn);
+		pBomDescriptionRecordMessage->set_cpn(Odb::Lib::Text::ToUtf8(cpn));
+		pBomDescriptionRecordMessage->set_pkg(Odb::Lib::Text::ToUtf8(pkg));
+		pBomDescriptionRecordMessage->set_ipn(Odb::Lib::Text::ToUtf8(ipn));
 		for (const auto& description : descriptions)
-		{			
-			pBomDescriptionRecordMessage->add_descriptions()->assign(description);
+		{
+			pBomDescriptionRecordMessage->add_descriptions()->assign(Odb::Lib::Text::ToUtf8(description));
 		}
-		pBomDescriptionRecordMessage->set_vpl_vnd(vpl_vnd);
-		pBomDescriptionRecordMessage->set_vpl_mpn(vpl_mpn);
-		pBomDescriptionRecordMessage->set_vnd(vnd);
-		pBomDescriptionRecordMessage->set_mpn(mpn);
+		pBomDescriptionRecordMessage->set_vpl_vnd(Odb::Lib::Text::ToUtf8(vpl_vnd));
+		pBomDescriptionRecordMessage->set_vpl_mpn(Odb::Lib::Text::ToUtf8(vpl_mpn));
+		pBomDescriptionRecordMessage->set_vnd(Odb::Lib::Text::ToUtf8(vnd));
+		pBomDescriptionRecordMessage->set_mpn(Odb::Lib::Text::ToUtf8(mpn));
 		return pBomDescriptionRecordMessage;
 	}
 
@@ -208,8 +209,8 @@ namespace Odb::Lib::FileModel::Design
 		pComponentRecordMessage->set_locationy(locationY);
 		pComponentRecordMessage->set_rotation(rotation);
 		pComponentRecordMessage->set_mirror(mirror);
-		pComponentRecordMessage->set_compname(compName);
-		pComponentRecordMessage->set_partname(partName);
+		pComponentRecordMessage->set_compname(Odb::Lib::Text::ToUtf8(compName));
+		pComponentRecordMessage->set_partname(Odb::Lib::Text::ToUtf8(partName));
 		//pComponentRecordMessage->set_attributes(attributes);
 		pComponentRecordMessage->set_index(index);
 
@@ -227,7 +228,7 @@ namespace Odb::Lib::FileModel::Design
 
 		for (const auto& kvAttributeAssignment : m_attributeLookupTable)
 		{
-			(*pComponentRecordMessage->mutable_attributelookuptable())[kvAttributeAssignment.first] = kvAttributeAssignment.second;
+			(*pComponentRecordMessage->mutable_attributelookuptable())[Odb::Lib::Text::ToUtf8(kvAttributeAssignment.first)] = Odb::Lib::Text::ToUtf8(kvAttributeAssignment.second);
 		}
 
 		return pComponentRecordMessage;
@@ -275,8 +276,8 @@ namespace Odb::Lib::FileModel::Design
 		pToeprintRecordMessage->set_mirror(mirror);
 		pToeprintRecordMessage->set_netnumber(netNumber);
 		pToeprintRecordMessage->set_subnetnumber(subnetNumber);
-		pToeprintRecordMessage->set_name(name);
-		return pToeprintRecordMessage;		
+		pToeprintRecordMessage->set_name(Odb::Lib::Text::ToUtf8(name));
+		return pToeprintRecordMessage;
 	}
 
 	void ComponentsFile::ComponentRecord::ToeprintRecord::from_protobuf(const Odb::Lib::Protobuf::ComponentsFile::ComponentRecord::ToeprintRecord& message)

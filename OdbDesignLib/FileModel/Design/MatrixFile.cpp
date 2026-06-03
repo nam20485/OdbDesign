@@ -16,6 +16,7 @@
 #include "../OdbFile.h"
 #include <memory>
 #include <ostream>
+#include "../../Text/Utf8Sanitizer.h"
 
 namespace Odb::Lib::FileModel::Design
 {
@@ -454,7 +455,7 @@ namespace Odb::Lib::FileModel::Design
     {
 		std::unique_ptr<Odb::Lib::Protobuf::MatrixFile::StepRecord> pStepRecordMessage(new Odb::Lib::Protobuf::MatrixFile::StepRecord);
 		pStepRecordMessage->set_column(column);
-		pStepRecordMessage->set_name(name);
+		pStepRecordMessage->set_name(Odb::Lib::Text::ToUtf8(name));
 		pStepRecordMessage->set_id(id);
 		return pStepRecordMessage;
 	}
@@ -469,21 +470,21 @@ namespace Odb::Lib::FileModel::Design
     std::unique_ptr<Odb::Lib::Protobuf::MatrixFile::LayerRecord> Odb::Lib::FileModel::Design::MatrixFile::LayerRecord::to_protobuf() const
     {
         std::unique_ptr<Odb::Lib::Protobuf::MatrixFile::LayerRecord> pLayerRecordMessage(new Odb::Lib::Protobuf::MatrixFile::LayerRecord);
-        pLayerRecordMessage->set_addtype(addType);
+        pLayerRecordMessage->set_addtype(Odb::Lib::Text::ToUtf8(addType));
         pLayerRecordMessage->set_context(static_cast<Odb::Lib::Protobuf::MatrixFile::LayerRecord::Context>(context));
         pLayerRecordMessage->set_cubottom(cuBottom);
         pLayerRecordMessage->set_cutop(cuTop);
-        pLayerRecordMessage->set_dielectricname(dielectricName);
+        pLayerRecordMessage->set_dielectricname(Odb::Lib::Text::ToUtf8(dielectricName));
         pLayerRecordMessage->set_dielectrictype(static_cast<Odb::Lib::Protobuf::MatrixFile::LayerRecord::DielectricType>(dielectricType));
-        pLayerRecordMessage->set_endname(endName);
+        pLayerRecordMessage->set_endname(Odb::Lib::Text::ToUtf8(endName));
         pLayerRecordMessage->set_form(static_cast<Odb::Lib::Protobuf::MatrixFile::LayerRecord::Form>(form));
         pLayerRecordMessage->set_id(id);
-        pLayerRecordMessage->set_name(name);
-        pLayerRecordMessage->set_oldname(oldName);
+        pLayerRecordMessage->set_name(Odb::Lib::Text::ToUtf8(name));
+        pLayerRecordMessage->set_oldname(Odb::Lib::Text::ToUtf8(oldName));
         pLayerRecordMessage->set_polarity(static_cast<Odb::Lib::Protobuf::Polarity>(polarity));
         pLayerRecordMessage->set_ref(ref);
         pLayerRecordMessage->set_row(row);
-        pLayerRecordMessage->set_startname(startName);
+        pLayerRecordMessage->set_startname(Odb::Lib::Text::ToUtf8(startName));
         pLayerRecordMessage->set_type(static_cast<Odb::Lib::Protobuf::MatrixFile::LayerRecord::Type>(type));
         pLayerRecordMessage->mutable_color()->set_red(color.red);
         pLayerRecordMessage->mutable_color()->set_green(color.green);

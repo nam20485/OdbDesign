@@ -1,5 +1,6 @@
 #include "LayerDirectory.h"
 #include "Logger.h"
+#include "../../Text/Utf8Sanitizer.h"
 
 namespace Odb::Lib::FileModel::Design
 {
@@ -82,10 +83,10 @@ namespace Odb::Lib::FileModel::Design
 	}
 
 	std::unique_ptr<Odb::Lib::Protobuf::LayerDirectory> Odb::Lib::FileModel::Design::LayerDirectory::to_protobuf() const
-	{		
+	{
 		std::unique_ptr<Odb::Lib::Protobuf::LayerDirectory> pLayerDirectoryMessage(new Odb::Lib::Protobuf::LayerDirectory);
-		pLayerDirectoryMessage->set_name(m_name);
-		pLayerDirectoryMessage->set_path(m_path.string());
+		pLayerDirectoryMessage->set_name(Odb::Lib::Text::ToUtf8(m_name));
+		pLayerDirectoryMessage->set_path(Odb::Lib::Text::ToUtf8(m_path.string()));
 		pLayerDirectoryMessage->mutable_components()->CopyFrom(*m_componentsFile.to_protobuf());
 		pLayerDirectoryMessage->mutable_featurefile()->CopyFrom(*m_featuresFile.to_protobuf());
 		pLayerDirectoryMessage->mutable_attrlistfile()->CopyFrom(*m_attrListFile.to_protobuf());

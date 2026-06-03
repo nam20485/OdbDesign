@@ -11,6 +11,7 @@
 #include <cstdio>
 #include <string>
 #include <memory>
+#include "../../Text/Utf8Sanitizer.h"
 
 using namespace Utils;
 using namespace std::filesystem;
@@ -261,23 +262,28 @@ namespace Odb::Lib::FileModel::Design
 	std::unique_ptr<Protobuf::FileArchive> FileArchive::to_protobuf() const
 	{
 		std::unique_ptr<Protobuf::FileArchive> pFileArchiveMessage(new Protobuf::FileArchive);
-		pFileArchiveMessage->set_productname(m_productName);
-		pFileArchiveMessage->set_filename(m_filename);
+		pFileArchiveMessage->set_productname(Odb::Lib::Text::ToUtf8(m_productName));
+		pFileArchiveMessage->set_filename(Odb::Lib::Text::ToUtf8(m_filename));
 		//pFileArchiveMessage->set_filepath(m_filePath);
 		pFileArchiveMessage->mutable_matrixfile()->CopyFrom(*m_matrixFile.to_protobuf());
 		pFileArchiveMessage->mutable_miscinfofile()->CopyFrom(*m_miscInfoFile.to_protobuf());
 		pFileArchiveMessage->mutable_standardfontsfile()->CopyFrom(*m_standardFontsFile.to_protobuf());
 		pFileArchiveMessage->mutable_miscattrlistfile()->CopyFrom(*m_miscAttrListFile.to_protobuf());
-		
+
 		for (const auto& kvStepDirectoryRecord : m_stepsByName)
 		{
-			(*pFileArchiveMessage->mutable_stepsbyname())[kvStepDirectoryRecord.first] = *kvStepDirectoryRecord.second->to_protobuf();
+			(*pFileArchiveMessage->mutable_stepsbyname())[Odb::Lib::Text::ToUtf8(kvStepDirectoryRecord.first)] = *kvStepDirectoryRecord.second->to_protobuf();
 		}
 
 		for (const auto& kvSymbolsDirectory : m_symbolsDirectoriesByName)
 		{
-			(*pFileArchiveMessage->mutable_symbolsdirectoriesbyname())[kvSymbolsDirectory.first] = *kvSymbolsDirectory.second->to_protobuf();
+			(*pFileArchiveMessage->mutable_symbolsdirectoriesbyname())[Odb::Lib::Text::ToUtf8(kvSymbolsDirectory.first)] = *kvSymbolsDirectory.second->to_protobuf();
 		}
+
+#ifndef NDEBUG
+		// Debug-only assertion: verify all string fields are valid UTF-8 before serialization
+		Odb::Lib::Text::AssertAllStringFieldsAreValidUtf8(*pFileArchiveMessage, "FileArchive");
+#endif
 
 		return pFileArchiveMessage;
 	}

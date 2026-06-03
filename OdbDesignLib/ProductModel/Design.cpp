@@ -8,6 +8,7 @@
 #include "Net.h"
 #include "../FileModel/Design/FileArchive.h"
 #include "../FileModel/Design/EdaDataFile.h"
+#include "../Text/Utf8Sanitizer.h"
 
 
 namespace Odb::Lib::ProductModel
@@ -157,8 +158,8 @@ namespace Odb::Lib::ProductModel
 	std::unique_ptr<Odb::Lib::Protobuf::ProductModel::Design> Design::to_protobuf() const
 	{
 		auto pDesignMsg = std::make_unique<Odb::Lib::Protobuf::ProductModel::Design>();
-		pDesignMsg->set_name(m_name);
-		pDesignMsg->set_productmodel(m_productModel);
+		pDesignMsg->set_name(Odb::Lib::Text::ToUtf8(m_name));
+		pDesignMsg->set_productmodel(Odb::Lib::Text::ToUtf8(m_productModel));
 
 		if (m_pFileModel != nullptr)
 		{
@@ -172,7 +173,7 @@ namespace Odb::Lib::ProductModel
 
 		for (const auto& kvNet : m_netsByName)
 		{
-			(*pDesignMsg->mutable_netsbyname())[kvNet.first] = *kvNet.second->to_protobuf();
+			(*pDesignMsg->mutable_netsbyname())[Odb::Lib::Text::ToUtf8(kvNet.first)] = *kvNet.second->to_protobuf();
 		}
 
 		for (const auto& pPackage : m_packages)
@@ -182,7 +183,7 @@ namespace Odb::Lib::ProductModel
 
 		for (const auto& kvPackage : m_packagesByName)
 		{
-			(*pDesignMsg->mutable_packagesbyname())[kvPackage.first] = *kvPackage.second->to_protobuf();
+			(*pDesignMsg->mutable_packagesbyname())[Odb::Lib::Text::ToUtf8(kvPackage.first)] = *kvPackage.second->to_protobuf();
 		}
 
 		for (const auto& pComponent : m_components)
@@ -192,7 +193,7 @@ namespace Odb::Lib::ProductModel
 
 		for (const auto& kvComponent : m_componentsByName)
 		{
-			(*pDesignMsg->mutable_componentsbyname())[kvComponent.first] = *kvComponent.second->to_protobuf();
+			(*pDesignMsg->mutable_componentsbyname())[Odb::Lib::Text::ToUtf8(kvComponent.first)] = *kvComponent.second->to_protobuf();
 		}
 
 		for (const auto& pPart : m_parts)
@@ -202,8 +203,13 @@ namespace Odb::Lib::ProductModel
 
 		for (const auto& kvPart : m_partsByName)
 		{
-			(*pDesignMsg->mutable_partsbyname())[kvPart.first] = *kvPart.second->to_protobuf();
-		}		
+			(*pDesignMsg->mutable_partsbyname())[Odb::Lib::Text::ToUtf8(kvPart.first)] = *kvPart.second->to_protobuf();
+		}
+
+#ifndef NDEBUG
+		// Debug-only assertion: verify all string fields are valid UTF-8 before serialization
+		Odb::Lib::Text::AssertAllStringFieldsAreValidUtf8(*pDesignMsg, "Design");
+#endif
 
 		return pDesignMsg;
 	}

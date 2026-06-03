@@ -9,6 +9,7 @@
 #include "../parse_info.h"
 #include "../parse_error.h"
 #include "../invalid_odb_error.h"
+#include "../../Text/Utf8Sanitizer.h"
 
 using namespace std::filesystem;
 using namespace Utils;
@@ -117,8 +118,8 @@ namespace Odb::Lib::FileModel::Design
 
     std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::NetRecord> EdaDataFile::NetRecord::to_protobuf() const
     {
-        std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::NetRecord> pNetRecordMessage(new Odb::Lib::Protobuf::EdaDataFile::NetRecord);        
-        pNetRecordMessage->set_name(name);
+        std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::NetRecord> pNetRecordMessage(new Odb::Lib::Protobuf::EdaDataFile::NetRecord);
+        pNetRecordMessage->set_name(Odb::Lib::Text::ToUtf8(name));
         //pNetRecordMessage->set_attributesidstring(attributesIdString);
         pNetRecordMessage->set_index(index);
 
@@ -132,10 +133,10 @@ namespace Odb::Lib::FileModel::Design
         {
 			auto pSubnetRecordMessage = pNetRecordMessage->add_subnetrecords();
 			pSubnetRecordMessage->CopyFrom(*subnetRecord->to_protobuf());
-        }   
+        }
         for (const auto& kvAttributeAssignment : m_attributeLookupTable)
         {
-            (*pNetRecordMessage->mutable_attributelookuptable())[kvAttributeAssignment.first] = kvAttributeAssignment.second;
+            (*pNetRecordMessage->mutable_attributelookuptable())[Odb::Lib::Text::ToUtf8(kvAttributeAssignment.first)] = Odb::Lib::Text::ToUtf8(kvAttributeAssignment.second);
         }
         return pNetRecordMessage;
     }
@@ -187,7 +188,7 @@ namespace Odb::Lib::FileModel::Design
     EdaDataFile::FeatureGroupRecord::to_protobuf() const
     {
         std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::FeatureGroupRecord> pFeatureGroupRecordMessage(new Odb::Lib::Protobuf::EdaDataFile::FeatureGroupRecord);
-        pFeatureGroupRecordMessage->set_type(type);
+        pFeatureGroupRecordMessage->set_type(Odb::Lib::Text::ToUtf8(type));
         for (const auto& featureIdRecord : m_featureIdRecords)
         {
             auto pFeatureIdRecordMessage = pFeatureGroupRecordMessage->add_featureidrecords();
@@ -265,30 +266,30 @@ namespace Odb::Lib::FileModel::Design
 
     std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile> EdaDataFile::to_protobuf() const
     {
-        std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile> pEdaDataFileMessage(new Odb::Lib::Protobuf::EdaDataFile);                
+        std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile> pEdaDataFileMessage(new Odb::Lib::Protobuf::EdaDataFile);
         pEdaDataFileMessage->set_path(m_path.string());
-        pEdaDataFileMessage->set_units(m_units);
-        pEdaDataFileMessage->set_source(m_source);
+        pEdaDataFileMessage->set_units(Odb::Lib::Text::ToUtf8(m_units));
+        pEdaDataFileMessage->set_source(Odb::Lib::Text::ToUtf8(m_source));
         for (const auto& layerName : m_layerNames)
         {
-			pEdaDataFileMessage->add_layernames(layerName);
+			pEdaDataFileMessage->add_layernames(Odb::Lib::Text::ToUtf8(layerName));
 		}
         for (const auto& attributeName : m_attributeNames)
         {
-            pEdaDataFileMessage->add_attributenames(attributeName);
+            pEdaDataFileMessage->add_attributenames(Odb::Lib::Text::ToUtf8(attributeName));
         }
         for (const auto& attrTextValue : m_attributeTextValues)
         {
-            pEdaDataFileMessage->add_attributetextvalues(attrTextValue);
+            pEdaDataFileMessage->add_attributetextvalues(Odb::Lib::Text::ToUtf8(attrTextValue));
         }
         for (const auto& pNetRecord : m_netRecords)
         {
             auto pNetRecordMessage = pEdaDataFileMessage->add_netrecords();
             pNetRecordMessage->CopyFrom(*pNetRecord->to_protobuf());
-        }              
+        }
         for (const auto& kvNetRecord : m_netRecordsByName)
         {
-            (*pEdaDataFileMessage->mutable_netrecordsbyname())[kvNetRecord.first] = *kvNetRecord.second->to_protobuf();
+            (*pEdaDataFileMessage->mutable_netrecordsbyname())[Odb::Lib::Text::ToUtf8(kvNetRecord.first)] = *kvNetRecord.second->to_protobuf();
         }
         for (const auto& pPackageRecord : m_packageRecords)
         {
@@ -297,8 +298,8 @@ namespace Odb::Lib::FileModel::Design
         }
         for (const auto& kvPackageRecord : m_packageRecordsByName)
         {
-            (*pEdaDataFileMessage->mutable_packagerecordsbyname())[kvPackageRecord.first] = *kvPackageRecord.second->to_protobuf();
-        }   
+            (*pEdaDataFileMessage->mutable_packagerecordsbyname())[Odb::Lib::Text::ToUtf8(kvPackageRecord.first)] = *kvPackageRecord.second->to_protobuf();
+        }
         for (const auto& pPropertyRecord : m_propertyRecords)
         {
             auto pPropertyRecordMessage = pEdaDataFileMessage->add_propertyrecords();
@@ -309,7 +310,7 @@ namespace Odb::Lib::FileModel::Design
             auto pFeatureGroupRecordMessage = pEdaDataFileMessage->add_featuregrouprecords();
             pFeatureGroupRecordMessage->CopyFrom(*pFeatureGroupRecord->to_protobuf());
         }
-       
+
         return pEdaDataFileMessage;
     }
 
@@ -1567,9 +1568,9 @@ namespace Odb::Lib::FileModel::Design
     // Inherited via IProtoBuffable
     std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::PackageRecord>
     EdaDataFile::PackageRecord::to_protobuf() const
-    {                      
+    {
         std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::PackageRecord> pPackageRecordMessage(new Odb::Lib::Protobuf::EdaDataFile::PackageRecord);
-        pPackageRecordMessage->set_name(name);
+        pPackageRecordMessage->set_name(Odb::Lib::Text::ToUtf8(name));
         pPackageRecordMessage->set_pitch(pitch);
         pPackageRecordMessage->set_xmin(xMin);
         pPackageRecordMessage->set_ymin(yMin);
@@ -1583,7 +1584,7 @@ namespace Odb::Lib::FileModel::Design
         }
         for (const auto& kvPinRecord : m_pinRecordsByName)
         {
-            (*pPackageRecordMessage->mutable_pinrecordsbyname())[kvPinRecord.first] = *kvPinRecord.second->to_protobuf();
+            (*pPackageRecordMessage->mutable_pinrecordsbyname())[Odb::Lib::Text::ToUtf8(kvPinRecord.first)] = *kvPinRecord.second->to_protobuf();
         }
         for (const auto& propertyRecord : m_propertyRecords)
         {
@@ -1597,7 +1598,7 @@ namespace Odb::Lib::FileModel::Design
 		}
         for (const auto& kvAttributeAssignment : m_attributeLookupTable)
         {
-            (*pPackageRecordMessage->mutable_attributelookuptable())[kvAttributeAssignment.first] = kvAttributeAssignment.second;
+            (*pPackageRecordMessage->mutable_attributelookuptable())[Odb::Lib::Text::ToUtf8(kvAttributeAssignment.first)] = Odb::Lib::Text::ToUtf8(kvAttributeAssignment.second);
         }
         return pPackageRecordMessage;
     }
@@ -1689,9 +1690,9 @@ namespace Odb::Lib::FileModel::Design
     // Inherited via IProtoBuffable
     std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::PackageRecord::PinRecord>
     EdaDataFile::PackageRecord::PinRecord::to_protobuf() const
-    {       
+    {
         std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::PackageRecord::PinRecord> pPinRecordMessage(new Odb::Lib::Protobuf::EdaDataFile::PackageRecord::PinRecord);
-        pPinRecordMessage->set_name(name);
+        pPinRecordMessage->set_name(Odb::Lib::Text::ToUtf8(name));
         pPinRecordMessage->set_type((Odb::Lib::Protobuf::EdaDataFile::PackageRecord::PinRecord::Type)type);
         pPinRecordMessage->set_xcenter(xCenter);
         pPinRecordMessage->set_ycenter(yCenter);

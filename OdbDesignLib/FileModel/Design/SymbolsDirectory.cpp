@@ -5,6 +5,7 @@
 #include "FeaturesFile.h"
 #include "AttrListFile.h"
 #include <memory>
+#include "../../Text/Utf8Sanitizer.h"
 
 namespace Odb::Lib::FileModel::Design
 {
@@ -41,8 +42,8 @@ namespace Odb::Lib::FileModel::Design
 	std::unique_ptr<Odb::Lib::Protobuf::SymbolsDirectory> SymbolsDirectory::to_protobuf() const
 	{
 		auto message = std::make_unique<Odb::Lib::Protobuf::SymbolsDirectory>();
-		message->set_name(m_name);
-		message->set_path(m_path.string());
+		message->set_name(Odb::Lib::Text::ToUtf8(m_name));
+		message->set_path(Odb::Lib::Text::ToUtf8(m_path.string()));
 		message->mutable_attrlistfile()->CopyFrom(*m_attrListFile.to_protobuf());
 		message->mutable_featurefile()->CopyFrom(*m_featuresFile.to_protobuf());
 		return message;
