@@ -33,12 +33,12 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# --- gRPC health check (easy to disable: comment out the two blocks below) ---
-# Download grpc_health_probe binary
-RUN GRPC_HEALTH_PROBE_VERSION=v0.4.24 && \
-    curl -sL -o /bin/grpc_health_probe \
-      https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-amd64 && \
-    chmod +x /bin/grpc_health_probe
+# # --- gRPC health check (easy to disable: comment out the two blocks below) ---
+# # Download grpc_health_probe binary
+# RUN GRPC_HEALTH_PROBE_VERSION=v0.4.24 && \
+#     curl -sL -o /bin/grpc_health_probe \
+#       https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-amd64 && \
+#     chmod +x /bin/grpc_health_probe
 
 # gRPC-specific healthcheck (comment out to disable, re-enable HTTP-only HEALTHCHECK above)
 # HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
@@ -47,7 +47,11 @@ RUN GRPC_HEALTH_PROBE_VERSION=v0.4.24 && \
 # test 7z install
 RUN 7z -h
 
-RUN mkdir --parents /OdbDesign/bin
+# create non-root user
+RUN groupadd --gid 10001 odbdesign && \
+    useradd --uid 10001 --gid odbdesign --create-home --shell /usr/sbin/nologin odbdesign
+
+RUN mkdir --parents /OdbDesign/bin /OdbDesign/templates /OdbDesign/designs
 WORKDIR /OdbDesign
 
 # copy pre-built binaries from artifacts (extracted from zip in workflow)
@@ -57,7 +61,12 @@ COPY ./artifacts/OdbDesignServer ./bin/
 # copy templates directory from source
 COPY ./OdbDesignServer/templates/* ./templates/
 
+# set ownership to non-root user
+RUN chmod +x ./bin/OdbDesignServer && \
+    chown --recursive odbdesign:odbdesign /OdbDesign
+
+USER odbdesign
+
 # run
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/OdbDesign/bin
-RUN chmod +x ./bin/OdbDesignServer
 ENTRYPOINT [ "./bin/OdbDesignServer", "--designs-dir", "./designs", "--templates-dir", "./templates" ]
