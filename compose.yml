@@ -3,8 +3,8 @@ name: odbdesign
 services:
 
   ### use remote image build from github container registry
-  server:    
-    image: ghcr.io/nam20485/odbdesign:nam20485-latest    
+  server:
+    image: ghcr.io/nam20485/odbdesign:nam20485-latest
     volumes:
       - ./compose-designs:/OdbDesign/designs
     ports:
@@ -13,6 +13,13 @@ services:
     environment:
       - ODBDESIGN_SERVER_REQUEST_USERNAME
       - ODBDESIGN_SERVER_REQUEST_PASSWORD
+    healthcheck:
+      # Default: HTTP check (works out of the box)
+      test: ["CMD", "curl", "-f", "http://localhost:8888/healthz/live"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s      
 
   ### use local image built from Dockerfile
   # server:
@@ -26,7 +33,14 @@ services:
   #     - 50051:50051
   #   environment:
   #     - ODBDESIGN_SERVER_REQUEST_USERNAME
-  #     - ODBDESIGN_SERVER_REQUEST_PASSWORD   
+  #     - ODBDESIGN_SERVER_REQUEST_PASSWORD
+  #   healthcheck:
+  #     # Default: HTTP check (works out of the box)
+  #     test: ["CMD", "curl", "-f", "http://localhost:8888/healthz/live"]
+  #     interval: 30s
+  #     timeout: 3s
+  #     retries: 3
+  #     start_period: 10s
    
   swagger-ui:
     image: ghcr.io/nam20485/odbdesignserver-swaggerui:nam20485-latest    

@@ -1,7 +1,7 @@
 # Debian 13 (Trixie) slim - amd64
 # Version: 13.3-slim (trixie-slim)
 # Reduces vulnerabilities: 2 HIGH, 1 MEDIUM, 4 LOW vs Debian 12
-FROM --platform=$BUILDPLATFORM debian@sha256:346fa035ca82052ce8ec3ddb9df460b255507acdeb1dc880a8b6930e778a553c AS build
+FROM --platform=$BUILDPLATFORM debian@sha256:ed8750007edb5cb6c6e69d930d3fe3f1af60e759f05de5362be014d498d5f25f AS build
 
 ARG OWNER=nam20485
 ARG GITHUB_TOKEN="PASSWORD"
@@ -75,7 +75,7 @@ RUN cmake --build --preset linux-release
 # Debian 13 (Trixie) slim - amd64
 # Version: 13.3-slim (trixie-slim)
 # Reduces vulnerabilities: 2 HIGH, 1 MEDIUM, 4 LOW vs Debian 12
-FROM --platform=$TARGETPLATFORM debian@sha256:346fa035ca82052ce8ec3ddb9df460b255507acdeb1dc880a8b6930e778a553c AS run
+FROM --platform=$TARGETPLATFORM debian@sha256:ed8750007edb5cb6c6e69d930d3fe3f1af60e759f05de5362be014d498d5f25f AS run
 # ARG ODBDESIGN_SERVER_REQUEST_USERNAME=""
 # ARG ODBDESIGN_SERVER_REQUEST_PASSWORD=""
 LABEL org.opencontainers.image.source=https://github.com/nam20485/OdbDesign \
@@ -88,7 +88,11 @@ LABEL org.opencontainers.image.source=https://github.com/nam20485/OdbDesign \
 
 EXPOSE 8888 50051
 
-# install dependencies (7z command)
+# # Docker health check using existing HTTP endpoint
+# HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+#   CMD curl -f http://localhost:8888/healthz/live || exit 1
+
+# install dependencies (curl for healthcheck, 7z for archive extraction)
 RUN apt-get update && \
     apt-get install -y -q --no-install-recommends \
     curl \
@@ -98,6 +102,17 @@ RUN apt-get update && \
     && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+
+# --- gRPC health check (easy to disable: comment out the two blocks below) ---
+# Download grpc_health_probe binary
+ARG GRPC_HEALTH_PROBE_VERSION=v0.4.24
+RUN curl -sL -o /bin/grpc_health_probe \
+      https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-amd64 && \
+    chmod +x /bin/grpc_health_probe
+
+# gRPC-specific healthcheck (comment out to disable, re-enable HTTP-only HEALTHCHECK above)
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD /bin/grpc_health_probe -addr=localhost:50051 || exit 1
 
 # test 7z install
 RUN 7z -h
