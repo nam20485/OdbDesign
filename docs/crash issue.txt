@@ -1,0 +1,76 @@
+any idea what happened here? cleitn establishes connectin and then when I try to load a design this happens (in debug build it works perfectly no errors)
+
+
+```[06/03/26 01:09:28.532 FileArchive.cpp     :401    INFO] Parsing misc/attrlist file complete
+   [06/03/26 01:09:28.532 FileArchive.cpp     :96     INFO] Successfully parsed. (0.573s)
+   [06/03/26 01:09:28.532 DesignCache.cpp     :89     INFO] Loaded from file
+   gRPC server thread started on port 50051
+   Crow REST server starting on 0.0.0.0:8888 (http-trace=false)
+   Loaded gRPC config from: /home/nam20485/src/github/nam20485/OdbDesign/out/build/linux-release/OdbDesignServer/config.json
+   gRPC max message sizes: receive=250MB (262144000 bytes), send=250MB (262144000 bytes)
+   gRPC compression enabled (gzip)
+   gRPC thread pool: max_threads=8, min_pollers=1
+   gRPC keepalive: time=30s, timeout=10s, permit_without_calls=true
+   gRPC server listening on 0.0.0.0:50051
+   [interactive] Type 'q' then Enter to quit gracefully...
+   (2026-06-03 08:09:28) [INFO    ] Crow/master server is running at http://0.0.0.0:8888 using 20 threads
+   (2026-06-03 08:09:28) [INFO    ] Call `app.loglevel(crow::LogLevel::Warning)` to hide Info level logs.
+   (2026-06-03 08:09:59) [INFO    ] Request: 127.0.0.1:41190 0x55d244e0c810 HTTP/1.1 GET /designs
+   (2026-06-03 08:09:59) [INFO    ] Response: 0x55d244e0c810 /designs 200 0
+   (2026-06-03 08:10:11) [INFO    ] Request: 127.0.0.1:37666 0x7f20e8000c30 HTTP/1.1 GET /filemodels/sample_design/steps
+   (2026-06-03 08:10:11) [INFO    ] Response: 0x7f20e8000c30 /filemodels/sample_design/steps 200 0
+   (2026-06-03 08:10:11) [INFO    ] Request: 127.0.0.1:37666 0x7f20e8000c30 HTTP/1.1 GET /filemodels/sample_design/steps/step/layers
+   (2026-06-03 08:10:11) [INFO    ] Response: 0x7f20e8000c30 /filemodels/sample_design/steps/step/layers 200 0
+   (2026-06-03 08:10:11) [INFO    ] Request: 127.0.0.1:37666 0x7f20e8000c30 HTTP/1.1 GET /filemodels/sample_design/matrix/matrix
+   WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+   F0000 00:00:1780474211.295713  524736 generated_message_reflection.cc:3668] Check failed: file != nullptr 
+   *** Check failure stack trace: ***
+   
+   Process finished with exit code 134 (interrupted by signal 6:SIGABRT)```
+
+
+
+
+   There's the smoking gun. protobuf::libprotobuf is a STATIC library (libprotobuf.a). Here's the full picture:
+
+OdbDesign (shared lib, libOdbDesign.so) links protobuf::libprotobuf (static .a) — so protobuf runtime code gets baked into the .so
+OdbDesignServer (executable) also links protobuf::libprotobuf (via gRPC dependencies) — so a second copy of the protobuf runtime gets baked into the exe
+At runtime, there are two separate descriptor pools, two GeneratedDatabase instances, etc.
+The .pb.cc files for matrixfile, design, etc. register their descriptors into the libOdbDesign.so copy of the descriptor pool
+When service.pb.cc (in the exe) tries to resolve its dependencies (design.proto, featuresfile.proto, symbolname.proto), it looks them up in the exe's descriptor pool — where they were never registered
+In debug builds, the linker may not strip unused symbols or the initialization order may differ, or the debug versions of protobuf may behave differently — which is why it works in debug but not release
+Here's what I recommend:
+
+Root Cause: Dual Static Protobuf Linkage
+You have protobuf::libprotobuf as a static library (libprotobuf.a) being linked into both:
+
+libOdbDesign.so (shared library)
+OdbDesignServer (executable, via gRPC)
+This creates two independent copies of the protobuf runtime, each with its own DescriptorPool::generated_pool(). The .pb.cc files in OdbDesignLib register descriptors (like matrixfile.proto) in the .so's pool, while service.pb.cc in the exe registers into the exe's pool. When the exe's protobuf runtime tries to look up matrixfile's file descriptor (triggered by MessageToJsonString via to_json()), it finds nullptr because that descriptor was registered in the other pool.
+
+Fixes (pick one)
+Option 1 (Recommended): Build protobuf as a shared library
+In your 
+
+vcpkg.json
+, add a feature or triplet override to build protobuf dynamically. Create or modify the vcpkg triplet to use dynamic linkage for protobuf:
+
+json
+// vcpkg.json - add:
+"overrides": [
+  { "name": "protobuf", "version": "..." }
+],
+"features": { ... }
+Or better — create a custom triplet (e.g., x64-linux-dynamic.cmake):
+
+cmake
+set(VCPKG_TARGET_TRIPLET x64-linux)
+set(VCPKG_CRT_LINKAGE dynamic)
+set(VCPKG_LIBRARY_LINKAGE dynamic)
+Option 2: Move protobuf linkage to OdbDesignLib only
+Since OdbDesignServer depends on OdbDesign which is PUBLICly linking protobuf::libprotobuf, the server is already getting protobuf. The problem is that gRPC also pulls in protobuf statically. You could try making the protobuf link PRIVATE in the server and relying on the .so's copy, but with a static protobuf this is fragile.
+
+Option 3 (Quick workaround): Force single protobuf instance via linker flags
+Add -Wl,-Bsymbolic to the shared library or use --whole-archive when linking protobuf into the shared library, and exclude it from the exe. This is fragile but can work.
+
+Want me to investigate your vcpkg configuration and implement one of these fixes? Option 1 (shared protobuf) is the cleanest and most reliable.

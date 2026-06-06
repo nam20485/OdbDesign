@@ -11,7 +11,10 @@
       ]
     },
     {
-      "name": "grpc"
+      "name": "grpc",
+      "features": [
+        "codegen"
+      ]
     }
   ],
   "overrides": [
