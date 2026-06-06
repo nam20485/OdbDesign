@@ -1,7 +1,7 @@
 # Debian 13 (Trixie) slim - amd64
 # Version: 13.3-slim (trixie-slim)
 # Reduces vulnerabilities: 2 HIGH, 1 MEDIUM, 4 LOW vs Debian 12
-FROM --platform=$BUILDPLATFORM debian@sha256:ed8750007edb5cb6c6e69d930d3fe3f1af60e759f05de5362be014d498d5f25f AS build
+FROM --platform=$BUILDPLATFORM debian@sha256:b6e2a152f22a40ff69d92cb397223c906017e1391a73c952b588e51af8883bf8 AS build
 
 ARG OWNER=nam20485
 ARG GITHUB_TOKEN="PASSWORD"
@@ -75,7 +75,8 @@ RUN cmake --build --preset linux-release
 # Debian 13 (Trixie) slim - amd64
 # Version: 13.3-slim (trixie-slim)
 # Reduces vulnerabilities: 2 HIGH, 1 MEDIUM, 4 LOW vs Debian 12
-FROM --platform=$TARGETPLATFORM debian@sha256:ed8750007edb5cb6c6e69d930d3fe3f1af60e759f05de5362be014d498d5f25f AS run
+# FROM --platform=$TARGETPLATFORM debian@sha256:b6e2a152f22a40ff69d92cb397223c906017e1391a73c952b588e51af8883bf8 AS run
+FROM debian@sha256:b6e2a152f22a40ff69d92cb397223c906017e1391a73c952b588e51af8883bf8 AS run
 # ARG ODBDESIGN_SERVER_REQUEST_USERNAME=""
 # ARG ODBDESIGN_SERVER_REQUEST_PASSWORD=""
 LABEL org.opencontainers.image.source=https://github.com/nam20485/OdbDesign \
