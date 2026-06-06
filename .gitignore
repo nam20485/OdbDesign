@@ -48,3 +48,7 @@ gpg_keys/
 #Ignore insiders AI rules
 .github\instructions\codacy.instructions.md
 /new_designs/
+.cursor/hooks/state/continual-learning.json
+.cursor/hooks/state/continual-learning-index.json
+.qwen/settings.json
+.qwen/settings.json.orig
