@@ -4,6 +4,7 @@
 
 /.vs
 /out
+/compile_commands.json
 /cmake-build-debug
 build/
 /vcpkg_installed
