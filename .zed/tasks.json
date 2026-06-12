@@ -7,7 +7,7 @@
     "use_new_terminal": false,
     "allow_concurrent_runs": false,
     "reveal": "always",
-    "hide": "on_success"
+    "hide": "on_success",
   },
   {
     "label": "CMake: Configure (Linux Release)",
@@ -16,7 +16,7 @@
     "use_new_terminal": false,
     "allow_concurrent_runs": false,
     "reveal": "always",
-    "hide": "on_success"
+    "hide": "on_success",
   },
   {
     "label": "CMake: Configure (Linux Dynamic Debug)",
@@ -25,7 +25,7 @@
     "use_new_terminal": false,
     "allow_concurrent_runs": false,
     "reveal": "always",
-    "hide": "on_success"
+    "hide": "on_success",
   },
   {
     "label": "CMake: Configure (Linux Dynamic Release)",
@@ -34,7 +34,7 @@
     "use_new_terminal": false,
     "allow_concurrent_runs": false,
     "reveal": "always",
-    "hide": "on_success"
+    "hide": "on_success",
   },
 
   // ── Build ───────────────────────────────────────────────────────────────
@@ -45,7 +45,7 @@
     "use_new_terminal": false,
     "allow_concurrent_runs": false,
     "reveal": "always",
-    "hide": "on_success"
+    "hide": "on_success",
   },
   {
     "label": "CMake: Build (Linux Release)",
@@ -54,7 +54,7 @@
     "use_new_terminal": false,
     "allow_concurrent_runs": false,
     "reveal": "always",
-    "hide": "on_success"
+    "hide": "on_success",
   },
   {
     "label": "CMake: Build (Linux Dynamic Debug)",
@@ -63,7 +63,7 @@
     "use_new_terminal": false,
     "allow_concurrent_runs": false,
     "reveal": "always",
-    "hide": "on_success"
+    "hide": "on_success",
   },
   {
     "label": "CMake: Build (Linux Dynamic Release)",
@@ -72,7 +72,7 @@
     "use_new_terminal": false,
     "allow_concurrent_runs": false,
     "reveal": "always",
-    "hide": "on_success"
+    "hide": "on_success",
   },
 
   // ── Test ─────────────────────────────────────────────────────────────────
@@ -83,7 +83,7 @@
     "use_new_terminal": false,
     "allow_concurrent_runs": false,
     "reveal": "always",
-    "hide": "never"
+    "hide": "never",
   },
   {
     "label": "CMake: Test (Linux Release)",
@@ -92,7 +92,7 @@
     "use_new_terminal": false,
     "allow_concurrent_runs": false,
     "reveal": "always",
-    "hide": "never"
+    "hide": "never",
   },
   {
     "label": "CMake: Test (Linux Dynamic Debug)",
@@ -101,7 +101,7 @@
     "use_new_terminal": false,
     "allow_concurrent_runs": false,
     "reveal": "always",
-    "hide": "never"
+    "hide": "never",
   },
   {
     "label": "CMake: Test (Linux Dynamic Release)",
@@ -110,7 +110,7 @@
     "use_new_terminal": false,
     "allow_concurrent_runs": false,
     "reveal": "always",
-    "hide": "never"
+    "hide": "never",
   },
 
   // ── Clean ────────────────────────────────────────────────────────────────
@@ -121,7 +121,7 @@
     "use_new_terminal": false,
     "allow_concurrent_runs": false,
     "reveal": "always",
-    "hide": "on_success"
+    "hide": "on_success",
   },
   {
     "label": "CMake: Clean Build (Linux Release)",
@@ -130,7 +130,7 @@
     "use_new_terminal": false,
     "allow_concurrent_runs": false,
     "reveal": "always",
-    "hide": "on_success"
+    "hide": "on_success",
   },
 
   // ── Full pipeline: Configure + Build ─────────────────────────────────────
@@ -141,7 +141,7 @@
     "use_new_terminal": false,
     "allow_concurrent_runs": false,
     "reveal": "always",
-    "hide": "on_success"
+    "hide": "on_success",
   },
   {
     "label": "CMake: Configure & Build (Linux Release)",
@@ -150,7 +150,7 @@
     "use_new_terminal": false,
     "allow_concurrent_runs": false,
     "reveal": "always",
-    "hide": "on_success"
+    "hide": "on_success",
   },
 
   // ── Full pipeline: Build + Test ──────────────────────────────────────────
@@ -161,7 +161,7 @@
     "use_new_terminal": false,
     "allow_concurrent_runs": false,
     "reveal": "always",
-    "hide": "never"
+    "hide": "never",
   },
   {
     "label": "CMake: Build & Test (Linux Release)",
@@ -170,6 +170,44 @@
     "use_new_terminal": false,
     "allow_concurrent_runs": false,
     "reveal": "always",
-    "hide": "never"
-  }
+    "hide": "never",
+  },
+
+  // ── Run (start without debugging) ────────────────────────────────────────
+  {
+    "label": "Run: OdbDesignServer (Debug)",
+    "command": "$ZED_WORKTREE_ROOT/out/build/linux-debug/OdbDesignServer/OdbDesignServer",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "use_new_terminal": true,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "hide": "never",
+  },
+  {
+    "label": "Run: OdbDesignApp (Debug)",
+    "command": "$ZED_WORKTREE_ROOT/out/build/linux-debug/OdbDesignApp/OdbDesignApp",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "use_new_terminal": true,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "hide": "never",
+  },
+  {
+    "label": "Run: OdbDesignServer (Release)",
+    "command": "$ZED_WORKTREE_ROOT/out/build/linux-release/OdbDesignServer/OdbDesignServer",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "use_new_terminal": true,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "hide": "never",
+  },
+  {
+    "label": "Run: OdbDesignApp (Release)",
+    "command": "$ZED_WORKTREE_ROOT/out/build/linux-release/OdbDesignApp/OdbDesignApp",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "use_new_terminal": true,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "hide": "never",
+  },
 ]
