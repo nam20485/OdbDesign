@@ -3,8 +3,8 @@ name: odbdesign
 services:
 
   ### use remote image build from github container registry
-  server:    
-    image: ghcr.io/nam20485/odbdesign:nam20485-latest    
+  server:
+    image: ghcr.io/nam20485/odbdesign:nam20485-latest
     volumes:
       - ./compose-designs:/OdbDesign/designs
     ports:
@@ -26,7 +26,7 @@ services:
   #     - 50051:50051
   #   environment:
   #     - ODBDESIGN_SERVER_REQUEST_USERNAME
-  #     - ODBDESIGN_SERVER_REQUEST_PASSWORD   
+  #     - ODBDESIGN_SERVER_REQUEST_PASSWORD
    
   swagger-ui:
     image: ghcr.io/nam20485/odbdesignserver-swaggerui:nam20485-latest    
