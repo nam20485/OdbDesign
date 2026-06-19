@@ -9,6 +9,9 @@ info:
   license:
     name: MIT
 servers:
+  # Relative URL lets swagger-ui "Try it out" hit the current origin, which
+  # works through the nginx reverse proxy without hardcoding a hostname.
+  - url: /
   - url: http://default-ingress-1165108808.us-west-2.elb.amazonaws.com
   - url: http://localhost:8888
   - url: http://precision5820:8081

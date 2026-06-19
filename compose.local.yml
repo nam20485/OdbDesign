@@ -2,9 +2,16 @@ name: odbdesign
 
 services:
 
-  ### use remote image build from github container registry
+  ### local image built from Dockerfile in this repo
   server:
-    image: ghcr.io/nam20485/odbdesign:nam20485-latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      # GITHUB_TOKEN is required by Dockerfile for NuGet/vcpkg binary cache auth.
+      # Pass via shell env: `GITHUB_TOKEN=... docker compose -f compose.local.yml build`
+      args:
+        - GITHUB_TOKEN=${GITHUB_TOKEN:-}
+        - VCPKG_BINARY_SOURCES=${VCPKG_BINARY_SOURCES:-}
     volumes:
       - ./compose-designs:/OdbDesign/designs
     # No host-published ports — nginx (the `proxy` service below) is the
@@ -18,23 +25,6 @@ services:
     environment:
       - ODBDESIGN_SERVER_REQUEST_USERNAME
       - ODBDESIGN_SERVER_REQUEST_PASSWORD
-
-  ### use local image built from Dockerfile
-  # server:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   volumes:
-  #     - ./compose-designs:/OdbDesign/designs
-  #   ports:
-  #     - 127.0.0.1:8888:8888
-  #     - 127.0.0.1:50051:50051
-  #   expose:
-  #     - 8888
-  #     - 50051
-  #   environment:
-  #     - ODBDESIGN_SERVER_REQUEST_USERNAME
-  #     - ODBDESIGN_SERVER_REQUEST_PASSWORD
 
   swagger-ui:
     image: ghcr.io/nam20485/odbdesignserver-swaggerui:nam20485-latest
