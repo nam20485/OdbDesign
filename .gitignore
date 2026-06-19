@@ -48,3 +48,4 @@ gpg_keys/
 #Ignore insiders AI rules
 .github\instructions\codacy.instructions.md
 /new_designs/
+.kimchi/plans/plan-1781877149619.md
