@@ -190,8 +190,13 @@ jobs:
           annotations: ${{ steps.meta.outputs.annotations }}
           build-args: |
             OWNER=nam20485
-            GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
             VCPKG_BINARY_SOURCES=clear;nuget,GitHub,readwrite
+          # GITHUB_TOKEN is passed as a BuildKit secret (mounted at
+          # /run/secrets/github_token) rather than a build arg, so it never
+          # appears in the build log or the image cache. USE_VCPKG_CACHE
+          # defaults to 0 (write-enabled cache upload).
+          secrets: |
+            "github_token=${{ secrets.GITHUB_TOKEN }}"
 
       # Sign the resulting Docker image digest
       # This will only write to the public Rekor transparency log when the Docker
