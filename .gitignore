@@ -4,6 +4,7 @@
 
 /.vs
 /out
+/compile_commands.json
 /cmake-build-debug
 build/
 /vcpkg_installed
@@ -49,3 +50,7 @@ gpg_keys/
 .github\instructions\codacy.instructions.md
 /new_designs/
 .kimchi/plans/plan-1781877149619.md
+.cursor/hooks/state/continual-learning.json
+.cursor/hooks/state/continual-learning-index.json
+.qwen/settings.json
+.qwen/settings.json.orig

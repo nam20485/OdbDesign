@@ -283,3 +283,20 @@ See `.github/copilot-instructions.md` for:
 - Tool and automation protocols
 - Dynamic workflow orchestration
 - URL translation for raw GitHub content
+
+---
+
+## Learned User Preferences
+
+- Keep OdbDesign local test env vars in `~/.bashrc` (`ODB_TEST_DATA_DIR`, `ODB_TEST_ENVIRONMENT_VARIABLE`) for routine `ctest` runs on this machine.
+- Revert incompatible vcpkg baseline bumps (rather than carrying overlay patches) when `grpc` is pinned and the new baseline breaks the build.
+
+## Learned Workspace Facts
+
+- Release-only SIGABRT on `GET /filemodels/<design>/matrix/matrix` comes from dual static protobuf descriptor pools in `libOdbDesign.so` and `OdbDesignServer`; use `linux-dynamic-debug` / `linux-dynamic-release` presets (`VCPKG_TARGET_TRIPLET=x64-linux-dynamic`) for a single shared protobuf runtime.
+- Target `grpc` in `vcpkg.json` must include feature `codegen` so fresh triplet installs export `gRPC::grpc++_reflection` (host-only codegen is insufficient).
+- Keep vcpkg baseline at `d1ff36c6520ee43f1a656c03cd6425c2974a449e` while `grpc` is pinned to `1.71.0#3`; baseline `059d760472984042e1b4db0d40efd935a1adcbc9` pulls newer Abseil and breaks gRPC compile (`glob.cc`: `std::any_of`).
+- Local test fixtures live in sibling repo `OdbDesignTestData`: set `ODB_TEST_DATA_DIR=/home/nam20485/src/github/nam20485/OdbDesignTestData/TEST_DATA`; design `.tgz` archives at `TEST_DATA/` root, small file-reader fixtures under `TEST_DATA/FILES/`.
+- Also set `ODB_TEST_ENVIRONMENT_VARIABLE=ODB_TEST_ENVIRONMENT_VARIABLE_EXISTS` for CrossPlatform env tests; these vars are not baked into CMake presets.
+- `OdbDesignServer` loads designs via `--designs-dir`, not `ODB_TEST_DATA_DIR`.
+- `CommandLineArgs` treats tokens starting with `/` as flags, so absolute paths after `--designs-dir` parse as boolean `true`; use relative paths (e.g. from `/home/nam20485/src/github/nam20485`: `OdbDesignTestData/TEST_DATA`).

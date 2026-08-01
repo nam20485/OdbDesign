@@ -18,6 +18,13 @@ services:
     environment:
       - ODBDESIGN_SERVER_REQUEST_USERNAME
       - ODBDESIGN_SERVER_REQUEST_PASSWORD
+    healthcheck:
+      # Default: HTTP check (works out of the box)
+      test: ["CMD", "curl", "-f", "http://localhost:8888/healthz/live"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s      
 
   ### use local image built from Dockerfile
   # server:
@@ -35,6 +42,13 @@ services:
   #   environment:
   #     - ODBDESIGN_SERVER_REQUEST_USERNAME
   #     - ODBDESIGN_SERVER_REQUEST_PASSWORD
+  #   healthcheck:
+  #     # Default: HTTP check (works out of the box)
+  #     test: ["CMD", "curl", "-f", "http://localhost:8888/healthz/live"]
+  #     interval: 30s
+  #     timeout: 3s
+  #     retries: 3
+  #     start_period: 10s
 
   swagger-ui:
     image: ghcr.io/nam20485/odbdesignserver-swaggerui:nam20485-latest

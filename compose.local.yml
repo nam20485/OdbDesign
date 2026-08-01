@@ -1,4 +1,4 @@
-name: odbdesign
+name: odbdesign-local
 
 services:
 
@@ -25,6 +25,19 @@ services:
     environment:
       - ODBDESIGN_SERVER_REQUEST_USERNAME
       - ODBDESIGN_SERVER_REQUEST_PASSWORD
+    healthcheck:
+      # Default: HTTP check (works out of the box)
+      # test: ["CMD", "curl", "-f", "http://localhost:8888/healthz/live"]
+      # interval: 30s
+      # timeout: 3s
+      # retries: 3
+      # start_period: 10s
+      # gRPC check (uncomment to enable during gRPC troubleshooting; requires grpc_health_probe in image)
+      test: ["CMD", "/bin/grpc_health_probe", "-addr=localhost:50051"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
 
   swagger-ui:
     image: ghcr.io/nam20485/odbdesignserver-swaggerui:nam20485-latest

@@ -19,6 +19,16 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 # See: https://docs.sonarsource.com/sonarqube-for-ide/vs-code/getting-started/running-an-analysis/#generate-a-compilation-database
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# symlink compile_commands.json to project root so IDEs (clangd, Zed, VS Code)
+# can find it without manual configuration
+if(EXISTS "${CMAKE_BINARY_DIR}/compile_commands.json")
+    file(CREATE_LINK
+        "${CMAKE_BINARY_DIR}/compile_commands.json"
+        "${CMAKE_SOURCE_DIR}/compile_commands.json"
+        SYMBOLIC COPY_ON_ERROR
+    )
+endif()
+
 # only use ccache locally, i.e. not in CI
 # nm, looks like we re-en-disabled it. Apparently it can speed up CI builds too. (Not sure how since its first one-off single build  everytime, but maybe it can cache within a single build run)
 #if (NOT DEFINED ENV{CI})
