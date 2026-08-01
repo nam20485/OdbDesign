@@ -4,8 +4,16 @@
 FROM --platform=$BUILDPLATFORM debian@sha256:346fa035ca82052ce8ec3ddb9df460b255507acdeb1dc880a8b6930e778a553c AS build
 
 ARG OWNER=nam20485
-ARG GITHUB_TOKEN="PASSWORD"
 ARG VCPKG_BINARY_SOURCES=""
+# USE_VCPKG_CACHE=1 enables read-only consumption of the GitHub Packages vcpkg
+# binary cache (local dev / consumer builds). USE_VCPKG_CACHE=0 keeps the legacy
+# write-enabled behavior (CI uploads via the in-image NuGet source).
+#
+# Tokens are supplied as BuildKit secrets (see the RUN --mount=type=secret below),
+# NOT as ARGs, so their values never appear in build logs or the layer cache:
+#   id=github_token     GitHub PAT (write:packages)  — used by the USE_VCPKG_CACHE=0 path
+#   id=nuget_auth_token GitHub PAT (read:packages)   — used by the USE_VCPKG_CACHE=1 path
+ARG USE_VCPKG_CACHE=0
 
 # install dependencies
 RUN apt-get update && \
@@ -38,18 +46,33 @@ RUN ./bootstrap-vcpkg.sh
 # set vcpkg to use NuGet for binary caching
 ENV VCPKG_BINARY_SOURCES=${VCPKG_BINARY_SOURCES}
 
-# setup NuGet to use GitHub Packages as a source so vcpkg binary cache can use it
-RUN mono `./vcpkg fetch nuget | tail -n 1` \
-    sources add \
-    -source "https://nuget.pkg.github.com/${OWNER}/index.json" \
-    -storepasswordincleartext \
-    -name "GitHub" \
-    -username ${OWNER} \
-    -password "${GITHUB_TOKEN}"
-
-RUN mono `./vcpkg fetch nuget | tail -n 1` \
-    setapikey "${GITHUB_TOKEN}" \
-    -source "https://nuget.pkg.github.com/${OWNER}/index.json"
+# When USE_VCPKG_CACHE=1 (local dev): generate a read-only nuget config so vcpkg
+# downloads pre-built packages from GitHub Packages without uploading.
+# When USE_VCPKG_CACHE=0 (CI / default): set up the in-image write-enabled NuGet
+# source so vcpkg uploads built binaries to GitHub Packages.
+RUN --mount=type=secret,id=github_token \
+    --mount=type=secret,id=nuget_auth_token \
+    if [ "${USE_VCPKG_CACHE}" = "1" ]; then \
+        if [ ! -s /run/secrets/nuget_auth_token ]; then \
+            echo "ERROR: USE_VCPKG_CACHE=1 requires the 'nuget_auth_token' build secret, but it is missing/empty." >&2; \
+            echo "       Provide NUGET_AUTH_TOKEN (GitHub PAT with read:packages scope) in the build environment." >&2; \
+            exit 1; \
+        fi; \
+        mkdir -p /etc/vcpkg && \
+        printf '<?xml version="1.0" encoding="utf-8"?>\n<configuration>\n    <packageSources>\n        <clear />\n        <add key="GitHubPackages-OdbDesign" value="https://nuget.pkg.github.com/%s/index.json" />\n    </packageSources>\n    <packageSourceCredentials>\n        <GitHubPackages-OdbDesign>\n            <add key="Username" value="%s" />\n            <add key="ClearTextPassword" value="%s" />\n        </GitHubPackages-OdbDesign>\n    </packageSourceCredentials>\n</configuration>\n' "${OWNER}" "${OWNER}" "$(cat /run/secrets/nuget_auth_token)" \
+            > /etc/vcpkg/local.nuget.config; \
+    else \
+        mono `./vcpkg fetch nuget | tail -n 1` \
+            sources add \
+            -source "https://nuget.pkg.github.com/${OWNER}/index.json" \
+            -storepasswordincleartext \
+            -name "GitHub" \
+            -username ${OWNER} \
+            -password "$(cat /run/secrets/github_token)" && \
+        mono `./vcpkg fetch nuget | tail -n 1` \
+            setapikey "$(cat /run/secrets/github_token)" \
+            -source "https://nuget.pkg.github.com/${OWNER}/index.json"; \
+    fi
 
 # pre-install vcpgk packages BEFORE cmake configure
 RUN mkdir -p /src/OdbDesign
@@ -126,7 +149,7 @@ COPY --from=build /src/OdbDesign/OdbDesignServer/templates/* ./templates
 #RUN mkdir ./designs
 
 # run
-ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/OdbDesign/bin
+ENV LD_LIBRARY_PATH=/OdbDesign/bin
 # ENV ODBDESIGN_SERVER_REQUEST_USERNAME=${ODBDESIGN_SERVER_REQUEST_USERNAME}
 # ENV ODBDESIGN_SERVER_REQUEST_PASSWORD=${ODBDESIGN_SERVER_REQUEST_PASSWORD}
 RUN chmod +x ./bin/OdbDesignServer

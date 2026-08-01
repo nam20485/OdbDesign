@@ -15,3 +15,5 @@ build/
 .idea/
 Testing/
 *.code-workspace
+.env
+.env.local

@@ -49,3 +49,8 @@ gpg_keys/
 .github\instructions\codacy.instructions.md
 /new_designs/
 .kimchi/plans/plan-1781877149619.md
+
+# Local environment files (may contain secrets) — copy .env.example to .env
+.env
+.env.local
+.env.*.local

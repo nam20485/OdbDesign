@@ -7,11 +7,23 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      # GITHUB_TOKEN is required by Dockerfile for NuGet/vcpkg binary cache auth.
-      # Pass via shell env: `GITHUB_TOKEN=... docker compose -f compose.local.yml build`
+      # Read-only vcpkg binary cache (consume pre-built packages from GH Packages,
+      # do NOT upload). USE_VCPKG_CACHE=1 makes the Dockerfile generate a
+      # read-only nuget config at /etc/vcpkg/local.nuget.config from the
+      # nuget_auth_token secret; VCPKG_BINARY_SOURCES then points vcpkg at it.
+      # Requires NUGET_AUTH_TOKEN in the shell env / .env (GitHub PAT with
+      # read:packages scope — same token used by scripts/setup-vcpkg-cache.sh).
       args:
-        - GITHUB_TOKEN=${GITHUB_TOKEN:-}
-        - VCPKG_BINARY_SOURCES=${VCPKG_BINARY_SOURCES:-}
+        - USE_VCPKG_CACHE=1
+        - VCPKG_BINARY_SOURCES=clear;nugetconfig,/etc/vcpkg/local.nuget.config,read
+      # Tokens are injected as BuildKit secrets (mounted at /run/secrets), never
+      # as build args, so they never appear in build logs or the image cache.
+      # Resolved from the host environment (or the project .env file):
+      #   github_token     <- GITHUB_TOKEN
+      #   nuget_auth_token <- NUGET_AUTH_TOKEN
+      secrets:
+        - github_token
+        - nuget_auth_token
     volumes:
       - ./compose-designs:/OdbDesign/designs
     # No host-published ports — nginx (the `proxy` service below) is the
@@ -59,3 +71,13 @@ services:
       timeout: 5s
       retries: 3
       start_period: 10s
+
+# Build-time secret sources. Each reads its value from the host environment
+# (or the project .env file) and mounts it into the build container at
+# /run/secrets/<name>. Values never pass through build args, so they are
+# absent from build logs and the layer cache.
+secrets:
+  github_token:
+    environment: GITHUB_TOKEN
+  nuget_auth_token:
+    environment: NUGET_AUTH_TOKEN
