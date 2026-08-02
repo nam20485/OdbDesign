@@ -14,6 +14,7 @@
 #include <cctype>
 #include <App/DesignCache.h>
 #include <design.pb.h>
+#include <standardfontsfile.pb.h>
 #include <vector>
 #include <Logger.h>
 
@@ -587,6 +588,36 @@ namespace OdbDesignServer
             {
                 std::string error = "Internal server error: " + std::string(e.what());
                 return { grpc::StatusCode::INTERNAL, error };
+            }
+        }
+
+        grpc::Status OdbDesignServiceImpl::GetStandardFonts(
+            grpc::ServerContext *context,
+            const Odb::Grpc::GetStandardFontsRequest *request,
+            Odb::Lib::Protobuf::StandardFontsFile *response)
+        {
+            try
+            {
+                loginfo("[ConnTrace] GetStandardFonts start: design_name=\"" + request->design_name() + "\"");
+
+                const auto fileArchive = m_designCache->GetFileArchive(request->design_name());
+                if (fileArchive == nullptr)
+                {
+                    return {grpc::StatusCode::NOT_FOUND, "Design not found: " + request->design_name()};
+                }
+
+                const auto &fontsFile = fileArchive->GetStandardFontsFile();
+                *response = *fontsFile.to_protobuf();
+
+                loginfo("[ConnTrace] GetStandardFonts done: design_name=\"" + request->design_name() +
+                    "\" characters=" + std::to_string(response->m_characterblocks_size()));
+
+                return grpc::Status::OK;
+            }
+            catch (const std::exception &e)
+            {
+                std::string error = "Internal server error: " + std::string(e.what());
+                return {grpc::StatusCode::INTERNAL, error};
             }
         }
 
