@@ -15,7 +15,9 @@ namespace Odb::Test
 	TEST_F(TestDataFixture, Test_ArchiveExtractor_CompressDir)
 	{
 		std::string fileArchiveOut;
-		ArchiveExtractor::CompressDir(getTestDataFilesDir().string(), getTestDataDir().string(), "files_archiveextractor", fileArchiveOut);
+		// Write the compressed output to the system temp dir, not the shared test-data
+		// directory, so parallel runs don't leave artifacts in (or race on) TEST_DATA.
+		ArchiveExtractor::CompressDir(getTestDataFilesDir().string(), temp_directory_path().string(), "files_archiveextractor", fileArchiveOut);
 
 		ASSERT_STRNE(fileArchiveOut.c_str(), "");
 		ASSERT_TRUE(exists(fileArchiveOut));

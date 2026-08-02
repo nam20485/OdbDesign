@@ -15,15 +15,21 @@ namespace Odb::Test::Fixtures
 
 	protected:
 		std::unique_ptr<Odb::Lib::App::DesignCache> m_pDesignCache;
-		
-		const bool m_removeDecompressedDirectories = true;
+
+		// Per-fixture isolated directory: design archives are copied here and extracted
+		// within it, so concurrent test processes never share a mutable on-disk location.
+		std::filesystem::path m_scratchDir;
 
 		void SetUp() override;
 		void TearDown() override;
 
 		std::filesystem::path getDesignPath(const std::string& filename) const;
-			
-		static inline const std::vector<std::string> KEEP_DIRECTORIES = { TESTDATA_FILES_DIR };		
+
+		// Returns the path to a per-fixture isolated copy of a design archive.
+		// Use this (instead of getDesignPath) when a test extracts/parses an archive
+		// directly, so extraction lands in the per-fixture scratch dir rather than the
+		// shared test-data directory (keeps parallel test runs from racing on disk).
+		std::filesystem::path getIsolatedDesignPath(const std::string& filename) const;
 
 	};
 }
