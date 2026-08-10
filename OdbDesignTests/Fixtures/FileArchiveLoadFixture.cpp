@@ -42,7 +42,11 @@ namespace
 			// create_directory atomically succeeds only if the dir does not yet exist.
 			if (std::filesystem::create_directory(candidate, ec))
 			{
-				return candidate;
+				// Resolve any symlinks in the system temp path (e.g. macOS /var ->
+				// /private/var) so libarchive's ARCHIVE_EXTRACT_SECURE_SYMLINKS check
+				// does not refuse to extract into the scratch directory.
+				auto resolved = std::filesystem::weakly_canonical(candidate, ec);
+				return ec ? candidate : resolved;
 			}
 		}
 	}
