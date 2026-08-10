@@ -606,8 +606,12 @@ namespace OdbDesignServer
                     return {grpc::StatusCode::NOT_FOUND, "Design not found: " + request->design_name()};
                 }
 
-                const auto &fontsFile = fileArchive->GetStandardFontsFile();
-                *response = *fontsFile.to_protobuf();
+                auto fontsFilePb = fileArchive->GetStandardFontsFile().to_protobuf();
+                if (fontsFilePb == nullptr)
+                {
+                    return {grpc::StatusCode::INTERNAL, "Failed to serialize standard fonts file"};
+                }
+                response->CopyFrom(*fontsFilePb);
 
                 loginfo("[ConnTrace] GetStandardFonts done: design_name=\"" + request->design_name() +
                     "\" characters=" + std::to_string(response->m_characterblocks_size()));

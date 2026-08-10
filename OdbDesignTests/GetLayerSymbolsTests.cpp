@@ -5,11 +5,6 @@
 #include "Fixtures/FileArchiveLoadFixture.h"
 #include "OdbDesignServer/Services/OdbDesignServiceImpl.h"
 
-namespace OdbDesignServer::Services
-{
-	class OdbDesignServiceImpl;
-}
-
 using namespace Odb::Test::Fixtures;
 
 class GetLayerSymbolsFixture : public FileArchiveLoadFixture

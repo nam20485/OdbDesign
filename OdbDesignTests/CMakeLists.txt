@@ -32,6 +32,7 @@ add_executable(OdbDesignTests
     # gRPC methods can be unit-tested directly (used by GetStandardFontsTests.cpp).
     "../OdbDesignServer/Services/OdbDesignServiceImpl.cpp"
     "GetStandardFontsTests.cpp"
+    "GetLayerSymbolsTests.cpp"
 
     # NOTE: GrpcBatchStreamTests.cpp temporarily disabled due to CMake coupling concerns
     # Future: Will create separate test target for server component tests
