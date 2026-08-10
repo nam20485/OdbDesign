@@ -137,8 +137,12 @@ TEST_F(GetStandardFontsFixture, ReturnsInternalForUnparseableDesign)
 	// findRootDir resolves a root, but they are empty, so ParseDesignDirectory
 	// throws (missing misc/info etc.). This forces the server's catch block,
 	// which maps to gRPC INTERNAL.
-	const auto base = std::filesystem::temp_directory_path() / "odb_badfonts_cache";
 	std::error_code ec;
+	// Resolve the system temp path (e.g. macOS /var -> /private/var) so libarchive's
+	// ARCHIVE_EXTRACT_SECURE_SYMLINKS check does not refuse to extract into it.
+	const auto tempDir = std::filesystem::weakly_canonical(std::filesystem::temp_directory_path(ec), ec);
+	ASSERT_FALSE(ec) << "temp_directory_path failed: " << ec.message();
+	const auto base = tempDir / "odb_badfonts_cache";
 	std::filesystem::create_directories(base, ec);
 	ASSERT_FALSE(ec) << "create_directories(base) failed: " << ec.message();
 
