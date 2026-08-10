@@ -27,11 +27,15 @@ add_executable(OdbDesignTests
     "GrpcServiceConfigTests.cpp"
     "Utf8SanitizerTests.cpp"
     "../OdbDesignServer/Config/GrpcServiceConfig.cpp"
-    
+
+    # Server service implementation compiled into the test executable so service-level
+    # gRPC methods can be unit-tested directly (used by GetStandardFontsTests.cpp).
+    "../OdbDesignServer/Services/OdbDesignServiceImpl.cpp"
+    "GetStandardFontsTests.cpp"
+    "GetLayerSymbolsTests.cpp"
+
     # NOTE: GrpcBatchStreamTests.cpp temporarily disabled due to CMake coupling concerns
-    # Server source files are compiled directly into test executable, creating tight coupling
     # Future: Will create separate test target for server component tests
-    # "../OdbDesignServer/Services/OdbDesignServiceImpl.cpp"
     # "GrpcBatchStreamTests.cpp"
      "FileArchiveLoadTests.cpp")
 

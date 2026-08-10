@@ -54,3 +54,4 @@ gpg_keys/
 .cursor/hooks/state/continual-learning-index.json
 .qwen/settings.json
 .qwen/settings.json.orig
+.mimosa/

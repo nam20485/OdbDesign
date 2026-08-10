@@ -5,6 +5,7 @@ package Odb.Grpc;
 import "design.proto";
 import "featuresfile.proto";
 import "symbolname.proto";
+import "standardfontsfile.proto";
 //import "common.proto";
 
 // Service definition for ODB++ data
@@ -25,6 +26,11 @@ service OdbDesignService {
   // Unary call to get the symbol list and units metadata for a layer.
   // Required to resolve FeatureRecord.sym_num into a SymbolName.
   rpc GetLayerSymbols(GetLayerSymbolsRequest) returns (GetLayerSymbolsResponse);
+
+  // Returns the standard font glyph data for a design.
+  // The client uses this to render ODB++ text features (silkscreen labels, refdes, etc.)
+  // as 3D stroke geometry.
+  rpc GetStandardFonts(GetStandardFontsRequest) returns (.Odb.Lib.Protobuf.StandardFontsFile);
 
   // A simple health check for the gRPC server
   rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
@@ -62,16 +68,20 @@ message GetLayerSymbolsResponse {
   repeated .Odb.Lib.Protobuf.SymbolName symbol_names = 4;
 }
 
-message HealthCheckRequest { 
+message GetStandardFontsRequest {
+  string design_name = 1;
+}
+
+message HealthCheckRequest {
   string service = 1;
 }
 
-message HealthCheckResponse { 
-  enum ServingStatus { 
+message HealthCheckResponse {
+  enum ServingStatus {
     UNKNOWN = 0;
-    SERVING = 1; 
-    NOT_SERVING = 2; 
-  } 
+    SERVING = 1;
+    NOT_SERVING = 2;
+  }
   ServingStatus status = 1;
 }
 
