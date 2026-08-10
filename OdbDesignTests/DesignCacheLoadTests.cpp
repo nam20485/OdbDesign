@@ -30,6 +30,14 @@ namespace
 		std::random_device rd;
 		return base / (std::to_string(rd()) + "_" + std::to_string(rd()));
 	}
+
+	// Removes the temp dir on destruction, so cleanup still runs when an ASSERT_*
+	// fails partway through a test (ASSERT returns from the test body).
+	struct TempDirGuard
+	{
+		std::filesystem::path path;
+		~TempDirGuard() { std::error_code ec; std::filesystem::remove_all(path, ec); }
+	};
 }
 
 namespace Odb::Test
@@ -53,6 +61,7 @@ namespace Odb::Test
 	TEST(DesignCacheLoadError, ThrowsForUnextractableArchive)
 	{
 		const auto cacheDir = makeUniqueCacheDir();
+		TempDirGuard guard{cacheDir};
 		std::error_code ec;
 		std::filesystem::create_directories(cacheDir, ec);
 		ASSERT_FALSE(ec) << ec.message();
@@ -66,8 +75,6 @@ namespace Odb::Test
 
 		Odb::Lib::App::DesignCache cache(cacheDir.string());
 		EXPECT_THROW(cache.GetFileArchive("broken"), std::exception);
-
-		std::filesystem::remove_all(cacheDir, ec);
 	}
 
 	// A valid archive that extracts but fails to parse must also throw
@@ -75,6 +82,7 @@ namespace Odb::Test
 	TEST(DesignCacheLoadError, ThrowsForUnparseableArchive)
 	{
 		const auto cacheDir = makeUniqueCacheDir();
+		TempDirGuard guard{cacheDir};
 		std::error_code ec;
 		std::filesystem::create_directories(cacheDir, ec);
 		ASSERT_FALSE(ec) << ec.message();
@@ -95,8 +103,6 @@ namespace Odb::Test
 
 		Odb::Lib::App::DesignCache cache(cacheDir.string());
 		EXPECT_THROW(cache.GetFileArchive("bad_design"), std::exception);
-
-		std::filesystem::remove_all(cacheDir, ec);
 	}
 
 	// A genuinely absent design must still return nullptr (no throw), so callers
@@ -104,6 +110,7 @@ namespace Odb::Test
 	TEST(DesignCacheLoadError, ReturnsNullptrForMissingDesign)
 	{
 		const auto cacheDir = makeUniqueCacheDir();
+		TempDirGuard guard{cacheDir};
 		std::error_code ec;
 		std::filesystem::create_directories(cacheDir, ec);
 		ASSERT_FALSE(ec) << ec.message();
@@ -113,7 +120,5 @@ namespace Odb::Test
 			auto p = cache.GetFileArchive("does_not_exist");
 			EXPECT_EQ(p, nullptr);
 		});
-
-		std::filesystem::remove_all(cacheDir, ec);
 	}
 }
