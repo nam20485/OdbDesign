@@ -55,3 +55,4 @@ gpg_keys/
 .qwen/settings.json
 .qwen/settings.json.orig
 .mimosa/
+.kilo/
