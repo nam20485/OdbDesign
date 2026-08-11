@@ -20,23 +20,23 @@
   "overrides": [
     {
       "name": "libarchive",
-      "version": "3.8.2"
+      "version": "3.8.7"
     },
     {
       "name": "zlib",
-      "version": "1.3.1"
+      "version": "1.3.2#2"
     },
     {
       "name": "crow",
-      "version": "1.3.0"
+      "version": "1.3.3"
     },
     {
       "name": "protobuf",
-      "version": "5.29.5#2"
+      "version": "6.33.4#2"
     },
     {
       "name": "grpc",
-      "version": "1.71.0#3"
+      "version": "1.81.1"
     }
   ]
 }
