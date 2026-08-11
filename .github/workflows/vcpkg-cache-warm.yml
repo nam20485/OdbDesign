@@ -33,6 +33,10 @@ env:
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
   NUGET_TIMEOUT: 1200
   NUGET_PUSH_TIMEOUT_IN_SECONDS: 1200
+  # Commit to check out. For workflow_run events this is the triggering run's head SHA.
+  # Safe because the warm jobs only run when the triggering event was NOT a pull request
+  # (see job `if:` conditions), i.e. only same-repo push/workflow_dispatch runs.
+  WARM_REF: ${{ github.event.workflow_run.head_sha || github.sha }}
 
 concurrency:
   group: vcpkg-cache-warm-${{ github.event.workflow_run.head_branch || github.ref_name || 'manual' }}
@@ -43,7 +47,8 @@ jobs:
     name: Vcpkg-Cache-Warm (Linux)
     if: >
       (github.event_name != 'workflow_run' ||
-      github.event.workflow_run.conclusion == 'success') &&
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event != 'pull_request')) &&
       (github.event_name != 'workflow_dispatch' ||
       inputs.target == 'all' ||
       inputs.target == 'linux')
@@ -58,7 +63,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          ref: ${{ env.WARM_REF }}
 
       - name: Install vcpkg Dependencies (Ubuntu)
         run: |
@@ -125,7 +130,8 @@ jobs:
     name: Vcpkg-Cache-Warm (macOS)
     if: >
       (github.event_name != 'workflow_run' ||
-      github.event.workflow_run.conclusion == 'success') &&
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event != 'pull_request')) &&
       (github.event_name != 'workflow_dispatch' ||
       inputs.target == 'all' ||
       inputs.target == 'macos')
@@ -140,7 +146,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          ref: ${{ env.WARM_REF }}
 
       - name: Install mono (macOS)
         run: brew install mono
