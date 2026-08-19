@@ -65,6 +65,18 @@ try {
     # Swagger UI
     #
 
+    # (re)create the swagger spec ConfigMap from the repo swagger file; the
+    # public swaggerui image bakes an outdated spec, the deployment mounts
+    # this ConfigMap over it
+    $specPath = "swagger/odbdesign-server-0.9-swagger.yaml"
+    & kubectl create configmap odbdesign-server-swagger-spec `
+        --from-file=odbdesign-server-0.9-swagger.yaml=$specPath `
+        --dry-run=client -o yaml | kubectl apply -f -
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "Failed to create/update the swagger spec ConfigMap."
+        Exit 1
+    }
+
     # apply deployment/service manifests
     Invoke-Kubectl @("apply", "-f", "deploy/kube/OdbDesignServer-SwaggerUI/deployment.yaml")
     Invoke-Kubectl @("apply", "-f", "deploy/kube/OdbDesignServer-SwaggerUI/service.yaml")
