@@ -28,6 +28,8 @@ All verdicts recorded (2026-08-19) and applied to `docs/plan/k3s-vm-cluster-plan
 | R18 | Minor | No validation for Restart, Uninstall, or kubeconfig-backup behavior | ACCEPTED |
 | R19 | — (resolved) | Duplicate plan copies would drift | RESOLVED by D1 |
 | R20 | — (resolved) | Kilo skill discovery vs `.agents/skills/` location | RESOLVED by D2, caveat below |
+| R21 | Blocker (found during deploy) | Published ghcr image runtime base is Debian 12 (glibc 2.36) but binaries need GLIBC_2.38/GLIBCXX_3.4.32 -> CrashLoopBackOff; pinned digest `b6e2a152...` is bookworm, not trixie as commented | PARTLY FIXED — Dockerfiles repinned to real trixie digest; ghcr image needs CI rebuild; cluster currently runs local trixie image |
+| R22 | Should-fix (found during deploy) | Deployment resources/rollout: 2-CPU requests × rolling surge deadlocked 4-core node; SwaggerUI over-requested 2 CPU/2Gi; `master`-label affinity (no-op on k3d) excluded the single control-plane node | ACCEPTED — fixed: Recreate strategy, requests lowered (1 CPU/1Gi server, 100m/128Mi swagger), stale affinity removed |
 
 ---
 
