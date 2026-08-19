@@ -1,7 +1,8 @@
 param(
-    # Cluster name
-    [Parameter(Mandatory=$false)]    
-    [string]$ClusterName = "k3d-k3dcluster",
+    # Kubernetes context to use. Omit to use the current context (e.g. k3s "default").
+    # For the old k3d cluster pass "k3d-k3dcluster".
+    [Parameter(Mandatory=$false)]
+    [string]$ClusterName = "",
     # Deployment name
     [Parameter(Mandatory=$false)]
     [string]$DeploymentName = "odbdesign-server-v1",
@@ -9,58 +10,89 @@ param(
     [switch]$SkipGrpcValidation = $false
 )
 
-# set kubeconfig
-kubectl config use-context $ClusterName
-if ($LASTEXITCODE -ne 0) {
-    Exit 1    
+Set-StrictMode -Version Latest
+$ErrorActionPreference = "Stop"
+
+$RepoRoot = Split-Path -Parent $PSScriptRoot
+
+function Invoke-Kubectl {
+    param([Parameter(Mandatory=$true)][string[]]$Arguments)
+
+    & kubectl @Arguments
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "kubectl $($Arguments -join ' ') failed with exit code $LASTEXITCODE."
+        Exit 1
+    }
 }
 
-#
-# Common (pre)
-#
+# set kubeconfig context (optional; omit to deploy to the current context, e.g. k3s)
+if (-not [string]::IsNullOrWhiteSpace($ClusterName)) {
+    Invoke-Kubectl @("config", "use-context", $ClusterName)
+}
 
-# persistent volume
-kubectl apply -f deploy/kube/k3d-volume-pv.yaml
-kubectl apply -f deploy/kube/k3d-volume-pvc.yaml
+Push-Location $RepoRoot
+try {
+    #
+    # Common (pre)
+    #
 
-#
-# OdbDesignServer
-#
+    # persistent volume
+    Invoke-Kubectl @("apply", "-f", "deploy/kube/k3d-volume-pv.yaml")
+    Invoke-Kubectl @("apply", "-f", "deploy/kube/k3d-volume-pvc.yaml")
 
-# secrets
-& (Join-Path $PSScriptRoot 'odbdesign-server-request-secret.ps1')
+    #
+    # OdbDesignServer
+    #
 
-# apply deployment/service manifests
-kubectl apply -f deploy/kube/OdbDesignServer/deployment.yaml
-kubectl apply -f deploy/kube/OdbDesignServer/service.yaml
-kubectl apply -f deploy/kube/OdbDesignServer/service-grpc.yaml
+    # secrets
+    & (Join-Path $PSScriptRoot "odbdesign-server-request-secret.ps1")
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "Failed to create/update the request secret."
+        Exit 1
+    }
 
-# restart deployment
-kubectl rollout restart deployment/$DeploymentName
-kubectl rollout status deployment/$DeploymentName
+    # apply deployment/service manifests
+    Invoke-Kubectl @("apply", "-f", "deploy/kube/OdbDesignServer/deployment.yaml")
+    Invoke-Kubectl @("apply", "-f", "deploy/kube/OdbDesignServer/service.yaml")
+    Invoke-Kubectl @("apply", "-f", "deploy/kube/OdbDesignServer/service-grpc.yaml")
+
+    # restart deployment
+    Invoke-Kubectl @("rollout", "restart", "deployment/$DeploymentName")
+    Invoke-Kubectl @("rollout", "status", "deployment/$DeploymentName", "--timeout=300s")
 
 
-#
-# Swagger UI
-#
+    #
+    # Swagger UI
+    #
 
-# apply deployment/service manifests
-kubectl apply -f deploy/kube/OdbDesignServer-SwaggerUI/deployment.yaml
-kubectl apply -f deploy/kube/OdbDesignServer-SwaggerUI/service.yaml
+    # apply deployment/service manifests
+    Invoke-Kubectl @("apply", "-f", "deploy/kube/OdbDesignServer-SwaggerUI/deployment.yaml")
+    Invoke-Kubectl @("apply", "-f", "deploy/kube/OdbDesignServer-SwaggerUI/service.yaml")
 
-# restart deployment
-kubectl rollout restart deployment/odbdesign-server-swaggerui-v1
-kubectl rollout status deployment/odbdesign-server-swaggerui-v1
+    # restart deployment
+    Invoke-Kubectl @("rollout", "restart", "deployment/odbdesign-server-swaggerui-v1")
+    Invoke-Kubectl @("rollout", "status", "deployment/odbdesign-server-swaggerui-v1", "--timeout=300s")
 
-#
-# Common (post)
-#
+    #
+    # Common (post)
+    #
 
-# apply ingress manifest
-kubectl apply -f deploy/kube/local-ingress.yaml
+    # apply ingress manifest
+    Invoke-Kubectl @("apply", "-f", "deploy/kube/local-ingress.yaml")
 
-if (-not $SkipGrpcValidation) {
-    & (Join-Path $PSScriptRoot 'validate-grpc-exposure.ps1') `
-        -ClusterName $ClusterName `
-        -DeploymentName $DeploymentName
+    if (-not $SkipGrpcValidation) {
+        $validateArgs = @{ DeploymentName = $DeploymentName }
+        if (-not [string]::IsNullOrWhiteSpace($ClusterName)) {
+            $validateArgs.ClusterName = $ClusterName
+        }
+
+        & (Join-Path $PSScriptRoot "validate-grpc-exposure.ps1") @validateArgs
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "gRPC exposure validation failed."
+            Exit 1
+        }
+    }
+}
+finally {
+    Pop-Location
 }

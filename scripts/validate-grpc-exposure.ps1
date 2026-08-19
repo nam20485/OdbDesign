@@ -1,6 +1,7 @@
 param(
+    # Kubernetes context to use. Omit to use the current context (e.g. k3s "default").
     [Parameter(Mandatory=$false)]
-    [string]$ClusterName = "k3d-k3dcluster",
+    [string]$ClusterName = "",
     [Parameter(Mandatory=$false)]
     [string]$DeploymentName = "odbdesign-server-v1",
     [Parameter(Mandatory=$false)]
@@ -9,8 +10,15 @@ param(
     [string]$GrpcPortName = "ods-grpc-port",
     [Parameter(Mandatory=$false)]
     [int]$GrpcPort = 50051,
+    # Host/IP clients use to reach gRPC. Omit to auto-detect:
+    #   k3s: the ServiceLB ingress IP (node IP)
+    #   k3d: "precision5820" (legacy default)
     [Parameter(Mandatory=$false)]
-    [string]$AdvertisedHost = "precision5820",
+    [string]$AdvertisedHost = "",
+    # Cluster kind. "Auto" detects k3d from a "k3d-*" context name, otherwise assumes k3s.
+    [Parameter(Mandatory=$false)]
+    [ValidateSet('Auto','k3d','k3s')]
+    [string]$ClusterKind = 'Auto',
     [Parameter(Mandatory=$false)]
     [string]$DesignName,
     [Parameter(Mandatory=$false)]
@@ -55,7 +63,7 @@ function Invoke-KubectlJson {
 function Normalize-ClusterShortName {
     param([string]$Name)
 
-    if ($Name.StartsWith("k3d-")) {
+    if (-not [string]::IsNullOrEmpty($Name) -and $Name.StartsWith("k3d-")) {
         return $Name.Substring(4)
     }
 
@@ -115,12 +123,36 @@ function Test-GrpcUrlTarget {
 }
 
 Require-Command "kubectl"
-Require-Command "docker"
 
-Write-Step "Switching kubectl context to $ClusterName..."
-kubectl config use-context $ClusterName | Out-Null
+$currentContext = (kubectl config current-context 2>$null)
 if ($LASTEXITCODE -ne 0) {
-    Fail "Failed to switch kubectl context to $ClusterName."
+    Fail "Failed to read current kubectl context."
+}
+$currentContext = "$currentContext".Trim()
+
+# resolve cluster kind
+$kind = $ClusterKind
+if ($kind -eq 'Auto') {
+    if ($currentContext.StartsWith("k3d-")) { $kind = 'k3d' } else { $kind = 'k3s' }
+}
+Write-Step "Cluster kind: $kind (context: $currentContext)"
+
+if ([string]::IsNullOrWhiteSpace($ClusterName)) {
+    $ClusterName = $currentContext
+}
+else {
+    Write-Step "Switching kubectl context to $ClusterName..."
+    kubectl config use-context $ClusterName | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        Fail "Failed to switch kubectl context to $ClusterName."
+    }
+}
+
+if ($kind -eq 'k3s' -and [string]::IsNullOrWhiteSpace($AdvertisedHost)) {
+    # resolve after service inspection below
+}
+elseif ([string]::IsNullOrWhiteSpace($AdvertisedHost)) {
+    $AdvertisedHost = "precision5820"
 }
 
 $deployment = Invoke-KubectlJson -Arguments @("get", "deployment", $DeploymentName)
@@ -154,7 +186,7 @@ if ($servicePorts.Count -eq 0) {
     Fail "Service '$GrpcServiceName' is not mapping port $GrpcPort to targetPort '$GrpcPortName'."
 }
 
-Write-Step "Service '$GrpcServiceName' maps host port $GrpcPort to target '$GrpcPortName'."
+Write-Step "Service '$GrpcServiceName' maps port $GrpcPort to target '$GrpcPortName'."
 
 $endpoints = Invoke-KubectlJson -Arguments @("get", "endpoints", $GrpcServiceName)
 $endpointAddresses = @(
@@ -171,18 +203,50 @@ if ($endpointAddresses.Count -eq 0) {
 
 Write-Step "Service '$GrpcServiceName' has endpoints: $($endpointAddresses -join ', ')"
 
-$clusterShortName = Normalize-ClusterShortName -Name $ClusterName
-$loadBalancerContainer = "k3d-$clusterShortName-serverlb"
-$publishedPort = & docker port $loadBalancerContainer "$GrpcPort/tcp" 2>$null
-if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($publishedPort)) {
-    Fail "Load balancer container '$loadBalancerContainer' is not publishing TCP/$GrpcPort. If this cluster predates the gRPC exposure change, recreate it with scripts/create-k3d-cluster.ps1 so it includes --port ""$GrpcPort:$GrpcPort@loadbalancer""."
-}
+#
+# LoadBalancer exposure check (cluster-kind specific)
+#
 
-if ($publishedPort -notmatch "[:]{1}$GrpcPort\b") {
-    Fail "Load balancer '$loadBalancerContainer' is publishing TCP/$GrpcPort as '$publishedPort' instead of host port $GrpcPort. Update the cluster creation port mapping or recreate the cluster."
-}
+$grpcTarget = $AdvertisedHost
 
-Write-Step "Load balancer '$loadBalancerContainer' publishes TCP/$GrpcPort as: $publishedPort"
+if ($kind -eq 'k3d') {
+    Require-Command "docker"
+
+    $clusterShortName = Normalize-ClusterShortName -Name $ClusterName
+    $loadBalancerContainer = "k3d-$clusterShortName-serverlb"
+    $publishedPort = & docker port $loadBalancerContainer "$GrpcPort/tcp" 2>$null
+    if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($publishedPort)) {
+        Fail "Load balancer container '$loadBalancerContainer' is not publishing TCP/$GrpcPort. If this cluster predates the gRPC exposure change, recreate it with scripts/create-k3d-cluster.ps1 so it includes --port ""$GrpcPort:$GrpcPort@loadbalancer""."
+    }
+
+    if ($publishedPort -notmatch "[:]{1}$GrpcPort\b") {
+        Fail "Load balancer '$loadBalancerContainer' is publishing TCP/$GrpcPort as '$publishedPort' instead of host port $GrpcPort. Update the cluster creation port mapping or recreate the cluster."
+    }
+
+    Write-Step "Load balancer '$loadBalancerContainer' publishes TCP/$GrpcPort as: $publishedPort"
+}
+else {
+    # k3s: ServiceLB (klipper-lb) publishes the LoadBalancer service on the node.
+    # Re-read the service to pick up its assigned ingress IP.
+    $service = Invoke-KubectlJson -Arguments @("get", "service", $GrpcServiceName)
+
+    $ingressIps = @(
+        foreach ($entry in @($service.status.loadBalancer.ingress)) {
+            if (-not [string]::IsNullOrWhiteSpace("$($_.ip)")) { "$($_.ip)" }
+            elseif (-not [string]::IsNullOrWhiteSpace("$($_.hostname)")) { "$($_.hostname)" }
+        }
+    ) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+
+    if ($ingressIps.Count -eq 0) {
+        Fail "ServiceLB has not assigned an ingress IP to service '$GrpcServiceName' yet. Check the svclb pod: kubectl -n kube-system get pods -l svccontroller.k3s.cattle.io/svcname=$GrpcServiceName"
+    }
+
+    Write-Step "ServiceLB publishes service '$GrpcServiceName' on: $($ingressIps -join ', ')"
+
+    if ([string]::IsNullOrWhiteSpace($AdvertisedHost)) {
+        $grpcTarget = $ingressIps[0]
+    }
+}
 
 if ($SkipGrpcUrl) {
     Write-Step "Skipping grpcurl checks."
@@ -207,6 +271,7 @@ $grpcurlPath = $grpcurlCommand.Source
 
 $computerName = $env:COMPUTERNAME
 if (-not [string]::IsNullOrWhiteSpace($computerName) -and
+    -not [string]::IsNullOrWhiteSpace($AdvertisedHost) -and
     $computerName.Equals($AdvertisedHost, [System.StringComparison]::OrdinalIgnoreCase)) {
     Test-GrpcUrlTarget `
         -Target "localhost:$GrpcPort" `
@@ -219,11 +284,11 @@ if (-not [string]::IsNullOrWhiteSpace($computerName) -and
         -LayerName $LayerName
 }
 else {
-    Write-Step "Skipping localhost grpcurl validation because this machine is '$computerName', not '$AdvertisedHost'."
+    Write-Step "Skipping localhost grpcurl validation (machine is '$computerName', advertised host is '$AdvertisedHost')."
 }
 
 Test-GrpcUrlTarget `
-    -Target "$AdvertisedHost:$GrpcPort" `
+    -Target "${grpcTarget}:$GrpcPort" `
     -GrpcUrlPath $grpcurlPath `
     -ServiceProtoPath $serviceProtoPath `
     -GrpcProtoPath $grpcProtoPath `

@@ -10,6 +10,10 @@ metadata:
     version: v1
 spec:
   replicas: 1
+  # single-replica service: Recreate avoids rollout deadlocks where old + new
+  # pods together exceed node capacity (requests are held during the overlap)
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: odbdesign-server
@@ -29,7 +33,7 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
-              - key: node-role.kubernetes.io/master
+              - key: node-role.kubernetes.io/control-plane
                 operator: NotIn
                 values:
                   - "true"
@@ -62,8 +66,8 @@ spec:
               cpu: "8"
               memory: 10Gi
             requests:
-              cpu: "2"
-              memory: 2Gi
+              cpu: "1"
+              memory: 1Gi
           livenessProbe:
             httpGet:
               path: /healthz/live

@@ -1,7 +1,10 @@
 # Debian 13 (Trixie) slim - amd64
 # Version: 13.3-slim (trixie-slim)
-# Reduces vulnerabilities: 2 HIGH, 1 MEDIUM, 4 LOW vs Debian 12
-FROM --platform=$BUILDPLATFORM debian@sha256:b6e2a152f22a40ff69d92cb397223c906017e1391a73c952b588e51af8883bf8 AS build
+# NOTE: the previous digest (b6e2a152...) actually resolved to Debian 12
+# (bookworm, glibc 2.36), which is too old for the CI-built binaries
+# (they require GLIBC_2.38 / GLIBCXX_3.4.32) -> CrashLoopBackOff.
+# Digest below is the real debian:13.3-slim manifest list (trixie, glibc 2.41).
+FROM --platform=$BUILDPLATFORM debian@sha256:1d3c811171a08a5adaa4a163fbafd96b61b87aa871bbc7aa15431ac275d3d430 AS build
 
 ARG OWNER=nam20485
 ARG GITHUB_TOKEN="PASSWORD"
@@ -74,9 +77,9 @@ RUN cmake --build --preset linux-release
 # much smaller runtime image
 # Debian 13 (Trixie) slim - amd64
 # Version: 13.3-slim (trixie-slim)
-# Reduces vulnerabilities: 2 HIGH, 1 MEDIUM, 4 LOW vs Debian 12
-# FROM --platform=$TARGETPLATFORM debian@sha256:b6e2a152f22a40ff69d92cb397223c906017e1391a73c952b588e51af8883bf8 AS run
-FROM debian@sha256:b6e2a152f22a40ff69d92cb397223c906017e1391a73c952b588e51af8883bf8 AS run
+# NOTE: keep in sync with the build stage digest (see note above).
+# FROM --platform=$TARGETPLATFORM debian@sha256:1d3c811171a08a5adaa4a163fbafd96b61b87aa871bbc7aa15431ac275d3d430 AS run
+FROM debian@sha256:1d3c811171a08a5adaa4a163fbafd96b61b87aa871bbc7aa15431ac275d3d430 AS run
 # ARG ODBDESIGN_SERVER_REQUEST_USERNAME=""
 # ARG ODBDESIGN_SERVER_REQUEST_PASSWORD=""
 LABEL org.opencontainers.image.source=https://github.com/nam20485/OdbDesign \
