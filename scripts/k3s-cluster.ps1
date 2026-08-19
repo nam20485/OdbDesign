@@ -43,7 +43,7 @@ function Get-ListeningPorts {
 
 function Get-BusyRequiredPorts {
     $listening = Get-ListeningPorts
-    return ,($requiredPorts | Where-Object { $listening -contains $_ })
+    return ,@($requiredPorts | Where-Object { $listening -contains $_ })
 }
 
 function Test-K3sInstalled {
