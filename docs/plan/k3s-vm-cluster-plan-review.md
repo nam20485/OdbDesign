@@ -100,6 +100,7 @@ APPLY
 ### R12. kubectl availability note overstated (plan line 55)
 - The k3s installer creates `/usr/local/bin/kubectl` symlink by default. Simplify: plain `kubectl` (with `~/.kube/config`) will exist post-install; the fallback chain is unnecessary complexity.
  APPLY
+- Post-install note (2026-08-19): the symlink exists, but it is k3s itself and its wrapper forces `KUBECONFIG=/etc/rancher/k3s/k3s.yaml` (root-only, mode 600) unless `KUBECONFIG` is set. `k3s-cluster.ps1` pins `KUBECONFIG=~/.kube/config`; the skill documents the gotcha.
 ### R13. Version pinning / redundant flag (plan line 42)
 - Add `INSTALL_K3S_VERSION=<pin>` (or documented channel) for reproducibility. `INSTALL_K3S_EXEC="server"` is redundant — server is the default single-node role; drop it. APPLY
 

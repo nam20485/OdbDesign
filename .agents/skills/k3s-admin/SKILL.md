@@ -29,7 +29,7 @@ pwsh scripts/k3s-cluster.ps1 -Action <Install|Start|Stop|Restart|Status|Uninstal
 - User kubeconfig: `~/.kube/config` (mode 600, created by Install; server URL rewritten to `https://192.168.122.200:6443`).
 - Root kubeconfig: `/etc/rancher/k3s/k3s.yaml` (mode 600).
 - Kubernetes API reachable at `https://192.168.122.200:6443` and `https://100.118.225.119:6443` (both are tls-san entries).
-- The k3s installer symlinks `/usr/local/bin/kubectl`, so plain `kubectl` works.
+- **Gotcha:** `/usr/local/bin/kubectl` is a symlink to k3s, and the k3s wrapper forces `KUBECONFIG=/etc/rancher/k3s/k3s.yaml` unless `KUBECONFIG` is already set — as a normal user that file is unreadable (mode 600 root). Use `KUBECONFIG=~/.kube/config kubectl ...` (or export `KUBECONFIG` in your shell profile), or run `sudo k3s kubectl`. `scripts/k3s-cluster.ps1` pins `KUBECONFIG` itself.
 
 ## Port / access map
 

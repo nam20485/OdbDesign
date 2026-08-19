@@ -30,6 +30,11 @@ $k3sUnitPath = '/etc/systemd/system/k3s.service'
 $k3sUninstallScriptPath = '/usr/local/bin/k3s-uninstall.sh'
 $minFreeKb = [int64]5 * 1024 * 1024
 
+# The /usr/local/bin/kubectl symlink is k3s itself; its wrapper forces
+# KUBECONFIG=/etc/rancher/k3s/k3s.yaml (root-only, mode 600) unless KUBECONFIG
+# is already set. Pin it to the user kubeconfig created by Install.
+$env:KUBECONFIG = $kubeConfigPath
+
 function Get-ListeningPorts {
     # Parse the Local Address:Port column of `ss -tln` in PowerShell (no brittle grep)
     $ports = @()
@@ -44,6 +49,28 @@ function Get-ListeningPorts {
 function Get-BusyRequiredPorts {
     $listening = Get-ListeningPorts
     return ,@($requiredPorts | Where-Object { $listening -contains $_ })
+}
+
+function Test-TcpPortReachable {
+    param(
+        [int]$Port,
+        [int]$TimeoutMilliseconds = 1000
+    )
+
+    $client = [System.Net.Sockets.TcpClient]::new()
+    try {
+        $task = $client.ConnectAsync('127.0.0.1', $Port)
+        if ($task.Wait($TimeoutMilliseconds)) {
+            return $client.Connected
+        }
+        return $false
+    }
+    catch {
+        return $false
+    }
+    finally {
+        $client.Dispose()
+    }
 }
 
 function Test-K3sInstalled {
@@ -103,15 +130,26 @@ function Restore-KubeConfig {
 }
 
 function Assert-InstallPreFlight {
+    param(
+        # -Force reinstalls over a running k3s, which legitimately holds the
+        # required ports; the port check would always fail in that case.
+        [switch]$SkipPortCheck
+    )
+
     foreach ($tool in @('curl', 'sudo')) {
         if (-not (Get-Command $tool -ErrorAction SilentlyContinue)) {
             throw "Required tool '$tool' is not available."
         }
     }
 
-    $busyPorts = Get-BusyRequiredPorts
-    if ($busyPorts.Count -gt 0) {
-        throw "Port(s) $($busyPorts -join ', ') already listening. Free them before installing (inspect with 'ss -tlnp')."
+    if ($SkipPortCheck) {
+        Write-Host "Skipping port pre-flight (-Force reinstall over the running cluster)."
+    }
+    else {
+        $busyPorts = Get-BusyRequiredPorts
+        if ($busyPorts.Count -gt 0) {
+            throw "Port(s) $($busyPorts -join ', ') already listening. Free them before installing (inspect with 'ss -tlnp')."
+        }
     }
 
     $freeKb = [int64](df --output=avail -k / | Select-Object -Last 1)
@@ -121,9 +159,6 @@ function Assert-InstallPreFlight {
 }
 
 function Invoke-Install {
-    Assert-InstallPreFlight
-    Backup-KubeConfig | Out-Null
-
     if (Test-K3sInstalled) {
         if (-not $Force) {
             throw "k3s is already installed. Re-run with -Force to re-run the installer over the existing install."
@@ -140,6 +175,9 @@ function Invoke-Install {
             }
         }
     }
+
+    Assert-InstallPreFlight -SkipPortCheck:$Force
+    Backup-KubeConfig | Out-Null
 
     Write-Host "Downloading k3s installer from $installerUrl ..."
     curl -sfL $installerUrl -o $installerPath
@@ -192,7 +230,17 @@ function Invoke-Status {
     $listening = Get-ListeningPorts
     Write-Host "Listening ports of interest:"
     foreach ($port in $requiredPorts) {
-        $state = if ($listening -contains $port) { 'LISTENING' } else { 'free' }
+        if ($listening -contains $port) {
+            $state = 'LISTENING'
+        }
+        elseif (Test-TcpPortReachable -Port $port) {
+            # k3s ServiceLB exposes hostPorts via iptables DNAT (svclb pods),
+            # which never shows up as a listen socket in `ss`.
+            $state = 'reachable (ServiceLB hostPort, no listen socket)'
+        }
+        else {
+            $state = 'free'
+        }
         Write-Host "  ${port}: $state"
     }
 

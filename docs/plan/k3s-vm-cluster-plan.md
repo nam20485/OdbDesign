@@ -58,7 +58,7 @@ Actions:
 - **Uninstall** (review R11): warn that `k3s-uninstall.sh` runs a killall script that can kill processes belonging to other container runtimes; interactive confirmation (type `uninstall` — mirrors k3d cluster-delete confirmation) unless `-Force`; then `sudo /usr/local/bin/k3s-uninstall.sh`; afterwards restore `~/.kube/config` from the Install-time backup when one exists, otherwise delete `~/.kube/config` (it points at a dead cluster); validate: unit inactive, `/usr/local/bin/k3s` gone, ports 6443/80/443/50051 free.
 
 Implementation notes:
-- The k3s installer symlinks `/usr/local/bin/kubectl` by default, so plain `kubectl` against `~/.kube/config` works post-install; no fallback chain needed (review R12).
+- The k3s installer symlinks `/usr/local/bin/kubectl` (review R12), but that symlink is k3s itself and its wrapper forces `KUBECONFIG=/etc/rancher/k3s/k3s.yaml` (root-only) unless `KUBECONFIG` is set — discovered during execution. The script therefore pins `$env:KUBECONFIG = ~/.kube/config`; interactive users must export `KUBECONFIG` (or use `sudo k3s kubectl`).
 - No firewall rules needed inside the VM (libvirt NAT + tailnet handle reachability); do not port the `Ensure-IngressFirewallRule` function.
 
 ### 2. Create `.agents/skills/k3s-admin/SKILL.md`
@@ -104,7 +104,7 @@ Replace the backslash joins at `scripts/deploy.ps1:31` and `:63` (`"$PSScriptRoo
 2. From VM: `kubectl get nodes -o wide` using `~/.kube/config`.
 3. From Windows host: `curl -k https://192.168.122.200:6443/livez` returns ok; `kubectl --server=https://192.168.122.200:6443 ...` (after copying kubeconfig) works without TLS errors.
 4. Tailnet IP (review R16): `curl -k https://100.118.225.119:6443/livez` returns ok — the tailnet SAN is half the justification for decision 4.
-5. `sudo ss -tlnp` shows 6443 and 80/443 (traefik); after running `deploy.ps1`, 50051 bound by ServiceLB.
+5. `ss -tln` shows 6443 listening. 80/443 (and 50051 after `deploy.ps1`) are exposed through ServiceLB `svclb` hostPorts via iptables DNAT — they never appear as listen sockets in `ss` (discovered during execution); the Status action falls back to a TCP probe, and real validation is an actual request (steps 6/7).
 6. Ingress routing (review R17): `curl -s -o /dev/null -w '%{http_code}' http://192.168.122.200/` and the same against `http://100.118.225.119/` both return 200 (not a Traefik 404) — would have caught review R3.
 7. Post-deploy gRPC (reviews R16, R17): `grpcurl -plaintext 192.168.122.200:50051 list` and `grpcurl -plaintext 100.118.225.119:50051 list` both succeed (deploy.ps1 runs with `-SkipGrpcValidation`, so this is the gRPC gate).
 8. `pwsh scripts/k3s-cluster.ps1 -Action Stop` -> Status shows inactive and does not throw (review R9) -> Start returns the node to Ready.
