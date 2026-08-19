@@ -14,7 +14,8 @@ servers:
   - url: /
   - url: http://default-ingress-1165108808.us-west-2.elb.amazonaws.com
   - url: http://localhost:8888
-  - url: http://precision5820:8081
+  - url: http://192.168.122.200
+  - url: http://100.118.225.119
 tags:
   - name: "file upload"
   - name: "filemodel"

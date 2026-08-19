@@ -28,7 +28,7 @@ kubectl apply -f deploy/kube/k3d-volume-pvc.yaml
 #
 
 # secrets
-& "$PSScriptRoot\odbdesign-server-request-secret.ps1"
+& (Join-Path $PSScriptRoot 'odbdesign-server-request-secret.ps1')
 
 # apply deployment/service manifests
 kubectl apply -f deploy/kube/OdbDesignServer/deployment.yaml
@@ -60,7 +60,7 @@ kubectl rollout status deployment/odbdesign-server-swaggerui-v1
 kubectl apply -f deploy/kube/local-ingress.yaml
 
 if (-not $SkipGrpcValidation) {
-    & "$PSScriptRoot\validate-grpc-exposure.ps1" `
+    & (Join-Path $PSScriptRoot 'validate-grpc-exposure.ps1') `
         -ClusterName $ClusterName `
         -DeploymentName $DeploymentName
 }

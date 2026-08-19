@@ -114,7 +114,8 @@ VITE_API_PASSWORD=your_password
 
 - **Development**: `http://localhost:8888`
 - **Production AWS**: `http://default-ingress-1165108808.us-west-2.elb.amazonaws.com`
-- **Local Network**: `http://precision5820:8081`
+- **Local Network**: `http://192.168.122.200`
+- **Tailnet**: `http://100.118.225.119`
 
 ---
 

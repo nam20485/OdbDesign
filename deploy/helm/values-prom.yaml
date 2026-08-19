@@ -1,5 +1,6 @@
 # kube-prometheus-stack overrides.
-# Grafana and Prometheus are exposed on the same host/port as Traefik (see create-k3d-cluster / local-ingress).
+# Grafana and Prometheus are exposed on the same Traefik entrypoint as the app
+# (k3s default ports 80/443 on the Debian 13 VM; host-less ingresses, see local-ingress).
 
 prometheus:
   prometheusSpec:
@@ -8,15 +9,14 @@ prometheus:
     serviceMonitorNamespaceSelector: {}
     # Do NOT set routePrefix to a subpath here: Prometheus must serve /api/v1 at the
     # Service root (port 9090) so Freelens/Lens and Grafana’s datasource work in-cluster.
-    # External URL http://precision5820:8081/prometheus uses Traefik StripPrefix (see
+    # External URL http://192.168.122.200/prometheus uses Traefik StripPrefix (see
     # deploy/kube/traefik-middleware-prometheus-stripprefix.yaml + ingress annotations).
   ingress:
     enabled: true
     ingressClassName: traefik
     annotations:
       traefik.ingress.kubernetes.io/router.middlewares: monitoring-prometheus-stripprefix@kubernetescrd
-    hosts:
-      - precision5820
+    hosts: []
     paths:
       - /prometheus
     pathType: Prefix
@@ -25,11 +25,10 @@ grafana:
   ingress:
     enabled: true
     ingressClassName: traefik
-    hosts:
-      - precision5820
+    hosts: []
     path: /grafana
-  # Required when serving Grafana behind a sub-path (same Traefik entrypoint as :8081).
+  # Required when serving Grafana behind a sub-path (same Traefik entrypoint as :80).
   grafana.ini:
     server:
-      root_url: http://precision5820:8081/grafana/
+      root_url: http://192.168.122.200/grafana/
       serve_from_sub_path: true
