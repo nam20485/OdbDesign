@@ -4,6 +4,10 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+# Fail the script when native commands (kubectl/helm) exit non-zero.
+# Without this, $ErrorActionPreference only governs cmdlets — a failed
+# `helm upgrade` was silently ignored (observed with the first loki install).
+$PSNativeCommandUseErrorActionPreference = $true
 
 $RepoRoot = Split-Path -Parent $PSScriptRoot
 Set-Location $RepoRoot
@@ -11,8 +15,12 @@ Set-Location $RepoRoot
 # Chart version pins (resolved 2026-08-19 via `helm search repo`; update deliberately):
 #   kube-prometheus-stack 88.5.0  (app v0.93.1)
 #   trivy-operator         0.35.0  (app 0.33.0)
+#   loki                   7.3.0   (app 3.6.12, single-binary)
+#   promtail               6.17.1  (app 3.5.1)
 $KubePrometheusStackChartVersion = "88.5.0"
 $TrivyOperatorChartVersion = "0.35.0"
+$LokiChartVersion = "7.3.0"
+$PromtailChartVersion = "6.17.1"
 
 # The /usr/local/bin/kubectl symlink is k3s itself; its wrapper forces
 # KUBECONFIG=/etc/rancher/k3s/k3s.yaml (root-only, mode 600) unless KUBECONFIG
@@ -117,7 +125,10 @@ function Wait-RolloutInNamespace {
     )
     $kinds = @("deploy", "sts", "ds")
     foreach ($k in $kinds) {
-        $names = kubectl get $k -n $Namespace -o name 2>$null
+        # `kubectl get <kind>` exits non-zero when the namespace has no
+        # objects of that kind — expected, not a failure (PSNativeCommand... throws otherwise)
+        try { $names = kubectl get $k -n $Namespace -o name 2>$null }
+        catch { continue }
         if (-not $names) { continue }
         foreach ($line in $names) {
             if ([string]::IsNullOrWhiteSpace($line)) { continue }
@@ -135,8 +146,9 @@ kubectl create namespace monitoring --dry-run=client -o yaml | kubectl apply -f 
 # NOTE: traefik.io/v1alpha1 — the k3s v1.36 cluster runs Traefik 3.x (2.x used traefik.containo.us).
 kubectl apply -f ./deploy/kube/traefik-middleware-prometheus-stripprefix.yaml
 
-helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-helm repo add aqua https://aquasecurity.github.io/helm-charts/
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts --force-update
+helm repo add aqua https://aquasecurity.github.io/helm-charts/ --force-update
+helm repo add grafana https://grafana.github.io/helm-charts --force-update
 helm repo update
 
 helm upgrade --install prom prometheus-community/kube-prometheus-stack `
@@ -145,6 +157,20 @@ kubectl --namespace monitoring get pods -l "release=prom"
 
 if ($Wait) {
     Write-Host "Waiting for monitoring stack rollouts (timeout ${WaitTimeoutSeconds}s)..."
+    Wait-RolloutInNamespace -Namespace "monitoring" -TimeoutSeconds $WaitTimeoutSeconds
+}
+
+# Loki (log store) + Promtail (DaemonSet log collector) — logs are viewable in Grafana
+# via the provisioned "Loki" datasource (values-prom.yaml grafana.additionalDataSources).
+# Single-binary Loki for this single-node VM; see deploy/helm/values-loki.yaml.
+helm upgrade --install loki grafana/loki `
+    -n monitoring --version $LokiChartVersion --values ./deploy/helm/values-loki.yaml
+
+helm upgrade --install promtail grafana/promtail `
+    -n monitoring --version $PromtailChartVersion --values ./deploy/helm/values-promtail.yaml
+
+if ($Wait) {
+    Write-Host "Waiting for Loki rollouts (timeout ${WaitTimeoutSeconds}s)..."
     Wait-RolloutInNamespace -Namespace "monitoring" -TimeoutSeconds $WaitTimeoutSeconds
 }
 

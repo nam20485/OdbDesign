@@ -32,3 +32,13 @@ grafana:
     server:
       root_url: http://192.168.122.200/grafana/
       serve_from_sub_path: true
+  # Loki datasource — logs in Explore (deploy/helm/values-loki.yaml + values-promtail.yaml).
+  # The gateway is disabled, so point straight at the loki Service (port 3100).
+  additionalDataSources:
+    - name: Loki
+      type: loki
+      access: proxy
+      url: http://loki.monitoring.svc.cluster.local:3100
+      isDefault: false
+      jsonData:
+        maxLines: 1000

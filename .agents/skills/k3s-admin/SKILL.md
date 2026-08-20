@@ -67,6 +67,7 @@ pwsh scripts/deploy-monitoring.ps1 -Wait -WaitTimeoutSeconds 900
 - Verify: `curl http://192.168.122.200/prometheus/-/healthy` and `curl http://192.168.122.200/grafana/api/health`; pods via `kubectl get pods -n monitoring` and `kubectl get pods -n trivy-system`.
 - Ordering matters: trivy's `serviceMonitor.enabled=true` needs the prometheus-operator CRDs, so prom is installed first (script already does this).
 - Node headroom: the stack adds ~1.5–2.5 GiB RSS and trivy scans spike CPU; check with `kubectl top node`.
+- **Logs (Loki)**: the script also installs `loki` (single-binary, 10 Gi PVC, gateway/caches disabled, `auth_enabled: false`) and `promtail` (DaemonSet) into `monitoring`; Grafana gets a provisioned **Loki** datasource. View logs in Grafana → Explore → Loki (`{namespace="monitoring"}` etc.). Values: `deploy/helm/values-loki.yaml`, `values-promtail.yaml`; push URL is `http://loki.monitoring.svc.cluster.local:3100/loki/api/v1/push`.
 
 ## Generating the OpenAPI spec (swaggerui)
 
