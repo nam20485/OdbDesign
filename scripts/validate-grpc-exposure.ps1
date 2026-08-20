@@ -31,6 +31,17 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
+# The /usr/local/bin/kubectl symlink is k3s itself; its wrapper forces
+# KUBECONFIG=/etc/rancher/k3s/k3s.yaml (root-only, mode 600) unless KUBECONFIG
+# is already set — standalone runs fail with permission denied. Pin the user
+# kubeconfig like deploy.ps1 and k3s-cluster.ps1 do.
+if ([string]::IsNullOrEmpty($env:KUBECONFIG)) {
+    $userKubeConfig = Join-Path $HOME ".kube/config"
+    if (Test-Path $userKubeConfig) {
+        $env:KUBECONFIG = $userKubeConfig
+    }
+}
+
 function Write-Step {
     param([string]$Message)
     Write-Host "[validate-grpc] $Message"
@@ -193,13 +204,24 @@ if ($servicePorts.Count -eq 0) {
 Write-Step "Service '$GrpcServiceName' maps port $GrpcPort to target '$GrpcPortName'."
 
 $endpoints = Invoke-KubectlJson -Arguments @("get", "endpoints", $GrpcServiceName)
-$endpointAddresses = @(
-    foreach ($subset in @($endpoints.subsets)) {
-        foreach ($address in @($subset.addresses)) {
-            $address.ip
+# StrictMode-safe: subsets/addresses are omitted when nothing is ready (the
+# exact no-endpoints state the guard below detects), and a trailing pipeline
+# Where-Object yields a scalar when exactly one item matches — collect inside
+# @() with property lookups instead.
+$endpointAddresses = @()
+$subsetsProp = $endpoints.PSObject.Properties['subsets']
+if ($subsetsProp) {
+    $endpointAddresses = @(
+        foreach ($subset in @($subsetsProp.Value)) {
+            $addressesProp = $subset.PSObject.Properties['addresses']
+            if (-not $addressesProp) { continue }
+            foreach ($address in @($addressesProp.Value)) {
+                $ipProp = $address.PSObject.Properties['ip']
+                if ($ipProp -and -not [string]::IsNullOrWhiteSpace("$($ipProp.Value)")) { "$($ipProp.Value)" }
+            }
         }
-    }
-) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+    )
+}
 
 if ($endpointAddresses.Count -eq 0) {
     Fail "Service '$GrpcServiceName' has no endpoints. The pod may not be ready or the selector may not match."
@@ -252,7 +274,7 @@ else {
                         if ($ipProp -and -not [string]::IsNullOrWhiteSpace("$($ipProp.Value)")) { "$($ipProp.Value)" }
                         elseif ($hostProp -and -not [string]::IsNullOrWhiteSpace("$($hostProp.Value)")) { "$($hostProp.Value)" }
                     }
-                ) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+                )
             }
         }
     }
