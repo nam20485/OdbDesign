@@ -1,65 +1,137 @@
-openapi: 3.0.1
+# OdbDesign Server REST API - OpenAPI 3.0.3 specification.
+#
+# GENERATED from the OdbDesignServer C++ (Crow) route registrations in
+# OdbDesignServer/Controllers/*.cpp and the protobuf message definitions in
+# OdbDesignLib/protoc/*.proto (JSON emitted with default proto3 JSON options:
+# lowerCamelCase keys, enums as names, default-valued fields omitted,
+# google.protobuf.Timestamp as RFC 3339 strings).
+#
+# The filename is fixed: the swaggerui container loads /spec/odbdesign-server-0.9-swagger.yaml
+# (mounted via the odbdesign-server-swagger-spec ConfigMap, see scripts/deploy.ps1).
+openapi: 3.0.3
+
 info:
   title: OdbDesign Server API
-  description: OdbDesign Server REST API
-  version: "0.9"
+  version: "1.0"
+  description: |
+    REST API for **OdbDesign** — a free open source cross-platform C++ library for parsing
+    [ODB++](https://www.ucamco.com/en/odb) design archives (`.tgz`) and accessing their data.
+
+    ## Overview
+    The server watches a designs directory for `.tgz` ODB++ archives. Uploaded or discovered
+    archives are parsed into two related models:
+
+    * **File model** (`/filemodels/...`) — a near 1:1 mapping of the ODB++ file hierarchy:
+      matrix, misc info, steps, layers, symbols, netlists, eda data, features, attrlists.
+    * **Product model** (`/designs/...`) — aggregated design objects: components, nets,
+      packages, parts.
+
+    ## Authentication
+    Most endpoints require **HTTP Basic authentication**. Credentials are configured on the
+    server via the `ODBDESIGN_SERVER_REQUEST_USERNAME` / `ODBDESIGN_SERVER_REQUEST_PASSWORD`
+    environment variables. Unauthenticated calls return `401 Unauthorized`; if the server has
+    no credentials configured, authenticated calls fail with `500`.
+
+    ## Conventions
+    * All object responses are `application/json` serialized from protobuf messages
+      (protobuf JSON mapping: unset/default fields are omitted from responses).
+    * Errors are returned as plain-text bodies (`text/plain`) with a human-readable message.
+    * Path parameters must be URL-encoded when they contain special characters
+      (names are decoded server-side).
   contact:
     name: Nathan Miller
     email: nmiller217@gmail.com
   license:
-    name: MIT
+    name: AGPL-3.0-only
+    url: https://www.gnu.org/licenses/agpl-3.0.html
+externalDocs:
+  description: OdbDesign documentation on GitHub Pages
+  url: https://nam20485.github.io/OdbDesign
+
 servers:
   # Relative URL lets swagger-ui "Try it out" hit the current origin, which
-  # works through the nginx reverse proxy without hardcoding a hostname.
+  # works through the reverse proxy / ingress without hardcoding a hostname.
   - url: /
-  - url: http://default-ingress-1165108808.us-west-2.elb.amazonaws.com
-  - url: http://localhost:8888
+    description: Current origin (through ingress / reverse proxy)
   - url: http://192.168.122.200
+    description: k3s VM (libvirt NAT LAN IP, Traefik ingress)
   - url: http://100.118.225.119
+    description: k3s VM (Tailscale IP, Traefik ingress)
+  - url: http://localhost:8888
+    description: Local development
+
 tags:
-  - name: "file upload"
-  - name: "filemodel"
-  #- name: "hello world"
-  - name: "health check"
-  - name: "steps"
-  - name: "layers"
-  - name: "symbols"
-  - name: "designs"
+  - name: file upload
+    description: Upload ODB++ design archives and list loaded files.
+  - name: filemodel
+    description: |
+      Access the parsed **file model** (FileArchive): the ODB++ file-hierarchy view of a
+      design — matrix, misc info, fonts, steps, layers, symbols and their sub-files.
+  - name: steps
+    description: Step-level data of a file model (eda data, attrlist, profile, stephdr, netlists).
+  - name: layers
+    description: Layer-level data of a step (components, features, attrlists).
+  - name: symbols
+    description: Symbol-directory data of a file model (features, attrlists).
+  - name: diagnostics
+    description: Diagnostic analyses computed across a step's layers.
+  - name: designs
+    description: |
+      Access the **product model** (Design): the aggregated view of a design —
+      components, nets, packages and parts.
+  - name: health check
+    description: Liveness / readiness / startup probes (unauthenticated).
+  - name: hello world
+    description: Demo templates (unauthenticated).
+
+security:
+  - BasicAuth: []
+
 paths:
   /files/list:
     get:
-      tags: ["file upload"]
-      parameters: []
+      tags: [file upload]
+      operationId: listFiles
+      summary: List design archives in the designs directory
+      description: |
+        Returns every `.tgz` archive discovered in the server's designs directory along with
+        its load state and model type (`Design` or `FileArchive`).
+        Returns `204 No Content` when the designs directory is empty.
       responses:
         "200":
-          description: ""
-      security:
-        - BasicAuth: []
-  /files/upload/{name}:
-    post:
-      tags: ["file upload"]
-      parameters:
-        - name: name
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/octet-stream:
-            schema:
-              type: string
-              format: binary
-      responses:
-        "200":
-          description: ""
-      security:
-        - BasicAuth: []
+          description: Archives found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FileArchiveList"
+              example:
+                filearchives:
+                  - name: sam20200826.tgz
+                    loaded: true
+                    type: Design
+                  - name: gwb-34hd.tgz
+                    loaded: true
+                    type: FileArchive
+                  - name: notyetloaded.tgz
+                    loaded: false
+                    type: FileArchive
+        "204":
+          description: Designs directory is empty (no body).
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /files/upload:
     post:
-      tags: ["file upload"]
-      parameters: []
+      tags: [file upload]
+      operationId: uploadFileMultipart
+      summary: Upload one or more design archives (multipart/form-data)
+      description: |
+        Uploads ODB++ design archives via `multipart/form-data`. Each file part **must** be
+        named `file` (other part names are skipped). The uploaded file is stored in the
+        server's designs directory and picked up for parsing.
+        Use this endpoint from HTML forms; use `/files/upload/{name}` for raw body uploads.
       requestBody:
         required: true
         content:
@@ -69,562 +141,2398 @@ paths:
               properties:
                 file:
                   type: array
+                  description: ODB++ design archive(s) (`.tgz`).
                   items:
                     type: string
                     format: binary
+            encoding:
+              file:
+                contentType: application/octet-stream
       responses:
-        "200":
-          description: ""
-      security:
-        - BasicAuth: []
+        "201":
+          description: Upload stored; the (possibly still loading) archives list is returned.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FileArchiveList"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /files/upload/{name}:
+    post:
+      tags: [file upload]
+      operationId: uploadFileOctetStream
+      summary: Upload a design archive as a raw body (application/octet-stream)
+      description: |
+        Uploads a single ODB++ design archive. The raw request body is the archive content;
+        the `Content-Type` header **must** be exactly `application/octet-stream`. The file is
+        stored as `{name}` in the server's designs directory and picked up for parsing.
+      parameters:
+        - $ref: "#/components/parameters/FileNameParam"
+      requestBody:
+        required: true
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+            example: <binary .tgz content>
+      responses:
+        "201":
+          description: Upload stored; the (possibly still loading) archives list is returned.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FileArchiveList"
+        "400":
+          description: |
+            Unsupported `Content-Type` (only `application/octet-stream` is accepted), or a
+            malformed request.
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: "unsupported content type: this endpoint only accepts 'application/octet-stream'"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /filemodels:
     get:
-      tags: ["filemodel"]
+      tags: [filemodel]
+      operationId: listFileModels
+      summary: List design archives and their load state
+      description: |
+        Same listing as `GET /files/list` — every archive in the designs directory with its
+        load state and model type. Returns `204 No Content` when the directory is empty.
       responses:
         "200":
-          description: ""
-      security:
-        - BasicAuth: []
+          description: Archives found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FileArchiveList"
+        "204":
+          description: Designs directory is empty (no body).
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /filemodels/{name}:
     get:
-      tags: ["filemodel"]
+      tags: [filemodel]
+      operationId: getFileModel
+      summary: Get the parsed file archive for a design
+      description: |
+        Returns the full parsed **FileArchive** file model (steps, layers, symbols, matrix,
+        misc info, standard fonts and misc attrlist) for the named design.
       parameters:
-        - name: name
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: "#/components/parameters/DesignNameParam"
       responses:
         "200":
-          description: ""
-      security:
-        - BasicAuth: []
+          description: File archive parsed and returned.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FileArchive"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
     post:
-      tags: ["filemodel"]      
+      tags: [filemodel]
+      operationId: publishFileModel
+      summary: Publish a file archive from a JSON body
+      description: |
+        Adds (or replaces) a file archive in the server's design cache by deserializing a
+        `FileArchive` JSON document (as produced by `GET /filemodels/{name}`) from the request
+        body. Returns an empty `200` response on success.
       parameters:
-        - name: name
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: "#/components/parameters/DesignNameParam"
       requestBody:
+        required: true
+        description: Serialized FileArchive file model.
         content:
           application/json:
             schema:
-              type: object
-              format: json
-        required: true                  
+              $ref: "#/components/schemas/FileArchive"
       responses:
         "200":
-          description: ""
-        "404":
-          description: ""
+          description: File archive stored (empty body).
+        "400":
+          description: Empty design name or empty POST body.
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: no data provided in POST body
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "500":
-          description: ""
-      security:
-        - BasicAuth: []
+          $ref: "#/components/responses/InternalError"
+
   /filemodels/{name}/misc/attrlist:
     get:
-      tags: ["filemodel"]
+      tags: [filemodel]
+      operationId: getMiscAttrList
+      summary: Get the misc attribute list file
+      description: Returns the top-level `misc/attrlist` file of the design.
       parameters:
-        - name: name
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: "#/components/parameters/DesignNameParam"
       responses:
         "200":
-          description: ""
-      security:
-        - BasicAuth: []
+          description: Attrlist file.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AttrListFile"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /filemodels/{name}/misc/info:
     get:
-      tags: ["filemodel"]
+      tags: [filemodel]
+      operationId: getMiscInfo
+      summary: Get the misc info file
+      description: |
+        Returns the `misc/info` file: product model name, ODB++ version, creation/save
+        timestamps, units, etc.
       parameters:
-        - name: name
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: "#/components/parameters/DesignNameParam"
       responses:
         "200":
-          description: ""
-      security:
-        - BasicAuth: []
+          description: Misc info file.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MiscInfoFile"
+              example:
+                productModelName: SAM
+                jobName: sam20200826
+                odbVersionMajor: "8"
+                odbVersionMinor: "0"
+                odbSource: test source
+                creationDateDate: "2020-08-26T00:00:00Z"
+                saveApp: test app
+                units: INCH
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /filemodels/{name}/matrix/matrix:
     get:
-      tags: ["filemodel"]
+      tags: [filemodel]
+      operationId: getMatrix
+      summary: Get the matrix file (step and layer records)
+      description: |
+        Returns the `matrix/matrix` file: the board stackup — step records and layer records
+        with type/context/polarity/copper-weight columns.
       parameters:
-        - name: name
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: "#/components/parameters/DesignNameParam"
       responses:
         "200":
-          description: ""
-      security:
-        - BasicAuth: []
+          description: Matrix file.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MatrixFile"
+              example:
+                steps:
+                  - column: 1
+                    id: 1
+                    name: pcb
+                layers:
+                  - row: 1
+                    context: Board
+                    type: Signal
+                    name: top
+                    polarity: Positive
+                    cuTop: 3
+                    cuBottom: 3
+                    ref: 4
+                    startName: top
+                    endName: ground_plane
+                    oldName: top
+                    addType: ""
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /filemodels/{name}/fonts/standard:
     get:
-      tags: ["filemodel"]
+      tags: [filemodel]
+      operationId: getStandardFonts
+      summary: Get the standard fonts file
+      description: "Returns the `fonts/standard` file: vector stroke font definitions."
       parameters:
-        - name: name
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: "#/components/parameters/DesignNameParam"
       responses:
         "200":
-          description: ""
-      security:
-        - BasicAuth: []
+          description: Standard fonts file.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StandardFontsFile"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /filemodels/{name}/steps:
     get:
-      tags: ["steps"]
+      tags: [steps]
+      operationId: listSteps
+      summary: List step names
+      description: Returns the names of all steps (e.g. `pcb`, panel steps) in the design.
       parameters:
-        - name: name
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: "#/components/parameters/DesignNameParam"
       responses:
         "200":
-          description: ""
-      security:
-        - BasicAuth: []
+          description: Step names.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StepNameList"
+              example:
+                steps: [pcb]
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /filemodels/{name}/steps/{step}:
     get:
-      tags: ["steps"]
+      tags: [steps]
+      operationId: getStep
+      summary: Get a step directory
+      description: |
+        Returns the full **StepDirectory** for a step, including its layers, netlists,
+        eda data, attrlist, profile and stephdr files.
       parameters:
-        - name: name
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: step
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: "#/components/parameters/DesignNameParam"
+        - $ref: "#/components/parameters/StepNameParam"
       responses:
         "200":
-          description: ""
-      security:
-        - BasicAuth: []
+          description: Step directory.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StepDirectory"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /filemodels/{name}/steps/{step}/eda_data:
     get:
-      tags: ["steps"]
+      tags: [steps]
+      operationId: getStepEdaData
+      summary: Get a step's eda data file
+      description: |
+        Returns the `eda/net` and `eda/pkg` data for the step: nets with subnets
+        (vias, traces, planes, toeprints), packages with pins/outlines, and feature groups.
       parameters:
-        - name: name
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: step
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: "#/components/parameters/DesignNameParam"
+        - $ref: "#/components/parameters/StepNameParam"
       responses:
         "200":
-          description: ""
-      security:
-        - BasicAuth: []
+          description: Eda data file.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EdaDataFile"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /filemodels/{name}/steps/{step}/attrlist:
     get:
-      tags: ["steps"]
+      tags: [steps]
+      operationId: getStepAttrList
+      summary: Get a step's attribute list file
+      description: Returns the step-level `attrlist` file.
       parameters:
-        - name: name
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: step
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: "#/components/parameters/DesignNameParam"
+        - $ref: "#/components/parameters/StepNameParam"
       responses:
         "200":
-          description: ""
-      security:
-        - BasicAuth: []
+          description: Attrlist file.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AttrListFile"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /filemodels/{name}/steps/{step}/profile:
     get:
-      tags: ["steps"]
+      tags: [steps]
+      operationId: getStepProfile
+      summary: Get a step's profile
+      description: |
+        Returns the step profile: the board outline as a FeaturesFile whose feature records
+        trace the profile contour.
       parameters:
-        - name: name
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: step
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: "#/components/parameters/DesignNameParam"
+        - $ref: "#/components/parameters/StepNameParam"
       responses:
         "200":
-          description: ""
-      security:
-        - BasicAuth: []
+          description: Profile features file.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeaturesFile"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /filemodels/{name}/steps/{step}/stephdr:
     get:
-      tags: ["steps"]
+      tags: [steps]
+      operationId: getStepHdr
+      summary: Get a step's stephdr file
+      description: |
+        Returns the step header: datum/origin/active-area extents and step-repeat records.
       parameters:
-        - name: name
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: step
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: "#/components/parameters/DesignNameParam"
+        - $ref: "#/components/parameters/StepNameParam"
       responses:
         "200":
-          description: ""
-      security:
-        - BasicAuth: []
+          description: Step header file.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StepHdrFile"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /filemodels/{name}/steps/{step}/netlists:
     get:
-      tags: ["steps"]
+      tags: [steps]
+      operationId: listNetlists
+      summary: List netlist names for a step
+      description: Returns the names of the netlist files in the step (e.g. `cad-net`, `36p`).
       parameters:
-        - name: name
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: step
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: "#/components/parameters/DesignNameParam"
+        - $ref: "#/components/parameters/StepNameParam"
       responses:
         "200":
-          description: ""
-      security:
-        - BasicAuth: []
+          description: Netlist names.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NetlistNameList"
+              example:
+                netlists: [cad-net]
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /filemodels/{name}/steps/{step}/netlists/{netlist}:
     get:
-      tags: ["steps"]
+      tags: [steps]
+      operationId: getNetlist
+      summary: Get a netlist file
+      description: Returns the netlist file with its net records and net point records.
       parameters:
-        - name: name
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: step
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: netlist
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: "#/components/parameters/DesignNameParam"
+        - $ref: "#/components/parameters/StepNameParam"
+        - $ref: "#/components/parameters/NetlistNameParam"
       responses:
         "200":
-          description: ""
-      security:
-        - BasicAuth: []
+          description: Netlist file.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NetlistFile"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /filemodels/{name}/steps/{step}/layers:
     get:
-      tags: ["layers"]
+      tags: [layers]
+      operationId: listLayers
+      summary: List layer names for a step
+      description: Returns the names of all layers in the step.
       parameters:
-        - name: name
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: step
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: "#/components/parameters/DesignNameParam"
+        - $ref: "#/components/parameters/StepNameParam"
       responses:
         "200":
-          description: ""
-      security:
-        - BasicAuth: []
+          description: Layer names.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LayerNameList"
+              example:
+                layers: [top, ground_plane, power_plane, bottom, solder_mask_top]
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /filemodels/{name}/steps/{step}/layers/{layer}:
     get:
-      tags: ["layers"]
+      tags: [layers]
+      operationId: getLayer
+      summary: Get a layer directory
+      description: |
+        Returns the full **LayerDirectory** including its components, features, attrlist
+        and tools files.
       parameters:
-        - name: name
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: step
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: layer
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: "#/components/parameters/DesignNameParam"
+        - $ref: "#/components/parameters/StepNameParam"
+        - $ref: "#/components/parameters/LayerNameParam"
       responses:
         "200":
-          description: ""
-      security:
-        - BasicAuth: []
+          description: Layer directory.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LayerDirectory"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /filemodels/{name}/steps/{step}/layers/{layer}/components:
     get:
-      tags: ["layers"]
+      tags: [layers]
+      operationId: getLayerComponents
+      summary: Get a layer's components file
+      description: |
+        Returns the layer components file: component records (placement, rotation, mirror,
+        toeprints) and BOM description records.
       parameters:
-        - name: name
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: step
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: layer
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: "#/components/parameters/DesignNameParam"
+        - $ref: "#/components/parameters/StepNameParam"
+        - $ref: "#/components/parameters/LayerNameParam"
       responses:
         "200":
-          description: ""
-      security:
-        - BasicAuth: []
+          description: Components file.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ComponentsFile"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /filemodels/{name}/steps/{step}/layers/{layer}/features:
     get:
-      tags: ["layers"]
+      tags: [layers]
+      operationId: getLayerFeatures
+      summary: Get a layer's features file
+      description: |
+        Returns the layer features file: arcs, pads, surfaces, barcodes, texts and lines with
+        their symbol references and attribute lookup tables.
       parameters:
-        - name: name
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: step
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: layer
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: "#/components/parameters/DesignNameParam"
+        - $ref: "#/components/parameters/StepNameParam"
+        - $ref: "#/components/parameters/LayerNameParam"
       responses:
         "200":
-          description: ""
-      security:
-        - BasicAuth: []
+          description: Features file.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeaturesFile"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /filemodels/{name}/steps/{step}/layers/{layer}/attrlist:
     get:
-      tags: ["layers"]
+      tags: [layers]
+      operationId: getLayerAttrList
+      summary: Get a layer's attribute list file
+      description: Returns the layer-level `attrlist` file.
       parameters:
-        - name: name
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: step
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: layer
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: "#/components/parameters/DesignNameParam"
+        - $ref: "#/components/parameters/StepNameParam"
+        - $ref: "#/components/parameters/LayerNameParam"
       responses:
         "200":
-          description: ""
-      security:
-        - BasicAuth: []
+          description: Attrlist file.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AttrListFile"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /filemodels/{name}/steps/{step}/diagnostics/symbol_units:
+    get:
+      tags: [diagnostics]
+      operationId: getStepSymbolUnitsDiagnostics
+      summary: Analyze symbol unit-type consistency across a step's layers
+      description: |
+        Computes, for every layer of the step, the unit type of each referenced symbol
+        (metric / imperial / none) and compares it against the layer features file's declared
+        units. Useful for detecting mixed or mismatched unit types in a design.
+
+        Note: this response is built directly by the server (not protobuf-serialized), so
+        its keys are `snake_case`.
+      parameters:
+        - $ref: "#/components/parameters/DesignNameParam"
+        - $ref: "#/components/parameters/StepNameParam"
+      responses:
+        "200":
+          description: Per-layer symbol unit diagnostics.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SymbolUnitsDiagnostics"
+              example:
+                design: sam20200826
+                step: pcb
+                layers:
+                  - layer: top
+                    features_units_raw: INCH
+                    symbols_total: 34
+                    symbol_unit_counts: { metric: 0, imperial: 34, none: 0 }
+                    has_mixed_symbol_unit_types: false
+                    has_mismatch_vs_features_units: false
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /filemodels/{name}/symbols:
     get:
-      tags: ["symbols"]
+      tags: [symbols]
+      operationId: listSymbols
+      summary: List symbol names
+      description: Returns the names of all symbol directories in the design.
       parameters:
-        - name: name
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: "#/components/parameters/DesignNameParam"
       responses:
         "200":
-          description: ""
-      security:
-        - BasicAuth: []
+          description: Symbol names.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SymbolNameList"
+              example:
+                symbols: [r155, pad_square, thermal_80]
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /filemodels/{name}/symbols/{symbol}:
     get:
-      tags: ["symbols"]
+      tags: [symbols]
+      operationId: getSymbol
+      summary: Get a symbol directory
+      description: Returns the symbol directory including its features and attrlist files.
       parameters:
-        - name: name
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: symbol
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: "#/components/parameters/DesignNameParam"
+        - $ref: "#/components/parameters/SymbolNameParam"
       responses:
         "200":
-          description: ""
-      security:
-        - BasicAuth: []
+          description: Symbol directory.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SymbolsDirectory"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /filemodels/{name}/symbols/{symbol}/features:
     get:
-      tags: ["symbols"]
+      tags: [symbols]
+      operationId: getSymbolFeatures
+      summary: Get a symbol's features file
+      description: Returns the feature records that make up the symbol.
       parameters:
-        - name: name
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: symbol
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: "#/components/parameters/DesignNameParam"
+        - $ref: "#/components/parameters/SymbolNameParam"
       responses:
         "200":
-          description: ""
-      security:
-        - BasicAuth: []
+          description: Features file.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeaturesFile"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /filemodels/{name}/symbols/{symbol}/attrlist:
     get:
-      tags: ["symbols"]
+      tags: [symbols]
+      operationId: getSymbolAttrList
+      summary: Get a symbol's attribute list file
+      description: Returns the symbol-level `attrlist` file.
       parameters:
-        - name: name
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: symbol
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: "#/components/parameters/DesignNameParam"
+        - $ref: "#/components/parameters/SymbolNameParam"
       responses:
         "200":
-          description: ""
-      security:
-        - BasicAuth: []
+          description: Attrlist file.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AttrListFile"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /designs:
     get:
-      tags: ["designs"]
+      tags: [designs]
+      operationId: listDesigns
+      summary: List design archives and their load state
+      description: |
+        Same listing as `GET /files/list` and `GET /filemodels`. Returns `204 No Content`
+        when the designs directory is empty.
       responses:
         "200":
-          description: ""
-      security:
-        - BasicAuth: []
+          description: Archives found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FileArchiveList"
+        "204":
+          description: Designs directory is empty (no body).
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /designs/{name}:
     get:
-      tags: ["designs"]
+      tags: [designs]
+      operationId: getDesign
+      summary: Get the product model for a design
+      description: |
+        Returns the aggregated **Design** product model: nets, packages, components and parts
+        (with their cross-references). By default the embedded file model is *clipped*
+        (removed) to reduce payload size; pass `include_filearchive=true` to keep it.
       parameters:
-        - name: name
-          in: path
-          required: true
+        - $ref: "#/components/parameters/DesignNameParam"
+        - name: include_filearchive
+          in: query
+          required: false
+          description: |
+            Include the full embedded file model in the response. Accepted values: `true`,
+            `yes` (any other value is treated as false).
           schema:
             type: string
+            enum: [true, yes]
+          example: true
       responses:
         "200":
-          description: ""
-      security:
-        - BasicAuth: []
+          description: Design product model.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Design"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /designs/{name}/components:
     get:
-      tags: ["designs"]
+      tags: [designs]
+      operationId: getDesignComponents
+      summary: Get a design's components
+      description: Returns the design's component list (refdes, part, package, board side).
       parameters:
-        - name: name
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: "#/components/parameters/DesignNameParam"
       responses:
         "200":
-          description: ""
-      security:
-        - BasicAuth: []
+          description: Components array.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Component"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /designs/{name}/nets:
     get:
-      tags: ["designs"]
+      tags: [designs]
+      operationId: getDesignNets
+      summary: Get a design's nets
+      description: Returns the design's net list with pin connections.
       parameters:
-        - name: name
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: "#/components/parameters/DesignNameParam"
       responses:
         "200":
-          description: ""
-      security:
-        - BasicAuth: []
-  /designs/{name}/parts:
-    get:
-      tags: ["designs"]
-      parameters:
-        - name: name
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: ""
-      security:
-        - BasicAuth: []
+          description: Nets array.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Net"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /designs/{name}/packages:
     get:
-      tags: ["designs"]
+      tags: [designs]
+      operationId: getDesignPackages
+      summary: Get a design's packages
+      description: Returns the design's package list with pin definitions.
       parameters:
-        - name: name
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: "#/components/parameters/DesignNameParam"
       responses:
         "200":
-          description: ""
-      security:
-        - BasicAuth: []
+          description: Packages array.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Package"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /designs/{name}/parts:
+    get:
+      tags: [designs]
+      operationId: getDesignParts
+      summary: Get a design's parts
+      description: Returns the design's part (part-number) list.
+      parameters:
+        - $ref: "#/components/parameters/DesignNameParam"
+      responses:
+        "200":
+          description: Parts array.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Part"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /healthz/live:
     get:
-      tags: ["health check"]
-      parameters: []
+      tags: [health check]
+      operationId: healthLive
+      summary: Liveness probe
+      description: Returns `200` with a plain-text body when the server process is alive.
+      security: []
       responses:
         "200":
-          description: ""  
+          description: Server is alive.
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: "healthy: live"
+
   /healthz/started:
     get:
-      tags: ["health check"]
-      parameters: []
+      tags: [health check]
+      operationId: healthStarted
+      summary: Startup probe
+      description: Returns `200` once the server has finished starting up.
+      security: []
       responses:
         "200":
-          description: "" 
+          description: Server has started.
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: "healthy: started"
+
   /healthz/ready:
     get:
-      tags: ["health check"]
-      parameters: []
+      tags: [health check]
+      operationId: healthReady
+      summary: Readiness probe
+      description: Returns `200` when the server is ready to accept requests.
+      security: []
       responses:
         "200":
-          description: ""      
+          description: Server is ready.
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: "healthy: ready"
+
+  /helloworld:
+    get:
+      tags: [hello world]
+      operationId: helloWorld
+      summary: Hello world demo page
+      description: Renders the `helloworld.html` mustache template (unauthenticated demo).
+      security: []
+      responses:
+        "200":
+          description: HTML page.
+          content:
+            text/html:
+              schema:
+                type: string
+
+  /hellodesign/{name}:
+    get:
+      tags: [hello world]
+      operationId: helloDesign
+      summary: Hello design demo page
+      description: |
+        Renders the `helloworld.html` mustache template with `{design}` substituted by the
+        given name (unauthenticated demo).
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/DesignNameParam"
+      responses:
+        "200":
+          description: HTML page.
+          content:
+            text/html:
+              schema:
+                type: string
+
 components:
   securitySchemes:
     BasicAuth:
       type: http
       scheme: basic
-  # schemas:
-  #   odbdesign-server-schema:
-  #     type: object
-  #     properties:
-  #       id:
-  #         type: integer
-  #         format: int64
+      description: |
+        HTTP Basic authentication. The server's credentials are set at startup via the
+        `ODBDESIGN_SERVER_REQUEST_USERNAME` / `ODBDESIGN_SERVER_REQUEST_PASSWORD`
+        environment variables.
+
+  parameters:
+    DesignNameParam:
+      name: name
+      in: path
+      required: true
+      description: Design (archive) name, without directory — e.g. `sam20200826.tgz`.
+      schema:
+        type: string
+      example: sam20200826.tgz
+    FileNameParam:
+      name: name
+      in: path
+      required: true
+      description: File name to store the uploaded archive as (e.g. `mydesign.tgz`).
+      schema:
+        type: string
+      example: mydesign.tgz
+    StepNameParam:
+      name: step
+      in: path
+      required: true
+      description: Step name — e.g. `pcb`.
+      schema:
+        type: string
+      example: pcb
+    LayerNameParam:
+      name: layer
+      in: path
+      required: true
+      description: Layer name — e.g. `top`, `ground_plane`, `solder_mask_top`.
+      schema:
+        type: string
+      example: top
+    SymbolNameParam:
+      name: symbol
+      in: path
+      required: true
+      description: Symbol name — e.g. `r155`, `pad_square`.
+      schema:
+        type: string
+      example: r155
+    NetlistNameParam:
+      name: netlist
+      in: path
+      required: true
+      description: Netlist name — e.g. `cad-net`.
+      schema:
+        type: string
+      example: cad-net
+
+  responses:
+    Unauthorized:
+      description: Missing or invalid HTTP Basic credentials.
+      content:
+        text/plain:
+          schema:
+            type: string
+          example: Unauthorized
+    BadRequest:
+      description: Malformed request (e.g. empty/invalid name, unsupported content type).
+      content:
+        text/plain:
+          schema:
+            type: string
+          example: design name not specified
+    NotFound:
+      description: Named resource (design / step / layer / symbol / netlist) not found.
+      content:
+        text/plain:
+          schema:
+            type: string
+          example: 'design: "sam20200826.tgz" not found'
+    InternalError:
+      description: Internal server error (e.g. file handling failure or unconfigured credentials).
+      content:
+        text/plain:
+          schema:
+            type: string
+          example: failed handling new file
+
+  schemas:
+    # ------------------------------------------------------------------ common
+    FileArchiveList:
+      type: object
+      description: Listing of design archives known to the server.
+      required: [filearchives]
+      properties:
+        filearchives:
+          type: array
+          items:
+            $ref: "#/components/schemas/FileArchiveEntry"
+    FileArchiveEntry:
+      type: object
+      description: One archive in the designs directory and its load state.
+      properties:
+        name:
+          type: string
+          description: Archive file name.
+          example: sam20200826.tgz
+        loaded:
+          type: boolean
+          description: Whether the archive has been parsed into the server cache.
+          example: true
+        type:
+          type: string
+          description: Model type the archive was parsed into.
+          enum: [Design, FileArchive]
+          example: Design
+    StepNameList:
+      type: object
+      required: [steps]
+      properties:
+        steps:
+          type: array
+          items:
+            type: string
+          example: [pcb]
+    LayerNameList:
+      type: object
+      required: [layers]
+      properties:
+        layers:
+          type: array
+          items:
+            type: string
+          example: [top, ground_plane, power_plane, bottom]
+    SymbolNameList:
+      type: object
+      required: [symbols]
+      properties:
+        symbols:
+          type: array
+          items:
+            type: string
+          example: [r155, pad_square]
+    NetlistNameList:
+      type: object
+      required: [netlists]
+      properties:
+        netlists:
+          type: array
+          items:
+            type: string
+          example: [cad-net]
+    PropertyRecord:
+      type: object
+      description: Generic name/value property (common.proto PropertyRecord).
+      properties:
+        name:
+          type: string
+        value:
+          type: string
+        floatValues:
+          type: array
+          items:
+            type: number
+            format: double
+    Color:
+      type: object
+      properties:
+        red:
+          type: number
+          format: float
+        green:
+          type: number
+          format: float
+        blue:
+          type: number
+          format: float
+        noPreference:
+          type: boolean
+
+    # ---------------------------------------------------------------- file model
+    FileArchive:
+      type: object
+      description: Parsed ODB++ file archive (file model root).
+      properties:
+        stepsByName:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/StepDirectory"
+          description: Steps keyed by step name.
+        miscInfoFile:
+          $ref: "#/components/schemas/MiscInfoFile"
+        matrixFile:
+          $ref: "#/components/schemas/MatrixFile"
+        standardFontsFile:
+          $ref: "#/components/schemas/StandardFontsFile"
+        symbolsDirectoriesByName:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/SymbolsDirectory"
+          description: Symbol directories keyed by symbol name.
+        miscAttrListFile:
+          $ref: "#/components/schemas/AttrListFile"
+        productName:
+          type: string
+          description: ODB++ internal product name.
+        fileName:
+          type: string
+          description: Source archive file name.
+
+    StepDirectory:
+      type: object
+      description: A step directory (`steps/<step>/`).
+      properties:
+        name:
+          type: string
+        path:
+          type: string
+        layersByName:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/LayerDirectory"
+        netlistsByName:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/NetlistFile"
+        edadatafile:
+          $ref: "#/components/schemas/EdaDataFile"
+        attrlistfile:
+          $ref: "#/components/schemas/AttrListFile"
+        profilefile:
+          $ref: "#/components/schemas/FeaturesFile"
+        stephdrfile:
+          $ref: "#/components/schemas/StepHdrFile"
+
+    LayerDirectory:
+      type: object
+      description: A layer directory (`steps/<step>/layers/<layer>/`).
+      properties:
+        name:
+          type: string
+        path:
+          type: string
+        components:
+          $ref: "#/components/schemas/ComponentsFile"
+        attrlistFile:
+          $ref: "#/components/schemas/AttrListFile"
+        featureFile:
+          $ref: "#/components/schemas/FeaturesFile"
+        toolFile:
+          $ref: "#/components/schemas/ToolsFile"
+
+    SymbolsDirectory:
+      type: object
+      description: A symbol directory (`symbols/<symbol>/`).
+      properties:
+        name:
+          type: string
+        path:
+          type: string
+        attrlistFile:
+          $ref: "#/components/schemas/AttrListFile"
+        featureFile:
+          $ref: "#/components/schemas/FeaturesFile"
+
+    MiscInfoFile:
+      type: object
+      description: "`misc/info` file — design-level metadata."
+      properties:
+        productModelName:
+          type: string
+        jobName:
+          type: string
+        odbVersionMajor:
+          type: string
+        odbVersionMinor:
+          type: string
+        odbSource:
+          type: string
+        creationDateDate:
+          type: string
+          format: date-time
+          description: Creation date (RFC 3339).
+        saveDate:
+          type: string
+          format: date-time
+          description: Last save date (RFC 3339).
+        saveApp:
+          type: string
+        saveUser:
+          type: string
+        units:
+          type: string
+          description: Design units, e.g. `INCH`, `MM`.
+          example: INCH
+        maxUniqueId:
+          type: integer
+          format: int32
+          description: Highest feature id assigned in the design.
+
+    MatrixFile:
+      type: object
+      description: "`matrix/matrix` file — board stackup rows/columns."
+      properties:
+        steps:
+          type: array
+          items:
+            $ref: "#/components/schemas/MatrixStepRecord"
+        layers:
+          type: array
+          items:
+            $ref: "#/components/schemas/MatrixLayerRecord"
+    MatrixStepRecord:
+      type: object
+      properties:
+        column:
+          type: integer
+          format: int32
+        id:
+          type: integer
+          format: int32
+        name:
+          type: string
+          example: pcb
+    MatrixLayerRecord:
+      type: object
+      properties:
+        row:
+          type: integer
+          format: int32
+        context:
+          type: string
+          enum: [Board, Misc]
+        type:
+          type: string
+          enum:
+            [Signal, PowerGround, Dielectric, Mixed, SolderMask, SolderPaste,
+             SilkScreen, Drill, Rout, Document, Component, Mask, ConductivePaste]
+        name:
+          type: string
+          example: top
+        polarity:
+          type: string
+          enum: [Positive, Negative]
+        dielectricType:
+          type: string
+          enum: [None, Prepreg, Core]
+        dielectricName:
+          type: string
+        form:
+          type: string
+          enum: [Rigid, Flex]
+        cuTop:
+          type: integer
+          format: int32
+          description: Copper weight (top side), percent.
+        cuBottom:
+          type: integer
+          format: int32
+          description: Copper weight (bottom side), percent.
+        ref:
+          type: integer
+          format: int32
+        startName:
+          type: string
+        endName:
+          type: string
+        oldName:
+          type: string
+        addType:
+          type: string
+        color:
+          $ref: "#/components/schemas/Color"
+        id:
+          type: integer
+          format: int32
+
+    AttrListFile:
+      type: object
+      description: Attribute list file (`attrlist`).
+      properties:
+        directory:
+          type: string
+        path:
+          type: string
+        units:
+          type: string
+        attributesByName:
+          type: object
+          additionalProperties:
+            type: string
+          description: Attribute name/value pairs.
+          example:
+            .-owned-by: ucamco
+
+    StandardFontsFile:
+      type: object
+      description: "`fonts/standard` file — vector stroke font."
+      properties:
+        xSize:
+          type: number
+          format: double
+        ySize:
+          type: number
+          format: double
+        offset:
+          type: number
+          format: double
+        mCharacterBlocks:
+          type: array
+          items:
+            $ref: "#/components/schemas/CharacterBlock"
+    CharacterBlock:
+      type: object
+      properties:
+        character:
+          type: string
+          description: The character this block draws (e.g. `A`).
+        mLineRecords:
+          type: array
+          items:
+            $ref: "#/components/schemas/FontLineRecord"
+    FontLineRecord:
+      type: object
+      properties:
+        xStart:
+          type: number
+          format: double
+        yStart:
+          type: number
+          format: double
+        xEnd:
+          type: number
+          format: double
+        yEnd:
+          type: number
+          format: double
+        polarity:
+          type: string
+          enum: [Positive, Negative]
+        shape:
+          type: string
+          enum: [Square, Round]
+        width:
+          type: number
+          format: double
+
+    NetlistFile:
+      type: object
+      description: A netlist file (`netlists/<netlist>`).
+      properties:
+        path:
+          type: string
+        name:
+          type: string
+        units:
+          type: string
+        optimized:
+          type: boolean
+        staggered:
+          type: string
+          enum: [Yes, No, Unknown]
+        netRecordss:
+          type: array
+          description: "Net records (note: field name matches the source model)."
+          items:
+            $ref: "#/components/schemas/NetlistNetRecord"
+        netRecordsByName:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/NetlistNetRecord"
+        netPointRecords:
+          type: array
+          items:
+            $ref: "#/components/schemas/NetPointRecord"
+    NetlistNetRecord:
+      type: object
+      properties:
+        serialNumber:
+          type: integer
+          format: int32
+        netName:
+          type: string
+          example: GND
+    NetPointRecord:
+      type: object
+      properties:
+        netNumber:
+          type: integer
+          format: int32
+        radius:
+          type: number
+          format: double
+        x:
+          type: number
+          format: double
+        y:
+          type: number
+          format: double
+        side:
+          type: string
+          enum: [Top, Down, Both, Inner]
+        width:
+          type: number
+          format: double
+        height:
+          type: number
+          format: double
+        epoint:
+          type: string
+        exp:
+          type: string
+        commentPoint:
+          type: boolean
+        staggeredX:
+          type: number
+          format: double
+        staggeredY:
+          type: number
+          format: double
+        staggeredRadius:
+          type: number
+          format: double
+        viaPoint:
+          type: number
+          format: double
+        fiducialPoint:
+          type: number
+          format: double
+        testPoint:
+          type: number
+          format: double
+        testExecutionSide:
+          type: string
+
+    EdaDataFile:
+      type: object
+      description: "`eda/data` file — electrical analysis data."
+      properties:
+        path:
+          type: string
+        units:
+          type: string
+        source:
+          type: string
+        layerNames:
+          type: array
+          items:
+            type: string
+        attributeNames:
+          type: array
+          items:
+            type: string
+        attributeTextValues:
+          type: array
+          items:
+            type: string
+        netRecords:
+          type: array
+          items:
+            $ref: "#/components/schemas/EdaNetRecord"
+        netRecordsByName:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/EdaNetRecord"
+        packageRecords:
+          type: array
+          items:
+            $ref: "#/components/schemas/EdaPackageRecord"
+        packageRecordsByName:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/EdaPackageRecord"
+        propertyRecords:
+          type: array
+          items:
+            $ref: "#/components/schemas/PropertyRecord"
+        featureGroupRecords:
+          type: array
+          items:
+            $ref: "#/components/schemas/EdaFeatureGroupRecord"
+    EdaNetRecord:
+      type: object
+      properties:
+        name:
+          type: string
+        attributesIdString:
+          type: string
+        index:
+          type: integer
+          format: int32
+        subnetRecords:
+          type: array
+          items:
+            $ref: "#/components/schemas/EdaSubnetRecord"
+        propertyRecords:
+          type: array
+          items:
+            $ref: "#/components/schemas/PropertyRecord"
+        attributeLookupTable:
+          type: object
+          additionalProperties:
+            type: string
+    EdaSubnetRecord:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [VIA, TRACE, PLANE, TOEPRINT]
+        featureIdRecords:
+          type: array
+          items:
+            $ref: "#/components/schemas/EdaFeatureIdRecord"
+        fillType:
+          type: string
+          enum: [SOLID, OUTLINE]
+          description: Plane subnets only.
+        cutoutType:
+          type: string
+          enum: [CIRCLE, RECTANGLE, OCTAGON, EXACT]
+          description: Plane subnets only.
+        fillSize:
+          type: number
+          format: double
+          description: Plane subnets only.
+        side:
+          type: string
+          enum: [BsNone, Top, Bottom]
+          description: Toeprint subnets only.
+        componentNumber:
+          type: integer
+          format: int32
+          description: Toeprint subnets only.
+        toeprintNumber:
+          type: integer
+          format: int32
+          description: Toeprint subnets only.
+        index:
+          type: integer
+          format: int32
+    EdaFeatureIdRecord:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [COPPER, LAMINATE, HOLE]
+        layerNumber:
+          type: integer
+          format: int32
+        featureNumber:
+          type: integer
+          format: int32
+    EdaPackageRecord:
+      type: object
+      properties:
+        name:
+          type: string
+        pitch:
+          type: number
+          format: double
+        xMin:
+          type: number
+          format: double
+        yMin:
+          type: number
+          format: double
+        xMax:
+          type: number
+          format: double
+        yMax:
+          type: number
+          format: double
+        attributesIdString:
+          type: string
+        pinRecords:
+          type: array
+          items:
+            $ref: "#/components/schemas/EdaPinRecord"
+        pinRecordsByName:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/EdaPinRecord"
+        propertyRecords:
+          type: array
+          items:
+            $ref: "#/components/schemas/PropertyRecord"
+        outlineRecords:
+          type: array
+          items:
+            $ref: "#/components/schemas/EdaOutlineRecord"
+        attributeLookupTable:
+          type: object
+          additionalProperties:
+            type: string
+    EdaPinRecord:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+          enum: [ThroughHole, Blind, Surface]
+        xCenter:
+          type: number
+          format: double
+        yCenter:
+          type: number
+          format: double
+        finishedHoleSize:
+          type: number
+          format: double
+          description: Unused (always 0).
+        electricalType:
+          type: string
+          enum: [Electrical, NonElectrical, Undefined]
+        mountType:
+          type: string
+          enum:
+            [Smt, RecommendedSmtPad, MT_ThroughHole, RecommendedThroughHole,
+             PressFit, NonBoard, Hole, MT_Undefined]
+        id:
+          type: integer
+          format: int32
+        index:
+          type: integer
+          format: int32
+    EdaOutlineRecord:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [Rectangle, Circle, Square, Contour]
+        lowerLeftX:
+          type: number
+          format: double
+        lowerLeftY:
+          type: number
+          format: double
+        width:
+          type: number
+          format: double
+        height:
+          type: number
+          format: double
+        xCenter:
+          type: number
+          format: double
+        yCenter:
+          type: number
+          format: double
+        halfSide:
+          type: number
+          format: double
+        radius:
+          type: number
+          format: double
+        contourPolygons:
+          type: array
+          items:
+            $ref: "#/components/schemas/ContourPolygon"
+    EdaFeatureGroupRecord:
+      type: object
+      properties:
+        type:
+          type: string
+        propertyRecords:
+          type: array
+          items:
+            $ref: "#/components/schemas/PropertyRecord"
+        featureIdRecords:
+          type: array
+          items:
+            $ref: "#/components/schemas/EdaFeatureIdRecord"
+
+    StepHdrFile:
+      type: object
+      description: "`stephdr` file — step header."
+      properties:
+        xDatum:
+          type: number
+          format: double
+        yDatum:
+          type: number
+          format: double
+        id:
+          type: integer
+          format: int32
+        xOrigin:
+          type: number
+          format: double
+        yOrigin:
+          type: number
+          format: double
+        topActive:
+          type: number
+          format: double
+        bottomActive:
+          type: number
+          format: double
+        rightActive:
+          type: number
+          format: double
+        leftActive:
+          type: number
+          format: double
+        affectingBom:
+          type: string
+        affectingBomChanged:
+          type: boolean
+        online:
+          type: string
+        stepRepeatRecords:
+          type: array
+          items:
+            $ref: "#/components/schemas/StepRepeatRecord"
+        path:
+          type: string
+        onlineValues:
+          type: object
+          additionalProperties:
+            type: string
+    StepRepeatRecord:
+      type: object
+      properties:
+        name:
+          type: string
+        x:
+          type: number
+          format: double
+        y:
+          type: number
+          format: double
+        dx:
+          type: number
+          format: double
+        dy:
+          type: number
+          format: double
+        nx:
+          type: integer
+          format: int32
+        ny:
+          type: integer
+          format: int32
+        angle:
+          type: number
+          format: double
+          description: Rotation in degrees.
+        flip:
+          type: boolean
+        mirror:
+          type: boolean
+
+    FeaturesFile:
+      type: object
+      description: A features file (`features` or step `profile`).
+      properties:
+        units:
+          type: string
+          example: INCH
+        id:
+          type: integer
+          format: int32
+        path:
+          type: string
+        directory:
+          type: string
+        numFeatures:
+          type: integer
+          format: int32
+        featureRecords:
+          type: array
+          items:
+            $ref: "#/components/schemas/FeatureRecord"
+        symbolNamesByName:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/SymbolNameRecord"
+        symbolNames:
+          type: array
+          items:
+            $ref: "#/components/schemas/SymbolNameRecord"
+    FeatureRecord:
+      type: object
+      description: |
+        A single drawn feature. Which coordinate fields are meaningful depends on `type`:
+        lines/arcs use start/end/center, pads use center + symbol reference, surfaces use
+        contour polygons, texts use position + font + size.
+      properties:
+        type:
+          type: string
+          enum: [Arc, Pad, Surface, Barcode, Text, Line]
+        xs:
+          type: number
+          format: double
+          description: Start X.
+        ys:
+          type: number
+          format: double
+          description: Start Y.
+        xe:
+          type: number
+          format: double
+          description: End X (lines/arcs).
+        ye:
+          type: number
+          format: double
+          description: End Y (lines/arcs).
+        x:
+          type: number
+          format: double
+          description: Center X (pads/texts).
+        y:
+          type: number
+          format: double
+          description: Center Y (pads/texts).
+        apt_def:
+          type: integer
+          format: int32
+        apt_def_symbol_num:
+          type: integer
+          format: int32
+        apt_def_resize_factor:
+          type: number
+          format: double
+        xc:
+          type: number
+          format: double
+          description: Arc center X.
+        yc:
+          type: number
+          format: double
+          description: Arc center Y.
+        cw:
+          type: boolean
+          description: Arc direction (clockwise).
+        font:
+          type: string
+          description: Text font name.
+        xsize:
+          type: number
+          format: double
+          description: Text X size.
+        ysize:
+          type: number
+          format: double
+          description: Text Y size.
+        width_factor:
+          type: number
+          format: double
+        text:
+          type: string
+          description: Text content (for `Text` features).
+        version:
+          type: integer
+          format: int32
+        sym_num:
+          type: integer
+          format: int32
+          description: Symbol number (pads/lines).
+        polarity:
+          type: string
+          enum: [Positive, Negative]
+        dcode:
+          type: integer
+          format: int32
+        atr:
+          type: integer
+          format: int32
+          description: Attribute reference id.
+        value:
+          type: string
+        id:
+          type: integer
+          format: int32
+        orient_def:
+          type: integer
+          format: int32
+        orient_def_rotation:
+          type: number
+          format: double
+        contourPolygons:
+          type: array
+          description: Contour polygons (for `Surface` features).
+          items:
+            $ref: "#/components/schemas/ContourPolygon"
+        attributeLookupTable:
+          type: object
+          additionalProperties:
+            type: string
+    ContourPolygon:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [Island, Hole]
+        xStart:
+          type: number
+          format: double
+        yStart:
+          type: number
+          format: double
+        polygonParts:
+          type: array
+          items:
+            $ref: "#/components/schemas/PolygonPart"
+    PolygonPart:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [Segment, Arc]
+        endX:
+          type: number
+          format: double
+        endY:
+          type: number
+          format: double
+        xCenter:
+          type: number
+          format: double
+          description: Arc center X (for `Arc` parts).
+        yCenter:
+          type: number
+          format: double
+          description: Arc center Y (for `Arc` parts).
+        isClockwise:
+          type: boolean
+          description: Arc direction (for `Arc` parts).
+    SymbolNameRecord:
+      type: object
+      description: Symbol reference (symbols directory name + its unit type).
+      properties:
+        name:
+          type: string
+          example: r155
+        unitType:
+          type: string
+          enum: [None, Metric, Imperial]
+
+    ComponentsFile:
+      type: object
+      description: Layer components file (`layers/<layer>/components`).
+      properties:
+        units:
+          type: string
+        id:
+          type: integer
+          format: int32
+        side:
+          type: string
+          enum: [BsNone, Top, Bottom]
+        layerName:
+          type: string
+        path:
+          type: string
+        directory:
+          type: string
+        attributeNames:
+          type: array
+          items:
+            type: string
+        attributeTextValues:
+          type: array
+          items:
+            type: string
+        componentRecords:
+          type: array
+          items:
+            $ref: "#/components/schemas/ComponentRecord"
+        componentRecordsByName:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/ComponentRecord"
+        propertyRecords:
+          type: array
+          items:
+            $ref: "#/components/schemas/PropertyRecord"
+        propertyRecordsByName:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/PropertyRecord"
+        bomDescriptionRecordsByCpn:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/BomDescriptionRecord"
+    ComponentRecord:
+      type: object
+      properties:
+        pkgRef:
+          type: integer
+          format: int32
+        locationX:
+          type: number
+          format: double
+        locationY:
+          type: number
+          format: double
+        rotation:
+          type: number
+          format: double
+          description: Placement rotation in degrees.
+        mirror:
+          type: boolean
+        compName:
+          type: string
+          description: Component reference designator.
+          example: U1
+        partName:
+          type: string
+        attributes:
+          type: string
+        id:
+          type: integer
+          format: int32
+        index:
+          type: integer
+          format: int32
+        propertyRecords:
+          type: array
+          items:
+            $ref: "#/components/schemas/PropertyRecord"
+        toeprintRecords:
+          type: array
+          items:
+            $ref: "#/components/schemas/ToeprintRecord"
+        attributeLookupTable:
+          type: object
+          additionalProperties:
+            type: string
+    ToeprintRecord:
+      type: object
+      description: A component pin's land pattern on this layer.
+      properties:
+        pinNumber:
+          type: integer
+          format: int32
+        locationX:
+          type: number
+          format: double
+        locationY:
+          type: number
+          format: double
+        rotation:
+          type: number
+          format: double
+        mirror:
+          type: boolean
+        netNumber:
+          type: integer
+          format: int32
+        subnetNumber:
+          type: integer
+          format: int32
+        name:
+          type: string
+    BomDescriptionRecord:
+      type: object
+      properties:
+        cpn:
+          type: string
+          description: Company part number.
+        pkg:
+          type: string
+          description: Package name.
+        ipn:
+          type: string
+          description: Internal part number.
+        descriptions:
+          type: array
+          items:
+            type: string
+        vpl_vnd:
+          type: string
+        vpl_mpn:
+          type: string
+        vnd:
+          type: string
+          description: Vendor name.
+        mpn:
+          type: string
+          description: Manufacturer part number.
+
+    ToolsFile:
+      type: object
+      description: Layer tools file (`layers/<layer>/tools`) — drill tool definitions.
+      properties:
+        directory:
+          type: string
+        path:
+          type: string
+        units:
+          type: string
+        thickness:
+          type: number
+          format: double
+        userParams:
+          type: string
+        tools:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/ToolsRecord"
+    ToolsRecord:
+      type: object
+      properties:
+        toolNum:
+          type: integer
+          format: int32
+        type:
+          type: string
+          enum: [Plated, NonPlated, Via]
+        type2:
+          type: string
+          enum: [Standard, PressFit, Photo, Laser]
+        minTol:
+          type: number
+          format: double
+        maxTol:
+          type: number
+          format: double
+        drillBit:
+          type: string
+        finishSize:
+          type: number
+          format: double
+        drillSize:
+          type: number
+          format: double
+
+    # ------------------------------------------------------------- diagnostics
+    SymbolUnitsDiagnostics:
+      type: object
+      description: Symbol unit-type analysis for a step (server-built JSON, snake_case keys).
+      required: [design, step, layers]
+      properties:
+        design:
+          type: string
+        step:
+          type: string
+        layers:
+          type: array
+          items:
+            $ref: "#/components/schemas/LayerSymbolUnits"
+    LayerSymbolUnits:
+      type: object
+      properties:
+        layer:
+          type: string
+        features_units_raw:
+          type: string
+          description: Raw units string from the layer features file.
+          example: INCH
+        symbols_total:
+          type: integer
+          description: Total number of symbols referenced by the layer.
+        symbol_unit_counts:
+          type: object
+          properties:
+            metric:
+              type: integer
+            imperial:
+              type: integer
+            none:
+              type: integer
+        has_mixed_symbol_unit_types:
+          type: boolean
+          description: True when both metric and imperial symbols are present.
+        has_mismatch_vs_features_units:
+          type: boolean
+          description: True when a symbol unit type contradicts the features file units.
+
+    # ------------------------------------------------------------ product model
+    Design:
+      type: object
+      description: Aggregated product model for a design.
+      properties:
+        productModel:
+          type: string
+          description: Source product model name.
+        name:
+          type: string
+          description: Design name.
+        fileModel:
+          $ref: "#/components/schemas/FileArchive"
+        nets:
+          type: array
+          items:
+            $ref: "#/components/schemas/Net"
+        netsByName:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/Net"
+        packages:
+          type: array
+          items:
+            $ref: "#/components/schemas/Package"
+        packagesByName:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/Package"
+        components:
+          type: array
+          items:
+            $ref: "#/components/schemas/Component"
+        componentsByName:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/Component"
+        parts:
+          type: array
+          items:
+            $ref: "#/components/schemas/Part"
+        partsByName:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/Part"
+    Component:
+      type: object
+      description: Placed component in the product model.
+      properties:
+        refDes:
+          type: string
+          description: Reference designator.
+          example: U1
+        partName:
+          type: string
+        package:
+          $ref: "#/components/schemas/Package"
+        index:
+          type: integer
+          format: int32
+        side:
+          type: string
+          enum: [BsNone, Top, Bottom]
+        part:
+          $ref: "#/components/schemas/Part"
+    Net:
+      type: object
+      description: Electrical net with its pin connections.
+      properties:
+        name:
+          type: string
+          example: GND
+        pinConnections:
+          type: array
+          items:
+            $ref: "#/components/schemas/PinConnection"
+        index:
+          type: integer
+          format: int32
+    PinConnection:
+      type: object
+      properties:
+        name:
+          type: string
+        component:
+          $ref: "#/components/schemas/Component"
+        pin:
+          $ref: "#/components/schemas/Pin"
+    Pin:
+      type: object
+      properties:
+        name:
+          type: string
+        index:
+          type: integer
+          format: int32
+    Package:
+      type: object
+      description: Component package (land pattern) with its pins.
+      properties:
+        name:
+          type: string
+        pins:
+          type: array
+          items:
+            $ref: "#/components/schemas/Pin"
+        pinsByName:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/Pin"
+        index:
+          type: integer
+          format: int32
+    Part:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Part number.
+          example: RES-10K-0402
