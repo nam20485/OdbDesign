@@ -46,12 +46,12 @@ pwsh scripts/k3s-cluster.ps1 -Action <Install|Start|Stop|Restart|Status|Uninstal
 ## Deploying OdbDesign
 
 ```powershell
-pwsh scripts/deploy.ps1 -ClusterName default -SkipGrpcValidation
+pwsh scripts/deploy.ps1
 ```
 
-- `-ClusterName default` selects the k3s kubeconfig context (the k3d-specific `k3d-k3dcluster` context does not exist here).
-- `-SkipGrpcValidation` is required: `scripts/validate-grpc-exposure.ps1` is k3d/Docker-specific (it inspects the `k3d-*-serverlb` container via `docker port`).
-- Validate gRPC manually afterwards: `grpcurl -plaintext 192.168.122.200:50051 list` (and/or the tailnet IP `100.118.225.119`).
+- `deploy.ps1` pins `KUBECONFIG=~/.kube/config` itself when unset (the k3s kubectl-symlink gotcha above); no need to export it or pass `-ClusterName default` — the current context is the k3s cluster.
+- Post-deploy gRPC validation runs automatically: `scripts/validate-grpc-exposure.ps1` auto-detects k3s from the context and validates the ServiceLB ingress IP (no Docker needed). Pass `-SkipGrpcValidation` only on clusters without ServiceLB.
+- Extra cross-check: `grpcurl -plaintext 192.168.122.200:50051 list` (and/or the tailnet IP `100.118.225.119`).
 
 ## Deploying monitoring
 
@@ -67,7 +67,7 @@ pwsh scripts/deploy-monitoring.ps1 -Wait -WaitTimeoutSeconds 900
 - Verify: `curl http://192.168.122.200/prometheus/-/healthy` and `curl http://192.168.122.200/grafana/api/health`; pods via `kubectl get pods -n monitoring` and `kubectl get pods -n trivy-system`.
 - Ordering matters: trivy's `serviceMonitor.enabled=true` needs the prometheus-operator CRDs, so prom is installed first (script already does this).
 - Node headroom: the stack adds ~1.5–2.5 GiB RSS and trivy scans spike CPU; check with `kubectl top node`.
-- **Logs (Loki)**: the script also installs `loki` (single-binary, 10 Gi PVC, gateway/caches disabled, `auth_enabled: false`) and `promtail` (DaemonSet) into `monitoring`; Grafana gets a provisioned **Loki** datasource. View logs in Grafana → Explore → Loki (`{namespace="monitoring"}` etc.). Values: `deploy/helm/values-loki.yaml`, `values-promtail.yaml`; push URL is `http://loki.monitoring.svc.cluster.local:3100/loki/api/v1/push`.
+- **Logs (Loki)**: the script also installs `loki` (single-binary, 10 Gi PVC, gateway/caches disabled, `auth_enabled: false`, compactor retention enforcing the 168h `retention_period`) and `promtail` (DaemonSet) into `monitoring`; Grafana gets a provisioned **Loki** datasource. View logs in Grafana → Explore → Loki (`{namespace="monitoring"}` etc.). Values: `deploy/helm/values-loki.yaml`, `values-promtail.yaml`; push URL is `http://loki.monitoring.svc.cluster.local:3100/loki/api/v1/push`.
 
 ## Generating the OpenAPI spec (swaggerui)
 
@@ -80,12 +80,13 @@ Workflow:
 3. **Schemas**: map returned objects to protobuf messages in `OdbDesignLib/protoc/*.proto`. JSON uses default proto3 JSON options (`OdbDesignLib/IProtoBuffable.h`): lowerCamelCase keys, enums as names, unset/default fields omitted, Timestamps as RFC 3339. Handlers that build JSON directly (e.g. `diagnostics/symbol_units`) use snake_case keys — derive from the handler code, not the protos.
 4. **Write the spec**: OpenAPI 3.0.3, keep `info.version` in sync with the server version, reuse `components/parameters` + `components/responses` ($refs), describe every operation (operationId/summary/description), enum every proto enum, and add response examples. Query params: e.g. `include_filearchive` on `GET /designs/{name}`.
 5. **Validate**: `python3 -c "import yaml; yaml.safe_load(open('swagger/odbdesign-server-0.9-swagger.yaml'))"` plus a `$ref` resolution check (there is a check script pattern in the repo history; a quick re-parse + spot-check suffices).
-6. **Ship to the cluster** (subPath mounts don't hot-reload):
+6. **Ship to the cluster** (subPath mounts don't hot-reload). Regenerate the committed ConfigMap manifest, apply it, and restart (`deploy.ps1` runs this regeneration automatically):
 
 ```bash
 kubectl create configmap odbdesign-server-swagger-spec \
   --from-file=odbdesign-server-0.9-swagger.yaml=swagger/odbdesign-server-0.9-swagger.yaml \
-  --dry-run=client -o yaml | kubectl apply -f -
+  --dry-run=client -o yaml > deploy/kube/OdbDesignServer-SwaggerUI/swagger-spec-configmap.yaml
+kubectl apply -f deploy/kube/OdbDesignServer-SwaggerUI/swagger-spec-configmap.yaml
 kubectl rollout restart deployment/odbdesign-server-swaggerui-v1
 kubectl rollout status deployment/odbdesign-server-swaggerui-v1
 ```
@@ -114,3 +115,4 @@ kubectl get events -A --sort-by=.lastTimestamp
 - **sudo timeout:** mutating actions call `sudo -v` once up front; on long unattended runs the cached credentials may expire mid-action.
 - **Install pre-flight failures:** ports 80/443/6443/50051 must be free, `/` needs >= 5 GB free, and `curl`/`sudo` must exist. Inspect conflicts with `ss -tlnp`.
 - **kubeconfig lifecycle:** Install backs up an existing `~/.kube/config` to `~/.kube/config.backup-<timestamp>`; Uninstall restores the newest backup or removes the file.
+- **PV `spec.hostPath` is immutable:** if the cluster already has PV `k3d-volume` with the old `/mnt/d/k3dvolume` path, `kubectl apply` aborts with `field is immutable`. `deploy.ps1` pre-flights this with an actionable error; recovery is manual (scale down the workload, move data to `/srv/odbdesign-volume`, delete PVC then PV, re-run deploy).

@@ -14,6 +14,11 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+# Fail the script when native commands (curl/sudo/systemctl/kubectl) exit
+# non-zero. Without this, $ErrorActionPreference only governs cmdlets — a
+# failed installer download/install would otherwise fall through into the
+# node-Ready wait and surface much later as a misleading timeout.
+$PSNativeCommandUseErrorActionPreference = $true
 
 if ($IsWindows) {
     throw "k3s-cluster.ps1 must run inside the Debian VM (Linux), not on the Windows host."
@@ -24,7 +29,7 @@ $requiredPorts = @(80, 443, 6443, 50051)
 $kubeDir = Join-Path $HOME '.kube'
 $kubeConfigPath = Join-Path $kubeDir 'config'
 $installerUrl = 'https://get.k3s.io'
-$installerPath = '/tmp/k3s-install.sh'
+$installerPath = Join-Path ([System.IO.Path]::GetTempPath()) "k3s-install-$([guid]::NewGuid().ToString('N').Substring(0, 8)).sh"
 $k3sBinaryPath = '/usr/local/bin/k3s'
 $k3sUnitPath = '/etc/systemd/system/k3s.service'
 $k3sUninstallScriptPath = '/usr/local/bin/k3s-uninstall.sh'
@@ -82,7 +87,18 @@ function Get-InstalledTlsSans {
         return ,@()
     }
     $content = Get-Content $k3sUnitPath -Raw
-    return ,([regex]::Matches($content, '--tls-san[=\s]+(\S+)') | ForEach-Object { $_.Groups[1].Value })
+    return ,@([regex]::Matches($content, '--tls-san[=\s]+(\S+)') | ForEach-Object { $_.Groups[1].Value })
+}
+
+function Get-K3sUnitState {
+    param(
+        [ValidateSet('is-active','is-enabled')]
+        [string]$Check
+    )
+    # systemctl exits non-zero for inactive/unknown states — a valid answer
+    # here, not a failure, so run outside the native-error policy.
+    $PSNativeCommandUseErrorActionPreference = $false
+    return (systemctl $Check k3s 2>$null) -join ''
 }
 
 function Wait-NodeReady {
@@ -93,7 +109,13 @@ function Wait-NodeReady {
     Write-Host "Waiting up to $TimeoutSeconds s for the node to report Ready..."
     $deadline = (Get-Date).AddSeconds($TimeoutSeconds)
     while ((Get-Date) -lt $deadline) {
-        $ready = sudo k3s kubectl get nodes -o 'jsonpath={.items[0].status.conditions[?(@.type=="Ready")].status}' 2>$null
+        $ready = $null
+        try {
+            $ready = sudo k3s kubectl get nodes -o 'jsonpath={.items[0].status.conditions[?(@.type=="Ready")].status}' 2>$null
+        }
+        catch {
+            # API not up yet (k3s still starting) — keep polling
+        }
         if ($ready -eq 'True') {
             Write-Host "Node is Ready."
             return
@@ -180,7 +202,15 @@ function Invoke-Install {
     Backup-KubeConfig | Out-Null
 
     Write-Host "Downloading k3s installer from $installerUrl ..."
-    curl -sfL $installerUrl -o $installerPath
+    try {
+        curl -sfL $installerUrl -o $installerPath
+    }
+    catch {
+        throw "Failed to download the k3s installer from $installerUrl (curl exit code $LASTEXITCODE). Check network access and retry."
+    }
+    if (-not (Test-Path $installerPath)) {
+        throw "k3s installer download failed: $installerPath does not exist after curl."
+    }
 
     $tlsArgs = @()
     foreach ($san in $TlsSans) {
@@ -188,16 +218,21 @@ function Invoke-Install {
         $tlsArgs += $san
     }
 
-    if ($K3sVersion) {
-        Write-Host "Installing k3s $K3sVersion (tls-san: $($TlsSans -join ', '))..."
-        sudo "INSTALL_K3S_VERSION=$K3sVersion" sh $installerPath @tlsArgs
-    }
-    else {
-        Write-Host "Installing latest stable k3s (tls-san: $($TlsSans -join ', '))..."
-        sudo sh $installerPath @tlsArgs
-    }
+    try {
+        if ($K3sVersion) {
+            Write-Host "Installing k3s $K3sVersion (tls-san: $($TlsSans -join ', '))..."
+            sudo env "INSTALL_K3S_VERSION=$K3sVersion" sh $installerPath @tlsArgs
+        }
+        else {
+            Write-Host "Installing latest stable k3s (tls-san: $($TlsSans -join ', '))..."
+            sudo sh $installerPath @tlsArgs
+        }
 
-    sudo systemctl enable k3s
+        sudo systemctl enable k3s
+    }
+    finally {
+        Remove-Item $installerPath -ErrorAction SilentlyContinue
+    }
     Wait-NodeReady -TimeoutSeconds $ReadyTimeoutSeconds
 
     Write-Host "Copying kubeconfig for user $env:USER..."
@@ -221,8 +256,8 @@ function Invoke-Status {
         Write-Host "k3s is not installed (no $k3sBinaryPath)."
     }
 
-    $activeState = (systemctl is-active k3s 2>$null) -join ''
-    $enabledState = (systemctl is-enabled k3s 2>$null) -join ''
+    $activeState = Get-K3sUnitState -Check 'is-active'
+    $enabledState = Get-K3sUnitState -Check 'is-enabled'
     if (-not $activeState) { $activeState = 'unknown' }
     if (-not $enabledState) { $enabledState = 'unknown' }
     Write-Host "k3s unit: active=$activeState enabled=$enabledState"
@@ -271,10 +306,15 @@ function Invoke-Uninstall {
         Write-Host "Force uninstall specified..."
     }
 
+    if (-not (Test-Path $k3sUninstallScriptPath)) {
+        throw "k3s uninstall script not found at $k3sUninstallScriptPath (unit file present but uninstall script missing). Remove the install manually."
+    }
+    # A failing uninstall must abort before Restore-KubeConfig touches the user
+    # kubeconfig (native-error policy throws on non-zero exit).
     sudo $k3sUninstallScriptPath
     Restore-KubeConfig
 
-    $activeState = (systemctl is-active k3s 2>$null) -join ''
+    $activeState = Get-K3sUnitState -Check 'is-active'
     if ($activeState -eq 'active') {
         throw "k3s unit is still active after uninstall."
     }

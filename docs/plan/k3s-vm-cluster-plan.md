@@ -40,7 +40,7 @@ Params:
 - `[string[]]$TlsSans = @('192.168.122.200','100.118.225.119')` (Install only)
 - `[string]$K3sVersion = ''` — when set, exported as `INSTALL_K3S_VERSION` for a reproducible install; pin the concrete version chosen at install time (review R13). Empty = latest stable.
 - `[switch]$Force` — Install: re-run the installer over an existing install; Uninstall: skip the interactive confirmation (mirrors `-ForceDelete` pattern in `create-k3d-cluster.ps1`).
-- `[int]$ReadyTimeoutSeconds = 300` — applies to every node-Ready wait: Install and Start (review R6).
+- `[int]$ReadyTimeoutSeconds = 300` — applies to every node-Ready wait: Install, Start and Restart (review R6).
 
 Actions:
 - **Install**:
@@ -94,7 +94,7 @@ Replace the backslash joins at `scripts/deploy.ps1:31` and `:63` (`"$PSScriptRoo
 
 ## Out of scope
 
-- `deploy/kube/k3d-volume-pv.yaml` hostPath (`/mnt/d/k3dvolume`) — review R2 was rejected ("why are we fixing the k3d script?"); the PV/PVC manifests are k3d leftovers and are not touched here. Known consequence: workloads mounting that PV will not run correctly in the VM until the PV is reworked separately.
+- ~~`deploy/kube/k3d-volume-pv.yaml` hostPath rework~~ — originally listed as out of scope (review R2 was rejected), but the PV/PVC manifests **are** reworked in this PR: hostPath is repointed from the Windows-host k3d leftover `/mnt/d/k3dvolume` to `/srv/odbdesign-volume` with `type: DirectoryOrCreate`, and `deploy.ps1` applies them. Note: `spec.hostPath` is immutable, so on a cluster that already has the PV with the old path, `kubectl apply` fails with `field is immutable`; `deploy.ps1` pre-flights this with an actionable error and manual recovery steps (delete/recreate the PV).
 - Migrating/copying the Docker-registry secret or any persisted data — fresh cluster assumes `deploy.ps1` will be re-run to apply manifests. (No old k3d cluster exists to migrate from — review R1.)
 - Any Windows-host-side scripts or scheduled tasks (`StartWithWindows` equivalent is just VM boot; k3s auto-starts via systemd enable).
 

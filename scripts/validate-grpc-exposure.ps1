@@ -130,12 +130,9 @@ if ($LASTEXITCODE -ne 0) {
 }
 $currentContext = "$currentContext".Trim()
 
-# resolve cluster kind
-$kind = $ClusterKind
-if ($kind -eq 'Auto') {
-    if ($currentContext.StartsWith("k3d-")) { $kind = 'k3d' } else { $kind = 'k3s' }
-}
-Write-Step "Cluster kind: $kind (context: $currentContext)"
+# cluster kind is resolved below, AFTER any -ClusterName context switch:
+# detecting it here would use the pre-switch context and run the wrong
+# validation path against the switched cluster.
 
 if ([string]::IsNullOrWhiteSpace($ClusterName)) {
     $ClusterName = $currentContext
@@ -147,6 +144,13 @@ else {
         Fail "Failed to switch kubectl context to $ClusterName."
     }
 }
+
+# resolve cluster kind from the effective context (post-switch)
+$kind = $ClusterKind
+if ($kind -eq 'Auto') {
+    if ($ClusterName.StartsWith("k3d-")) { $kind = 'k3d' } else { $kind = 'k3s' }
+}
+Write-Step "Cluster kind: $kind (context: $ClusterName)"
 
 if ($kind -eq 'k3s' -and [string]::IsNullOrWhiteSpace($AdvertisedHost)) {
     # resolve after service inspection below
@@ -216,7 +220,7 @@ if ($kind -eq 'k3d') {
     $loadBalancerContainer = "k3d-$clusterShortName-serverlb"
     $publishedPort = & docker port $loadBalancerContainer "$GrpcPort/tcp" 2>$null
     if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($publishedPort)) {
-        Fail "Load balancer container '$loadBalancerContainer' is not publishing TCP/$GrpcPort. If this cluster predates the gRPC exposure change, recreate it with scripts/create-k3d-cluster.ps1 so it includes --port ""$GrpcPort:$GrpcPort@loadbalancer""."
+        Fail "Load balancer container '$loadBalancerContainer' is not publishing TCP/$GrpcPort. If this cluster predates the gRPC exposure change, recreate it with scripts/create-k3d-cluster.ps1 so it includes --port ""${GrpcPort}:${GrpcPort}@loadbalancer""."
     }
 
     if ($publishedPort -notmatch "[:]{1}$GrpcPort\b") {
@@ -230,12 +234,25 @@ else {
     # Re-read the service to pick up its assigned ingress IP.
     $service = Invoke-KubectlJson -Arguments @("get", "service", $GrpcServiceName)
 
-    $ingressIps = @(
-        foreach ($entry in @($service.status.loadBalancer.ingress)) {
-            if (-not [string]::IsNullOrWhiteSpace("$($_.ip)")) { "$($_.ip)" }
-            elseif (-not [string]::IsNullOrWhiteSpace("$($_.hostname)")) { "$($_.hostname)" }
+    # StrictMode-safe lookup: kubectl's JSON omits the empty "ingress" key
+    # while the LoadBalancer IP is pending (status.loadBalancer: {}), which
+    # would otherwise throw PropertyNotFoundException and hide the guard below.
+    $ingressIps = @()
+    $statusProp = $service.PSObject.Properties['status']
+    if ($statusProp) {
+        $lbProp = $statusProp.Value.PSObject.Properties['loadBalancer']
+        if ($lbProp) {
+            $ingressProp = $lbProp.Value.PSObject.Properties['ingress']
+            if ($ingressProp) {
+                $ingressIps = @(
+                    foreach ($entry in @($ingressProp.Value)) {
+                        if (-not [string]::IsNullOrWhiteSpace("$($_.ip)")) { "$($_.ip)" }
+                        elseif (-not [string]::IsNullOrWhiteSpace("$($_.hostname)")) { "$($_.hostname)" }
+                    }
+                ) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+            }
         }
-    ) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+    }
 
     if ($ingressIps.Count -eq 0) {
         Fail "ServiceLB has not assigned an ingress IP to service '$GrpcServiceName' yet. Check the svclb pod: kubectl -n kube-system get pods -l svccontroller.k3s.cattle.io/svcname=$GrpcServiceName"

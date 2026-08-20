@@ -128,7 +128,7 @@ function Wait-RolloutInNamespace {
         # `kubectl get <kind>` exits non-zero when the namespace has no
         # objects of that kind — expected, not a failure (PSNativeCommand... throws otherwise)
         try { $names = kubectl get $k -n $Namespace -o name 2>$null }
-        catch { continue }
+        catch { Write-Host "  skipping ${k}: $_"; continue }
         if (-not $names) { continue }
         foreach ($line in $names) {
             if ([string]::IsNullOrWhiteSpace($line)) { continue }

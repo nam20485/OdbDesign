@@ -9,7 +9,7 @@ All verdicts recorded (2026-08-19) and applied to `docs/plan/k3s-vm-cluster-plan
 | D1 | — (applied) | `docs/plan/k3s-vm-cluster-plan.md` is the canonical copy; `.kilo/plans/1786784477051-k3s-vm-cluster-plan.md` deleted | DONE |
 | D2 | — (applied) | Skill location changed to client-neutral `.agents/skills/k3s-admin/SKILL.md` (plan updated) | DONE (caveat in R20) |
 | R1 | Blocker | No task to decommission the existing k3d cluster -> guaranteed port conflicts | REJECTED (SKIP — k3d never installed on this VM) |
-| R2 | Blocker | Install step creates wrong PV hostPath dir | REJECTED (SKIP — k3d leftover, untouched) |
+| R2 | Blocker | Install step creates wrong PV hostPath dir | REJECTED (SKIP — k3d leftover, untouched) — SUPERSEDED: the PV manifest was later reworked in this PR (hostPath → `/srv/odbdesign-volume`, see R2 detail) |
 | R3 | Blocker | Decision 3 (`http://<vm-ip>/`) contradicts the ingress manifest host rule | ACCEPTED |
 | R4 | Blocker | "deploy.ps1 applies fine" is false on Linux pwsh; post-deploy validation is k3d-only | ACCEPTED |
 | R5 | Blocker (security) | `--write-kubeconfig-mode 644` makes cluster-admin kubeconfig world-readable | ACCEPTED |
@@ -58,6 +58,7 @@ All verdicts recorded (2026-08-19) and applied to `docs/plan/k3s-vm-cluster-plan
 - **Finding:** The manifest's hostPath is `/mnt/d/k3dvolume` (`deploy/kube/k3d-volume-pv.yaml:15`), not `/k3dvolume`. The Install step as written does nothing useful, and pods mounting the PV will fail with `CreateContainerConfigError`/runnable-on-node issues.
 - **Proposed fix:** Either (a) `sudo mkdir -p /mnt/d/k3dvolume`, or (b) change the PV manifest path to something sane like `/srv/k3dvolume` (preferred — `/mnt/d` is a leftover Windows-drive path). Option (b) means the "no manifest changes" claim in decision 5 (plan line 15, about service-grpc.yaml — that part is correct) should not be conflated with the PV manifest.
 - Verdict: REJECTED — Feedback: SKIP- why are we fixing the k3d script? (PV manifests left untouched; the mkdir step was dropped from Install and the k3d-leftover PV is listed as out of scope with the known consequence noted.)
+- Post-rework note (PR review round 2, 2026-08-20): the rejection is superseded — this PR **does** rework the PV manifest (option (b), path `/srv/odbdesign-volume`, `type: DirectoryOrCreate`), because the k3s cluster mounts its workloads from that PV and the `/mnt/d/k3dvolume` Windows-host path does not exist on the VM. `deploy.ps1` pre-flights the `spec.hostPath` immutability failure with an actionable error + manual delete/recreate recovery for clusters that already have the old-path PV.
 ### R3. Decision 3 ingress claim contradicts `local-ingress.yaml`
 - **Where:** plan line 13 ("clients must use `http://<vm-ip>/`"), port map line 23, validation step 1.
 - **Finding:** `deploy/kube/local-ingress.yaml:10` has a single rule with `host: precision5820` and no default backend. A request to `http://192.168.122.200/` (or the tailnet IP) without `Host: precision5820` gets a Traefik 404. `precision5820` also won't resolve from the tailnet unless a hosts entry / MagicDNS record exists.

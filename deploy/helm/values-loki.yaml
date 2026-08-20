@@ -24,6 +24,11 @@ loki:
     type: filesystem
   limits_config:
     retention_period: 168h
+  # limits_config.retention_period is only enforced when the compactor runs
+  # with retention enabled (single-binary runs the compactor in-process);
+  # without this nothing prunes chunks and the 10Gi PVC fills indefinitely.
+  compactor:
+    retention_enabled: true
 
 singleBinary:
   replicas: 1

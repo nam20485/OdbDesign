@@ -15,6 +15,16 @@ $ErrorActionPreference = "Stop"
 
 $RepoRoot = Split-Path -Parent $PSScriptRoot
 
+# The /usr/local/bin/kubectl symlink is k3s itself; its wrapper forces
+# KUBECONFIG=/etc/rancher/k3s/k3s.yaml (root-only, mode 600) unless KUBECONFIG
+# is already set. Pin it to the user kubeconfig created by k3s-cluster.ps1 Install.
+if ([string]::IsNullOrEmpty($env:KUBECONFIG)) {
+    $userKubeConfig = Join-Path $HOME ".kube/config"
+    if (Test-Path $userKubeConfig) {
+        $env:KUBECONFIG = $userKubeConfig
+    }
+}
+
 function Invoke-Kubectl {
     param([Parameter(Mandatory=$true)][string[]]$Arguments)
 
@@ -37,6 +47,23 @@ try {
     #
 
     # persistent volume
+    # spec.hostPath is immutable: on a cluster that already has this PV with the
+    # old path, apply fails with "field is immutable" and aborts the whole deploy.
+    # Pre-flight with an actionable error instead of the cryptic apply failure.
+    $expectedHostPath = '/srv/odbdesign-volume'
+    $existingHostPath = $null
+    try {
+        $existingHostPath = (kubectl get pv k3d-volume -o jsonpath='{.spec.hostPath.path}' 2>$null) -join ''
+    }
+    catch {
+        # PV does not exist yet (fresh cluster) — nothing to pre-flight
+    }
+    if ($existingHostPath -and $existingHostPath -ne $expectedHostPath) {
+        Write-Host "PV 'k3d-volume' exists with hostPath '$existingHostPath', but this manifest declares '$expectedHostPath'."
+        Write-Host "spec.hostPath is immutable, so kubectl apply would abort the whole deploy."
+        Write-Host "Manual recovery: scale down workloads using PVC k3d-volume-claim, move any data from '$existingHostPath' to '$expectedHostPath', delete the PVC then the PV, and re-run this deploy."
+        Exit 1
+    }
     Invoke-Kubectl @("apply", "-f", "deploy/kube/k3d-volume-pv.yaml")
     Invoke-Kubectl @("apply", "-f", "deploy/kube/k3d-volume-pvc.yaml")
 
@@ -65,17 +92,21 @@ try {
     # Swagger UI
     #
 
-    # (re)create the swagger spec ConfigMap from the repo swagger file; the
-    # public swaggerui image bakes an outdated spec, the deployment mounts
-    # this ConfigMap over it
+    # (re)generate the swagger spec ConfigMap manifest from the repo swagger
+    # file, then apply it; the public swaggerui image bakes an outdated spec,
+    # the deployment mounts this ConfigMap over it. Regenerating the committed
+    # file here keeps the manifest set self-contained (raw apply / GitOps can
+    # resolve the volume) without letting it drift past the last deploy.
     $specPath = "swagger/odbdesign-server-0.9-swagger.yaml"
-    & kubectl create configmap odbdesign-server-swagger-spec `
+    $configMapPath = "deploy/kube/OdbDesignServer-SwaggerUI/swagger-spec-configmap.yaml"
+    kubectl create configmap odbdesign-server-swagger-spec `
         --from-file=odbdesign-server-0.9-swagger.yaml=$specPath `
-        --dry-run=client -o yaml | kubectl apply -f -
+        --dry-run=client -o yaml > $configMapPath
     if ($LASTEXITCODE -ne 0) {
-        Write-Host "Failed to create/update the swagger spec ConfigMap."
+        Write-Host "Failed to generate the swagger spec ConfigMap manifest."
         Exit 1
     }
+    Invoke-Kubectl @("apply", "-f", $configMapPath)
 
     # apply deployment/service manifests
     Invoke-Kubectl @("apply", "-f", "deploy/kube/OdbDesignServer-SwaggerUI/deployment.yaml")
