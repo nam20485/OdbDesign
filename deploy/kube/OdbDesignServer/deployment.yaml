@@ -60,8 +60,8 @@ spec:
               cpu: "8"
               memory: 10Gi
             requests:
-              cpu: "1"
-              memory: 1Gi
+              cpu: "2"
+              memory: 4Gi
           livenessProbe:
             httpGet:
               path: /healthz/live
