@@ -246,8 +246,8 @@ else {
             if ($ingressProp) {
                 $ingressIps = @(
                     foreach ($entry in @($ingressProp.Value)) {
-                        if (-not [string]::IsNullOrWhiteSpace("$($_.ip)")) { "$($_.ip)" }
-                        elseif (-not [string]::IsNullOrWhiteSpace("$($_.hostname)")) { "$($_.hostname)" }
+                        if (-not [string]::IsNullOrWhiteSpace("$($entry.ip)")) { "$($entry.ip)" }
+                        elseif (-not [string]::IsNullOrWhiteSpace("$($entry.hostname)")) { "$($entry.hostname)" }
                     }
                 ) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
             }
