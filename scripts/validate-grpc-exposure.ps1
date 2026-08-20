@@ -246,8 +246,11 @@ else {
             if ($ingressProp) {
                 $ingressIps = @(
                     foreach ($entry in @($ingressProp.Value)) {
-                        if (-not [string]::IsNullOrWhiteSpace("$($entry.ip)")) { "$($entry.ip)" }
-                        elseif (-not [string]::IsNullOrWhiteSpace("$($entry.hostname)")) { "$($entry.hostname)" }
+                        # entries may omit "ip" (hostname-only) — StrictMode-safe lookup
+                        $ipProp = $entry.PSObject.Properties['ip']
+                        $hostProp = $entry.PSObject.Properties['hostname']
+                        if ($ipProp -and -not [string]::IsNullOrWhiteSpace("$($ipProp.Value)")) { "$($ipProp.Value)" }
+                        elseif ($hostProp -and -not [string]::IsNullOrWhiteSpace("$($hostProp.Value)")) { "$($hostProp.Value)" }
                     }
                 ) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
             }

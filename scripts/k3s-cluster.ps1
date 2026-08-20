@@ -338,7 +338,7 @@ switch ($Action) {
         Invoke-Install
     }
     'Start' {
-        $activeState = (systemctl is-active k3s 2>$null) -join ''
+        $activeState = Get-K3sUnitState -Check 'is-active'
         if ($activeState -eq 'active') {
             Write-Host "k3s is already active."
             Wait-NodeReady -TimeoutSeconds $ReadyTimeoutSeconds
