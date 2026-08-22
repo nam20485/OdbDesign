@@ -56,3 +56,12 @@ gpg_keys/
 .qwen/settings.json.orig
 .mimosa/
 .kilo/
+
+# Local environment files (may contain secrets) — copy .env.example to .env
+.env
+.env.local
+.env.*.local
+
+# IDE state / editor backups
+/.idea/
+/docs/plan/*.old

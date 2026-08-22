@@ -33,3 +33,8 @@ Testing/
 
 # Ignore other Docker files
 Dockerfile*
+
+# Local environment files (may contain secrets) — never send to the builder
+.env
+.env.local
+local.nuget.config
