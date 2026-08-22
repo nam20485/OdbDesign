@@ -1,6 +1,6 @@
 # Grafana, Prometheus, and Trivy (how to open and verify)
 
-This repo deploys **kube-prometheus-stack** (Prometheus + Grafana) into the `monitoring` namespace and the **Trivy Operator** into `trivy-system`. Monitoring is wired to the same Traefik HTTP entrypoint as the app (host `precision5820`, port **8081** on your k3d setup).
+This repo deploys **kube-prometheus-stack** (Prometheus + Grafana) into the `monitoring` namespace and the **Trivy Operator** into `trivy-system`. Monitoring is wired to the same Traefik HTTP entrypoint as the app (k3s default ports **80/443** on the Debian 13 VM, host-less ingresses).
 
 ## 1. Deploy or refresh the stack
 
@@ -11,33 +11,33 @@ From the repository root:
 ```
 
 - **`-Wait`** waits for Deployments, StatefulSets, and DaemonSets in `monitoring` and `trivy-system` to finish rolling out (default timeout **600** seconds). Omit it if you only want Helm to apply and exit.
-- If your cluster hostname or Traefik port is not `precision5820` / `8081`, edit `deploy/helm/values-prom.yaml` first: set `grafana.ingress.hosts`, `grafana.grafana.ini.server.root_url`, `prometheus.ingress.hosts`, and `prometheus.prometheusSpec.externalUrl` to match, then rerun the script.
+- The ingresses are host-less, so any hostname/IP that reaches Traefik works. If you serve under a different external URL, edit `deploy/helm/values-prom.yaml` first: set `grafana.grafana.ini.server.root_url` (and optionally `prometheus.prometheusSpec.externalUrl`) to match, then rerun the script.
 
-Ensure Traefik is running and your ingress for the host exists (for the app you use `deploy/kube/local-ingress.yaml`). Grafana and Prometheus get **their own Ingress objects** in `monitoring` from Helm; they share the same host and port as long as Traefik listens on `8081` for that host.
+Ensure Traefik is running and your ingress exists (for the app you use `deploy/kube/local-ingress.yaml`). Grafana and Prometheus get **their own Ingress objects** in `monitoring` from Helm; they share the same Traefik entrypoint (80/443).
 
-**Prometheus path vs in-cluster clients:** Prometheus must answer the HTTP API at **`http://<prometheus-service>:9090/api/v1/...`** (path `/`, not `/prometheus/...`). Tools such as **Freelens/Lens** use that URL inside the cluster. The deploy script applies **`deploy/kube/traefik-middleware-prometheus-stripprefix.yaml`**, which strips the **`/prometheus`** prefix on Traefik so the browser can still use `http://precision5820:8081/prometheus/` without breaking in-cluster queries. If the Middleware fails to apply (wrong Traefik API version), see the comments in that YAML file.
+**Prometheus path vs in-cluster clients:** Prometheus must answer the HTTP API at **`http://<prometheus-service>:9090/api/v1/...`** (path `/`, not `/prometheus/...`). Tools such as **Freelens/Lens** use that URL inside the cluster. The deploy script applies **`deploy/kube/traefik-middleware-prometheus-stripprefix.yaml`**, which strips the **`/prometheus`** prefix on Traefik so the browser can still use `http://192.168.122.200/prometheus/` without breaking in-cluster queries. If the Middleware fails to apply (wrong Traefik API version), see the comments in that YAML file.
 
 ## 2. URLs (browser)
 
 | What | URL |
 |------|-----|
-| **Grafana** | `http://precision5820:8081/grafana/` |
-| **Prometheus** | `http://precision5820:8081/prometheus/` |
-| **OdbDesign** (same Traefik) | `http://precision5820:8081/` |
+| **Grafana** | `http://192.168.122.200/grafana/` |
+| **Prometheus** | `http://192.168.122.200/prometheus/` |
+| **OdbDesign** (same Traefik) | `http://192.168.122.200/` |
 
-Use the hostname or IP that actually resolves from your machine (for example `http://192.168.1.30:8081/grafana/` if you use the LAN IP). Paths are **prefix** routes: Grafana is under `/grafana`, Prometheus under `/prometheus`, so they do not clash with `/` or `/swagger`.
+Use the address that actually resolves from your machine — the VM LAN IP `192.168.122.200` (libvirt NAT) or the Tailscale IP `100.118.225.119` (for example `http://100.118.225.119/grafana/`). Paths are **prefix** routes: Grafana is under `/grafana`, Prometheus under `/prometheus`, so they do not clash with `/` or `/swagger`.
 
 If a page returns 404, check:
 
-1. `kubectl get ingress -n monitoring` — you should see Grafana and Prometheus ingresses with host `precision5820` (or your edited host).
+1. `kubectl get ingress -n monitoring` — you should see the Grafana and Prometheus ingresses (host-less).
 2. `kubectl get pods -n kube-system` (or wherever Traefik runs) — Traefik must be Ready.
-3. Firewall / k3d port mapping still exposes **8081** to the client you are browsing from.
+3. The k3s Traefik ports **80/443** are reachable from the client you are browsing from (libvirt NAT or tailnet).
 
 ## 3. Grafana (web UI)
 
 ### 3.1 Log in
 
-1. Open `http://precision5820:8081/grafana/` (or your equivalent).
+1. Open `http://192.168.122.200/grafana/` (or your equivalent).
 2. User is **`admin`** unless you changed `grafana.adminUser` in Helm values.
 3. Password comes from the Grafana secret (release name `prom` → secret name **`prom-grafana`**):
 
@@ -67,7 +67,7 @@ Copy the printed string and paste it into the Grafana password field.
 
 ### 4.1 Graph
 
-1. Open `http://precision5820:8081/prometheus/`.
+1. Open `http://192.168.122.200/prometheus/`.
 2. Open the **Graph** tab.
 3. Enter `up` and click **Execute**. You should see time series with value `1` for healthy scrape targets.
 
@@ -147,7 +147,7 @@ Then open `http://127.0.0.1:8080/metrics` in a browser (port may differ; check t
 
 ## 6. Quick checklist: “everything works”
 
-- [ ] `http://precision5820:8081/grafana/` loads and login works.
+- [ ] `http://192.168.122.200/grafana/` loads and login works.
 - [ ] Grafana **Prometheus** data source **Save & test** succeeds.
 - [ ] Prometheus **Status → Targets** shows most targets **UP**.
 - [ ] `kubectl get vulnerabilityreports -A` returns (possibly empty until scans run; operator Ready is what matters first).
