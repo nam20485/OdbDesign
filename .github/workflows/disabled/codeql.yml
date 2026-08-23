@@ -68,7 +68,8 @@ jobs:
         include:
           - language: 'c-cpp'
             os: 'ubuntu-24.04'
-            preset: 'linux-release'          
+            # dynamic triplet: shared protobuf/gRPC runtime (see docs/linux-dynamic-release-plan.md)
+            preset: 'linux-dynamic-release'          
           # Uncomment to add Windows analysis
           # - language: 'c-cpp'
           #   os: 'windows-2022'

@@ -58,7 +58,10 @@ RUN mkdir --parents /OdbDesign/bin /OdbDesign/templates /OdbDesign/designs
 WORKDIR /OdbDesign
 
 # copy pre-built binaries from artifacts (extracted from zip in workflow)
-COPY ./artifacts/*.so ./bin/
+# *.so* (not *.so): the linux-dynamic-release artifacts bundle versioned vcpkg
+# shared libraries (e.g. libarchive.so.13, libprotobuf.so.33) alongside the
+# project libraries; LD_LIBRARY_PATH=/OdbDesign/bin below makes them findable
+COPY ./artifacts/*.so* ./bin/
 COPY ./artifacts/OdbDesignServer ./bin/
 # gRPC service config (loaded by RunGrpcServer from exeDir/config.json)
 COPY ./OdbDesignServer/config.json ./bin/config.json
