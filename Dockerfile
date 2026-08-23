@@ -4,7 +4,7 @@
 # (bookworm, glibc 2.36), which is too old for the CI-built binaries
 # (they require GLIBC_2.38 / GLIBCXX_3.4.32) -> CrashLoopBackOff.
 # Digest below is the real debian:13.3-slim manifest list (trixie, glibc 2.41).
-FROM --platform=$BUILDPLATFORM debian@sha256:1d3c811171a08a5adaa4a163fbafd96b61b87aa871bbc7aa15431ac275d3d430 AS build
+FROM --platform=$BUILDPLATFORM debian@sha256:34cd9e9fd437c0a095ec39cb2e73422c9f30821b0d0848ed74fd0d43bae4d958 AS build
 
 ARG OWNER=nam20485
 ARG VCPKG_BINARY_SOURCES=""
@@ -113,7 +113,7 @@ RUN cmake --build --preset linux-dynamic-release
 # Version: 13.3-slim (trixie-slim)
 # NOTE: keep in sync with the build stage digest (see note above).
 # FROM --platform=$TARGETPLATFORM debian@sha256:1d3c811171a08a5adaa4a163fbafd96b61b87aa871bbc7aa15431ac275d3d430 AS run
-FROM debian@sha256:1d3c811171a08a5adaa4a163fbafd96b61b87aa871bbc7aa15431ac275d3d430 AS run
+FROM debian@sha256:34cd9e9fd437c0a095ec39cb2e73422c9f30821b0d0848ed74fd0d43bae4d958 AS run
 # ARG ODBDESIGN_SERVER_REQUEST_USERNAME=""
 # ARG ODBDESIGN_SERVER_REQUEST_PASSWORD=""
 LABEL org.opencontainers.image.source=https://github.com/nam20485/OdbDesign \
