@@ -133,7 +133,8 @@ jobs:
               core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
 
         - name: vcpkg Install Dependencies
-          run: "\"${{env.VCPKG_ROOT}}/vcpkg\" install"
+          # match the matrix's linux-dynamic-release preset triplet
+          run: "\"${{env.VCPKG_ROOT}}/vcpkg\" install --triplet x64-linux-dynamic"
 
         - name: CMake Configure
           run: cmake --preset ${{ matrix.preset }}
