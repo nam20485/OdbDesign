@@ -17,6 +17,34 @@ namespace Odb::App::Server
 	{
 	}
 
+	std::optional<crow::response> DesignsController::TryGetDesign(
+		const std::string& designName,
+		std::shared_ptr<Odb::Lib::ProductModel::Design>& pDesign) const
+	{
+		try
+		{
+			pDesign = m_serverApp.designs().GetDesign(designName);
+		}
+		catch (const std::exception&)
+		{
+			// Corrupt / unloadable archive: DesignCache::LoadFileArchive throws,
+			// and the exception propagates through LoadDesign/GetDesign. Translate
+			// to INTERNAL/500. The exception details (which may contain server
+			// filesystem paths) are logged server-side only.
+			return crow::response(crow::status::INTERNAL_SERVER_ERROR,
+				"failed to load design \"" + designName + "\": could not extract or parse archive");
+		}
+
+		if (pDesign == nullptr)
+		{
+			std::stringstream ss;
+			ss << "design: \"" << designName << "\" not found";
+			return crow::response(crow::status::NOT_FOUND, ss.str());
+		}
+
+		return std::nullopt;
+	}
+
 	void DesignsController::register_routes()
 	{
 		CROW_ROUTE(m_serverApp.crow_app(), "/designs")
@@ -163,12 +191,10 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "design name not specified");
 		}		
 
-		auto pDesign = m_serverApp.designs().GetDesign(designNameDecoded);
-		if (pDesign == nullptr)
+		std::shared_ptr<Odb::Lib::ProductModel::Design> pDesign;
+		if (auto errorResponse = TryGetDesign(designNameDecoded, pDesign))
 		{
-			std::stringstream ss;
-			ss << "design: \"" << designNameDecoded << "\" not found";
-			return crow::response(crow::status::NOT_FOUND, ss.str());
+			return std::move(*errorResponse);
 		}
 
 		// TODO: use excludeFileArchive
@@ -198,12 +224,10 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "design name not specified");
 		}
 
-		auto pDesign = m_serverApp.designs().GetDesign(designNameDecoded);
-		if (pDesign == nullptr)
+		std::shared_ptr<Odb::Lib::ProductModel::Design> pDesign;
+		if (auto errorResponse = TryGetDesign(designNameDecoded, pDesign))
 		{
-			std::stringstream ss;
-			ss << "design: \"" << designNameDecoded << "\" not found";
-			return crow::response(crow::status::NOT_FOUND, ss.str());
+			return std::move(*errorResponse);
 		}
 
 		std::vector<crow::json::rvalue> rvComponents;
@@ -232,12 +256,10 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "design name not specified");
 		}
 
-		auto pDesign = m_serverApp.designs().GetDesign(designNameDecoded);
-		if (pDesign == nullptr)
+		std::shared_ptr<Odb::Lib::ProductModel::Design> pDesign;
+		if (auto errorResponse = TryGetDesign(designNameDecoded, pDesign))
 		{
-			std::stringstream ss;
-			ss << "design: \"" << designNameDecoded << "\" not found";
-			return crow::response(crow::status::NOT_FOUND, ss.str());
+			return std::move(*errorResponse);
 		}
 
 		std::vector<crow::json::rvalue> rvNets;
@@ -266,12 +288,10 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "design name not specified");
 		}
 
-		auto pDesign = m_serverApp.designs().GetDesign(designNameDecoded);
-		if (pDesign == nullptr)
+		std::shared_ptr<Odb::Lib::ProductModel::Design> pDesign;
+		if (auto errorResponse = TryGetDesign(designNameDecoded, pDesign))
 		{
-			std::stringstream ss;
-			ss << "design: \"" << designNameDecoded << "\" not found";
-			return crow::response(crow::status::NOT_FOUND, ss.str());
+			return std::move(*errorResponse);
 		}
 
 		std::vector<crow::json::rvalue> rvParts;
@@ -300,12 +320,10 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "design name not specified");
 		}
 
-		auto pDesign = m_serverApp.designs().GetDesign(designNameDecoded);
-		if (pDesign == nullptr)
+		std::shared_ptr<Odb::Lib::ProductModel::Design> pDesign;
+		if (auto errorResponse = TryGetDesign(designNameDecoded, pDesign))
 		{
-			std::stringstream ss;
-			ss << "design: \"" << designNameDecoded << "\" not found";
-			return crow::response(crow::status::NOT_FOUND, ss.str());
+			return std::move(*errorResponse);
 		}
 
 		std::vector<crow::json::rvalue> rvPackages;

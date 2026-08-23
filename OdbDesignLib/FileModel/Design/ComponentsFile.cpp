@@ -89,8 +89,8 @@ namespace Odb::Lib::FileModel::Design
 		pComponentsFileMessage->set_id(m_id);
 		pComponentsFileMessage->set_side(static_cast<Odb::Lib::Protobuf::BoardSide>(m_side));
 		pComponentsFileMessage->set_layername(Odb::Lib::Text::ToUtf8(m_layerName));
-		pComponentsFileMessage->set_path(m_path.string());
-		pComponentsFileMessage->set_directory(m_directory.string());
+		pComponentsFileMessage->set_path(Odb::Lib::Text::ToUtf8(m_path.string()));
+		pComponentsFileMessage->set_directory(Odb::Lib::Text::ToUtf8(m_directory.string()));
 
 		for (const auto& attributeName : m_attributeNames)
 		{

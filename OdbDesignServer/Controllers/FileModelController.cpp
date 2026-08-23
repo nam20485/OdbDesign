@@ -420,7 +420,7 @@ namespace Odb::App::Server
 		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
 		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			return *errorResponse;
+			return std::move(*errorResponse);
 		}
 
 		return crow::response(JsonCrowReturnable(*pFileArchive));
@@ -466,7 +466,7 @@ namespace Odb::App::Server
 		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
 		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			return *errorResponse;
+			return std::move(*errorResponse);
 		}
 
 		auto& stepsByName = pFileArchive->GetStepsByName();
@@ -500,7 +500,7 @@ namespace Odb::App::Server
 		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
 		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			return *errorResponse;
+			return std::move(*errorResponse);
 		}
 
 		auto& stepsByName = pFileArchive->GetStepsByName();
@@ -534,7 +534,7 @@ namespace Odb::App::Server
 		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
 		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			return *errorResponse;
+			return std::move(*errorResponse);
 		}
 
 		auto& stepsByName = pFileArchive->GetStepsByName();
@@ -568,7 +568,7 @@ namespace Odb::App::Server
 		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
 		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			return *errorResponse;
+			return std::move(*errorResponse);
 		}
 
 		auto& stepsByName = pFileArchive->GetStepsByName();
@@ -608,7 +608,7 @@ namespace Odb::App::Server
 		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
 		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			return *errorResponse;
+			return std::move(*errorResponse);
 		}
 
 		auto& stepsByName = pFileArchive->GetStepsByName();
@@ -651,7 +651,7 @@ namespace Odb::App::Server
 		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
 		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			return *errorResponse;
+			return std::move(*errorResponse);
 		}
 
 		auto& stepsByName = pFileArchive->GetStepsByName();
@@ -687,7 +687,7 @@ namespace Odb::App::Server
 		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
 		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			return *errorResponse;
+			return std::move(*errorResponse);
 		}
 
 		auto& stepsByName = pFileArchive->GetStepsByName();
@@ -725,7 +725,7 @@ namespace Odb::App::Server
 		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
 		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			return *errorResponse;
+			return std::move(*errorResponse);
 		}
 
 		auto& stepsByName = pFileArchive->GetStepsByName();
@@ -774,7 +774,7 @@ namespace Odb::App::Server
 		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
 		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			return *errorResponse;
+			return std::move(*errorResponse);
 		}
 
 		auto& stepsByName = pFileArchive->GetStepsByName();
@@ -835,7 +835,7 @@ namespace Odb::App::Server
 		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
 		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			return *errorResponse;
+			return std::move(*errorResponse);
 		}
 
 		auto& stepsByName = pFileArchive->GetStepsByName();
@@ -885,7 +885,7 @@ namespace Odb::App::Server
 		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
 		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			return *errorResponse;
+			return std::move(*errorResponse);
 		}
 
 		auto& stepsByName = pFileArchive->GetStepsByName();
@@ -929,7 +929,7 @@ namespace Odb::App::Server
 		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
 		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			return *errorResponse;
+			return std::move(*errorResponse);
 		}
 
 		auto& stepsByName = pFileArchive->GetStepsByName();
@@ -971,7 +971,7 @@ namespace Odb::App::Server
 		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
 		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			return *errorResponse;
+			return std::move(*errorResponse);
 		}
 
 		auto& stepsByName = pFileArchive->GetStepsByName();
@@ -1052,7 +1052,7 @@ namespace Odb::App::Server
 		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
 		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			return *errorResponse;
+			return std::move(*errorResponse);
 		}
 
 		auto& stepsByName = pFileArchive->GetStepsByName();
@@ -1085,7 +1085,7 @@ namespace Odb::App::Server
 		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
 		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			return *errorResponse;
+			return std::move(*errorResponse);
 		}
 
 		auto& symbolsByName = pFileArchive->GetSymbolsDirectoriesByName();
@@ -1118,7 +1118,7 @@ namespace Odb::App::Server
 		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
 		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			return *errorResponse;
+			return std::move(*errorResponse);
 		}
 
 		auto& symbolsByName = pFileArchive->GetSymbolsDirectoriesByName();
@@ -1152,7 +1152,7 @@ namespace Odb::App::Server
 		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
 		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			return *errorResponse;
+			return std::move(*errorResponse);
 		}
 
 		auto& symbolsByName = pFileArchive->GetSymbolsDirectoriesByName();
@@ -1180,7 +1180,7 @@ namespace Odb::App::Server
 		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
 		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			return *errorResponse;
+			return std::move(*errorResponse);
 		}		
 
 		auto& symbolsByName = pFileArchive->GetSymbolsDirectoriesByName();
@@ -1211,7 +1211,7 @@ namespace Odb::App::Server
 		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
 		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			return *errorResponse;
+			return std::move(*errorResponse);
 		}		
 
 		auto& miscAttrListFile = pFileArchive->GetMiscAttrListFile();
@@ -1229,7 +1229,7 @@ namespace Odb::App::Server
 		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
 		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			return *errorResponse;
+			return std::move(*errorResponse);
 		}
 
 		auto& matrixFile = pFileArchive->GetMatrixFile();
@@ -1247,7 +1247,7 @@ namespace Odb::App::Server
 		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
 		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			return *errorResponse;
+			return std::move(*errorResponse);
 		}
 
 		auto& miscInfoFile = pFileArchive->GetMiscInfoFile();
@@ -1265,7 +1265,7 @@ namespace Odb::App::Server
 		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
 		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			return *errorResponse;
+			return std::move(*errorResponse);
 		}
 
 		auto& standardFontsFile = pFileArchive->GetStandardFontsFile();

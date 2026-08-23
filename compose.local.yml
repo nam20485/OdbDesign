@@ -16,14 +16,20 @@ services:
       args:
         - USE_VCPKG_CACHE=1
         - VCPKG_BINARY_SOURCES=clear;nugetconfig,/etc/vcpkg/local.nuget.config,read
-      # Tokens are injected as BuildKit secrets (mounted at /run/secrets), never
-      # as build args, so they never appear in build logs or the image cache.
+      # Tokens are injected as BuildKit secrets (mounted at /run/secrets), not
+      # passed as build args, not printed in build logs, and kept out of the
+      # final image (they exist only in the build stage's layer contents).
       # Resolved from the host environment (or the project .env file):
       #   github_token     <- GITHUB_TOKEN
       #   nuget_auth_token <- NUGET_AUTH_TOKEN
       secrets:
         - github_token
         - nuget_auth_token
+    # The container runs as the non-root odbdesign user (uid/gid 10001). The
+    # bind mount below replaces the image-layer designs dir, and on a fresh
+    # host Docker creates ./compose-designs root-owned, so uploads would fail
+    # with EACCES. Prepare the host directory once before first use:
+    #   mkdir -p ./compose-designs && sudo chown -R 10001:10001 ./compose-designs
     volumes:
       - ./compose-designs:/OdbDesign/designs
     # No host-published ports — nginx (the `proxy` service below) is the
@@ -77,8 +83,9 @@ services:
 
 # Build-time secret sources. Each reads its value from the host environment
 # (or the project .env file) and mounts it into the build container at
-# /run/secrets/<name>. Values never pass through build args, so they are
-# absent from build logs and the layer cache.
+# /run/secrets/<name>. Values are not passed as build args, not printed in
+# build logs, and kept out of the final image (they exist only in the build
+# stage's layer contents, so avoid exporting build-stage layers to a shared cache).
 secrets:
   github_token:
     environment: GITHUB_TOKEN

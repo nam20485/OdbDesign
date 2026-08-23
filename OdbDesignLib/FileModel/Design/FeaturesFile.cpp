@@ -961,11 +961,11 @@ namespace Odb::Lib::FileModel::Design
 		pFeatureRecordMessage->set_xc(xc);
 		pFeatureRecordMessage->set_yc(yc);
 		pFeatureRecordMessage->set_cw(cw);
-		pFeatureRecordMessage->set_font(font);
+		pFeatureRecordMessage->set_font(Odb::Lib::Text::ToUtf8(font));
 		pFeatureRecordMessage->set_xsize(xsize);
 		pFeatureRecordMessage->set_ysize(ysize);
 		pFeatureRecordMessage->set_width_factor(width_factor);
-		pFeatureRecordMessage->set_text(text);
+		pFeatureRecordMessage->set_text(Odb::Lib::Text::ToUtf8(text));
 		pFeatureRecordMessage->set_version(version);
 		if (sym_num >= 0)
 		{
@@ -993,7 +993,7 @@ namespace Odb::Lib::FileModel::Design
 		}
 		for (const auto &kvAttributeAssignment : m_attributeLookupTable)
 		{
-			(*pFeatureRecordMessage->mutable_attributelookuptable())[kvAttributeAssignment.first] = kvAttributeAssignment.second;
+			(*pFeatureRecordMessage->mutable_attributelookuptable())[Odb::Lib::Text::ToUtf8(kvAttributeAssignment.first)] = Odb::Lib::Text::ToUtf8(kvAttributeAssignment.second);
 		}
 		return pFeatureRecordMessage;
 	}

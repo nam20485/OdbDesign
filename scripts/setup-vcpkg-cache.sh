@@ -64,6 +64,26 @@ c_green "Using feed: ${FEED_URL}"
 c_green "Using username: ${USERNAME}"
 echo
 
+# --check: validate the credentials by hitting the feed index, WITHOUT writing
+# any files (in particular, not the credential-bearing local.nuget.config).
+# Useful as a read-only smoke test before kicking off a long build.
+if [[ "${CHECK_ONLY}" -eq 1 ]]; then
+    c_cyan "Running --check: probing ${FEED_URL} ..."
+    http_code="$(curl -sS -o /dev/null -w '%{http_code}' \
+        -u "${USERNAME}:${NUGET_AUTH_TOKEN}" \
+        "${FEED_URL}" || echo "000")"
+    if [[ "${http_code}" =~ ^2 ]]; then
+        c_green "OK (HTTP ${http_code}) — credentials accepted by GitHub Packages."
+        exit 0
+    elif [[ "${http_code}" == "401" ]]; then
+        c_red "FAIL (HTTP 401) — PAT is invalid or lacks read:packages scope."
+        exit 1
+    else
+        c_yellow "WARN (HTTP ${http_code}) — could not confirm; check connectivity."
+        exit 2
+    fi
+fi
+
 # Generate local.nuget.config with embedded credentials.
 # Pattern matches scripts/setup-vcpkg-cache.ps1 exactly so behaviour is portable.
 cat > "${LOCAL_CONFIG}" <<EOF
@@ -94,25 +114,6 @@ c_yellow "To use the binary cache, set this env var in your shell:"
 echo
 echo "    export VCPKG_BINARY_SOURCES=\"${ENV_VALUE}\""
 echo
-
-# --check: validate the credentials by hitting the feed index. Useful as a
-# smoke test before kicking off a long build.
-if [[ "${CHECK_ONLY}" -eq 1 ]]; then
-    c_cyan "Running --check: probing ${FEED_URL} ..."
-    http_code="$(curl -sS -o /dev/null -w '%{http_code}' \
-        -u "${USERNAME}:${NUGET_AUTH_TOKEN}" \
-        "${FEED_URL}" || echo "000")"
-    if [[ "${http_code}" =~ ^2 ]]; then
-        c_green "OK (HTTP ${http_code}) — credentials accepted by GitHub Packages."
-        exit 0
-    elif [[ "${http_code}" == "401" ]]; then
-        c_red "FAIL (HTTP 401) — PAT is invalid or lacks read:packages scope."
-        exit 1
-    else
-        c_yellow "WARN (HTTP ${http_code}) — could not confirm; check connectivity."
-        exit 2
-    fi
-fi
 
 if [[ "${ADD_TO_BASHRC}" -eq 1 ]]; then
     RC="${HOME}/.bashrc"

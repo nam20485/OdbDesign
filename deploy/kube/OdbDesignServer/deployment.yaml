@@ -28,6 +28,15 @@ spec:
         - name: odbdesign-server-storage
           persistentVolumeClaim:
             claimName: k3d-volume-claim
+      # Run as the image's non-root odbdesign user (uid/gid 10001). fsGroup
+      # makes the PVC mount group-owned by gid 10001 so the container can write
+      # uploaded designs into /OdbDesign/designs; without it a freshly
+      # provisioned volume is root-owned and uploads fail with EACCES.
+      securityContext:
+        runAsUser: 10001
+        runAsGroup: 10001
+        runAsNonRoot: true
+        fsGroup: 10001
       # NOTE: the old nodeAffinity excluded master/control-plane nodes, which
       # was correct for the multi-agent k3d cluster but prevents scheduling on
       # the single-node k3s cluster (its only node IS control-plane).

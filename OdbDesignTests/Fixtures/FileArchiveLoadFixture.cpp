@@ -80,7 +80,12 @@ namespace Odb::Test::Fixtures
 		// (which writes next to the archive) happens per-fixture instead of in the
 		// shared test-data directory. The shared directory is treated as read-only.
 		std::error_code ec;
-		for (const auto& entry : directory_iterator(getTestDataDir(), ec))
+		directory_iterator testDataIt(getTestDataDir(), ec);
+		// Fail loudly if the test-data directory could not be iterated; otherwise
+		// the loop below silently copies nothing and the test later fails with an
+		// opaque parse error instead of a clear setup failure.
+		ASSERT_FALSE(ec) << "directory_iterator failed for '" << getTestDataDir() << "': " << ec.message();
+		for (const auto& entry : testDataIt)
 		{
 			if (!entry.is_regular_file())
 			{

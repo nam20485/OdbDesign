@@ -19,6 +19,15 @@ using namespace Odb::Test::Fixtures;
 namespace
 {
 	constexpr const char* SAMPLE_DESIGN = "sample_design";
+
+	// Removes the temp dir on destruction, so cleanup still runs when an ASSERT_*
+	// fails partway through a test (ASSERT returns from the test body). Mirrors
+	// the TempDirGuard used by the DesignCacheLoadError tests.
+	struct TempDirGuard
+	{
+		std::filesystem::path path;
+		~TempDirGuard() { std::error_code ec; std::filesystem::remove_all(path, ec); }
+	};
 }
 
 class GetStandardFontsFixture : public FileArchiveLoadFixture
@@ -148,6 +157,8 @@ TEST_F(GetStandardFontsFixture, ReturnsInternalForUnparseableDesign)
 
 	std::random_device rd;
 	auto cacheDir = base / (std::to_string(rd()) + "_" + std::to_string(rd()));
+	// RAII: guarantees removal even if an ASSERT_* below aborts the test early.
+	TempDirGuard cacheDirGuard{cacheDir};
 	auto srcRoot = cacheDir / "src" / "bad_design";
 	for (const auto* sub : { "fonts", "misc", "matrix", "steps" })
 	{
@@ -170,6 +181,5 @@ TEST_F(GetStandardFontsFixture, ReturnsInternalForUnparseableDesign)
 
 	auto status = service->GetStandardFonts(&ctx, &req, &resp);
 	EXPECT_EQ(status.error_code(), grpc::StatusCode::INTERNAL);
-
-	std::filesystem::remove_all(cacheDir, ec);
+	// cacheDirGuard removes cacheDir on scope exit.
 }

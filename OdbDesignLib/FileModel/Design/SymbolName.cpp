@@ -1,5 +1,4 @@
 #include "SymbolName.h"
-#include "SymbolName.h"
 #include "../../Text/Utf8Sanitizer.h"
 
 namespace Odb::Lib::FileModel::Design

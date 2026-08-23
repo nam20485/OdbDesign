@@ -9,7 +9,14 @@
  */
 
 #include "Utf8Sanitizer.h"
+
+#include <google/protobuf/descriptor.h>
+#include <google/protobuf/message.h>
+
 #include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+#include <string>
 
 namespace Odb::Lib::Text
 {
@@ -130,6 +137,119 @@ namespace Odb::Lib::Text
                 return 4;
             }
         }
+
+#ifndef NDEBUG
+        /**
+         * @brief Reports an invalid UTF-8 value found in a message field, then aborts.
+         *
+         * Prints the field path and a hex-escaped sample of the offending value to
+         * stderr. Portable replacement for glibc's __assert_fail (not available on
+         * MSVC/Windows).
+         */
+        [[noreturn]] void FailOnInvalidUtf8(const std::string& fieldPath, const std::string& value)
+        {
+            std::fprintf(stderr, "Utf8Sanitizer assertion failed: invalid UTF-8 in %s: \"", fieldPath.c_str());
+            const std::size_t sampleLen = value.size() < 32 ? value.size() : 32;
+            for (std::size_t i = 0; i < sampleLen; ++i)
+            {
+                const unsigned char c = static_cast<unsigned char>(value[i]);
+                if (c >= 0x20 && c < 0x7F)
+                {
+                    std::fputc(c, stderr);
+                }
+                else
+                {
+                    std::fprintf(stderr, "\\x%02X", c);
+                }
+            }
+            if (value.size() > sampleLen)
+            {
+                std::fprintf(stderr, "...");
+            }
+            std::fprintf(stderr, "\"\n");
+            std::abort();
+        }
+
+        void AssertMessageStringsAreValidUtf8(const google::protobuf::Message& msg, std::string& fieldPath);
+
+        /**
+         * @brief Validates a single string value, aborting (in debug builds) if invalid.
+         */
+        void AssertStringIsValidUtf8(const std::string& value, const std::string& fieldPath)
+        {
+            if (!value.empty() && !IsValidUtf8(value))
+            {
+                FailOnInvalidUtf8(fieldPath, value);
+            }
+        }
+
+        /**
+         * @brief Recursively validates every `string` field reachable from @p msg.
+         *
+         * Handles singular strings, repeated strings, and strings nested in
+         * sub-messages. Map fields are covered implicitly: protobuf exposes a
+         * map<K,V> field as a repeated message of synthetic MapEntry messages,
+         * so recursing into repeated message fields validates map keys and values.
+         * `bytes` fields are skipped (arbitrary binary data is allowed there).
+         *
+         * @param msg The message to validate
+         * @param fieldPath Dot-separated path of the current message, extended as we recurse
+         */
+        void AssertMessageStringsAreValidUtf8(const google::protobuf::Message& msg, std::string& fieldPath)
+        {
+            const google::protobuf::Descriptor* descriptor = msg.GetDescriptor();
+            const google::protobuf::Reflection* reflection = msg.GetReflection();
+
+            for (int i = 0; i < descriptor->field_count(); ++i)
+            {
+                const google::protobuf::FieldDescriptor* field = descriptor->field(i);
+                const std::size_t basePathLen = fieldPath.size();
+                fieldPath.append(".").append(field->name());
+
+                if (field->is_repeated())
+                {
+                    const int count = reflection->FieldSize(msg, field);
+                    if (field->type() == google::protobuf::FieldDescriptor::TYPE_STRING)
+                    {
+                        for (int j = 0; j < count; ++j)
+                        {
+                            AssertStringIsValidUtf8(reflection->GetRepeatedString(msg, field, j), fieldPath);
+                        }
+                    }
+                    else if (field->cpp_type() == google::protobuf::FieldDescriptor::CPPTYPE_MESSAGE)
+                    {
+                        for (int j = 0; j < count; ++j)
+                        {
+                            const std::size_t indexPathLen = fieldPath.size();
+                            fieldPath.append("[").append(std::to_string(j)).append("]");
+                            AssertMessageStringsAreValidUtf8(reflection->GetRepeatedMessage(msg, field, j), fieldPath);
+                            fieldPath.resize(indexPathLen);
+                        }
+                    }
+                }
+                else
+                {
+                    // Skip unset fields when presence tracking is available
+                    if (field->has_presence() && !reflection->HasField(msg, field))
+                    {
+                        fieldPath.resize(basePathLen);
+                        continue;
+                    }
+
+                    if (field->type() == google::protobuf::FieldDescriptor::TYPE_STRING)
+                    {
+                        AssertStringIsValidUtf8(reflection->GetString(msg, field), fieldPath);
+                    }
+                    else if (field->cpp_type() == google::protobuf::FieldDescriptor::CPPTYPE_MESSAGE)
+                    {
+                        AssertMessageStringsAreValidUtf8(reflection->GetMessage(msg, field), fieldPath);
+                    }
+                }
+
+                fieldPath.resize(basePathLen);
+            }
+        }
+#endif // !NDEBUG
     } // anonymous namespace
 
     bool IsValidUtf8(const char* data, std::size_t size) noexcept
@@ -215,7 +335,7 @@ namespace Odb::Lib::Text
         return IsValidUtf8(s.data(), s.size());
     }
 
-    std::string ToUtf8(std::string_view input) noexcept
+    std::string ToUtf8(std::string_view input)
     {
         // Fast path: already valid UTF-8
         if (IsValidUtf8(input))
@@ -224,9 +344,10 @@ namespace Odb::Lib::Text
         }
 
         // Slow path: transcode from CP1252
-        // Worst case: each byte becomes 3 UTF-8 bytes (for chars in 0x80-0x9F range)
+        // Worst case: each byte becomes 3 UTF-8 bytes (CP1252 0x80-0x9F map to
+        // BMP code points that encode as 3-byte UTF-8 sequences)
         std::string result;
-        result.reserve(input.size() * 2); // Reasonable estimate
+        result.reserve(input.size() * 3);
 
         char utf8Buf[4];
         for (unsigned char byte : input)
@@ -239,7 +360,7 @@ namespace Odb::Lib::Text
         return result;
     }
 
-    void SanitizeToUtf8(std::string& s) noexcept
+    void SanitizeToUtf8(std::string& s)
     {
         if (!IsValidUtf8(s))
         {
@@ -249,31 +370,12 @@ namespace Odb::Lib::Text
 
     void AssertAllStringFieldsAreValidUtf8(const google::protobuf::Message& msg, std::string_view msgName)
     {
-        // This is a debug-only helper to validate protobuf messages
-        // We use MessageDumper to get all string fields and validate them
 #ifndef NDEBUG
-        const google::protobuf::Reflection* reflection = msg.GetReflection();
-        const google::protobuf::Descriptor* descriptor = msg.GetDescriptor();
-
-        // Check all singular string fields
-        for (int i = 0; i < descriptor->field_count(); ++i)
-        {
-            const google::protobuf::FieldDescriptor* field = descriptor->field(i);
-            if (field->cpp_type() == google::protobuf::FieldDescriptor::CPPTYPE_STRING &&
-                field->is_optional() && !field->is_repeated())
-            {
-                std::string value = reflection->GetString(msg, field);
-                if (!value.empty() && !IsValidUtf8(value))
-                {
-                    std::string err = "Invalid UTF-8 in ";
-                    err.append(msgName).append(".").append(field->name()).append(": \"")
-                        .append(value.substr(0, 32))
-                        .append("\"");
-                    // Use a simple assert to catch the error
-                    __assert_fail(err.c_str(), __FILE__, __LINE__, __func__);
-                }
-            }
-        }
+        std::string fieldPath(msgName);
+        AssertMessageStringsAreValidUtf8(msg, fieldPath);
+#else
+        (void)msg;
+        (void)msgName;
 #endif
     }
 

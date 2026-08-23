@@ -23,6 +23,11 @@
 #include <string>
 #include <string_view>
 
+// AssertAllStringFieldsAreValidUtf8 takes a google::protobuf::Message. Include
+// the message header (rather than relying on transitive includes) so this header
+// is self-contained regardless of include order.
+#include <google/protobuf/message.h>
+
 namespace Odb::Lib::Text
 {
     /**
@@ -57,12 +62,14 @@ namespace Odb::Lib::Text
      * The five undefined CP1252 slots (0x81, 0x8D, 0x8F, 0x90, 0x9D)
      * are mapped to U+FFFD (REPLACEMENT CHARACTER).
      *
-     * Never throws. Never returns invalid UTF-8.
+     * Never returns invalid UTF-8. May throw std::bad_alloc on allocation
+     * failure; callers in the serialization path handle it like any other
+     * allocation failure (the per-RPC try/catch translates it to INTERNAL).
      *
      * @param input The raw byte sequence from ODB++ files
      * @return A valid UTF-8 string
      */
-    std::string ToUtf8(std::string_view input) noexcept;
+    std::string ToUtf8(std::string_view input);
 
     /**
      * @brief In-place convenience overload.
@@ -70,15 +77,24 @@ namespace Odb::Lib::Text
      * Replaces the contents of @p s with ToUtf8(s) only if validation fails.
      * Avoids allocation when already valid UTF-8.
      *
+     * May throw std::bad_alloc when transcoding is required (see ToUtf8).
+     *
      * @param s The string to sanitize
      */
-    void SanitizeToUtf8(std::string& s) noexcept;
+    void SanitizeToUtf8(std::string& s);
 
     /**
      * @brief Debug-only assertion to verify all string fields in a message are valid UTF-8.
      *
-     * This function walks the protobuf message and asserts that every string field
-     * contains valid UTF-8. It is only active in debug builds (#ifndef NDEBUG).
+     * Recursively walks the protobuf message via the reflection API and asserts
+     * that every `string` field contains valid UTF-8: singular strings, repeated
+     * strings, and strings nested inside sub-messages and map entries (map keys
+     * and values). `bytes` fields are intentionally skipped — they may hold
+     * arbitrary binary data. It is only active in debug builds (#ifndef NDEBUG);
+     * in release builds it compiles to a no-op.
+     *
+     * On failure the offending field path and a hex-escaped sample of the value
+     * are written to stderr and the process aborts.
      *
      * @param msg The protobuf message to validate
      * @param msgName A descriptive name for the message type (used in assertion messages)

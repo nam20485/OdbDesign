@@ -267,7 +267,7 @@ namespace Odb::Lib::FileModel::Design
     std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile> EdaDataFile::to_protobuf() const
     {
         std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile> pEdaDataFileMessage(new Odb::Lib::Protobuf::EdaDataFile);
-        pEdaDataFileMessage->set_path(m_path.string());
+        pEdaDataFileMessage->set_path(Odb::Lib::Text::ToUtf8(m_path.string()));
         pEdaDataFileMessage->set_units(Odb::Lib::Text::ToUtf8(m_units));
         pEdaDataFileMessage->set_source(Odb::Lib::Text::ToUtf8(m_source));
         for (const auto& layerName : m_layerNames)

@@ -9,7 +9,8 @@ services defined in `../../compose.yml`.
 ```
 Internet ──► nginx (:443, :80)
             ├─ /Odb.Grpc.OdbDesignService/*  ──► server:50051  (gRPC, HTTP/2)
-            ├─ /Odb.Lib.Protobuf.OdbDesignApi/* ──► server:50051  (gRPC, HTTP/2)
+            ├─ /grpc.reflection.v1.ServerReflection/*        ──► server:50051  (gRPC)
+            ├─ /grpc.reflection.v1alpha.ServerReflection/*   ──► server:50051  (gRPC)
             ├─ /healthz/*, /ready             ──► server:8888  (REST)
             ├─ /designs/*                     ──► server:8888  (REST)
             ├─ /filemodels/*                  ──► server:8888  (REST)
@@ -48,6 +49,10 @@ sudo chmod 0640 ssl/cert.key
 | Health probes              | `https://<host>/healthz`, `https://<host>/ready`               |
 | gRPC (server-streaming)    | `grpcurl -insecure <host>:443 Odb.Grpc.OdbDesignService/...`   |
 
+gRPC server reflection is routed through the proxy (see the
+`grpc.reflection.*` locations in `nginx.conf`), so the `grpcurl` invocation
+above resolves the service schema without needing local `-proto` files.
+
 For local development, the `server:` and `swagger-ui:` containers also
 expose `127.0.0.1:8888`, `127.0.0.1:50051`, and `127.0.0.1:8080`
 loopback-only — useful for bypassing the proxy during debugging
@@ -59,7 +64,7 @@ loopback-only — useful for bypassing the proxy during debugging
   catch-all `location /`. Order doesn't matter — nginx uses longest-prefix
   match.
 - **Expose a new gRPC service**: add a new `location` with
-  `grpc_pass grpc://odbesign_grpc;`.
+  `grpc_pass grpc://odbdesign_grpc;`.
 - **Tune timeouts**: per-route `grpc_*_timeout` and `proxy_*_timeout` values.
   The gRPC server's keepalive is 30s (set in `OdbDesignServer/config.json`).
 

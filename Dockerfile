@@ -13,7 +13,10 @@ ARG VCPKG_BINARY_SOURCES=""
 # write-enabled behavior (CI uploads via the in-image NuGet source).
 #
 # Tokens are supplied as BuildKit secrets (see the RUN --mount=type=secret below),
-# NOT as ARGs, so their values never appear in build logs or the layer cache:
+# NOT as ARGs, so they are not passed as build args, not printed in build logs,
+# and kept out of the final image. (They do exist in the *build* stage's layer
+# contents — e.g. the generated NuGet config — so avoid exporting build-stage
+# layers to a shared cache; the published `run` stage contains no token.)
 #   id=github_token     GitHub PAT (write:packages)  — used by the USE_VCPKG_CACHE=0 path
 #   id=nuget_auth_token GitHub PAT (read:packages)   — used by the USE_VCPKG_CACHE=1 path
 ARG USE_VCPKG_CACHE=0
@@ -65,6 +68,11 @@ RUN --mount=type=secret,id=github_token \
         printf '<?xml version="1.0" encoding="utf-8"?>\n<configuration>\n    <packageSources>\n        <clear />\n        <add key="GitHubPackages-OdbDesign" value="https://nuget.pkg.github.com/%s/index.json" />\n    </packageSources>\n    <packageSourceCredentials>\n        <GitHubPackages-OdbDesign>\n            <add key="Username" value="%s" />\n            <add key="ClearTextPassword" value="%s" />\n        </GitHubPackages-OdbDesign>\n    </packageSourceCredentials>\n</configuration>\n' "${OWNER}" "${OWNER}" "$(cat /run/secrets/nuget_auth_token)" \
             > /etc/vcpkg/local.nuget.config; \
     else \
+        if [ ! -s /run/secrets/github_token ]; then \
+            echo "ERROR: USE_VCPKG_CACHE=0 requires the 'github_token' build secret, but it is missing/empty." >&2; \
+            echo "       Provide GITHUB_TOKEN (GitHub PAT with write:packages scope) in the build environment." >&2; \
+            exit 1; \
+        fi; \
         mono `./vcpkg fetch nuget | tail -n 1` \
             sources add \
             -source "https://nuget.pkg.github.com/${OWNER}/index.json" \
@@ -78,11 +86,13 @@ RUN --mount=type=secret,id=github_token \
     fi
 
 # pre-install vcpgk packages BEFORE cmake configure
+# match the linux-dynamic-release preset's triplet so the pre-install is what
+# the configure step actually consumes (manifest mode would install it anyway)
 RUN mkdir -p /src/OdbDesign
 WORKDIR /src/OdbDesign
 COPY ./vcpkg.json .
 COPY ./vcpkg-configuration.json .
-RUN ${VCPKG_ROOT}/vcpkg install
+RUN ${VCPKG_ROOT}/vcpkg install --triplet x64-linux-dynamic
 # RUN --mount=type=cache,target=/root/.cache \
 #     ${VCPKG_ROOT}/vcpkg install
 
@@ -90,9 +100,10 @@ RUN ${VCPKG_ROOT}/vcpkg install
 COPY . .
 
 # configure & build using presets
-# linux-release
-RUN cmake --preset linux-release
-RUN cmake --build --preset linux-release
+# linux-dynamic-release (shared protobuf/gRPC runtime — the static linux-release
+# preset loads two protobuf copies and crashes; see docs/linux-dynamic-release-plan.md)
+RUN cmake --preset linux-dynamic-release
+RUN cmake --build --preset linux-dynamic-release
 # # linux-debug
 # RUN cmake --preset linux-debug
 # RUN cmake --build --preset linux-debug
@@ -152,15 +163,20 @@ RUN mkdir --parents /OdbDesign/bin /OdbDesign/templates /OdbDesign/designs
 WORKDIR /OdbDesign
 
 # copy binaries
-COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignLib/*.so ./bin/
-COPY --from=build /src/OdbDesign/out/build/linux-release/Utils/*.so ./bin/
-COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignServer/OdbDesignServer ./bin/
-COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignServer/*.so ./bin/
+COPY --from=build /src/OdbDesign/out/build/linux-dynamic-release/OdbDesignLib/*.so ./bin/
+COPY --from=build /src/OdbDesign/out/build/linux-dynamic-release/Utils/*.so ./bin/
+COPY --from=build /src/OdbDesign/out/build/linux-dynamic-release/OdbDesignServer/OdbDesignServer ./bin/
+COPY --from=build /src/OdbDesign/out/build/linux-dynamic-release/OdbDesignServer/*.so ./bin/
+# vcpkg shared libraries (protobuf, gRPC, libarchive, ...) required by the
+# linux-dynamic-release build; discovered via LD_LIBRARY_PATH=/OdbDesign/bin
+COPY --from=build /src/OdbDesign/out/build/linux-dynamic-release/vcpkg_installed/x64-linux-dynamic/lib/*.so* ./bin/
+# OpenSSL 3 provider modules (resolved relative to libcrypto.so's directory)
+COPY --from=build /src/OdbDesign/out/build/linux-dynamic-release/vcpkg_installed/x64-linux-dynamic/lib/ossl-modules ./bin/ossl-modules
 # gRPC service config (loaded by RunGrpcServer from exeDir/config.json)
 COPY --from=build /src/OdbDesign/OdbDesignServer/config.json ./bin/config.json
-COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignTests/OdbDesignTests ./bin/
-# COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignApp/OdbDesignApp ./bin/
-# COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignApp/*.so ./bin/
+COPY --from=build /src/OdbDesign/out/build/linux-dynamic-release/OdbDesignTests/OdbDesignTests ./bin/
+# COPY --from=build /src/OdbDesign/out/build/linux-dynamic-release/OdbDesignApp/OdbDesignApp ./bin/
+# COPY --from=build /src/OdbDesign/out/build/linux-dynamic-release/OdbDesignApp/*.so ./bin/
 
 # copy templates directory
 COPY --from=build /src/OdbDesign/OdbDesignServer/templates/* ./templates

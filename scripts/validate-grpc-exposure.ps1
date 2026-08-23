@@ -10,6 +10,13 @@ param(
     [string]$GrpcPortName = "ods-grpc-port",
     [Parameter(Mandatory=$false)]
     [int]$GrpcPort = 50051,
+    # Host port the k3d load balancer publishes the in-cluster gRPC service
+    # port on (create-k3d-cluster.ps1 decouples them:
+    # --port "<GrpcHostPort>:50051@loadbalancer"). Defaults to $GrpcPort when
+    # omitted. Only the k3d path distinguishes host vs. service port; k3s
+    # ServiceLB publishes the service port directly on the node.
+    [Parameter(Mandatory=$false)]
+    [int]$GrpcHostPort = 0,
     # Host/IP clients use to reach gRPC. Omit to auto-detect:
     #   k3s: the ServiceLB ingress IP (node IP)
     #   k3d: "precision5820" (legacy default)
@@ -30,6 +37,10 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+
+if ($GrpcHostPort -le 0) {
+    $GrpcHostPort = $GrpcPort
+}
 
 # The /usr/local/bin/kubectl symlink is k3s itself; its wrapper forces
 # KUBECONFIG=/etc/rancher/k3s/k3s.yaml (root-only, mode 600) unless KUBECONFIG
@@ -171,10 +182,23 @@ elseif ([string]::IsNullOrWhiteSpace($AdvertisedHost)) {
 }
 
 $deployment = Invoke-KubectlJson -Arguments @("get", "deployment", $DeploymentName)
+# StrictMode-safe: a container omits "ports" entirely when it exposes none,
+# and a port entry omits "name" when unnamed — direct property access on either
+# would throw PropertyNotFoundStrict in exactly the failure states this script
+# diagnoses. Probe PSObject.Properties instead.
 $deploymentPorts = @(
-    $deployment.spec.template.spec.containers |
-    ForEach-Object { @($_.ports) } |
-    Where-Object { $_.name -eq $GrpcPortName -and [int]$_.containerPort -eq $GrpcPort }
+    @($deployment.spec.template.spec.containers) |
+    ForEach-Object {
+        $portsProp = $_.PSObject.Properties['ports']
+        if ($portsProp) { foreach ($port in @($portsProp.Value)) { $port } }
+    } |
+    Where-Object {
+        $portNameProp = $_.PSObject.Properties['name']
+        $containerPortProp = $_.PSObject.Properties['containerPort']
+        ($null -ne $portNameProp) -and ($null -ne $containerPortProp) -and
+        ($portNameProp.Value -eq $GrpcPortName) -and
+        ([int]$containerPortProp.Value -eq $GrpcPort)
+    }
 )
 
 if ($deploymentPorts.Count -eq 0) {
@@ -188,12 +212,25 @@ if ($service.spec.type -ne "LoadBalancer") {
     Fail "Service '$GrpcServiceName' must be type LoadBalancer but was '$($service.spec.type)'."
 }
 
+# StrictMode-safe: "name" and "targetPort" are optional on a service port and
+# targetPort is either a port name (string) or number — compare accordingly.
 $servicePorts = @(
     @($service.spec.ports) |
     Where-Object {
-        $_.name -eq $GrpcPortName -and
-        [int]$_.port -eq $GrpcPort -and
-        ($_.targetPort -eq $GrpcPortName -or [int]$_.targetPort -eq $GrpcPort)
+        $portNameProp = $_.PSObject.Properties['name']
+        $portProp = $_.PSObject.Properties['port']
+        $targetPortProp = $_.PSObject.Properties['targetPort']
+
+        if (($null -eq $portNameProp) -or ($portNameProp.Value -ne $GrpcPortName)) { return $false }
+        if (($null -eq $portProp) -or ([int]$portProp.Value -ne $GrpcPort)) { return $false }
+        if ($null -eq $targetPortProp) { return $false }
+
+        $targetPortString = "$($targetPortProp.Value)"
+        $targetPortNumber = 0
+        if ([int]::TryParse($targetPortString, [ref]$targetPortNumber)) {
+            return ($targetPortNumber -eq $GrpcPort)
+        }
+        return ($targetPortString -eq $GrpcPortName)
     }
 )
 
@@ -242,14 +279,18 @@ if ($kind -eq 'k3d') {
     $loadBalancerContainer = "k3d-$clusterShortName-serverlb"
     $publishedPort = & docker port $loadBalancerContainer "$GrpcPort/tcp" 2>$null
     if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($publishedPort)) {
-        Fail "Load balancer container '$loadBalancerContainer' is not publishing TCP/$GrpcPort. If this cluster predates the gRPC exposure change, recreate it with scripts/create-k3d-cluster.ps1 so it includes --port ""${GrpcPort}:${GrpcPort}@loadbalancer""."
+        Fail "Load balancer container '$loadBalancerContainer' is not publishing TCP/$GrpcPort. If this cluster predates the gRPC exposure change, recreate it with scripts/create-k3d-cluster.ps1 so it includes --port ""${GrpcHostPort}:${GrpcPort}@loadbalancer""."
     }
 
-    if ($publishedPort -notmatch "[:]{1}$GrpcPort\b") {
-        Fail "Load balancer '$loadBalancerContainer' is publishing TCP/$GrpcPort as '$publishedPort' instead of host port $GrpcPort. Update the cluster creation port mapping or recreate the cluster."
+    # 'docker port' prints "<host-ip>:<host-port>"; the host port is decoupled
+    # from the in-cluster service port (create-k3d-cluster.ps1 passes
+    # --port "<GrpcHostPort>:50051@loadbalancer"), so validate the host side
+    # against $GrpcHostPort rather than $GrpcPort.
+    if ($publishedPort -notmatch "[:]{1}$GrpcHostPort\b") {
+        Fail "Load balancer '$loadBalancerContainer' is publishing TCP/$GrpcPort as '$publishedPort' instead of host port $GrpcHostPort. Recreate the cluster with scripts/create-k3d-cluster.ps1 -GrpcHostPort $GrpcHostPort (maps --port ""${GrpcHostPort}:${GrpcPort}@loadbalancer"")."
     }
 
-    Write-Step "Load balancer '$loadBalancerContainer' publishes TCP/$GrpcPort as: $publishedPort"
+    Write-Step "Load balancer '$loadBalancerContainer' publishes TCP/$GrpcPort on host port $GrpcHostPort as: $publishedPort"
 }
 else {
     # k3s: ServiceLB (klipper-lb) publishes the LoadBalancer service on the node.
@@ -290,6 +331,14 @@ else {
     }
 }
 
+# Port clients dial on the advertised host: for k3d that is the load
+# balancer's published host port; k3s ServiceLB publishes the service port
+# directly on the node.
+$grpcTargetPort = $GrpcPort
+if ($kind -eq 'k3d') {
+    $grpcTargetPort = $GrpcHostPort
+}
+
 if ($SkipGrpcUrl) {
     Write-Step "Skipping grpcurl checks."
     exit 0
@@ -316,7 +365,7 @@ if (-not [string]::IsNullOrWhiteSpace($computerName) -and
     -not [string]::IsNullOrWhiteSpace($AdvertisedHost) -and
     $computerName.Equals($AdvertisedHost, [System.StringComparison]::OrdinalIgnoreCase)) {
     Test-GrpcUrlTarget `
-        -Target "localhost:$GrpcPort" `
+        -Target "localhost:$grpcTargetPort" `
         -GrpcUrlPath $grpcurlPath `
         -ServiceProtoPath $serviceProtoPath `
         -GrpcProtoPath $grpcProtoPath `
@@ -330,7 +379,7 @@ else {
 }
 
 Test-GrpcUrlTarget `
-    -Target "${grpcTarget}:$GrpcPort" `
+    -Target "${grpcTarget}:$grpcTargetPort" `
     -GrpcUrlPath $grpcurlPath `
     -ServiceProtoPath $serviceProtoPath `
     -GrpcProtoPath $grpcProtoPath `

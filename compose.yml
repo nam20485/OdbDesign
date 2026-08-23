@@ -5,6 +5,11 @@ services:
   ### use remote image build from github container registry
   server:
     image: ghcr.io/nam20485/odbdesign:nam20485-latest
+    # The container runs as the non-root odbdesign user (uid/gid 10001). The
+    # bind mount below replaces the image-layer designs dir, and on a fresh
+    # host Docker creates ./compose-designs root-owned, so uploads would fail
+    # with EACCES. Prepare the host directory once before first use:
+    #   mkdir -p ./compose-designs && sudo chown -R 10001:10001 ./compose-designs
     volumes:
       - ./compose-designs:/OdbDesign/designs
     # No host-published ports — nginx (the `proxy` service below) is the
