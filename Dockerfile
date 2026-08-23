@@ -183,8 +183,10 @@ RUN chmod +x ./bin/OdbDesignServer && \
 
 USER odbdesign
 
-# Docker health check using existing HTTP endpoint (placed after USER so the
-# check is associated with the non-root runtime user)
+# Docker health check using existing HTTP endpoint. Runs inside the container
+# as the image's configured user (odbdesign, the final USER above) — HEALTHCHECK
+# placement does not affect that; kept after USER purely for readability of the
+# non-root runtime stage.
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
   CMD curl -f http://localhost:8888/healthz/live || exit 1
 
