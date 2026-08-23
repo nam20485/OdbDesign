@@ -25,6 +25,34 @@ namespace Odb::App::Server
 	{
 	}
 
+	std::optional<crow::response> FileModelController::TryGetFileArchive(
+		const std::string& designName,
+		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive>& pFileArchive) const
+	{
+		try
+		{
+			pFileArchive = m_serverApp.designs().GetFileArchive(designName);
+		}
+		catch (const std::exception&)
+		{
+			// Corrupt / unloadable archive: DesignCache::LoadFileArchive throws so
+			// callers can distinguish this from a missing design. Translate to
+			// INTERNAL/500. The exception details (which may contain server
+			// filesystem paths) are logged server-side only.
+			return crow::response(crow::status::INTERNAL_SERVER_ERROR,
+				"failed to load design \"" + designName + "\": could not extract or parse archive");
+		}
+
+		if (pFileArchive == nullptr)
+		{
+			std::stringstream ss;
+			ss << "design: \"" << designName << "\" not found";
+			return crow::response(crow::status::NOT_FOUND, ss.str());
+		}
+
+		return std::nullopt;
+	}
+
 	////FileArchive	*
 		////StepDirectory::StringMap m_stepsByName;	//*
 			////LayerDirectory::StringMap m_layersByName;	//*
@@ -389,12 +417,10 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "design name not specified");
 		}
 
-		auto pFileArchive = m_serverApp.designs().GetFileArchive(designNameDecoded);
-		if (pFileArchive == nullptr)
+		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
+		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			std::stringstream ss;
-			ss << "design: \"" << designNameDecoded << "\" not found";
-			return crow::response(crow::status::NOT_FOUND, ss.str());
+			return *errorResponse;
 		}
 
 		return crow::response(JsonCrowReturnable(*pFileArchive));
@@ -437,12 +463,10 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "step name not specified");
 		}
 
-		auto pFileArchive = m_serverApp.designs().GetFileArchive(designNameDecoded);
-		if (pFileArchive == nullptr)
+		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
+		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			std::stringstream ss;
-			ss << "design: \"" << designNameDecoded << "\" not found";
-			return crow::response(crow::status::NOT_FOUND, ss.str());
+			return *errorResponse;
 		}
 
 		auto& stepsByName = pFileArchive->GetStepsByName();
@@ -473,12 +497,10 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "step name not specified");
 		}
 
-		auto pFileArchive = m_serverApp.designs().GetFileArchive(designNameDecoded);
-		if (pFileArchive == nullptr)
+		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
+		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			std::stringstream ss;
-			ss << "design: \"" << designNameDecoded << "\" not found";
-			return crow::response(crow::status::NOT_FOUND, ss.str());
+			return *errorResponse;
 		}
 
 		auto& stepsByName = pFileArchive->GetStepsByName();
@@ -509,12 +531,10 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "step name not specified");
 		}
 
-		auto pFileArchive = m_serverApp.designs().GetFileArchive(designNameDecoded);
-		if (pFileArchive == nullptr)
+		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
+		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			std::stringstream ss;
-			ss << "design: \"" << designNameDecoded << "\" not found";
-			return crow::response(crow::status::NOT_FOUND, ss.str());
+			return *errorResponse;
 		}
 
 		auto& stepsByName = pFileArchive->GetStepsByName();
@@ -545,12 +565,10 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "step name not specified");
 		}
 
-		auto pFileArchive = m_serverApp.designs().GetFileArchive(designNameDecoded);
-		if (pFileArchive == nullptr)
+		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
+		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			std::stringstream ss;
-			ss << "design: \"" << designNameDecoded << "\" not found";
-			return crow::response(crow::status::NOT_FOUND, ss.str());
+			return *errorResponse;
 		}
 
 		auto& stepsByName = pFileArchive->GetStepsByName();
@@ -587,12 +605,10 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "netlist name not specified");
 		}
 
-		auto pFileArchive = m_serverApp.designs().GetFileArchive(designNameDecoded);
-		if (pFileArchive == nullptr)
+		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
+		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			std::stringstream ss;
-			ss << "design: \"" << designNameDecoded << "\" not found";
-			return crow::response(crow::status::NOT_FOUND, ss.str());
+			return *errorResponse;
 		}
 
 		auto& stepsByName = pFileArchive->GetStepsByName();
@@ -632,12 +648,10 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "step name not specified");
 		}
 
-		auto pFileArchive = m_serverApp.designs().GetFileArchive(designNameDecoded);
-		if (pFileArchive == nullptr)
+		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
+		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			std::stringstream ss;
-			ss << "design: \"" << designNameDecoded << "\" not found";
-			return crow::response(crow::status::NOT_FOUND, ss.str());
+			return *errorResponse;
 		}
 
 		auto& stepsByName = pFileArchive->GetStepsByName();
@@ -670,12 +684,10 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "design name not specified");
 		}
 
-		auto pFileArchive = m_serverApp.designs().GetFileArchive(designNameDecoded);
-		if (pFileArchive == nullptr)
+		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
+		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			std::stringstream ss;
-			ss << "design: \"" << designNameDecoded << "\" not found";
-			return crow::response(crow::status::NOT_FOUND, ss.str());
+			return *errorResponse;
 		}
 
 		auto& stepsByName = pFileArchive->GetStepsByName();
@@ -710,12 +722,10 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "layer name not specified");
 		}
 
-		auto pFileArchive = m_serverApp.designs().GetFileArchive(designNameDecoded);
-		if (pFileArchive == nullptr)
+		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
+		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			std::stringstream ss;
-			ss << "design: \"" << designNameDecoded << "\" not found";
-			return crow::response(crow::status::NOT_FOUND, ss.str());
+			return *errorResponse;
 		}
 
 		auto& stepsByName = pFileArchive->GetStepsByName();
@@ -761,12 +771,10 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "layer name not specified");
 		}
 
-		auto pFileArchive = m_serverApp.designs().GetFileArchive(designNameDecoded);
-		if (pFileArchive == nullptr)
+		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
+		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			std::stringstream ss;
-			ss << "design: \"" << designNameDecoded << "\" not found";
-			return crow::response(crow::status::NOT_FOUND, ss.str());
+			return *errorResponse;
 		}
 
 		auto& stepsByName = pFileArchive->GetStepsByName();
@@ -824,12 +832,10 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "layer name not specified");
 		}
 
-		auto pFileArchive = m_serverApp.designs().GetFileArchive(designNameDecoded);
-		if (pFileArchive == nullptr)
+		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
+		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			std::stringstream ss;
-			ss << "design: \"" << designNameDecoded << "\" not found";
-			return crow::response(crow::status::NOT_FOUND, ss.str());
+			return *errorResponse;
 		}
 
 		auto& stepsByName = pFileArchive->GetStepsByName();
@@ -876,12 +882,10 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "layer name not specified");
 		}
 
-		auto pFileArchive = m_serverApp.designs().GetFileArchive(designNameDecoded);
-		if (pFileArchive == nullptr)
+		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
+		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			std::stringstream ss;
-			ss << "design: \"" << designNameDecoded << "\" not found";
-			return crow::response(crow::status::NOT_FOUND, ss.str());
+			return *errorResponse;
 		}
 
 		auto& stepsByName = pFileArchive->GetStepsByName();
@@ -922,12 +926,10 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "step name not specified");
 		}
 
-		auto pFileArchive = m_serverApp.designs().GetFileArchive(designNameDecoded);
-		if (pFileArchive == nullptr)
+		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
+		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			std::stringstream ss;
-			ss << "design: \"" << designNameDecoded << "\" not found";
-			return crow::response(crow::status::NOT_FOUND, ss.str());
+			return *errorResponse;
 		}
 
 		auto& stepsByName = pFileArchive->GetStepsByName();
@@ -966,12 +968,10 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "step name not specified");
 		}
 
-		auto pFileArchive = m_serverApp.designs().GetFileArchive(designNameDecoded);
-		if (pFileArchive == nullptr)
+		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
+		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			std::stringstream ss;
-			ss << "design: \"" << designNameDecoded << "\" not found";
-			return crow::response(crow::status::NOT_FOUND, ss.str());
+			return *errorResponse;
 		}
 
 		auto& stepsByName = pFileArchive->GetStepsByName();
@@ -1049,12 +1049,10 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "step name not specified");
 		}
 
-		auto pFileArchive = m_serverApp.designs().GetFileArchive(designNameDecoded);
-		if (pFileArchive == nullptr)
+		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
+		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			std::stringstream ss;
-			ss << "design: \"" << designNameDecoded << "\" not found";
-			return crow::response(crow::status::NOT_FOUND, ss.str());
+			return *errorResponse;
 		}
 
 		auto& stepsByName = pFileArchive->GetStepsByName();
@@ -1084,12 +1082,10 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "step name not specified");
 		}
 
-		auto pFileArchive = m_serverApp.designs().GetFileArchive(designNameDecoded);
-		if (pFileArchive == nullptr)
+		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
+		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			std::stringstream ss;
-			ss << "design: \"" << designNameDecoded << "\" not found";
-			return crow::response(crow::status::NOT_FOUND, ss.str());
+			return *errorResponse;
 		}
 
 		auto& symbolsByName = pFileArchive->GetSymbolsDirectoriesByName();
@@ -1119,12 +1115,10 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "step name not specified");
 		}
 
-		auto pFileArchive = m_serverApp.designs().GetFileArchive(designNameDecoded);
-		if (pFileArchive == nullptr)
+		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
+		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			std::stringstream ss;
-			ss << "design: \"" << designNameDecoded << "\" not found";
-			return crow::response(crow::status::NOT_FOUND, ss.str());
+			return *errorResponse;
 		}
 
 		auto& symbolsByName = pFileArchive->GetSymbolsDirectoriesByName();
@@ -1155,12 +1149,10 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "step name not specified");
 		}
 
-		auto pFileArchive = m_serverApp.designs().GetFileArchive(designNameDecoded);
-		if (pFileArchive == nullptr)
+		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
+		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			std::stringstream ss;
-			ss << "design: \"" << designNameDecoded << "\" not found";
-			return crow::response(crow::status::NOT_FOUND, ss.str());
+			return *errorResponse;
 		}
 
 		auto& symbolsByName = pFileArchive->GetSymbolsDirectoriesByName();
@@ -1185,12 +1177,10 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "design name not specified");
 		}
 
-		auto pFileArchive = m_serverApp.designs().GetFileArchive(designNameDecoded);
-		if (pFileArchive == nullptr)
+		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
+		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			std::stringstream ss;
-			ss << "design: \"" << designNameDecoded << "\" not found";
-			return crow::response(crow::status::NOT_FOUND, ss.str());
+			return *errorResponse;
 		}		
 
 		auto& symbolsByName = pFileArchive->GetSymbolsDirectoriesByName();
@@ -1218,12 +1208,10 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "design name not specified");
 		}
 
-		auto pFileArchive = m_serverApp.designs().GetFileArchive(designNameDecoded);
-		if (pFileArchive == nullptr)
+		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
+		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			std::stringstream ss;
-			ss << "design: \"" << designNameDecoded << "\" not found";
-			return crow::response(crow::status::NOT_FOUND, ss.str());
+			return *errorResponse;
 		}		
 
 		auto& miscAttrListFile = pFileArchive->GetMiscAttrListFile();
@@ -1238,12 +1226,10 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "design name not specified");
 		}
 
-		auto pFileArchive = m_serverApp.designs().GetFileArchive(designNameDecoded);
-		if (pFileArchive == nullptr)
+		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
+		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			std::stringstream ss;
-			ss << "design: \"" << designNameDecoded << "\" not found";
-			return crow::response(crow::status::NOT_FOUND, ss.str());
+			return *errorResponse;
 		}
 
 		auto& matrixFile = pFileArchive->GetMatrixFile();
@@ -1258,12 +1244,10 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "design name not specified");
 		}
 
-		auto pFileArchive = m_serverApp.designs().GetFileArchive(designNameDecoded);
-		if (pFileArchive == nullptr)
+		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
+		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			std::stringstream ss;
-			ss << "design: \"" << designNameDecoded << "\" not found";
-			return crow::response(crow::status::NOT_FOUND, ss.str());
+			return *errorResponse;
 		}
 
 		auto& miscInfoFile = pFileArchive->GetMiscInfoFile();
@@ -1278,12 +1262,10 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "design name not specified");
 		}
 
-		auto pFileArchive = m_serverApp.designs().GetFileArchive(designNameDecoded);
-		if (pFileArchive == nullptr)
+		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
+		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
-			std::stringstream ss;
-			ss << "design: \"" << designNameDecoded << "\" not found";
-			return crow::response(crow::status::NOT_FOUND, ss.str());
+			return *errorResponse;
 		}
 
 		auto& standardFontsFile = pFileArchive->GetStandardFontsFile();
