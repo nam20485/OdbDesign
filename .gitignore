@@ -65,3 +65,5 @@ gpg_keys/
 # IDE state / editor backups
 /.idea/
 /docs/plan/*.old
+.qwen/tmp/s-954746f9-a168-43ee-b954-e8e97a725965/qwen-skill-args-resolve-pr-comments.txt
+.qwen/tmp/s-d05672ef-b4f4-4a7f-97fc-df1f46868b32/qwen-skill-args-resolve-pr-comments.txt
