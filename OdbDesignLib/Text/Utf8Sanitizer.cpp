@@ -149,7 +149,9 @@ namespace Odb::Lib::Text
         [[noreturn]] void FailOnInvalidUtf8(const std::string& fieldPath, const std::string& value)
         {
             std::fprintf(stderr, "Utf8Sanitizer assertion failed: invalid UTF-8 in %s: \"", fieldPath.c_str());
-            const std::size_t sampleLen = value.size() < 32 ? value.size() : 32;
+            constexpr std::size_t kMaxSampleLen = 32;
+            const bool truncated = value.size() > kMaxSampleLen;
+            const std::size_t sampleLen = truncated ? kMaxSampleLen : value.size();
             for (std::size_t i = 0; i < sampleLen; ++i)
             {
                 const unsigned char c = static_cast<unsigned char>(value[i]);
@@ -162,7 +164,7 @@ namespace Odb::Lib::Text
                     std::fprintf(stderr, "\\x%02X", c);
                 }
             }
-            if (value.size() > sampleLen)
+            if (truncated)
             {
                 std::fprintf(stderr, "...");
             }

@@ -126,10 +126,6 @@ LABEL org.opencontainers.image.source=https://github.com/nam20485/OdbDesign \
 
 EXPOSE 8888 50051
 
-# Docker health check using existing HTTP endpoint
-HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
-  CMD curl -f http://localhost:8888/healthz/live || exit 1
-
 # install dependencies (curl for healthcheck, 7z for archive extraction)
 RUN apt-get update && \
     apt-get install -y -q --no-install-recommends \
@@ -186,6 +182,11 @@ RUN chmod +x ./bin/OdbDesignServer && \
     chown --recursive odbdesign:odbdesign /OdbDesign
 
 USER odbdesign
+
+# Docker health check using existing HTTP endpoint (placed after USER so the
+# check is associated with the non-root runtime user)
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+  CMD curl -f http://localhost:8888/healthz/live || exit 1
 
 # create designs directory
 # required to be volume mounted!
