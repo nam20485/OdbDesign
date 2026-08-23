@@ -4,6 +4,7 @@
 
 /.vs
 /out
+/compile_commands.json
 /cmake-build-debug
 build/
 /vcpkg_installed
@@ -47,3 +48,20 @@ gpg_keys/
 
 #Ignore insiders AI rules
 .github\instructions\codacy.instructions.md
+/new_designs/
+.kimchi/plans/plan-1781877149619.md
+.cursor/hooks/state/continual-learning.json
+.cursor/hooks/state/continual-learning-index.json
+.qwen/settings.json
+.qwen/settings.json.orig
+.mimosa/
+.kilo/
+
+# Local environment files (may contain secrets) — copy .env.example to .env
+.env
+.env.local
+.env.*.local
+
+# IDE state / editor backups
+/.idea/
+/docs/plan/*.old

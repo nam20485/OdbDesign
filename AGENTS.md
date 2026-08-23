@@ -283,3 +283,23 @@ See `.github/copilot-instructions.md` for:
 - Tool and automation protocols
 - Dynamic workflow orchestration
 - URL translation for raw GitHub content
+
+---
+
+## Learned User Preferences
+
+- Keep OdbDesign local test env vars in `~/.bashrc` (`ODB_TEST_DATA_DIR`, `ODB_TEST_ENVIRONMENT_VARIABLE`) for routine `ctest` runs on this machine.
+- The vcpkg upgrade to baseline `4f6d4ae8` (`grpc 1.81.1`, `protobuf 6.33.4#2`) is the accepted target; revert future baseline bumps only if they break the gRPC/protobuf build.
+
+## Learned Workspace Facts
+
+- Release-only SIGABRT on `GET /filemodels/<design>/matrix/matrix` comes from dual static protobuf descriptor pools in `libOdbDesign.so` and `OdbDesignServer`; use `linux-dynamic-debug` / `linux-dynamic-release` presets (`VCPKG_TARGET_TRIPLET=x64-linux-dynamic`) for a single shared protobuf runtime.
+- Target `grpc` in `vcpkg.json` must include feature `codegen` so fresh triplet installs export `gRPC::grpc++_reflection` (host-only codegen is insufficient).
+- vcpkg baseline is `4f6d4ae8247b2dcae554555a135e52bb449dd524` (supersedes the old `d1ff36c` / `grpc 1.71.0#3` pin); it resolves to `protobuf 6.33.4#2`, `grpc 1.81.1`, `zlib 1.3.2#2`, `libarchive 3.8.7`, `crow 1.3.3` and compiles cleanly. The earlier `059d760` baseline's gRPC break (`glob.cc` `std::any_of`) does not recur here. `vcpkg.json` `overrides` pin these exact `version#port-version` strings.
+- The `"version": "X.Y.Z#N"` form (port-version embedded in the version string) is valid in `overrides`; do not split it into separate `version` + `port-version` fields.
+- Pin the exact `version#port-version` for every override that has a non-zero port-version (e.g. `zlib 1.3.2#2`, not `1.3.2`); a missing/wrong port-version resolves to a different build and forces vcpkg to rebuild the whole dependency chain from source.
+- After a protobuf major bump (e.g. 29→33), stale generated `.pb.h`/`.pb.cc` from the old protoc fail with "Protobuf C++ gencode is built with an incompatible version" / missing `map_field_inl.h`; wipe the build dir (keep `vcpkg_installed/`) and reconfigure so protoc regenerates them — don't try to compile stale gencode.
+- Local test fixtures live in sibling repo `OdbDesignTestData`: set `ODB_TEST_DATA_DIR=/home/nam20485/src/github/nam20485/OdbDesignTestData/TEST_DATA`; design `.tgz` archives at `TEST_DATA/` root, small file-reader fixtures under `TEST_DATA/FILES/`.
+- Also set `ODB_TEST_ENVIRONMENT_VARIABLE=ODB_TEST_ENVIRONMENT_VARIABLE_EXISTS` for CrossPlatform env tests; these vars are not baked into CMake presets.
+- `OdbDesignServer` loads designs via `--designs-dir`, not `ODB_TEST_DATA_DIR`.
+- `CommandLineArgs` treats tokens starting with `/` as flags, so absolute paths after `--designs-dir` parse as boolean `true`; use relative paths (e.g. from `/home/nam20485/src/github/nam20485`: `OdbDesignTestData/TEST_DATA`).

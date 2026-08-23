@@ -1,0 +1,213 @@
+[
+  // ── Configure ──────────────────────────────────────────────────────────
+  {
+    "label": "CMake: Configure (Linux Debug)",
+    "command": "cmake --preset linux-debug",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "hide": "on_success"
+  },
+  {
+    "label": "CMake: Configure (Linux Release)",
+    "command": "cmake --preset linux-release",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "hide": "on_success"
+  },
+  {
+    "label": "CMake: Configure (Linux Dynamic Debug)",
+    "command": "cmake --preset linux-dynamic-debug",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "hide": "on_success"
+  },
+  {
+    "label": "CMake: Configure (Linux Dynamic Release)",
+    "command": "cmake --preset linux-dynamic-release",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "hide": "on_success"
+  },
+
+  // ── Build ───────────────────────────────────────────────────────────────
+  {
+    "label": "CMake: Build (Linux Debug)",
+    "command": "cmake --build --preset linux-debug",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "hide": "on_success"
+  },
+  {
+    "label": "CMake: Build (Linux Release)",
+    "command": "cmake --build --preset linux-release",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "hide": "on_success"
+  },
+  {
+    "label": "CMake: Build (Linux Dynamic Debug)",
+    "command": "cmake --build --preset linux-dynamic-debug",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "hide": "on_success"
+  },
+  {
+    "label": "CMake: Build (Linux Dynamic Release)",
+    "command": "cmake --build --preset linux-dynamic-release",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "hide": "on_success"
+  },
+
+  // ── Test ─────────────────────────────────────────────────────────────────
+  {
+    "label": "CMake: Test (Linux Debug)",
+    "command": "ctest --preset linux-debug --output-on-failure",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "hide": "never"
+  },
+  {
+    "label": "CMake: Test (Linux Release)",
+    "command": "ctest --preset linux-release --output-on-failure",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "hide": "never"
+  },
+  {
+    "label": "CMake: Test (Linux Dynamic Debug)",
+    "command": "ctest --preset linux-dynamic-debug --output-on-failure",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "hide": "never"
+  },
+  {
+    "label": "CMake: Test (Linux Dynamic Release)",
+    "command": "ctest --preset linux-dynamic-release --output-on-failure",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "hide": "never"
+  },
+
+  // ── Clean ────────────────────────────────────────────────────────────────
+  {
+    "label": "CMake: Clean Build (Linux Debug)",
+    "command": "cmake --build --preset linux-debug --target clean",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "hide": "on_success"
+  },
+  {
+    "label": "CMake: Clean Build (Linux Release)",
+    "command": "cmake --build --preset linux-release --target clean",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "hide": "on_success"
+  },
+
+  // ── Full pipeline: Configure + Build ─────────────────────────────────────
+  {
+    "label": "CMake: Configure & Build (Linux Debug)",
+    "command": "cmake --preset linux-debug && cmake --build --preset linux-debug",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "hide": "on_success"
+  },
+  {
+    "label": "CMake: Configure & Build (Linux Release)",
+    "command": "cmake --preset linux-release && cmake --build --preset linux-release",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "hide": "on_success"
+  },
+
+  // ── Full pipeline: Build + Test ──────────────────────────────────────────
+  {
+    "label": "CMake: Build & Test (Linux Debug)",
+    "command": "cmake --build --preset linux-debug && ctest --preset linux-debug --output-on-failure",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "hide": "never"
+  },
+  {
+    "label": "CMake: Build & Test (Linux Release)",
+    "command": "cmake --build --preset linux-release && ctest --preset linux-release --output-on-failure",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "hide": "never"
+  },
+
+  // ── Run (start without debugging) ────────────────────────────────────────
+  {
+    "label": "Run: OdbDesignServer (Debug)",
+    "command": "$ZED_WORKTREE_ROOT/out/build/linux-debug/OdbDesignServer/OdbDesignServer",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "use_new_terminal": true,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "hide": "never"
+  },
+  {
+    "label": "Run: OdbDesignApp (Debug)",
+    "command": "$ZED_WORKTREE_ROOT/out/build/linux-debug/OdbDesignApp/OdbDesignApp",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "use_new_terminal": true,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "hide": "never"
+  },
+  {
+    "label": "Run: OdbDesignServer (Release)",
+    "command": "$ZED_WORKTREE_ROOT/out/build/linux-release/OdbDesignServer/OdbDesignServer",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "use_new_terminal": true,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "hide": "never"
+  },
+  {
+    "label": "Run: OdbDesignApp (Release)",
+    "command": "$ZED_WORKTREE_ROOT/out/build/linux-release/OdbDesignApp/OdbDesignApp",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "use_new_terminal": true,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "hide": "never"
+  }
+]

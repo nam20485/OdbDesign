@@ -1,0 +1,7 @@
+# Promtail overrides — DaemonSet that tails container logs and pushes to Loki.
+# Default gateway URL is overridden because the Loki gateway is disabled
+# (see values-loki.yaml); the loki Service lives in the monitoring namespace.
+
+config:
+  clients:
+    - url: http://loki.monitoring.svc.cluster.local:3100/loki/api/v1/push

@@ -20,6 +20,12 @@ spec:
         app: odbdesign-server-swaggerui
         version: v1
     spec:
+      # the public swaggerui image bakes an outdated spec (built 2024-05-08,
+      # pre-k3s servers list); mount the current spec over it via ConfigMap
+      volumes:
+        - name: swagger-spec
+          configMap:
+            name: odbdesign-server-swagger-spec
       containers:
         - name: odbdesign-server-swaggerui
           image: ghcr.io/nam20485/odbdesignserver-swaggerui:nam20485-latest
@@ -27,11 +33,16 @@ spec:
           ports:
             - containerPort: 8080
               name: oss-dep-port
+          volumeMounts:
+            - name: swagger-spec
+              mountPath: /spec/odbdesign-server-0.9-swagger.yaml
+              subPath: odbdesign-server-0.9-swagger.yaml
+              readOnly: true
           resources:
             limits:
-              cpu: "8"
-              memory: 10Gi
+              cpu: "1"
+              memory: 1Gi
             requests:
-              cpu: "2"
-              memory: 2Gi                 
+              cpu: 100m
+              memory: 128Mi                 
             

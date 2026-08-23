@@ -119,13 +119,15 @@ namespace Odb::App::Server
 		
 		// Apply message size limits from configuration
 		// Convert MB to bytes (multiply by 1024*1024)
-		int maxReceiveBytes = loadResult.config->max_receive_message_size_mb * 1024 * 1024;
-		int maxSendBytes = loadResult.config->max_send_message_size_mb * 1024 * 1024;
-		builder.SetMaxReceiveMessageSize(maxReceiveBytes);
-		builder.SetMaxSendMessageSize(maxSendBytes);
+		const int64_t maxReceiveBytes = static_cast<int64_t>(loadResult.config->max_receive_message_size_mb) * 1024 * 1024;
+		const int64_t maxSendBytes = static_cast<int64_t>(loadResult.config->max_send_message_size_mb) * 1024 * 1024;
+		builder.SetMaxReceiveMessageSize(static_cast<int>(maxReceiveBytes));
+		builder.SetMaxSendMessageSize(static_cast<int>(maxSendBytes));
 
 		std::cout << "gRPC max message sizes: receive=" << loadResult.config->max_receive_message_size_mb
-				  << "MB, send=" << loadResult.config->max_send_message_size_mb << "MB" << std::endl;
+				  << "MB (" << maxReceiveBytes << " bytes)"
+				  << ", send=" << loadResult.config->max_send_message_size_mb
+				  << "MB (" << maxSendBytes << " bytes)" << std::endl;
 	// Apply compression configuration
 	if (loadResult.config->compression_enabled)
 	{

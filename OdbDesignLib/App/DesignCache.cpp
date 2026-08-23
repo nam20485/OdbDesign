@@ -3,6 +3,7 @@
 #include "Logger.h"
 #include <exception>
 #include <filesystem>
+#include <stdexcept>
 #include <vector>
 #include "../FileModel/Design/FileArchive.h"
 #include <memory>
@@ -395,10 +396,16 @@ namespace Odb::Lib::App
                     {
                         return pFileArchive;
                     }
-                    else
-                    {
-                        break;
-                    }
+
+                    // A matching file was found but failed to extract or parse. Treat this
+                    // as a corrupt/unloadable design (error) rather than a missing one, so
+                    // callers surface INTERNAL/500 instead of a misleading NOT_FOUND/404.
+                    // (ParseFileModel already throws on parse failure; this covers the
+                    // extraction / missing-root-dir paths that return false.)
+                    // The file path is intentionally omitted here to avoid leaking server
+                    // filesystem details to API clients (it is logged above for diagnostics).
+                    throw std::runtime_error(
+                        "Failed to load design \"" + designName + "\": could not extract or parse archive");
                 }
             }
         }       

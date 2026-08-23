@@ -3,15 +3,33 @@ name: odbdesign
 services:
 
   ### use remote image build from github container registry
-  server:    
-    image: ghcr.io/nam20485/odbdesign:nam20485-latest    
+  server:
+    image: ghcr.io/nam20485/odbdesign:nam20485-latest
+    # The container runs as the non-root odbdesign user (uid/gid 10001). The
+    # bind mount below replaces the image-layer designs dir, and on a fresh
+    # host Docker creates ./compose-designs root-owned, so uploads would fail
+    # with EACCES. Prepare the host directory once before first use:
+    #   mkdir -p ./compose-designs && sudo chown -R 10001:10001 ./compose-designs
     volumes:
       - ./compose-designs:/OdbDesign/designs
+    # No host-published ports — nginx (the `proxy` service below) is the
+    # only public ingress. Loopback-only 8888/50051 are kept for local debug.
     ports:
-      - 8888:8888
+      - 127.0.0.1:8888:8888
+      - 127.0.0.1:50051:50051
+    expose:
+      - 8888
+      - 50051
     environment:
       - ODBDESIGN_SERVER_REQUEST_USERNAME
       - ODBDESIGN_SERVER_REQUEST_PASSWORD
+    healthcheck:
+      # Default: HTTP check (works out of the box)
+      test: ["CMD", "curl", "-f", "http://localhost:8888/healthz/live"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s      
 
   ### use local image built from Dockerfile
   # server:
@@ -21,14 +39,52 @@ services:
   #   volumes:
   #     - ./compose-designs:/OdbDesign/designs
   #   ports:
-  #     - 8888:8888
+  #     - 127.0.0.1:8888:8888
+  #     - 127.0.0.1:50051:50051
+  #   expose:
+  #     - 8888
+  #     - 50051
   #   environment:
   #     - ODBDESIGN_SERVER_REQUEST_USERNAME
-  #     - ODBDESIGN_SERVER_REQUEST_PASSWORD   
-   
+  #     - ODBDESIGN_SERVER_REQUEST_PASSWORD
+  #   healthcheck:
+  #     # Default: HTTP check (works out of the box)
+  #     test: ["CMD", "curl", "-f", "http://localhost:8888/healthz/live"]
+  #     interval: 30s
+  #     timeout: 3s
+  #     retries: 3
+  #     start_period: 10s
+
   swagger-ui:
-    image: ghcr.io/nam20485/odbdesignserver-swaggerui:nam20485-latest    
+    image: ghcr.io/nam20485/odbdesignserver-swaggerui:nam20485-latest
     depends_on:
       - server
+    # Loopback-only; nginx routes / → swagger-ui:8080.
     ports:
-      - 8080:8080
+      - 127.0.0.1:8080:8080
+    expose:
+      - 8080
+
+  # Single public ingress: TLS termination + path-based routing.
+  # Pulls certs from ./ssl/ (host) and mounts the config from deploy/nginx/.
+  # See deploy/nginx/README.md for endpoint reference and cert setup.
+  proxy:
+    image: nginx:1.27-alpine
+    depends_on:
+      - server
+      - swagger-ui
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - ./deploy/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    # wget is present in nginx:alpine; spider the swagger-ui container which
+    # in turn depends on the REST server. This is a smoke check, not a deep
+    # health probe — use /healthz behind the proxy for real probes.
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://swagger-ui:8080/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

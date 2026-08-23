@@ -6,14 +6,20 @@ param(
     [Parameter(Mandatory=$true)]
     [int]$NumAgents = 3,
     # Ingress host port
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory=$false)]
     [int]$IngressHostPort = 8081,
+    # gRPC host port (LAN access to OdbDesignServer gRPC)
+    [Parameter(Mandatory=$false)]
+    [int]$GrpcHostPort = 50051,
+    # Kubernetes API server host port (pinned so LAN clients can use a stable kubeconfig)
+    [Parameter(Mandatory=$false)]
+    [int]$ApiHostPort = 6443,
     # When set to true, the cluster will be deleted first
     [switch]$DeleteClusterFirst = $false,
     # When set to true, the cluster will be deleted without asking for confirmation
     [switch]$ForceDelete = $false,
     # Host Volume Path for PersistentVolume
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory=$false)]
     [string]$HostVolumePath = "D:/k3dvolume",
     # When set to true, register a scheduled task to start the cluster at Windows boot
     [switch]$StartWithWindows = $false
@@ -27,6 +33,8 @@ $hostIp = "192.168.1.30"
 # $hostIp = "192.168.1.101"
 $ingressHostName = "precision5820"
 $firewallRuleDisplayName = "k3d $ClusterName ingress $IngressHostPort"
+$grpcFirewallRuleDisplayName = "k3d $ClusterName grpc $GrpcHostPort"
+$apiFirewallRuleDisplayName = "k3d $ClusterName api $ApiHostPort"
 
 function Ensure-IngressFirewallRule {
     param(
@@ -78,14 +86,19 @@ k3d cluster create $ClusterName `
     --agents $NumAgents `
     --k3s-arg="--tls-san=${hostIp}@server:0" `
     --k3s-arg="--tls-san=${ingressHostName}@server:0" `
+    --api-port "0.0.0.0:${ApiHostPort}" `
     --port "${IngressHostPort}:80@loadbalancer" `
     --port "8443:443@loadbalancer" `
+    --port "${GrpcHostPort}:50051@loadbalancer" `
     --volume ${HostVolumePath}:/k3dvolume@all
     # --volume ${HostVolumePath}:/tmp/k3dvolume@all
 
 Write-Host "Cluster '$ClusterName' created."
+Write-Host "If this cluster existed before gRPC host-port support was added, it must be recreated to publish TCP/$GrpcHostPort on the load balancer."
 
 Ensure-IngressFirewallRule -DisplayName $firewallRuleDisplayName -Port $IngressHostPort
+Ensure-IngressFirewallRule -DisplayName $grpcFirewallRuleDisplayName -Port $GrpcHostPort
+Ensure-IngressFirewallRule -DisplayName $apiFirewallRuleDisplayName -Port $ApiHostPort
 
 if ($StartWithWindows) {
     $registerScriptPath = Join-Path $PSScriptRoot "register-k3d-startup-task.ps1"

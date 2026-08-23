@@ -1,0 +1,17 @@
+# Strip /prometheus before forwarding to the Prometheus Service so Prometheus can keep
+# its HTTP API at / (required for Freelens/Lens and other in-cluster clients).
+# Reference from prometheus ingress: monitoring-prometheus-stripprefix@kubernetescrd
+#
+# If apply fails with "no matches for kind Middleware", your Traefik may use a
+# different API group. Try: kubectl api-resources | grep -i middleware
+# - Traefik 2.x: traefik.containo.us/v1alpha1
+# - Traefik 3.x: traefik.io/v1alpha1  (k3s v1.36 bundles Traefik 3.7 — use this)
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: prometheus-stripprefix
+  namespace: monitoring
+spec:
+  stripPrefix:
+    prefixes:
+      - /prometheus
