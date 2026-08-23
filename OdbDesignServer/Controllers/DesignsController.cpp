@@ -3,6 +3,7 @@
 #include "UrlEncoding.h"
 #include "App/IOdbServerApp.h"
 #include "App/RouteController.h"
+#include <Logger.h>
 #include <cstring>
 #include <vector>
 
@@ -25,12 +26,13 @@ namespace Odb::App::Server
 		{
 			pDesign = m_serverApp.designs().GetDesign(designName);
 		}
-		catch (const std::exception&)
+		catch (const std::exception& e)
 		{
 			// Corrupt / unloadable archive: DesignCache::LoadFileArchive throws,
 			// and the exception propagates through LoadDesign/GetDesign. Translate
 			// to INTERNAL/500. The exception details (which may contain server
-			// filesystem paths) are logged server-side only.
+			// filesystem paths) are logged server-side only, never sent to the client.
+			logexception_msg(e, "failed to load design \"" + designName + "\"");
 			return crow::response(crow::status::INTERNAL_SERVER_ERROR,
 				"failed to load design \"" + designName + "\": could not extract or parse archive");
 		}

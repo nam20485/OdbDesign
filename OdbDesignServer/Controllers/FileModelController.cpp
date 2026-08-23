@@ -4,6 +4,7 @@
 #include <memory>
 #include <FileModel/Design/FileArchive.h>
 #include <FileModel/Design/ComponentHeightTracer.h>
+#include <Logger.h>
 #include <sstream>
 #include <string>
 #include <algorithm>
@@ -33,12 +34,13 @@ namespace Odb::App::Server
 		{
 			pFileArchive = m_serverApp.designs().GetFileArchive(designName);
 		}
-		catch (const std::exception&)
+		catch (const std::exception& e)
 		{
 			// Corrupt / unloadable archive: DesignCache::LoadFileArchive throws so
 			// callers can distinguish this from a missing design. Translate to
 			// INTERNAL/500. The exception details (which may contain server
-			// filesystem paths) are logged server-side only.
+			// filesystem paths) are logged server-side only, never sent to the client.
+			logexception_msg(e, "failed to load design \"" + designName + "\"");
 			return crow::response(crow::status::INTERNAL_SERVER_ERROR,
 				"failed to load design \"" + designName + "\": could not extract or parse archive");
 		}
