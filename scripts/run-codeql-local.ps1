@@ -52,7 +52,8 @@ if (-not (Test-Path $DatabasePath) -or $Clean) {
         $createCmd = "codeql database create `"$DatabasePath`" --language=cpp --source-root=. --overwrite"
     } else {
         # Create database with build
-        $buildCmd = "cmake --preset linux-release && cmake --build --preset linux-release"
+        # linux-dynamic-release: shared protobuf/gRPC runtime (see docs/linux-dynamic-release-plan.md)
+        $buildCmd = "cmake --preset linux-dynamic-release && cmake --build --preset linux-dynamic-release"
         $createCmd = "codeql database create `"$DatabasePath`" --language=cpp --command=`"$buildCmd`" --source-root=. --overwrite"
     }
     

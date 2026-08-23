@@ -3,7 +3,7 @@
   "database": {
     "languages": ["cpp"],
     "sourceRoot": ".",
-    "buildCommand": "cmake --preset linux-release && cmake --build --preset linux-release"
+    "buildCommand": "cmake --preset linux-dynamic-release && cmake --build --preset linux-dynamic-release"
   },
   "queries": {
     "suites": [

@@ -58,7 +58,15 @@ RUN mkdir --parents /OdbDesign/bin /OdbDesign/templates /OdbDesign/designs
 WORKDIR /OdbDesign
 
 # copy pre-built binaries from artifacts (extracted from zip in workflow)
-COPY ./artifacts/*.so ./bin/
+# *.so* (not *.so): the linux-dynamic-release artifacts bundle versioned vcpkg
+# shared libraries (e.g. libarchive.so.13, libprotobuf.so.33) alongside the
+# project libraries; LD_LIBRARY_PATH=/OdbDesign/bin below makes them findable.
+# The zip stores vcpkg's dev symlinks as symlinks (zip -y), so COPY recreates
+# libfoo.so -> libfoo.so.N -> real-file chains as links, not duplicate copies.
+COPY ./artifacts/*.so* ./bin/
+# OpenSSL 3 provider modules (resolved relative to libcrypto.so's directory);
+# mirrors the full Dockerfile's ossl-modules COPY
+COPY ./artifacts/ossl-modules ./bin/ossl-modules
 COPY ./artifacts/OdbDesignServer ./bin/
 # gRPC service config (loaded by RunGrpcServer from exeDir/config.json)
 COPY ./OdbDesignServer/config.json ./bin/config.json

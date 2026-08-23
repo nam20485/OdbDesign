@@ -65,3 +65,5 @@ gpg_keys/
 # IDE state / editor backups
 /.idea/
 /docs/plan/*.old
+# Qwen Code session scratch (per-session s-<uuid> dirs) — disposable
+.qwen/tmp/

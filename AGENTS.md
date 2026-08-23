@@ -17,8 +17,8 @@ OdbDesign is a C++ library for parsing and working with ODB++ design files (PCB 
 ### Configure (Linux)
 
 ```bash
-cmake --preset linux-debug      # Debug build
-cmake --preset linux-release    # Release build
+cmake --preset linux-debug             # Debug build
+cmake --preset linux-dynamic-release   # Release build (main Linux release; shared protobuf/gRPC)
 ```
 
 ### Configure (Windows)
@@ -32,7 +32,7 @@ cmake --preset x64-release      # Release build
 
 ```bash
 cmake --build --preset linux-debug
-cmake --build --preset linux-release
+cmake --build --preset linux-dynamic-release
 cmake --build --preset x64-release
 ```
 
@@ -50,7 +50,7 @@ cmake --build --preset linux-debug --clean-first
 
 ```bash
 ctest --preset linux-debug
-ctest --preset linux-release
+ctest --preset linux-dynamic-release
 ctest --preset x64-debug
 ```
 

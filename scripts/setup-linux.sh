@@ -292,16 +292,28 @@ setup_environment() {
     print_success "Environment configured"
 }
 
+# Map BUILD_TYPE to the main Linux CMake preset.
+# Release uses the dynamic triplet (shared protobuf/gRPC) — the static
+# linux-release preset loads two protobuf copies at runtime and crashes;
+# see docs/linux-dynamic-release-plan.md.
+get_preset() {
+    if [[ "$BUILD_TYPE" == "Release" ]]; then
+        echo "linux-dynamic-release"
+    else
+        echo "linux-$(echo $BUILD_TYPE | tr '[:upper:]' '[:lower:]')"
+    fi
+}
+
 # Build the project
 build_project() {
     if [[ "$SKIP_BUILD" == "true" ]]; then
         print_status "Skipping build as requested"
         return
     fi
-    
+
     print_status "Building OdbDesign ($BUILD_TYPE)..."
-    
-    local preset="linux-$(echo $BUILD_TYPE | tr '[:upper:]' '[:lower:]')"
+
+    local preset="$(get_preset)"
     
     # Configure
     print_status "Configuring with preset: $preset"
@@ -328,8 +340,8 @@ build_project() {
 run_tests() {
     if [[ "$BUILD_TESTS" == "true" ]]; then
         print_status "Running tests..."
-        
-        local preset="linux-$(echo $BUILD_TYPE | tr '[:upper:]' '[:lower:]')"
+
+        local preset="$(get_preset)"
         
         if ctest --preset "$preset" --output-on-failure; then
             print_success "All tests passed"
@@ -416,9 +428,9 @@ main() {
     echo "  1. Restart your shell or run: source ~/.bashrc"
     echo "  2. Navigate to the project directory"
     if [[ "$SKIP_BUILD" == "false" ]]; then
-        echo "  3. Run the server: ./out/build/linux-$(echo $BUILD_TYPE | tr '[:upper:]' '[:lower:]')/OdbDesignServer"
+        echo "  3. Run the server: ./out/build/$(get_preset)/OdbDesignServer"
     else
-        echo "  3. Build the project: cmake --preset linux-$(echo $BUILD_TYPE | tr '[:upper:]' '[:lower:]') && cmake --build --preset linux-$(echo $BUILD_TYPE | tr '[:upper:]' '[:lower:]')"
+        echo "  3. Build the project: cmake --preset $(get_preset) && cmake --build --preset $(get_preset)"
     fi
     echo "  4. Access the API at: http://localhost:8888"
     echo

@@ -123,8 +123,13 @@ jobs:
       - name: Install Ninja
         uses: seanmiddleditch/gha-setup-ninja@8b297075da4cd2a5f1fd21fe011b499edf06e9d2 # master
 
-      - name: Warm vcpkg Binary Cache
+      - name: Warm vcpkg Binary Cache (static triplet)
+        # still consumed by code-coverage.yml (linux-debug preset)
         run: '"${{ env.VCPKG_ROOT }}/vcpkg" install'
+
+      - name: Warm vcpkg Binary Cache (dynamic triplet)
+        # consumed by the linux-dynamic-release preset (cmake-multi-platform, Dockerfile)
+        run: '"${{ env.VCPKG_ROOT }}/vcpkg" install --triplet x64-linux-dynamic'
 
   warm-macos:
     name: Vcpkg-Cache-Warm (macOS)
