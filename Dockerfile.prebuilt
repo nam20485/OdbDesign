@@ -8,7 +8,7 @@
 # (bookworm, glibc 2.36), which is too old for the CI-built artifacts
 # (they require GLIBC_2.38 / GLIBCXX_3.4.32) -> CrashLoopBackOff.
 # Digest below is the real debian:13.3-slim manifest list (trixie, glibc 2.41).
-FROM debian@sha256:1d3c811171a08a5adaa4a163fbafd96b61b87aa871bbc7aa15431ac275d3d430 AS run
+FROM debian@sha256:f324c7ff54321e8d9c588493a20244965938ce0aa50bbd1022d38010e9ffc4b1 AS run
 
 LABEL org.opencontainers.image.source=https://github.com/nam20485/OdbDesign \
     org.opencontainers.image.authors=https://github.com/nam20485 \
