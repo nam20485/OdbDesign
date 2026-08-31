@@ -6,6 +6,24 @@ OdbDesign is a C++ library for parsing and working with ODB++ design files (PCB 
 
 ---
 
+## Branching & Merge Flow
+
+- **Default branch:** `development`
+- **Integration branch:** `nam20485` — every feature branch is cut **from `nam20485`** and its PR targets **`nam20485`** as the base.
+- **Feature branch naming:** `nam/<feature>` (e.g. `nam/argocd`, `nam/unified-clang-build`).
+
+Merge flow (left to right):
+
+```text
+nam/<feature>  →  nam20485  →  development (default)  →  staging  →  main  →  release
+```
+
+- CI triggers (CMake multi-platform, code coverage, dependency review, Docker publish) are configured for `["development", "staging", "main", "release", "nam20485"]`; pushes to `nam/*` feature branches are NOT built — only PRs gate those (see `.github/workflows/cmake-multi-platform.yml`).
+- `release` is fed from `main` (cf. `chore(release): merge main into release (#529)`); the release workflow fires on `repository_dispatch`.
+- `production` is a **legacy branch** (last touched ~14 months ago, absent from every CI trigger list) — not part of the current flow.
+
+---
+
 ## Build Commands
 
 ### Prerequisites
