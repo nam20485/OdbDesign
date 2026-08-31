@@ -2,6 +2,7 @@
 #include <string>
 #include "package.pb.h"
 #include "Pin.h"
+#include "ProtobufMapHelpers.h"
 #include <memory>
 #include "../Text/Utf8Sanitizer.h"
 
@@ -38,10 +39,7 @@ namespace Odb::Lib::ProductModel
 		{
 			pPackageMsg->add_pins()->CopyFrom(*pPin->to_protobuf());
 		}
-		for (const auto& kvPin : m_pinsByName)
-		{
-			(*pPackageMsg->mutable_pinsbyname())[Odb::Lib::Text::ToUtf8(kvPin.first)] = *kvPin.second->to_protobuf();
-		}
+		FillProtobufMapWithSanitizedKeys(*pPackageMsg->mutable_pinsbyname(), m_pinsByName);
 		return pPackageMsg;
 	}
 

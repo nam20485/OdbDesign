@@ -56,7 +56,10 @@ namespace Odb::Lib::Text
      * @brief Converts input to valid UTF-8.
      *
      * - If input is already valid UTF-8, returns a copy unchanged.
-     * - Otherwise, decodes input as Windows-1252 and re-encodes as UTF-8.
+     * - Otherwise, repairs it: every maximal valid UTF-8 sequence is kept
+     *   as-is and each remaining invalid byte is decoded as Windows-1252
+     *   and re-encoded as UTF-8. Transcoding the whole string as CP1252
+     *   would corrupt the already-valid parts of mixed input into mojibake.
      *
      * CP1252 differs from ISO-8859-1 only in the 0x80–0x9F range.
      * The five undefined CP1252 slots (0x81, 0x8D, 0x8F, 0x90, 0x9D)

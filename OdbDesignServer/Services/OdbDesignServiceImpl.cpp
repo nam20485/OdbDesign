@@ -620,8 +620,11 @@ namespace OdbDesignServer
             }
             catch (const std::exception &e)
             {
-                std::string error = "Internal server error: " + std::string(e.what());
-                return {grpc::StatusCode::INTERNAL, error};
+                // Log the full details server-side only: e.what() can embed
+                // filesystem paths, which must not reach clients of a server
+                // that runs with insecure credentials and no authentication.
+                logerror(std::string("[ConnTrace] GetStandardFonts failed: ") + e.what());
+                return {grpc::StatusCode::INTERNAL, "Internal server error"};
             }
         }
 

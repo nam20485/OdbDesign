@@ -204,8 +204,12 @@ jobs:
           # /run/secrets/github_token) rather than a build arg, so it never
           # appears in the build log or the image cache. USE_VCPKG_CACHE
           # defaults to 0 (write-enabled cache upload).
+          # The line must not be quoted: build-push-action splits each line on
+          # the first '=' without stripping quotes, so quotes would become part
+          # of the secret id and the Dockerfile mount id=github_token would
+          # never match.
           secrets: |
-            "github_token=${{ secrets.GITHUB_TOKEN }}"
+            github_token=${{ secrets.GITHUB_TOKEN }}
 
       # Sign the resulting Docker image digest
       # This will only write to the public Rekor transparency log when the Docker
