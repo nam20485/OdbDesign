@@ -1,161 +1,283 @@
-# Plan: Install Argo CD on the k3s VM cluster (`scripts/argocd.ps1`)
+# Plan: Install Argo CD on the k3s VM cluster (`scripts/argocd.sh`)
+
+> **Re-targeted 2026-08-31** for the daemon-tier environment (agent user `linux-admin-agent`
+> running on debian13vm itself, Hermes profile `linux-admin-agent-vm`). The original revision
+> specified a PowerShell script (`scripts/argocd.ps1`) for a VM with pwsh 7.x; **pwsh is not
+> installed on this VM**, so the deliverable is now a bash script following the repo's
+> bash-twin convention (`setup-vcpkg-cache.sh`, `compress-artifacts.sh`). All review findings
+> R1–R12 from `docs/plan/argocd-install-plan-review.md` remain incorporated, translated to bash.
 
 ## Goal
 
-Add a single PowerShell script, `scripts/argocd.ps1`, that installs Argo CD into the single-node k3s cluster in the Debian 13 VM following the official getting-started guide (https://argo-cd.readthedocs.io/en/stable/getting_started/), and supports distinct invocations for install, status, and validation:
+Add a single bash script, `scripts/argocd.sh`, that installs Argo CD into the single-node k3s
+cluster on the Debian 13 VM following the official getting-started guide
+(https://argo-cd.readthedocs.io/en/stable/getting_started/), and supports distinct invocations
+for install, status, and validation:
 
-```powershell
-pwsh scripts/argocd.ps1 -Action Install    # deploy Argo CD (idempotent)
-pwsh scripts/argocd.ps1 -Action Status     # read-only overview (default, safe when not installed)
-pwsh scripts/argocd.ps1 -Action Validate   # exit-code health check (rollouts + API healthz)
-pwsh scripts/argocd.ps1 -Action Uninstall  # remove Argo CD (confirmation required, -Force skips)
+```bash
+bash scripts/argocd.sh install             # deploy Argo CD (idempotent)
+bash scripts/argocd.sh status              # read-only overview (default action, safe when not installed)
+bash scripts/argocd.sh validate            # exit-code health check (rollouts + API healthz)
+bash scripts/argocd.sh uninstall           # remove Argo CD (typed confirmation required, --force skips)
 ```
 
-## Context / environment facts
+## Context / environment facts (verified on the VM, 2026-08-31)
 
-- Cluster: single-node k3s in the Debian 13 VM (`192.168.122.200`), managed by `scripts/k3s-cluster.ps1`. The new script runs **inside the VM** with pwsh 7.x (same as `k3s-cluster.ps1`).
-- kubectl gotcha: `/usr/local/bin/kubectl` is the k3s wrapper and forces `KUBECONFIG=/etc/rancher/k3s/k3s.yaml` (root-only) unless `KUBECONFIG` is preset. The script must pin `$env:KUBECONFIG = ~/.kube/config` (same as `scripts/k3s-cluster.ps1:36`).
-- Repo conventions to mimic (`scripts/k3s-cluster.ps1`, `scripts/deploy-monitoring.ps1`): `param()` with `[ValidateSet]` action, `Set-StrictMode -Version Latest`, `$ErrorActionPreference = "Stop"`, throw `$IsWindows` guard, `Test-Command` helper, `Wait-RolloutInNamespace` helper.
+- **Execution tier:** daemon tier — the script runs as `linux-admin-agent` **on debian13vm
+  itself** (headless, no GUI). The cluster is documented by the **`k3s-cluster-admin` skill**
+  (profile `linux-admin-agent-vm`): single-node k3s **v1.36.3+k3s1**, context `k3s-cluster`,
+  API `https://100.118.225.119:6443` (Tailscale), node internal IP `192.168.122.200`.
+  The skill's `scripts/health.sh` is the live source of truth for cluster state;
+  `scripts/k3s-cluster.ps1` from the old plan is **not** part of this environment's workflow.
+- **No pwsh on the VM** — bash 5.2.37 only. Repo precedent for bash twins of pwsh scripts:
+  `scripts/setup-vcpkg-cache.sh`, `scripts/compress-artifacts.sh`. Conventions to mimic
+  (`scripts/run-tests.sh`, `scripts/setup-vcpkg-cache.sh`): `#!/usr/bin/env bash` header,
+  `set -euo pipefail`, `SCRIPT_DIR` resolution, colored `print_status`-style helpers,
+  `usage()` + flag parsing, `command -v` existence checks.
+- kubectl gotcha (confirmed live): `/usr/local/bin/kubectl` is a symlink to the `k3s` wrapper
+  and defaults to root-only `/etc/rancher/k3s/k3s.yaml` → *permission denied* as this user
+  unless `KUBECONFIG` is set. The agent's login shell exports it, but the script must not rely
+  on that: `export KUBECONFIG="${KUBECONFIG:-$HOME/.kube/config}"`. All kubectl operations work
+  without sudo (client-certificate auth from `~/.kube/config`).
+- Available tools: `curl`, `openssl`, `ss`, `base64`. **No `jq`** — use `kubectl -o jsonpath`
+  / go-template instead; the script must not grow a jq dependency.
+- **Port 8080 is already busy on this VM** (busy listeners verified: 631, 2222, 4170, 6333,
+  6334, 6443–6444, **8080**, 8082, 9100, 9119, 9222, 10010, 10248–10259, …; the
+  k3s-cluster-admin skill also lists 8080/8082/6333/6334/9119 as claimed by non-k8s services).
+  The old plan's default health-check port 8080 would fail its own preflight → new default is
+  **8443** (verified free).
+- Memory headroom: node capacity 16 GiB, current usage ≈6.6 GiB (41 %) — Argo CD's ~1–1.5 GiB
+  fits comfortably; Install still prints a `kubectl top node` sanity check.
+- Argo CD is **not yet installed** (no `argocd` namespace). Latest upstream release at probe
+  time: **v3.5.2** (the review verified the workload split against v3.5.1; unchanged).
 - Official install steps (current stable docs):
   ```bash
   kubectl create namespace argocd
   kubectl apply -n argocd --server-side --force-conflicts \
     -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
   ```
-  `--server-side --force-conflicts` is **required** (ApplicationSet CRD exceeds the 262KB client-side apply annotation limit). Docs recommend pinning a version tag for production.
+  `--server-side --force-conflicts` is **required** (ApplicationSet CRD exceeds the 262KB
+  client-side apply annotation limit). Docs recommend pinning a version tag for production.
+- **Daemon-tier operating rules** (apply whenever the agent executes this script, not to the
+  script itself): destructive operations — `uninstall` — follow the 6-step cycle
+  (Detect → Confirm → Backup → Execute → Verify → Report) and are logged in
+  `system-changes/CHANGELOG.md` of the journal repo
+  (`~/src/github/nam20485/linux-admin-agent-vm`), `Target: debian13vm (daemon tier)`.
+  After any install/uninstall, update the k3s-cluster-admin skill's
+  `references/cluster-inventory.md` (skill mandate: "Update it after any change").
 
 ## Decisions
 
 | Decision | Choice | Rationale |
 |---|---|---|
-| Install method | Raw manifests from `stable` branch (docs' getting-started), overridable via `-Version` param (e.g. `v3.2.0` → `manifests/install.yaml` at that tag) | Matches the linked docs; no Helm dependency. `-Version` enables the docs' pinning recommendation |
+| Script language | **bash** (`scripts/argocd.sh`), not the old plan's pwsh (`argocd.ps1`) | pwsh not installed on the daemon-tier VM; repo has bash-twin precedent (`setup-vcpkg-cache.sh`, `compress-artifacts.sh`); headless tier is bash-native. Installing pwsh just for this script was considered and rejected as unnecessary weight |
+| Install method | Raw manifests from `stable` branch (docs' getting-started), overridable via `--version` (e.g. `v3.5.2` → `manifests/install.yaml` at that tag) | Matches the linked docs; no Helm dependency. `--version` enables the docs' pinning recommendation |
 | Namespace | `argocd` (default) | Docs default; manifests' ClusterRoleBindings hardcode it |
 | Apply flags | `--server-side --force-conflicts` on every apply | Required by CRD size; makes re-runs/upgrades idempotent |
-| Exposure | **None by default** — Validate uses `kubectl port-forward svc/argocd-server -n argocd 8080:443` | k3s ServiceLB cannot publish the argocd-server LB on host port 443/80 (Traefik already binds them → LB stuck Pending). Ingress exposure is a follow-up (see Out of scope) |
-| Validate scope | Workloads rolled out + API `/healthz` over port-forward + initial-admin secret exists (warning-only if absent) | No `argocd` CLI dependency; fully scriptable exit code |
-| Admin password | Not printed by default; `Status` shows whether `argocd-initial-admin-secret` exists and prints the retrieval one-liner | Avoids leaking credentials into logs; docs warn to delete it after first password change |
-| Uninstall | Included for symmetry with `k3s-cluster.ps1`; deletes the manifest URL resources + namespace after typed confirmation (`argocd`), `-Force` skips | Cheap to add, completes lifecycle |
+| Exposure | **None by default** — Validate uses `kubectl port-forward svc/argocd-server -n argocd 8443:443` | k3s ServiceLB cannot publish the argocd-server LB on host port 443/80 (Traefik already binds them → LB stuck Pending). Default local port **8443** because **8080 is busy on this VM**. Ingress exposure is a follow-up (see Out of scope) |
+| Validate scope | Workloads rolled out + API `/healthz` over port-forward (`curl -sk`) + initial-admin secret exists (warning-only if absent) | No `argocd` CLI dependency; fully scriptable exit code |
+| Admin password | Not printed by default; `status` shows whether `argocd-initial-admin-secret` exists and prints the bash retrieval one-liner (`base64 -d`) | Avoids leaking credentials into logs; docs warn to delete it after first password change |
+| Uninstall | Deletes the manifest URL resources + namespace after typed confirmation (`argocd`), `--force` skips | Completes lifecycle; when the *agent* runs it, the journal's destructive-op cycle + CHANGELOG entry additionally apply (profile hard rule) |
 
-## Script specification — `scripts/argocd.ps1`
+## Script specification — `scripts/argocd.sh`
 
-### Parameters
+### Interface
 
-```powershell
-param(
-    [ValidateSet('Install','Status','Validate','Uninstall')]
-    [string]$Action = 'Status',
-    # Install: Argo CD version tag (empty = stable branch manifests); leading 'v' optional ('3.5.1' -> 'v3.5.1')
-    [ValidatePattern('^v?\d+\.\d+\.\d+$')]
-    [string]$Version = '',
-    # Install: opt-in wait for all rollouts to complete (repo convention, cf. deploy-monitoring.ps1)
-    [switch]$Wait,
-    [int]$WaitTimeoutSeconds = 600,
-    # Validate: local port used for the port-forward health probe
-    [int]$HealthCheckPort = 8080,
-    # Uninstall: skip the typed confirmation
-    [switch]$Force = $false
-)
+```text
+Usage: argocd.sh [action] [options]
+
+Actions (default: status):
+  install      Deploy Argo CD (idempotent; server-side apply)
+  status       Read-only overview; safe when not installed (exit 0)
+  validate     Health check; exit 0 = healthy
+  uninstall    Remove Argo CD (typed confirmation; --force skips)
+
+Options:
+  --version <tag>         install: Argo CD version tag (empty = stable branch manifests);
+                          leading 'v' optional ('3.5.2' -> 'v3.5.2')
+  --wait                  install: wait for all rollouts to complete (opt-in, repo convention)
+  --wait-timeout <sec>    install: rollout wait timeout (default 600)
+  --health-check-port <p> validate: local port for the healthz probe (default 8443)
+  --force                 uninstall: skip the typed confirmation
+  -h, --help
 ```
 
 ### Shared setup (all actions)
 
-1. `Set-StrictMode -Version Latest`; `$ErrorActionPreference = "Stop"`; throw if `$IsWindows` ("must run inside the Debian VM").
-2. Pin `$env:KUBECONFIG = (Join-Path $HOME '.kube/config')`.
-3. Preflight: `kubectl` on PATH (`Test-Command`); cluster reachable via `kubectl get nodes -o name` — on failure, point the user to `pwsh scripts/k3s-cluster.ps1 -Action Status/Start`.
-4. Normalize `-Version` (`if ($Version -and $Version -notmatch '^v') { $Version = "v$Version" }`) — GitHub tags require the leading `v`; without it raw.githubusercontent returns a bare 404 mid-install. Then compute the manifest URL: `https://raw.githubusercontent.com/argoproj/argo-cd/{stable|$Version}/manifests/install.yaml`, and print the resolved URL before applying.
+1. `set -euo pipefail`; colored status helpers; `usage()` for `-h/--help` and unknown args.
+2. `export KUBECONFIG="${KUBECONFIG:-$HOME/.kube/config}"` (see kubectl gotcha above).
+3. Preflight: `command -v kubectl` and `command -v curl`; cluster reachable via
+   `kubectl get nodes -o name` — on failure, point the user at the k3s-cluster-admin skill
+   (`sudo systemctl status k3s`, skill `scripts/health.sh`).
+4. Normalize `--version` (`[[ $VERSION =~ ^[0-9] ]] && VERSION="v$VERSION"`; validate
+   `^v?[0-9]+\.[0-9]+\.[0-9]+$`) — GitHub tags require the leading `v`; without it
+   raw.githubusercontent returns a bare 404 mid-install. Then compute the manifest URL:
+   `https://raw.githubusercontent.com/argoproj/argo-cd/{stable|$VERSION}/manifests/install.yaml`,
+   and print the resolved URL before applying.
 
-### `-Action Install`
+### `install`
 
-1. `kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -` (idempotent; pattern from `deploy-monitoring.ps1:73`).
-2. `kubectl apply -n argocd --server-side --force-conflicts -f <manifest URL>`.
-3. If `$Wait` (opt-in): reuse the `Wait-RolloutInNamespace` pattern (deploy/sts/ds in `argocd`, `kubectl rollout status ... --timeout`). After the wait, print a `kubectl top node` snapshot as a memory-headroom sanity check (see Risks).
-4. Print next steps: port-forward command, initial-password retrieval one-liner (pwsh-native form, see Status), and a note that the initial password secret should be deleted after first login.
+1. `kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -` (idempotent).
+2. `kubectl apply -n argocd --server-side --force-conflicts -f "$MANIFEST_URL"`.
+3. If `--wait` (opt-in): for every deployment/statefulset/daemonset in `argocd`,
+   `kubectl rollout status <kind>/<name> -n argocd --timeout="${WAIT_TIMEOUT}s"`. After the
+   wait, print a `kubectl top node` snapshot as a memory-headroom sanity check (see Risks).
+4. Print next steps: port-forward command (8443), initial-password retrieval one-liner
+   (bash form, see `status`), and a note that the initial password secret should be deleted
+   after first login.
 
-### `-Action Status` (default; read-only; must not throw when Argo CD is absent)
+### `status` (default; read-only; must not fail when Argo CD is absent)
 
-- Namespace `argocd` exists? If not, print "not installed" and exit 0.
+- Namespace `argocd` exists? If not, print "not installed" and exit 0. (Guard the check so
+  `set -e` doesn't turn the expected NotFound into a stack trace:
+  `kubectl get namespace argocd >/dev/null 2>&1 || { echo "not installed"; exit 0; }`.)
 - `kubectl get pods -n argocd -o wide` (Ready/Status per pod).
 - Deployments/statefulsets with ready replicas (`kubectl get deploy,sts -n argocd`).
 - `kubectl get svc -n argocd` (argocd-server type/IP).
-- Installed version: image tag of `deployment/argocd-server`.
-- Presence of `argocd-initial-admin-secret` (+ retrieval one-liner; prefer the pwsh-native form since the script itself is pwsh: `[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String((kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}')))`), and a reminder to delete it after rotating the password.
+- Installed version: image tag of `deployment/argocd-server`
+  (`-o jsonpath='{.spec.template.spec.containers[0].image}'`).
+- Presence of `argocd-initial-admin-secret` (+ retrieval one-liner, bash-native here since the
+  script is bash):
+  ```bash
+  kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d; echo
+  ```
+  and a reminder to delete it after rotating the password.
 
-### `-Action Validate` (exit 0 = healthy, non-zero otherwise; collects all failures before exiting)
+### `validate` (exit 0 = healthy, non-zero otherwise; collects all failures before exiting)
 
-1. Namespace exists and is not terminating. If the namespace is missing, print the single line `Argo CD is not installed (run: pwsh scripts/argocd.ps1 -Action Install)` and `exit 1` — absence is failure for a health check, but it must be a clean failure, not a StrictMode/`$ErrorActionPreference = "Stop"` stack trace from the first kubectl call.
-2. Expected workloads exist and report `readyReplicas == replicas` — Deployments: `argocd-server`, `argocd-repo-server`, `argocd-redis`, `argocd-dex-server`, `argocd-notifications-controller`, `argocd-applicationset-controller`; StatefulSet: `argocd-application-controller`. This is the split in the current stable manifest (v3.5.1): `argocd-redis` is a **Deployment** and the only StatefulSet is `argocd-application-controller`. Enumerate `kubectl get deploy,sts -n argocd` as the source of truth so a future manifest change (e.g. a redis kind flip) degrades to a warning rather than a hard mismatch, but assert the core set above.
-3. No pods in the namespace in `Pending|CrashLoopBackOff|ImagePullBackOff|Error` (report offenders).
-4. Argo CD CRDs present (`kubectl get crd applications.argoproj.io applicationsets.argoproj.io appprojects.argoproj.io`).
-5. Health-check port preflight (hard): verify `-HealthCheckPort` is not already listening, reusing the `Get-ListeningPorts` / `Test-TcpPortReachable` helpers from `k3s-cluster.ps1:38-74`; if busy, fail fast with a message pointing at the `-HealthCheckPort` override (without this, a busy port surfaces as a confusing 30s probe-timeout failure).
+1. Namespace exists and is not terminating. If missing, print the single line
+   `Argo CD is not installed (run: bash scripts/argocd.sh install)` and `exit 1` — absence is
+   failure for a health check, but it must be a clean failure, not a `set -e` stack trace from
+   the first kubectl call.
+2. Expected workloads exist and report `readyReplicas == replicas` — Deployments:
+   `argocd-server`, `argocd-repo-server`, `argocd-redis`, `argocd-dex-server`,
+   `argocd-notifications-controller`, `argocd-applicationset-controller`; StatefulSet:
+   `argocd-application-controller`. This is the split in the current stable manifest
+   (v3.5.1/v3.5.2): `argocd-redis` is a **Deployment** and the only StatefulSet is
+   `argocd-application-controller` (review finding R2). Enumerate
+   `kubectl get deploy,sts -n argocd` as the source of truth so a future manifest change
+   (e.g. a redis kind flip) degrades to a warning rather than a hard mismatch, but assert the
+   core set above.
+3. No pods in the namespace in `Pending|CrashLoopBackOff|ImagePullBackOff|Error` (report
+   offenders).
+4. Argo CD CRDs present
+   (`kubectl get crd applications.argoproj.io applicationsets.argoproj.io appprojects.argoproj.io`).
+5. Health-check port preflight (hard): verify `--health-check-port` is not already listening
+   via `ss -tln` (e.g. `ss -tln | grep -E "[:.]${PORT}\b"`); if busy, fail fast with a message
+   pointing at the `--health-check-port` override (without this, a busy port surfaces as a
+   confusing 30s probe-timeout failure). Note: 8080/8082/6333/6334/9119 are known-busy on this
+   VM — hence the 8443 default.
 6. API health probe:
-   - Start `kubectl port-forward svc/argocd-server -n argocd ${HealthCheckPort}:443` as a background process (`Start-Process -PassThru`), redirecting stdout/stderr to temp files so unredirected native output cannot interleave/block the probe.
-   - Poll `Invoke-WebRequest -Uri "https://localhost:${HealthCheckPort}/healthz" -SkipCertificateCheck -TimeoutSec 5` (self-signed cert) up to ~30s; success = HTTP 200. Every attempt needs `-TimeoutSec` (the default can hang far beyond the 30s budget). Treat non-2xx as retryable, not fatal: either wrap in try/catch and retry, or use `-SkipHttpErrorCheck` (pwsh 7+) and test `.StatusCode -eq 200`.
-   - Always stop/kill the port-forward process in a `finally` block.
-7. `argocd-initial-admin-secret` exists — **warning-only** if absent (does not affect the exit code): the docs say to delete this secret after the first password change (and Install reminds the user to do so), so treating absence as failure would break Validate on a correctly-hardened install.
-8. Print PASS/FAIL summary table; exit 1 if any hard check (steps 1–6) failed.
+   - Start `kubectl port-forward svc/argocd-server -n argocd ${PORT}:443` as a background
+     process (`&`, capture `$!`), redirecting stdout/stderr to temp files so background output
+     cannot interleave with probe output; register cleanup in a `trap ... EXIT` (bash's
+     "finally") that kills the port-forward PID on every exit path.
+   - Poll `curl -sk --max-time 5 -o /dev/null -w '%{http_code}' "https://127.0.0.1:${PORT}/healthz"`
+     up to ~30s; success = HTTP 200. Every attempt needs `--max-time` (curl's default can hang
+     far beyond the 30s budget). Treat non-2xx as retryable, not fatal.
+7. `argocd-initial-admin-secret` exists — **warning-only** if absent (does not affect the exit
+   code): the docs say to delete this secret after the first password change (and `install`
+   reminds the user to do so), so treating absence as failure would break `validate` on a
+   correctly-hardened install (review finding R7).
+8. Print PASS/FAIL summary; exit 1 if any hard check (steps 1–6) failed.
 
-### `-Action Uninstall`
+### `uninstall`
 
-1. Unless `-Force`, require typed confirmation (`argocd`), same UX as `k3s-cluster.ps1` Uninstall.
-2. `kubectl delete -n argocd -f <manifest URL> --ignore-not-found` — plain `delete -f`, no `--server-side --force-conflicts`: those are `kubectl apply`-only flags and `kubectl delete` rejects them (`unknown flag`). Deletion enumerates object references from the manifest itself, so it works regardless of whether the resources were applied server-side.
-3. `kubectl delete namespace argocd --ignore-not-found`. Warn on stuck finalizers with a hint to inspect `kubectl get ns argocd -o yaml`, and extend the hint to the cluster-scoped CRDs deleted in step 2 (`applications/applicationsets/appprojects.argoproj.io`): if any Applications/ApplicationSets still exist, CRD deletion can hang on finalizers too (`kubectl get crd <name> -o yaml`). Acceptable on this single-purpose cluster.
+1. Unless `--force`, require typed confirmation (`argocd`); a mistyped confirmation exits
+   non-zero without deleting anything.
+2. `kubectl delete -n argocd -f "$MANIFEST_URL" --ignore-not-found` — plain `delete -f`, no
+   `--server-side --force-conflicts`: those are `kubectl apply`-only flags and `kubectl delete`
+   rejects them (`unknown flag`) (review finding R1). Deletion enumerates object references from
+   the manifest itself, so it works regardless of whether the resources were applied server-side.
+3. `kubectl delete namespace argocd --ignore-not-found`. Warn on stuck finalizers with a hint to
+   inspect `kubectl get ns argocd -o yaml`, and extend the hint to the cluster-scoped CRDs
+   deleted in step 2 (`applications/applicationsets/appprojects.argoproj.io`): if any
+   Applications/ApplicationSets still exist, CRD deletion can hang on finalizers too
+   (`kubectl get crd <name> -o yaml`). Acceptable on this single-purpose cluster.
+4. *(Agent-only, not script logic:)* record the removal in the journal CHANGELOG and update the
+   k3s-cluster-admin skill inventory — see Context / environment facts.
 
 ## Implementation steps (ordered)
 
-1. Create `scripts/argocd.ps1` per the spec above, mirroring structure/helpers of `scripts/k3s-cluster.ps1` (strict mode, KUBECONFIG pin, Windows guard, `Test-Command`) and the rollout-wait helper from `scripts/deploy-monitoring.ps1`.
-2. `scripts/README.md`: **skip** (condition resolved) — that file documents only the test-automation shell scripts (`run-tests.sh`, `coverage.sh`, `setup-linux.sh`); neither `k3s-cluster.ps1` nor `deploy-monitoring.ps1` is documented there, so adding `argocd.ps1` would be the odd one out. The cluster-script documentation home is the k3s-admin skill (step 3).
-3. Update the k3s-admin skill only if the user asks (out of scope by default).
+1. Create `scripts/argocd.sh` per the spec above, mirroring structure/helpers of
+   `scripts/run-tests.sh` and `scripts/setup-vcpkg-cache.sh` (bash header, `set -euo pipefail`,
+   colored helpers, flag parsing, `command -v` checks); `chmod +x`.
+2. `scripts/README.md`: **skip** (condition resolved, review finding R8) — that file documents
+   only the test-automation shell scripts (`run-tests.sh`, `coverage.sh`, `setup-linux.sh`);
+   the cluster/infra scripts are not documented there, so adding `argocd.sh` would be the odd
+   one out. The cluster documentation home is the k3s-cluster-admin skill.
+3. After a successful install, update the k3s-cluster-admin skill's
+   `references/cluster-inventory.md` (daemon-tier chore, not script logic).
 
-## Validation plan (run inside the VM, from repo root)
+## Validation plan (run on the VM as `linux-admin-agent`, from repo root)
 
-```powershell
-pwsh scripts/k3s-cluster.ps1 -Action Status          # cluster must be running first
-pwsh scripts/argocd.ps1 -Action Status               # "not installed" before install, exit 0
-pwsh scripts/argocd.ps1 -Action Install -Wait        # applies manifests, waits for rollouts
-pwsh scripts/argocd.ps1 -Action Status               # pods ready, version, secret present
-pwsh scripts/argocd.ps1 -Action Validate             # exit 0, healthz 200 over port-forward
-pwsh scripts/argocd.ps1 -Action Install -Wait        # re-run: idempotent, no errors (server-side apply)
-pwsh scripts/argocd.ps1 -Action Uninstall            # typed confirmation; namespace removed
-pwsh scripts/argocd.ps1 -Action Status               # back to "not installed"
+```bash
+# Cluster preflight (k3s-cluster-admin skill health script; or plain `kubectl get nodes`)
+bash ~/.hermes/profiles/linux-admin-agent-vm/skills/devops/k3s-cluster-admin/scripts/health.sh
+
+bash scripts/argocd.sh status                # "not installed" before install, exit 0
+bash scripts/argocd.sh validate              # not installed -> clean one-line failure, exit 1
+bash scripts/argocd.sh install --wait        # applies manifests, waits for rollouts, top-node snapshot
+bash scripts/argocd.sh status                # pods ready, version, secret present
+bash scripts/argocd.sh validate              # exit 0, healthz 200 over port-forward
+bash scripts/argocd.sh install --wait        # re-run: idempotent, no errors (server-side apply)
+bash scripts/argocd.sh uninstall             # typed confirmation; namespace removed
+bash scripts/argocd.sh status                # back to "not installed"
 ```
 
 Additional coverage:
 
-```powershell
-# Wait opt-out: Install without -Wait returns promptly after apply (no rollout wait)
-pwsh scripts/argocd.ps1 -Action Install
+```bash
+# Wait opt-out: install without --wait returns promptly after apply (no rollout wait)
+bash scripts/argocd.sh install
 
 # Pinned install / upgrade (the docs' upgrade mechanism = re-install with a different version)
-pwsh scripts/argocd.ps1 -Action Install -Version v3.5.1 -Wait   # pinned tag; Status shows v3.5.1 image tag
-pwsh scripts/argocd.ps1 -Action Install -Version 3.5.1 -Wait    # missing leading 'v' is normalized, same manifest
-pwsh scripts/argocd.ps1 -Action Install -Wait                   # back to stable branch manifests
+bash scripts/argocd.sh install --version v3.5.2 --wait   # pinned tag; status shows v3.5.2 image tag
+bash scripts/argocd.sh install --version 3.5.2 --wait    # missing leading 'v' is normalized, same manifest
+bash scripts/argocd.sh install --wait                    # back to stable branch manifests
 
 # Uninstall variants
-pwsh scripts/argocd.ps1 -Action Uninstall             # mistyped confirmation -> non-zero exit, nothing deleted
-pwsh scripts/argocd.ps1 -Action Uninstall -Force      # skips confirmation
+bash scripts/argocd.sh uninstall             # mistyped confirmation -> non-zero exit, nothing deleted
+bash scripts/argocd.sh uninstall --force     # skips confirmation
 
 # Validate failure paths
-pwsh scripts/argocd.ps1 -Action Validate               # not installed -> clean one-line failure, exit 1
-pwsh scripts/argocd.ps1 -Action Validate -HealthCheckPort <busy-port>   # port preflight fails fast, exit 1
-kubectl -n argocd scale deploy/argocd-server --replicas=0; pwsh scripts/argocd.ps1 -Action Validate   # induced unhealthy -> exit 1
-kubectl -n argocd scale deploy/argocd-server --replicas=1                                             # restore
+bash scripts/argocd.sh validate --health-check-port 8080  # 8080 is busy on this VM -> preflight fails fast, exit 1
+kubectl -n argocd scale deploy/argocd-server --replicas=0; bash scripts/argocd.sh validate  # induced unhealthy -> exit 1
+kubectl -n argocd scale deploy/argocd-server --replicas=1                                   # restore
 ```
 
-Manual smoke test of UI access after Install:
-`kubectl port-forward svc/argocd-server -n argocd 8080:443` then browse `https://localhost:8080` (accept self-signed cert), login `admin` + secret password.
+Manual smoke test of UI access after install:
+inside the VM `kubectl port-forward svc/argocd-server -n argocd 8443:443`, then from the
+hypervisor host tunnel through SSH (`ssh -N -L 8443:127.0.0.1:8443 debian13vm`) and browse
+`https://localhost:8443` (accept self-signed cert), login `admin` + secret password.
 
 ## Risks / failure modes
 
-- **Port-forward probe flakiness**: `kubectl port-forward` can race the API; mitigate with retry/poll loop (30s) and guaranteed process cleanup in `finally`.
-- **`stable` branch drift**: unpinned manifests can change under us; `-Version` pin is available and Install prints the resolved manifest URL.
-- **Image pulls**: first install pulls ~7 images; on slow links the default 600s wait may need `-WaitTimeoutSeconds` bump.
-- **Port 8080 busy** during Validate: hard preflight (Validate step 5) checks the port via the `k3s-cluster.ps1` helpers and fails fast pointing at `-HealthCheckPort`, instead of letting the probe time out after 30s.
-- **Memory footprint**: the non-HA install adds 7 pods (~1–1.5 GiB RSS total) next to kube-prometheus-stack, trivy-operator, and the OdbDesign server on the single-node VM; Install prints a `kubectl top node` snapshot after the rollout wait as a sanity check.
+- **Port-forward probe flakiness**: `kubectl port-forward` can race the API; mitigate with
+  retry/poll loop (30s) and guaranteed process cleanup via `trap ... EXIT`.
+- **`stable` branch drift**: unpinned manifests can change under us; `--version` pin is
+  available and `install` prints the resolved manifest URL.
+- **Image pulls**: first install pulls ~7 images; on slow links the default 600s wait may need
+  a bigger `--wait-timeout`.
+- **Local port contention** during validate: hard preflight (validate step 5) checks the port
+  via `ss -tln` and fails fast pointing at `--health-check-port`. Default moved from 8080 to
+  **8443** because 8080 is busy on this VM (along with 8082, 6333, 6334, 9119, 9222, …).
+- **Memory footprint**: the non-HA install adds 7 pods (~1–1.5 GiB RSS total) next to
+  kube-prometheus-stack, trivy-operator, and the OdbDesign server on the single-node VM;
+  verified headroom 2026-08-31: 16 GiB capacity, 41 % used. Install prints a `kubectl top node`
+  snapshot after the rollout wait as a sanity check.
+- **No jq on the VM**: all JSON extraction uses `kubectl -o jsonpath`; do not introduce a jq
+  dependency.
+- **Workload-set drift vs. assertions**: expected-workload list was verified at v3.5.1/v3.5.2;
+  the enumeration fallback (validate step 2) degrades kind/name drift to warnings.
 - **sudo/k3s not involved**: script needs no sudo; only user kubeconfig access.
 
 ## Out of scope (follow-ups)
 
-- Traefik Ingress route for the Argo CD UI (needs `ssl-passthrough` annotation or cert replacement per the Argo CD ingress docs) — ServiceLB on 443/80 conflicts with Traefik, so no LoadBalancer patch by default.
+- Traefik Ingress route for the Argo CD UI (needs `ssl-passthrough` annotation or cert
+  replacement per the Argo CD ingress docs) — ServiceLB on 443/80 conflicts with Traefik, so no
+  LoadBalancer patch by default.
 - Installing the `argocd` CLI binary.
+- Installing pwsh on the VM to keep the old `.ps1` deliverable (bash covers the need).
 - Creating/syncing Argo CD Applications (guestbook example from the docs).
 - HA manifests variant and external cluster registration.
