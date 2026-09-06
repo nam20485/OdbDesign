@@ -1,10 +1,12 @@
 # Debian 13 (Trixie) slim - amd64
-# Version: 13.3-slim (trixie-slim)
+# Version: trixie-slim (pinned digest = 13.6-slim / trixie-20260824-slim, glibc 2.41)
 # NOTE: the previous digest (b6e2a152...) actually resolved to Debian 12
 # (bookworm, glibc 2.36), which is too old for the CI-built binaries
 # (they require GLIBC_2.38 / GLIBCXX_3.4.32) -> CrashLoopBackOff.
-# Digest below is the real debian:13.3-slim manifest list (trixie, glibc 2.41).
-FROM --platform=$BUILDPLATFORM debian@sha256:1d3c811171a08a5adaa4a163fbafd96b61b87aa871bbc7aa15431ac275d3d430 AS build
+# NOTE: keep the "trixie-slim" tag in the reference. A bare "debian@sha256:..."
+# has no tag for Dependabot to track, so it gets bumped against the full
+# (non-slim) image (see reverted bump 0f10566: 1d3c811 -> 34cd9e9).
+FROM --platform=$BUILDPLATFORM debian:trixie-slim@sha256:d7e12182ce18b85b93007c1dedf31f2d29e01ccf3182cc4017c709b6259bc132 AS build
 
 ARG OWNER=nam20485
 ARG VCPKG_BINARY_SOURCES=""
@@ -110,10 +112,9 @@ RUN cmake --build --preset linux-dynamic-release
 
 # much smaller runtime image
 # Debian 13 (Trixie) slim - amd64
-# Version: 13.3-slim (trixie-slim)
+# Version: trixie-slim (pinned digest = 13.6-slim / trixie-20260824-slim, glibc 2.41)
 # NOTE: keep in sync with the build stage digest (see note above).
-# FROM --platform=$TARGETPLATFORM debian@sha256:1d3c811171a08a5adaa4a163fbafd96b61b87aa871bbc7aa15431ac275d3d430 AS run
-FROM debian@sha256:1d3c811171a08a5adaa4a163fbafd96b61b87aa871bbc7aa15431ac275d3d430 AS run
+FROM debian:trixie-slim@sha256:d7e12182ce18b85b93007c1dedf31f2d29e01ccf3182cc4017c709b6259bc132 AS run
 # ARG ODBDESIGN_SERVER_REQUEST_USERNAME=""
 # ARG ODBDESIGN_SERVER_REQUEST_PASSWORD=""
 LABEL org.opencontainers.image.source=https://github.com/nam20485/OdbDesign \

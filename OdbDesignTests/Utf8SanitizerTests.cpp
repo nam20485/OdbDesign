@@ -154,6 +154,42 @@ namespace Odb::Test
         EXPECT_EQ(invalid, "\xC3\x96");
     }
 
+    // 13. Mixed valid UTF-8 + invalid byte: valid parts must survive untouched.
+    // A whole-string CP1252 fallback would turn the valid "Ö" into the mojibake
+    // "Ã–"; only the trailing raw 0xD6 may be transcoded.
+    TEST_F(Utf8SanitizerTest, MixedValidUtf8AndInvalidByte_NoMojibake)
+    {
+        std::string input = "\xC3\x96\xD6";  // valid UTF-8 "Ö" + raw CP1252 0xD6
+        EXPECT_FALSE(IsValidUtf8(input));
+        std::string expected = "\xC3\x96\xC3\x96";  // "ÖÖ"
+        EXPECT_TRUE(BytesMatch(ToUtf8(input), expected));
+        EXPECT_TRUE(IsValidUtf8(ToUtf8(input)));
+    }
+
+    // 14. Truncated multi-byte sequence at end of string: the dangling lead byte
+    // is repaired while the valid prefix is preserved.
+    TEST_F(Utf8SanitizerTest, TruncatedSequenceAtEnd_Repaired)
+    {
+        std::string input = "A\xC3";
+        EXPECT_FALSE(IsValidUtf8(input));
+        // 0xC3 -> U+00C3 (Ã) -> 0xC3 0x83
+        std::string expected = "A\xC3\x83";
+        EXPECT_TRUE(BytesMatch(ToUtf8(input), expected));
+        EXPECT_TRUE(IsValidUtf8(ToUtf8(input)));
+    }
+
+    // 15. Valid runs between invalid bytes: both valid runs are preserved.
+    TEST_F(Utf8SanitizerTest, ValidRunsBetweenInvalidBytes_Preserved)
+    {
+        // raw CP1252 0xD6 + valid UTF-8 "€" + raw CP1252 0xE4
+        std::string input = "\xD6" "\xE2\x82\xAC" "\xE4";
+        EXPECT_FALSE(IsValidUtf8(input));
+        // 0xD6 -> Ö (0xC3 0x96), € unchanged, 0xE4 -> ä (0xC3 0xA4)
+        std::string expected = "\xC3\x96" "\xE2\x82\xAC" "\xC3\xA4";
+        EXPECT_TRUE(BytesMatch(ToUtf8(input), expected));
+        EXPECT_TRUE(IsValidUtf8(ToUtf8(input)));
+    }
+
     // 12. Integration test: PropertyRecord with raw CP1252 value
     TEST_F(Utf8SanitizerTest, Integration_PropertyRecordSerialization)
     {

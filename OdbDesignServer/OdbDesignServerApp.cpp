@@ -24,6 +24,8 @@
 #include <grpcpp/resource_quota.h>
 #include <filesystem>
 #include <cstdlib>
+#include <algorithm>
+#include <limits>
 
 using namespace Odb::Lib::App;
 
@@ -121,8 +123,22 @@ namespace Odb::App::Server
 		// Convert MB to bytes (multiply by 1024*1024)
 		const int64_t maxReceiveBytes = static_cast<int64_t>(loadResult.config->max_receive_message_size_mb) * 1024 * 1024;
 		const int64_t maxSendBytes = static_cast<int64_t>(loadResult.config->max_send_message_size_mb) * 1024 * 1024;
-		builder.SetMaxReceiveMessageSize(static_cast<int>(maxReceiveBytes));
-		builder.SetMaxSendMessageSize(static_cast<int>(maxSendBytes));
+		// gRPC takes int message sizes. Narrowing a value above INT_MAX bytes
+		// (~2047 MB) would wrap negative, and gRPC treats a negative limit as
+		// unlimited — silently disabling the guard. Clamp instead.
+		constexpr int64_t maxIntBytes = static_cast<int64_t>(std::numeric_limits<int>::max());
+		if (maxReceiveBytes > maxIntBytes)
+		{
+			std::cerr << "WARNING: max_receive_message_size_mb exceeds " << maxIntBytes / (1024 * 1024)
+				<< " MB; clamping gRPC receive limit to INT_MAX bytes" << std::endl;
+		}
+		if (maxSendBytes > maxIntBytes)
+		{
+			std::cerr << "WARNING: max_send_message_size_mb exceeds " << maxIntBytes / (1024 * 1024)
+				<< " MB; clamping gRPC send limit to INT_MAX bytes" << std::endl;
+		}
+		builder.SetMaxReceiveMessageSize(static_cast<int>(std::min(maxReceiveBytes, maxIntBytes)));
+		builder.SetMaxSendMessageSize(static_cast<int>(std::min(maxSendBytes, maxIntBytes)));
 
 		std::cout << "gRPC max message sizes: receive=" << loadResult.config->max_receive_message_size_mb
 				  << "MB (" << maxReceiveBytes << " bytes)"

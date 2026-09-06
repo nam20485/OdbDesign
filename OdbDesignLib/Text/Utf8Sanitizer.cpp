@@ -138,6 +138,81 @@ namespace Odb::Lib::Text
             }
         }
 
+        /**
+         * @brief Returns the length in bytes (1-4) of the valid UTF-8 sequence
+         * starting at bytes[i], or 0 if no valid sequence starts there.
+         *
+         * Shared by validation (IsValidUtf8) and repair (ToUtf8) so both use
+         * exactly the same acceptance rules: continuation byte ranges, no
+         * overlong encodings, no surrogate halves, no code points > U+10FFFF.
+         */
+        std::size_t Utf8SequenceLengthAt(const uint8_t* bytes, std::size_t i, std::size_t size) noexcept
+        {
+            const uint8_t byte = bytes[i];
+
+            // Single byte: 0xxxxxxx
+            if (byte <= 0x7F)
+            {
+                return 1;
+            }
+
+            // Two bytes: 110xxxxx 10xxxxxx
+            if ((byte & 0xE0) == 0xC0)
+            {
+                if (i + 1 >= size) return 0;
+                if ((bytes[i + 1] & 0xC0) != 0x80) return 0;
+
+                // Check for overlong encoding
+                const uint32_t codepoint = ((byte & 0x1F) << 6) | (bytes[i + 1] & 0x3F);
+                if (codepoint < 0x80) return 0;
+
+                return 2;
+            }
+
+            // Three bytes: 1110xxxx 10xxxxxx 10xxxxxx
+            if ((byte & 0xF0) == 0xE0)
+            {
+                if (i + 2 >= size) return 0;
+                if ((bytes[i + 1] & 0xC0) != 0x80 || (bytes[i + 2] & 0xC0) != 0x80)
+                    return 0;
+
+                const uint32_t codepoint =
+                    ((byte & 0x0F) << 12) | ((bytes[i + 1] & 0x3F) << 6) | (bytes[i + 2] & 0x3F);
+
+                // Check for overlong encoding
+                if (codepoint < 0x800) return 0;
+
+                // Reject surrogate halves U+D800..U+DFFF
+                if (codepoint >= 0xD800 && codepoint <= 0xDFFF) return 0;
+
+                return 3;
+            }
+
+            // Four bytes: 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+            if ((byte & 0xF8) == 0xF0)
+            {
+                if (i + 3 >= size) return 0;
+                if ((bytes[i + 1] & 0xC0) != 0x80 || (bytes[i + 2] & 0xC0) != 0x80 ||
+                    (bytes[i + 3] & 0xC0) != 0x80)
+                    return 0;
+
+                const uint32_t codepoint =
+                    ((byte & 0x07) << 18) | ((bytes[i + 1] & 0x3F) << 12) |
+                    ((bytes[i + 2] & 0x3F) << 6) | (bytes[i + 3] & 0x3F);
+
+                // Check for overlong encoding
+                if (codepoint < 0x10000) return 0;
+
+                // Reject code points above U+10FFFF
+                if (codepoint > 0x10FFFF) return 0;
+
+                return 4;
+            }
+
+            // Invalid leading byte (includes bare continuation bytes)
+            return 0;
+        }
+
 #ifndef NDEBUG
         /**
          * @brief Reports an invalid UTF-8 value found in a message field, then aborts.
@@ -263,70 +338,9 @@ namespace Odb::Lib::Text
 
         while (i < size)
         {
-            const uint8_t byte = bytes[i];
-
-            // Single byte: 0xxxxxxx
-            if (byte <= 0x7F)
-            {
-                ++i;
-                continue;
-            }
-
-            // Two bytes: 110xxxxx 10xxxxxx
-            if ((byte & 0xE0) == 0xC0)
-            {
-                if (i + 1 >= size) return false;
-                if ((bytes[i + 1] & 0xC0) != 0x80) return false;
-
-                // Check for overlong encoding
-                const uint32_t codepoint = ((byte & 0x1F) << 6) | (bytes[i + 1] & 0x3F);
-                if (codepoint < 0x80) return false;
-
-                i += 2;
-            }
-            // Three bytes: 1110xxxx 10xxxxxx 10xxxxxx
-            else if ((byte & 0xF0) == 0xE0)
-            {
-                if (i + 2 >= size) return false;
-                if ((bytes[i + 1] & 0xC0) != 0x80 || (bytes[i + 2] & 0xC0) != 0x80)
-                    return false;
-
-                const uint32_t codepoint =
-                    ((byte & 0x0F) << 12) | ((bytes[i + 1] & 0x3F) << 6) | (bytes[i + 2] & 0x3F);
-
-                // Check for overlong encoding
-                if (codepoint < 0x800) return false;
-
-                // Reject surrogate halves U+D800..U+DFFF
-                if (codepoint >= 0xD800 && codepoint <= 0xDFFF) return false;
-
-                i += 3;
-            }
-            // Four bytes: 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
-            else if ((byte & 0xF8) == 0xF0)
-            {
-                if (i + 3 >= size) return false;
-                if ((bytes[i + 1] & 0xC0) != 0x80 || (bytes[i + 2] & 0xC0) != 0x80 ||
-                    (bytes[i + 3] & 0xC0) != 0x80)
-                    return false;
-
-                const uint32_t codepoint =
-                    ((byte & 0x07) << 18) | ((bytes[i + 1] & 0x3F) << 12) |
-                    ((bytes[i + 2] & 0x3F) << 6) | (bytes[i + 3] & 0x3F);
-
-                // Check for overlong encoding
-                if (codepoint < 0x10000) return false;
-
-                // Reject code points above U+10FFFF
-                if (codepoint > 0x10FFFF) return false;
-
-                i += 4;
-            }
-            else
-            {
-                // Invalid leading byte
-                return false;
-            }
+            const std::size_t sequenceLength = Utf8SequenceLengthAt(bytes, i, size);
+            if (sequenceLength == 0) return false;
+            i += sequenceLength;
         }
 
         return true;
@@ -345,18 +359,34 @@ namespace Odb::Lib::Text
             return std::string(input);
         }
 
-        // Slow path: transcode from CP1252
+        // Repair path: keep every valid UTF-8 sequence as-is and transcode each
+        // invalid byte individually as CP1252. Transcoding the whole string as
+        // CP1252 would corrupt the already-valid parts of mixed input into
+        // mojibake (e.g. a valid "Ö" would become "Ã–").
         // Worst case: each byte becomes 3 UTF-8 bytes (CP1252 0x80-0x9F map to
-        // BMP code points that encode as 3-byte UTF-8 sequences)
+        // BMP code points that encode as 3-byte UTF-8 sequences).
         std::string result;
         result.reserve(input.size() * 3);
 
+        const auto* bytes = reinterpret_cast<const uint8_t*>(input.data());
         char utf8Buf[4];
-        for (unsigned char byte : input)
+        std::size_t i = 0;
+
+        while (i < input.size())
         {
-            const uint32_t codepoint = kCp1252ToUnicode[byte];
-            const int len = EncodeUtf8Codepoint(codepoint, utf8Buf);
-            result.append(utf8Buf, len);
+            const std::size_t sequenceLength = Utf8SequenceLengthAt(bytes, i, input.size());
+            if (sequenceLength > 0)
+            {
+                result.append(input.data() + i, sequenceLength);
+                i += sequenceLength;
+            }
+            else
+            {
+                const uint32_t codepoint = kCp1252ToUnicode[bytes[i]];
+                const int len = EncodeUtf8Codepoint(codepoint, utf8Buf);
+                result.append(utf8Buf, len);
+                ++i;
+            }
         }
 
         return result;

@@ -66,6 +66,15 @@ jobs:
 
       - name: Checkout repository
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          # workflow_run: check out the triggering build's commit, not the
+          # default branch. The image is assembled from this checkout
+          # (Dockerfile.prebuilt, config.json, templates), so it must match
+          # the branch whose artifacts are being packaged — the default
+          # branch's Dockerfile.prebuilt may be stale (e.g. missing the
+          # `*.so*` glob for versioned vcpkg soname symlinks, which produces
+          # an image missing libgrpc++_reflection.so.1.81 -> CrashLoopBackOff).
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
 
       # Download pre-built Linux artifacts from CMake workflow
       - name: Download Linux Artifacts
@@ -195,8 +204,12 @@ jobs:
           # /run/secrets/github_token) rather than a build arg, so it never
           # appears in the build log or the image cache. USE_VCPKG_CACHE
           # defaults to 0 (write-enabled cache upload).
+          # The line must not be quoted: build-push-action splits each line on
+          # the first '=' without stripping quotes, so quotes would become part
+          # of the secret id and the Dockerfile mount id=github_token would
+          # never match.
           secrets: |
-            "github_token=${{ secrets.GITHUB_TOKEN }}"
+            github_token=${{ secrets.GITHUB_TOKEN }}
 
       # Sign the resulting Docker image digest
       # This will only write to the public Rekor transparency log when the Docker

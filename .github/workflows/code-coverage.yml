@@ -8,7 +8,15 @@ on:
     branches: ["development", "staging", "main", "release", "nam20485"]
 
 concurrency:
-  group: code-coverage-${{ github.workflow }}-${{ github.ref }}
+  # Group by head repo + branch instead of github.ref: a same-repo PR fires
+  # both the push lane (refs/heads/<branch>) and the pull_request lane
+  # (refs/pull/<n>/merge) for the same commit, and ref-keyed groups let both
+  # run at once. Keying on the head branch puts both lanes in one group, so
+  # the duplicate cancels and each newer commit cancels its predecessor.
+  # Fork PRs stay isolated by their own repo full name. Coverage is a
+  # trend-only metric (not a required status check), so only the latest run
+  # per branch matters.
+  group: code-coverage-${{ github.event_name == 'pull_request' && format('{0}/{1}', github.event.pull_request.head.repo.full_name, github.head_ref) || format('{0}/{1}', github.repository, github.ref_name) }}
   cancel-in-progress: true
 
 permissions:

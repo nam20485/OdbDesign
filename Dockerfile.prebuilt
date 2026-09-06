@@ -3,12 +3,14 @@
 # artifacts built by the CMake Multi-Platform workflow, avoiding a full rebuild.
 
 # Debian 13 (Trixie) slim - amd64
-# Version: 13.3-slim (trixie-slim)
+# Version: trixie-slim (pinned digest = 13.6-slim / trixie-20260824-slim, glibc 2.41)
 # NOTE: the previous digest (b6e2a152...) actually resolved to Debian 12
 # (bookworm, glibc 2.36), which is too old for the CI-built artifacts
 # (they require GLIBC_2.38 / GLIBCXX_3.4.32) -> CrashLoopBackOff.
-# Digest below is the real debian:13.3-slim manifest list (trixie, glibc 2.41).
-FROM debian@sha256:1d3c811171a08a5adaa4a163fbafd96b61b87aa871bbc7aa15431ac275d3d430 AS run
+# NOTE: keep the "trixie-slim" tag in the reference. A bare "debian@sha256:..."
+# has no tag for Dependabot to track, so it gets bumped against the full
+# (non-slim) image (see reverted bump 0f10566: 1d3c811 -> 34cd9e9).
+FROM debian:trixie-slim@sha256:d7e12182ce18b85b93007c1dedf31f2d29e01ccf3182cc4017c709b6259bc132 AS run
 
 LABEL org.opencontainers.image.source=https://github.com/nam20485/OdbDesign \
     org.opencontainers.image.authors=https://github.com/nam20485 \
@@ -58,7 +60,15 @@ RUN mkdir --parents /OdbDesign/bin /OdbDesign/templates /OdbDesign/designs
 WORKDIR /OdbDesign
 
 # copy pre-built binaries from artifacts (extracted from zip in workflow)
-COPY ./artifacts/*.so ./bin/
+# *.so* (not *.so): the linux-dynamic-release artifacts bundle versioned vcpkg
+# shared libraries (e.g. libarchive.so.13, libprotobuf.so.33) alongside the
+# project libraries; LD_LIBRARY_PATH=/OdbDesign/bin below makes them findable.
+# The zip stores vcpkg's dev symlinks as symlinks (zip -y), so COPY recreates
+# libfoo.so -> libfoo.so.N -> real-file chains as links, not duplicate copies.
+COPY ./artifacts/*.so* ./bin/
+# OpenSSL 3 provider modules (resolved relative to libcrypto.so's directory);
+# mirrors the full Dockerfile's ossl-modules COPY
+COPY ./artifacts/ossl-modules ./bin/ossl-modules
 COPY ./artifacts/OdbDesignServer ./bin/
 # gRPC service config (loaded by RunGrpcServer from exeDir/config.json)
 COPY ./OdbDesignServer/config.json ./bin/config.json

@@ -3,6 +3,7 @@
 #include "../OdbFile.h"
 #include "../../odbdesign_export.h"
 #include "../../enums.h"
+#include <string>
 #include <vector>
 #include "../../IProtoBuffable.h"
 #include "standardfontsfile.pb.h"
@@ -49,7 +50,13 @@ namespace Odb::Lib::FileModel::Design
 			inline static constexpr const char* BEGIN_TOKEN = "CHAR";
 			inline static constexpr const char* END_TOKEN = "ECHAR";
 
-			char character;
+			// Glyph key as read from the fonts/standard file: a single byte that
+			// may be a high CP1252 byte. A string (not a char) so from_protobuf()
+			// can hold the multi-byte sanitized glyph. Sanitized to UTF-8 only at
+			// the protobuf boundary in to_protobuf(); the reverse direction is
+			// lossy for high bytes — after a protobuf round trip this member
+			// holds the sanitized UTF-8 glyph, not the original raw byte.
+			std::string character;
 			LineRecord::Vector m_lineRecords;
 
 			std::unique_ptr<Odb::Lib::Protobuf::StandardFontsFile::CharacterBlock> to_protobuf() const override;
