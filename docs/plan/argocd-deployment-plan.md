@@ -108,7 +108,7 @@ auditing tags.
 
    | Workflow | Trigger | Effect of a deploy commit | Action |
    |---|---|---|---|
-   | `cmake-multi-platform.yml` | push + PR, no paths filter | **full CMake build → docker-publish → new image → bump → loop** | add `paths-ignore: [deploy/**, docs/**]` to push |
+   | `cmake-multi-platform.yml` | push + PR, no paths filter | **full CMake rebuild → docker-publish → new image → one redundant auto-deploy** (the bot's own bump commit cannot re-trigger: GITHUB_TOKEN pushes create no workflow runs — this is build waste, not a loop) | add `paths-ignore: [deploy/**, docs/**]` to push |
    | `code-coverage.yml` | push + PR, no paths filter | full coverage build per deploy | same `paths-ignore` |
    | `sbom-generate-submit.yml` | push incl. `nam20485` | cheap Syft run | same `paths-ignore` (optional) |
    | `docker-publish.yml` | workflow_run(CMake) | none (CMake skipped) | — |
@@ -154,7 +154,7 @@ auditing tags.
 | D6 | SwaggerUI image bumped **manually** in git; no cross-repo PAT | That image changes ~never (spec updates flow via the ConfigMap from this repo). A PAT with contents:write on OdbDesign stored in the SwaggerUI repo is a new secret for no present value (user prefers minimal secrets). Revisit if SwaggerUI releases become frequent. |
 | D7 | Sync policy: `automated {prune, selfHeal}`, `ServerSideApply=true`, `CreateNamespace=false`, **no `resources-finalizer` on any Application** | Prune/selfHeal per handoff; SSA avoids last-applied bloat on the 85 KB ConfigMap; no finalizers means deleting an Application orphans live objects instead of cascading — deliberate PV-safety choice (handoff §8.3). |
 | D8 | CI gating restored in Phase 0 (CodeQL re-enabled with concurrency dedup; ruleset checks made satisfiable) | §2.3.2–3, user direction 2026-09-08. |
-| D9 | Deploy commits carry `[skip ci]` **and** workflows get `paths-ignore` | `[skip ci]` guards the bot commit; `paths-ignore` also guards human deploy/docs-only commits. |
+| D9 | Deploy commits carry `[skip ci]` **and** workflows get `paths-ignore` | Bot commits made with `GITHUB_TOKEN` never trigger workflow runs anyway; `[skip ci]` is defense-in-depth for human-pushed equivalents, `paths-ignore` guards human deploy/docs-only commits. |
 
 ## 5. Target flow
 
@@ -364,6 +364,10 @@ New job after `build` (reuses the build's pinned checkout action SHA):
         run: |
           TAG="nam20485-${{ github.run_number }}"   # exactly what this run pushed
           FILE="deploy/kube/OdbDesignServer/deployment.yaml"
+          # Blob SHA of the COMMITTED file — capture it before sed rewrites
+          # the file: the Contents API PUT replaces the blob this sha
+          # identifies, and hashing the post-sed content would 409 every run.
+          SHA="$(git rev-parse "HEAD:$FILE")"
           sed -i "s|image: ghcr.io/nam20485/odbdesign:.*|image: ghcr.io/nam20485/odbdesign:${TAG}|" "$FILE"
           # Commit through the Contents API, not git push: the nam20485
           # ruleset's required_signatures rule rejects unsigned bot commits,
@@ -371,7 +375,7 @@ New job after `build` (reuses the build's pinned checkout action SHA):
           gh api --method PUT "repos/${{ github.repository }}/contents/${FILE}" \
             -f message="deploy: odbdesign-server ${TAG} [skip ci]" \
             -f content="$(base64 -w0 < "$FILE")" \
-            -f sha="$(git hash-object "$FILE")" \
+            -f sha="$SHA" \
             -f branch=nam20485
 ```
 
@@ -405,28 +409,33 @@ jobs:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           ref: nam20485
-      - name: Regenerate ConfigMap manifest
-        run: |
-          kubectl create configmap odbdesign-server-swagger-spec \
-            --from-file=odbdesign-server-0.9-swagger.yaml=swagger/odbdesign-server-0.9-swagger.yaml \
-            --dry-run=client -o yaml \
-            > deploy/kube/OdbDesignServer-SwaggerUI/swagger-spec-configmap.yaml
       - name: Commit if changed
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          git diff --quiet -- deploy/kube/OdbDesignServer-SwaggerUI/swagger-spec-configmap.yaml \
-            && { echo "ConfigMap up to date"; exit 0; }
           FILE="deploy/kube/OdbDesignServer-SwaggerUI/swagger-spec-configmap.yaml"
+          # Blob SHA of the COMMITTED file — capture it before regenerating
+          # rewrites the file (same 409 trap as §6.4 otherwise)
+          SHA="$(git rev-parse "HEAD:$FILE")"
+          kubectl create configmap odbdesign-server-swagger-spec \
+            --from-file=odbdesign-server-0.9-swagger.yaml=swagger/odbdesign-server-0.9-swagger.yaml \
+            --dry-run=client -o yaml > "$FILE"
+          # diff regenerated vs committed: a fresh checkout is always clean,
+          # so this check is only meaningful after the regeneration above
+          git diff --quiet -- "$FILE" \
+            && { echo "ConfigMap up to date"; exit 0; }
           gh api --method PUT "repos/${{ github.repository }}/contents/${FILE}" \
             -f message="chore(swagger): regenerate spec ConfigMap [skip ci]" \
             -f content="$(base64 -w0 < "$FILE")" \
-            -f sha="$(git hash-object "$FILE")" \
+            -f sha="$SHA" \
             -f branch=nam20485
 ```
 
-Loop-safe: its own commit touches `deploy/`, its path filter watches
-`swagger/**`; CMake's `paths-ignore` (§6.6) skips the commit.
+Loop-safe twice over: the bot's commit is made with `GITHUB_TOKEN`, and
+GitHub does not create workflow runs for pushes made with `GITHUB_TOKEN`;
+the commit also touches only `deploy/`, outside this workflow's
+`paths: ["swagger/**"]` filter. CMake's `paths-ignore` (§6.6) additionally
+saves wasted builds on human deploy/docs-only commits.
 
 ### 6.6 Trigger hygiene (Phase 0)
 
@@ -443,8 +452,23 @@ Loop-safe: its own commit touches `deploy/`, its path filter watches
 ### 6.7 Re-enable CodeQL (Phase 0)
 
 `git mv .github/workflows/disabled/codeql.yml .github/workflows/codeql.yml`
-and add the concurrency dedup already proven in `cmake-multi-platform.yml` /
-`code-coverage.yml`:
+— the disabled file needs three fixes as part of the move:
+
+1. **Structural:** its `steps:` block is mis-indented inside
+   `strategy.matrix:` (a sibling of `include:`), leaving the `analyze` job
+   with no job-level `steps` — GitHub rejects such a workflow ("Every job
+   must define a `steps` or a `uses` key"), so the moved file would fail
+   validation as-is. Re-indent `steps:` to job level.
+2. **Check contexts:** the job is named
+   `CodeQL-Analysis-${{ matrix.language }}` with a c-cpp-only matrix, so it
+   can only ever report `CodeQL-Analysis-c-cpp` — none of the three contexts
+   the `nam20485` ruleset requires. Rename the job to `Analyze` and extend
+   the matrix to `[actions, c-cpp, javascript-typescript]` so it reports the
+   exact required contexts `Analyze (actions)`, `Analyze (c-cpp)`,
+   `Analyze (javascript-typescript)` — or trim the ruleset's required list
+   instead (§6.8); as-is the file can satisfy neither.
+3. **Concurrency dedup** — add the pattern already proven in
+   `cmake-multi-platform.yml` / `code-coverage.yml`:
 
 ```yaml
 concurrency:
@@ -542,6 +566,14 @@ argocd MCP server, including the read-vs-mutate rules for agents.
 2. The PR touches `.github/workflows/**` → CMake builds post-merge →
    docker-publish pushes a **new** tag → bump job commits it → first real
    auto-deploy (Recreate: brief downtime).
+   **Caveat:** `workflow_run`-triggered workflows always execute the copy of
+   the workflow file on the **default branch** (`development`), regardless of
+   which branch was pushed — a `bump-manifest` job merged only into
+   `nam20485` never runs, so images get pushed but no bump commit lands.
+   Activation lands when the workflow change flows `nam20485 → development`
+   (normal merge flow), or cherry-pick it to `development` to activate
+   early. The bump commit itself still targets `nam20485`: the job checks
+   out `ref: nam20485` and PUTs to that branch.
 3. **Verify:** bump commit visible on `nam20485`; `argocd app get
    odbdesign-server` → Synced/Healthy; live image equals the git tag
    (`kubectl -n default get deploy odbdesign-server-v1 -o
