@@ -462,9 +462,18 @@ saves wasted builds on human deploy/docs-only commits.
 2. **Check contexts:** the job is named
    `CodeQL-Analysis-${{ matrix.language }}` with a c-cpp-only matrix, so it
    can only ever report `CodeQL-Analysis-c-cpp` — none of the three contexts
-   the `nam20485` ruleset requires. Rename the job to `Analyze` and extend
-   the matrix to `[actions, c-cpp, javascript-typescript]` so it reports the
-   exact required contexts `Analyze (actions)`, `Analyze (c-cpp)`,
+   the `nam20485` ruleset requires. Renaming the job alone is not enough:
+   GitHub names a matrix job's check run `<name> (<all matrix values>)`, so
+   with the legs' `os:`/`preset:` keys left in the matrix, a renamed
+   `Analyze` job would still report e.g.
+   `Analyze (actions, ubuntu-24.04, linux-dynamic-release)` — no match.
+   Make `language` the **only** matrix key (legs: `actions`, `c-cpp`,
+   `javascript-typescript`), hardcode `runs-on: ubuntu-24.04` and the
+   `linux-dynamic-release` preset in the build steps, and gate the build
+   chain (vcpkg bootstrap/install, apt, ninja, CMake configure/build) on
+   `if: matrix.language == 'c-cpp'` — CodeQL needs a build only for c-cpp;
+   the `actions` and `javascript-typescript` legs analyze the tree as-is.
+   The checks then report exactly `Analyze (actions)`, `Analyze (c-cpp)`,
    `Analyze (javascript-typescript)` — or trim the ruleset's required list
    instead (§6.8); as-is the file can satisfy neither.
 3. **Concurrency dedup** — add the pattern already proven in
@@ -490,8 +499,13 @@ become live again. Verify — and fix if contexts drifted:
 ```bash
 gh api repos/nam20485/OdbDesign/rulesets --jq '.[] | select(.name=="nam20485 branch")'
 # required_status_checks contexts must reference checks that actually run on
-# PRs into nam20485: Analyze (actions|c-cpp|javascript-typescript), Codacy,
-# dependency-review
+# PRs into nam20485. Verified 2026-09-08 the ruleset requires six: Codacy
+# Static Code Analysis, CodeQL, Analyze (actions|c-cpp|javascript-typescript),
+# dependency-review. The bare `CodeQL` context can never come from the matrix
+# workflow (its checks are always `Analyze (...)`) — it exists only if
+# GitHub's default code-scanning setup runs (API reports state: configured)
+# or a job is literally named CodeQL; if neither produces it on PRs, trim it
+# from the ruleset.
 ```
 
 Keep the `pull_request` rule **absent** from `nam20485` (the bump bot needs
