@@ -71,22 +71,30 @@ spec:
             requests:
               cpu: "2"
               memory: 4Gi
+          # Probe budgets sized for a 4-worker Crow server whose workers do
+          # minute-scale design parses: the 1s default timeout failed probes
+          # whenever workers were busy parsing (2026-09-07: 882 readiness +
+          # 30 liveness failures), and liveness then killed the server
+          # mid-parse, restarting the very work that made it busy.
           livenessProbe:
             httpGet:
               path: /healthz/live
               port: ods-dep-port
-            failureThreshold: 3
+            timeoutSeconds: 5
+            failureThreshold: 6
             periodSeconds: 5
           readinessProbe:
             httpGet:
               path: /healthz/ready
               port: ods-dep-port
+            timeoutSeconds: 5
             failureThreshold: 3
             periodSeconds: 5
           startupProbe:
             httpGet:
               path: /healthz/started
               port: ods-dep-port
-            failureThreshold: 10
-            periodSeconds: 1
-            #initialDelaySeconds: 1          
+            # 10 x 1s = one slow PVC attach away from a crash loop; 5 min
+            # headroom costs nothing while the endpoint answers immediately
+            periodSeconds: 5
+            failureThreshold: 60
