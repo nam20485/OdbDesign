@@ -6,6 +6,10 @@
 > installed on this VM**, so the deliverable is now a bash script following the repo's
 > bash-twin convention (`setup-vcpkg-cache.sh`, `compress-artifacts.sh`). All review findings
 > R1–R12 from `docs/plan/argocd-install-plan-review.md` remain incorporated, translated to bash.
+>
+> **Branch targeting (per AGENTS.md "Branching & Merge Flow"):** all Argo CD work — this plan,
+> `scripts/argocd.sh`, and its follow-ups — lives on `nam/argocd` (cut from `nam20485`) and is
+> delivered via PR into `nam20485`.
 
 ## Goal
 
