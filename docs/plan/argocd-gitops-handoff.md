@@ -276,6 +276,10 @@ the manifest → commit**. Argo CD auto-syncs ≤3 min later. Concrete addition 
         with:
           ref: ${{ github.event.workflow_run.head_branch }}
       - name: Bump odbdesign image tag
+        env:
+          # job-level env from the event context: $GITHUB_ENV values set in
+          # the build job are job-scoped and do not cross the needs: boundary
+          BRANCH_NAME: ${{ github.event.workflow_run.head_branch }}
         run: |
           TAG="${BRANCH_NAME}-${GITHUB_RUN_NUMBER}"   # same value docker-publish pushed
           sed -i "s|image: ghcr.io/nam20485/odbdesign:.*|image: ghcr.io/nam20485/odbdesign:${TAG}|" \
@@ -289,13 +293,17 @@ the manifest → commit**. Argo CD auto-syncs ≤3 min later. Concrete addition 
 
 Notes:
 
-- Set `BRANCH_NAME` the same way the existing job derives it (it's already an
-  env in your workflow); the pushed tag is exactly the one the build job
-  published, so the manifest always references an image that exists.
-- The bump commit re-enters the workflow's branch filter — guard the CMake →
-  docker-publish chain with `paths-ignore: ["deploy/**", "docs/**"]` (or accept
-  a no-op rebuild cycle). A `[skip ci]` commit-message convention also works if
-  your triggers honor it.
+- `BRANCH_NAME` is derived in this job from the `workflow_run` event context
+  (job-level `env:`), not from `$GITHUB_ENV` — values exported there are
+  job-scoped and invisible to other jobs. The pushed tag is exactly the one
+  the build job published, so the manifest always references an image that
+  exists.
+- The bump commit cannot loop the chain: it is created with the workflow's
+  `GITHUB_TOKEN`, and GitHub does not create workflow runs for pushes made
+  with `GITHUB_TOKEN`. Note `paths-ignore` is **not** a valid key under
+  `on: workflow_run` — the `paths-ignore: ["deploy/**", "docs/**"]` guard
+  belongs on the CMake workflow's `on: push`, where it saves wasted builds
+  for human deploy/docs-only commits.
 - Same pattern in `nam20485/OdbDesignServer-SwaggerUI`'s publish workflow for
   its image — it needs a PAT (repo secret) with contents:write **on OdbDesign**
   to commit the bump into `deploy/kube/OdbDesignServer-SwaggerUI/deployment.yaml`
