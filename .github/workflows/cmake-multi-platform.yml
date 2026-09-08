@@ -10,6 +10,18 @@ on:
   pull_request:
     branches: ["development", "staging", "main", "release", "nam20485"]
 
+concurrency:
+  # Group by head repo + branch instead of github.ref: a same-repo PR fires
+  # both the push lane (refs/heads/<branch>) and the pull_request lane
+  # (refs/pull/<n>/merge) for the same commit, and without a shared group
+  # neither the duplicate nor superseded runs of older commits are ever
+  # cancelled. Keying on the head branch makes the newest commit cancel
+  # older runs across both lanes; fork PRs stay isolated by their own repo
+  # full name. Required status checks only gate on the latest commit, which
+  # always gets a fresh run.
+  group: cmake-multi-platform-${{ github.event_name == 'pull_request' && format('{0}/{1}', github.event.pull_request.head.repo.full_name, github.head_ref) || format('{0}/{1}', github.repository, github.ref_name) }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
   packages: write
