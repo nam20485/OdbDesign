@@ -6,7 +6,8 @@ serviceMonitor:
 
 # 2026-09-08: trivy scan waves starved this single 4-core node and caused
 # the odbdesign-server probe failures (882 readiness / 30 liveness events on
-# Sep 7; see docs/k8s-health-probe-failures.md). Trivy-operator re-enqueues a
+# Sep 7; probe budgets since fixed — see the probe comments in
+# deploy/kube/OdbDesignServer/deployment.yaml). Trivy-operator re-enqueues a
 # scan for EVERY watched workload whenever it restarts or fully re-syncs its
 # watches, and this cluster churns bare debug pods (kubectl run for agents /
 # manual testing), each of which enqueued a scan. Scale scanning back to the
