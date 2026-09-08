@@ -473,6 +473,14 @@ saves wasted builds on human deploy/docs-only commits.
    chain (vcpkg bootstrap/install, apt, ninja, CMake configure/build) on
    `if: matrix.language == 'c-cpp'` — CodeQL needs a build only for c-cpp;
    the `actions` and `javascript-typescript` legs analyze the tree as-is.
+   Removing the `os:` key also strands two `matrix.os` references inside
+   step bodies, so de-`matrix.os` those too: the "Install vcpkg" step's
+   in-script conditional (`if [ "${{ matrix.os }}" = "ubuntu-24.04" ]`)
+   renders empty and falls into the `bootstrap-vcpkg.bat` branch on Ubuntu —
+   drop the conditional and call `bootstrap-vcpkg.sh` directly; and the
+   "Install vcpkg Dependencies (Ubuntu)" step's `if: matrix.os ==
+   'ubuntu-24.04'` must be **replaced** by the `matrix.language == 'c-cpp'`
+   gate (not merely wrapped in one), or the apt deps silently never install.
    The checks then report exactly `Analyze (actions)`, `Analyze (c-cpp)`,
    `Analyze (javascript-typescript)` — or trim the ruleset's required list
    instead (§6.8); as-is the file can satisfy neither.
