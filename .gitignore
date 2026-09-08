@@ -67,3 +67,5 @@ gpg_keys/
 /docs/plan/*.old
 # Qwen Code session scratch (per-session s-<uuid> dirs) — disposable
 .qwen/tmp/
+# ZCode project config (MCP server defs; may hold ARGOCD_API_TOKEN)
+.zcode/
