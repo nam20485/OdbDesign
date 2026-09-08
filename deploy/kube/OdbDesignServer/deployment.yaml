@@ -94,7 +94,12 @@ spec:
             httpGet:
               path: /healthz/started
               port: ods-dep-port
-            # 10 x 1s = one slow PVC attach away from a crash loop; 5 min
-            # headroom costs nothing while the endpoint answers immediately
+            # Same 5s timeout as liveness/readiness: the 1s default fails
+            # whenever workers are parse-busy, and while the startup probe is
+            # failing it suppresses the other two entirely — kubelet would
+            # kill the container mid-parse on a restart during a busy
+            # design-load window. 5 min headroom costs nothing while the
+            # endpoint answers immediately.
+            timeoutSeconds: 5
             periodSeconds: 5
             failureThreshold: 60
