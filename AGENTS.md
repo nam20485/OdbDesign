@@ -303,3 +303,12 @@ See `.github/copilot-instructions.md` for:
 - Also set `ODB_TEST_ENVIRONMENT_VARIABLE=ODB_TEST_ENVIRONMENT_VARIABLE_EXISTS` for CrossPlatform env tests; these vars are not baked into CMake presets.
 - `OdbDesignServer` loads designs via `--designs-dir`, not `ODB_TEST_DATA_DIR`.
 - `CommandLineArgs` treats tokens starting with `/` as flags, so absolute paths after `--designs-dir` parse as boolean `true`; use relative paths (e.g. from `/home/nam20485/src/github/nam20485`: `OdbDesignTestData/TEST_DATA`).
+
+## Deployment Tooling (k3s cluster + Argo CD)
+
+- OdbDesign services deploy to the single-node k3s cluster on `debian13vm` (Tailscale `100.118.225.119`, LAN `192.168.122.200`). Until the GitOps migration lands, `scripts/deploy.ps1` remains the manual mechanism; target state is Argo CD GitOps — see `docs/plan/argocd-gitops-handoff.md` (platform handoff) and `docs/plan/argocd-deployment-plan.md` (execution plan).
+- `argocd` CLI (v3.5.2, `~/.local/bin/argocd`) is logged in on this machine (context `debian13vm.tail11ba79.ts.net/argocd`); it works only from tailnet devices. Re-auth with `argocd relogin`, or `argocd login debian13vm.tail11ba79.ts.net --username admin --grpc-web --grpc-web-root-path /argocd` (both flags required — Traefik rootpath).
+- An Argo CD MCP server is configured in `.zcode/config.json` (stdio, `argocd-mcp@0.9.0`, `ARGOCD_BASE_URL` set; identical to the platform repo's config). Authentication is **environment inheritance, not config**: the server process picks up `ARGOCD_API_TOKEN` from the ZCode process environment (`~/.api-keys-export.sh`, platform `mcp` account). ZCode must be launched with the var exported and restarted to load the server.
+- The `mcp` account is **read-only** (`role:readonly`): MCP mutations (`sync_application`, `create/update/delete_application`, `run_resource_action`) are denied by design. Token policy: 1-year expiry — rotate with `argocd account generate-token --account mcp --expires-in 8760h`, update `~/.api-keys-export.sh`, restart ZCode. Platform source of truth: `linux-system-agent` `.agents/rules/tools.md`.
+- `.zcode/` is gitignored — keep MCP configs credential-free; never commit tokens.
+- Agent rule: MCP is a read-only view; early sync-triggering via the CLI; manifest/Application changes go through git on the `nam20485` deploy branch. Never `kubectl apply` / `argocd app create` / `argocd app sync --local` against app-managed resources — Argo CD selfHeal reverts them.
