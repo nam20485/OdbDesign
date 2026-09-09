@@ -131,11 +131,12 @@ Tests run automatically on every push and pull request via GitHub Actions. The C
 
 ### CI Test Execution
 
+{% raw %}
 ```yaml
 - name: CMake Test
-  run: ctest --test-dir ./out/build/${{matrix.preset}}/OdbDesignTests 
-       --output-log testlog.txt 
-       --output-junit testlog.xml 
+  run: ctest --test-dir ./out/build/${{matrix.preset}}/OdbDesignTests
+       --output-log testlog.txt
+       --output-junit testlog.xml
        --output-on-failure
 
 - name: Report Test Results
@@ -145,6 +146,7 @@ Tests run automatically on every push and pull request via GitHub Actions. The C
     path: testlog.xml
     reporter: java-junit
 ```
+{% endraw %}
 
 ## Test Development
 
