@@ -139,6 +139,7 @@ jobs:
           ODB_TEST_ENVIRONMENT_VARIABLE: ${{ vars.ODB_TEST_ENVIRONMENT_VARIABLE }}
         run: >
           ctest --test-dir ./out/build/linux-debug/OdbDesignTests
+          -j "$(nproc)"
           --output-log ${{ github.workspace }}/coverage-testlog.txt
           --output-junit ${{ github.workspace }}/coverage-testlog.xml
           --output-on-failure

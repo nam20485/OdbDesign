@@ -171,8 +171,8 @@ run_tests_for_coverage() {
         echo "Test file content" > "$ODB_TEST_DATA_DIR/FILES/test.txt"
     fi
     
-    # Run tests
-    if ctest --output-on-failure; then
+    # Run tests (parallel: suite is race-free as of 313918e)
+    if ctest --output-on-failure -j "$(nproc)"; then
         print_success "Tests completed successfully"
     else
         print_warning "Some tests failed, but coverage data was still generated"
