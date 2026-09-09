@@ -4,10 +4,12 @@
 #include "Logger.h"
 #include "../enums.h"
 #include "Part.h"
+#include "ProtobufMapHelpers.h"
 #include <memory>
 #include "Net.h"
 #include "../FileModel/Design/FileArchive.h"
 #include "../FileModel/Design/EdaDataFile.h"
+#include "../Text/Utf8Sanitizer.h"
 
 
 namespace Odb::Lib::ProductModel
@@ -157,8 +159,8 @@ namespace Odb::Lib::ProductModel
 	std::unique_ptr<Odb::Lib::Protobuf::ProductModel::Design> Design::to_protobuf() const
 	{
 		auto pDesignMsg = std::make_unique<Odb::Lib::Protobuf::ProductModel::Design>();
-		pDesignMsg->set_name(m_name);
-		pDesignMsg->set_productmodel(m_productModel);
+		pDesignMsg->set_name(Odb::Lib::Text::ToUtf8(m_name));
+		pDesignMsg->set_productmodel(Odb::Lib::Text::ToUtf8(m_productModel));
 
 		if (m_pFileModel != nullptr)
 		{
@@ -170,40 +172,33 @@ namespace Odb::Lib::ProductModel
 			pDesignMsg->add_nets()->CopyFrom(*pNet->to_protobuf());
 		}
 
-		for (const auto& kvNet : m_netsByName)
-		{
-			(*pDesignMsg->mutable_netsbyname())[kvNet.first] = *kvNet.second->to_protobuf();
-		}
+		FillProtobufMapWithSanitizedKeys(*pDesignMsg->mutable_netsbyname(), m_netsByName);
 
 		for (const auto& pPackage : m_packages)
 		{
 			pDesignMsg->add_packages()->CopyFrom(*pPackage->to_protobuf());
 		}
 
-		for (const auto& kvPackage : m_packagesByName)
-		{
-			(*pDesignMsg->mutable_packagesbyname())[kvPackage.first] = *kvPackage.second->to_protobuf();
-		}
+		FillProtobufMapWithSanitizedKeys(*pDesignMsg->mutable_packagesbyname(), m_packagesByName);
 
 		for (const auto& pComponent : m_components)
 		{
 			pDesignMsg->add_components()->CopyFrom(*pComponent->to_protobuf());
 		}
 
-		for (const auto& kvComponent : m_componentsByName)
-		{
-			(*pDesignMsg->mutable_componentsbyname())[kvComponent.first] = *kvComponent.second->to_protobuf();
-		}
+		FillProtobufMapWithSanitizedKeys(*pDesignMsg->mutable_componentsbyname(), m_componentsByName);
 
 		for (const auto& pPart : m_parts)
 		{
 			pDesignMsg->add_parts()->CopyFrom(*pPart->to_protobuf());
 		}
 
-		for (const auto& kvPart : m_partsByName)
-		{
-			(*pDesignMsg->mutable_partsbyname())[kvPart.first] = *kvPart.second->to_protobuf();
-		}		
+		FillProtobufMapWithSanitizedKeys(*pDesignMsg->mutable_partsbyname(), m_partsByName);
+
+#ifndef NDEBUG
+		// Debug-only assertion: verify all string fields are valid UTF-8 before serialization
+		Odb::Lib::Text::AssertAllStringFieldsAreValidUtf8(*pDesignMsg, "Design");
+#endif
 
 		return pDesignMsg;
 	}

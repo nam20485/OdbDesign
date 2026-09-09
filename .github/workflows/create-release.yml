@@ -68,17 +68,37 @@ jobs:
               sha256sum OdbDesign-MacOS-x64.zip > OdbDesign-MacOS-x64.zip.sha256sum          
     
           - name: Import GPG Key
+            id: import_gpg
             uses: crazy-max/ghaction-import-gpg@01dd5d3ca463c7f10f7f4f7b4f177225ac661ee4 # v6.1.0
             with:
               gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
               passphrase: ${{ secrets.PASSPHRASE }}
               
           - name: Sign Binaries
+            env:
+              GPG_PASSPHRASE: ${{ secrets.PASSPHRASE }}
             run: |
-              cd ${{ github.workspace }}/artifacts
-              gpg --batch --yes --detach-sign --armor OdbDesign-Linux-x64.zip
-              gpg --batch --yes --detach-sign --armor OdbDesign-Windows-x64.zip
-              gpg --batch --yes --detach-sign --armor OdbDesign-MacOS-x64.zip
+              cd "${{ github.workspace }}/artifacts"
+              signing_key="$(gpg --batch --with-colons --list-secret-keys | awk -F: '
+                ($1 == "sec" || $1 == "ssb") {
+                  wantsign = index($12, "s") || index($12, "S")
+                  next
+                }
+                wantsign && $1 == "fpr" {
+                  print $10
+                  exit
+                }
+              ')"
+
+              if [ -z "$signing_key" ]; then
+                echo "No signing-capable secret key found after import" >&2
+                gpg --batch --list-secret-keys >&2
+                exit 1
+              fi
+
+              gpg --batch --yes --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" --local-user "$signing_key" --detach-sign --armor OdbDesign-Linux-x64.zip
+              gpg --batch --yes --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" --local-user "$signing_key" --detach-sign --armor OdbDesign-Windows-x64.zip
+              gpg --batch --yes --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" --local-user "$signing_key" --detach-sign --armor OdbDesign-MacOS-x64.zip
     
           - name: Create Release Variables
             run: |

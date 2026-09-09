@@ -2,7 +2,9 @@
 #include <string>
 #include "package.pb.h"
 #include "Pin.h"
+#include "ProtobufMapHelpers.h"
 #include <memory>
+#include "../Text/Utf8Sanitizer.h"
 
 namespace Odb::Lib::ProductModel
 {
@@ -31,16 +33,13 @@ namespace Odb::Lib::ProductModel
 	std::unique_ptr<Odb::Lib::Protobuf::ProductModel::Package> Package::to_protobuf() const
 	{
 		auto pPackageMsg = std::make_unique<Odb::Lib::Protobuf::ProductModel::Package>();
-		pPackageMsg->set_name(m_name);
+		pPackageMsg->set_name(Odb::Lib::Text::ToUtf8(m_name));
 		pPackageMsg->set_index(m_index);
 		for (const auto& pPin : m_pins)
 		{
 			pPackageMsg->add_pins()->CopyFrom(*pPin->to_protobuf());
 		}
-		for (const auto& kvPin : m_pinsByName)
-		{
-			(*pPackageMsg->mutable_pinsbyname())[kvPin.first] = *kvPin.second->to_protobuf();
-		}
+		FillProtobufMapWithSanitizedKeys(*pPackageMsg->mutable_pinsbyname(), m_pinsByName);
 		return pPackageMsg;
 	}
 

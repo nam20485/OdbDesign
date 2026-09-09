@@ -68,7 +68,8 @@ jobs:
         include:
           - language: 'c-cpp'
             os: 'ubuntu-24.04'
-            preset: 'linux-release'          
+            # dynamic triplet: shared protobuf/gRPC runtime (see docs/linux-dynamic-release-plan.md)
+            preset: 'linux-dynamic-release'          
           # Uncomment to add Windows analysis
           # - language: 'c-cpp'
           #   os: 'windows-2022'
@@ -132,7 +133,8 @@ jobs:
               core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
 
         - name: vcpkg Install Dependencies
-          run: "\"${{env.VCPKG_ROOT}}/vcpkg\" install"
+          # match the matrix's linux-dynamic-release preset triplet
+          run: "\"${{env.VCPKG_ROOT}}/vcpkg\" install --triplet x64-linux-dynamic"
 
         - name: CMake Configure
           run: cmake --preset ${{ matrix.preset }}

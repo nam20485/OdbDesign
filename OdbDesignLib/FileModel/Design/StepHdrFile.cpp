@@ -4,6 +4,7 @@
 #include "../../Constants.h"
 #include "../parse_error.h"
 #include <Logger.h>
+#include "../../Text/Utf8Sanitizer.h"
 
 namespace Odb::Lib::FileModel::Design
 {
@@ -307,8 +308,8 @@ namespace Odb::Lib::FileModel::Design
 		message->set_bottomactive(bottomActive);
 		message->set_leftactive(leftActive);
 		message->set_rightactive(rightActive);
-		message->set_affectingbom(affectingBom);
-		message->set_affectingbomchanged(affectingBomChanged);		
+		message->set_affectingbom(Odb::Lib::Text::ToUtf8(affectingBom));
+		message->set_affectingbomchanged(affectingBomChanged);
 
 		for (const auto& stepRepeatRecord : m_stepRepeatRecords)
 		{
@@ -318,7 +319,7 @@ namespace Odb::Lib::FileModel::Design
 
         for (const auto& kvOnlineValue : m_onlineValues)
         {
-            (*message->mutable_onlinevalues())[kvOnlineValue.first] = kvOnlineValue.second;
+            (*message->mutable_onlinevalues())[Odb::Lib::Text::ToUtf8(kvOnlineValue.first)] = Odb::Lib::Text::ToUtf8(kvOnlineValue.second);
         }
 
 		return message;
@@ -359,7 +360,7 @@ namespace Odb::Lib::FileModel::Design
 	std::unique_ptr<Odb::Lib::Protobuf::StepHdrFile::StepRepeatRecord> StepHdrFile::StepRepeatRecord::to_protobuf() const
 	{
 		auto message = std::make_unique<Odb::Lib::Protobuf::StepHdrFile::StepRepeatRecord>();
-		message->set_name(name);
+		message->set_name(Odb::Lib::Text::ToUtf8(name));
 		message->set_x(x);
 		message->set_y(y);
 		message->set_dx(dx);
@@ -369,7 +370,7 @@ namespace Odb::Lib::FileModel::Design
 		message->set_angle(angle);
         message->set_flip(flip);
         message->set_mirror(mirror);
-		return message;		
+		return message;
 	}
 
 	void StepHdrFile::StepRepeatRecord::from_protobuf(const Odb::Lib::Protobuf::StepHdrFile::StepRepeatRecord& message)

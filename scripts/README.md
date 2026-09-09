@@ -156,7 +156,7 @@ export ODB_TEST_DATA_DIR=./OdbDesignTestData/TEST_DATA
 
 ```bash
 # CI test execution
-./scripts/run-tests.sh --preset linux-release --verbose
+./scripts/run-tests.sh --preset linux-dynamic-release --verbose
 
 # Coverage for CI
 ./scripts/coverage.sh --summary
@@ -206,7 +206,7 @@ These scripts are designed to work in CI environments:
 ### GitHub Actions Usage
 ```yaml
 - name: Run Tests
-  run: ./scripts/run-tests.sh --preset linux-release
+  run: ./scripts/run-tests.sh --preset linux-dynamic-release
 
 - name: Generate Coverage
   run: ./scripts/coverage.sh --html
@@ -222,7 +222,7 @@ These scripts are designed to work in CI environments:
 ```bash
 # Simulate CI environment
 export CI=true
-./scripts/run-tests.sh --preset linux-release --verbose
+./scripts/run-tests.sh --preset linux-dynamic-release --verbose
 ```
 
 ## Troubleshooting

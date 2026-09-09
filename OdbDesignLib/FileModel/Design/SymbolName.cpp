@@ -1,5 +1,5 @@
 #include "SymbolName.h"
-#include "SymbolName.h"
+#include "../../Text/Utf8Sanitizer.h"
 
 namespace Odb::Lib::FileModel::Design
 {
@@ -106,7 +106,7 @@ namespace Odb::Lib::FileModel::Design
 	std::unique_ptr<Odb::Lib::Protobuf::SymbolName> SymbolName::to_protobuf() const
 	{
 		auto message = std::make_unique<Odb::Lib::Protobuf::SymbolName>();
-		message->set_name(m_name);
+		message->set_name(Odb::Lib::Text::ToUtf8(m_name));
 		message->set_unittype(static_cast<Odb::Lib::Protobuf::UnitType>(m_unitType));
 		return message;
 	}

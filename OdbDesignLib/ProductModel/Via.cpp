@@ -4,6 +4,7 @@
 #include "enums.pb.h"
 #include "../enums.h"
 #include <string>
+#include "../Text/Utf8Sanitizer.h"
 
 
 namespace Odb::Lib::ProductModel
@@ -27,7 +28,7 @@ namespace Odb::Lib::ProductModel
 	std::unique_ptr<Odb::Lib::Protobuf::ProductModel::Via> Via::to_protobuf() const
 	{
 		auto pViaMsg = std::make_unique<Odb::Lib::Protobuf::ProductModel::Via>();
-		pViaMsg->set_name(m_name);
+		pViaMsg->set_name(Odb::Lib::Text::ToUtf8(m_name));
 		pViaMsg->set_boardside(static_cast<Odb::Lib::Protobuf::BoardSide>(m_side));
 		return pViaMsg;
 	}

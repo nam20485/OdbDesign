@@ -8,3 +8,18 @@ show_downloads: false
 
 url: https://source.odbdesignserver.com
 #baseurl: /jekyll-blog-demo
+
+# Liquid runs before Markdown, so it also expands expressions inside fenced code
+# blocks. These docs quote GitHub Actions syntax. A quote nested in {{ }} — e.g.
+# format('{0}/{1}', ...) or hashFiles('vcpkg.json') — stops Liquid's variable
+# tokenizer from finding the closing }}, which aborts the entire site build; a
+# quote-free expression instead renders as empty and silently holes the published
+# text. Add any new doc that quotes Actions expressions here, or {% raw %}-fence
+# it if the page should stay published.
+exclude:
+- plan/argocd-deployment-plan.md
+- plan/argocd-gitops-handoff.md
+- vcpkg-binary-cache/fix-cmake-workflow-caching-plan.md
+- vcpkg-binary-cache/github-packages-MS-tutorial.md
+- vcpkg-binary-cache/vcpkg-github-packages-plan.md
+- workflow-optimization-analysis.md

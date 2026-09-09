@@ -134,6 +134,24 @@
       }
     },
     {
+      "name": "linux-dynamic-debug",
+      "displayName": "Linux Dynamic Debug",
+      "inherits": "linux-base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "VCPKG_TARGET_TRIPLET": "x64-linux-dynamic"
+      }
+    },
+    {
+      "name": "linux-dynamic-release",
+      "displayName": "Linux Dynamic Release",
+      "inherits": "linux-base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "VCPKG_TARGET_TRIPLET": "x64-linux-dynamic"
+      }
+    },
+    {
       "name": "linux-mingw-w64-debug",
       "displayName": "Linux MinGW-w64 Debug",
       "inherits": "linux-debug",
@@ -269,6 +287,24 @@
       "description": "Build Linux Release"
     },
     {
+      "name": "linux-dynamic-debug",
+      "displayName": "Linux Dynamic Debug",
+      "configurePreset": "linux-dynamic-debug",
+      "inherits": "linux-base",
+      "cleanFirst": false,
+      "configuration": "Debug",
+      "description": "Build Linux Dynamic Debug (shared protobuf/gRPC)"
+    },
+    {
+      "name": "linux-dynamic-release",
+      "displayName": "Linux Dynamic Release",
+      "configurePreset": "linux-dynamic-release",
+      "inherits": "linux-base",
+      "cleanFirst": false,
+      "configuration": "Release",
+      "description": "Build Linux Dynamic Release (shared protobuf/gRPC)"
+    },
+    {
       "name": "linux-mingw-w64-base",
       "hidden": true,
       "condition": {
@@ -364,6 +400,18 @@
       "name": "linux-release",
       "displayName": "Test Linux Release",
       "configurePreset": "linux-release",
+      "inherits": "linux-base"
+    },
+    {
+      "name": "linux-dynamic-debug",
+      "displayName": "Test Linux Dynamic Debug",
+      "configurePreset": "linux-dynamic-debug",
+      "inherits": "linux-base"
+    },
+    {
+      "name": "linux-dynamic-release",
+      "displayName": "Test Linux Dynamic Release",
+      "configurePreset": "linux-dynamic-release",
       "inherits": "linux-base"
     },
     {

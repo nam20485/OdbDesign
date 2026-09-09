@@ -10,6 +10,7 @@
 #include "str_utils.h"
 #include "../../Constants.h"
 #include <ArchiveExtractor.h>
+#include "../../Text/Utf8Sanitizer.h"
 
 namespace Odb::Lib::FileModel::Design
 {
@@ -374,10 +375,10 @@ namespace Odb::Lib::FileModel::Design
 		pToolsRecordMessage->set_type2(static_cast<Odb::Lib::Protobuf::ToolsFile::ToolsRecord::Type2>(type2));
 		pToolsRecordMessage->set_min_tol(minTOL);
 		pToolsRecordMessage->set_max_tol(maxTOL);
-		pToolsRecordMessage->set_drill_bit(drillBit);
+		pToolsRecordMessage->set_drill_bit(Odb::Lib::Text::ToUtf8(drillBit));
 		pToolsRecordMessage->set_finish_size(finishSize);
 		pToolsRecordMessage->set_drill_size(drillSize);
-		
+
 		return pToolsRecordMessage;
 	}
 
@@ -397,12 +398,12 @@ namespace Odb::Lib::FileModel::Design
 	{
 		auto message = std::make_unique<Odb::Lib::Protobuf::ToolsFile>();
 
-		message->set_directory(m_directory.string());
-		message->set_path(m_path.string());
-		message->set_units(m_units);
+		message->set_directory(Odb::Lib::Text::ToUtf8(m_directory.string()));
+		message->set_path(Odb::Lib::Text::ToUtf8(m_path.string()));
+		message->set_units(Odb::Lib::Text::ToUtf8(m_units));
 
 		message->set_thickness(m_thickness);
-		message->set_user_params(m_user_params);
+		message->set_user_params(Odb::Lib::Text::ToUtf8(m_user_params));
 
 		auto* tools_map = message->mutable_tools();
 		for (const auto& [toolNum, toolsRecord] : m_toolsByNum)

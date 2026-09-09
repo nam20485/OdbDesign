@@ -3,6 +3,7 @@
 #include <fstream>
 #include "str_utils.h"
 #include "../../Constants.h"
+#include "../../Text/Utf8Sanitizer.h"
 #include "../parse_error.h"
 #include "../invalid_odb_error.h"
 #include "enums.pb.h"
@@ -147,7 +148,7 @@ namespace Odb::Lib::FileModel::Design
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
 
-                        pCurrentCharacterBlock->character = token[0];
+                        pCurrentCharacterBlock->character = token;
                     }
                     else if (line.find(CharacterBlock::END_TOKEN) == 0)
                     {
@@ -323,7 +324,7 @@ namespace Odb::Lib::FileModel::Design
     std::unique_ptr<Odb::Lib::Protobuf::StandardFontsFile::CharacterBlock> StandardFontsFile::CharacterBlock::to_protobuf() const
     {
         std::unique_ptr<Odb::Lib::Protobuf::StandardFontsFile::CharacterBlock> pCharacterBlockMessage(new Odb::Lib::Protobuf::StandardFontsFile::CharacterBlock);
-        pCharacterBlockMessage->set_character(std::string(1, character));
+        pCharacterBlockMessage->set_character(Odb::Lib::Text::ToUtf8(character));
         for (const auto& lineRecord : m_lineRecords)
         {
             pCharacterBlockMessage->add_m_linerecords()->CopyFrom(*lineRecord->to_protobuf());
@@ -333,7 +334,7 @@ namespace Odb::Lib::FileModel::Design
 
     void StandardFontsFile::CharacterBlock::from_protobuf(const Odb::Lib::Protobuf::StandardFontsFile::CharacterBlock& message)
     {
-        if (! message.character().empty())  character = message.character()[0];
+        if (! message.character().empty())  character = message.character();
 
         for (const auto& lineRecordMessage : message.m_linerecords())
         {

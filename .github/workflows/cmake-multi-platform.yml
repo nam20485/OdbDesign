@@ -10,12 +10,29 @@ on:
   pull_request:
     branches: ["development", "staging", "main", "release", "nam20485"]
 
+concurrency:
+  # Group by head repo + branch instead of github.ref: a same-repo PR fires
+  # both the push lane (refs/heads/<branch>) and the pull_request lane
+  # (refs/pull/<n>/merge) for the same commit, and without a shared group
+  # neither the duplicate nor superseded runs of older commits are ever
+  # cancelled. Keying on the head branch makes the newest commit cancel
+  # older runs across both lanes; fork PRs stay isolated by their own repo
+  # full name. Required status checks only gate on the latest commit, which
+  # always gets a fresh run.
+  group: cmake-multi-platform-${{ github.event_name == 'pull_request' && format('{0}/{1}', github.event.pull_request.head.repo.full_name, github.head_ref) || format('{0}/{1}', github.repository, github.ref_name) }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
   packages: write
 
 env:
   VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+  # Pin the vcpkg clone to the manifest baseline (vcpkg-configuration.json
+  # default-registry.baseline). An unpinned clone drifts with vcpkg HEAD, and
+  # the tool version is part of every package's ABI hash — every drift
+  # invalidated the whole binary cache. Keep in sync with the baseline.
+  VCPKG_COMMIT: 4f6d4ae8247b2dcae554555a135e52bb449dd524
   # Override vcpkg's default binary cache to a known path for actions/cache
   VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}/.vcpkg-binary-cache
   # GitHub Packages NuGet feed URLs used for package source resolution and push/API key association.
@@ -56,8 +73,11 @@ jobs:
           - os: windows-2022
             preset: x64-release
           # Linux x64 Release (upgraded to 24.04 for newer toolchain)
+          # dynamic triplet: shared protobuf/gRPC runtime — the static
+          # linux-release preset loads two protobuf copies and crashes
+          # (see docs/linux-dynamic-release-plan.md)
           - os: ubuntu-24.04
-            preset: linux-release
+            preset: linux-dynamic-release
           # MacOS x64 Release
           - os: macos-14
             preset: macos-release
@@ -156,22 +176,52 @@ jobs:
       # Cross-branch and cache-evicted builds fall through to NuGet (persistent layer).
       - name: Create vcpkg Binary Cache Directory
         shell: bash
-        run: mkdir -p "$VCPKG_DEFAULT_BINARY_CACHE"
+        run: |
+          mkdir -p "$VCPKG_DEFAULT_BINARY_CACHE"
+          # runner image version feeds the cache key: image updates bump the
+          # bundled compiler (and on Windows the VS-provided vcpkg tool)
+          echo "RUNNER_IMAGE_VERSION=${ImageVersion:-unknown}" >> "$GITHUB_ENV"
 
       - name: Restore vcpkg Binary Cache
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
-          key: vcpkg-archives-${{ matrix.preset }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
+          # The run_id probe key never matches a saved entry, so restore always
+          # resolves via restore-keys (newest prefix match) and the explicit
+          # save step below always writes — this avoids the exact-key-hit
+          # no-save trap that discarded rebuilt archives after ABI drift.
+          key: vcpkg-archives-${{ matrix.preset }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}-${{ env.VCPKG_COMMIT }}-${{ env.RUNNER_IMAGE_VERSION }}-${{ github.run_id }}
           restore-keys: |
+            vcpkg-archives-${{ matrix.preset }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}-${{ env.VCPKG_COMMIT }}-${{ env.RUNNER_IMAGE_VERSION }}-
             vcpkg-archives-${{ matrix.preset }}-
 
       - name: Setup NuGet Credential Provider (Windows)
         if: matrix.os == 'windows-2022'
         shell: pwsh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Install Azure Artifacts credential provider for non-interactive NuGet auth
-          Invoke-Expression "& { $(Invoke-RestMethod https://aka.ms/install-artifacts-credprovider.ps1) } -AddNetfx"
+          # The upstream bootstrap/install scripts call api.github.com anonymously, which
+          # 403s on shared runner egress IPs (60 req/hr per IP). Resolve and fetch the
+          # installer through the authenticated API, verify its digest, then patch its
+          # remaining release lookups to send the token too.
+          $apiHeaders = @{ Authorization = "Bearer $env:GITHUB_TOKEN"; Accept = "application/vnd.github+json" }
+          $release = Invoke-RestMethod -Headers $apiHeaders "https://api.github.com/repos/microsoft/artifacts-credprovider/releases/latest"
+          $installAsset = $release.assets | Where-Object { $_.name -eq "installcredprovider.ps1" }
+          if (!$installAsset) { throw "installcredprovider.ps1 asset missing from release $($release.tag_name)" }
+          Invoke-WebRequest -Headers @{ Authorization = "Bearer $env:GITHUB_TOKEN"; Accept = "application/octet-stream" } `
+            -Uri "https://api.github.com/repos/microsoft/artifacts-credprovider/releases/assets/$($installAsset.id)" `
+            -OutFile installcredprovider.ps1
+          if ($installAsset.digest -and $installAsset.digest.StartsWith("sha256:")) {
+            $expectedHash = $installAsset.digest.Substring(7)
+            $actualHash = (Get-FileHash installcredprovider.ps1 -Algorithm SHA256).Hash
+            if ($actualHash -ne $expectedHash) { throw "installcredprovider.ps1 hash mismatch: $actualHash != $expectedHash" }
+          }
+          (Get-Content installcredprovider.ps1 -Raw) `
+            -replace 'Invoke-WebRequest -UseBasicParsing', 'Invoke-WebRequest -UseBasicParsing -Headers @{ Authorization = "Bearer " + $env:GITHUB_TOKEN }' |
+            Set-Content installcredprovider.ps1
+          Invoke-Expression "& { $(Get-Content installcredprovider.ps1 -Raw) } -AddNetfx"
           # Set environment variable to allow credential provider to work non-interactively
           echo "NUGET_CREDENTIALPROVIDER_SESSIONTOKENCACHE_ENABLED=true" >> $env:GITHUB_ENV
           # Set API key for NuGet push to GitHub Packages
@@ -197,8 +247,11 @@ jobs:
       #
       - name: Install vcpkg
         run: |
-          git clone https://github.com/Microsoft/vcpkg.git ${{env.VCPKG_ROOT}}
-          "${{env.VCPKG_ROOT}}/bootstrap-vcpkg.sh"
+          git init "${{ env.VCPKG_ROOT }}"
+          git -C "${{ env.VCPKG_ROOT }}" remote add origin https://github.com/Microsoft/vcpkg.git
+          git -C "${{ env.VCPKG_ROOT }}" fetch --depth 1 origin "${{ env.VCPKG_COMMIT }}"
+          git -C "${{ env.VCPKG_ROOT }}" checkout --detach FETCH_HEAD
+          "${{ env.VCPKG_ROOT }}/bootstrap-vcpkg.sh"
         # (Windows comes w/ vcpkg installed as part of VS)
         if: matrix.os != 'windows-2022'
 
@@ -237,9 +290,14 @@ jobs:
       #     ./scripts/generate-python-module.sh
       #   if: matrix.preset == 'python-linux-release'
 
-      - name: Manual vcpkg Install (Non-Windows)
+      - name: Manual vcpkg Install (Linux)
+        # match the linux-dynamic-release preset's triplet
+        run: '"${{env.VCPKG_ROOT}}/vcpkg" install --triplet x64-linux-dynamic'
+        if: matrix.preset == 'linux-dynamic-release'
+
+      - name: Manual vcpkg Install (macOS)
         run: '"${{env.VCPKG_ROOT}}/vcpkg" install'
-        if: matrix.preset != 'linux-mingw-w64-release' && matrix.os != 'windows-2022'
+        if: matrix.os == 'macos-14'
 
       - name: Manual vcpkg Install (Windows)
         run: '& "${{env.VCPKG_ROOT}}/vcpkg" install --triplet x64-windows'
@@ -254,6 +312,16 @@ jobs:
       #
       - name: CMake Configure
         run: cmake --preset ${{matrix.preset}}
+
+      - name: Save vcpkg Binary Cache
+        # vcpkg installs dependencies during configure; save immediately after
+        # so the archives survive later step failures/cancellations. Unique
+        # run_id key means the save always happens (no exact-hit skip).
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+          key: vcpkg-archives-${{ matrix.preset }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}-${{ env.VCPKG_COMMIT }}-${{ env.RUNNER_IMAGE_VERSION }}-${{ github.run_id }}
 
       - name: CMake Build
         run: cmake --build --preset ${{matrix.preset}}
@@ -294,8 +362,16 @@ jobs:
           cp ./out/build/${{matrix.preset}}/OdbDesignLib/*.so ${{env.ARTIFACTS_DIR}}
           cp ./out/build/${{matrix.preset}}/Utils/*.so ${{env.ARTIFACTS_DIR}}
           cp ./out/build/${{matrix.preset}}/OdbDesignServer/OdbDesignServer ${{env.ARTIFACTS_DIR}}
+          # vcpkg shared libraries (protobuf, gRPC, ...) required at runtime by
+          # the linux-dynamic-release build; Dockerfile.prebuilt copies *.so*
+          # -P preserves vcpkg's dev symlinks (libfoo.so -> libfoo.so.N -> real
+          # file) so each lib ships once; zip -y below stores them as links
+          cp -P ./out/build/${{matrix.preset}}/vcpkg_installed/x64-linux-dynamic/lib/*.so* ${{env.ARTIFACTS_DIR}}
+          # OpenSSL 3 provider modules (resolved relative to libcrypto.so's dir);
+          # mirrors the full Dockerfile's ossl-modules COPY
+          cp -r ./out/build/${{matrix.preset}}/vcpkg_installed/x64-linux-dynamic/lib/ossl-modules ${{env.ARTIFACTS_DIR}}/
           cd ${{env.ARTIFACTS_DIR}}
-          zip -r ./artifacts-${{matrix.os}}.zip ./*.so ./OdbDesignServer
+          zip -r -y ./artifacts-${{matrix.os}}.zip ./*.so* ./ossl-modules ./OdbDesignServer
 
       - name: Compress Artifacts (MacOS)
         if: matrix.os == 'macos-14'

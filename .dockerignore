@@ -1,17 +1,40 @@
-out/
-.vs/
-.github/
-.git/
-.gitignore
-.gitattributes
-Dockerfile*
-docker-compose.yml
-*.code-workspace
-vcpkg_installed/
-ssl/
+# Ignore build artifacts and large directories
 out/
 cmake-build-*/
 build/
+log.txt
+designs/
+new_designs/
+
+# Ignore IDE files
+.vs/
 .idea/
-Testing/
+
+# Ignore Git-related files
+.git/
+.gitignore
+.gitattributes
+
+# Ignore GitHub-related files
+.github/
+
+# Ignore Docker-related files (except Dockerfile itself)
+docker-compose.yml
 *.code-workspace
+
+# Ignore vcpkg artifacts
+vcpkg_installed/
+
+# Ignore SSL certificates
+ssl/
+
+# Ignore testing artifacts
+Testing/
+
+# Ignore other Docker files
+Dockerfile*
+
+# Local environment files (may contain secrets) — never send to the builder
+.env
+.env.local
+local.nuget.config

@@ -2,6 +2,7 @@
 #include <string>
 #include <memory>
 #include "pin.pb.h"
+#include "../Text/Utf8Sanitizer.h"
 
 namespace Odb::Lib::ProductModel
 {	
@@ -24,7 +25,7 @@ namespace Odb::Lib::ProductModel
 	std::unique_ptr<Odb::Lib::Protobuf::ProductModel::Pin> Odb::Lib::ProductModel::Pin::to_protobuf() const
 	{
 		auto pPinMessage =  std::make_unique<Odb::Lib::Protobuf::ProductModel::Pin>();
-		pPinMessage->set_name(m_name);
+		pPinMessage->set_name(Odb::Lib::Text::ToUtf8(m_name));
 		pPinMessage->set_index(m_index);
 		return pPinMessage;
 	}

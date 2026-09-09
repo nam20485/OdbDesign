@@ -2,18 +2,18 @@
 #
 
 add_executable(OdbDesignTests
-    "Fixtures/FileArchiveLoadFixture.h" 
-    "Fixtures/FileArchiveLoadFixture.cpp"     
+    "Fixtures/FileArchiveLoadFixture.h"
+    "Fixtures/FileArchiveLoadFixture.cpp"
     "TestTests.cpp"
     "DesignCacheLoadTests.cpp"
-    "Fixtures/DesignNameValueParamTest.h"   
+    "Fixtures/DesignNameValueParamTest.h"
     "FileArchiveTests.cpp"
-    "ProtobufSerializationTests.cpp" 
-    "FileReaderTests.cpp" 
-    "ArchiveTests.cpp" 
-    "CrossPlatformTests.cpp" 
-    "Fixtures/TestDataFixture.h" 
-    "Fixtures/TestDataFixture.cpp" 
+    "ProtobufSerializationTests.cpp"
+    "FileReaderTests.cpp"
+    "ArchiveTests.cpp"
+    "CrossPlatformTests.cpp"
+    "Fixtures/TestDataFixture.h"
+    "Fixtures/TestDataFixture.cpp"
     "ArchiveExtractorTests.cpp"
     "PerformanceTests.cpp"
     "EnhancedTests.cpp"
@@ -25,12 +25,17 @@ add_executable(OdbDesignTests
     "ComponentHeightPipelineTests.cpp"
     "DesignCacheThreadSafetyTests.cpp"
     "GrpcServiceConfigTests.cpp"
+    "Utf8SanitizerTests.cpp"
     "../OdbDesignServer/Config/GrpcServiceConfig.cpp"
-    
+
+    # Server service implementation compiled into the test executable so service-level
+    # gRPC methods can be unit-tested directly (used by GetStandardFontsTests.cpp).
+    "../OdbDesignServer/Services/OdbDesignServiceImpl.cpp"
+    "GetStandardFontsTests.cpp"
+    "GetLayerSymbolsTests.cpp"
+
     # NOTE: GrpcBatchStreamTests.cpp temporarily disabled due to CMake coupling concerns
-    # Server source files are compiled directly into test executable, creating tight coupling
     # Future: Will create separate test target for server component tests
-    # "../OdbDesignServer/Services/OdbDesignServiceImpl.cpp"
     # "GrpcBatchStreamTests.cpp"
      "FileArchiveLoadTests.cpp")
 
