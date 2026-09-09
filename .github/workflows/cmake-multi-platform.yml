@@ -194,9 +194,30 @@ jobs:
       - name: Setup NuGet Credential Provider (Windows)
         if: matrix.os == 'windows-2022'
         shell: pwsh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Install Azure Artifacts credential provider for non-interactive NuGet auth
-          Invoke-Expression "& { $(Invoke-RestMethod https://aka.ms/install-artifacts-credprovider.ps1) } -AddNetfx"
+          # The upstream bootstrap/install scripts call api.github.com anonymously, which
+          # 403s on shared runner egress IPs (60 req/hr per IP). Resolve and fetch the
+          # installer through the authenticated API, verify its digest, then patch its
+          # remaining release lookups to send the token too.
+          $apiHeaders = @{ Authorization = "Bearer $env:GITHUB_TOKEN"; Accept = "application/vnd.github+json" }
+          $release = Invoke-RestMethod -Headers $apiHeaders "https://api.github.com/repos/microsoft/artifacts-credprovider/releases/latest"
+          $installAsset = $release.assets | Where-Object { $_.name -eq "installcredprovider.ps1" }
+          if (!$installAsset) { throw "installcredprovider.ps1 asset missing from release $($release.tag_name)" }
+          Invoke-WebRequest -Headers @{ Authorization = "Bearer $env:GITHUB_TOKEN"; Accept = "application/octet-stream" } `
+            -Uri "https://api.github.com/repos/microsoft/artifacts-credprovider/releases/assets/$($installAsset.id)" `
+            -OutFile installcredprovider.ps1
+          if ($installAsset.digest -and $installAsset.digest.StartsWith("sha256:")) {
+            $expectedHash = $installAsset.digest.Substring(7)
+            $actualHash = (Get-FileHash installcredprovider.ps1 -Algorithm SHA256).Hash
+            if ($actualHash -ne $expectedHash) { throw "installcredprovider.ps1 hash mismatch: $actualHash != $expectedHash" }
+          }
+          (Get-Content installcredprovider.ps1 -Raw) `
+            -replace 'Invoke-WebRequest -UseBasicParsing', 'Invoke-WebRequest -UseBasicParsing -Headers @{ Authorization = "Bearer " + $env:GITHUB_TOKEN }' |
+            Set-Content installcredprovider.ps1
+          Invoke-Expression "& { $(Get-Content installcredprovider.ps1 -Raw) } -AddNetfx"
           # Set environment variable to allow credential provider to work non-interactively
           echo "NUGET_CREDENTIALPROVIDER_SESSIONTOKENCACHE_ENABLED=true" >> $env:GITHUB_ENV
           # Set API key for NuGet push to GitHub Packages
