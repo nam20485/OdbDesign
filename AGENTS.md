@@ -19,8 +19,37 @@ nam/<feature>  →  nam20485  →  development (default)  →  staging  →  mai
 ```
 
 - CI triggers (CMake multi-platform, code coverage, dependency review, Docker publish) are configured for `["development", "staging", "main", "release", "nam20485"]`; pushes to `nam/*` feature branches are NOT built — only PRs gate those (see `.github/workflows/cmake-multi-platform.yml`).
-- `release` is fed from `main` (cf. `chore(release): merge main into release (#529)`); the release workflow fires on `repository_dispatch`.
-- `production` is a **legacy branch** (last touched ~14 months ago, absent from every CI trigger list) — not part of the current flow.
+- `release` is fed from `main`; the release workflow fires on `repository_dispatch`.
+- `production` is a **defunct legacy branch** — abandoned, absent from every CI trigger list, and not part of the flow. Do not promote to it, merge from it, or treat its contents as current.
+
+### Merge method
+
+Promotion between long-lived branches uses **merge commits** — `gh pr merge --merge`. Never rebase or squash-merge across `nam20485 → development → staging → main → release`.
+
+- Rebase is fine only on a private, never-pushed branch. Once commits are published, merge them; rewriting published commits desyncs the merge base for everyone downstream.
+- Squash is acceptable for `nam/<feature>` → `nam20485` **only if the source branch is deleted**. Squash leaves no patch-equivalent commits behind, so an undeleted branch reads as permanently unmerged even after its PR lands.
+
+**Do not re-add `required_linear_history` to ruleset `169360`** (covers `main`, `release`, `staging`, `production`). It rejects merge commits while that same ruleset's `pull_request.allowed_merge_methods` permits only `["merge"]` — an unsatisfiable pair that makes those four branches unmergeable through any PR, leaving hand-rebase plus admin force-push as the only route in. That is what happened in April 2026: ~270 of `development`'s commits were replayed onto `main` with new SHAs, so the branches reported ~320 ahead / ~500 behind each other while `git cherry` showed 259 of them were patch-identical. It also dragged the merge base back to 2025-07-08, making a later real merge cost 148 conflicted files. Removed 2026-09-08, when `main` and `release` were re-baselined onto `development` (rollback tags: `backup/main-pre-rebaseline-20260908`, `backup/release-pre-rebaseline-20260908`).
+
+Required checks differ per branch — check before waiting on CI:
+
+| Branch | Ruleset | Required status checks |
+|---|---|---|
+| `nam20485` | `186765` | `Codacy Static Code Analysis`, `CodeQL`, `Analyze (actions)`, `Analyze (c-cpp)`, `Analyze (javascript-typescript)`, `dependency-review` — **no CMake builds** |
+| `development` | `169324` | `CMake-Multi-Platform-Build` × 3 — `(windows-2022, x64-release)`, `(ubuntu-24.04, linux-dynamic-release)`, `(macos-14, macos-release)` — plus `Generate-Submit-SBOM`, `Codacy Static Code Analysis`, `dependency-review`; `strict: true`, 1 approval |
+| `main`, `release`, `staging`, `production` | `169360` | Same three `CMake-Multi-Platform-Build` legs as `development`, plus `Generate-Submit-SBOM`, `Codacy Static Code Analysis`, `dependency-review` **and `Docker-Build-and-Publish`**; code-owner review and last-push approval also required |
+
+Two requirements on `169360` were unsatisfiable and were removed on 2026-09-08 — do not reintroduce either:
+
+1. **`required_linear_history`** — see above; it contradicted `allowed_merge_methods: ["merge"]`.
+2. **Required check `CMake-Multi-Platform-Build (ubuntu-24.04, linux-release)`** — no workflow produces that context. The matrix switched to `linux-dynamic-release` because the `linux-release` preset loads two protobuf copies and SIGABRTs (see `docs/linux-dynamic-release-plan.md`). Verified against the 25 most recent CMake runs on every branch: all 21 that spawned the job reported `linux-dynamic-release`, zero reported `linux-release`. With `strict_required_status_checks_policy: true` the context stayed permanently "expected", so PRs could never satisfy required checks. Renamed to `(ubuntu-24.04, linux-dynamic-release)`.
+
+`169360` still requires 1 approval with `require_code_owner_review` and `require_last_push_approval`, which a solo maintainer cannot satisfy on their own PR — the last pusher is always the author. **Promotions into `main`/`release`/`staging`/`production` therefore still need `--admin`.** That is deliberate and was left in place on 2026-09-08.
+
+For docs- or workflow-YAML-only changes the C++ builds cannot detect a regression; `Analyze (actions)` is the applicable check for workflow edits. `gh pr merge --merge --admin` is the pragmatic route in that case. Note `tag.gpgsign = true` locally and `required_signatures` is on every ruleset, so commits must be signed — and scripted `git tag` blocks on a passphrase prompt without a TTY (use `git update-ref refs/tags/...` for lightweight tags).
+
+
+
 
 ---
 
