@@ -11,7 +11,7 @@ namespace Odb::Test
 {
 	TEST_F(FileArchiveLoadFixture, Test_DesignOdb_RigidFlexDesign_CanHasCorrectData)
 	{
-        auto rigidFlexDesignPath = getDesignPath("designodb_rigidflex.tgz");
+        auto rigidFlexDesignPath = getIsolatedDesignPath("designodb_rigidflex.tgz");
 
         Design::FileArchive rigidFlexOdbDesign(rigidFlexDesignPath.string());
         auto success = rigidFlexOdbDesign.ParseFileModel();
@@ -84,7 +84,7 @@ namespace Odb::Test
 
     TEST_F(FileArchiveLoadFixture, Test_SampleDesign_CanHasCorrectData)
     {
-        auto rigidFlexDesignPath = getDesignPath("sample_design.tgz");
+        auto rigidFlexDesignPath = getIsolatedDesignPath("sample_design.tgz");
 
         Design::FileArchive rigidFlexOdbDesign(rigidFlexDesignPath.string());
         auto success = rigidFlexOdbDesign.ParseFileModel();

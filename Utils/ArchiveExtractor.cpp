@@ -79,11 +79,11 @@ namespace Utils
 		{
 			if (Utils::IsWindows())
 			{
-				ss << " >$null 2>&1";
+				ss << " >nul 2>nul";
 			}
 			else
 			{
-				ss << " >nul 2>nul";
+				ss << " >/dev/null 2>/dev/null";
 			}
 		}
 

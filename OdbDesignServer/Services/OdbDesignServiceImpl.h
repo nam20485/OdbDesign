@@ -8,6 +8,7 @@
 #include <design.pb.h>
 #include <featuresfile.pb.h>
 #include <service.pb.h>
+#include <standardfontsfile.pb.h>
 #include <symbolname.pb.h>
 #include <grpcpp/impl/status.h>
 #include <grpcpp/server_context.h>
@@ -37,6 +38,10 @@ namespace OdbDesignServer {
             grpc::Status GetLayerSymbols(grpc::ServerContext* context,
                 const Odb::Grpc::GetLayerSymbolsRequest* request,
                 Odb::Grpc::GetLayerSymbolsResponse* response) override;
+
+            grpc::Status GetStandardFonts(grpc::ServerContext* context,
+                const Odb::Grpc::GetStandardFontsRequest* request,
+                Odb::Lib::Protobuf::StandardFontsFile* response) override;
 
             grpc::Status HealthCheck(grpc::ServerContext* context,
                 const Odb::Grpc::HealthCheckRequest* request,

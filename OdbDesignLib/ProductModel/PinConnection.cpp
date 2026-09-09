@@ -4,6 +4,7 @@
 #include "Component.h"
 #include <string>
 #include "pinconnection.pb.h"
+#include "../Text/Utf8Sanitizer.h"
 
 
 namespace Odb::Lib::ProductModel
@@ -44,7 +45,7 @@ namespace Odb::Lib::ProductModel
 	std::unique_ptr<Protobuf::ProductModel::PinConnection> PinConnection::to_protobuf() const
 	{
 		auto pPinConnectionMsg = std::make_unique<Protobuf::ProductModel::PinConnection>();
-		pPinConnectionMsg->set_name(m_name);
+		pPinConnectionMsg->set_name(Odb::Lib::Text::ToUtf8(m_name));
 		pPinConnectionMsg->mutable_component()->CopyFrom(*m_pComponent->to_protobuf());
 		pPinConnectionMsg->mutable_pin()->CopyFrom(*m_pPin->to_protobuf());
 		return pPinConnectionMsg;

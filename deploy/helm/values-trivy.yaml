@@ -1,5 +1,34 @@
+# values for the trivy-operator helm release (chart pinned in
+# scripts/deploy-monitoring.ps1, currently aqua/trivy-operator 0.35.0)
 serviceMonitor:
   # enabled determines whether a serviceMonitor should be deployed
   enabled: true
+
+# 2026-09-08: trivy scan waves starved this single 4-core node and caused
+# the odbdesign-server probe failures (882 readiness / 30 liveness events on
+# Sep 7; probe budgets since fixed — see the probe comments in
+# deploy/kube/OdbDesignServer/deployment.yaml). Trivy-operator re-enqueues a
+# scan for EVERY watched workload whenever it restarts or fully re-syncs its
+# watches, and this cluster churns bare debug pods (kubectl run for agents /
+# manual testing), each of which enqueued a scan. Scale scanning back to the
+# real app workloads, one job at a time, with hard CPU caps on scan jobs.
+excludeNamespaces: "kube-system,trivy-system,monitoring,argocd"
+# top-level chart key (NOT under operator:) — drop bare `pod` (and
+# job/cronjob) scanning: replica-level scans cover deployed app images;
+# bare pods are ephemeral debug junk
+targetWorkloads: "replicaset,replicationcontroller,statefulset,daemonset"
+operator:
+  # default is 10 concurrent jobs = up to 5 cores demanded on a 4-core node
+  scanJobsConcurrentLimit: 1
+
 trivy:
   ignoreUnfixed: true
+  # pin the scan-job resource caps (chart defaults, made explicit): with
+  # concurrency 1 above, scanning can take at most ~half a core from the node
+  resources:
+    requests:
+      cpu: 100m
+      memory: 100M
+    limits:
+      cpu: 500m
+      memory: 500M

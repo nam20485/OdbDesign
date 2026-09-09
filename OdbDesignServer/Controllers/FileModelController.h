@@ -3,6 +3,15 @@
 #include "App/RouteController.h"
 #include "App/IOdbServerApp.h"
 
+#include <memory>
+#include <optional>
+#include <string>
+
+namespace Odb::Lib::FileModel::Design
+{
+	class FileArchive;
+}
+
 namespace Odb::App::Server
 {
 	class FileModelController : public Odb::Lib::App::RouteController
@@ -14,6 +23,14 @@ namespace Odb::App::Server
 		void register_routes() override;
 
 	private:
+		// Fetches the FileArchive for a design, translating failures into HTTP
+		// responses: corrupt/unloadable archive (DesignCache::LoadFileArchive
+		// throws) -> engaged optional holding INTERNAL/500; design not found ->
+		// engaged optional holding NOT_FOUND/404. On success the optional is
+		// disengaged and pFileArchive is populated.
+		std::optional<crow::response> TryGetFileArchive(
+			const std::string& designName,
+			std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive>& pFileArchive) const;
 		crow::response filemodels_get_route_handler(const std::string& designName, const crow::request& req);
 		crow::response filemodels_post_route_handler(const std::string& designName, const crow::request& req);
 		crow::response filemodels_list_route_handler(const crow::request& req);

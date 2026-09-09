@@ -14,6 +14,7 @@
 #include "Logger.h"
 #include "../parse_error.h"
 #include "../invalid_odb_error.h"
+#include "../../Text/Utf8Sanitizer.h"
 
 using namespace std::chrono;
 
@@ -225,20 +226,20 @@ namespace Odb::Lib::FileModel::Design
     std::unique_ptr<Odb::Lib::Protobuf::MiscInfoFile> MiscInfoFile::to_protobuf() const
     {
         std::unique_ptr<Odb::Lib::Protobuf::MiscInfoFile> pMiscInfoFileMessage(new Odb::Lib::Protobuf::MiscInfoFile);
-        pMiscInfoFileMessage->set_jobname(m_jobName);
-        pMiscInfoFileMessage->set_productmodelname(m_productModelName);
-        pMiscInfoFileMessage->set_odbversionmajor(m_odbVersionMajor);
-        pMiscInfoFileMessage->set_odbversionminor(m_odbVersionMinor);
-        pMiscInfoFileMessage->set_odbsource(m_odbSource);
+        pMiscInfoFileMessage->set_jobname(Odb::Lib::Text::ToUtf8(m_jobName));
+        pMiscInfoFileMessage->set_productmodelname(Odb::Lib::Text::ToUtf8(m_productModelName));
+        pMiscInfoFileMessage->set_odbversionmajor(Odb::Lib::Text::ToUtf8(m_odbVersionMajor));
+        pMiscInfoFileMessage->set_odbversionminor(Odb::Lib::Text::ToUtf8(m_odbVersionMinor));
+        pMiscInfoFileMessage->set_odbsource(Odb::Lib::Text::ToUtf8(m_odbSource));
         auto seconds = std::chrono::duration_cast<std::chrono::seconds>(m_creationDateDate.time_since_epoch()).count();
         pMiscInfoFileMessage->mutable_creationdatedate()->set_seconds(seconds);
         pMiscInfoFileMessage->mutable_creationdatedate()->set_nanos(0);
         seconds = std::chrono::duration_cast<std::chrono::seconds>(m_saveDate.time_since_epoch()).count();
         pMiscInfoFileMessage->mutable_savedate()->set_seconds(seconds);
         pMiscInfoFileMessage->mutable_savedate()->set_nanos(0);
-        pMiscInfoFileMessage->set_saveapp(m_saveApp);
-        pMiscInfoFileMessage->set_saveuser(m_saveUser);
-        pMiscInfoFileMessage->set_units(m_units);
+        pMiscInfoFileMessage->set_saveapp(Odb::Lib::Text::ToUtf8(m_saveApp));
+        pMiscInfoFileMessage->set_saveuser(Odb::Lib::Text::ToUtf8(m_saveUser));
+        pMiscInfoFileMessage->set_units(Odb::Lib::Text::ToUtf8(m_units));
         pMiscInfoFileMessage->set_maxuniqueid(m_maxUniqueId);
         return pMiscInfoFileMessage;
     }

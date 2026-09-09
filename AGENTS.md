@@ -6,6 +6,53 @@ OdbDesign is a C++ library for parsing and working with ODB++ design files (PCB 
 
 ---
 
+## Branching & Merge Flow
+
+- **Default branch:** `development`
+- **Integration branch:** `nam20485` — every feature branch is cut **from `nam20485`** and its PR targets **`nam20485`** as the base.
+- **Feature branch naming:** `nam/<feature>` (e.g. `nam/argocd`, `nam/unified-clang-build`).
+
+Merge flow (left to right):
+
+```text
+nam/<feature>  →  nam20485  →  development (default)  →  staging  →  main  →  release
+```
+
+- CI triggers (CMake multi-platform, code coverage, dependency review, Docker publish) are configured for `["development", "staging", "main", "release", "nam20485"]`; pushes to `nam/*` feature branches are NOT built — only PRs gate those (see `.github/workflows/cmake-multi-platform.yml`).
+- `release` is fed from `main`; the release workflow fires on `repository_dispatch`.
+- `production` is a **defunct legacy branch** — abandoned, absent from every CI trigger list, and not part of the flow. Do not promote to it, merge from it, or treat its contents as current.
+
+### Merge method
+
+Promotion between long-lived branches uses **merge commits** — `gh pr merge --merge`. Never rebase or squash-merge across `nam20485 → development → staging → main → release`.
+
+- Rebase is fine only on a private, never-pushed branch. Once commits are published, merge them; rewriting published commits desyncs the merge base for everyone downstream.
+- Squash is acceptable for `nam/<feature>` → `nam20485` **only if the source branch is deleted**. Squash leaves no patch-equivalent commits behind, so an undeleted branch reads as permanently unmerged even after its PR lands.
+
+**Do not re-add `required_linear_history` to ruleset `169360`** (covers `main`, `release`, `staging`, `production`). It rejects merge commits while that same ruleset's `pull_request.allowed_merge_methods` permits only `["merge"]` — an unsatisfiable pair that makes those four branches unmergeable through any PR, leaving hand-rebase plus admin force-push as the only route in. That is what happened in April 2026: ~270 of `development`'s commits were replayed onto `main` with new SHAs, so the branches reported ~320 ahead / ~500 behind each other while `git cherry` showed 259 of them were patch-identical. It also dragged the merge base back to 2025-07-08, making a later real merge cost 148 conflicted files. Removed 2026-09-08, when `main` and `release` were re-baselined onto `development` (rollback tags: `backup/main-pre-rebaseline-20260908`, `backup/release-pre-rebaseline-20260908`).
+
+Required checks differ per branch — check before waiting on CI:
+
+| Branch | Ruleset | Required status checks |
+|---|---|---|
+| `nam20485` | `186765` | `Codacy Static Code Analysis`, `CodeQL`, `Analyze (actions)`, `Analyze (c-cpp)`, `Analyze (javascript-typescript)`, `dependency-review` — **no CMake builds** |
+| `development` | `169324` | `CMake-Multi-Platform-Build` × 3 — `(windows-2022, x64-release)`, `(ubuntu-24.04, linux-dynamic-release)`, `(macos-14, macos-release)` — plus `Generate-Submit-SBOM`, `Codacy Static Code Analysis`, `dependency-review`; `strict: true`, 1 approval |
+| `main`, `release`, `staging`, `production` | `169360` | Same three `CMake-Multi-Platform-Build` legs as `development`, plus `Generate-Submit-SBOM`, `Codacy Static Code Analysis`, `dependency-review` **and `Docker-Build-and-Publish`**; code-owner review and last-push approval also required |
+
+Two requirements on `169360` were unsatisfiable and were removed on 2026-09-08 — do not reintroduce either:
+
+1. **`required_linear_history`** — see above; it contradicted `allowed_merge_methods: ["merge"]`.
+2. **Required check `CMake-Multi-Platform-Build (ubuntu-24.04, linux-release)`** — no workflow produces that context. The matrix switched to `linux-dynamic-release` because the `linux-release` preset loads two protobuf copies and SIGABRTs (see `docs/linux-dynamic-release-plan.md`). Verified against the 25 most recent CMake runs on every branch: all 21 that spawned the job reported `linux-dynamic-release`, zero reported `linux-release`. With `strict_required_status_checks_policy: true` the context stayed permanently "expected", so PRs could never satisfy required checks. Renamed to `(ubuntu-24.04, linux-dynamic-release)`.
+
+`169360` still requires 1 approval with `require_code_owner_review` and `require_last_push_approval`, which a solo maintainer cannot satisfy on their own PR — the last pusher is always the author. **Promotions into `main`/`release`/`staging`/`production` therefore still need `--admin`.** That is deliberate and was left in place on 2026-09-08.
+
+For docs- or workflow-YAML-only changes the C++ builds cannot detect a regression; `Analyze (actions)` is the applicable check for workflow edits. `gh pr merge --merge --admin` is the pragmatic route in that case. Note `tag.gpgsign = true` locally and `required_signatures` is on every ruleset, so commits must be signed — and scripted `git tag` blocks on a passphrase prompt without a TTY (use `git update-ref refs/tags/...` for lightweight tags).
+
+
+
+
+---
+
 ## Build Commands
 
 ### Prerequisites
@@ -17,8 +64,8 @@ OdbDesign is a C++ library for parsing and working with ODB++ design files (PCB 
 ### Configure (Linux)
 
 ```bash
-cmake --preset linux-debug      # Debug build
-cmake --preset linux-release    # Release build
+cmake --preset linux-debug             # Debug build
+cmake --preset linux-dynamic-release   # Release build (main Linux release; shared protobuf/gRPC)
 ```
 
 ### Configure (Windows)
@@ -32,7 +79,7 @@ cmake --preset x64-release      # Release build
 
 ```bash
 cmake --build --preset linux-debug
-cmake --build --preset linux-release
+cmake --build --preset linux-dynamic-release
 cmake --build --preset x64-release
 ```
 
@@ -50,7 +97,7 @@ cmake --build --preset linux-debug --clean-first
 
 ```bash
 ctest --preset linux-debug
-ctest --preset linux-release
+ctest --preset linux-dynamic-release
 ctest --preset x64-debug
 ```
 
@@ -283,3 +330,32 @@ See `.github/copilot-instructions.md` for:
 - Tool and automation protocols
 - Dynamic workflow orchestration
 - URL translation for raw GitHub content
+
+---
+
+## Learned User Preferences
+
+- Keep OdbDesign local test env vars in `~/.bashrc` (`ODB_TEST_DATA_DIR`, `ODB_TEST_ENVIRONMENT_VARIABLE`) for routine `ctest` runs on this machine.
+- The vcpkg upgrade to baseline `4f6d4ae8` (`grpc 1.81.1`, `protobuf 6.33.4#2`) is the accepted target; revert future baseline bumps only if they break the gRPC/protobuf build.
+
+## Learned Workspace Facts
+
+- Release-only SIGABRT on `GET /filemodels/<design>/matrix/matrix` comes from dual static protobuf descriptor pools in `libOdbDesign.so` and `OdbDesignServer`; use `linux-dynamic-debug` / `linux-dynamic-release` presets (`VCPKG_TARGET_TRIPLET=x64-linux-dynamic`) for a single shared protobuf runtime.
+- Target `grpc` in `vcpkg.json` must include feature `codegen` so fresh triplet installs export `gRPC::grpc++_reflection` (host-only codegen is insufficient).
+- vcpkg baseline is `4f6d4ae8247b2dcae554555a135e52bb449dd524` (supersedes the old `d1ff36c` / `grpc 1.71.0#3` pin); it resolves to `protobuf 6.33.4#2`, `grpc 1.81.1`, `zlib 1.3.2#2`, `libarchive 3.8.7`, `crow 1.3.3` and compiles cleanly. The earlier `059d760` baseline's gRPC break (`glob.cc` `std::any_of`) does not recur here. `vcpkg.json` `overrides` pin these exact `version#port-version` strings.
+- The `"version": "X.Y.Z#N"` form (port-version embedded in the version string) is valid in `overrides`; do not split it into separate `version` + `port-version` fields.
+- Pin the exact `version#port-version` for every override that has a non-zero port-version (e.g. `zlib 1.3.2#2`, not `1.3.2`); a missing/wrong port-version resolves to a different build and forces vcpkg to rebuild the whole dependency chain from source.
+- After a protobuf major bump (e.g. 29→33), stale generated `.pb.h`/`.pb.cc` from the old protoc fail with "Protobuf C++ gencode is built with an incompatible version" / missing `map_field_inl.h`; wipe the build dir (keep `vcpkg_installed/`) and reconfigure so protoc regenerates them — don't try to compile stale gencode.
+- Local test fixtures live in sibling repo `OdbDesignTestData`: set `ODB_TEST_DATA_DIR=/home/nam20485/src/github/nam20485/OdbDesignTestData/TEST_DATA`; design `.tgz` archives at `TEST_DATA/` root, small file-reader fixtures under `TEST_DATA/FILES/`.
+- Also set `ODB_TEST_ENVIRONMENT_VARIABLE=ODB_TEST_ENVIRONMENT_VARIABLE_EXISTS` for CrossPlatform env tests; these vars are not baked into CMake presets.
+- `OdbDesignServer` loads designs via `--designs-dir`, not `ODB_TEST_DATA_DIR`.
+- `CommandLineArgs` treats tokens starting with `/` as flags, so absolute paths after `--designs-dir` parse as boolean `true`; use relative paths (e.g. from `/home/nam20485/src/github/nam20485`: `OdbDesignTestData/TEST_DATA`).
+
+## Deployment Tooling (k3s cluster + Argo CD)
+
+- OdbDesign services deploy to the single-node k3s cluster on `debian13vm` (Tailscale `100.118.225.119`, LAN `192.168.122.200`). Until the GitOps migration lands, `scripts/deploy.ps1` remains the manual mechanism; target state is Argo CD GitOps — see `docs/plan/argocd-gitops-handoff.md` (platform handoff) and `docs/plan/argocd-deployment-plan.md` (execution plan).
+- `argocd` CLI (v3.5.2, `~/.local/bin/argocd`) is logged in on this machine (context `debian13vm.tail11ba79.ts.net/argocd`); it works only from tailnet devices. Re-auth with `argocd relogin`, or `argocd login debian13vm.tail11ba79.ts.net --username admin --grpc-web --grpc-web-root-path /argocd` (both flags required — Traefik rootpath).
+- An Argo CD MCP server is configured in `.zcode/config.json` (stdio, `argocd-mcp@0.9.0`, `ARGOCD_BASE_URL` set; identical to the platform repo's config). Authentication is **environment inheritance, not config**: the server process picks up `ARGOCD_API_TOKEN` from the ZCode process environment (`~/.api-keys-export.sh`, platform `mcp` account). ZCode must be launched with the var exported and restarted to load the server.
+- The `mcp` account is **read-only** (`role:readonly`): MCP mutations (`sync_application`, `create/update/delete_application`, `run_resource_action`) are denied by design. Token policy: 1-year expiry — rotate with `argocd account generate-token --account mcp --expires-in 8760h`, update `~/.api-keys-export.sh`, restart ZCode. Platform source of truth: `linux-system-agent` `.agents/rules/tools.md`.
+- `.zcode/` is gitignored — keep MCP configs credential-free; never commit tokens.
+- Agent rule: MCP is a read-only view; early sync-triggering via the CLI; manifest/Application changes go through git on the `nam20485` deploy branch. Never `kubectl apply` / `argocd app create` / `argocd app sync --local` against app-managed resources — Argo CD selfHeal reverts them.

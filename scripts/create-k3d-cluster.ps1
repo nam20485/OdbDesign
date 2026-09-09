@@ -1,49 +1,83 @@
 param(
     # Cluster name
-    [Parameter(Mandatory=$true)]    
+    [Parameter(Mandatory=$true)]
     [string]$ClusterName = "k3dcluster",
     # Number of agents to create
-    [Parameter(Mandatory=$true)]    
+    [Parameter(Mandatory=$true)]
     [int]$NumAgents = 3,
     # Ingress host port
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory=$false)]
     [int]$IngressHostPort = 8081,
+    # gRPC host port (LAN access to OdbDesignServer gRPC)
+    [Parameter(Mandatory=$false)]
+    [int]$GrpcHostPort = 50051,
+    # Kubernetes API server host port (pinned so LAN clients can use a stable kubeconfig)
+    [Parameter(Mandatory=$false)]
+    [int]$ApiHostPort = 6443,
     # When set to true, the cluster will be deleted first
     [switch]$DeleteClusterFirst = $false,
     # When set to true, the cluster will be deleted without asking for confirmation
     [switch]$ForceDelete = $false,
-     # Host Volume Path for PersistentVolume
-     [Parameter(Mandatory=$true)]    
-     [string]$HostVolumePath = "D:/k3dvolume"
-    
+    # Host Volume Path for PersistentVolume
+    [Parameter(Mandatory=$false)]
+    [string]$HostVolumePath = "D:/k3dvolume",
+    # When set to true, register a scheduled task to start the cluster at Windows boot
+    [switch]$StartWithWindows = $false
 )
 
-# $clusterName="k3dcluster"
-#$hostIp = "10.0.0.185"
+Set-StrictMode -Version Latest
+$ErrorActionPreference = "Stop"
+
+# $hostIp = "10.0.0.185"
 $hostIp = "192.168.1.30"
-#$hostIp = "192.168.1.101"
-# $numAgents=3
-# $ingressHostPort=8081
+# $hostIp = "192.168.1.101"
+$ingressHostName = "precision5820"
+$firewallRuleDisplayName = "k3d $ClusterName ingress $IngressHostPort"
+$grpcFirewallRuleDisplayName = "k3d $ClusterName grpc $GrpcHostPort"
+$apiFirewallRuleDisplayName = "k3d $ClusterName api $ApiHostPort"
+
+function Ensure-IngressFirewallRule {
+    param(
+        [Parameter(Mandatory=$true)]
+        [string]$DisplayName,
+        [Parameter(Mandatory=$true)]
+        [int]$Port
+    )
+
+    $existingRule = Get-NetFirewallRule -DisplayName $DisplayName -ErrorAction SilentlyContinue
+    if ($null -eq $existingRule) {
+        Write-Host "Creating firewall rule '$DisplayName' for TCP/$Port..."
+        New-NetFirewallRule `
+            -DisplayName $DisplayName `
+            -Direction Inbound `
+            -Action Allow `
+            -Protocol TCP `
+            -LocalPort $Port `
+            -Profile Any | Out-Null
+        return
+    }
+
+    Write-Host "Firewall rule '$DisplayName' already exists. Ensuring it is enabled..."
+    Enable-NetFirewallRule -DisplayName $DisplayName | Out-Null
+}
 
 if ($DeleteClusterFirst) {
-
-    if (! $ForceDelete) {`
+    if (-not $ForceDelete) {
         $clusterNameInput = Read-Host "Type cluster name ($ClusterName) and hit ENTER to delete the cluster first..."
     }
     else {
         Write-Host "Force delete specified..."
         $clusterNameInput = $ClusterName
     }
-    
+
     if ($clusterNameInput -ne $ClusterName) {
         Write-Host "Cluster name did not match. Exiting..."
-        Exit 1
+        exit 1
     }
-    else {
-        Write-Host "Deleting cluster '$ClusterName'..."
-        k3d cluster delete $ClusterName
-        Write-Host "Cluster '$ClusterName' deleted."
-    }
+
+    Write-Host "Deleting cluster '$ClusterName'..."
+    k3d cluster delete $ClusterName
+    Write-Host "Cluster '$ClusterName' deleted."
 }
 
 Write-Host "Creating cluster '$ClusterName'..."
@@ -51,10 +85,23 @@ Write-Host "Creating cluster '$ClusterName'..."
 k3d cluster create $ClusterName `
     --agents $NumAgents `
     --k3s-arg="--tls-san=${hostIp}@server:0" `
-    --k3s-arg="--tls-san=precision5820@server:0" `
+    --k3s-arg="--tls-san=${ingressHostName}@server:0" `
+    --api-port "0.0.0.0:${ApiHostPort}" `
     --port "${IngressHostPort}:80@loadbalancer" `
     --port "8443:443@loadbalancer" `
+    --port "${GrpcHostPort}:50051@loadbalancer" `
     --volume ${HostVolumePath}:/k3dvolume@all
-    #--volume ${HostVolumePath}:/tmp/k3dvolume@all
+    # --volume ${HostVolumePath}:/tmp/k3dvolume@all
 
 Write-Host "Cluster '$ClusterName' created."
+Write-Host "If this cluster existed before gRPC host-port support was added, it must be recreated to publish TCP/$GrpcHostPort on the load balancer."
+
+Ensure-IngressFirewallRule -DisplayName $firewallRuleDisplayName -Port $IngressHostPort
+Ensure-IngressFirewallRule -DisplayName $grpcFirewallRuleDisplayName -Port $GrpcHostPort
+Ensure-IngressFirewallRule -DisplayName $apiFirewallRuleDisplayName -Port $ApiHostPort
+
+if ($StartWithWindows) {
+    $registerScriptPath = Join-Path $PSScriptRoot "register-k3d-startup-task.ps1"
+    Write-Host "Registering Windows startup task for cluster '$ClusterName'..."
+    & $registerScriptPath -ClusterName $ClusterName
+}

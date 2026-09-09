@@ -11,7 +11,7 @@ on:
   workflow_run:
     workflows: ["CMake Build Multi-Platform"]
     types: [completed]
-    branches: [development, staging, main, release]
+    branches: [development, staging, main, release, nam20485]
   workflow_dispatch:
     inputs:
       use_prebuilt:
@@ -66,6 +66,15 @@ jobs:
 
       - name: Checkout repository
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          # workflow_run: check out the triggering build's commit, not the
+          # default branch. The image is assembled from this checkout
+          # (Dockerfile.prebuilt, config.json, templates), so it must match
+          # the branch whose artifacts are being packaged — the default
+          # branch's Dockerfile.prebuilt may be stale (e.g. missing the
+          # `*.so*` glob for versioned vcpkg soname symlinks, which produces
+          # an image missing libgrpc++_reflection.so.1.81 -> CrashLoopBackOff).
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
 
       # Download pre-built Linux artifacts from CMake workflow
       - name: Download Linux Artifacts
@@ -113,14 +122,29 @@ jobs:
 
       # Set branch name for workflow_run events (uses triggering workflow's branch)
       - name: Set Branch Name
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          WORKFLOW_RUN_HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          WORKFLOW_RUN_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          REF_NAME: ${{ github.ref_name }}
+          CURRENT_SHA: ${{ github.sha }}
         run: |
-          if [ "${{ github.event_name }}" == "workflow_run" ]; then
-            echo "BRANCH_NAME=${{ github.event.workflow_run.head_branch }}" >> $GITHUB_ENV
-            echo "COMMIT_SHA=${{ github.event.workflow_run.head_sha }}" >> $GITHUB_ENV
+          if [ "$EVENT_NAME" = "workflow_run" ]; then
+            branch_name="$WORKFLOW_RUN_HEAD_BRANCH"
+            commit_sha="$WORKFLOW_RUN_HEAD_SHA"
           else
-            echo "BRANCH_NAME=${{ github.ref_name }}" >> $GITHUB_ENV
-            echo "COMMIT_SHA=${{ github.sha }}" >> $GITHUB_ENV
+            branch_name="$REF_NAME"
+            commit_sha="$CURRENT_SHA"
           fi
+
+          if ! printf '%s' "$branch_name" | grep -Eq '^[A-Za-z0-9._/-]+$'; then
+            echo "Invalid branch name: $branch_name" >&2
+            exit 1
+          fi
+
+          safe_branch_name="${branch_name//\//-}"
+          printf 'BRANCH_NAME=%s\n' "$safe_branch_name" >> "$GITHUB_ENV"
+          printf 'COMMIT_SHA=%s\n' "$commit_sha" >> "$GITHUB_ENV"
 
       - name: Echo Environment Variables
         run: |
@@ -190,8 +214,17 @@ jobs:
           annotations: ${{ steps.meta.outputs.annotations }}
           build-args: |
             OWNER=nam20485
-            GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
             VCPKG_BINARY_SOURCES=clear;nuget,GitHub,readwrite
+          # GITHUB_TOKEN is passed as a BuildKit secret (mounted at
+          # /run/secrets/github_token) rather than a build arg, so it never
+          # appears in the build log or the image cache. USE_VCPKG_CACHE
+          # defaults to 0 (write-enabled cache upload).
+          # The line must not be quoted: build-push-action splits each line on
+          # the first '=' without stripping quotes, so quotes would become part
+          # of the secret id and the Dockerfile mount id=github_token would
+          # never match.
+          secrets: |
+            github_token=${{ secrets.GITHUB_TOKEN }}
 
       # Sign the resulting Docker image digest
       # This will only write to the public Rekor transparency log when the Docker

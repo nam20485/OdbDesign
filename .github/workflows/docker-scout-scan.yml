@@ -58,18 +58,28 @@ jobs:
       # Determine which branch/tag to scan
       - name: Set Image Tag
         id: set-tag
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          WORKFLOW_RUN_HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          INPUT_BRANCH: ${{ inputs.branch }}
         run: |
-          if [ "${{ github.event_name }}" == "workflow_run" ]; then
-            echo "SCAN_TAG=${{ github.event.workflow_run.head_branch }}-latest" >> $GITHUB_ENV
-            echo "BRANCH_NAME=${{ github.event.workflow_run.head_branch }}" >> $GITHUB_ENV
-          elif [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            echo "SCAN_TAG=${{ inputs.branch }}-latest" >> $GITHUB_ENV
-            echo "BRANCH_NAME=${{ inputs.branch }}" >> $GITHUB_ENV
+          if [ "$EVENT_NAME" = "workflow_run" ]; then
+            branch_name="$WORKFLOW_RUN_HEAD_BRANCH"
+          elif [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            branch_name="$INPUT_BRANCH"
           else
             # Scheduled run - scan development by default
-            echo "SCAN_TAG=development-latest" >> $GITHUB_ENV
-            echo "BRANCH_NAME=development" >> $GITHUB_ENV
+            branch_name="development"
           fi
+
+          if ! printf '%s' "$branch_name" | grep -Eq '^[A-Za-z0-9._/-]+$'; then
+            echo "Invalid branch name: $branch_name" >&2
+            exit 1
+          fi
+
+          safe_branch_name="${branch_name//\//-}"
+          printf 'BRANCH_NAME=%s\n' "$safe_branch_name" >> "$GITHUB_ENV"
+          printf 'SCAN_TAG=%s-latest\n' "$safe_branch_name" >> "$GITHUB_ENV"
 
       # Login against Docker Hub to allow running Docker Scout
       - name: Log into Docker Hub registry

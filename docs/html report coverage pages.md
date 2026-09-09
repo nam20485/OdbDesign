@@ -1,0 +1,5 @@
+re: option 1 there already is a release worflow- it packages and signs the binaries and a docker image and then tags the rev and creates an official GH releae entry out of it. 
+
+Do you mean folding it into that, or do you justy mean folding the coverage html page into the code existing code coverage workflow? The latter is more compliacted since right now code coverage generation happens early, way before a release is ready on the development baranch I be;ieve, but then the gh jekyll pages workflow doenst happen until way later in the integration process bc it is triggered at the same time a release is created (merge to release branch). The branch integration workflowe is feature/ropic branch -> development -> staging -> main -> release, so those two things happen at the far ends of the branch workflow (i.e. development and release).
+
+Why dont you just upload the genertaed html artifcat every tiem coverage workflow runs, so its always updated and ready for use, and then sometime later whenver the gh pages jekyll workflow runs, as part of its existing process, it can grab whatever the latest html coveraage report artifcact has been uploaded and publish that?
