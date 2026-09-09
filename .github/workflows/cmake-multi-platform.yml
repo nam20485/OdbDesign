@@ -28,6 +28,11 @@ permissions:
 
 env:
   VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+  # Pin the vcpkg clone to the manifest baseline (vcpkg-configuration.json
+  # default-registry.baseline). An unpinned clone drifts with vcpkg HEAD, and
+  # the tool version is part of every package's ABI hash — every drift
+  # invalidated the whole binary cache. Keep in sync with the baseline.
+  VCPKG_COMMIT: 4f6d4ae8247b2dcae554555a135e52bb449dd524
   # Override vcpkg's default binary cache to a known path for actions/cache
   VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}/.vcpkg-binary-cache
   # GitHub Packages NuGet feed URLs used for package source resolution and push/API key association.
@@ -171,24 +176,23 @@ jobs:
       # Cross-branch and cache-evicted builds fall through to NuGet (persistent layer).
       - name: Create vcpkg Binary Cache Directory
         shell: bash
-        run: mkdir -p "$VCPKG_DEFAULT_BINARY_CACHE"
+        run: |
+          mkdir -p "$VCPKG_DEFAULT_BINARY_CACHE"
+          # runner image version feeds the cache key: image updates bump the
+          # bundled compiler (and on Windows the VS-provided vcpkg tool)
+          echo "RUNNER_IMAGE_VERSION=${ImageVersion:-unknown}" >> "$GITHUB_ENV"
 
-      - name: Restore vcpkg Binary Cache (Linux)
-        if: matrix.os == 'ubuntu-24.04'
-        uses: actions/cache@v4
+      - name: Restore vcpkg Binary Cache
+        uses: actions/cache/restore@v4
         with:
           path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
-          key: vcpkg-archives-linux-x64-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
+          # The run_id probe key never matches a saved entry, so restore always
+          # resolves via restore-keys (newest prefix match) and the explicit
+          # save step below always writes — this avoids the exact-key-hit
+          # no-save trap that discarded rebuilt archives after ABI drift.
+          key: vcpkg-archives-${{ matrix.preset }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}-${{ env.VCPKG_COMMIT }}-${{ env.RUNNER_IMAGE_VERSION }}-${{ github.run_id }}
           restore-keys: |
-            vcpkg-archives-linux-x64-
-
-      - name: Restore vcpkg Binary Cache (Non-Linux)
-        if: matrix.os != 'ubuntu-24.04'
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
-          key: vcpkg-archives-${{ matrix.preset }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
-          restore-keys: |
+            vcpkg-archives-${{ matrix.preset }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}-${{ env.VCPKG_COMMIT }}-${{ env.RUNNER_IMAGE_VERSION }}-
             vcpkg-archives-${{ matrix.preset }}-
 
       - name: Setup NuGet Credential Provider (Windows)
@@ -243,8 +247,11 @@ jobs:
       #
       - name: Install vcpkg
         run: |
-          git clone https://github.com/Microsoft/vcpkg.git ${{env.VCPKG_ROOT}}
-          "${{env.VCPKG_ROOT}}/bootstrap-vcpkg.sh"
+          git init "${{ env.VCPKG_ROOT }}"
+          git -C "${{ env.VCPKG_ROOT }}" remote add origin https://github.com/Microsoft/vcpkg.git
+          git -C "${{ env.VCPKG_ROOT }}" fetch --depth 1 origin "${{ env.VCPKG_COMMIT }}"
+          git -C "${{ env.VCPKG_ROOT }}" checkout --detach FETCH_HEAD
+          "${{ env.VCPKG_ROOT }}/bootstrap-vcpkg.sh"
         # (Windows comes w/ vcpkg installed as part of VS)
         if: matrix.os != 'windows-2022'
 
@@ -305,6 +312,16 @@ jobs:
       #
       - name: CMake Configure
         run: cmake --preset ${{matrix.preset}}
+
+      - name: Save vcpkg Binary Cache
+        # vcpkg installs dependencies during configure; save immediately after
+        # so the archives survive later step failures/cancellations. Unique
+        # run_id key means the save always happens (no exact-hit skip).
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+          key: vcpkg-archives-${{ matrix.preset }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}-${{ env.VCPKG_COMMIT }}-${{ env.RUNNER_IMAGE_VERSION }}-${{ github.run_id }}
 
       - name: CMake Build
         run: cmake --build --preset ${{matrix.preset}}
