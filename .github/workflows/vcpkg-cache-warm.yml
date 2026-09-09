@@ -24,6 +24,9 @@ permissions:
 
 env:
   VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+  # Pin the vcpkg clone to the manifest baseline (vcpkg-configuration.json
+  # default-registry.baseline); see cmake-multi-platform.yml for rationale.
+  VCPKG_COMMIT: 4f6d4ae8247b2dcae554555a135e52bb449dd524
   VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}/.vcpkg-binary-cache
   FEED_URL: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
   FEED_PUSH_URL: https://nuget.pkg.github.com/${{ github.repository_owner }}
@@ -100,14 +103,20 @@ jobs:
 
       - name: Create vcpkg Binary Cache Directory
         shell: bash
-        run: mkdir -p "$VCPKG_DEFAULT_BINARY_CACHE"
+        run: |
+          mkdir -p "$VCPKG_DEFAULT_BINARY_CACHE"
+          # runner image version feeds the cache key (compiler bump detection)
+          echo "RUNNER_IMAGE_VERSION=${ImageVersion:-unknown}" >> "$GITHUB_ENV"
 
       - name: Restore vcpkg Binary Cache
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae  # v5.0.5
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae  # v5.0.5
         with:
           path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
-          key: vcpkg-archives-linux-x64-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
+          # run_id probe key never matches, so restore resolves via
+          # restore-keys and the explicit save step always writes
+          key: vcpkg-archives-linux-x64-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}-${{ env.VCPKG_COMMIT }}-${{ env.RUNNER_IMAGE_VERSION }}-${{ github.run_id }}
           restore-keys: |
+            vcpkg-archives-linux-x64-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}-${{ env.VCPKG_COMMIT }}-${{ env.RUNNER_IMAGE_VERSION }}-
             vcpkg-archives-linux-x64-
 
       - name: Setup NuGet API Key
@@ -117,7 +126,10 @@ jobs:
 
       - name: Install vcpkg
         run: |
-          git clone https://github.com/Microsoft/vcpkg.git ${{ env.VCPKG_ROOT }}
+          git init "${{ env.VCPKG_ROOT }}"
+          git -C "${{ env.VCPKG_ROOT }}" remote add origin https://github.com/Microsoft/vcpkg.git
+          git -C "${{ env.VCPKG_ROOT }}" fetch --depth 1 origin "${{ env.VCPKG_COMMIT }}"
+          git -C "${{ env.VCPKG_ROOT }}" checkout --detach FETCH_HEAD
           "${{ env.VCPKG_ROOT }}/bootstrap-vcpkg.sh"
 
       - name: Install Ninja
@@ -130,6 +142,14 @@ jobs:
       - name: Warm vcpkg Binary Cache (dynamic triplet)
         # consumed by the linux-dynamic-release preset (cmake-multi-platform, Dockerfile)
         run: '"${{ env.VCPKG_ROOT }}/vcpkg" install --triplet x64-linux-dynamic'
+
+      - name: Save vcpkg Binary Cache
+        # unique run_id key means the save always happens
+        if: always()
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae  # v5.0.5
+        with:
+          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+          key: vcpkg-archives-linux-x64-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}-${{ env.VCPKG_COMMIT }}-${{ env.RUNNER_IMAGE_VERSION }}-${{ github.run_id }}
 
   warm-macos:
     name: Vcpkg-Cache-Warm (macOS)
@@ -186,14 +206,20 @@ jobs:
 
       - name: Create vcpkg Binary Cache Directory
         shell: bash
-        run: mkdir -p "$VCPKG_DEFAULT_BINARY_CACHE"
+        run: |
+          mkdir -p "$VCPKG_DEFAULT_BINARY_CACHE"
+          # runner image version feeds the cache key (Xcode/compiler bump detection)
+          echo "RUNNER_IMAGE_VERSION=${ImageVersion:-unknown}" >> "$GITHUB_ENV"
 
       - name: Restore vcpkg Binary Cache
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae  # v5.0.5  
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae  # v5.0.5
         with:
           path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
-          key: vcpkg-cache-warm-macos-release-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
+          # run_id probe key never matches, so restore resolves via
+          # restore-keys and the explicit save step always writes
+          key: vcpkg-cache-warm-macos-release-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}-${{ env.VCPKG_COMMIT }}-${{ env.RUNNER_IMAGE_VERSION }}-${{ github.run_id }}
           restore-keys: |
+            vcpkg-cache-warm-macos-release-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}-${{ env.VCPKG_COMMIT }}-${{ env.RUNNER_IMAGE_VERSION }}-
             vcpkg-cache-warm-macos-release-
 
       - name: Setup NuGet API Key
@@ -203,7 +229,10 @@ jobs:
 
       - name: Install vcpkg
         run: |
-          git clone https://github.com/Microsoft/vcpkg.git ${{ env.VCPKG_ROOT }}
+          git init "${{ env.VCPKG_ROOT }}"
+          git -C "${{ env.VCPKG_ROOT }}" remote add origin https://github.com/Microsoft/vcpkg.git
+          git -C "${{ env.VCPKG_ROOT }}" fetch --depth 1 origin "${{ env.VCPKG_COMMIT }}"
+          git -C "${{ env.VCPKG_ROOT }}" checkout --detach FETCH_HEAD
           "${{ env.VCPKG_ROOT }}/bootstrap-vcpkg.sh"
 
       - name: Install Ninja
@@ -211,3 +240,11 @@ jobs:
 
       - name: Warm vcpkg Binary Cache
         run: '"${{ env.VCPKG_ROOT }}/vcpkg" install'
+
+      - name: Save vcpkg Binary Cache
+        # unique run_id key means the save always happens
+        if: always()
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae  # v5.0.5
+        with:
+          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+          key: vcpkg-cache-warm-macos-release-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}-${{ env.VCPKG_COMMIT }}-${{ env.RUNNER_IMAGE_VERSION }}-${{ github.run_id }}
