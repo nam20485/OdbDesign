@@ -6,7 +6,7 @@
 #include <vector>
 #include <map>
 #include "Pin.h"
-#include "../ProtoBuf/package.pb.h"
+#include "package.pb.h"
 #include "../IProtoBuffable.h"	
 
 

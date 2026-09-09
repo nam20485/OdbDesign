@@ -12,4 +12,7 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: /mnt/d/k3dvolume
+    # created automatically by the kubelet on first mount (k3s node);
+    # the old k3d value was /mnt/d/k3dvolume (Windows host path)
+    path: /srv/odbdesign-volume
+    type: DirectoryOrCreate

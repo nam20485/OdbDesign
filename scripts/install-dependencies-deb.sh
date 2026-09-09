@@ -11,4 +11,4 @@ sudo apt install -y -qq --no-install-recommends \
                     docker-compose-v2
 
 git clone https://github.com/microsoft/vcpkg $HOME/vcpkg
-$HOME/vcpkg/bootstrap-vcpkg.sh
+"$HOME/vcpkg/bootstrap-vcpkg.sh"

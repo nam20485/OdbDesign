@@ -11,7 +11,7 @@
 #include "RgbColor.h"
 #include "../../enums.h"
 #include "../../IProtoBuffable.h"
-#include "../../ProtoBuf/matrixfile.pb.h"
+#include "matrixfile.pb.h"
 #include "../IStreamSaveable.h"
 #include "EnumMap.h"
 #include <string>
@@ -186,7 +186,17 @@ namespace Odb::Lib::FileModel::Design
         // Inherited via IStreamSaveable
         bool Save(std::ostream& os) override;
 
-        static inline bool attributeValueIsOptional(const std::string& attribute);
+        static inline bool attributeValueIsOptional(const std::string& attribute)
+        {
+            for (const auto& optionalAttribute : OPTIONAL_ATTRIBUTES)
+            {
+                if (attribute == optionalAttribute)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
 
         // Inherited via IProtoBuffable
         std::unique_ptr<Odb::Lib::Protobuf::MatrixFile> to_protobuf() const override;
@@ -216,3 +226,4 @@ namespace Odb::Lib::FileModel::Design
         };      
     };
 }
+

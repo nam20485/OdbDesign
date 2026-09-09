@@ -13,7 +13,8 @@
 #include <memory>
 #include <string>
 #include "../parse_info.h"
-#include "../../ProtoBuf/netlistfile.pb.h"
+#include "netlistfile.pb.h"
+#include "../../Text/Utf8Sanitizer.h"
 
 using namespace std::filesystem;
 
@@ -296,9 +297,9 @@ namespace Odb::Lib::FileModel::Design
 	std::unique_ptr<Protobuf::NetlistFile> NetlistFile::to_protobuf() const
 	{
 		std::unique_ptr<Protobuf::NetlistFile> pNetlistFileMessage(new Protobuf::NetlistFile);
-		pNetlistFileMessage->set_units(m_units);
-		pNetlistFileMessage->set_path(m_path.string());	
-		pNetlistFileMessage->set_name(m_name);
+		pNetlistFileMessage->set_units(Odb::Lib::Text::ToUtf8(m_units));
+		pNetlistFileMessage->set_path(Odb::Lib::Text::ToUtf8(m_path.string()));
+		pNetlistFileMessage->set_name(Odb::Lib::Text::ToUtf8(m_name));
 		pNetlistFileMessage->set_optimized(m_optimized);
 		pNetlistFileMessage->set_staggered(static_cast<Protobuf::NetlistFile::Staggered>(m_staggered));
 
@@ -310,7 +311,7 @@ namespace Odb::Lib::FileModel::Design
 
 		for (const auto& kvNetRecord : m_netRecordsByName)
 		{
-			(*pNetlistFileMessage->mutable_netrecordsbyname())[kvNetRecord.first] = *kvNetRecord.second->to_protobuf();
+			(*pNetlistFileMessage->mutable_netrecordsbyname())[Odb::Lib::Text::ToUtf8(kvNetRecord.first)] = *kvNetRecord.second->to_protobuf();
 		}
 
 		for (const auto& pNetPointRecord : m_netPointRecords)
@@ -319,7 +320,7 @@ namespace Odb::Lib::FileModel::Design
 			pNetlistFileMessage->add_netpointrecords()->CopyFrom(*pNetPointRecordMessage);
 		}
 
-		return pNetlistFileMessage;		
+		return pNetlistFileMessage;
 	}
 
 	void NetlistFile::from_protobuf(const Protobuf::NetlistFile& message)
@@ -388,8 +389,8 @@ namespace Odb::Lib::FileModel::Design
 	{
 		std::unique_ptr<Protobuf::NetlistFile::NetRecord> pNetRecordMessage(new Protobuf::NetlistFile::NetRecord);
 		pNetRecordMessage->set_serialnumber(serialNumber);
-		pNetRecordMessage->set_netname(netName);
-		return pNetRecordMessage;		
+		pNetRecordMessage->set_netname(Odb::Lib::Text::ToUtf8(netName));
+		return pNetRecordMessage;
 	}
 
 	void NetlistFile::NetRecord::from_protobuf(const Protobuf::NetlistFile::NetRecord& message)

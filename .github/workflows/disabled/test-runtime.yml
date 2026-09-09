@@ -38,9 +38,9 @@ jobs:
           # Windows x64 Release
           - os: windows-2022
             preset: x64-release
-          # Linux x64 Release          
-          - os: ubuntu-22.04
-            preset: linux-release
+          # Linux x64 Release (dynamic triplet: shared protobuf/gRPC runtime)
+          - os: ubuntu-24.04
+            preset: linux-dynamic-release
           # MacOS x64 Release
           - os: macos-12
             preset: macos-release

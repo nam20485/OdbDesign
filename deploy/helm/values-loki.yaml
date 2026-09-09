@@ -1,0 +1,63 @@
+# Loki overrides — single-binary mode for the single-node k3s dev VM.
+# Logs are viewable in Grafana via the provisioned "Loki" datasource
+# (see values-prom.yaml grafana.additionalDataSources).
+
+deploymentMode: SingleBinary
+
+loki:
+  # single-tenant dev cluster: no X-Scope-OrgID required (promtail/Grafana need no tenant)
+  auth_enabled: false
+  # required by the chart for Loki 3.x — tsdb index + filesystem object store
+  schemaConfig:
+    configs:
+      - from: "2024-04-01"
+        store: tsdb
+        object_store: filesystem
+        schema: v13
+        index:
+          prefix: index_
+          period: 24h
+  commonConfig:
+    replication_factor: 1
+  storage:
+    # filesystem + PVC is fine for a dev cluster; use object storage for HA setups
+    type: filesystem
+  limits_config:
+    retention_period: 168h
+  # limits_config.retention_period is only enforced when the compactor runs
+  # with retention enabled (single-binary runs the compactor in-process);
+  # without this nothing prunes chunks and the 10Gi PVC fills indefinitely.
+  compactor:
+    retention_enabled: true
+
+singleBinary:
+  replicas: 1
+  persistence:
+    enabled: true
+    size: 10Gi
+
+# no nginx gateway — Grafana/Promtail talk to the loki Service directly
+# (http://loki.monitoring.svc.cluster.local:3100)
+gateway:
+  enabled: false
+
+lokiCanary:
+  enabled: false
+
+test:
+  enabled: false
+
+# zero out the SimpleScalable targets — required when deploymentMode: SingleBinary
+# (chart defaults are 3; the chart validates one mode has all-zero replicas)
+write:
+  replicas: 0
+read:
+  replicas: 0
+backend:
+  replicas: 0
+
+# dev VM: skip the memcached chunks/results caches (less RAM, fewer pods)
+chunksCache:
+  enabled: false
+resultsCache:
+  enabled: false

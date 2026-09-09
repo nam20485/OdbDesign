@@ -7,7 +7,7 @@
 #include "Component.h"
 #include "Package.h"
 #include "Part.h"
-#include "../ProtoBuf/design.pb.h"
+#include "design.pb.h"
 #include "../IProtoBuffable.h"	
 #include <map>
 #include <vector>

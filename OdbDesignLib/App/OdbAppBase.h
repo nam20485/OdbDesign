@@ -4,6 +4,8 @@
 #include "DesignCache.h"
 #include "OdbDesignArgs.h"
 #include "../odbdesign_export.h"
+#include "IOdbApp.h"
+#include <ExitCode.h>
 
 namespace Odb::Lib::App
 {

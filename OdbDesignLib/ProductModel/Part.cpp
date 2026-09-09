@@ -1,7 +1,8 @@
 #include "Part.h"
 #include <string>
-#include "../ProtoBuf/part.pb.h"
+#include "part.pb.h"
 #include <memory>
+#include "../Text/Utf8Sanitizer.h"
 
 namespace Odb::Lib::ProductModel
 {
@@ -18,7 +19,7 @@ namespace Odb::Lib::ProductModel
 	std::unique_ptr<Odb::Lib::Protobuf::ProductModel::Part> Odb::Lib::ProductModel::Part::to_protobuf() const
 	{
 		auto pPartMsg = std::make_unique<Odb::Lib::Protobuf::ProductModel::Part>();
-		pPartMsg->set_name(m_name);
+		pPartMsg->set_name(Odb::Lib::Text::ToUtf8(m_name));
 		return pPartMsg;
 	}
 

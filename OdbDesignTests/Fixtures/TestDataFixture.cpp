@@ -1,4 +1,5 @@
 #include "TestDataFixture.h"
+#include "CrossPlatform.h"
 #include <string>
 #include <Logger.h>
 #include <filesystem>
@@ -37,11 +38,20 @@ namespace Odb::Test::Fixtures
 
 	path TestDataFixture::getTestDataDir()
 	{
-		auto szTestDataDir = std::getenv(ODB_TEST_DATA_DIR_ENV_NAME);
-		if (szTestDataDir == nullptr) return "";
-		//if (szTestDataDir == nullptr) throw std::runtime_error("ODB_TEST_DATA_DIR environment variable is not set");				
-		//if (!exists(szTestDataDir)) throw std::runtime_error("ODB_TEST_DATA_DIR environment variable is set to a non-existent directory");
-		return szTestDataDir;
+		static const path testDataDir = []()
+		{
+			std::string envValue;
+			if (!CrossPlatform::getenv_safe(ODB_TEST_DATA_DIR_ENV_NAME, envValue))
+			{
+				return path{};
+			}
+
+			auto resolvedPath = path(envValue);
+			resolvedPath.make_preferred();
+			return resolvedPath;
+		}();
+
+		return testDataDir;
 	}
 
 	path TestDataFixture::getTestDataFilesDir() const

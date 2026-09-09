@@ -67,8 +67,9 @@ jobs:
       matrix:
         include:
           - language: 'c-cpp'
-            os: 'ubuntu-22.04'
-            preset: 'linux-release'          
+            os: 'ubuntu-24.04'
+            # dynamic triplet: shared protobuf/gRPC runtime (see docs/linux-dynamic-release-plan.md)
+            preset: 'linux-dynamic-release'          
           # Uncomment to add Windows analysis
           # - language: 'c-cpp'
           #   os: 'windows-2022'
@@ -108,11 +109,17 @@ jobs:
         - name: Install vcpkg
           run: |
             git clone --depth 1 https://github.com/Microsoft/vcpkg.git ${{env.VCPKG_ROOT}}
-            if [ "${{ matrix.os }}" = "ubuntu-22.04" ]; then
+            if [ "${{ matrix.os }}" = "ubuntu-24.04" ]; then
               "${{env.VCPKG_ROOT}}/bootstrap-vcpkg.sh"
             else
               "${{env.VCPKG_ROOT}}/bootstrap-vcpkg.bat"
             fi
+
+        - name: Install vcpkg Dependencies (Ubuntu)
+          if: matrix.os == 'ubuntu-24.04'
+          run: |
+            sudo apt update
+            sudo apt install -y -q --no-install-recommends build-essential tar curl zip unzip mono-devel linux-libc-dev
 
         - name: Install Ninja
           uses: seanmiddleditch/gha-setup-ninja@8b297075da4cd2a5f1fd21fe011b499edf06e9d2 # master
@@ -126,7 +133,8 @@ jobs:
               core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
 
         - name: vcpkg Install Dependencies
-          run: "\"${{env.VCPKG_ROOT}}/vcpkg\" install"
+          # match the matrix's linux-dynamic-release preset triplet
+          run: "\"${{env.VCPKG_ROOT}}/vcpkg\" install --triplet x64-linux-dynamic"
 
         - name: CMake Configure
           run: cmake --preset ${{ matrix.preset }}

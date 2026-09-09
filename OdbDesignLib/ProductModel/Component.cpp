@@ -1,11 +1,12 @@
 #include "Component.h"
-#include "../ProtoBuf/component.pb.h"
-#include "../ProtoBuf/enums.pb.h"
+#include "component.pb.h"
+#include "enums.pb.h"
 #include <string>
 #include <memory>
 #include "../enums.h"
 #include "Part.h"
 #include "Package.h"
+#include "../Text/Utf8Sanitizer.h"
 
 
 namespace Odb::Lib::ProductModel
@@ -67,8 +68,8 @@ namespace Odb::Lib::ProductModel
 	std::unique_ptr<Odb::Lib::Protobuf::ProductModel::Component> Component::to_protobuf() const
 	{
 		auto pComponentMsg = std::make_unique<Odb::Lib::Protobuf::ProductModel::Component>();
-		pComponentMsg->set_refdes(m_refDes);
-		pComponentMsg->set_partname(m_partName);
+		pComponentMsg->set_refdes(Odb::Lib::Text::ToUtf8(m_refDes));
+		pComponentMsg->set_partname(Odb::Lib::Text::ToUtf8(m_partName));
 		pComponentMsg->set_index(m_index);
 		pComponentMsg->set_side(static_cast<Odb::Lib::Protobuf::BoardSide>(m_side));
 		pComponentMsg->mutable_package()->CopyFrom(*m_pPackage->to_protobuf());		

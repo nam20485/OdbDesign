@@ -1,0 +1,213 @@
+name: Vcpkg Binary Cache Warm
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Platform target to warm
+        required: true
+        default: all
+        type: choice
+        options:
+          - all
+          - linux
+          - macos
+  schedule:
+    - cron: '0 8 * * 1'
+  workflow_run:
+    workflows: ["CMake Build Multi-Platform"]
+    types: [completed]
+    branches: ["development", "staging", "main", "release"]
+
+permissions:
+  contents: read
+
+env:
+  VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+  VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}/.vcpkg-binary-cache
+  FEED_URL: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
+  FEED_PUSH_URL: https://nuget.pkg.github.com/${{ github.repository_owner }}
+  VCPKG_FEATURE_FLAGS: dependencygraph
+  USERNAME: ${{ github.repository_owner }}
+  NUGET_XMLDOC_MODE: skip
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  NUGET_TIMEOUT: 1200
+  NUGET_PUSH_TIMEOUT_IN_SECONDS: 1200
+  # Commit to check out. For workflow_run events this is the triggering run's head SHA.
+  # Safe because the warm jobs only run when the triggering event was NOT a pull request
+  # (see job `if:` conditions), i.e. only same-repo push/workflow_dispatch runs.
+  WARM_REF: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+concurrency:
+  group: vcpkg-cache-warm-${{ github.event.workflow_run.head_branch || github.ref_name || 'manual' }}
+  cancel-in-progress: false
+
+jobs:
+  warm-linux:
+    name: Vcpkg-Cache-Warm (Linux)
+    if: >
+      (github.event_name != 'workflow_run' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event != 'pull_request')) &&
+      (github.event_name != 'workflow_dispatch' ||
+      inputs.target == 'all' ||
+      inputs.target == 'linux')
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.1
+        with:
+          egress-policy: audit
+
+      - name: Checkout Repository
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          ref: ${{ env.WARM_REF }}
+
+      - name: Install vcpkg Dependencies (Ubuntu)
+        run: |
+          sudo apt update
+          sudo apt install -y -q --no-install-recommends build-essential tar curl zip unzip mono-devel linux-libc-dev
+
+      - name: Generate NuGet Config for Binary Cache
+        shell: bash
+        run: |
+          cat > "$GITHUB_WORKSPACE/nuget.generated.config" << 'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <configuration>
+            <packageSources>
+              <clear />
+              <add key="GitHubPackages" value="${{ env.FEED_URL }}" />
+            </packageSources>
+            <packageSourceCredentials>
+              <GitHubPackages>
+                <add key="Username" value="${{ env.USERNAME }}" />
+                <add key="ClearTextPassword" value="${{ secrets.VCPKG_PAT_TOKEN }}" />
+              </GitHubPackages>
+            </packageSourceCredentials>
+            <apiKeys>
+              <add key="${{ env.FEED_URL }}" value="${{ secrets.VCPKG_PAT_TOKEN }}" />
+              <add key="${{ env.FEED_PUSH_URL }}" value="${{ secrets.VCPKG_PAT_TOKEN }}" />
+            </apiKeys>
+            <config>
+              <add key="defaultPushSource" value="${{ env.FEED_PUSH_URL }}" />
+              <add key="signatureValidationMode" value="accept" />
+            </config>
+          </configuration>
+          EOF
+          echo "VCPKG_BINARY_SOURCES=clear;default,readwrite;nugettimeout,900;nugetconfig,$GITHUB_WORKSPACE/nuget.generated.config,readwrite" >> $GITHUB_ENV
+
+      - name: Create vcpkg Binary Cache Directory
+        shell: bash
+        run: mkdir -p "$VCPKG_DEFAULT_BINARY_CACHE"
+
+      - name: Restore vcpkg Binary Cache
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae  # v5.0.5
+        with:
+          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+          key: vcpkg-archives-linux-x64-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
+          restore-keys: |
+            vcpkg-archives-linux-x64-
+
+      - name: Setup NuGet API Key
+        shell: bash
+        run: |
+          mono $(which nuget) setApiKey "${{ secrets.VCPKG_PAT_TOKEN }}" -Source "${{ env.FEED_PUSH_URL }}" -NonInteractive || true
+
+      - name: Install vcpkg
+        run: |
+          git clone https://github.com/Microsoft/vcpkg.git ${{ env.VCPKG_ROOT }}
+          "${{ env.VCPKG_ROOT }}/bootstrap-vcpkg.sh"
+
+      - name: Install Ninja
+        uses: seanmiddleditch/gha-setup-ninja@8b297075da4cd2a5f1fd21fe011b499edf06e9d2 # master
+
+      - name: Warm vcpkg Binary Cache (static triplet)
+        # still consumed by code-coverage.yml (linux-debug preset)
+        run: '"${{ env.VCPKG_ROOT }}/vcpkg" install'
+
+      - name: Warm vcpkg Binary Cache (dynamic triplet)
+        # consumed by the linux-dynamic-release preset (cmake-multi-platform, Dockerfile)
+        run: '"${{ env.VCPKG_ROOT }}/vcpkg" install --triplet x64-linux-dynamic'
+
+  warm-macos:
+    name: Vcpkg-Cache-Warm (macOS)
+    if: >
+      (github.event_name != 'workflow_run' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event != 'pull_request')) &&
+      (github.event_name != 'workflow_dispatch' ||
+      inputs.target == 'all' ||
+      inputs.target == 'macos')
+    runs-on: macos-14
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.1
+        with:
+          egress-policy: audit
+
+      - name: Checkout Repository
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          ref: ${{ env.WARM_REF }}
+
+      - name: Install mono (macOS)
+        run: brew install mono
+
+      - name: Generate NuGet Config for Binary Cache
+        shell: bash
+        run: |
+          cat > "$GITHUB_WORKSPACE/nuget.generated.config" << 'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <configuration>
+            <packageSources>
+              <clear />
+              <add key="GitHubPackages" value="${{ env.FEED_URL }}" />
+            </packageSources>
+            <packageSourceCredentials>
+              <GitHubPackages>
+                <add key="Username" value="${{ env.USERNAME }}" />
+                <add key="ClearTextPassword" value="${{ secrets.VCPKG_PAT_TOKEN }}" />
+              </GitHubPackages>
+            </packageSourceCredentials>
+            <apiKeys>
+              <add key="${{ env.FEED_URL }}" value="${{ secrets.VCPKG_PAT_TOKEN }}" />
+              <add key="${{ env.FEED_PUSH_URL }}" value="${{ secrets.VCPKG_PAT_TOKEN }}" />
+            </apiKeys>
+            <config>
+              <add key="defaultPushSource" value="${{ env.FEED_PUSH_URL }}" />
+              <add key="signatureValidationMode" value="accept" />
+            </config>
+          </configuration>
+          EOF
+          echo "VCPKG_BINARY_SOURCES=clear;default,readwrite;nugettimeout,900;nugetconfig,$GITHUB_WORKSPACE/nuget.generated.config,readwrite" >> $GITHUB_ENV
+
+      - name: Create vcpkg Binary Cache Directory
+        shell: bash
+        run: mkdir -p "$VCPKG_DEFAULT_BINARY_CACHE"
+
+      - name: Restore vcpkg Binary Cache
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae  # v5.0.5  
+        with:
+          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+          key: vcpkg-cache-warm-macos-release-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
+          restore-keys: |
+            vcpkg-cache-warm-macos-release-
+
+      - name: Setup NuGet API Key
+        shell: bash
+        run: |
+          mono $(which nuget) setApiKey "${{ secrets.VCPKG_PAT_TOKEN }}" -Source "${{ env.FEED_PUSH_URL }}" -NonInteractive || true
+
+      - name: Install vcpkg
+        run: |
+          git clone https://github.com/Microsoft/vcpkg.git ${{ env.VCPKG_ROOT }}
+          "${{ env.VCPKG_ROOT }}/bootstrap-vcpkg.sh"
+
+      - name: Install Ninja
+        uses: seanmiddleditch/gha-setup-ninja@8b297075da4cd2a5f1fd21fe011b499edf06e9d2 # master
+
+      - name: Warm vcpkg Binary Cache
+        run: '"${{ env.VCPKG_ROOT }}/vcpkg" install'

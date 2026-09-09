@@ -2,6 +2,15 @@
 
 #include "App/RouteController.h"
 
+#include <memory>
+#include <optional>
+#include <string>
+
+namespace Odb::Lib::ProductModel
+{
+	class Design;
+}
+
 namespace Odb::App::Server
 {
 	class DesignsController : public Odb::Lib::App::RouteController
@@ -16,6 +25,15 @@ namespace Odb::App::Server
 		constexpr inline static const char* kszIncludeFileArchiveQueryParamName = "include_filearchive";
 
 	private:
+
+		// Fetches the ProductModel Design for a design name, translating failures
+		// into HTTP responses: corrupt/unloadable archive (propagated from
+		// DesignCache::LoadFileArchive via GetDesign) -> engaged optional holding
+		// INTERNAL/500; design not found -> engaged optional holding NOT_FOUND/404.
+		// On success the optional is disengaged and pDesign is populated.
+		std::optional<crow::response> TryGetDesign(
+			const std::string& designName,
+			std::shared_ptr<Odb::Lib::ProductModel::Design>& pDesign) const;
 
 		crow::response designs_list_route_handler(const crow::request& req);
 		crow::response design_route_handler(std::string designName, const crow::request& req);

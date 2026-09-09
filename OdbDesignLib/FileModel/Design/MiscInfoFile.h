@@ -2,15 +2,14 @@
 // Created by nmill on 10/13/2023.
 //
 
+#pragma once
 #include "../OdbFile.h"
 #include <chrono>
 #include "../../IProtoBuffable.h"
-#include "../../ProtoBuf/miscinfofile.pb.h"
+#include "miscinfofile.pb.h"
 #include "../IStreamSaveable.h"
 #include <memory>
 #include "../../odbdesign_export.h"
-
-#pragma once
 
 namespace Odb::Lib::FileModel::Design
 {
@@ -74,3 +73,4 @@ namespace Odb::Lib::FileModel::Design
         constexpr inline static const char* MAX_UID_KEY = "MAX_UID";        
     };
 }
+

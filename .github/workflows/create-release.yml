@@ -23,14 +23,14 @@ jobs:
     name: Create Release
     #needs: build
     #if: ${{ (github.ref_name == 'release') && github.event_name == 'push' }}
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     permissions: 
         contents: write
     
     steps:
 
           - name: Harden Runner
-            uses: step-security/harden-runner@4d991eb9b905ef189e4c376166672c3f2f230481 # v2.11.0
+            uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.1
             with:
               egress-policy: audit
 
@@ -44,10 +44,10 @@ jobs:
               fi
     
           - name: Checkout Repository
-            uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+            uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
        
           - name: Download Artifacts
-            uses: dawidd6/action-download-artifact@09f2f74827fd3a8607589e5ad7f9398816f540fe # v3.1.4
+            uses: dawidd6/action-download-artifact@ac66b43f0e6a346234dd65d4d0c8fbb31cb316e5 # v11
             with:
               workflow: cmake-multi-platform.yml
               workflow_conclusion: success
@@ -55,7 +55,7 @@ jobs:
     
           - name: Rename Artifacts
             run: |
-              mv ${{ github.workspace }}/artifacts/ubuntu-22.04-artifacts/artifacts-ubuntu-22.04.zip ${{ github.workspace }}/artifacts/OdbDesign-Linux-x64.zip
+              mv ${{ github.workspace }}/artifacts/ubuntu-24.04-artifacts/artifacts-ubuntu-24.04.zip ${{ github.workspace }}/artifacts/OdbDesign-Linux-x64.zip
               mv ${{ github.workspace }}/artifacts/windows-2022-artifacts/artifacts-windows-2022.zip ${{ github.workspace }}/artifacts/OdbDesign-Windows-x64.zip
               mv ${{ github.workspace }}/artifacts/macos-14-artifacts/artifacts-macos-14.zip ${{ github.workspace }}/artifacts/OdbDesign-MacOS-x64.zip
     
@@ -68,17 +68,37 @@ jobs:
               sha256sum OdbDesign-MacOS-x64.zip > OdbDesign-MacOS-x64.zip.sha256sum          
     
           - name: Import GPG Key
+            id: import_gpg
             uses: crazy-max/ghaction-import-gpg@01dd5d3ca463c7f10f7f4f7b4f177225ac661ee4 # v6.1.0
             with:
               gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
               passphrase: ${{ secrets.PASSPHRASE }}
               
           - name: Sign Binaries
+            env:
+              GPG_PASSPHRASE: ${{ secrets.PASSPHRASE }}
             run: |
-              cd ${{ github.workspace }}/artifacts
-              gpg --batch --yes --detach-sign --armor OdbDesign-Linux-x64.zip
-              gpg --batch --yes --detach-sign --armor OdbDesign-Windows-x64.zip
-              gpg --batch --yes --detach-sign --armor OdbDesign-MacOS-x64.zip
+              cd "${{ github.workspace }}/artifacts"
+              signing_key="$(gpg --batch --with-colons --list-secret-keys | awk -F: '
+                ($1 == "sec" || $1 == "ssb") {
+                  wantsign = index($12, "s") || index($12, "S")
+                  next
+                }
+                wantsign && $1 == "fpr" {
+                  print $10
+                  exit
+                }
+              ')"
+
+              if [ -z "$signing_key" ]; then
+                echo "No signing-capable secret key found after import" >&2
+                gpg --batch --list-secret-keys >&2
+                exit 1
+              fi
+
+              gpg --batch --yes --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" --local-user "$signing_key" --detach-sign --armor OdbDesign-Linux-x64.zip
+              gpg --batch --yes --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" --local-user "$signing_key" --detach-sign --armor OdbDesign-Windows-x64.zip
+              gpg --batch --yes --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" --local-user "$signing_key" --detach-sign --armor OdbDesign-MacOS-x64.zip
     
           - name: Create Release Variables
             run: |

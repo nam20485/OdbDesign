@@ -2,9 +2,10 @@
 #include <memory>
 #include "Component.h"
 #include "Pin.h"
-#include "../ProtoBuf/net.pb.h"
+#include "net.pb.h"
 #include <string>
 #include "PinConnection.h"
+#include "../Text/Utf8Sanitizer.h"
 
 
 namespace Odb::Lib::ProductModel
@@ -44,7 +45,7 @@ namespace Odb::Lib::ProductModel
 	std::unique_ptr<Odb::Lib::Protobuf::ProductModel::Net> Odb::Lib::ProductModel::Net::to_protobuf() const
 	{
 		auto pNetMsg = std::make_unique<Odb::Lib::Protobuf::ProductModel::Net>();
-		pNetMsg->set_name(m_name);
+		pNetMsg->set_name(Odb::Lib::Text::ToUtf8(m_name));
 		pNetMsg->set_index(m_index);
 		for (auto& pPinConnection : m_pinConnections)
 		{

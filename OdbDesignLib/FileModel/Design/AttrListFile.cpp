@@ -11,6 +11,7 @@
 #include "str_utils.h"
 #include "../../Constants.h"
 #include <ArchiveExtractor.h>
+#include "../../Text/Utf8Sanitizer.h"
 
 namespace Odb::Lib::FileModel::Design
 {
@@ -163,17 +164,17 @@ namespace Odb::Lib::FileModel::Design
 	{
 		auto message = std::make_unique<Odb::Lib::Protobuf::AttrListFile>();
 
-		message->set_directory(m_directory.string());
-		message->set_path(m_path.string());
-		message->set_units(m_units);
+		message->set_directory(Odb::Lib::Text::ToUtf8(m_directory.string()));
+		message->set_path(Odb::Lib::Text::ToUtf8(m_path.string()));
+		message->set_units(Odb::Lib::Text::ToUtf8(m_units));
 
 		for (const auto& kvAttribute : m_attributesByName)
 		{
-			(*message->mutable_attributesbyname())[kvAttribute.first] = kvAttribute.second;
+			(*message->mutable_attributesbyname())[Odb::Lib::Text::ToUtf8(kvAttribute.first)] = Odb::Lib::Text::ToUtf8(kvAttribute.second);
 		}
 
 		return message;
-	
+
 	}
 
 	void Lib::FileModel::Design::AttrListFile::from_protobuf(const Odb::Lib::Protobuf::AttrListFile& message)

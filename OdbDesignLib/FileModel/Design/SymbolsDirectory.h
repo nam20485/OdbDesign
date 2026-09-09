@@ -9,7 +9,7 @@
 #include <memory>
 #include <filesystem>
 #include "../../IProtoBuffable.h"
-#include "../../ProtoBuf/symbolsdirectory.pb.h"
+#include "symbolsdirectory.pb.h"
 #include "../ISaveable.h"
 
 namespace Odb::Lib::FileModel::Design
@@ -48,3 +48,4 @@ namespace Odb::Lib::FileModel::Design
 
 	};
 }
+

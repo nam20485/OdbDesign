@@ -1,0 +1,7 @@
+{
+    "sonarlint.pathToCompileCommands": "${config:cmake.buildDirectory}/compile_commands.json",
+    "sonarlint.connectedMode.project": {
+        "connectionId": "nam20485",
+        "projectKey": "nam20485_OdbDesign"
+    }
+}

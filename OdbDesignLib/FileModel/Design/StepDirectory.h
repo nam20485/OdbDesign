@@ -10,7 +10,7 @@
 #include "EdaDataFile.h"
 #include "NetlistFile.h"
 #include "../../IProtoBuffable.h"
-#include "../../ProtoBuf/stepdirectory.pb.h"
+#include "stepdirectory.pb.h"
 #include "ComponentsFile.h"
 #include "AttrListFile.h"
 #include "StepHdrFile.h"
@@ -71,4 +71,5 @@ namespace Odb::Lib::FileModel::Design
 		
 	};
 }
+
 

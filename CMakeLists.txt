@@ -14,10 +14,47 @@ set(CXX_STANDARD ${MY_CXX_STANDARD})
 set(CMAKE_CXX_STANDARD ${MY_CXX_STANDARD})
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+# export all class and method symbols when building shared libraries on Windows
+# mandatory to enable export of grpc service protoc-generated classes/methods
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+
+# enable compilation database for SonarQube analysis
+# See: https://docs.sonarsource.com/sonarqube-for-ide/vs-code/getting-started/running-an-analysis/#generate-a-compilation-database
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+# symlink compile_commands.json to project root so IDEs (clangd, Zed, VS Code)
+# can find it without manual configuration.
+#
+# The destination is only (re)created when absent or already one of our symlinks,
+# so reconfiguring with a different preset neither fails on EEXIST nor silently
+# replaces an existing regular file with a snapshot. Failures (e.g. a read-only
+# checkout) are tolerated instead of aborting configure.
+if(EXISTS "${CMAKE_BINARY_DIR}/compile_commands.json")
+    set(_odb_cc_dest "${CMAKE_SOURCE_DIR}/compile_commands.json")
+    if(IS_SYMLINK "${_odb_cc_dest}")
+        # refresh the link so it points at the binary dir of the current preset
+        file(REMOVE "${_odb_cc_dest}")
+    endif()
+    if(NOT EXISTS "${_odb_cc_dest}")
+        file(CREATE_LINK
+            "${CMAKE_BINARY_DIR}/compile_commands.json"
+            "${_odb_cc_dest}"
+            SYMBOLIC COPY_ON_ERROR
+            RESULT _odb_cc_result
+        )
+        if(NOT _odb_cc_result EQUAL 0)
+            message(STATUS "Could not link compile_commands.json into source dir (result ${_odb_cc_result}); configure IDEs manually")
+        endif()
+    endif()
+endif()
+
 # only use ccache locally, i.e. not in CI
+# nm, looks like we re-en-disabled it. Apparently it can speed up CI builds too. (Not sure how since its first one-off single build  everytime, but maybe it can cache within a single build run)
 #if (NOT DEFINED ENV{CI})
     set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_EXE}")
 #endif()
+
+set(CMAKE_COLOR_DIAGNOSTICS ON)
 
 #
 # GoogleTest support
@@ -25,13 +62,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 include(FetchContent)
 FetchContent_Declare(
   googletest
-  URL https://github.com/google/googletest/archive/refs/tags/v1.16.0.zip
+  URL https://github.com/google/googletest/archive/refs/tags/v1.17.0.zip
   #URL https://github.com/google/googletest/archive/refs/heads/main.zip
 )
 # For Windows: Prevent overriding the parent project's compiler/linker settings
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
-
 enable_testing()
 
 # Enable Hot Reload for MSVC compilers if supported.
@@ -63,7 +99,7 @@ if (MSVC)
     add_compile_options(/wd4100)
     #add_compile_options(/sdl)
 else()
-    # additional warnings    
+    # additional warnings
     add_compile_options(-Wall -Wextra -Wpedantic)
     # treat warnings as errors
     #add_compile_options(-Werror)

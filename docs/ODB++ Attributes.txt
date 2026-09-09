@@ -1,0 +1,249 @@
+ODB++ Attributes
+Attributes in the ODB++ format provide a flexible way to assign product related and process related
+information to ODB++ entities. The use of attributes by the ODB++ format has been standardized and is
+supported in a unified manner, independent of any application-specific references to attributes. All system
+attributes are optional.
+Attribute definition files for all attributes in the product model are stored under
+<product_model_name>/misc. They all have the same syntax.
+Attributes starting with the dot (.) character are system attributes. See “misc/sysattr.* (Attribute Definition)”
+on page 84.
+User-defined attributes cannot have the dot character before their name. See “misc/userattr (User
+Attribute Definition)” on page 90.
+Attribute Classes
+Attribute Value Assignment
+Attribute Classes
+At the highest level, attributes within the ODB++ format are divided into these classes: DFM Analysis,
+Product, and Process.
+• DFM Analysis attributes — Used to enable or enhance analysis. An example is .center_fiducial
+for components that require a center fiducial.
+• Product attributes — Used to describe the finished product. An example is .gold_plated on a
+copper features to indicate that gold will be delivered at these locations.
+• Process attributes — Used to add further definition to the manufacturing process applied to the
+product. Process attributes are divided into process categories:
+◦ Fabrication — For example, the fabrication process attribute .plating_bar describes the
+manufacturing purpose for a piece of copper that is later removed by the milling/routing
+process and is not delivered to the customer as part of the final product.
+◦ Assembly — For example, the assembly process attribute .fs_direction_top is used to
+describe the flow solder assembly direction.
+ODB++Design Format Specification 27
+ODB++Design Format Specification
+Attribute Value Assignment
+◦ Test — These attributes are for the functional, optical, and other testing of the PCBA
+product before, during or following the assembly process. An example would be the HP3070
+attributes used to deliver programs for this test machine.
+◦ Generic — The generic attributes related to the production process.
+The attribute definitions for each attribute class are stored in a separate file.
+In addition to the files that contain system attribute definitions, the file userattr can be used to define user
+attributes for all entities. It is stored in the library when the product model is created. It is read each time
+the product model is opened.
+These files contain attribute definitions:
+Attribute Definition
+File Class List of System Attributes in the Class
+sysattr Product “Product (sysattr)” on page 252
+sysattr.dfm DFM analysis “DFM (sysattr.dfm)” on page 257
+sysattr.fab Fabrication “Fabrication (sysattr.fab)” on page 261
+sysattr.assy Assembly “Assembly (sysattr.assy)” on page 264
+sysattr.test Test “Test (sysattr.test)” on page 265
+sysattr.gen Generic “Generic (sysattr.gen)” on page 266
+userattr (none) (Contains user-defined attributes.)
+Attribute Value Assignment
+You can assign system attributes and user-defined attributes to ODB++ entities. For some entities,
+attributes are assigned using an attrlist file. For some entities, attributes are assigned using a lookup
+table.
+Attrlist Files
+For some entities, an attrlist file is placed under the entity, containing a list of attribute names
+and values. For example, this attrlist file assigns attributes to the layer named <layer_name>:
+<product_model_name>/steps/<step_name>/layers/<layer_name>/attrlist:
+UNITS=MM
+.out_mirror = no
+.inp_file =
+.eda_layers = "VIA CLASS:TOP"&"PIN:TOP"&"ETCH:TOP"
+.out_angle = 0.0
+.out_polarity = positive
+.out_x_scale = 1.000000
+.out_y_scale = 1.000000
+.out_comp = 0.000000
+28 ODB++Design Format Specification
+ODB++Design Format Specification
+Attribute Value Assignment
+Lookup Tables
+For entities for which multiple entities are defined in the same file—such as features, components, or nets
+—each entity definition line can contain attribute assignments for the entity being defined. Lookup tables
+are used to allow the entity assignment syntax to use shortcuts to refer to attributes and their values. This
+is an example of a feature attribute lookup table, and a feature definition record that assigns attributes by
+pointing to attributes and their values in the string 3=2,4=0:
+#
+#Feature attribute names
+#
+@0 .smd
+@1 .nomenclature
+@2 .test_point
+@3 .geometry
+@4 .pad_usage
+#
+#Feature attribute text strings
+#
+&0 9796334
+&1 fid_0_0_0
+&2 moire
+#
+#Layer features
+#
+P -0.198 1.62 16 P 0 3;3=2,4=0;ID=123456
+ODB++ Entities That Can Have Attributes Assigned Using Lookup Tables
+ODB++ Entity File with Attribute Lookup Tables Explanation
+Symbol Feature /symbols/<symbol_name>/features “<symbol_name>/features (Symbol
+Features)” on page 93
+Net /steps/<step_name>/eda/data “eda/data (EDA Data)” on
+page 106
+Feature /steps/<step_name>/layers/
+<layer_name>/features “<layer_name>/features (Graphic
+Features)” on page 164
+Component /steps/<step_name>/layers/
+<layer_name>/components “<layer_name>/components
+(Components)” on page 149
+ODB++ Entities That Can Have Attributes Assigned in an attrlist File
+ODB++ Entity attrlist File Explanation
+Product Model <product_model_name>/misc/attrlist “misc/attrlist (Product Model
+Attribute List)” on page 74
+ODB++Design Format Specification 29
+ODB++Design Format Specification
+Unique ID
+ODB++ Entity attrlist File Explanation
+Symbol /symbols/<symbol_name>/attrlist “<symbol_name>/attrlist (Symbol
+Attribute List)” on page 92
+Wheel /wheels/<wheel_name>/attrlist “<wheel_name>/attrlist (Wheel
+Attribute List)” on page 94
+Step /steps/<step_name>/attrlist “<step_name>/attrlist (Step Attribute
+List)” on page 97
+Layer /steps/<step_name>/layers/
+<layer_name>/attrlist “<layer_name>/attrlist (Layer
+Attribute List)” on page 147
+Unique ID
+The ODB++ format supports the permanent reference of entities through the use of indices for unique
+IDs. The unique ID is optional, but once assigned, is never changed, and no other entity within the
+product model can bear the same ID.
+IDs are represented by a positive number between 0 and 4294967295.
+Unique IDs are generated for use in the product model definition of these files: matrix, stephdr, features,
+components, and profile. The largest unique ID used in the product model is stored in the info file. See
+“misc/info (Basic Product Model Information)” on page 75.
+The stephdr, features, components, and profile files can also have their own individual ID record to
+uniquely identify the file itself.
+A feature file with an ID of 216 would look like this:
+UNITS=INCH
+ID=216
+.....
+#
+#Feature symbol names
+#
+$0 r4
+$1 r5
+A component file with an ID of 843 would look like this:
+UNITS=INCH
+ID=843
+#
+#Component attribute names
+#
+@0 .comp_height
+@1 .package_type
+"
+30
+
+pg 30
+---
+
+@ and & — Component Attribute Lookup Table
+This section of the component file contains a table of component attribute names and a table of all
+component attribute values that are strings.
+• Component attribute names — Each record contains an at sign (@), and index, and an attribute
+name. For example, @1 .comp_ignore.
+• Feature attribute text strings — Each record contains an ampersand (&), an index, and a text
+string that can be used as the value of an attribute of type TEXT. For example, &3 gw.
+System attributes that can be placed in this table are listed with Entity = Comp. in the attribute description.
+See “System Attributes” on page 207.
+This section must be placed before the first CMP record of the file.
+The CMP records in the file can assign component attributes by referencing the index of a component
+attribute and, for attributes of type TEXT, the index of the text string that is the value assigned to the
+attribute.
+This is an example of a component attribute lookup table, and a CMP record that assigns attributes. The
+string 0,2=0,3=1 in the CMP record in the example should be interpreted as assigning these attributes to
+the component:
+#Component attribute names
+#
+@0 .no_pop
+@1 .comp_ignore
+@2 .desc1
+@3 .comp_mount_type
+@4 .comp_height
+#
+#Component attribute text strings
+#
+&0 Internally created connector
+&1 Socket
+&2 ball
+ODB++Design Format Specification 151
+Layer Entities
+CMP — Component Record
+&3 gw
+# CMP 0
+CMP 0 1.55 8.9 270.0 N J10 2300046 ;0,2=0,3=1
+Assignment
+in the CMP
+Record
+Line in the Table of
+Attribute Names Attribute
+Type
+Line in the
+Table of
+Attribute
+Text Strings
+Result
+0 @0 .no_pop BOOLEAN - .no_pop = TRUE
+2=0 @2 .desc1 TEXT &0 Internally
+created
+connector
+.desc1 = Internally created
+connector
+3=1 @3 .comp_mount_type OPTION - .comp_mount_type = SMT
+Options for
+the .comp_mount_type
+attributes are: Other, SMT,
+THMT, PressFit, so 1
+indicates SMT.
+CMP — Component Record
+This record contains the definition of a component. Each CMP line is followed by 0 or more property
+(PRP) records, and 0 or more TOP records. The pkg_ref field of the CMP record references the
+sequential order of the PKG records in the eda/data file. PKG order is referenced using numbers starting
+from 0 and up.
+See “PKG — Package Record” on page 112.
+This is the format of the CMP component record:
+CMP <pkg_ref> <x> <y> <rot> <mirror> <comp_name> <part_name>; <attributes>;ID=<id>
+Field Explanation
+pkg_ref Reference number of the package in the eda/data file.
+See “<step_name>/eda (Electronic Design Automation)” on page 105.
+x, y Board location of the component in inches or mm.
+rot Rotation of the component, in degrees, clockwise.
+mirror N for not mirrored, M for mirrored.
+comp_name Unique reference designator (component name); a single string of ASCII
+characters without spaces. Upper case and lower case characters are not
+equivalent.
+part_name Part identification is a single string of ASCII characters without spaces.
+152 ODB++Design Format Specification
+Layer Entities
+PRP — Component Property Record
+Field Explanation
+attributes A comma separated list of attribute assignments. The attribute is indicated by
+its index in the attribute name lookup table.
+• BOOLEAN — n indicating that attribute n is set.
+• OPTION — n=m indicating that attribute n has value m.
+• INTEGER — n=i indicating that attribute n has value i.
+• FLOAT — n=f indicating that attribute n has value f.
+• TEXT — n=s indicating that attribute n has the value associated with index
+s in the attribute text string lookup table.
+See “@ and & — Component Attribute Lookup Table” on page 151.
+ID=<id> Assigns a unique identifier to the component.
+See “Unique ID” on page 30.
+
+...
+
+pg. 153

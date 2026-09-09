@@ -8,7 +8,7 @@
 #include <map>
 #include <filesystem>
 #include "../../IProtoBuffable.h"
-#include "../../ProtoBuf/attrlistfile.pb.h"
+#include "attrlistfile.pb.h"
 #include "../../odbdesign_export.h"
 #include "../IStreamSaveable.h"
 #include <memory>
@@ -47,3 +47,4 @@ namespace Odb::Lib::FileModel::Design
 }
 
 #endif //ODBDESIGN_ATTRLISTFILE_H
+
