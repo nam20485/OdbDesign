@@ -45,11 +45,11 @@ if(EXISTS "${CMAKE_BINARY_DIR}/compile_commands.json")
     endif()
 endif()
 
-# only use ccache locally, i.e. not in CI
-# nm, looks like we re-en-disabled it. Apparently it can speed up CI builds too. (Not sure how since its first one-off single build  everytime, but maybe it can cache within a single build run)
-#if (NOT DEFINED ENV{CI})
+# ccache for local builds only (CI runners set CI; keep them launcher-free)
+find_program(CCACHE_EXE ccache)
+if(CCACHE_EXE AND NOT DEFINED ENV{CI})
     set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_EXE}")
-#endif()
+endif()
 
 set(CMAKE_COLOR_DIAGNOSTICS ON)
 
