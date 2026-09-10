@@ -24,6 +24,7 @@ add_executable(OdbDesignTests
     "MatrixFileTests.cpp"
     "ComponentHeightPipelineTests.cpp"
     "DesignCacheThreadSafetyTests.cpp"
+    "DesignCacheSingleFlightTests.cpp"
     "GrpcServiceConfigTests.cpp"
     "Utf8SanitizerTests.cpp"
     "../OdbDesignServer/Config/GrpcServiceConfig.cpp"
