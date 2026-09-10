@@ -152,15 +152,16 @@ try {
 
         # CA Issuer + serving Certificate. Requires the odbdesign-root-ca
         # secret to exist first (scripts/make-tls-ca.sh, one-time).
-        # try/catch + 2>$null mirrors the PV pre-flight above: under
-        # ErrorActionPreference=Stop a missing secret can surface as a
-        # thrown record, not just a non-zero exit code. Check
-        # $LASTEXITCODE first so an unreachable cluster / bad kubeconfig is
-        # not misdiagnosed as "secret missing".
+        # --ignore-not-found: kubectl exits 0 with EMPTY output when the secret
+        # is absent (the normal first-run path -> the actionable guidance
+        # below), and only exits non-zero on a real query failure (unreachable
+        # cluster / bad kubeconfig). try/catch + 2>$null mirrors the PV
+        # pre-flight above: under ErrorActionPreference=Stop a failure can
+        # surface as a thrown record, not just a non-zero exit code.
         $rootCaSecret = $null
         $kubectlFailed = $false
         try {
-            $rootCaSecret = (kubectl get secret odbdesign-root-ca -n default --no-headers 2>$null) -join ''
+            $rootCaSecret = (kubectl get secret odbdesign-root-ca -n default --ignore-not-found -o name 2>$null) -join ''
             if ($LASTEXITCODE -ne 0) { $kubectlFailed = $true }
         }
         catch {

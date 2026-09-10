@@ -108,9 +108,23 @@ namespace OdbDesignServer
                             {
                                 result.config->compression_level = GRPC_COMPRESS_LEVEL_NONE;
                             }
+                            // The disposition must match the gating above: nothing is
+                            // migrated when an explicit "level" is present.
+                            const char* disposition;
+                            if (hasLevel)
+                            {
+                                disposition = "ignored; the explicit \"level\" applies";
+                            }
+                            else if (enabled)
+                            {
+                                disposition = "ignored (the \"level\" default applies)";
+                            }
+                            else
+                            {
+                                disposition = "migrated to \"level\": \"none\"";
+                            }
                             std::cerr << "WARNING: deprecated grpc.compression \"enabled\" key "
-                                      << (enabled ? "ignored (level default applies)"
-                                                  : "migrated to \"level\": \"none\"")
+                                      << disposition
                                       << "; use \"level\": \"none|low|medium|high\" instead" << std::endl;
                         }
                         if (compressionSection.has("algorithm"))
