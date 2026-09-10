@@ -47,6 +47,9 @@ namespace Odb::Lib::App
 			designs().setDirectory(args().designsDir());
 		}
 
+        // set the design cache byte budget (--cache-max-mb, 0 disables eviction)
+        designs().setCacheMaxBytes(static_cast<std::uint64_t>(args().cacheMaxMb()) * 1024ull * 1024ull);
+
         // load a design if specified via command line args
         if (!args().loadDesign().empty())
         {

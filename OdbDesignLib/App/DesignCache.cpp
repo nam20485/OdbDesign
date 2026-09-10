@@ -18,7 +18,7 @@ using namespace Utils;
 using namespace std::filesystem;
 
 namespace Odb::Lib::App
-{    
+{
     DesignCache::DesignCache(std::string directory) :
         m_directory(std::move(directory))
     {
@@ -32,85 +32,49 @@ namespace Odb::Lib::App
 
     std::shared_ptr<ProductModel::Design> DesignCache::GetDesign(const std::string& designName)
     {
-        // Fast path: shared (read) lock for cache hit
-        {
-            std::shared_lock readLock(m_cacheMutex);
-            auto findIt = m_designsByName.find(designName);
-            if (findIt != m_designsByName.end())
-            {
-                return findIt->second;
-            }
-        }
-
-        // Slow path: load from disk without holding lock (LoadDesign may call GetFileArchive)
-        auto pDesign = LoadDesign(designName);
-
-        // Insert into cache under exclusive lock (double-check another thread didn't load it)
-        if (pDesign != nullptr)
-        {
-            std::unique_lock writeLock(m_cacheMutex);
-            auto findIt = m_designsByName.find(designName);
-            if (findIt != m_designsByName.end())
-            {
-                return findIt->second;  // Another thread loaded it first
-            }
-            m_designsByName[designName] = pDesign;
-        }
-        return pDesign;
+        return GetOrLoadSingleFlight<ProductModel::Design>(
+            designName,
+            m_designsByName,
+            m_designsInFlight,
+            [this, &designName]() { return LoadDesign(designName); },
+            true);
     }
 
     std::shared_ptr<FileModel::Design::FileArchive> DesignCache::GetFileArchive(const std::string& designName)
+    {
+        return GetFileArchiveInternal(designName, true);
+    }
+
+    std::shared_ptr<FileModel::Design::FileArchive> DesignCache::GetFileArchiveInternal(const std::string& designName, bool updateState)
     {
         std::stringstream ss;
         ss << "Retrieving design \"" << designName << "\" from cache... ";
         logdebug(ss.str());
 
-        // Fast path: shared (read) lock for cache hit
-        {
-            std::shared_lock readLock(m_cacheMutex);
-            auto findIt = m_fileArchivesByName.find(designName);
-            if (findIt != m_fileArchivesByName.end())
-            {
-                logdebug("Found. Returning from cache.");
-                return findIt->second;
-            }
-        }
-
-        loginfo("Not found in cache, attempting to load from file...");
-
-        // Slow path: load from disk without holding lock
-        auto pFileArchive = LoadFileArchive(designName);
-
-        if (pFileArchive == nullptr)
-        {
-            logwarn("Failed loading from file");
-        }
-        else
-        {
-            loginfo("Loaded from file");
-
-            // Insert into cache under exclusive lock (double-check)
-            std::unique_lock writeLock(m_cacheMutex);
-            auto findIt = m_fileArchivesByName.find(designName);
-            if (findIt != m_fileArchivesByName.end())
-            {
-                logdebug("Found. Returning from cache (loaded by another thread).");
-                return findIt->second;  // Another thread loaded it first
-            }
-            m_fileArchivesByName[designName] = pFileArchive;
-        }
-        return pFileArchive;
+        return GetOrLoadSingleFlight<FileModel::Design::FileArchive>(
+            designName,
+            m_fileArchivesByName,
+            m_fileArchivesInFlight,
+            [this, &designName]() { return LoadFileArchive(designName); },
+            updateState);
     }
 
     void DesignCache::AddFileArchive(const std::string& designName, std::shared_ptr<FileModel::Design::FileArchive> fileArchive, bool save)
     {
-        std::unique_lock writeLock(m_cacheMutex);
-        m_fileArchivesByName[designName] = fileArchive;
+        {
+            std::unique_lock<std::shared_mutex> writeLock(m_cacheMutex);
+            m_fileArchivesByName[designName] = fileArchive;
+        }
+
+        // Charge the injected archive to the byte budget (never its own eviction
+        // victim) and reflect the externally-completed load in the state machine.
+        InsertLruAndEvict(designName);
+        TransitionLoadState(designName, LoadState::Loaded);
+
         if (save)
         {
-            // SaveFileArchive calls GetFileArchive internally, which takes the lock.
-            // We must release before calling to avoid deadlock.
-            writeLock.unlock();
+            // SaveFileArchive calls GetFileArchive internally, which takes the locks.
+            // We must release before calling to avoid deadlock. (No locks held here.)
             SaveFileArchive(designName);
         }
     }
@@ -122,7 +86,7 @@ namespace Odb::Lib::App
         {
             std::string directory;
             {
-                std::shared_lock readLock(m_cacheMutex);
+                std::shared_lock<std::shared_mutex> readLock(m_cacheMutex);
                 directory = m_directory;
             }
             return fileArchive->SaveFileModel(directory);
@@ -132,7 +96,7 @@ namespace Odb::Lib::App
 
     std::vector<std::string> DesignCache::getLoadedDesignNames(const std::string& filter) const
     {
-        std::shared_lock readLock(m_cacheMutex);
+        std::shared_lock<std::shared_mutex> readLock(m_cacheMutex);
         std::vector<std::string> loadedDesigns;
         for (const auto& kv : m_designsByName)
         {
@@ -143,7 +107,7 @@ namespace Odb::Lib::App
 
     std::vector<std::string> DesignCache::getLoadedFileArchiveNames(const std::string& filter) const
     {
-        std::shared_lock readLock(m_cacheMutex);
+        std::shared_lock<std::shared_mutex> readLock(m_cacheMutex);
         std::vector<std::string> loadedFileArchives;
         for (const auto& kv : m_fileArchivesByName)
 		{
@@ -153,10 +117,10 @@ namespace Odb::Lib::App
     }
 
     std::vector<std::string> DesignCache::getUnloadedDesignNames(const std::string& filter) const
-    {        
+    {
         std::string directory;
         {
-            std::shared_lock readLock(m_cacheMutex);
+            std::shared_lock<std::shared_mutex> readLock(m_cacheMutex);
             directory = m_directory;
         }
 
@@ -189,7 +153,7 @@ namespace Odb::Lib::App
 
         std::string directory;
         {
-            std::shared_lock readLock(m_cacheMutex);
+            std::shared_lock<std::shared_mutex> readLock(m_cacheMutex);
             directory = m_directory;
         }
 
@@ -226,7 +190,7 @@ namespace Odb::Lib::App
 
         std::string directory;
         {
-            std::shared_lock readLock(m_cacheMutex);
+            std::shared_lock<std::shared_mutex> readLock(m_cacheMutex);
             directory = m_directory;
         }
 
@@ -309,30 +273,97 @@ namespace Odb::Lib::App
 
     void DesignCache::setDirectory(const std::string& directory)
     {
-        std::unique_lock writeLock(m_cacheMutex);
+        std::unique_lock<std::shared_mutex> writeLock(m_cacheMutex);
         m_directory = directory;
     }
 
     std::string DesignCache::getDirectory() const
     {
-        std::shared_lock readLock(m_cacheMutex);
+        std::shared_lock<std::shared_mutex> readLock(m_cacheMutex);
         return m_directory;
     }
 
     void DesignCache::Clear()
     {
-        std::unique_lock writeLock(m_cacheMutex);
-        m_fileArchivesByName.clear();
-        m_designsByName.clear();
+        {
+            std::unique_lock<std::shared_mutex> writeLock(m_cacheMutex);
+            m_fileArchivesByName.clear();
+            m_designsByName.clear();
+        }
+        {
+            std::lock_guard<std::mutex> lruLock(m_lruMutex);
+            m_lruEntries.clear();
+            m_cachedBytes = 0;
+        }
+        {
+            // In-flight futures are left to their owning threads, which erase their
+            // own entries; a load completing after Clear() re-inserts, matching the
+            // pre-existing post-Clear insert behavior.
+            std::lock_guard<std::mutex> stateLock(m_loadStateMutex);
+            m_loadStatesByName.clear();
+        }
+    }
+
+    DesignCache::LoadState DesignCache::GetLoadState(const std::string& designName) const
+    {
+        std::lock_guard<std::mutex> stateLock(m_loadStateMutex);
+        auto stateIt = m_loadStatesByName.find(designName);
+        if (stateIt != m_loadStatesByName.end())
+        {
+            return stateIt->second;
+        }
+        return LoadState::Unloaded;
+    }
+
+    void DesignCache::AddLoadObserver(LoadEventCallback callback)
+    {
+        std::lock_guard<std::mutex> stateLock(m_loadStateMutex);
+        m_loadObservers.push_back(std::move(callback));
+    }
+
+    void DesignCache::setCacheMaxBytes(std::uint64_t maxBytes)
+    {
+        std::vector<std::string> evicted;
+        {
+            std::lock_guard<std::mutex> lruLock(m_lruMutex);
+            m_maxBytes = maxBytes;
+            // No protected name: shrinking the budget evicts immediately
+            evicted = EvictOverBudgetLocked("");
+        }
+        EvictCacheEntries(evicted);
+    }
+
+    std::uint64_t DesignCache::getCacheMaxBytes() const
+    {
+        std::lock_guard<std::mutex> lruLock(m_lruMutex);
+        return m_maxBytes;
+    }
+
+    void DesignCache::ensureDirectoryExists() const
+    {
+        if (!std::filesystem::exists(m_directory))
+        {
+            // create directory
+            try
+            {
+                std::filesystem::create_directories(m_directory);
+            }
+            catch (const std::exception& e)
+            {
+                std::string msg = "Failed to create design cache directory: " + m_directory;
+                logexception_msg(e, msg);
+                throw e;
+			}
+        }
     }
 
     std::shared_ptr<ProductModel::Design> DesignCache::LoadDesign(const std::string& designName)
     {
         // NOTE: This is a lock-free I/O helper. It does NOT modify the cache maps.
-        // Cache insertion is handled by GetDesign().
+        // Cache insertion is handled by GetOrLoadSingleFlight().
         std::string directory;
         {
-            std::shared_lock readLock(m_cacheMutex);
+            std::shared_lock<std::shared_mutex> readLock(m_cacheMutex);
             directory = m_directory;
         }
 
@@ -342,8 +373,10 @@ namespace Odb::Lib::App
             {
                 if (entry.path().stem() == designName)
                 {
-                    // GetFileArchive is thread-safe, manages its own locking
-                    auto pFileModel = GetFileArchive(designName);
+                    // GetFileArchive is thread-safe, manages its own locking.
+                    // updateState=false: the archive is a sub-step of this design load
+                    // and must not flip the design's load state mid-load.
+                    auto pFileModel = GetFileArchiveInternal(designName, false);
                     if (pFileModel != nullptr)
                     {
                         auto pDesign = std::make_shared<ProductModel::Design>();
@@ -362,7 +395,7 @@ namespace Odb::Lib::App
                     }
                 }
             }
-        }    
+        }
 
         return nullptr;
     }
@@ -370,12 +403,12 @@ namespace Odb::Lib::App
     std::shared_ptr<FileModel::Design::FileArchive> DesignCache::LoadFileArchive(const std::string& designName)
     {
         // NOTE: This is a lock-free I/O helper. It does NOT modify the cache maps.
-        // Cache insertion is handled by GetFileArchive().
+        // Cache insertion is handled by GetOrLoadSingleFlight().
         auto fileFound = false;
 
         std::string directory;
         {
-            std::shared_lock readLock(m_cacheMutex);
+            std::shared_lock<std::shared_mutex> readLock(m_cacheMutex);
             directory = m_directory;
         }
 
@@ -386,7 +419,7 @@ namespace Odb::Lib::App
             if (entry.is_regular_file())
             {
                 if (entry.path().stem() == designName)
-                {                    
+                {
                     fileFound = true;
 
                     loginfo("file found: [" + entry.path().string() + "], attempting to parse...");
@@ -408,12 +441,12 @@ namespace Odb::Lib::App
                         "Failed to load design \"" + designName + "\": could not extract or parse archive");
                 }
             }
-        }       
+        }
 
         if (!fileFound)
         {
             logwarn("Failed to find file for design \"" + designName + "\"");
-            
+
             logdebug("Listing all files in directory: " + directory);
             for (const auto& entry : directory_iterator(directory, options))
             {
@@ -427,21 +460,178 @@ namespace Odb::Lib::App
         return nullptr;
     }
 
-    void DesignCache::ensureDirectoryExists() const
+    void DesignCache::TouchLru(const std::string& designName)
     {
-        if (!std::filesystem::exists(m_directory))
+        std::lock_guard<std::mutex> lruLock(m_lruMutex);
+        auto findIt = m_lruEntries.find(designName);
+        if (findIt != m_lruEntries.end())
         {
-            // create directory
+            findIt->second.lastServed = std::chrono::steady_clock::now();
+        }
+        // No entry: the name raced with eviction or was never charged; nothing to do.
+    }
+
+    void DesignCache::InsertLruAndEvict(const std::string& designName)
+    {
+        const auto now = std::chrono::steady_clock::now();
+        const auto bytes = EstimateDesignBytes(designName);
+
+        std::vector<std::string> evicted;
+        {
+            std::lock_guard<std::mutex> lruLock(m_lruMutex);
+            auto findIt = m_lruEntries.find(designName);
+            if (findIt != m_lruEntries.end())
+            {
+                findIt->second.lastServed = now;
+            }
+            else
+            {
+                m_lruEntries.emplace(designName, LruEntry{bytes, now});
+                m_cachedBytes += bytes;
+            }
+            evicted = EvictOverBudgetLocked(designName);
+        }
+        EvictCacheEntries(evicted);
+    }
+
+    // Requires m_lruMutex held. May acquire m_loadStateMutex (the one permitted
+    // nesting) to skip in-flight (Loading) designs. Returns evicted names; cache-map
+    // and state cleanup happens in EvictCacheEntries after m_lruMutex is released.
+    std::vector<std::string> DesignCache::EvictOverBudgetLocked(const std::string& protectedName)
+    {
+        std::vector<std::string> evicted;
+
+        if (m_maxBytes == 0)
+        {
+            // Budget of 0 disables eviction
+            return evicted;
+        }
+
+        while (m_cachedBytes > m_maxBytes)
+        {
+            auto victimIt = m_lruEntries.end();
+            auto oldest = std::chrono::steady_clock::time_point::max();
+
+            for (auto it = m_lruEntries.begin(); it != m_lruEntries.end(); ++it)
+            {
+                if (it->first == protectedName) continue;       // never evict the entry being served
+                if (it->second.lastServed >= oldest) continue;  // least-recently-served first
+                {
+                    std::lock_guard<std::mutex> stateLock(m_loadStateMutex);
+                    auto stateIt = m_loadStatesByName.find(it->first);
+                    if (stateIt != m_loadStatesByName.end() && stateIt->second == LoadState::Loading)
+                    {
+                        continue;  // never evict an in-flight design
+                    }
+                }
+                oldest = it->second.lastServed;
+                victimIt = it;
+            }
+
+            if (victimIt == m_lruEntries.end())
+            {
+                // Nothing evictable (only the protected/in-flight entries remain);
+                // over-budget is tolerated rather than dropping protected work.
+                break;
+            }
+
+            m_cachedBytes -= victimIt->second.estimatedBytes;
+            const auto evictedName = victimIt->first;
+            m_lruEntries.erase(victimIt);
+            evicted.push_back(evictedName);
+        }
+
+        return evicted;
+    }
+
+    void DesignCache::EvictCacheEntries(const std::vector<std::string>& names)
+    {
+        for (const auto& name : names)
+        {
+            {
+                std::unique_lock<std::shared_mutex> writeLock(m_cacheMutex);
+                m_designsByName.erase(name);
+                m_fileArchivesByName.erase(name);
+            }
+
+            loginfo("Evicted design \"" + name + "\" from cache (over byte budget)");
+
+            TransitionLoadState(name, LoadState::Unloaded);
+        }
+    }
+
+    std::uint64_t DesignCache::EstimateDesignBytes(const std::string& designName) const
+    {
+        // Simple estimate: archive file size on disk + a small constant. Serialized
+        // response sizes are added to this estimate in M1.4 (response cache).
+        std::string directory;
+        {
+            std::shared_lock<std::shared_mutex> readLock(m_cacheMutex);
+            directory = m_directory;
+        }
+
+        std::error_code ec;
+        const auto options = directory_options::skip_permission_denied;
+        directory_iterator dirIt(directory, options, ec);
+        if (ec)
+        {
+            return DESIGN_BYTES_OVERHEAD;
+        }
+
+        for (const auto& entry : dirIt)
+        {
+            if (entry.is_regular_file() && entry.path().stem() == designName)
+            {
+                const auto size = entry.file_size(ec);
+                if (ec)
+                {
+                    return DESIGN_BYTES_OVERHEAD;
+                }
+                return static_cast<std::uint64_t>(size) + DESIGN_BYTES_OVERHEAD;
+            }
+        }
+
+        return DESIGN_BYTES_OVERHEAD;
+    }
+
+    void DesignCache::TransitionLoadState(const std::string& designName, LoadState to)
+    {
+        LoadObserverList observers;
+        auto from = LoadState::Unloaded;
+        {
+            std::lock_guard<std::mutex> stateLock(m_loadStateMutex);
+            auto stateIt = m_loadStatesByName.find(designName);
+            from = (stateIt != m_loadStatesByName.end()) ? stateIt->second : LoadState::Unloaded;
+            if (from == to)
+            {
+                // Not a transition (e.g. an archive load under an already-Loading
+                // design, or a duplicate completion) — no observer event.
+                return;
+            }
+            m_loadStatesByName[designName] = to;
+            observers = m_loadObservers;
+        }
+        NotifyLoadObservers(designName, from, to, observers);
+    }
+
+    // Observers run with no locks held (they may re-enter the cache) and must be
+    // cheap/non-blocking; a throwing observer is logged and skipped.
+    void DesignCache::NotifyLoadObservers(const std::string& designName, LoadState from, LoadState to, const LoadObserverList& observers)
+    {
+        for (const auto& observer : observers)
+        {
             try
             {
-                std::filesystem::create_directories(m_directory);
+                observer(designName, from, to);
             }
             catch (const std::exception& e)
             {
-                std::string msg = "Failed to create design cache directory: " + m_directory;				
-                logexception_msg(e, msg);                
-                throw e;
-			}
+                logwarn(std::string("Design load observer threw: ") + e.what());
+            }
+            catch (...)
+            {
+                logwarn("Design load observer threw an unknown exception");
+            }
         }
     }
 }

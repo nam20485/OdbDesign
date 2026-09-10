@@ -58,6 +58,11 @@ namespace Odb::Lib::App
 		return boolArg("disable-authentication", DEFAULT_DISABLE_AUTH);
 	}
 
+	int OdbDesignArgs::cacheMaxMb() const
+	{
+		return intArg("cache-max-mb", DEFAULT_CACHE_MAX_MB);
+	}
+
 	std::string OdbDesignArgs::getUsageString() const
 	{
 		std::stringstream ss;
@@ -72,6 +77,7 @@ namespace Odb::Lib::App
 		ss << "  --load-design <design>   Design to load on startup (default: " << DEFAULT_LOAD_DESIGN << ")\n";
 		ss << "  --load-all               Load all designs on startup (default: " << (DEFAULT_LOAD_ALL ? "true" : "false") << ")\n";
 		ss << "  --disable-authentication Disable authentication (default: " << (DEFAULT_DISABLE_AUTH ? "true" : "false") << ")\n";
+		ss << "  --cache-max-mb <MB>      Max design cache size in MB before LRU eviction, 0 disables (default: " << DEFAULT_CACHE_MAX_MB << ")\n";
 		ss << "  --help                   Print this help message\n";
 		return ss.str();		
 	}	
