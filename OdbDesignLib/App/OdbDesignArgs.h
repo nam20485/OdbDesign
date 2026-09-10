@@ -23,6 +23,7 @@ namespace Odb::Lib::App
 		bool loadAll() const;
 		bool disableAuthentication() const;
 		int cacheMaxMb() const;
+		int maxBackgroundLoads() const;
 
 	protected:
 		// Inherited via CommandLineArgs
@@ -40,6 +41,7 @@ namespace Odb::Lib::App
 		constexpr static const bool		DEFAULT_LOAD_ALL =		false;
 		constexpr static const bool		DEFAULT_DISABLE_AUTH = false;
 		constexpr static const int		DEFAULT_CACHE_MAX_MB = 4096;
+		constexpr static const int		DEFAULT_MAX_BACKGROUND_LOADS = 2;
 
 	};
 }

@@ -4,6 +4,7 @@
 #include <exception>
 #include <filesystem>
 #include <stdexcept>
+#include <thread>
 #include <vector>
 #include "../FileModel/Design/FileArchive.h"
 #include <memory>
@@ -28,6 +29,16 @@ namespace Odb::Lib::App
     DesignCache::~DesignCache()
     {
         Clear();
+
+        // Detached background loads hold `this`; drain them before member
+        // teardown. A queued load first acquires its semaphore slot (running
+        // loads release theirs), so the wait is bounded by the outstanding
+        // parse time.
+        std::unique_lock<std::mutex> lock(m_backgroundMutex);
+        m_backgroundDoneCv.wait(lock, [this]()
+        {
+            return m_outstandingBackgroundLoads == 0;
+        });
     }
 
     std::shared_ptr<ProductModel::Design> DesignCache::GetDesign(const std::string& designName)
@@ -352,6 +363,128 @@ namespace Odb::Lib::App
         return m_maxBytes;
     }
 
+    void DesignCache::setMaxBackgroundLoads(std::size_t maxLoads)
+    {
+        {
+            std::lock_guard<std::mutex> lock(m_backgroundMutex);
+            m_maxBackgroundLoads = maxLoads;
+        }
+        // A raised cap frees waiting loads immediately
+        m_backgroundSlotCv.notify_all();
+    }
+
+    std::size_t DesignCache::getMaxBackgroundLoads() const
+    {
+        std::lock_guard<std::mutex> lock(m_backgroundMutex);
+        return m_maxBackgroundLoads;
+    }
+
+    bool DesignCache::ContainsDesign(const std::string& designName) const
+    {
+        return !FindArchivePath(designName).empty();
+    }
+
+    bool DesignCache::LoadDesignAsync(const std::string& designName)
+    {
+        {
+            std::lock_guard<std::mutex> lock(m_loadStateMutex);
+            // A kick we issued earlier (queued or parsing) or a synchronous
+            // single-flight load in progress means already-loading; registering
+            // the pending marker here closes the window before the background
+            // thread announces Loading.
+            if (m_pendingAsyncLoads.find(designName) != m_pendingAsyncLoads.end() ||
+                m_designsInFlight.find(designName) != m_designsInFlight.end() ||
+                m_fileArchivesInFlight.find(designName) != m_fileArchivesInFlight.end())
+            {
+                return false;
+            }
+            m_pendingAsyncLoads.insert(designName);
+        }
+
+        {
+            std::lock_guard<std::mutex> lock(m_backgroundMutex);
+            ++m_outstandingBackgroundLoads;
+        }
+
+        try
+        {
+            // Detached by design (fire-and-forget): ~DesignCache drains
+            // m_outstandingBackgroundLoads so the thread never outlives members.
+            std::thread(&DesignCache::BackgroundLoad, this, designName).detach();
+        }
+        catch (...)
+        {
+            {
+                std::lock_guard<std::mutex> lock(m_backgroundMutex);
+                --m_outstandingBackgroundLoads;
+            }
+            {
+                std::lock_guard<std::mutex> lock(m_loadStateMutex);
+                m_pendingAsyncLoads.erase(designName);
+            }
+            throw;
+        }
+        return true;
+    }
+
+    void DesignCache::BackgroundLoad(const std::string& designName)
+    {
+        AcquireBackgroundSlot();
+        try
+        {
+            // The single-flight path registers the Loading/Loaded/Failed
+            // transitions and observers exactly as a synchronous load; a failed
+            // parse records Failed and drops the in-flight entry (retryable).
+            auto pDesign = GetDesign(designName);
+            if (pDesign == nullptr)
+            {
+                logwarn("Background load: no archive found for design \"" + designName + "\"");
+            }
+            else
+            {
+                loginfo("Background load of design \"" + designName + "\" completed");
+            }
+        }
+        catch (const std::exception& e)
+        {
+            logexception_msg(e, "Background load of design \"" + designName + "\" failed (retryable)");
+        }
+        catch (...)
+        {
+            logerror("Background load of design \"" + designName + "\" failed with an unknown exception (retryable)");
+        }
+        ReleaseBackgroundSlot();
+
+        {
+            std::lock_guard<std::mutex> lock(m_loadStateMutex);
+            m_pendingAsyncLoads.erase(designName);
+        }
+        {
+            std::lock_guard<std::mutex> lock(m_backgroundMutex);
+            --m_outstandingBackgroundLoads;
+        }
+        m_backgroundDoneCv.notify_all();
+    }
+
+    void DesignCache::AcquireBackgroundSlot()
+    {
+        std::unique_lock<std::mutex> lock(m_backgroundMutex);
+        m_backgroundSlotCv.wait(lock, [this]()
+        {
+            return m_maxBackgroundLoads == 0 || m_activeBackgroundLoads < m_maxBackgroundLoads;
+        });
+        ++m_activeBackgroundLoads;
+    }
+
+    void DesignCache::ReleaseBackgroundSlot()
+    {
+        {
+            std::lock_guard<std::mutex> lock(m_backgroundMutex);
+            --m_activeBackgroundLoads;
+        }
+        m_backgroundSlotCv.notify_one();
+    }
+
     void DesignCache::ensureDirectoryExists() const
     {
         if (!std::filesystem::exists(m_directory))
@@ -370,44 +503,55 @@ namespace Odb::Lib::App
         }
     }
 
-    std::shared_ptr<ProductModel::Design> DesignCache::LoadDesign(const std::string& designName)
+    std::filesystem::path DesignCache::FindArchivePath(const std::string& designName) const
     {
-        // NOTE: This is a lock-free I/O helper. It does NOT modify the cache maps.
-        // Cache insertion is handled by GetOrLoadSingleFlight().
         std::string directory;
         {
             std::shared_lock<std::shared_mutex> readLock(m_cacheMutex);
             directory = m_directory;
         }
 
-        for (const auto& entry : directory_iterator(directory))
+        std::error_code ec;
+        const auto options = directory_options::skip_permission_denied;
+        directory_iterator dirIt(directory, options, ec);
+        if (ec)
         {
-            if (entry.is_regular_file())
+            return {};
+        }
+
+        for (const auto& entry : dirIt)
+        {
+            if (entry.is_regular_file() && entry.path().stem() == designName)
             {
-                if (entry.path().stem() == designName)
-                {
-                    // GetFileArchive is thread-safe, manages its own locking.
-                    // updateState=false: the archive is a sub-step of this design load
-                    // and must not flip the design's load state mid-load.
-                    auto pFileModel = GetFileArchiveInternal(designName, false);
-                    if (pFileModel != nullptr)
-                    {
-                        auto pDesign = std::make_shared<ProductModel::Design>();
-                        if (pDesign->Build(pFileModel))
-                        {
-                            return pDesign;
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
+                return entry.path();
             }
+        }
+
+        return {};
+    }
+
+    std::shared_ptr<ProductModel::Design> DesignCache::LoadDesign(const std::string& designName)
+    {
+        // NOTE: This is a lock-free I/O helper. It does NOT modify the cache maps.
+        // Cache insertion is handled by GetOrLoadSingleFlight().
+        if (FindArchivePath(designName).empty())
+        {
+            return nullptr;
+        }
+
+        // GetFileArchive is thread-safe, manages its own locking.
+        // updateState=false: the archive is a sub-step of this design load
+        // and must not flip the design's load state mid-load.
+        auto pFileModel = GetFileArchiveInternal(designName, false);
+        if (pFileModel == nullptr)
+        {
+            return nullptr;
+        }
+
+        auto pDesign = std::make_shared<ProductModel::Design>();
+        if (pDesign->Build(pFileModel))
+        {
+            return pDesign;
         }
 
         return nullptr;
@@ -417,60 +561,42 @@ namespace Odb::Lib::App
     {
         // NOTE: This is a lock-free I/O helper. It does NOT modify the cache maps.
         // Cache insertion is handled by GetOrLoadSingleFlight().
-        auto fileFound = false;
-
-        std::string directory;
-        {
-            std::shared_lock<std::shared_mutex> readLock(m_cacheMutex);
-            directory = m_directory;
-        }
-
-        // skip inaccessible files and do not follow symlinks
-        const auto options = directory_options::skip_permission_denied;
-        for (const auto& entry : directory_iterator(directory, options))
-        {
-            if (entry.is_regular_file())
-            {
-                if (entry.path().stem() == designName)
-                {
-                    fileFound = true;
-
-                    loginfo("file found: [" + entry.path().string() + "], attempting to parse...");
-
-                    auto pFileArchive = std::make_shared<FileModel::Design::FileArchive>(entry.path().string());
-                    if (pFileArchive->ParseFileModel())
-                    {
-                        return pFileArchive;
-                    }
-
-                    // A matching file was found but failed to extract or parse. Treat this
-                    // as a corrupt/unloadable design (error) rather than a missing one, so
-                    // callers surface INTERNAL/500 instead of a misleading NOT_FOUND/404.
-                    // (ParseFileModel already throws on parse failure; this covers the
-                    // extraction / missing-root-dir paths that return false.)
-                    // The file path is intentionally omitted here to avoid leaking server
-                    // filesystem details to API clients (it is logged above for diagnostics).
-                    throw std::runtime_error(
-                        "Failed to load design \"" + designName + "\": could not extract or parse archive");
-                }
-            }
-        }
-
-        if (!fileFound)
+        const auto archivePath = FindArchivePath(designName);
+        if (archivePath.empty())
         {
             logwarn("Failed to find file for design \"" + designName + "\"");
 
-            logdebug("Listing all files in directory: " + directory);
-            for (const auto& entry : directory_iterator(directory, options))
+            logdebug("Listing all files in directory: " + getDirectory());
+            const auto options = directory_options::skip_permission_denied;
+            std::error_code ec;
+            for (const auto& entry : directory_iterator(getDirectory(), options, ec))
             {
                 if (entry.is_regular_file())
                 {
                     logdebug("Found file: " + entry.path().filename().string() + " (stem: " + entry.path().stem().string() + ")");
                 }
             }
+
+            return nullptr;
         }
 
-        return nullptr;
+        loginfo("file found: [" + archivePath.string() + "], attempting to parse...");
+
+        auto pFileArchive = std::make_shared<FileModel::Design::FileArchive>(archivePath.string());
+        if (pFileArchive->ParseFileModel())
+        {
+            return pFileArchive;
+        }
+
+        // A matching file was found but failed to extract or parse. Treat this
+        // as a corrupt/unloadable design (error) rather than a missing one, so
+        // callers surface INTERNAL/500 instead of a misleading NOT_FOUND/404.
+        // (ParseFileModel already throws on parse failure; this covers the
+        // extraction / missing-root-dir paths that return false.)
+        // The file path is intentionally omitted here to avoid leaking server
+        // filesystem details to API clients (it is logged above for diagnostics).
+        throw std::runtime_error(
+            "Failed to load design \"" + designName + "\": could not extract or parse archive");
     }
 
     void DesignCache::TouchLru(const std::string& designName)
@@ -580,34 +706,19 @@ namespace Odb::Lib::App
     {
         // Simple estimate: archive file size on disk + a small constant. Serialized
         // response sizes are added to this estimate in M1.4 (response cache).
-        std::string directory;
-        {
-            std::shared_lock<std::shared_mutex> readLock(m_cacheMutex);
-            directory = m_directory;
-        }
-
-        std::error_code ec;
-        const auto options = directory_options::skip_permission_denied;
-        directory_iterator dirIt(directory, options, ec);
-        if (ec)
+        const auto archivePath = FindArchivePath(designName);
+        if (archivePath.empty())
         {
             return DESIGN_BYTES_OVERHEAD;
         }
 
-        for (const auto& entry : dirIt)
+        std::error_code ec;
+        const auto size = std::filesystem::file_size(archivePath, ec);
+        if (ec)
         {
-            if (entry.is_regular_file() && entry.path().stem() == designName)
-            {
-                const auto size = entry.file_size(ec);
-                if (ec)
-                {
-                    return DESIGN_BYTES_OVERHEAD;
-                }
-                return static_cast<std::uint64_t>(size) + DESIGN_BYTES_OVERHEAD;
-            }
+            return DESIGN_BYTES_OVERHEAD;
         }
-
-        return DESIGN_BYTES_OVERHEAD;
+        return static_cast<std::uint64_t>(size) + DESIGN_BYTES_OVERHEAD;
     }
 
     void DesignCache::TransitionLoadState(const std::string& designName, LoadState to)

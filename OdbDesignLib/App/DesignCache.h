@@ -5,7 +5,10 @@
 #include "../odbdesign_export.h"
 #include "StringVector.h"
 #include <chrono>
+#include <condition_variable>
+#include <cstddef>
 #include <cstdint>
+#include <filesystem>
 #include <functional>
 #include <future>
 #include <memory>
@@ -14,6 +17,7 @@
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 
@@ -83,9 +87,33 @@ namespace Odb::Lib::App
 		// waiting. Requesting other designs is safe.
 		void AddLoadObserver(LoadEventCallback callback);
 
+		// ---- background loads (consumed by M1.2 RequestLoadDesign + upload auto-warm) ----
+
+		// Kicks a background load of the named design and returns immediately:
+		// the parse runs on a detached thread through the same single-flight
+		// path as a synchronous GetDesign, so state/observer transitions,
+		// caching, and failure semantics (Failed is retryable) are identical.
+		// Returns true when a fresh background load was started; false when one
+		// is already pending or in flight for the name (the caller surfaces
+		// that as "already loading"). Throws only if the load thread itself
+		// could not be spawned; load failures are logged, never thrown here.
+		bool LoadDesignAsync(const std::string& designName);
+
+		// True when an archive file for the design name exists in the designs
+		// directory (first regular file whose stem matches), without
+		// triggering a load. Lets callers distinguish "no such archive"
+		// (NOT_FOUND) from a parse failure (Failed load state).
+		bool ContainsDesign(const std::string& designName) const;
+
 		// Byte budget for LRU eviction; 0 disables eviction.
 		void setCacheMaxBytes(std::uint64_t maxBytes);
 		std::uint64_t getCacheMaxBytes() const;
+
+		// Cap on concurrently parsing background loads; further loads queue on
+		// the semaphore inside their background thread (LoadDesignAsync itself
+		// never blocks). 0 = unbounded.
+		void setMaxBackgroundLoads(std::size_t maxLoads);
+		std::size_t getMaxBackgroundLoads() const;
 
 	private:
 		std::string m_directory;
@@ -130,6 +158,26 @@ namespace Odb::Lib::App
 		// Protects the in-flight maps, m_loadStatesByName, m_loadObservers, and m_epoch
 		mutable std::mutex m_loadStateMutex;
 
+		// Names with a background load kicked but not yet finished (queued on the
+		// semaphore or parsing). Closing the between-kick-and-Loading window
+		// synchronously in LoadDesignAsync makes a second kick for the same name
+		// deterministically return false instead of racing the background
+		// thread's Loading announcement. Guarded by m_loadStateMutex.
+		std::unordered_set<std::string> m_pendingAsyncLoads;
+
+		// ---- background-load bookkeeping ----
+		//
+		// Counting semaphore for background parses (mutex + cv; C++17 target).
+		// m_outstandingBackgroundLoads counts spawned-but-unfinished background
+		// threads (queued or parsing); ~DesignCache drains it so detached loads
+		// never outlive the cache members they touch. Guarded by m_backgroundMutex.
+		mutable std::mutex m_backgroundMutex;
+		std::condition_variable m_backgroundSlotCv;
+		std::condition_variable m_backgroundDoneCv;
+		std::size_t m_maxBackgroundLoads = DEFAULT_MAX_BACKGROUND_LOADS;
+		std::size_t m_activeBackgroundLoads = 0;        // threads currently holding a parse slot
+		std::size_t m_outstandingBackgroundLoads = 0;   // spawned but unfinished threads
+
 		// Thread-local re-entry guard: name of the design whose load the current
 		// thread is running, set only while the Loading transition (and its
 		// synchronous observers) is in progress on the loader thread. The joiner
@@ -168,6 +216,17 @@ namespace Odb::Lib::App
 		std::shared_ptr<ProductModel::Design> LoadDesign(const std::string& designName);
 		std::shared_ptr<FileModel::Design::FileArchive> LoadFileArchive(const std::string& designName);
 		std::shared_ptr<FileModel::Design::FileArchive> GetFileArchiveInternal(const std::string& designName, bool updateState);
+
+		// Shared archive-file-by-stem scan: path of the first regular file in the
+		// designs directory whose stem matches designName, or an empty path.
+		std::filesystem::path FindArchivePath(const std::string& designName) const;
+
+		// Body of a LoadDesignAsync background thread: queues on the semaphore,
+		// runs the single-flight load, logs the outcome, then releases its
+		// bookkeeping. Never lets an exception escape (thread functions must not).
+		void BackgroundLoad(const std::string& designName);
+		void AcquireBackgroundSlot();
+		void ReleaseBackgroundSlot();
 
 		// Core single-flight path behind GetDesign/GetFileArchive. Exactly one caller
 		// per design name runs loadFn; joiners wait on the same shared_future (a failed
@@ -388,6 +447,7 @@ namespace Odb::Lib::App
 		bool WasClearedSince(std::uint64_t epoch) const;
 
 		constexpr inline static std::uint64_t DEFAULT_CACHE_MAX_BYTES = 4096ull * 1024ull * 1024ull;
+		constexpr inline static std::size_t DEFAULT_MAX_BACKGROUND_LOADS = 2;
 		// Rough per-design overhead added to the archive file size; serialized response
 		// sizes are added to this estimate in M1.4 (response cache).
 		constexpr inline static std::uint64_t DESIGN_BYTES_OVERHEAD = 4096;

@@ -1061,6 +1061,37 @@ paths:
         "500":
           $ref: "#/components/responses/InternalError"
 
+  /designs/{name}/load:
+    post:
+      tags: [designs]
+      operationId: requestLoadDesign
+      summary: Request a background load of a design
+      description: |
+        Kicks a background parse of the design archive and returns immediately (the gRPC
+        twin is `OdbDesignService/RequestLoadDesign`). Never blocks on the parse: poll
+        `GET /designs/{name}` until the design is warm. Concurrent background parses are
+        capped (`--max-background-loads`, default 2); further requests queue. Designs
+        uploaded via `POST /files/upload*` are auto-warmed through the same path.
+      parameters:
+        - $ref: "#/components/parameters/DesignNameParam"
+      responses:
+        "202":
+          description: |
+            Load request processed. The body carries the resulting load status:
+            `accepted` (a background load was kicked), `already_loading`, `already_loaded`,
+            or `not_found` (no archive with that name on disk — reported in the body with
+            202, not as an HTTP 404, because the request itself succeeded).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RequestLoadDesignStatus"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /healthz/live:
     get:
       tags: [health check]
@@ -1235,6 +1266,26 @@ components:
 
   schemas:
     # ------------------------------------------------------------------ common
+    RequestLoadDesignStatus:
+      type: object
+      description: |
+        Result of a load request (`POST /designs/{name}/load` and the gRPC
+        `RequestLoadDesign` twin). The request itself always succeeds; the status
+        distinguishes what was (or was not) kicked.
+      required: [designName, status]
+      properties:
+        designName:
+          type: string
+          description: Design (archive) name the request was made for.
+        status:
+          type: string
+          enum: [accepted, already_loading, already_loaded, not_found]
+          description: |
+            Lifecycle status of the requested background load: `accepted` — a
+            background load was kicked; `already_loading` — a load is already
+            queued or parsing; `already_loaded` — the design is warm, no load
+            was kicked; `not_found` — no archive with that name exists in the
+            designs directory, nothing was kicked.
     FileArchiveList:
       type: object
       description: Listing of design archives known to the server.
