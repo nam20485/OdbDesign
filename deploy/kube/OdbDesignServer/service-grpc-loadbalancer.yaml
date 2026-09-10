@@ -1,11 +1,10 @@
 ##################################################################################################
-# OdbDesignServer gRPC service (ClusterIP — backend of the Traefik IngressRouteTCP)
+# OdbDesignServer gRPC service (k3d ServiceLB / klipper-lb)
 #
-# M3.1 (gRPC TLS): Traefik terminates TLS on the `grpc` entrypoint
-# (deploy/kube/odbdesign-grpc-ingressroute-tcp.yaml) and forwards h2c to this
-# service, so it no longer needs its own LoadBalancer. Applied by
-# scripts/deploy.ps1 only under -EnableTls; the no-flag default applies
-# service-grpc-loadbalancer.yaml instead (direct ServiceLB exposure, node :50051).
+# Default (no -EnableTls) gRPC exposure: LoadBalancer publishes node :50051
+# directly. Content-identical to service-grpc.yaml before the M3.1 change, so
+# a no-flag scripts/deploy.ps1 run reproduces the pre-TLS deployment exactly.
+# See service-grpc.yaml (ClusterIP variant) for the TLS path.
 ##################################################################################################
 apiVersion: v1
 kind: Service
@@ -15,7 +14,7 @@ metadata:
     app: odbdesign-server
     service: odbdesign-server-grpc
 spec:
-  type: ClusterIP
+  type: LoadBalancer
   ports:
     - name: ods-grpc-port
       port: 50051
@@ -23,4 +22,3 @@ spec:
       protocol: TCP
   selector:
     app: odbdesign-server
-
