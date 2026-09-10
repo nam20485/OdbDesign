@@ -2,11 +2,14 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: odbdesign-server-ingress
-  # annotations:
-  #   cert-manager.io/issuer: "letsencrypt-staging"
+  annotations:
+    # Option C private-CA Issuer (deploy/kube/issuer-ca.yaml, namespace-scoped
+    # in the same namespace). Only acted on when cert-manager is installed;
+    # without it the annotation is inert and plain-HTTP routing is unchanged.
+    cert-manager.io/issuer: "odbdesign-ca"
 spec:
   ingressClassName: traefik
-  rules:   
+  rules:
     - http:
         paths:
           - path: "/"
@@ -23,7 +26,22 @@ spec:
                 name: odbdesign-server-swaggerui-service
                 port:
                   name: oss-svc-port
-  # tls:
-  # - hosts:
-  #   - your.domain # your domain 
-  #   secretName: letsencrypt-staging-tls
+          # M0.3: ReDoc UI, mirrored from the /swagger route. 404s until the
+          # swaggerui sidecar image ships redoc.html (follow-up in the sidecar
+          # repo); the routing is in place for when it does.
+          - path: /redoc
+            pathType: Prefix
+            backend:
+              service:
+                name: odbdesign-server-swaggerui-service
+                port:
+                  name: oss-svc-port
+  # Option C serving cert (deploy/kube/certificate-odbs-server.yaml ->
+  # secret odbdesign-server-tls). Kept in the base file unconditionally:
+  # Traefik serves both :80 (plain HTTP — default behavior, unchanged) and
+  # :443. Before cert-manager issues the secret, :443 serves Traefik's
+  # default self-signed cert — the pre-existing status quo (Option F).
+  # Host-less on purpose: clients hit bare IPs and verify cert SANs, not SNI
+  # (Ingress tls.hosts only takes DNS names, so it is omitted).
+  tls:
+    - secretName: odbdesign-server-tls
