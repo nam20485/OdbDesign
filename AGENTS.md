@@ -24,10 +24,10 @@ nam/<feature>  →  nam20485  →  development (default)  →  staging  →  mai
 
 ### Merge method
 
-Promotion between long-lived branches uses **merge commits** — `gh pr merge --merge`. Never rebase or squash-merge across `nam20485 → development → staging → main → release`.
+**All merges are merge commits — `gh pr merge --merge`. Never squash and never rebase any PR, on any branch pair** (`nam/<feature>` → `nam20485` included).
 
 - Rebase is fine only on a private, never-pushed branch. Once commits are published, merge them; rewriting published commits desyncs the merge base for everyone downstream.
-- Squash is acceptable for `nam/<feature>` → `nam20485` **only if the source branch is deleted**. Squash leaves no patch-equivalent commits behind, so an undeleted branch reads as permanently unmerged even after its PR lands.
+- Squash is prohibited everywhere (directive 2026-09-10; the earlier "squash + delete-branch" allowance for feature PRs is revoked). Squash leaves no patch-equivalent commits behind, so the source branch reads as permanently unmerged and downstream merge bases desync — the same failure shape as the April 2026 replay described below.
 
 **Do not re-add `required_linear_history` to ruleset `169360`** (covers `main`, `release`, `staging`, `production`). It rejects merge commits while that same ruleset's `pull_request.allowed_merge_methods` permits only `["merge"]` — an unsatisfiable pair that makes those four branches unmergeable through any PR, leaving hand-rebase plus admin force-push as the only route in. That is what happened in April 2026: ~270 of `development`'s commits were replayed onto `main` with new SHAs, so the branches reported ~320 ahead / ~500 behind each other while `git cherry` showed 259 of them were patch-identical. It also dragged the merge base back to 2025-07-08, making a later real merge cost 148 conflicted files. Removed 2026-09-08, when `main` and `release` were re-baselined onto `development` (rollback tags: `backup/main-pre-rebaseline-20260908`, `backup/release-pre-rebaseline-20260908`).
 
