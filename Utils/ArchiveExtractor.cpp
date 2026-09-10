@@ -127,12 +127,26 @@ namespace Utils
 				return ExtractLzmaOutOfProc(destinationPath);
 			}			
 		}
-		else if (extract(m_path.string().c_str(), destinationPath.c_str()))
+		else
 		{
-			//path p(destinationPath);
-			//p /= path(m_path).stem();
-			m_extractionDirectory = destinationPath;
-			return true;
+			// macOS temp/design locations sit behind symlinks (/var -> /private/var,
+			// /tmp -> /private/tmp), and libarchive runs with
+			// ARCHIVE_EXTRACT_SECURE_SYMLINKS, which rejects any entry whose path
+			// traverses a symlink - extraction into such a destination fails on
+			// every entry. Resolve the destination to its canonical real path
+			// before handing it to libarchive (no-op on Linux/Windows).
+			std::error_code canonicalError;
+			auto canonicalDestination = weakly_canonical(path(destinationPath), canonicalError);
+			if (canonicalError)
+			{
+				canonicalDestination = path(destinationPath);
+			}
+
+			if (extract(m_path.string().c_str(), canonicalDestination.string().c_str()))
+			{
+				m_extractionDirectory = canonicalDestination.string();
+				return true;
+			}
 		}
 
 		return false;
