@@ -1,6 +1,7 @@
 #include "GrpcServiceConfig.h"
 #include <algorithm>
 #include <fstream>
+#include <iostream>
 #include <sstream>
 #include <crow/json.h>
 #include <filesystem>
@@ -9,6 +10,22 @@ namespace OdbDesignServer
 {
     namespace Config
     {
+        namespace
+        {
+            // Map a config string to a gRPC compression level;
+            // unknown values fall back to high (matches previous gzip behavior)
+            grpc_compression_level ParseCompressionLevel(const std::string& value)
+            {
+                if (value == "none") return GRPC_COMPRESS_LEVEL_NONE;
+                if (value == "low") return GRPC_COMPRESS_LEVEL_LOW;
+                if (value == "medium") return GRPC_COMPRESS_LEVEL_MED;
+                if (value == "high") return GRPC_COMPRESS_LEVEL_HIGH;
+                std::cerr << "WARNING: unknown grpc compression level \"" << value
+                          << "\", defaulting to \"high\"" << std::endl;
+                return GRPC_COMPRESS_LEVEL_HIGH;
+            }
+        }
+
         GrpcServiceConfig::LoadResult GrpcServiceConfig::LoadFromFile(const std::string& configPath)
         {
             LoadResult result;
@@ -78,9 +95,17 @@ namespace OdbDesignServer
                     if (grpcSection.has("compression"))
                     {
                         auto compressionSection = grpcSection["compression"];
-                        if (compressionSection.has("enabled"))
+
+                        // Legacy boolean/algorithm keys are no longer supported: warn and ignore
+                        if (compressionSection.has("enabled") || compressionSection.has("algorithm"))
                         {
-                            result.config->compression_enabled = compressionSection["enabled"].b();
+                            std::cerr << "WARNING: deprecated grpc.compression keys \"enabled\"/\"algorithm\" ignored; "
+                                      << "use \"level\": \"none|low|medium|high\" instead" << std::endl;
+                        }
+
+                        if (compressionSection.has("level"))
+                        {
+                            result.config->compression_level = ParseCompressionLevel(compressionSection["level"].s());
                         }
                     }
 
