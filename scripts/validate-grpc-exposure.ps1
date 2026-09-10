@@ -342,7 +342,10 @@ if ($Tls) {
 
     if ([string]::IsNullOrWhiteSpace($AdvertisedHost)) {
         $traefikService = Invoke-KubectlJson -Arguments @("-n", $TraefikNamespace, "get", "service", $TraefikServiceName)
-        $traefikIps = Get-LbIngressIps -Service $traefikService
+        # @() guards against PowerShell pipeline unrolling: a single ingress IP
+        # would otherwise assign a bare [string], whose [0] yields the first
+        # character, not the IP.
+        $traefikIps = @(Get-LbIngressIps -Service $traefikService)
 
         if ($traefikIps.Count -eq 0) {
             Fail "Traefik service '$TraefikNamespace/$TraefikServiceName' has no LoadBalancer ingress IP. Is Traefik running? kubectl -n $TraefikNamespace get service $TraefikServiceName"

@@ -13,7 +13,12 @@ param(
     # adds the Traefik `grpc` entrypoint + IngressRouteTCP (TLS-terminated
     # gRPC on node :50051) and migrates the gRPC service to ClusterIP.
     # Default (no flag) = plain-HTTP deployment, unchanged.
-    [switch]$EnableTls = $false
+    [switch]$EnableTls = $false,
+    # Path to the root CA cert (ca.crt from make-tls-ca.sh). With -EnableTls,
+    # forwarded to validate-grpc-exposure.ps1 so grpcurl verifies against the
+    # private CA on machines where it is not imported into the system store.
+    [Parameter(Mandatory=$false)]
+    [string]$CaCert = ""
 )
 
 Set-StrictMode -Version Latest
@@ -149,13 +154,22 @@ try {
         # secret to exist first (scripts/make-tls-ca.sh, one-time).
         # try/catch + 2>$null mirrors the PV pre-flight above: under
         # ErrorActionPreference=Stop a missing secret can surface as a
-        # thrown record, not just a non-zero exit code.
+        # thrown record, not just a non-zero exit code. Check
+        # $LASTEXITCODE first so an unreachable cluster / bad kubeconfig is
+        # not misdiagnosed as "secret missing".
         $rootCaSecret = $null
+        $kubectlFailed = $false
         try {
             $rootCaSecret = (kubectl get secret odbdesign-root-ca -n default --no-headers 2>$null) -join ''
+            if ($LASTEXITCODE -ne 0) { $kubectlFailed = $true }
         }
         catch {
-            # secret does not exist yet — actionable error below
+            $kubectlFailed = $true
+        }
+        if ($kubectlFailed) {
+            Write-Host "Could not query the cluster for secret 'odbdesign-root-ca' (kubectl exit $LASTEXITCODE)."
+            Write-Host "Check that the cluster is reachable and the kubeconfig context is valid."
+            Exit 1
         }
         if ([string]::IsNullOrEmpty("$rootCaSecret")) {
             Write-Host "Secret 'odbdesign-root-ca' not found in namespace 'default'."
@@ -185,6 +199,23 @@ try {
         # the ports block manually instead (see manifest comments).
         Invoke-Kubectl @("apply", "-f", "deploy/kube/traefik-helmchartconfig-grpc-entrypoint.yaml")
         Invoke-Kubectl @("-n", "kube-system", "rollout", "status", "deployment/traefik", "--timeout=300s")
+        # rollout status can pass before the k3s addon controller re-upgrades
+        # the chart with the new entrypoint; poll the Traefik Service until the
+        # grpc port (:50051) is actually published so the IngressRouteTCP never
+        # targets an entrypoint Traefik doesn't serve yet.
+        $entrypointReady = $false
+        foreach ($attempt in 1..30) {
+            $grpcPort = (kubectl -n kube-system get service traefik -o jsonpath='{.spec.ports[?(@.name=="grpc")].port}' 2>$null) -join ''
+            if (-not [string]::IsNullOrEmpty($grpcPort)) { $entrypointReady = $true; break }
+            Start-Sleep -Seconds 5
+        }
+        if (-not $entrypointReady) {
+            Write-Host "Traefik did not publish the grpc entrypoint (:50051) within 150s of the HelmChartConfig apply."
+            Write-Host "The k3s addon controller may need a server restart, or a pre-existing traefik"
+            Write-Host "HelmChartConfig needs its values merged manually — see the comments in"
+            Write-Host "deploy/kube/traefik-helmchartconfig-grpc-entrypoint.yaml."
+            Exit 1
+        }
         Invoke-Kubectl @("apply", "-f", "deploy/kube/odbdesign-grpc-ingressroute-tcp.yaml")
     }
 
@@ -198,6 +229,9 @@ try {
         }
         if ($EnableTls) {
             $validateArgs.Tls = $true
+            if (-not [string]::IsNullOrWhiteSpace($CaCert)) {
+                $validateArgs.CaCert = $CaCert
+            }
         }
 
         & (Join-Path $PSScriptRoot "validate-grpc-exposure.ps1") @validateArgs

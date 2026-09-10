@@ -18,6 +18,10 @@
 # signing the leaves — see deploy/kube/cert-manager/README.md.
 
 set -euo pipefail
+# 077 so ca.key is created mode 600 by default (the ambient umask is
+# typically 0644; if the script aborts after openssl writes the key,
+# it must never be left world-readable).
+umask 077
 
 OUT_DIR="${1:-.}"
 CA_KEY="$OUT_DIR/ca.key"
@@ -64,7 +68,7 @@ echo "  key:  $CA_KEY (mode 600 — keep private; may be kept offline, see READM
 echo
 echo "Next step — import into the cluster so the cert-manager CA Issuer can sign leaves:"
 echo
-echo "  kubectl create secret tls odbdesign-root-ca --cert=$CA_CRT --key=$CA_KEY -n default"
+echo "  kubectl create secret tls odbdesign-root-ca --cert=\"$CA_CRT\" --key=\"$CA_KEY\" -n default"
 echo
 echo "Then distribute $CA_CRT to clients (curl --cacert, update-ca-certificates,"
 echo "Windows cert store, REQUESTS_CA_BUNDLE, ...) — see deploy/kube/cert-manager/README.md."

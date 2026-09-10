@@ -347,13 +347,31 @@ namespace Odb::Test::Config
         EXPECT_EQ(result.config->compression_level, GRPC_COMPRESS_LEVEL_HIGH);
     }
 
-    TEST_F(GrpcServiceConfigTest, LoadFromFile_CompressionLegacyKeys_Ignored)
+    TEST_F(GrpcServiceConfigTest, LoadFromFile_CompressionLegacyEnabledFalse_MigratesToNone)
     {
-        // Legacy "enabled"/"algorithm" keys are deprecated: ignored, level keeps default
+        // Legacy "enabled": false is honored as a migration: an explicit opt-out
+        // must not silently re-enable compression at the default level
         auto path = writeConfigFile(R"({
             "grpc": {
                 "compression": {
                     "enabled": false,
+                    "algorithm": "gzip"
+                }
+            }
+        })");
+
+        auto result = GrpcServiceConfig::LoadFromFile(path);
+        EXPECT_TRUE(result.loadedFromFile);
+        EXPECT_EQ(result.config->compression_level, GRPC_COMPRESS_LEVEL_NONE);
+    }
+
+    TEST_F(GrpcServiceConfigTest, LoadFromFile_CompressionLegacyEnabledTrue_KeepsDefault)
+    {
+        // "enabled": true with no "level" keeps the level default (high)
+        auto path = writeConfigFile(R"({
+            "grpc": {
+                "compression": {
+                    "enabled": true,
                     "algorithm": "gzip"
                 }
             }

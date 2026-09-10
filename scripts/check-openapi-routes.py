@@ -19,7 +19,9 @@ treated as OpenAPI ``{param}`` placeholders; trailing slashes stripped) with the
 
 Commented-out registrations (``//CROW_ROUTE ...``) are ignored.
 
-Exits 0 when the code and spec agree (modulo ALLOWLIST), 1 on any drift.
+Exits 0 when the code and spec agree (modulo ALLOWLIST), 1 on any drift,
+2 when an input file is missing/unreadable (distinct from drift so CI can
+tell misconfiguration from a real finding).
 
 stdlib only.
 """
@@ -69,13 +71,20 @@ def normalize(path: str) -> str:
     return path.rstrip("/")
 
 
+def read_or_exit(path: Path) -> str:
+    """Read a file, exiting with code 2 (not the drift code) when unreadable."""
+    try:
+        return path.read_text(encoding="utf-8", errors="replace")
+    except OSError as exc:
+        print(f"error: cannot read {path}: {exc}", file=sys.stderr)
+        sys.exit(2)
+
+
 def extract_code_routes() -> dict:
     """Return {normalized_path: "raw_path (file:line)"} for registered routes."""
     routes = {}
     for src in SOURCES:
-        for lineno, line in enumerate(
-            src.read_text(encoding="utf-8", errors="replace").splitlines(), start=1
-        ):
+        for lineno, line in enumerate(read_or_exit(src).splitlines(), start=1):
             # Skip commented-out registrations.
             if line.lstrip().startswith("//"):
                 continue
@@ -93,7 +102,7 @@ def extract_spec_paths() -> dict:
     """
     paths = {}
     in_paths = False
-    for line in SWAGGER_PATH.read_text(encoding="utf-8").splitlines():
+    for line in read_or_exit(SWAGGER_PATH).splitlines():
         if re.fullmatch(r"paths:\s*", line):
             in_paths = True
             continue

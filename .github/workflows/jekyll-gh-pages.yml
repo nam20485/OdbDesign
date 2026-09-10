@@ -101,8 +101,10 @@ jobs:
 
             # Latest successful push-triggered coverage run for this branch.
             # gh's built-in --jq prints "<id> <sha> <createdAt>", empty when no
-            # such run exists. Any failure below degrades to a placeholder.
-            if run_info="$(gh run list --workflow=code-coverage.yml --branch="$branch" --event=push --status=success --limit=1 --json databaseId,headSha,createdAt --jq '.[0] | "\(.databaseId) \(.headSha) \(.createdAt)"' 2>/dev/null)" && [ -n "$run_info" ]; then
+            # such run exists (select(. != null) keeps .[0] on an empty list
+            # from interpolating to "null null null"). Any failure below
+            # degrades to a placeholder.
+            if run_info="$(gh run list --workflow=code-coverage.yml --branch="$branch" --event=push --status=success --limit=1 --json databaseId,headSha,createdAt --jq '.[0] | select(. != null) | "\(.databaseId) \(.headSha) \(.createdAt)"' 2>/dev/null)" && [ -n "$run_info" ]; then
               read -r run_id head_sha created <<<"$run_info"
               echo "branch '$branch': found successful code-coverage run $run_id (head $head_sha, $created)"
               if gh run download "$run_id" --name linux-coverage-report --dir "$tmp_root/$branch" \

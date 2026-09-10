@@ -96,11 +96,27 @@ namespace OdbDesignServer
                     {
                         auto compressionSection = grpcSection["compression"];
 
-                        // Legacy boolean/algorithm keys are no longer supported: warn and ignore
-                        if (compressionSection.has("enabled") || compressionSection.has("algorithm"))
+                        // Legacy boolean/algorithm keys. "enabled": false is honored as a
+                        // one-time migration (-> level "none") so an explicit opt-out never
+                        // silently re-enables compression after upgrade; "enabled": true and
+                        // "algorithm" are superseded by level-based negotiation.
+                        const bool hasLevel = compressionSection.has("level");
+                        if (compressionSection.has("enabled"))
                         {
-                            std::cerr << "WARNING: deprecated grpc.compression keys \"enabled\"/\"algorithm\" ignored; "
-                                      << "use \"level\": \"none|low|medium|high\" instead" << std::endl;
+                            const bool enabled = compressionSection["enabled"].b();
+                            if (!enabled && !hasLevel)
+                            {
+                                result.config->compression_level = GRPC_COMPRESS_LEVEL_NONE;
+                            }
+                            std::cerr << "WARNING: deprecated grpc.compression \"enabled\" key "
+                                      << (enabled ? "ignored (level default applies)"
+                                                  : "migrated to \"level\": \"none\"")
+                                      << "; use \"level\": \"none|low|medium|high\" instead" << std::endl;
+                        }
+                        if (compressionSection.has("algorithm"))
+                        {
+                            std::cerr << "WARNING: deprecated grpc.compression \"algorithm\" key ignored; "
+                                      << "algorithm selection now follows \"level\"" << std::endl;
                         }
 
                         if (compressionSection.has("level"))
