@@ -1,4 +1,5 @@
 #include "OdbDesignArgs.h"
+#include <iostream>
 #include <sstream>
 
 namespace Odb::Lib::App
@@ -60,7 +61,23 @@ namespace Odb::Lib::App
 
 	int OdbDesignArgs::cacheMaxMb() const
 	{
-		return intArg("cache-max-mb", DEFAULT_CACHE_MAX_MB);
+		// intArg -> std::stoi throws when CommandLineArgs stored the literal
+		// boolean `true` (missing value, or a value starting with '-' or '/');
+		// this runs unconditionally at the top of OdbAppBase::Run(), so a
+		// malformed --cache-max-mb must not std::terminate the process — fall
+		// back to the default with a warning. Negative values clamp to 0
+		// (eviction disabled), matching setCacheMaxBytes semantics.
+		try
+		{
+			const int mb = intArg("cache-max-mb", DEFAULT_CACHE_MAX_MB);
+			return mb < 0 ? 0 : mb;
+		}
+		catch (const std::exception&)
+		{
+			std::cerr << "WARNING: invalid --cache-max-mb value; using default "
+				<< DEFAULT_CACHE_MAX_MB << std::endl;
+			return DEFAULT_CACHE_MAX_MB;
+		}
 	}
 
 	std::string OdbDesignArgs::getUsageString() const

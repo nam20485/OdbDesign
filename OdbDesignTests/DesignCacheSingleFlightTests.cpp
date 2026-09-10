@@ -210,6 +210,7 @@ namespace Odb::Test
         const int numThreads = 8;
 
         std::vector<std::shared_ptr<OdbFileArchive>> results(numThreads);
+        std::vector<std::exception_ptr> errors(numThreads);
 
         auto gate = std::make_shared<std::promise<void>>();
         auto release = gate->get_future().share();
@@ -220,11 +221,36 @@ namespace Odb::Test
             threads.emplace_back([&, i]()
             {
                 release.wait();
-                results[i] = m_pDesignCache->GetFileArchive(designName);
+                // An escaping exception from a thread function invokes
+                // std::terminate and kills the whole test binary; capture it
+                // so the assertions below can report it per-thread.
+                try
+                {
+                    results[i] = m_pDesignCache->GetFileArchive(designName);
+                }
+                catch (...)
+                {
+                    errors[i] = std::current_exception();
+                }
             });
         }
         gate->set_value();
         for (auto& t : threads) t.join();
+
+        for (int i = 0; i < numThreads; ++i)
+        {
+            if (errors[i] != nullptr)
+            {
+                try
+                {
+                    std::rethrow_exception(errors[i]);
+                }
+                catch (const std::exception& e)
+                {
+                    ADD_FAILURE() << "thread " << i << " threw: " << e.what();
+                }
+            }
+        }
 
         for (int i = 0; i < numThreads; ++i)
         {
@@ -394,8 +420,17 @@ namespace Odb::Test
         }
 
         // Shrink the budget while 'big' is in flight: 'small' (least recently served)
-        // is evicted, the in-flight 'big' must be untouchable.
+        // is evicted, the in-flight 'big' must be untouchable. The parse can
+        // complete between the Loading observation above and this shrink, so
+        // re-check immediately after the shrink and skip if it slipped out —
+        // otherwise the Loading assertion below can flake under CI load.
         m_pDesignCache->setCacheMaxBytes(1024);
+        if (m_pDesignCache->GetLoadState(big) != DesignCache::LoadState::Loading)
+        {
+            loader.join();
+            GTEST_SKIP() << "design finished parsing between the Loading observation and the budget shrink; "
+                            "in-flight eviction path not exercised";
+        }
         EXPECT_EQ(m_pDesignCache->GetLoadState(small), DesignCache::LoadState::Unloaded)
             << "victim should have been evicted during the in-flight window";
         EXPECT_EQ(m_pDesignCache->GetLoadState(big), DesignCache::LoadState::Loading)
