@@ -27,6 +27,7 @@ add_executable(OdbDesignTests
     "DesignCacheSingleFlightTests.cpp"
     "GrpcServiceConfigTests.cpp"
     "Utf8SanitizerTests.cpp"
+    "HttpCachingTests.cpp"
     "../OdbDesignServer/Config/GrpcServiceConfig.cpp"
 
     # Server service implementation compiled into the test executable so service-level

@@ -419,13 +419,15 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "design name not specified");
 		}
 
+		std::string etag;
+		if (auto notModified = checkConditionalGet(req, designNameDecoded, "/filemodels/<string>", etag)) return std::move(*notModified);
 		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
 		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
 			return std::move(*errorResponse);
 		}
 
-		return crow::response(JsonCrowReturnable(*pFileArchive));
+		return withCacheHeaders(crow::response(JsonCrowReturnable(*pFileArchive)), etag);
 	}
 
 	crow::response FileModelController::filemodels_post_route_handler(const std::string& designName, const crow::request& req)
@@ -465,6 +467,8 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "step name not specified");
 		}
 
+		std::string etag;
+		if (auto notModified = checkConditionalGet(req, designNameDecoded, "/filemodels/<string>/steps/<string>/eda_data", etag)) return std::move(*notModified);
 		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
 		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
@@ -482,7 +486,7 @@ namespace Odb::App::Server
 
 		auto& step = findIt->second;
 		auto& edaDataFile = step->GetEdaDataFile();
-		return crow::response(JsonCrowReturnable(edaDataFile));
+		return withCacheHeaders(crow::response(JsonCrowReturnable(edaDataFile)), etag);
 	}
 
 	crow::response FileModelController::steps_attrlist_route_handler(const std::string& designName, const std::string& stepName, const crow::request& req)
@@ -499,6 +503,8 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "step name not specified");
 		}
 
+		std::string etag;
+		if (auto notModified = checkConditionalGet(req, designNameDecoded, "/filemodels/<string>/steps/<string>/attrlist", etag)) return std::move(*notModified);
 		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
 		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
@@ -516,7 +522,7 @@ namespace Odb::App::Server
 
 		auto& step = findIt->second;
 		auto& attrListFile = step->GetAttrListFile();
-		return crow::response(JsonCrowReturnable(attrListFile));
+		return withCacheHeaders(crow::response(JsonCrowReturnable(attrListFile)), etag);
 	}
 
 	crow::response FileModelController::steps_profile_route_handler(const std::string& designName, const std::string& stepName, const crow::request& req)
@@ -533,6 +539,8 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "step name not specified");
 		}
 
+		std::string etag;
+		if (auto notModified = checkConditionalGet(req, designNameDecoded, "/filemodels/<string>/steps/<string>/profile", etag)) return std::move(*notModified);
 		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
 		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
@@ -550,7 +558,7 @@ namespace Odb::App::Server
 
 		auto& step = findIt->second;
 		auto& profileFile = step->GetProfileFile();
-		return crow::response(JsonCrowReturnable(profileFile));
+		return withCacheHeaders(crow::response(JsonCrowReturnable(profileFile)), etag);
 	}
 
 	crow::response FileModelController::steps_stephdr_route_handler(const std::string& designName, const std::string& stepName, const crow::request& req)
@@ -567,6 +575,8 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "step name not specified");
 		}
 
+		std::string etag;
+		if (auto notModified = checkConditionalGet(req, designNameDecoded, "/filemodels/<string>/steps/<string>/stephdr", etag)) return std::move(*notModified);
 		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
 		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
@@ -584,7 +594,7 @@ namespace Odb::App::Server
 
 		auto& step = findIt->second;
 		auto& stepHdrFile = step->GetStepHdrFile();
-		return crow::response(JsonCrowReturnable(stepHdrFile));
+		return withCacheHeaders(crow::response(JsonCrowReturnable(stepHdrFile)), etag);
 	}
 
 	crow::response FileModelController::steps_netlists_route_handler(const std::string& designName, const std::string& stepName, const std::string& netlistName, const crow::request& req)
@@ -607,6 +617,8 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "netlist name not specified");
 		}
 
+		std::string etag;
+		if (auto notModified = checkConditionalGet(req, designNameDecoded, "/filemodels/<string>/steps/<string>/netlists/<string>", etag)) return std::move(*notModified);
 		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
 		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
@@ -633,7 +645,7 @@ namespace Odb::App::Server
 		}
 		auto& netlist = findIt2->second;
 		
-		return crow::response(JsonCrowReturnable(*netlist));
+		return withCacheHeaders(crow::response(JsonCrowReturnable(*netlist)), etag);
 	}
 
 	crow::response FileModelController::steps_netlists_list_route_handler(const std::string& designName, const std::string& stepName, const crow::request& req)
@@ -724,6 +736,8 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "layer name not specified");
 		}
 
+		std::string etag;
+		if (auto notModified = checkConditionalGet(req, designNameDecoded, "/filemodels/<string>/steps/<string>/layers/<string>", etag)) return std::move(*notModified);
 		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
 		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
@@ -750,7 +764,7 @@ namespace Odb::App::Server
 		}
 		auto& layer = findIt2->second;
 
-		return crow::response(JsonCrowReturnable(*layer));
+		return withCacheHeaders(crow::response(JsonCrowReturnable(*layer)), etag);
 	}
 
 	crow::response FileModelController::steps_layers_components_route_handler(const std::string& designName, const std::string& stepName, const std::string& layerName, const crow::request& req)
@@ -773,6 +787,8 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "layer name not specified");
 		}
 
+		std::string etag;
+		if (auto notModified = checkConditionalGet(req, designNameDecoded, "/filemodels/<string>/steps/<string>/layers/<string>/components", etag)) return std::move(*notModified);
 		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
 		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
@@ -811,7 +827,7 @@ namespace Odb::App::Server
 				pComponentRecord->GetAttributeLookupTable(),
 				attributeNames);
 		}
-		return crow::response(JsonCrowReturnable(componentsFile));
+		return withCacheHeaders(crow::response(JsonCrowReturnable(componentsFile)), etag);
 	}
 
 	crow::response FileModelController::steps_layers_features_route_handler(const std::string& designName, const std::string& stepName, const std::string& layerName, const crow::request& req)
@@ -834,6 +850,8 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "layer name not specified");
 		}
 
+		std::string etag;
+		if (auto notModified = checkConditionalGet(req, designNameDecoded, "/filemodels/<string>/steps/<string>/layers/<string>/features", etag)) return std::move(*notModified);
 		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
 		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
@@ -861,7 +879,7 @@ namespace Odb::App::Server
 		auto& layer = findIt2->second;
 
 		auto& featuresFile = layer->GetFeaturesFile();
-		return crow::response(JsonCrowReturnable(featuresFile));
+		return withCacheHeaders(crow::response(JsonCrowReturnable(featuresFile)), etag);
 	}
 
 	crow::response FileModelController::steps_layers_attrlist_route_handler(const std::string& designName, const std::string& stepName, const std::string& layerName, const crow::request& req)
@@ -884,6 +902,8 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "layer name not specified");
 		}
 
+		std::string etag;
+		if (auto notModified = checkConditionalGet(req, designNameDecoded, "/filemodels/<string>/steps/<string>/layers/<string>/attrlist", etag)) return std::move(*notModified);
 		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
 		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
@@ -911,7 +931,7 @@ namespace Odb::App::Server
 		auto& layer = findIt2->second;
 
 		auto& attrlistFile = layer->GetAttrListFile();
-		return crow::response(JsonCrowReturnable(attrlistFile));
+		return withCacheHeaders(crow::response(JsonCrowReturnable(attrlistFile)), etag);
 	}
 
 	crow::response FileModelController::steps_layers_list_route_handler(const std::string& designName, const std::string& stepName, const crow::request& req)
@@ -970,6 +990,8 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "step name not specified");
 		}
 
+		std::string etag;
+		if (auto notModified = checkConditionalGet(req, designNameDecoded, "/filemodels/<string>/steps/<string>/diagnostics/symbol_units", etag)) return std::move(*notModified);
 		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
 		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
@@ -1034,7 +1056,7 @@ namespace Odb::App::Server
 		result["design"] = designNameDecoded;
 		result["step"] = stepNameDecoded;
 		result["layers"] = std::move(layers);
-		return crow::response(result);
+		return withCacheHeaders(crow::response(result), etag);
 	}
 
 	crow::response FileModelController::steps_route_handler(const std::string& designName, const std::string& stepName, const crow::request& req)
@@ -1051,6 +1073,8 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "step name not specified");
 		}
 
+		std::string etag;
+		if (auto notModified = checkConditionalGet(req, designNameDecoded, "/filemodels/<string>/steps/<string>", etag)) return std::move(*notModified);
 		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
 		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
@@ -1067,7 +1091,7 @@ namespace Odb::App::Server
 		}
 
 		auto& step = findIt->second;		
-		return crow::response(JsonCrowReturnable(*step));
+		return withCacheHeaders(crow::response(JsonCrowReturnable(*step)), etag);
 	}
 
 	crow::response FileModelController::symbols_route_handler(const std::string& designName, const std::string& symbolName, const crow::request& req)
@@ -1084,6 +1108,8 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "step name not specified");
 		}
 
+		std::string etag;
+		if (auto notModified = checkConditionalGet(req, designNameDecoded, "/filemodels/<string>/symbols/<string>", etag)) return std::move(*notModified);
 		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
 		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
@@ -1100,7 +1126,7 @@ namespace Odb::App::Server
 		}
 
 		auto& symbol = findIt->second;		
-		return crow::response(JsonCrowReturnable(*symbol));
+		return withCacheHeaders(crow::response(JsonCrowReturnable(*symbol)), etag);
 	}
 
 	crow::response FileModelController::symbols_features_route_handler(const std::string& designName, const std::string& symbolName, const crow::request& req)
@@ -1117,6 +1143,8 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "step name not specified");
 		}
 
+		std::string etag;
+		if (auto notModified = checkConditionalGet(req, designNameDecoded, "/filemodels/<string>/symbols/<string>/features", etag)) return std::move(*notModified);
 		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
 		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
@@ -1134,7 +1162,7 @@ namespace Odb::App::Server
 		auto& symbol = findIt->second;
 
 		auto& featuresFile = symbol->GetFeaturesFile();
-		return crow::response(JsonCrowReturnable(featuresFile));
+		return withCacheHeaders(crow::response(JsonCrowReturnable(featuresFile)), etag);
 	}
 
 	crow::response FileModelController::symbols_attrlist_route_handler(const std::string& designName, const std::string& symbolName, const crow::request& req)
@@ -1151,6 +1179,8 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "step name not specified");
 		}
 
+		std::string etag;
+		if (auto notModified = checkConditionalGet(req, designNameDecoded, "/filemodels/<string>/symbols/<string>/attrlist", etag)) return std::move(*notModified);
 		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
 		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
@@ -1168,7 +1198,7 @@ namespace Odb::App::Server
 		auto& symbol = findIt->second;
 
 		auto& attrlistFile = symbol->GetAttrListFile();
-		return crow::response(JsonCrowReturnable(attrlistFile));
+		return withCacheHeaders(crow::response(JsonCrowReturnable(attrlistFile)), etag);
 	}
 
 	crow::response FileModelController::symbols_list_route_handler(const std::string& designName, const crow::request& req)
@@ -1210,6 +1240,8 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "design name not specified");
 		}
 
+		std::string etag;
+		if (auto notModified = checkConditionalGet(req, designNameDecoded, "/filemodels/<string>/misc/attrlist", etag)) return std::move(*notModified);
 		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
 		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
@@ -1217,7 +1249,7 @@ namespace Odb::App::Server
 		}		
 
 		auto& miscAttrListFile = pFileArchive->GetMiscAttrListFile();
-		return crow::response(JsonCrowReturnable(miscAttrListFile));
+		return withCacheHeaders(crow::response(JsonCrowReturnable(miscAttrListFile)), etag);
 	}
 
 	crow::response FileModelController::matrix_matrix_route_handler(const std::string& designName, const crow::request& req)
@@ -1228,6 +1260,8 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "design name not specified");
 		}
 
+		std::string etag;
+		if (auto notModified = checkConditionalGet(req, designNameDecoded, "/filemodels/<string>/matrix/matrix", etag)) return std::move(*notModified);
 		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
 		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
@@ -1235,7 +1269,7 @@ namespace Odb::App::Server
 		}
 
 		auto& matrixFile = pFileArchive->GetMatrixFile();
-		return crow::response(JsonCrowReturnable(matrixFile));
+		return withCacheHeaders(crow::response(JsonCrowReturnable(matrixFile)), etag);
 	}
 
 	crow::response FileModelController::misc_info_route_handler(const std::string& designName, const crow::request& req)
@@ -1246,6 +1280,8 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "design name not specified");
 		}
 
+		std::string etag;
+		if (auto notModified = checkConditionalGet(req, designNameDecoded, "/filemodels/<string>/misc/info", etag)) return std::move(*notModified);
 		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
 		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
@@ -1253,7 +1289,7 @@ namespace Odb::App::Server
 		}
 
 		auto& miscInfoFile = pFileArchive->GetMiscInfoFile();
-		return crow::response(JsonCrowReturnable(miscInfoFile));
+		return withCacheHeaders(crow::response(JsonCrowReturnable(miscInfoFile)), etag);
 	}
 
 	crow::response FileModelController::fonts_standard_route_handler(const std::string& designName, const crow::request& req)
@@ -1264,6 +1300,8 @@ namespace Odb::App::Server
 			return crow::response(crow::status::BAD_REQUEST, "design name not specified");
 		}
 
+		std::string etag;
+		if (auto notModified = checkConditionalGet(req, designNameDecoded, "/filemodels/<string>/fonts/standard", etag)) return std::move(*notModified);
 		std::shared_ptr<Odb::Lib::FileModel::Design::FileArchive> pFileArchive;
 		if (auto errorResponse = TryGetFileArchive(designNameDecoded, pFileArchive))
 		{
@@ -1271,6 +1309,6 @@ namespace Odb::App::Server
 		}
 
 		auto& standardFontsFile = pFileArchive->GetStandardFontsFile();
-		return crow::response(JsonCrowReturnable(standardFontsFile));
+		return withCacheHeaders(crow::response(JsonCrowReturnable(standardFontsFile)), etag);
 	}
 }
