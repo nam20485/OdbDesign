@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| Status | **RECOMMENDATIONS DRAFT** — two decisions still open (see [Open decisions](#open-decisions)): SI2 branch set, SI5 IdP choice. |
+| Status | **DECIDED 2026-09-10** — decisions resolved by per-item remarks (NOTE blocks) in this doc; execution tracked in [server-issues-implementation-plan.md](server-issues-implementation-plan.md). One upstream decision remains open: REST TLS option A–E (gates SI4 only). |
 | Date | 2026-09-09 |
 | Scope | OdbDesignServer (Crow REST + gRPC), CI / GitHub Pages publishing, branch topology |
 | Related | [https-tls-options.md](https-tls-options.md) (REST TLS decision, §8 gRPC TLS) · [gh-pages-coverage-integration.md](../gh-pages-coverage-integration.md) · [html report coverage pages.md](../html%20report%20coverage%20pages.md) · [opt/phase2-grpc-optimizations.md](opt/phase2-grpc-optimizations.md) |
@@ -90,7 +90,9 @@ Whatever hosts the page, "maximally annotated" means investing in `swagger/odbde
 **Option 1 now, Option 3 as the public home; keep Option 2 in the back pocket.**
 Option 1 is pure deployment config on infrastructure that already routes `/swagger` — the lowest-risk way to get `/redoc` tomorrow, and the annotation investment lands in the same YAML either way. Option 3 pairs naturally with the SI2 Pages work (one publisher workflow assembling Jekyll + coverage + API docs). Option 2's "spec matches the running binary" property becomes valuable once auth (SI5) and new endpoints (SI7) start changing the API faster; do it as part of SI5 rather than standalone.
 
-**Dependencies/effort:** Option 1 ≈ a day (sidecar repo + ingress route + spec polish is the long pole — the annotation pass is the bulk of the work). No blockers.
+**Dependencies/effort:** Option 1 ≈ a day (sidecar repo + ingress route + spec polish is the long pole — the annotation pass is the bulk of the work). No blockers.  
+  
+**NOTE:** Option1 is good for now. Well the agent who hand-rolled the current spec off of source code inspection did a great job- its definitely the most well annoatetd/comprehensive generated swagger UI page that ive ever seen for an API. But what would you recommend ideally? Are there tools that can dynamically generate it from source code or live endpoints? The issue ahs been that the server is my manual impementaiont of REST using the crow HTTP server + json (gernated from the protobugs of OdnDesign lib's data model) so im not aware of a tool that can gnerate off of such an adhoc one-off server codebase. And then if you go the interrgoiate liove endpointsm then you cant get the level opf detail that the agent generated. I mean ive used kiota before, but i dont know how well it could do with thticodebase?
 
 ---
 
@@ -132,7 +134,9 @@ Same mechanism as B, bigger set.
 
 **Open decision (flagged):** the branch set — `dev+release` (recommended) vs all four vs the literal "not main" reading (`dev, staging, release`). Mechanism is identical; only the array changes.
 
-**Dependencies/effort:** 1–2 days of workflow work; no C++ changes. Requires `actions: read` (artifact download) alongside existing Pages permissions, and the retention bump.
+**Dependencies/effort:** 1–2 days of workflow work; no C++ changes. Requires `actions: read` (artifact download) alongside existing Pages permissions, and the retention bump.  
+  
+Option B is good.
 
 ---
 
@@ -155,6 +159,8 @@ Flow per `AGENTS.md`: `nam20485 → development → staging → main → release
 
 **Option 3 — rename `main` → `production`.**
 - ❌ `production` already exists as a defunct branch, so the rename collides; deleting `production` first adds risk for a second time. Buys nothing over Option 1 or 2. **Rejected.**
+  
+  
 
 ### Recommendation
 
@@ -162,6 +168,8 @@ Flow per `AGENTS.md`: `nam20485 → development → staging → main → release
 The task's own constraint ("don't change unless risk is totally nontrivial") plus the analysis above: the rename is impossible-without-cleanup, the drop is a coordinated multi-system change whose only payoff is one fewer `gh pr merge`. If branch count ever actually hurts, Option 2 is the correct variant *now* (post-re-baseline equivalence makes the diff trivially verifiable) — file it as a deliberate future cleanup, not an urgent one. `production` stays defunct and ignored, per `AGENTS.md`.
 
 **Dependencies/effort:** none (decision only).
+
+**NOTE:** OK fine option 1 keep main. it just bothers my sense of OCD. Which admittedly is not a good reason to reconfigure production application deployments.
 
 ---
 
@@ -242,7 +250,12 @@ It is the only option that satisfies SI5a and SI5b (identity, per-resource decis
 
 **Dependencies/effort:** stopgaps ~1 day; Keycloak deployment + realm ~2–3 days; middleware/interceptor ~2–4 days. Interacts with SI4 (tokens over TLS) and SI1 (spec security schemes).
 
----
+**NOTE:** Wow. Thats alot. I have given it some serious thought, and at this point I have only one question...................  
+  
+  
+What is "yak-shaving?"
+
+Option 1 is good.
 
 ## SI5b — per-user, per-resource authorization + device flow (gRPC and REST)
 
@@ -276,6 +289,9 @@ Each design gets an ownership record — start as a JSON sidecar next to the arc
 The ownership store is intentionally boring (JSON sidecar first), the enforcement points piggyback on SI5a's middleware/interceptor so there is exactly one place per channel to get it right, and the migration rule (`shared=all`) keeps today's behavior intact at rollout. REST and gRPC get identical decisions from the same claim set, satisfying the "both channel type and data resources" requirement by construction.
 
 **Dependencies/effort:** ~3–5 days after SI5a lands (store + choke points + migration + tests). The upload path also gains its missing `sanitizeFilename` implementation while it's being touched (`FileUploadController.cpp` TODO) — a pre-existing security gap in the same code.
+
+Option 1 is good.
+
 
 ---
 
@@ -330,6 +346,8 @@ The ordering follows cost/benefit: response caching + ETags attack the only cost
 
 **Dependencies/effort:** (1) ~3–5 days incl. invalidation tests; (2) ~1 day; (3) counted in SI7; (4) ~1–2 days with the PVC fallback; (5)/(6) sized on demand.
 
+1 + 2 sounsd good.
+
 ---
 
 ## SI7 — `RequestLoadDesign(Async)`: kick a load, return immediately
@@ -369,6 +387,9 @@ This is the item where SI6 and SI7 genuinely merge: single-flight is the concurr
 
 **Dependencies/effort:** ~4–6 days including tests and the eviction coupling. Touches `DesignCache`, `service.proto` (+ codegen), `OdbDesignServiceImpl`, `FileUploadController`, and the swagger spec (SI1).
 
+Option 1 is good.
+
+
 ---
 
 ## SI8 — optional push channel (SSE? WebSockets?) with mandatory fallback
@@ -402,6 +423,9 @@ Extend the existing streaming machinery with e.g. a `SubscribeDesignEvents` stre
 The fallback requirement decides the architecture more than the transport choice: whatever is built must be a pure optimization layer over the existing polling REST API, never a dependency — that invariant should be written into the client contract (and the SI1 spec) explicitly. SI7's load events are the first payload this channel should carry, which sequences SI8 after (or with) SI7.
 
 **Dependencies/effort:** ~3–5 days (route + event schema + reconnect semantics + proxy config for both deployment shapes).
+
+Option 1 is good.
+
 
 ---
 
@@ -441,6 +465,8 @@ One delta the phase-2 spec must absorb when 2.2 is implemented: `config.json` ha
 
 **Dependencies/effort:** 2.1 ≈ 1–2 h; 2.2 ≈ 1–2 h (+ spec delta); 1.3 ≈ 4–8 h, scheduled with SI6.1. All are C++/proto changes → feature branch → `nam20485` per the merge flow, protobuf regeneration wipes build dir (see workspace notes on major-bump gencode).
 
+Sopunds good- take your recommendation
+
 ---
 
 ## Cross-cutting sequencing
@@ -463,7 +489,9 @@ Two coupling rules worth stating explicitly:
 
 | # | Decision | Status |
 |---|---|---|
-| 1 | SI2 branch set for published coverage: `development+release` (recommended) vs all four vs "not main" literal three | **Open** — task text self-contradictory ("…main, release (not main)") |
-| 2 | SI5 IdP: Keycloak-on-k3s (recommended) vs server-issued tokens vs managed IdP | **Open** — recommendation contingent on accepting one new stateful service |
-| 3 | REST TLS option A–E (prerequisite for SI4's shared-cert plan) | **Open** — tracked in [https-tls-options.md](https-tls-options.md) §10 |
-| 4 | SI3 branch topology: keep `main` (recommended) | Effectively decided unless branch-count pain materializes |
+| 1 | SI2 branch set for published coverage: `development+release` (recommended) vs all four vs "not main" literal three | **Decided 2026-09-10 — Option B, `{development, release}`** |
+| 2 | SI5 IdP: Keycloak-on-k3s (recommended) vs server-issued tokens vs managed IdP | **Decided 2026-09-10 — Keycloak on k3s (Option 1)** |
+| 3 | REST TLS option A–E (prerequisite for SI4's shared-cert plan) | **Open** — the only remaining upstream decision; tracked in [https-tls-options.md](https-tls-options.md) §10; gates SI4 (milestone M3.1) only |
+| 4 | SI3 branch topology: keep `main` (recommended) | **Decided 2026-09-10 — keep `main`, no changes** |
+
+i believe all decisions have been resolved by my per-item remarks. |
