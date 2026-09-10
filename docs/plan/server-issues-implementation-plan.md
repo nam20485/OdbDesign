@@ -2,9 +2,9 @@
 
 | | |
 |---|---|
-| Status | **ACTIVE** — all decisions recorded 2026-09-10 via per-item remarks on the options doc (PR #581); execution begins at Phase 0. |
+| Status | **ACTIVE — executing.** All decisions recorded (incl. REST TLS cert source = **Option C**, 2026-09-10 follow-up). First tranche on `nam/server-issues-impl`: Phase 0 + M3.1. |
 | Source | [server-issues.md](server-issues.md) (options + pros/cons + decisions) — this doc turns those decisions into sequenced, file-level work. |
-| Related | [https-tls-options.md](https-tls-options.md) (REST TLS **cert source** — still OPEN, feeds M3.1) · [opt/phase2-grpc-optimizations.md](opt/phase2-grpc-optimizations.md) (SI19 implementation spec) · [gh-pages-coverage-integration.md](../gh-pages-coverage-integration.md) |
+| Related | [https-tls-options.md](https-tls-options.md) (REST TLS — **DECIDED: Option C**, 2026-09-10) · [opt/phase2-grpc-optimizations.md](opt/phase2-grpc-optimizations.md) (SI19 implementation spec) · [gh-pages-coverage-integration.md](../gh-pages-coverage-integration.md) |
 | Method | Every milestone = one `nam/<feature>` branch → PR → `nam20485`, merged with **merge commits only** (AGENTS.md, directive 2026-09-10). C++ milestones ride the multi-platform PR builds; docs/workflow milestones ride the static checks. |
 
 ---
@@ -16,7 +16,7 @@
 | SI1 | Option 1 now — `redoc.html` in the swaggerui sidecar; annotation pass in the single swagger YAML. Spec-provenance question answered in [§SI1-A](#si1-a-spec-provenance-curation--generation) below. | M0.3, M0.4 |
 | SI2 | Option B, branch set **`{development, release}`**. | M0.5 |
 | SI3 | Keep `main`; no changes. | — (none) |
-| SI4 | **Decided 2026-09-10: Option 1** — Traefik `IngressRouteTCP` termination, app plaintext in-cluster. Cert *source* = the REST TLS A–E pick (the one still-open upstream decision). | M3.1 |
+| SI4 | **Decided 2026-09-10: Option 1** — Traefik `IngressRouteTCP` termination, app plaintext in-cluster. Cert source **decided: Option C** (cert-manager private CA, IP SANs) — M3.1 unblocked. | M3.1 |
 | SI5a | Keycloak on k3s + JWT bearers (Crow middleware + gRPC interceptor); stopgap hardening first. | M2.1–M2.3, M2.5 |
 | SI5b | Option 1 — ownership sidecar metadata enforced at two choke points; device flow via Keycloak; `sanitizeFilename` fix included. | M2.4 |
 | SI6 | Items **1 (serialized-response cache) + 2 (ETag/Cache-Control)**; item 3 via SI7; item 4 opportunistic; 5/6 demand-driven. | M1.3, M1.4, M1.5 |
@@ -40,7 +40,7 @@ Phase 2 (identity track, strictly ordered):
                        ──► M2.4 ownership + device flow ──► M2.5 Basic removal
 
 Phase 3 (edge & events):
-  M3.1 gRPC TLS (mechanism decided; cert source A–E pending)     M3.2 WS /events (after M1.2)
+  M3.1 gRPC TLS (Option C — unblocked, first tranche)     M3.2 WS /events (after M1.2)
 ```
 
 ---
@@ -232,9 +232,18 @@ The recorded question: *can the spec be dynamically generated from source or liv
 
 ## Phase 3 — edge & events
 
-### M3.1 — SI4: gRPC TLS via Traefik `IngressRouteTCP`
+### M3.1 — SI4: gRPC TLS via Traefik `IngressRouteTCP` + Option C cert chain
 
-- **Decided 2026-09-10:** Option 1 — Traefik `IngressRouteTCP` termination, app plaintext in-cluster. **Blocked only on:** the cert-source pick (REST TLS A–E) in [https-tls-options.md](https-tls-options.md) §10 — the last open decision anywhere in this plan. When it lands, gRPC uses the same cert Secret/source.
+- **Decided:** Option 1 mechanism (2026-09-10) + **Option C cert source** (cert-manager + self-managed CA, IP SANs — 2026-09-10 follow-up). Unblocked.
+- **Files (this repo):**
+  - `scripts/make-tls-ca.sh` (new): one-time CA generation (`openssl req -x509`, 10-yr EC root), usage documented.
+  - `deploy/kube/cert-manager/` (new): vendored, version-pinned cert-manager static manifest + README (CA distribution/import instructions per platform).
+  - `deploy/kube/issuer-ca.yaml` (new; retires the stale staging `issuer.yaml`): `Issuer` kind `CA` → secret `odbdesign-root-ca`.
+  - `deploy/kube/certificate-odbs-server.yaml` (new): `Certificate` with `ipAddresses: [192.168.122.200, 100.118.225.119]` + `dnsNames: [odbdesign.local, debian13vm…]` → secret `odbdesign-server-tls`.
+  - `deploy/kube/local-ingress.yaml`: add `tls:` referencing the secret (host-less IP routing preserved — clients verify against SANs, not SNI).
+  - `deploy/kube/OdbDesignServer/service-grpc.yaml`: `type: LoadBalancer` → `ClusterIP`.
+  - `deploy/kube/odbdesign-grpc-ingressroute-tcp.yaml` (new): `IngressRouteTCP` on :50051 with `tls:` → same secret, h2c backend.
+  - `scripts/deploy.ps1`: optional `-EnableTls` flag applying the TLS pieces (default remains plaintext — `https-tls-options.md` §3.6); `scripts/validate-grpc-exposure.ps1` updated for TLS mode (grpcurl drops `-plaintext`).
 - **Files (this repo):** `deploy/kube/OdbDesignServer/service-grpc.yaml` → convert from `type: LoadBalancer` to ClusterIP backend of a new `IngressRouteTCP` on :50051 with `tls:` (h2c to the backend); `scripts/deploy.ps1` applies it; `scripts/validate-grpc-exposure.ps1` updated (grpcurl drops `-plaintext`).
 - **Notes:** app stays plaintext in-cluster; revisit passthrough/app-native TLS only if mTLS for machine clients is ever wanted (SI5b follow-up, not now).
 - **Effort:** ~1 day once unblocked.

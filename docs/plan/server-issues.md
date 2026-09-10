@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| Status | **DECIDED 2026-09-10** — all SI decisions resolved by per-item remarks (NOTE blocks) in this doc, incl. SI4 = Option 1; execution tracked in [server-issues-implementation-plan.md](server-issues-implementation-plan.md). Sole remaining pick: the REST TLS **cert source** A–E (feeds SI4/M3.1) — [https-tls-options.md](https-tls-options.md) §10. |
+| Status | **DECIDED 2026-09-10** — all decisions resolved (per-item NOTE remarks + follow-ups): SI4 = Option 1, REST TLS cert source = **Option C** (cert-manager private CA). Execution tracked in [server-issues-implementation-plan.md](server-issues-implementation-plan.md); first tranche on `nam/server-issues-impl`. |
 | Date | 2026-09-09 |
 | Scope | OdbDesignServer (Crow REST + gRPC), CI / GitHub Pages publishing, branch topology |
 | Related | [https-tls-options.md](https-tls-options.md) (REST TLS decision, §8 gRPC TLS) · [gh-pages-coverage-integration.md](../gh-pages-coverage-integration.md) · [html report coverage pages.md](../html%20report%20coverage%20pages.md) · [opt/phase2-grpc-optimizations.md](opt/phase2-grpc-optimizations.md) |
@@ -207,6 +207,8 @@ Traefik routes raw TCP; the gRPC server loads the cert/key from mounted secrets.
 **Option 1 — Traefik `IngressRouteTCP` termination sharing the REST cert Secret**, decided and implemented *together with* the REST TLS decision (don't pick a gRPC cert source now that might diverge from it). Keep the app plaintext-in-cluster; revisit passthrough/app-native TLS only if/when SI5b wants mTLS for machine clients. Note for implementation: `grpcurl` then drops `-plaintext`; reflection already routes through the proxy in the compose nginx config, which is the reference for the Traefik router shape.
 
 **Dependencies/effort:** blocked on the REST TLS decision ([https-tls-options.md](https-tls-options.md) open questions §10); ~1 day once decided.  
+
+> **Cert source decided 2026-09-10: Option C** — cert-manager + self-managed CA with IP SANs (`192.168.122.200`, `100.118.225.119`), per [https-tls-options.md](https-tls-options.md) §5 Option C. The same Secret feeds the REST ingress and the gRPC `IngressRouteTCP` (milestone M3.1).
   
 option 1 is good.
 
@@ -493,7 +495,7 @@ Two coupling rules worth stating explicitly:
 |---|---|---|
 | 1 | SI2 branch set for published coverage: `development+release` (recommended) vs all four vs "not main" literal three | **Decided 2026-09-10 — Option B, `{development, release}`** |
 | 2 | SI5 IdP: Keycloak-on-k3s (recommended) vs server-issued tokens vs managed IdP | **Decided 2026-09-10 — Keycloak on k3s (Option 1)** |
-| 3 | REST TLS cert source A–E (feeds SI4's shared cert Secret) | **SI4 mechanism decided 2026-09-10 (Option 1: Traefik `IngressRouteTCP` termination)**; the cert *source* A–E is the last open pick — [https-tls-options.md](https-tls-options.md) §10; gates milestone M3.1 only |
+| 3 | REST TLS cert source A–E (feeds SI4's shared cert Secret) | **Decided 2026-09-10 — Option C** (cert-manager + private CA, IP SANs for the k3s VM); [https-tls-options.md](https-tls-options.md) status header updated |
 | 4 | SI3 branch topology: keep `main` (recommended) | **Decided 2026-09-10 — keep `main`, no changes** |
 
 i believe all decisions have been resolved by my per-item remarks. |
