@@ -12,7 +12,7 @@ Sounds great! Now how do I build and run it?
 
 [Build](#building-from-source)
 
-Documentation for the currently-released version of the source code is available [here](https://nam20485.github.io/OdbDesign/api).
+Documentation for the currently-released version of the source code is available [here](https://source.odbdesignserver.com/api).
 
 ## Need Help?
 
@@ -139,7 +139,7 @@ The diagram describes the current state of parser implementation and data availa
 
 The OdbDesign parser is built as a C++ shared library on all three platforms. An executable running the server links to the library and provides the REST API for accessing the data the library parses. The REST API server can be run by invoking the executable directly or by running the Docker image. The server executable and library can be run on Windows, Linux, or MacOS and the Docker image can be run on any platform that supports Docker.
 
-Documentation for the currently-released version of the source code is available [here](https://nam20485.github.io/OdbDesign/api).
+Documentation for the currently-released version of the source code is available [here](https://source.odbdesignserver.com/api).
 
 [Insert Diagram Image]
 
@@ -180,7 +180,7 @@ If successful, the REST API server will be running and listening on port 8888. Y
 
 ## Building from Source
 
-Documentation for the currently-released version of the source code is available [here](https://nam20485.github.io/OdbDesign/api).
+Documentation for the currently-released version of the source code is available [here](https://source.odbdesignserver.com/api).
 
 ### Automated Setup Scripts
 
@@ -397,7 +397,7 @@ If you are interested in using the parser in your application or code, or have a
 * [Email me (maintainer)](mailto:nmiller217@gmail.com?subject=OdbDesign)
 * [GitHub](https://github.com/nam20485/odbdesign)
 * [LinkedIn](https://www.linkedin.com/in/namiller/)
-* [OdbDesign Website](https://nam20485.github.io/OdbDesign/)
+* [OdbDesign Website](https://source.odbdesignserver.com/)
 * Gitter chat room: [odbdesign:gitter.im](https://app.gitter.im/#/room/#odbdesign:gitter.im)
 * Use the button below to schedule a video call on Google.
 

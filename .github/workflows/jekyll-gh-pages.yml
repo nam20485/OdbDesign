@@ -2,18 +2,26 @@
 name: Deploy Jekyll with GitHub Pages dependencies preinstalled
 
 on:
-  # Runs on pushes targeting the default branch
+  # Runs on pushes targeting the release branch
   push:
     branches: ["release"]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+  # Weekly refresh (Monday 06:00 UTC) so the per-branch coverage pages are
+  # re-published even when no release push happens for a while.
+  schedule:
+    - cron: "0 6 * * 1"
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages.
+# actions: read additionally lets this workflow list and download artifacts
+# from other workflow runs (the per-branch coverage reports).
 permissions:
   contents: read
   pages: write
   id-token: write
+  actions: read
 
 # Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
 # However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
@@ -33,25 +41,122 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          # Scheduled runs always execute the default branch's workflow file
+          # and would otherwise check out that branch (development); keep the
+          # published site sourced from `release` exactly like push deploys.
+          # Push and workflow_dispatch behavior is unchanged.
+          ref: ${{ github.event_name == 'schedule' && 'release' || github.ref }}
 
       - name: Install Doxygen
         run: sudo apt install -y doxygen
 
       - name: Generate Doxygen docs
-        run: doxygen ./OdbDesignLib/doxygen.conf         
-        
+        run: doxygen ./OdbDesignLib/doxygen.conf
+
       - name: Setup Pages
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
-        
+
       - name: Build with Jekyll
         uses: actions/jekyll-build-pages@44a6e6beabd48582f863aeeb6cb2151cc1716697 # v1.0.13
         with:
           source: ./docs
           destination: ./_site
 
-      # - name: Copy Doxygen docs
-      #   run: cp -r ./OdbDesignLib/doxygen/html ./_site/api
-          
+      # doxygen.conf writes its HTML to ./docs/api (OUTPUT_DIRECTORY = docs,
+      # HTML_OUTPUT = api, both relative to the workspace root where doxygen
+      # runs), so the Jekyll build (source: ./docs) already carries it into
+      # ./_site/api. Copy the contents explicitly to keep /api published
+      # regardless of Jekyll's static-file handling; the "./dir/." form is
+      # idempotent if the directory already exists. (The previously commented
+      # ./OdbDesignLib/doxygen/html source never matched this config.)
+      - name: Copy Doxygen docs
+        run: |
+          mkdir -p ./_site/api
+          cp -r ./docs/api/. ./_site/api/
+
+      # Publish per-branch HTML coverage reports under /coverage/<branch>/ by
+      # downloading the linux-coverage-report artifact from each branch's most
+      # recent successful push-triggered code-coverage.yml run. This workflow
+      # is the ONLY one allowed to publish the Pages site (one Pages deployment
+      # per repo; a second publisher would wipe the site), which is why the
+      # coverage tree is folded into this artifact here. A missing/expired
+      # artifact only yields a placeholder page; it must never fail the deploy.
+      - name: Add per-branch coverage reports
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          coverage_root="./_site/coverage"
+          tmp_root="$(mktemp -d)"
+          rows_file="$tmp_root/coverage-rows.html"
+          : > "$rows_file"
+
+          for branch in development release; do
+            branch_dir="$coverage_root/$branch"
+            run_id=""
+            head_sha=""
+            created=""
+
+            # Latest successful push-triggered coverage run for this branch.
+            # gh's built-in --jq prints "<id> <sha> <createdAt>", empty when no
+            # such run exists. Any failure below degrades to a placeholder.
+            if run_info="$(gh run list --workflow=code-coverage.yml --branch="$branch" --event=push --status=success --limit=1 --json databaseId,headSha,createdAt --jq '.[0] | "\(.databaseId) \(.headSha) \(.createdAt)"' 2>/dev/null)" && [ -n "$run_info" ]; then
+              read -r run_id head_sha created <<<"$run_info"
+              echo "branch '$branch': found successful code-coverage run $run_id (head $head_sha, $created)"
+              if gh run download "$run_id" --name linux-coverage-report --dir "$tmp_root/$branch" \
+                 && [ -d "$tmp_root/$branch/html" ] \
+                 && mkdir -p "$branch_dir" \
+                 && cp -r "$tmp_root/$branch/html/." "$branch_dir/"; then
+                short_sha="$(printf '%s' "$head_sha" | cut -c1-7)"
+                printf '<tr><td><a href="./%s/">%s</a></td><td><code>%s</code></td><td>%s</td></tr>\n' "$branch" "$branch" "$short_sha" "$created" >> "$rows_file"
+                continue
+              fi
+              echo "warning: could not fetch linux-coverage-report artifact for branch '$branch'; publishing placeholder page" >&2
+            else
+              echo "no successful code-coverage run found for branch '$branch'; publishing placeholder page"
+            fi
+
+            mkdir -p "$branch_dir"
+            cat > "$branch_dir/index.html" <<HTML
+          <!DOCTYPE html>
+          <html lang="en">
+          <head><meta charset="utf-8"><title>OdbDesign test coverage - $branch</title></head>
+          <body>
+          <h1>OdbDesign test coverage - $branch</h1>
+          <p>no coverage report available (last checked $(date -u '+%Y-%m-%dT%H:%M:%SZ'))</p>
+          <p><a href="../">back to coverage index</a></p>
+          </body>
+          </html>
+          HTML
+            printf '<tr><td>%s</td><td colspan="2">no coverage report available</td></tr>\n' "$branch" >> "$rows_file"
+          done
+
+          checked="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+          {
+            cat <<HTML
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <title>OdbDesign test coverage</title>
+          </head>
+          <body>
+          <h1>OdbDesign test coverage</h1>
+          <p>Per-branch HTML coverage reports, produced by the Code Coverage workflow (<a href="https://github.com/nam20485/OdbDesign/actions/workflows/code-coverage.yml">code-coverage.yml</a>).</p>
+          <table border="1">
+            <tr><th>Branch</th><th>Commit</th><th>Coverage run</th></tr>
+          HTML
+            cat "$rows_file"
+            cat <<HTML
+          </table>
+          <p>Reports last checked: $checked (UTC)</p>
+          </body>
+          </html>
+          HTML
+          } > "$coverage_root/index.html"
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
 
