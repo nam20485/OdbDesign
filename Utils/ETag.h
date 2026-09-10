@@ -77,7 +77,9 @@ namespace Utils
 			return {};
 		}
 
-		static constexpr const char* DESIGN_ARCHIVE_EXTENSIONS[] = { ".tar.gz", ".tgz", ".zip", ".tar", ".gzip", ".gz" };
+		// string_view (not const char* + strlen): sizes are compile-time, no
+		// NUL-termination assumptions on string inputs (Codacy CWE-126).
+		static constexpr std::string_view DESIGN_ARCHIVE_EXTENSIONS[] = { ".tar.gz", ".tgz", ".zip", ".tar", ".gzip", ".gz" };
 
 		std::error_code ec;
 		std::filesystem::directory_iterator dirIt(designsDir, std::filesystem::directory_options::skip_permission_denied, ec);
@@ -95,22 +97,21 @@ namespace Utils
 			}
 
 			const auto filename = entry.path().filename().string();
-			for (const auto* extension : DESIGN_ARCHIVE_EXTENSIONS)
+			for (const auto extension : DESIGN_ARCHIVE_EXTENSIONS)
 			{
-				const auto extLen = std::strlen(extension);
-				if (filename.size() <= extLen)
+				if (filename.size() <= extension.size())
 				{
 					continue;
 				}
 
-				const auto stem = filename.substr(0, filename.size() - extLen);
+				const auto stem = filename.substr(0, filename.size() - extension.size());
 				if (stem != designName)
 				{
 					continue;
 				}
 
 				// stem matches; confirm the tail is the extension, case-insensitively
-				const auto isExtension = std::equal(extension, extension + extLen,
+				const auto isExtension = std::equal(extension.begin(), extension.end(),
 					filename.begin() + static_cast<std::ptrdiff_t>(stem.size()),
 					[](char a, char b) { return std::tolower(static_cast<unsigned char>(a)) == std::tolower(static_cast<unsigned char>(b)); });
 				if (isExtension)
