@@ -11,6 +11,7 @@
 #include <memory>
 #include <mutex>
 #include <shared_mutex>
+#include <stdexcept>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -21,9 +22,12 @@ namespace Odb::Lib::App
 	class ODBDESIGN_EXPORT DesignCache
 	{
 	public:
-		// Lifecycle of a single design's load. Failed covers both parse failure and
-		// design-not-found; neither poisons the cache — the in-flight entry is erased
-		// so a later request starts a fresh load.
+		// Lifecycle of a single design's load. Failed covers parse failure only
+		// (a corrupt/unparseable archive); a design that is simply not found is a
+		// miss, not a failure, and records no state entry (its name stays
+		// Unloaded) so the state map cannot grow without bound on untrusted
+		// names. Neither poisons the cache — the in-flight entry is erased so a
+		// later request starts a fresh load.
 		enum class LoadState
 		{
 			Unloaded,
@@ -66,6 +70,17 @@ namespace Odb::Lib::App
 		// ---- load state machine + observers (consumed by M1.2 RequestLoadDesign, M3.2 events) ----
 
 		LoadState GetLoadState(const std::string& designName) const;
+
+		// Register a load-state observer. Observers are invoked synchronously on
+		// the thread performing the transition (loader or evictor) with no cache
+		// locks held; observers MUST be cheap and non-blocking.
+		//
+		// Re-entrancy contract: an observer MUST NOT request the design currently
+		// being loaded on its own thread (GetDesign / GetFileArchive / anything
+		// that reaches GetOrLoadSingleFlight for that name). The re-entrant call
+		// would join the loader's own pending in-flight future and deadlock; such
+		// re-entry is detected and rejected with std::runtime_error instead of
+		// waiting. Requesting other designs is safe.
 		void AddLoadObserver(LoadEventCallback callback);
 
 		// Byte budget for LRU eviction; 0 disables eviction.
@@ -105,8 +120,28 @@ namespace Odb::Lib::App
 		LoadStateMap m_loadStatesByName;
 		LoadObserverList m_loadObservers;
 
-		// Protects the in-flight maps, m_loadStatesByName, and m_loadObservers
+		// Cache generation, guarded by m_loadStateMutex: Clear() increments it. A
+		// load captures it at in-flight registration; a mismatch at completion
+		// means Clear() ran mid-parse and the load must abandon its bookkeeping
+		// (no cache insert, no LRU charge, no state transition) while still
+		// delivering the parsed value to its direct callers.
+		std::uint64_t m_epoch = 0;
+
+		// Protects the in-flight maps, m_loadStatesByName, m_loadObservers, and m_epoch
 		mutable std::mutex m_loadStateMutex;
+
+		// Thread-local re-entry guard: name of the design whose load the current
+		// thread is running, set only while the Loading transition (and its
+		// synchronous observers) is in progress on the loader thread. The joiner
+		// path of GetOrLoadSingleFlight checks it and throws instead of joining
+		// the thread's own pending future. Held in a function-local thread_local
+		// because a static thread_local data member of an ODBDESIGN_EXPORT class
+		// would give the variable dll interface, which MSVC rejects (C2492).
+		static const std::string*& loadingDesignName()
+		{
+			thread_local const std::string* s_loadingDesignName = nullptr;
+			return s_loadingDesignName;
+		}
 
 		// ---- byte-budget LRU bookkeeping ----
 
@@ -169,6 +204,7 @@ namespace Odb::Lib::App
 			std::promise<std::shared_ptr<T>> promise;
 			std::shared_future<std::shared_ptr<T>> future = promise.get_future().share();
 			bool isLoader = false;
+			std::uint64_t epochAtStart = 0;
 			{
 				std::lock_guard<std::mutex> lock(m_loadStateMutex);
 				auto findIt = inFlightMap.find(designName);
@@ -180,11 +216,26 @@ namespace Odb::Lib::App
 				{
 					inFlightMap.emplace(designName, future);
 					isLoader = true;
+					// Capture the cache generation at registration: a Clear() during
+					// the parse bumps m_epoch and this load abandons its bookkeeping
+					// on completion (see WasClearedSince below).
+					epochAtStart = m_epoch;
 				}
 			}
 
 			if (!isLoader)
 			{
+				// Observer re-entry guard: if this thread is itself the loader of
+				// this design (an observer invoked during the Loading transition),
+				// waiting here would join our own pending future and deadlock.
+				// Reject the re-entry instead of blocking forever.
+				const std::string* pLoadingName = loadingDesignName();
+				if (pLoadingName != nullptr && *pLoadingName == designName)
+				{
+					throw std::runtime_error(
+						"DesignCache observer re-entry: load observers must not call back into the DesignCache for the design being loaded");
+				}
+
 				// Another thread is parsing this design; wait on its result. A failed
 				// parse rethrows here in the waiting thread.
 				auto pValue = future.get();
@@ -194,6 +245,25 @@ namespace Odb::Lib::App
 
 			if (updateState)
 			{
+				// Announce Loading with the re-entry marker set: observers run
+				// synchronously on this (loader) thread, and one that re-enters the
+				// cache for this design would otherwise join our own pending future
+				// and deadlock (the marker makes such a call throw; see the joiner
+				// path above).
+				struct LoadingMarker
+				{
+					explicit LoadingMarker(const std::string& name) :
+						m_previous(loadingDesignName())
+					{
+						loadingDesignName() = &name;
+					}
+					~LoadingMarker()
+					{
+						loadingDesignName() = m_previous;
+					}
+					const std::string* m_previous;
+				} loadingMarker(designName);
+
 				TransitionLoadState(designName, LoadState::Loading);
 			}
 
@@ -205,27 +275,52 @@ namespace Odb::Lib::App
 			catch (...)
 			{
 				// Fulfil the shared future first so joiners observe the failure, then
-				// drop the in-flight entry so a later request starts a fresh load.
+				// record Failed, then drop the in-flight entry. The transition runs
+				// while this thread still owns the in-flight entry: a caller arriving
+				// mid-transition joins the already-failed future instead of
+				// registering a fresh load whose Loading state our late Failed would
+				// overwrite (state claiming Failed while a fresh load is in flight).
 				promise.set_exception(std::current_exception());
-				eraseInFlight(inFlightMap, designName);
-				if (updateState)
+				if (updateState && !WasClearedSince(epochAtStart))
 				{
 					TransitionLoadState(designName, LoadState::Failed);
 				}
+				eraseInFlight(inFlightMap, designName);
 				throw;
 			}
 
 			if (pValue == nullptr)
 			{
-				// Design not found: nothing to cache. Record Failed (retryable) so
-				// state consumers see the last attempt did not produce a design.
+				// Design not found: nothing to cache. A missing design is not a
+				// parse failure — erase the state entry the Loading announcement
+				// recorded (name reverts to the implicit Unloaded) so
+				// m_loadStatesByName stays bounded by names that map to real
+				// archives instead of growing on every untrusted route parameter
+				// ever requested. Parse exceptions from corrupt archives still
+				// record Failed, bounded by the real design count. The erase runs
+				// before the in-flight entry is dropped, mirroring the failure
+				// path: a caller arriving mid-cleanup joins our already-fulfilled
+				// future instead of registering a fresh load whose Loading our
+				// late erase would clobber.
 				promise.set_value(nullptr);
-				eraseInFlight(inFlightMap, designName);
 				if (updateState)
 				{
-					TransitionLoadState(designName, LoadState::Failed);
+					EraseLoadState(designName);
 				}
+				eraseInFlight(inFlightMap, designName);
 				return nullptr;
+			}
+
+			if (WasClearedSince(epochAtStart))
+			{
+				// Clear() ran while we parsed: this generation of the cache is
+				// gone. Abandon the bookkeeping — no cache insert, no LRU charge,
+				// no state transition — so the just-wiped cache is not re-populated
+				// with a phantom entry, but still deliver the parsed value to our
+				// direct callers and drop the in-flight entry.
+				promise.set_value(pValue);
+				eraseInFlight(inFlightMap, designName);
+				return pValue;
 			}
 
 			// Insert into cache under exclusive lock (double-check another thread
@@ -246,13 +341,18 @@ namespace Odb::Lib::App
 			// Charge the byte budget and evict if over; this design is never its own victim
 			InsertLruAndEvict(designName);
 
-			// Publish to joiners only once the cache entry is visible
-			promise.set_value(pValue);
-			eraseInFlight(inFlightMap, designName);
+			// Record Loaded while the in-flight entry still exists: a caller
+			// arriving mid-transition joins our future instead of starting a fresh
+			// load whose Loading our Loaded would clobber, and joiners woken by
+			// set_value below then observe Loaded.
 			if (updateState)
 			{
 				TransitionLoadState(designName, LoadState::Loaded);
 			}
+
+			// Publish to joiners only once the cache entry and state are visible
+			promise.set_value(pValue);
+			eraseInFlight(inFlightMap, designName);
 			return pValue;
 		}
 
@@ -273,7 +373,19 @@ namespace Odb::Lib::App
 		std::uint64_t EstimateDesignBytes(const std::string& designName) const;
 
 		void TransitionLoadState(const std::string& designName, LoadState to);
+
+		// Removes a design's load-state entry entirely (its state becomes the
+		// implicit Unloaded) and notifies observers of the transition. Used when
+		// a load attempt ends without a result that should keep state (not-found):
+		// erasing — rather than overwriting with Unloaded — is what bounds
+		// m_loadStatesByName growth to names that map to real archives.
+		void EraseLoadState(const std::string& designName);
+
 		void NotifyLoadObservers(const std::string& designName, LoadState from, LoadState to, const LoadObserverList& observers);
+
+		// True once Clear() has run after the given epoch snapshot was taken
+		// (see m_epoch); a load in that situation abandons its bookkeeping.
+		bool WasClearedSince(std::uint64_t epoch) const;
 
 		constexpr inline static std::uint64_t DEFAULT_CACHE_MAX_BYTES = 4096ull * 1024ull * 1024ull;
 		// Rough per-design overhead added to the archive file size; serialized response

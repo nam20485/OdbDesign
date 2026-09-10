@@ -296,11 +296,17 @@ namespace Odb::Lib::App
             m_cachedBytes = 0;
         }
         {
-            // In-flight futures are left to their owning threads, which erase their
-            // own entries; a load completing after Clear() re-inserts, matching the
-            // pre-existing post-Clear insert behavior.
+            // Wipe the state map and bump the cache generation under the state
+            // lock. Loads that registered before this Clear() see the epoch change
+            // on completion and abandon their bookkeeping — no cache insert, no
+            // LRU charge, no stale state transition — instead of re-populating
+            // the just-wiped cache with a phantom entry. Their in-flight futures
+            // are left to their owning threads (which erase their own entries);
+            // parsed values are still delivered to the direct callers holding
+            // those futures.
             std::lock_guard<std::mutex> stateLock(m_loadStateMutex);
             m_loadStatesByName.clear();
+            ++m_epoch;
         }
     }
 
@@ -319,6 +325,13 @@ namespace Odb::Lib::App
     {
         std::lock_guard<std::mutex> stateLock(m_loadStateMutex);
         m_loadObservers.push_back(std::move(callback));
+    }
+
+    // Epoch snapshot comparison for Clear()-during-load detection; see m_epoch.
+    bool DesignCache::WasClearedSince(std::uint64_t epoch) const
+    {
+        std::lock_guard<std::mutex> stateLock(m_loadStateMutex);
+        return m_epoch != epoch;
     }
 
     void DesignCache::setCacheMaxBytes(std::uint64_t maxBytes)
@@ -468,7 +481,10 @@ namespace Odb::Lib::App
         {
             findIt->second.lastServed = std::chrono::steady_clock::now();
         }
-        // No entry: the name raced with eviction or was never charged; nothing to do.
+        // No entry: the name raced with eviction, was never charged, or belonged
+        // to a load abandoned across Clear(). Touch is a no-op for absent names —
+        // it never inserts — so a joiner of an abandoned load cannot phantom-charge
+        // the byte budget for an uncached name.
     }
 
     void DesignCache::InsertLruAndEvict(const std::string& designName)
@@ -612,6 +628,30 @@ namespace Odb::Lib::App
             observers = m_loadObservers;
         }
         NotifyLoadObservers(designName, from, to, observers);
+    }
+
+    // Removes the design's state entry and reports the revert to Unloaded. If no
+    // entry exists (nothing was recorded, or Clear() already wiped it) this is a
+    // no-op: the name is already at the implicit Unloaded, so no event is due.
+    void DesignCache::EraseLoadState(const std::string& designName)
+    {
+        LoadObserverList observers;
+        auto from = LoadState::Unloaded;
+        {
+            std::lock_guard<std::mutex> stateLock(m_loadStateMutex);
+            auto stateIt = m_loadStatesByName.find(designName);
+            if (stateIt == m_loadStatesByName.end())
+            {
+                return;
+            }
+            from = stateIt->second;
+            m_loadStatesByName.erase(stateIt);
+            observers = m_loadObservers;
+        }
+        if (from != LoadState::Unloaded)
+        {
+            NotifyLoadObservers(designName, from, LoadState::Unloaded, observers);
+        }
     }
 
     // Observers run with no locks held (they may re-enter the cache) and must be

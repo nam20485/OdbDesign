@@ -11,6 +11,7 @@
 #include <exception>
 #include <filesystem>
 #include <fstream>
+#include <future>
 #include <map>
 #include <memory>
 #include <mutex>
@@ -327,6 +328,95 @@ namespace Odb::Test
         EXPECT_EQ(pArchive.get(), cache.GetFileArchive("broken").get()) << "loaded archive must be cached";
     }
 
+    // ---- observer re-entry must not deadlock the loader thread ----
+
+    TEST_F(DesignCacheSingleFlightTest, ObserverReEntry_DuringLoading_ThrowsInsteadOfDeadlock)
+    {
+        const std::string designName = "designodb_rigidflex";
+
+        // The observer runs synchronously on the loader thread during the Loading
+        // transition. Re-entering the cache for the design being loaded must
+        // throw (detected re-entry), not join the loader's own pending in-flight
+        // future — which would block the loader thread on itself forever.
+        auto reEntryDetected = std::make_shared<std::atomic<bool>>(false);
+        auto reEntryMessage = std::make_shared<std::string>();
+
+        m_pDesignCache->AddLoadObserver(
+            [this, &designName, reEntryDetected, reEntryMessage](const std::string& name,
+                DesignCache::LoadState from, DesignCache::LoadState to)
+            {
+                (void)from;
+                if (to != DesignCache::LoadState::Loading || name != designName)
+                {
+                    return;
+                }
+                try
+                {
+                    (void)m_pDesignCache->GetFileArchive(name);
+                }
+                catch (const std::exception& e)
+                {
+                    reEntryDetected->store(true);
+                    *reEntryMessage = e.what();
+                }
+            });
+
+        // Run the load on a separate thread so the main thread can watchdog it:
+        // on a regression the loader joins its own future and hangs forever; the
+        // watchdog turns that hang into a hard failure instead of a stuck CI job.
+        std::shared_ptr<OdbFileArchive> pArchive;
+        std::thread loader([this, &designName, &pArchive]()
+        {
+            pArchive = m_pDesignCache->GetFileArchive(designName);
+        });
+
+        auto watchdog = std::async(std::launch::async, [&loader]() { loader.join(); });
+        if (watchdog.wait_for(std::chrono::seconds(60)) != std::future_status::ready)
+        {
+            ADD_FAILURE() << "loader thread deadlocked: observer re-entry joined its own "
+                             "in-flight future instead of throwing";
+            std::terminate();  // the loader is unjoinable; abort rather than hang CI
+        }
+
+        EXPECT_TRUE(reEntryDetected->load())
+            << "re-entrant GetFileArchive during the Loading transition must throw";
+        EXPECT_NE(reEntryMessage->find("observer re-entry"), std::string::npos)
+            << "expected the re-entry guard error, got: " << *reEntryMessage;
+
+        ASSERT_NE(pArchive, nullptr) << "the load itself must complete after the rejected re-entry";
+        EXPECT_EQ(m_recorder->loadStarts(designName), 1)
+            << "the rejected re-entry must not register a second load";
+        EXPECT_EQ(m_recorder->loadCompletions(designName), 1);
+    }
+
+    // ---- not-found designs are misses, not failures ----
+
+    TEST_F(DesignCacheSingleFlightTest, NotFoundDesign_StaysUnloaded_NoFailedEntry)
+    {
+        // A nonexistent design (server route params are untrusted input) is a
+        // miss, not a parse failure: recording Failed for every distinct miss
+        // would grow the load-state map without bound. The name must stay
+        // Unloaded across repeated misses, with no Failed transitions observed.
+        const std::string missing = "no_such_design_anywhere";
+
+        for (int attempt = 1; attempt <= 2; ++attempt)
+        {
+            auto pArchive = m_pDesignCache->GetFileArchive(missing);
+            EXPECT_EQ(pArchive, nullptr) << "attempt " << attempt;
+            EXPECT_EQ(m_pDesignCache->GetLoadState(missing), DesignCache::LoadState::Unloaded)
+                << "attempt " << attempt << ": a not-found design must not record a Failed entry";
+
+            auto pDesign = m_pDesignCache->GetDesign(missing);
+            EXPECT_EQ(pDesign, nullptr) << "attempt " << attempt;
+            EXPECT_EQ(m_pDesignCache->GetLoadState(missing), DesignCache::LoadState::Unloaded)
+                << "attempt " << attempt << ": a not-found design must not record a Failed entry";
+        }
+
+        EXPECT_EQ(m_recorder->loadFailures(missing), 0);
+        EXPECT_EQ(m_recorder->loadStarts(missing), 4)
+            << "each miss is a fresh single-flight load (2 archive + 2 design)";
+    }
+
     // ---- byte-budget LRU eviction ----
 
     TEST_F(DesignCacheSingleFlightTest, ByteBudgetEviction_EvictsLeastRecentlyServedAndReloads)
@@ -459,6 +549,87 @@ namespace Odb::Test
         const auto names = m_pDesignCache->getLoadedDesignNames();
         EXPECT_TRUE(contains(names, "sample_design"));
         EXPECT_TRUE(contains(names, "designodb_rigidflex"));
+    }
+
+    // ---- load completing across Clear() is abandoned from the cache ----
+
+    TEST_F(DesignCacheSingleFlightTest, ClearDuringLoad_AbandonsBookkeeping_ValueStillDelivered)
+    {
+        const std::string big = "designodb_rigidflex";  // slowest parse: widest in-flight window
+
+        std::shared_ptr<OdbDesign> pBig;
+        std::exception_ptr loaderError;
+        std::thread loader([&]()
+        {
+            try
+            {
+                pBig = m_pDesignCache->GetDesign(big);
+            }
+            catch (...)
+            {
+                loaderError = std::current_exception();
+            }
+        });
+
+        // Wait for 'big' to go mid-flight (Loading), same pattern as the
+        // in-flight eviction test above.
+        bool observedLoading = false;
+        const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(30);
+        while (std::chrono::steady_clock::now() < deadline)
+        {
+            const auto state = m_pDesignCache->GetLoadState(big);
+            if (state == DesignCache::LoadState::Loading)
+            {
+                observedLoading = true;
+                break;
+            }
+            if (state == DesignCache::LoadState::Loaded)
+            {
+                break;
+            }
+            std::this_thread::yield();
+        }
+
+        if (!observedLoading)
+        {
+            loader.join();
+            GTEST_SKIP() << "design parsed faster than its Loading state could be observed; "
+                            "clear-during-load path not exercised";
+        }
+
+        // The parse can complete between the Loading observation and Clear();
+        // re-check and skip if it slipped out, mirroring the in-flight eviction
+        // test, so the post-Clear assertions below cannot flake under CI load.
+        if (m_pDesignCache->GetLoadState(big) != DesignCache::LoadState::Loading)
+        {
+            loader.join();
+            GTEST_SKIP() << "design finished parsing between the Loading observation and Clear(); "
+                            "clear-during-load path not exercised";
+        }
+
+        m_pDesignCache->Clear();
+
+        loader.join();
+        ASSERT_EQ(loaderError, nullptr);
+        ASSERT_NE(pBig, nullptr)
+            << "a load completing across Clear() must still deliver its parsed value to its direct caller";
+
+        // The load was abandoned: nothing it recorded survives Clear(), and it
+        // must not have re-populated the cache or the state map afterwards.
+        EXPECT_EQ(m_pDesignCache->GetLoadState(big), DesignCache::LoadState::Unloaded)
+            << "stale Loaded state must not survive Clear()";
+        EXPECT_FALSE(contains(m_pDesignCache->getLoadedDesignNames(), big))
+            << "an abandoned load must not appear cached";
+        EXPECT_EQ(m_recorder->loadStarts(big), 1)
+            << "abandonment must not restart the load (the value still reached its caller)";
+
+        // A fresh request therefore re-parses from scratch: no stale Loaded
+        // state, no phantom LRU charge quietly serving the abandoned instance.
+        auto pReloaded = m_pDesignCache->GetDesign(big);
+        ASSERT_NE(pReloaded, nullptr);
+        EXPECT_NE(pReloaded.get(), pBig.get())
+            << "a load abandoned across Clear() must not be served from cache";
+        EXPECT_EQ(m_recorder->loadStarts(big), 2);
     }
 
     // ---- --cache-max-mb argument ----
