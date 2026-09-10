@@ -628,6 +628,25 @@ namespace OdbDesignServer
             }
         }
 
+        grpc::Status OdbDesignServiceImpl::RequestLoadDesign(
+            grpc::ServerContext *context,
+            const Odb::Grpc::RequestLoadDesignRequest *request,
+            Odb::Grpc::RequestLoadDesignResponse *response)
+        {
+            try
+            {
+                loginfo("[ConnTrace] RequestLoadDesign: design_name=\"" + request->design_name() + "\"");
+                response->set_design_name(request->design_name());
+                response->set_status(ComputeRequestLoadStatus(*m_designCache, request->design_name()));
+                return grpc::Status::OK;
+            }
+            catch (const std::exception &e)
+            {
+                std::string error = "Internal server error: " + std::string(e.what());
+                return {grpc::StatusCode::INTERNAL, error};
+            }
+        }
+
         grpc::Status OdbDesignServiceImpl::HealthCheck(
             grpc::ServerContext *context,
             const Odb::Grpc::HealthCheckRequest *request,

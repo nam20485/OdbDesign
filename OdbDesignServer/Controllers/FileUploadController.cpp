@@ -11,6 +11,34 @@ using namespace std::filesystem;
 using namespace Odb::Lib::App;
 using namespace Utils;
 
+namespace
+{
+    // Fire-and-forget auto-warm: after an uploaded archive lands in the designs
+    // directory, kick a background parse (same path as RequestLoadDesign) so the
+    // first client request is warm. Never fails the upload response on a warm
+    // error; warm failures are logged only and stay retryable.
+    void autoWarmDesign(Odb::Lib::App::DesignCache& designs, const std::string& filename)
+    {
+        // Design names are archive file stems (matching DesignCache's scan)
+        const auto designName = path(filename).stem().string();
+        try
+        {
+            if (designs.LoadDesignAsync(designName))
+            {
+                CROW_LOG_INFO << "Auto-warm load kicked for uploaded design \"" << designName << "\"";
+            }
+            else
+            {
+                CROW_LOG_DEBUG << "Auto-warm for \"" << designName << "\" skipped: a load is already queued or in progress";
+            }
+        }
+        catch (const std::exception& e)
+        {
+            CROW_LOG_ERROR << "Auto-warm load failed to start for \"" << designName << "\": " << e.what();
+        }
+    }
+}
+
 namespace Odb::App::Server
 {
 	FileUploadController::FileUploadController(IOdbServerApp& serverApp)
@@ -123,6 +151,8 @@ namespace Odb::App::Server
             return crow::response(crow::status::INTERNAL_SERVER_ERROR, "failed handling new file");
         }
 
+        autoWarmDesign(m_serverApp.designs(), safeName);
+
         std::string responseBody = "{ \"filename\": \"" + safeName + "\" }";
 
         return makeLoadedFileModelsResponse(true);
@@ -203,6 +233,8 @@ namespace Odb::App::Server
             {
                 return crow::response(crow::status::INTERNAL_SERVER_ERROR, "failed handling new file");
             }
+
+            autoWarmDesign(m_serverApp.designs(), safeName);
 
             CROW_LOG_INFO << " Contents written to " << outfile_name << '\n';
         }
