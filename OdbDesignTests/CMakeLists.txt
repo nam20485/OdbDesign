@@ -35,6 +35,7 @@ add_executable(OdbDesignTests
     "GetStandardFontsTests.cpp"
     "GetLayerSymbolsTests.cpp"
     "RequestLoadDesignTests.cpp"
+    "ResponseCacheTests.cpp"
 
     # NOTE: GrpcBatchStreamTests.cpp temporarily disabled due to CMake coupling concerns
     # Future: Will create separate test target for server component tests
