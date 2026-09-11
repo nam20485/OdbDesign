@@ -75,7 +75,18 @@ namespace Odb::Lib::App
         {
             std::unique_lock<std::shared_mutex> writeLock(m_cacheMutex);
             m_fileArchivesByName[designName] = fileArchive;
+            // Re-upload invalidation (M1.4): any previously cached Design was
+            // built from the OLD archive contents, so it — and every serialized
+            // response payload derived from it — must go. Dropping the Design
+            // (not just the payloads) is what makes invalidation airtight: a
+            // later GetDesign rebuilds from the new archive, and re-populated
+            // payloads describe the new contents.
+            m_designsByName.erase(designName);
         }
+
+        // Drop serialized response payloads for the design (generation bump)
+        // before the state/LRU bookkeeping.
+        InvalidateResponsePayloads(designName);
 
         // Charge the injected archive to the byte budget (never its own eviction
         // victim) and reflect the externally-completed load in the state machine.
@@ -305,6 +316,11 @@ namespace Odb::Lib::App
             std::lock_guard<std::mutex> lruLock(m_lruMutex);
             m_lruEntries.clear();
             m_cachedBytes = 0;
+        }
+        {
+            // Drop all serialized response payloads. A pre-serialization commit
+            // in flight during this Clear() is discarded by its epoch check.
+            m_responseStore.Clear();
         }
         {
             // Wipe the state map and bump the cache generation under the state
@@ -628,7 +644,7 @@ namespace Odb::Lib::App
             }
             else
             {
-                m_lruEntries.emplace(designName, LruEntry{bytes, now});
+                m_lruEntries.emplace(designName, LruEntry{bytes, 0, now});
                 m_cachedBytes += bytes;
             }
             evicted = EvictOverBudgetLocked(designName);
@@ -690,6 +706,12 @@ namespace Odb::Lib::App
     {
         for (const auto& name : names)
         {
+            // Drop the serialized response payloads (generation bump keeps a
+            // commit that raced the eviction from re-publishing them). The
+            // payload bytes were already uncharged: they lived inside the LRU
+            // entry that EvictOverBudgetLocked removed before calling this.
+            m_responseStore.Invalidate(name);
+
             {
                 std::unique_lock<std::shared_mutex> writeLock(m_cacheMutex);
                 m_designsByName.erase(name);
@@ -704,21 +726,24 @@ namespace Odb::Lib::App
 
     std::uint64_t DesignCache::EstimateDesignBytes(const std::string& designName) const
     {
-        // Simple estimate: archive file size on disk + a small constant. Serialized
-        // response sizes are added to this estimate in M1.4 (response cache).
+        // Estimate: archive file size on disk + a small constant + the bytes
+        // currently held for the design's cached serialized response payloads
+        // (M1.4). The payload term is zero for a fresh entry — payload bytes
+        // are charged incrementally at commit time (CommitResponsePayloads) —
+        // but a re-insert while payloads exist stays honest.
         const auto archivePath = FindArchivePath(designName);
         if (archivePath.empty())
         {
-            return DESIGN_BYTES_OVERHEAD;
+            return DESIGN_BYTES_OVERHEAD + m_responseStore.StoredBytes(designName);
         }
 
         std::error_code ec;
         const auto size = std::filesystem::file_size(archivePath, ec);
         if (ec)
         {
-            return DESIGN_BYTES_OVERHEAD;
+            return DESIGN_BYTES_OVERHEAD + m_responseStore.StoredBytes(designName);
         }
-        return static_cast<std::uint64_t>(size) + DESIGN_BYTES_OVERHEAD;
+        return static_cast<std::uint64_t>(size) + DESIGN_BYTES_OVERHEAD + m_responseStore.StoredBytes(designName);
     }
 
     void DesignCache::TransitionLoadState(const std::string& designName, LoadState to)
@@ -783,6 +808,365 @@ namespace Odb::Lib::App
             {
                 logwarn("Design load observer threw an unknown exception");
             }
+        }
+    }
+
+    // ---- serialized-response cache (M1.4) ----
+
+    bool DesignCache::ResponseStore::TryGetDesignBytes(const std::string& designName, std::string& outBytes) const
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        auto findIt = m_entriesByName.find(designName);
+        if (findIt == m_entriesByName.end() || findIt->second.payload.designPbBytes.empty())
+        {
+            return false;
+        }
+        outBytes = findIt->second.payload.designPbBytes;
+        return true;
+    }
+
+    bool DesignCache::ResponseStore::TryGetJsonPayload(const std::string& designName, JsonPayloadKind kind, std::string& outJson) const
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        auto findIt = m_entriesByName.find(designName);
+        if (findIt == m_entriesByName.end())
+        {
+            return false;
+        }
+        const auto& json = (kind == JsonPayloadKind::Design)
+            ? findIt->second.payload.designJson
+            : findIt->second.payload.fileModelJson;
+        if (json.empty())
+        {
+            return false;
+        }
+        outJson = json;
+        return true;
+    }
+
+    bool DesignCache::ResponseStore::HasEntry(const std::string& designName) const
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        return m_entriesByName.find(designName) != m_entriesByName.end();
+    }
+
+    std::uint64_t DesignCache::ResponseStore::StoredBytes(const std::string& designName) const
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        auto findIt = m_entriesByName.find(designName);
+        return findIt != m_entriesByName.end() ? findIt->second.payload.totalBytes() : 0;
+    }
+
+    std::uint64_t DesignCache::ResponseStore::TotalStoredBytes() const
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        std::uint64_t total = 0;
+        for (const auto& kv : m_entriesByName)
+        {
+            total += kv.second.payload.totalBytes();
+        }
+        return total;
+    }
+
+    std::uint64_t DesignCache::ResponseStore::CurrentGeneration(const std::string& designName) const
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        auto findIt = m_generationsByName.find(designName);
+        return findIt != m_generationsByName.end() ? findIt->second : 0;
+    }
+
+    DesignCache::ResponseStore::StoreResult DesignCache::ResponseStore::TryStore(
+        const std::string& designName, std::uint64_t generation, ResponsePayload&& payload)
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+
+        // Validate against the generation tombstone: any invalidation since the
+        // committer captured its generation bumps past it and loses the race.
+        auto genIt = m_generationsByName.find(designName);
+        const auto currentGeneration = genIt != m_generationsByName.end() ? genIt->second : 0;
+        if (generation != currentGeneration)
+        {
+            StoreResult lost;
+            lost.stored = false;
+            return lost;
+        }
+
+        auto findIt = m_entriesByName.find(designName);
+        if (findIt != m_entriesByName.end())
+        {
+            // Already stored for this generation (a racing background/lazy
+            // committer won): report success without re-storing so the
+            // serialization counter stays exact — one per design per generation.
+            StoreResult result;
+            result.stored = true;
+            result.storedBytes = findIt->second.payload.totalBytes();
+            return result;
+        }
+
+        auto& entry = m_entriesByName[designName];
+        entry.payload = std::move(payload);
+        ++m_designSerializations;
+
+        StoreResult result;
+        result.stored = true;
+        result.storedBytes = entry.payload.totalBytes();
+        return result;
+    }
+
+    std::uint64_t DesignCache::ResponseStore::Invalidate(const std::string& designName)
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        std::uint64_t dropped = 0;
+        auto findIt = m_entriesByName.find(designName);
+        if (findIt != m_entriesByName.end())
+        {
+            dropped = findIt->second.payload.totalBytes();
+            m_entriesByName.erase(findIt);
+        }
+        // Bump the tombstone even when no entry existed: a commit that captured
+        // the pre-invalidation generation must lose its TryStore.
+        ++m_generationsByName[designName];
+        return dropped;
+    }
+
+    void DesignCache::ResponseStore::Clear()
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        m_entriesByName.clear();
+        m_generationsByName.clear();
+        // Counter intentionally NOT reset: it counts work performed, not work
+        // currently cached (tests read it as "how many serializations happened").
+    }
+
+    std::uint64_t DesignCache::ResponseStore::designSerializations() const
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        return m_designSerializations;
+    }
+
+    // ---- DesignCache-level response-cache API ----
+
+    bool DesignCache::TryGetDesignBytes(const std::string& designName, std::string& outBytes) const
+    {
+        return m_responseStore.TryGetDesignBytes(designName, outBytes);
+    }
+
+    bool DesignCache::TryGetJsonPayload(const std::string& designName, JsonPayloadKind kind, std::string& outJson) const
+    {
+        return m_responseStore.TryGetJsonPayload(designName, kind, outJson);
+    }
+
+    bool DesignCache::HasCachedResponse(const std::string& designName) const
+    {
+        return m_responseStore.HasEntry(designName);
+    }
+
+    std::uint64_t DesignCache::designSerializationCount() const
+    {
+        return m_responseStore.designSerializations();
+    }
+
+    std::uint64_t DesignCache::cachedResponseBytes() const
+    {
+        return m_responseStore.TotalStoredBytes();
+    }
+
+    std::uint64_t DesignCache::CurrentEpoch() const
+    {
+        std::lock_guard<std::mutex> stateLock(m_loadStateMutex);
+        return m_epoch;
+    }
+
+    DesignCache::ResponsePayload DesignCache::BuildResponsePayload(const ProductModel::Design& design)
+    {
+        ResponsePayload payload;
+
+        // One protobuf tree build serves both the wire bytes and the JSON.
+        auto pMessage = design.to_protobuf();
+        if (pMessage != nullptr)
+        {
+            if (!pMessage->SerializeToString(&payload.designPbBytes))
+            {
+                payload.designPbBytes.clear();
+            }
+
+        }
+
+        // JSON payloads (designJson/fileModelJson) are deliberately NOT built
+        // here: their REST consumers arrive with the controller-wiring
+        // follow-up, and eagerly building two full-JSON strings per design
+        // alongside the protobuf tree was a major memory-thrash contributor
+        // on large designs. TryGetJsonPayload returns false until that
+        // follow-up adds (lazy) JSON population.
+        return payload;
+    }
+
+    void DesignCache::CommitResponsePayloads(const std::string& designName,
+        std::uint64_t epochAtStart,
+        const std::shared_ptr<ProductModel::Design>& pDesign,
+        ResponsePayload&& payload,
+        std::uint64_t generation)
+    {
+        if (pDesign == nullptr || payload.totalBytes() == 0)
+        {
+            return;
+        }
+
+        // Design-object identity: the payloads are valid only for the Design
+        // object they were built from. Eviction, Clear(), and AddFileArchive
+        // remove or replace the cached Design; a mismatch (shared_ptr identity,
+        // so no address-reuse ABA) aborts the commit.
+        {
+            std::shared_lock<std::shared_mutex> readLock(m_cacheMutex);
+            auto findIt = m_designsByName.find(designName);
+            if (findIt == m_designsByName.end() || findIt->second != pDesign)
+            {
+                return;
+            }
+        }
+
+        std::vector<std::string> evicted;
+        {
+            std::lock_guard<std::mutex> lruLock(m_lruMutex);
+            auto entryIt = m_lruEntries.find(designName);
+            if (entryIt == m_lruEntries.end())
+            {
+                return; // evicted while serializing
+            }
+            if (WasClearedSince(epochAtStart))
+            {
+                return; // Clear() ran since the load/serialization started
+            }
+
+            const auto storeResult = m_responseStore.TryStore(designName, generation, std::move(payload));
+            if (storeResult.stored)
+            {
+                // Resync the entry's serialized charge with the store. An
+                // invalidation racing between TryStore and StoredBytes shows up
+                // here as a smaller/zero reading, which is exactly the right
+                // charge for the store's current contents.
+                const auto delta = storeResult.storedBytes - entryIt->second.serializedBytes;
+                entryIt->second.serializedBytes = storeResult.storedBytes;
+                m_cachedBytes += delta;
+            }
+
+            evicted = EvictOverBudgetLocked(designName);
+        }
+        EvictCacheEntries(evicted);
+    }
+
+    void DesignCache::ScheduleResponsePreSerialization(const std::string& designName,
+        std::shared_ptr<ProductModel::Design> pDesign,
+        std::uint64_t epochAtStart)
+    {
+        const auto generation = m_responseStore.CurrentGeneration(designName);
+
+        // Counted + drained exactly like background loads so detached threads
+        // never outlive the cache members they touch (~DesignCache waits on
+        // m_outstandingBackgroundLoads).
+        {
+            std::lock_guard<std::mutex> lock(m_backgroundMutex);
+            ++m_outstandingBackgroundLoads;
+        }
+
+        try
+        {
+            std::thread(&DesignCache::PreSerializeWorker, this, designName, std::move(pDesign),
+                epochAtStart, generation).detach();
+        }
+        catch (const std::exception& e)
+        {
+            {
+                std::lock_guard<std::mutex> lock(m_backgroundMutex);
+                --m_outstandingBackgroundLoads;
+            }
+            // A failed pre-serialization schedule must not fail the load that
+            // just succeeded; the first fetch repopulates lazily.
+            logwarn("Failed to schedule response pre-serialization for design \"" + designName + "\": " + e.what());
+        }
+    }
+
+    void DesignCache::PreSerializeWorker(std::string designName,
+        std::shared_ptr<ProductModel::Design> pDesign,
+        std::uint64_t epochAtStart,
+        std::uint64_t generation)
+    {
+        // Shares the background-load semaphore: serialization competes with
+        // parses for --max-background-loads slots, bounding memory spikes.
+        AcquireBackgroundSlot();
+        try
+        {
+            auto payload = BuildResponsePayload(*pDesign);
+            CommitResponsePayloads(designName, epochAtStart, pDesign, std::move(payload), generation);
+            logdebug("Response pre-serialization for design \"" + designName + "\" committed");
+        }
+        catch (const std::exception& e)
+        {
+            logwarn("Response pre-serialization for design \"" + designName + "\" failed: " + e.what());
+        }
+        catch (...)
+        {
+            logwarn("Response pre-serialization for design \"" + designName + "\" failed with an unknown exception");
+        }
+        ReleaseBackgroundSlot();
+
+        {
+            std::lock_guard<std::mutex> lock(m_backgroundMutex);
+            --m_outstandingBackgroundLoads;
+        }
+        m_backgroundDoneCv.notify_all();
+    }
+
+    void DesignCache::InvalidateResponsePayloads(const std::string& designName)
+    {
+        m_responseStore.Invalidate(designName);
+        AdjustLruSerializedBytes(designName);
+    }
+
+    void DesignCache::AdjustLruSerializedBytes(const std::string& designName)
+    {
+        std::lock_guard<std::mutex> lruLock(m_lruMutex);
+        auto entryIt = m_lruEntries.find(designName);
+        if (entryIt == m_lruEntries.end())
+        {
+            return;
+        }
+        const auto stored = m_responseStore.StoredBytes(designName);
+        if (stored != entryIt->second.serializedBytes)
+        {
+            m_cachedBytes -= entryIt->second.serializedBytes - stored;
+            entryIt->second.serializedBytes = stored;
+        }
+    }
+
+    void DesignCache::SerializeResponsePayloads(const std::string& designName)
+    {
+        std::shared_ptr<ProductModel::Design> pDesign;
+        {
+            std::shared_lock<std::shared_mutex> readLock(m_cacheMutex);
+            auto findIt = m_designsByName.find(designName);
+            if (findIt == m_designsByName.end())
+            {
+                return;
+            }
+            pDesign = findIt->second;
+        }
+
+        const auto generation = m_responseStore.CurrentGeneration(designName);
+        const auto epoch = CurrentEpoch();
+
+        try
+        {
+            auto payload = BuildResponsePayload(*pDesign);
+            CommitResponsePayloads(designName, epoch, pDesign, std::move(payload), generation);
+        }
+        catch (const std::exception& e)
+        {
+            logwarn("Lazy response serialization for design \"" + designName + "\" failed: " + e.what());
+        }
+        catch (...)
+        {
+            logwarn("Lazy response serialization for design \"" + designName + "\" failed with an unknown exception");
         }
     }
 }

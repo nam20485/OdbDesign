@@ -16,6 +16,7 @@
 #include <shared_mutex>
 #include <stdexcept>
 #include <string>
+#include <type_traits>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -115,6 +116,61 @@ namespace Odb::Lib::App
 		void setMaxBackgroundLoads(std::size_t maxLoads);
 		std::size_t getMaxBackgroundLoads() const;
 
+		// ---- serialized-response cache (M1.4) ----
+		//
+		// Per-design pre-serialized response payloads, counted against the SAME
+		// byte budget as the archive/Design entries (see LruEntry::serializedBytes).
+		// Population: a background pre-serialization is scheduled when a design
+		// load completes (synchronous and LoadDesignAsync/M1.2 background loads
+		// alike); the first GetDesign RPC that misses also serializes lazily, so
+		// behavior is correct even when the background pass lost a race or never
+		// ran. At most one serialization is counted per design per invalidation
+		// generation.
+		//
+		// Invalidation (drops the payload entries; next request re-populates):
+		// AddFileArchive (re-upload/POST /filemodels — also drops the cached
+		// Design, which was built from the old archive), LRU eviction, Clear().
+		// A commit racing any of these is discarded (generation + design-identity
+		// + epoch checks), so stale bytes can never be published.
+
+		// REST JSON payload variants exposed to the controllers:
+		// Design    -> ProductModel::Design::to_json()   (/designs/<name>)
+		// FileModel -> FileArchive::to_json()            (/filemodels/<name>)
+		// Note: the cached Design JSON is the un-clipped payload (the shared
+		// cached Design must keep its file model for the gRPC GetDesign path);
+		// the controller wiring decides how/whether to serve it for the default
+		// (file-model-clipped) route.
+		enum class JsonPayloadKind
+		{
+			Design,
+			FileModel
+		};
+
+		// Cached serialized ProductModel::Design bytes (the gRPC GetDesign
+		// response payload). True and filled when warm.
+		bool TryGetDesignBytes(const std::string& designName, std::string& outBytes) const;
+
+		// Cached REST JSON payload for the design. True and filled when warm.
+		bool TryGetJsonPayload(const std::string& designName, JsonPayloadKind kind, std::string& outJson) const;
+
+		// True when a full response payload set is cached for the design.
+		bool HasCachedResponse(const std::string& designName) const;
+
+		// Synchronous lazy population: builds and commits the response payloads
+		// for the currently cached design (no-op if the design is not cached or
+		// was already serialized for the current generation). Used by the gRPC
+		// GetDesign fast path's cold branch and by tests.
+		void SerializeResponsePayloads(const std::string& designName);
+
+		// Times a response payload set was built and committed (one per design
+		// per generation — warm GetDesign hits add nothing). Test seam for the
+		// "exactly one to_protobuf call" acceptance criterion.
+		std::uint64_t designSerializationCount() const;
+
+		// Total bytes currently charged to serialized payloads (already included
+		// in the LRU byte budget). Drops to 0 on eviction/invalidation/Clear().
+		std::uint64_t cachedResponseBytes() const;
+
 	private:
 		std::string m_directory;
 
@@ -127,11 +183,13 @@ namespace Odb::Lib::App
 
 		// ---- single-flight load bookkeeping ----
 		//
-		// Lock order (never acquired in reverse; only nesting allowed is
-		// m_lruMutex -> m_loadStateMutex inside eviction):
-		//   m_cacheMutex     -> (nothing)
-		//   m_lruMutex       -> m_loadStateMutex
-		//   m_loadStateMutex -> (nothing)
+		// Lock order (never acquired in reverse; allowed nestings are
+		// m_lruMutex -> m_loadStateMutex inside eviction and
+		// m_lruMutex -> ResponseStore::m_mutex inside payload commit):
+		//   m_cacheMutex               -> (nothing)
+		//   m_lruMutex                 -> m_loadStateMutex, ResponseStore::m_mutex
+		//   ResponseStore::m_mutex     -> (nothing)
+		//   m_loadStateMutex           -> (nothing)
 		// All other critical sections take a single lock at a time.
 
 		using DesignFuture = std::shared_future<std::shared_ptr<ProductModel::Design>>;
@@ -196,6 +254,11 @@ namespace Odb::Lib::App
 		struct LruEntry
 		{
 			std::uint64_t estimatedBytes = 0;
+			// Bytes charged for the design's cached serialized response payloads
+			// (included in estimatedBytes' contribution to m_cachedBytes). Kept
+			// separately so invalidation can uncharge without dropping the
+			// archive/Design cache entry.
+			std::uint64_t serializedBytes = 0;
 			std::chrono::steady_clock::time_point lastServed;
 		};
 
@@ -212,6 +275,109 @@ namespace Odb::Lib::App
 
 		// Protects m_lruEntries, m_cachedBytes, and m_maxBytes
 		mutable std::mutex m_lruMutex;
+
+		// ---- serialized-response cache (M1.4) ----
+		//
+		// The pre-serialized response payloads for one design.
+		struct ResponsePayload
+		{
+			std::string designPbBytes;   // serialized ProductModel::Design (gRPC GetDesign response bytes)
+			std::string designJson;      // ProductModel::Design::to_json()  (/designs/<name>)
+			std::string fileModelJson;   // FileArchive::to_json()           (/filemodels/<name>)
+
+			std::uint64_t totalBytes() const
+			{
+				return static_cast<std::uint64_t>(designPbBytes.size()) +
+					static_cast<std::uint64_t>(designJson.size()) +
+					static_cast<std::uint64_t>(fileModelJson.size());
+			}
+		};
+
+		// Payload store with per-design invalidation generations. A committer
+		// captures CurrentGeneration before serializing; TryStore succeeds only
+		// while the generation is unchanged, and stores at most once per
+		// (design, generation): a duplicate commit for an already-stored
+		// generation is a no-op success (this is what makes the design-
+		// serialization counter exact under racing background/lazy committers).
+		// Self-contained behind m_mutex; never calls back into DesignCache.
+		class ResponseStore
+		{
+		public:
+			struct StoreResult
+			{
+				bool stored = false;            // payload is current for (name, generation)
+				std::uint64_t storedBytes = 0;  // bytes now held for the name
+			};
+
+			bool TryGetDesignBytes(const std::string& designName, std::string& outBytes) const;
+			bool TryGetJsonPayload(const std::string& designName, JsonPayloadKind kind, std::string& outJson) const;
+			bool HasEntry(const std::string& designName) const;
+			std::uint64_t StoredBytes(const std::string& designName) const;
+			std::uint64_t TotalStoredBytes() const;
+			std::uint64_t CurrentGeneration(const std::string& designName) const;
+			StoreResult TryStore(const std::string& designName, std::uint64_t generation, ResponsePayload&& payload);
+			// Drops the entry and bumps the generation; returns the dropped bytes.
+			std::uint64_t Invalidate(const std::string& designName);
+			void Clear();
+			std::uint64_t designSerializations() const;
+
+		private:
+			struct Entry
+			{
+				ResponsePayload payload;
+			};
+
+			mutable std::mutex m_mutex;
+			std::unordered_map<std::string, Entry> m_entriesByName;
+			// Per-design invalidation generation (monotonically increasing
+			// tombstones; absent = 0). Single source of truth for TryStore
+			// validation — survives entry erasure so a commit that captured a
+			// pre-invalidation generation always loses.
+			std::unordered_map<std::string, std::uint64_t> m_generationsByName;
+			std::uint64_t m_designSerializations = 0;
+		};
+
+		ResponseStore m_responseStore;
+
+		// Builds the payload set from a loaded Design. The protobuf tree is
+		// built once: the serialized bytes and the Design JSON both come from
+		// the same message (no second ProductModel traversal).
+		static ResponsePayload BuildResponsePayload(const ProductModel::Design& design);
+
+		// Validates (epoch, LRU presence, Design identity, generation) and
+		// commits a payload set, charging its bytes to the design's LRU entry
+		// and evicting over budget (never this design). Abort silently leaves
+		// the cache unchanged.
+		void CommitResponsePayloads(const std::string& designName,
+			std::uint64_t epochAtStart,
+			const std::shared_ptr<ProductModel::Design>& pDesign,
+			ResponsePayload&& payload,
+			std::uint64_t generation);
+
+		// Schedules a detached background thread that builds + commits the
+		// payloads for a design that just reached Loaded. Counted/drained via
+		// m_outstandingBackgroundLoads exactly like background loads.
+		void ScheduleResponsePreSerialization(const std::string& designName,
+			std::shared_ptr<ProductModel::Design> pDesign,
+			std::uint64_t epochAtStart);
+
+		// Body of the background pre-serialization thread. Never lets an
+		// exception escape.
+		void PreSerializeWorker(std::string designName,
+			std::shared_ptr<ProductModel::Design> pDesign,
+			std::uint64_t epochAtStart,
+			std::uint64_t generation);
+
+		// Drops the payload entry (generation bump) and uncharges its bytes
+		// from the design's LRU entry, when one exists.
+		void InvalidateResponsePayloads(const std::string& designName);
+
+		// Resyncs one LRU entry's serializedBytes with the store (charge delta).
+		// Requires m_lruMutex NOT held.
+		void AdjustLruSerializedBytes(const std::string& designName);
+
+		// Current cache generation snapshot (for lazy serialization commits).
+		std::uint64_t CurrentEpoch() const;
 
 		std::shared_ptr<ProductModel::Design> LoadDesign(const std::string& designName);
 		std::shared_ptr<FileModel::Design::FileArchive> LoadFileArchive(const std::string& designName);
@@ -399,6 +565,20 @@ namespace Odb::Lib::App
 
 			// Charge the byte budget and evict if over; this design is never its own victim
 			InsertLruAndEvict(designName);
+
+			// M1.4: a design just became serveable — schedule background
+			// pre-serialization of its response payloads (gRPC GetDesign bytes
+			// + REST JSON variants). Only the design-level load hooks this (the
+			// archive sub-load runs with updateState=false). The commit is
+			// validated against epoch/eviction/invalidation, so races with
+			// Clear()/eviction/AddFileArchive discard the payloads.
+			if constexpr (std::is_same_v<T, ProductModel::Design>)
+			{
+				if (updateState)
+				{
+					ScheduleResponsePreSerialization(designName, pValue, epochAtStart);
+				}
+			}
 
 			// Record Loaded while the in-flight entry still exists: a caller
 			// arriving mid-transition joins our future instead of starting a fresh
