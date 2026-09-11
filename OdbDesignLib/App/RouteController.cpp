@@ -1,4 +1,5 @@
 #include "RouteController.h"
+#include <ETag.h>
 
 
 namespace Odb::Lib::App
@@ -86,5 +87,50 @@ namespace Odb::Lib::App
 		}
 
 		return crow::response(httpCode , jsonResponse);
+	}
+
+	std::optional<crow::response> RouteController::checkConditionalGet(const crow::request& req,
+		const std::string& designName,
+		const std::string& endpointPath,
+		std::string& etag) const
+	{
+		// Computed from the archive file on disk, not the (possibly not yet
+		// loaded) cached object, so the 304 decision never pays for a load or a
+		// serialization. A stat-to-load race (archive replaced in between) is
+		// benign: the 200 body then carries the pre-load tag, the next request
+		// recomputes the post-replacement tag, and the client's stale copy is
+		// revalidated and refreshed.
+		etag = Utils::MakeDesignEtag(m_serverApp.args().designsDir(), designName, endpointPath);
+		if (etag.empty())
+		{
+			return std::nullopt;
+		}
+
+		const auto& ifNoneMatch = req.get_header_value("If-None-Match");
+		if (!ifNoneMatch.empty() && Utils::IfNoneMatchMatches(ifNoneMatch, etag))
+		{
+			// 304 short-circuits the handler: no archive load, no to_json().
+			// ETag + Cache-Control are echoed per RFC 7232 so the client can
+			// refresh its cached header set.
+			crow::response notModified(crow::status::NOT_MODIFIED);
+			notModified.set_header("ETag", etag);
+			notModified.set_header("Cache-Control", CACHE_CONTROL_DATA_VALUE);
+			return notModified;
+		}
+
+		return std::nullopt;
+	}
+
+	crow::response RouteController::withCacheHeaders(crow::response response, const std::string& etag) const
+	{
+		// private: design payloads are user-scoped data and must not be served
+		// from shared/proxy caches; max-age allows short-term client reuse
+		// between revalidations.
+		if (!etag.empty())
+		{
+			response.set_header("ETag", etag);
+			response.set_header("Cache-Control", CACHE_CONTROL_DATA_VALUE);
+		}
+		return response;
 	}
 }
