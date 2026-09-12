@@ -234,8 +234,14 @@ paths:
         misc info, standard fonts and misc attrlist) for the named design.
       parameters:
         - $ref: "#/components/parameters/DesignNameParam"
+        - $ref: "#/components/parameters/IfNoneMatch"
       responses:
         "200":
+          headers:
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Cache-Control:
+              $ref: "#/components/headers/CacheControl"
           description: File archive parsed and returned.
           content:
             application/json:
@@ -249,6 +255,8 @@ paths:
           $ref: "#/components/responses/NotFound"
         "500":
           $ref: "#/components/responses/InternalError"
+        "304":
+          $ref: "#/components/responses/NotModified"
     post:
       tags: [filemodel]
       operationId: publishFileModel
@@ -289,8 +297,14 @@ paths:
       description: Returns the top-level `misc/attrlist` file of the design.
       parameters:
         - $ref: "#/components/parameters/DesignNameParam"
+        - $ref: "#/components/parameters/IfNoneMatch"
       responses:
         "200":
+          headers:
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Cache-Control:
+              $ref: "#/components/headers/CacheControl"
           description: Attrlist file.
           content:
             application/json:
@@ -304,6 +318,8 @@ paths:
           $ref: "#/components/responses/NotFound"
         "500":
           $ref: "#/components/responses/InternalError"
+        "304":
+          $ref: "#/components/responses/NotModified"
 
   /filemodels/{name}/misc/info:
     get:
@@ -315,8 +331,14 @@ paths:
         timestamps, units, etc.
       parameters:
         - $ref: "#/components/parameters/DesignNameParam"
+        - $ref: "#/components/parameters/IfNoneMatch"
       responses:
         "200":
+          headers:
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Cache-Control:
+              $ref: "#/components/headers/CacheControl"
           description: Misc info file.
           content:
             application/json:
@@ -339,6 +361,8 @@ paths:
           $ref: "#/components/responses/NotFound"
         "500":
           $ref: "#/components/responses/InternalError"
+        "304":
+          $ref: "#/components/responses/NotModified"
 
   /filemodels/{name}/matrix/matrix:
     get:
@@ -350,8 +374,14 @@ paths:
         with type/context/polarity/copper-weight columns.
       parameters:
         - $ref: "#/components/parameters/DesignNameParam"
+        - $ref: "#/components/parameters/IfNoneMatch"
       responses:
         "200":
+          headers:
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Cache-Control:
+              $ref: "#/components/headers/CacheControl"
           description: Matrix file.
           content:
             application/json:
@@ -383,6 +413,8 @@ paths:
           $ref: "#/components/responses/NotFound"
         "500":
           $ref: "#/components/responses/InternalError"
+        "304":
+          $ref: "#/components/responses/NotModified"
 
   /filemodels/{name}/fonts/standard:
     get:
@@ -392,8 +424,14 @@ paths:
       description: "Returns the `fonts/standard` file: vector stroke font definitions."
       parameters:
         - $ref: "#/components/parameters/DesignNameParam"
+        - $ref: "#/components/parameters/IfNoneMatch"
       responses:
         "200":
+          headers:
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Cache-Control:
+              $ref: "#/components/headers/CacheControl"
           description: Standard fonts file.
           content:
             application/json:
@@ -407,6 +445,8 @@ paths:
           $ref: "#/components/responses/NotFound"
         "500":
           $ref: "#/components/responses/InternalError"
+        "304":
+          $ref: "#/components/responses/NotModified"
 
   /filemodels/{name}/steps:
     get:
@@ -445,8 +485,14 @@ paths:
       parameters:
         - $ref: "#/components/parameters/DesignNameParam"
         - $ref: "#/components/parameters/StepNameParam"
+        - $ref: "#/components/parameters/IfNoneMatch"
       responses:
         "200":
+          headers:
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Cache-Control:
+              $ref: "#/components/headers/CacheControl"
           description: Step directory.
           content:
             application/json:
@@ -460,6 +506,8 @@ paths:
           $ref: "#/components/responses/NotFound"
         "500":
           $ref: "#/components/responses/InternalError"
+        "304":
+          $ref: "#/components/responses/NotModified"
 
   /filemodels/{name}/steps/{step}/eda_data:
     get:
@@ -472,8 +520,14 @@ paths:
       parameters:
         - $ref: "#/components/parameters/DesignNameParam"
         - $ref: "#/components/parameters/StepNameParam"
+        - $ref: "#/components/parameters/IfNoneMatch"
       responses:
         "200":
+          headers:
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Cache-Control:
+              $ref: "#/components/headers/CacheControl"
           description: Eda data file.
           content:
             application/json:
@@ -487,6 +541,8 @@ paths:
           $ref: "#/components/responses/NotFound"
         "500":
           $ref: "#/components/responses/InternalError"
+        "304":
+          $ref: "#/components/responses/NotModified"
 
   /filemodels/{name}/steps/{step}/attrlist:
     get:
@@ -497,8 +553,14 @@ paths:
       parameters:
         - $ref: "#/components/parameters/DesignNameParam"
         - $ref: "#/components/parameters/StepNameParam"
+        - $ref: "#/components/parameters/IfNoneMatch"
       responses:
         "200":
+          headers:
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Cache-Control:
+              $ref: "#/components/headers/CacheControl"
           description: Attrlist file.
           content:
             application/json:
@@ -512,6 +574,8 @@ paths:
           $ref: "#/components/responses/NotFound"
         "500":
           $ref: "#/components/responses/InternalError"
+        "304":
+          $ref: "#/components/responses/NotModified"
 
   /filemodels/{name}/steps/{step}/profile:
     get:
@@ -524,8 +588,14 @@ paths:
       parameters:
         - $ref: "#/components/parameters/DesignNameParam"
         - $ref: "#/components/parameters/StepNameParam"
+        - $ref: "#/components/parameters/IfNoneMatch"
       responses:
         "200":
+          headers:
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Cache-Control:
+              $ref: "#/components/headers/CacheControl"
           description: Profile features file.
           content:
             application/json:
@@ -539,6 +609,8 @@ paths:
           $ref: "#/components/responses/NotFound"
         "500":
           $ref: "#/components/responses/InternalError"
+        "304":
+          $ref: "#/components/responses/NotModified"
 
   /filemodels/{name}/steps/{step}/stephdr:
     get:
@@ -550,8 +622,14 @@ paths:
       parameters:
         - $ref: "#/components/parameters/DesignNameParam"
         - $ref: "#/components/parameters/StepNameParam"
+        - $ref: "#/components/parameters/IfNoneMatch"
       responses:
         "200":
+          headers:
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Cache-Control:
+              $ref: "#/components/headers/CacheControl"
           description: Step header file.
           content:
             application/json:
@@ -565,6 +643,8 @@ paths:
           $ref: "#/components/responses/NotFound"
         "500":
           $ref: "#/components/responses/InternalError"
+        "304":
+          $ref: "#/components/responses/NotModified"
 
   /filemodels/{name}/steps/{step}/netlists:
     get:
@@ -603,8 +683,14 @@ paths:
         - $ref: "#/components/parameters/DesignNameParam"
         - $ref: "#/components/parameters/StepNameParam"
         - $ref: "#/components/parameters/NetlistNameParam"
+        - $ref: "#/components/parameters/IfNoneMatch"
       responses:
         "200":
+          headers:
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Cache-Control:
+              $ref: "#/components/headers/CacheControl"
           description: Netlist file.
           content:
             application/json:
@@ -618,6 +704,8 @@ paths:
           $ref: "#/components/responses/NotFound"
         "500":
           $ref: "#/components/responses/InternalError"
+        "304":
+          $ref: "#/components/responses/NotModified"
 
   /filemodels/{name}/steps/{step}/layers:
     get:
@@ -658,8 +746,14 @@ paths:
         - $ref: "#/components/parameters/DesignNameParam"
         - $ref: "#/components/parameters/StepNameParam"
         - $ref: "#/components/parameters/LayerNameParam"
+        - $ref: "#/components/parameters/IfNoneMatch"
       responses:
         "200":
+          headers:
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Cache-Control:
+              $ref: "#/components/headers/CacheControl"
           description: Layer directory.
           content:
             application/json:
@@ -673,6 +767,8 @@ paths:
           $ref: "#/components/responses/NotFound"
         "500":
           $ref: "#/components/responses/InternalError"
+        "304":
+          $ref: "#/components/responses/NotModified"
 
   /filemodels/{name}/steps/{step}/layers/{layer}/components:
     get:
@@ -686,8 +782,14 @@ paths:
         - $ref: "#/components/parameters/DesignNameParam"
         - $ref: "#/components/parameters/StepNameParam"
         - $ref: "#/components/parameters/LayerNameParam"
+        - $ref: "#/components/parameters/IfNoneMatch"
       responses:
         "200":
+          headers:
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Cache-Control:
+              $ref: "#/components/headers/CacheControl"
           description: Components file.
           content:
             application/json:
@@ -701,6 +803,8 @@ paths:
           $ref: "#/components/responses/NotFound"
         "500":
           $ref: "#/components/responses/InternalError"
+        "304":
+          $ref: "#/components/responses/NotModified"
 
   /filemodels/{name}/steps/{step}/layers/{layer}/features:
     get:
@@ -714,8 +818,14 @@ paths:
         - $ref: "#/components/parameters/DesignNameParam"
         - $ref: "#/components/parameters/StepNameParam"
         - $ref: "#/components/parameters/LayerNameParam"
+        - $ref: "#/components/parameters/IfNoneMatch"
       responses:
         "200":
+          headers:
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Cache-Control:
+              $ref: "#/components/headers/CacheControl"
           description: Features file.
           content:
             application/json:
@@ -729,6 +839,8 @@ paths:
           $ref: "#/components/responses/NotFound"
         "500":
           $ref: "#/components/responses/InternalError"
+        "304":
+          $ref: "#/components/responses/NotModified"
 
   /filemodels/{name}/steps/{step}/layers/{layer}/attrlist:
     get:
@@ -740,8 +852,14 @@ paths:
         - $ref: "#/components/parameters/DesignNameParam"
         - $ref: "#/components/parameters/StepNameParam"
         - $ref: "#/components/parameters/LayerNameParam"
+        - $ref: "#/components/parameters/IfNoneMatch"
       responses:
         "200":
+          headers:
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Cache-Control:
+              $ref: "#/components/headers/CacheControl"
           description: Attrlist file.
           content:
             application/json:
@@ -755,6 +873,8 @@ paths:
           $ref: "#/components/responses/NotFound"
         "500":
           $ref: "#/components/responses/InternalError"
+        "304":
+          $ref: "#/components/responses/NotModified"
 
   /filemodels/{name}/steps/{step}/diagnostics/symbol_units:
     get:
@@ -771,8 +891,14 @@ paths:
       parameters:
         - $ref: "#/components/parameters/DesignNameParam"
         - $ref: "#/components/parameters/StepNameParam"
+        - $ref: "#/components/parameters/IfNoneMatch"
       responses:
         "200":
+          headers:
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Cache-Control:
+              $ref: "#/components/headers/CacheControl"
           description: Per-layer symbol unit diagnostics.
           content:
             application/json:
@@ -796,6 +922,8 @@ paths:
           $ref: "#/components/responses/NotFound"
         "500":
           $ref: "#/components/responses/InternalError"
+        "304":
+          $ref: "#/components/responses/NotModified"
 
   /filemodels/{name}/symbols:
     get:
@@ -832,8 +960,14 @@ paths:
       parameters:
         - $ref: "#/components/parameters/DesignNameParam"
         - $ref: "#/components/parameters/SymbolNameParam"
+        - $ref: "#/components/parameters/IfNoneMatch"
       responses:
         "200":
+          headers:
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Cache-Control:
+              $ref: "#/components/headers/CacheControl"
           description: Symbol directory.
           content:
             application/json:
@@ -847,6 +981,8 @@ paths:
           $ref: "#/components/responses/NotFound"
         "500":
           $ref: "#/components/responses/InternalError"
+        "304":
+          $ref: "#/components/responses/NotModified"
 
   /filemodels/{name}/symbols/{symbol}/features:
     get:
@@ -857,8 +993,14 @@ paths:
       parameters:
         - $ref: "#/components/parameters/DesignNameParam"
         - $ref: "#/components/parameters/SymbolNameParam"
+        - $ref: "#/components/parameters/IfNoneMatch"
       responses:
         "200":
+          headers:
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Cache-Control:
+              $ref: "#/components/headers/CacheControl"
           description: Features file.
           content:
             application/json:
@@ -872,6 +1014,8 @@ paths:
           $ref: "#/components/responses/NotFound"
         "500":
           $ref: "#/components/responses/InternalError"
+        "304":
+          $ref: "#/components/responses/NotModified"
 
   /filemodels/{name}/symbols/{symbol}/attrlist:
     get:
@@ -882,8 +1026,14 @@ paths:
       parameters:
         - $ref: "#/components/parameters/DesignNameParam"
         - $ref: "#/components/parameters/SymbolNameParam"
+        - $ref: "#/components/parameters/IfNoneMatch"
       responses:
         "200":
+          headers:
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Cache-Control:
+              $ref: "#/components/headers/CacheControl"
           description: Attrlist file.
           content:
             application/json:
@@ -897,6 +1047,8 @@ paths:
           $ref: "#/components/responses/NotFound"
         "500":
           $ref: "#/components/responses/InternalError"
+        "304":
+          $ref: "#/components/responses/NotModified"
 
   /designs:
     get:
@@ -1234,6 +1386,36 @@ components:
         type: string
       example: cad-net
 
+    IfNoneMatch:
+        name: If-None-Match
+        in: header
+        required: false
+        description: |
+            RFC 7232 entity-tag list (or "*") copied from a previous response's
+            ETag. When one of the tags matches the current representation, the
+            server returns 304 Not Modified with no body.
+        schema:
+            type: string
+        example: '"a1b2c3d4e5f60718"'
+
+  headers:
+    ETag:
+        description: |
+            Strong entity tag of the uncompressed representation: FNV-1a over
+            (design name, archive mtime/size, cache invalidation generation,
+            endpoint path). Changes when the design archive is replaced or the
+            cached representation is invalidated.
+        schema:
+            type: string
+        example: '"a1b2c3d4e5f60718"'
+    CacheControl:
+        description: |
+            Cache policy for per-design data: private (no shared/proxy cache),
+            one hour of client reuse, then mandatory revalidation.
+        schema:
+            type: string
+        example: private, max-age=3600
+
   responses:
     Unauthorized:
       description: Missing or invalid HTTP Basic credentials.
@@ -1263,6 +1445,18 @@ components:
           schema:
             type: string
           example: failed handling new file
+
+    NotModified:
+        description: |
+            Not Modified (RFC 7232 §4.1): the client's If-None-Match matched the
+            current representation, so no body is returned. ETag and
+            Cache-Control are echoed so the client can refresh its cached
+            header set.
+        headers:
+            ETag:
+                $ref: "#/components/headers/ETag"
+            CacheControl:
+                $ref: "#/components/headers/CacheControl"
 
   schemas:
     # ------------------------------------------------------------------ common
@@ -1563,14 +1757,14 @@ components:
               ys: 0
               xe: 1.5
               ye: 0
-              sym_num: 1
+              symNum: 1
               polarity: Positive
               dcode: 10
               id: 1
             - type: Pad
               x: 0.35
               y: 0.2
-              sym_num: 2
+              symNum: 2
               polarity: Positive
               dcode: 11
               id: 2
@@ -1628,7 +1822,7 @@ components:
               ys: 0
               xe: 0.155
               ye: 0
-              sym_num: 1
+              symNum: 1
               polarity: Positive
               dcode: 10
               id: 1
@@ -2551,14 +2745,14 @@ components:
             ys: 0
             xe: 1.5
             ye: 0
-            sym_num: 1
+            symNum: 1
             polarity: Positive
             dcode: 10
             id: 1
           - type: Pad
             x: 0.35
             y: 0.2
-            sym_num: 2
+            symNum: 2
             polarity: Positive
             dcode: 11
             id: 2
