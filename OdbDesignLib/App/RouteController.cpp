@@ -94,13 +94,18 @@ namespace Odb::Lib::App
 		const std::string& endpointPath,
 		std::string& etag) const
 	{
-		// Computed from the archive file on disk, not the (possibly not yet
-		// loaded) cached object, so the 304 decision never pays for a load or a
-		// serialization. A stat-to-load race (archive replaced in between) is
-		// benign: the 200 body then carries the pre-load tag, the next request
-		// recomputes the post-replacement tag, and the client's stale copy is
-		// revalidated and refreshed.
-		etag = Utils::MakeDesignEtag(m_serverApp.args().designsDir(), designName, endpointPath);
+	// Computed from the archive file on disk plus the design's cache
+	// invalidation generation, not the (possibly not yet loaded) cached
+	// object, so the 304 decision never pays for a load or a serialization.
+	// The generation covers in-memory-only changes (POST /filemodels with
+	// save=false replaces the cache without touching the file): those bump
+	// the generation, rotating the tag, so revalidation serves a fresh 200
+	// instead of 304-forever. A stat-to-load race (archive replaced in
+	// between) is benign: the 200 body then carries the pre-load tag, the
+	// next request recomputes the post-replacement tag, and the client's
+	// stale copy is revalidated and refreshed.
+	etag = Utils::MakeDesignEtag(m_serverApp.args().designsDir(), designName, endpointPath,
+		m_serverApp.designs().GetResponseGeneration(designName));
 		if (etag.empty())
 		{
 			return std::nullopt;

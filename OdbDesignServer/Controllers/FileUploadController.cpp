@@ -23,6 +23,18 @@ namespace
         const auto designName = path(filename).stem().string();
         try
         {
+            // An overwrite of an already-cached design must drop the stale
+            // cache entry first: LoadDesignAsync happily reports a fresh
+            // background load, but its single-flight cache-hit path would
+            // return the object parsed from the OLD archive without ever
+            // re-reading disk — a silent no-op that then pins the stale body
+            // behind the overwritten file's fresh ETag.
+            if (designs.GetLoadState(designName) != Odb::Lib::App::DesignCache::LoadState::Unloaded)
+            {
+                designs.InvalidateDesign(designName);
+                CROW_LOG_INFO << "Invalidated cached design \"" << designName << "\" for re-parse of the replaced archive";
+            }
+
             if (designs.LoadDesignAsync(designName))
             {
                 CROW_LOG_INFO << "Auto-warm load kicked for uploaded design \"" << designName << "\"";

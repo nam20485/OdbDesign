@@ -108,7 +108,18 @@ namespace Odb::Test::HttpCaching
                   MakeEtag("design1", 1000, 12345, "/filemodels/<string>/matrix/matrix"));
     }
 
-    // ---- FindDesignArchiveFile: stem matching over the DesignCache extension set ----
+    TEST_F(HttpCachingTest, MakeEtag_VariesByGeneration)
+    {
+        // The cache invalidation generation is part of the digest so
+        // in-memory-only changes (POST /filemodels with save=false) rotate
+        // the tag without touching the archive file on disk.
+        EXPECT_NE(MakeEtag("design1", 1000, 12345, "/filemodels/<string>", 0),
+                  MakeEtag("design1", 1000, 12345, "/filemodels/<string>", 1));
+        EXPECT_EQ(MakeEtag("design1", 1000, 12345, "/filemodels/<string>", 7),
+                  MakeEtag("design1", 1000, 12345, "/filemodels/<string>", 7));
+    }
+
+    // ---- FindDesignArchiveFile: stem matching, mirroring DesignCache serving ----
 
     TEST_F(HttpCachingTest, FindDesignArchiveFile_FindsEachSupportedExtension)
     {
@@ -127,7 +138,7 @@ namespace Odb::Test::HttpCaching
         }
     }
 
-    TEST_F(HttpCachingTest, FindDesignArchiveFile_ExtensionMatchIsCaseInsensitive)
+    TEST_F(HttpCachingTest, FindDesignArchiveFile_MatchesByStemRegardlessOfExtensionCase)
     {
         writeDesignFile("MYDESIGN.TGZ", "x", 1000);
 
@@ -136,13 +147,18 @@ namespace Odb::Test::HttpCaching
         EXPECT_EQ(found.filename().string(), "MYDESIGN.TGZ");
     }
 
-    TEST_F(HttpCachingTest, FindDesignArchiveFile_MatchesMultiPartTarGzExtension)
+    TEST_F(HttpCachingTest, FindDesignArchiveFile_MultiPartTarGzFollowsStemSemantics)
     {
         writeDesignFile("tarborn.tgz", "x", 1000);
         writeDesignFile("flexi.tar.gz", "x", 1000);
 
-        // ".tar.gz" must strip whole (design "flexi"), not leave "flexi.tar"
-        auto found = FindDesignArchiveFile(designsDir(), "flexi");
+        // Matching mirrors DesignCache::FindArchivePath exactly: a file's stem
+        // strips only the LAST extension, so "flexi.tar.gz" belongs to design
+        // "flexi.tar" — the same name the server serves and uploads it under.
+        // A whole-extension strip here would let the validator attest a
+        // different archive than the one behind the body.
+        EXPECT_TRUE(FindDesignArchiveFile(designsDir(), "flexi").empty());
+        auto found = FindDesignArchiveFile(designsDir(), "flexi.tar");
         ASSERT_FALSE(found.empty());
         EXPECT_EQ(found.filename().string(), "flexi.tar.gz");
     }
@@ -154,11 +170,17 @@ namespace Odb::Test::HttpCaching
         EXPECT_TRUE(FindDesignArchiveFile(designsDir(), "nosuchdesign").empty());
     }
 
-    TEST_F(HttpCachingTest, FindDesignArchiveFile_UnsupportedExtension_ReturnsEmpty)
+    TEST_F(HttpCachingTest, FindDesignArchiveFile_MatchesAnyExtensionLikeDesignCache)
     {
+        // DesignCache::FindArchivePath serves the first regular file whose stem
+        // matches, with no extension whitelist; the validator must resolve the
+        // identical file or the tag could attest an archive the server would
+        // never serve for that name.
         writeDesignFile("notes.txt", "x", 1000);
 
-        EXPECT_TRUE(FindDesignArchiveFile(designsDir(), "notes").empty());
+        auto found = FindDesignArchiveFile(designsDir(), "notes");
+        ASSERT_FALSE(found.empty());
+        EXPECT_EQ(found.filename().string(), "notes.txt");
     }
 
     TEST_F(HttpCachingTest, FindDesignArchiveFile_MissingDirectory_ReturnsEmpty)
@@ -219,6 +241,21 @@ namespace Odb::Test::HttpCaching
 
         EXPECT_NE(MakeDesignEtag(designsDir(), "design1", "/filemodels/<string>/matrix/matrix"),
                   MakeDesignEtag(designsDir(), "design1", "/filemodels/<string>/misc/info"));
+    }
+
+    // Generation invalidation contract: a cache-side replacement that never
+    // touches the archive file (POST /filemodels with save=false) still
+    // rotates the tag, so a revalidating client gets a fresh 200 instead of
+    // a 304 describing data it already has.
+    TEST_F(HttpCachingTest, MakeDesignEtag_VariesByGeneration_SameFileOnDisk)
+    {
+        writeDesignFile("design1.tgz", "stable archive contents", 1000);
+
+        const auto before = MakeDesignEtag(designsDir(), "design1", "/filemodels/<string>", 3);
+        const auto after = MakeDesignEtag(designsDir(), "design1", "/filemodels/<string>", 4);
+
+        ASSERT_FALSE(before.empty());
+        EXPECT_NE(before, after);
     }
 
     // ---- IfNoneMatchMatches: RFC 7232 weak comparison ----

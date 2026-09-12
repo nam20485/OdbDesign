@@ -2,15 +2,17 @@
 
 // Strong ETag support for the per-design HTTP data endpoints (M1.3).
 //
-// An ETag binds the design name, the design archive file's mtime and size, and
-// the endpoint path with an FNV-1a 64-bit hash, rendered as a quoted lowercase
-// hex string ("a1b2c3d4e5f60718").
+// An ETag binds the design name, the design archive file's mtime and size, the
+// per-design cache invalidation generation, and the endpoint path with an
+// FNV-1a 64-bit hash, rendered as a quoted lowercase hex string
+// ("a1b2c3d4e5f60718").
 //
-// Invalidation contract: because the tag includes the archive file's mtime and
-// size, replacing or re-uploading a design archive (DesignCache reload,
-// FileUploadController overwrite, POST of a new archive file) changes the tag
-// with no explicit invalidation step — a client revalidating with the stale
-// tag's If-None-Match no longer matches and receives a fresh 200.
+// Invalidation contract: replacing or re-uploading a design archive changes
+// the on-disk mtime/size, and in-memory replacements (POST /filemodels with
+// save=false, upload-overwrite invalidation) bump the cache invalidation
+// generation — either way the tag changes with no explicit invalidation step,
+// so a client revalidating with the stale tag's If-None-Match no longer
+// matches and receives a fresh 200.
 //
 // Gzip interplay: the tag is the strong validator of the UNCOMPRESSED
 // representation. It is computed before Crow serializes the body, hence also
@@ -22,6 +24,7 @@
 #include <cstring>
 #include <filesystem>
 #include <string>
+#include <string_view>
 #include <system_error>
 
 namespace Utils
@@ -44,12 +47,16 @@ namespace Utils
 	// Builds the quoted ETag string from the raw hashed fields.
 	// Exposed separately from MakeDesignEtag so tests can pin the digest
 	// behavior (determinism, field sensitivity, formatting) without files.
-	inline std::string MakeEtag(const std::string& designName, std::int64_t mtimeTicks, std::uint64_t sizeBytes, const std::string& endpointPath)
+	// generation: the design's cache invalidation generation (0 = no
+	// in-memory invalidation has occurred); folded into the digest so
+	// cache-only changes (POST /filemodels with save=false) rotate the tag.
+	inline std::string MakeEtag(const std::string& designName, std::int64_t mtimeTicks, std::uint64_t sizeBytes, const std::string& endpointPath, std::uint64_t generation = 0)
 	{
 		auto hash = Fnv1a64(designName.data(), designName.size());
 		hash = Fnv1a64(reinterpret_cast<const char*>(&mtimeTicks), sizeof(mtimeTicks), hash);
 		hash = Fnv1a64(reinterpret_cast<const char*>(&sizeBytes), sizeof(sizeBytes), hash);
 		hash = Fnv1a64(endpointPath.data(), endpointPath.size(), hash);
+		hash = Fnv1a64(reinterpret_cast<const char*>(&generation), sizeof(generation), hash);
 
 		static constexpr char HEX_DIGITS[] = "0123456789abcdef";
 		std::string tag;
@@ -63,23 +70,22 @@ namespace Utils
 		return tag;
 	}
 
-	// Locates the design's archive file by stem-matching designName against the
-	// extension set DesignCache documents (DesignCache::DESIGN_EXTENSIONS:
-	// zip, tgz, tar.gz, tar, gzip, gz). ".tar.gz" is tested before ".gz"/".tar"
-	// so the multi-part extension strips whole ("foo" from "foo.tar.gz"). The
-	// extension comparison is case-insensitive; the stem comparison is
-	// case-sensitive, mirroring DesignCache's stem lookup. Returns an empty path
-	// when no archive matches or the directory cannot be read.
+	// Locates the design's archive file exactly the way DesignCache does when
+	// serving (DesignCache::FindArchivePath): the first regular file in the
+	// designs directory whose path stem matches designName (the stem strips
+	// only the LAST extension — "foo.tar.gz" has stem "foo.tar"). Keeping the
+	// two resolvers identical is what makes the validator attest the same
+	// archive that is served; a divergent extension-stripping rule here would
+	// let the tag name a different file than the one behind the body. The
+	// stem comparison is case-sensitive, mirroring DesignCache's lookup.
+	// Returns an empty path when no archive matches or the directory cannot
+	// be read.
 	inline std::filesystem::path FindDesignArchiveFile(const std::string& designsDir, const std::string& designName)
 	{
 		if (designsDir.empty() || designName.empty())
 		{
 			return {};
 		}
-
-		// string_view (not const char* + strlen): sizes are compile-time, no
-		// NUL-termination assumptions on string inputs (Codacy CWE-126).
-		static constexpr std::string_view DESIGN_ARCHIVE_EXTENSIONS[] = { ".tar.gz", ".tgz", ".zip", ".tar", ".gzip", ".gz" };
 
 		std::error_code ec;
 		std::filesystem::directory_iterator dirIt(designsDir, std::filesystem::directory_options::skip_permission_denied, ec);
@@ -96,28 +102,9 @@ namespace Utils
 				continue;
 			}
 
-			const auto filename = entry.path().filename().string();
-			for (const auto extension : DESIGN_ARCHIVE_EXTENSIONS)
+			if (entry.path().stem() == designName)
 			{
-				if (filename.size() <= extension.size())
-				{
-					continue;
-				}
-
-				const auto stem = filename.substr(0, filename.size() - extension.size());
-				if (stem != designName)
-				{
-					continue;
-				}
-
-				// stem matches; confirm the tail is the extension, case-insensitively
-				const auto isExtension = std::equal(extension.begin(), extension.end(),
-					filename.begin() + static_cast<std::ptrdiff_t>(stem.size()),
-					[](char a, char b) { return std::tolower(static_cast<unsigned char>(a)) == std::tolower(static_cast<unsigned char>(b)); });
-				if (isExtension)
-				{
-					return entry.path();
-				}
+				return entry.path();
 			}
 		}
 
@@ -126,10 +113,11 @@ namespace Utils
 
 	// Computes the strong ETag for a per-design data endpoint: locates the
 	// design's archive file under designsDir and hashes (design name, archive
-	// mtime, archive size, endpoint path). Returns the quoted tag, or an empty
-	// string when the archive file cannot be found or stat'ed — the endpoint
-	// will 404 on load in that case, so no caching headers are emitted.
-	inline std::string MakeDesignEtag(const std::string& designsDir, const std::string& designName, const std::string& endpointPath)
+	// mtime, archive size, endpoint path, cache invalidation generation).
+	// Returns the quoted tag, or an empty string when the archive file cannot
+	// be found or stat'ed — the endpoint will 404 on load in that case, so no
+	// caching headers are emitted.
+	inline std::string MakeDesignEtag(const std::string& designsDir, const std::string& designName, const std::string& endpointPath, std::uint64_t generation = 0)
 	{
 		const auto archivePath = FindDesignArchiveFile(designsDir, designName);
 		if (archivePath.empty())
@@ -153,7 +141,7 @@ namespace Utils
 		// platform, which is all an ETag requires: it is only ever compared
 		// against itself, never interpreted as a timestamp.
 		const auto mtimeTicks = static_cast<std::int64_t>(mtime.time_since_epoch().count());
-		return MakeEtag(designName, mtimeTicks, sizeBytes, endpointPath);
+		return MakeEtag(designName, mtimeTicks, sizeBytes, endpointPath, generation);
 	}
 
 	// RFC 7232 If-None-Match evaluation using weak comparison (the spec mandates
