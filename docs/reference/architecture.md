@@ -732,7 +732,7 @@ OdbDesignLib/
 - **Current REST API Spec**: `swagger/odbdesign-server-0.9-swagger.yaml`
 - **gRPC C++ Tutorial**: https://grpc.io/docs/languages/cpp/basics/
 - **Streaming Best Practices**: https://grpc.io/docs/guides/performance/
-- **ODB++ Spec**: `docs/odb_spec_user.pdf`
+- **ODB++ Spec**: `docs/reference/odbpp/odb_spec_user.pdf`
 
 ---
 
