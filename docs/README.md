@@ -89,7 +89,7 @@ It is built using the latest available version of the C++ standard and is compil
 
 The diagram describes the current state of parser implementation and data availability. Green color describes areas of the ODB++ archive file that are implemented and have their data available for use. ~~Red color describes areas that are not parsed so their data is not yet available.~~ **All areas of the file are now parsed, and have their data available for use.**
 
-![ODB++ file hierarchy implementation state diagram](<odb++ file hierarchy (implemented).png>)
+![ODB++ file hierarchy implementation state diagram](<reference/images/odb-file-hierarchy-implemented.png>)
 
 ### Project Security
 
@@ -320,7 +320,7 @@ $ cmake --build --preset linux-dynamic-release
 
 ```
 
->This uses the `linux-dynamic-release` preset, which links vcpkg dependencies (protobuf, gRPC, ...) as shared libraries. Linking them statically (`linux-release` preset) loads two copies of protobuf at runtime and crashes. See [linux-dynamic-release-plan.md](./linux-dynamic-release-plan.md).
+>This uses the `linux-dynamic-release` preset, which links vcpkg dependencies (protobuf, gRPC, ...) as shared libraries. Linking them statically (`linux-release` preset) loads two copies of protobuf at runtime and crashes. See [linux-dynamic-release-plan.md](./completed/linux-dynamic-release-plan.md).
 
 This builds the C++ shared library and the REST API server executable. See the [Running the C++ Application](#running-the-c%2b%2b-application) section for more details.
 
@@ -429,7 +429,7 @@ You can use this to get help or support, discuss any issues with integration int
 
 * [ODB++ Format Home](https://odbplusplus.com/design/)
 * [ODB++ Format Documentation & Resources](https://odbplusplus.com/design/our-resources/)
-* ODB++ Format Specification (included in this repo): `docs/odb_spec_user.pdf`
+* ODB++ Format Specification (included in this repo): `docs/reference/odbpp/odb_spec_user.pdf`
 * [ODB++ Format Specification v8.1 update 4 (public PDF)](https://odbplusplus.com/wp-content/uploads/sites/2/2024/08/odb_spec_user.pdf)
 
 *ODB++ is a registered trademark of Siemens*

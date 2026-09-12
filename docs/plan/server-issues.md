@@ -5,7 +5,7 @@
 | Status | **DECIDED 2026-09-10** — all decisions resolved (per-item NOTE remarks + follow-ups): SI4 = Option 1, REST TLS cert source = **Option C** (cert-manager private CA). Execution tracked in [server-issues-implementation-plan.md](server-issues-implementation-plan.md); first tranche on `nam/server-issues-impl`. |
 | Date | 2026-09-09 |
 | Scope | OdbDesignServer (Crow REST + gRPC), CI / GitHub Pages publishing, branch topology |
-| Related | [https-tls-options.md](https-tls-options.md) (REST TLS decision, §8 gRPC TLS) · [gh-pages-coverage-integration.md](../gh-pages-coverage-integration.md) · [html report coverage pages.md](../html%20report%20coverage%20pages.md) · [opt/phase2-grpc-optimizations.md](opt/phase2-grpc-optimizations.md) |
+| Related | [https-tls-options.md](https-tls-options.md) (REST TLS decision, §8 gRPC TLS) · [gh-pages-coverage-integration.md](../completed/gh-pages-coverage-integration.md) · [opt/phase2-grpc-optimizations.md](opt/phase2-grpc-optimizations.md) |
 
 Each issue: **Current state** (facts, with code references) → **Options** (pros/cons) → **Recommendation + why** → **Dependencies / effort**.
 
@@ -102,7 +102,7 @@ Option 1 is pure deployment config on infrastructure that already routes `/swagg
 
 - Pages: single deployment, one publisher — `jekyll-gh-pages.yml` builds `docs/` → `_site` and deploys on **push to `release`** only. Every deploy *replaces* the whole site.
 - Coverage: `code-coverage.yml` produces `genhtml` HTML (`coverage/html/`) and uploads artifact `linux-coverage-report` (**14-day retention**) plus Codacy, on push/PR to all five branches.
-- Prior analysis exists: [gh-pages-coverage-integration.md](../gh-pages-coverage-integration.md) (Solutions A/B/C, single-branch `/coverage`) and [html report coverage pages.md](../html%20report%20coverage%20pages.md) (the "upload artifact every run, Pages grabs latest when it deploys" idea).
+- Prior analysis exists: [gh-pages-coverage-integration.md](../completed/gh-pages-coverage-integration.md) (Solutions A/B/C, single-branch `/coverage`) and the "upload artifact every run, Pages grabs latest when it deploys" idea.
 
 ### Options
 

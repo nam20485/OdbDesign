@@ -1,12 +1,12 @@
 # GitHub Pages: publish HTML coverage at `/coverage`
 
-This document analyzes how to expose the LCOV `genhtml` output (already produced in [`.github/workflows/code-coverage.yml`](../.github/workflows/code-coverage.yml)) on the project GitHub Pages site at a path such as **`/coverage/`**, matching the public documentation URL configured in [`docs/_config.yml`](_config.yml) (`https://source.odbdesignserver.com`).
+This document analyzes how to expose the LCOV `genhtml` output (already produced in [`.github/workflows/code-coverage.yml`](../../.github/workflows/code-coverage.yml)) on the project GitHub Pages site at a path such as **`/coverage/`**, matching the public documentation URL configured in [`docs/_config.yml`](../_config.yml) (`https://source.odbdesignserver.com`).
 
 ## Current state
 
 | Piece | Behavior |
 |--------|----------|
-| **Pages site** | Built by [`.github/workflows/jekyll-gh-pages.yml`](../.github/workflows/jekyll-gh-pages.yml): Jekyll builds `./docs` → `./_site`, then `actions/upload-pages-artifact` + `actions/deploy-pages`. Trigger: **`push` to branch `release`** (and `workflow_dispatch`). |
+| **Pages site** | Built by [`.github/workflows/jekyll-gh-pages.yml`](../../.github/workflows/jekyll-gh-pages.yml): Jekyll builds `./docs` → `./_site`, then `actions/upload-pages-artifact` + `actions/deploy-pages`. Trigger: **`push` to branch `release`** (and `workflow_dispatch`). |
 | **Custom domain** | `url: https://source.odbdesignserver.com` in `_config.yml` (no `baseurl`), so the site root is the domain root. A folder `_site/coverage/` becomes **`https://source.odbdesignserver.com/coverage/`**. |
 | **Coverage HTML** | `code-coverage` job runs `genhtml` into `coverage/html/`, uploads artifact `linux-coverage-report` (14 days). Same workflow also uploads to Codacy when tokens exist. |
 | **Deployment model** | GitHub Pages stores **one** deployment per repo/environment. Each deploy **replaces** the previous published tree. Whatever you put in the uploaded artifact **is** the whole public site. |
@@ -37,7 +37,7 @@ Any solution must produce **a single combined artifact** (Jekyll output + `cover
 4. Runs Doxygen (if you re-enable copying API docs to `_site/api`) so the single artifact still matches your intended site.
 5. Uploads **one** `upload-pages-artifact` and deploys with `deploy-pages`.
 
-**Changes elsewhere:** Remove or disable the separate deploy in [`.github/workflows/jekyll-gh-pages.yml`](../.github/workflows/jekyll-gh-pages.yml) (or replace that file with this unified workflow) so there is **only one** publisher.
+**Changes elsewhere:** Remove or disable the separate deploy in [`.github/workflows/jekyll-gh-pages.yml`](../../.github/workflows/jekyll-gh-pages.yml) (or replace that file with this unified workflow) so there is **only one** publisher.
 
 **Pros:** Predictable site layout; no race; coverage and docs always from the same commit on `release`.  
 **Cons:** Larger workflow file or need for a reusable workflow chunk; `release` publishes only when this workflow runs (align triggers with your release process).
@@ -46,7 +46,7 @@ Any solution must produce **a single combined artifact** (Jekyll output + `cover
 
 ## Solution B — Keep two workflows; chain with `workflow_run`
 
-**Idea:** Leave [`.github/workflows/code-coverage.yml`](../.github/workflows/code-coverage.yml) as the job that **generates** coverage and uploads `linux-coverage-report`.
+**Idea:** Leave [`.github/workflows/code-coverage.yml`](../../.github/workflows/code-coverage.yml) as the job that **generates** coverage and uploads `linux-coverage-report`.
 
 Add a **new** workflow (or extend `jekyll-gh-pages.yml`) that:
 
@@ -112,6 +112,6 @@ After implementation, add a visible link in Jekyll (for example in `docs/index.m
 
 ## Related files
 
-- [`.github/workflows/code-coverage.yml`](../.github/workflows/code-coverage.yml) — `lcov` / `genhtml`, artifact `linux-coverage-report`
-- [`.github/workflows/jekyll-gh-pages.yml`](../.github/workflows/jekyll-gh-pages.yml) — Jekyll → Pages
-- [`docs/_config.yml`](_config.yml) — site `url`, theme
+- [`.github/workflows/code-coverage.yml`](../../.github/workflows/code-coverage.yml) — `lcov` / `genhtml`, artifact `linux-coverage-report`
+- [`.github/workflows/jekyll-gh-pages.yml`](../../.github/workflows/jekyll-gh-pages.yml) — Jekyll → Pages
+- [`docs/_config.yml`](../_config.yml) — site `url`, theme
