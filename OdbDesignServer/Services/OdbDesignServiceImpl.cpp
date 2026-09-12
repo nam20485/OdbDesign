@@ -133,10 +133,20 @@ namespace OdbDesignServer
                 std::string cachedBytes;
                 if (m_designCache->TryGetDesignBytes(designName, cachedBytes))
                 {
-                    response->ParseFromString(cachedBytes);
-                    loginfo("[ConnTrace] GetDesign ok (cached bytes): design_name=\"" + designName +
-                        "\" approx_bytes=" + std::to_string(response->ByteSizeLong()));
-                    return grpc::Status::OK;
+                    if (response->ParseFromString(cachedBytes))
+                    {
+                        loginfo("[ConnTrace] GetDesign ok (cached bytes): design_name=\"" + designName +
+                            "\" approx_bytes=" + std::to_string(response->ByteSizeLong()));
+                        return grpc::Status::OK;
+                    }
+
+                    // Corrupt cached bytes: never serve an empty/partial
+                    // message as OK. Log, clear the partially-merged message,
+                    // and fall through to the cold path below (the poisoned
+                    // payload is dropped by the next invalidation).
+                    logerror("Cached design bytes failed to parse for \"" + designName +
+                        "\"; falling back to full load");
+                    response->Clear();
                 }
 
                 const auto design = m_designCache->GetDesign(designName);

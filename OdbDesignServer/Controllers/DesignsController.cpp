@@ -244,8 +244,22 @@ namespace Odb::App::Server
 
 		// Same pure status mapping as the gRPC RequestLoadDesign twin: never
 		// blocks on a parse, the only mutating call is the async-load kick.
-		const auto status = OdbDesignServer::Services::ComputeRequestLoadStatus(
-			m_serverApp.designs(), designNameDecoded);
+		// Like the gRPC twin (and TryGetDesign above), thread-spawn failure
+		// from LoadDesignAsync maps to an error response — an uncaught escape
+		// would die in Crow's worker loop and leave the client with no
+		// response at all.
+		Odb::Grpc::LoadStatus status;
+		try
+		{
+			status = OdbDesignServer::Services::ComputeRequestLoadStatus(
+				m_serverApp.designs(), designNameDecoded);
+		}
+		catch (const std::exception& e)
+		{
+			logexception_msg(e, "failed to kick load for design \"" + designNameDecoded + "\"");
+			return crow::response(crow::status::INTERNAL_SERVER_ERROR,
+				"failed to start load for design \"" + designNameDecoded + "\"");
+		}
 
 		crow::json::wvalue wv;
 		wv["designName"] = designNameDecoded;
