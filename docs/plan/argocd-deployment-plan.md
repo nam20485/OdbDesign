@@ -155,6 +155,7 @@ auditing tags.
 | D7 | Sync policy: `automated {prune, selfHeal}`, `ServerSideApply=true`, `CreateNamespace=false`, **no `resources-finalizer` on any Application** | Prune/selfHeal per handoff; SSA avoids last-applied bloat on the 85 KB ConfigMap; no finalizers means deleting an Application orphans live objects instead of cascading — deliberate PV-safety choice (handoff §8.3). |
 | D8 | CI gating restored in Phase 0 (CodeQL re-enabled with concurrency dedup; ruleset checks made satisfiable) | §2.3.2–3, user direction 2026-09-08. |
 | D9 | Deploy commits carry `[skip ci]` **and** workflows get `paths-ignore` | Bot commits made with `GITHUB_TOKEN` never trigger workflow runs anyway; `[skip ci]` is defense-in-depth for human-pushed equivalents, `paths-ignore` guards human deploy/docs-only commits. |
+| D10 | Exactly **one** gRPC Service variant lives in the Application-watched `deploy/kube/OdbDesignServer/` path — the **LoadBalancer** (`service-grpc-loadbalancer.yaml`, matching the live non-TLS deployment, so adoption is a no-op); the ClusterIP TLS variant (`service-grpc.yaml`) moves out of the watched tree together with the other TLS-mode artifacts | The two manifests define the **same** Service (`odbdesign-server-grpc-service`) with contradictory `spec.type`; a directory sync applies both and last-write-wins silently (PR #588 review W4, analysis in `docs/plan/pr-588-review-resolution.md` §5). TLS mode, when adopted, arrives as its own reviewed overlay/path — never as a second Service definition inside a watched dir. |
 
 ## 5. Target flow
 
@@ -182,7 +183,16 @@ or with the platform owner.
 
 ```text
 deploy/kube/
-├── OdbDesignServer/                      # unchanged contents
+├── OdbDesignServer/                      # ONE change (D10): service-grpc.yaml
+│                                         # (TLS ClusterIP variant) moves to
+│                                         # tls/ — never two definitions of the
+│                                         # same Service in a watched path
+├── tls/                                  # NEW dir — TLS-mode manifests, kept
+│   ├── service-grpc.yaml                 # out of every Application path
+│   ├── traefik-helmchartconfig-grpc-entrypoint.yaml
+│   ├── odbdesign-grpc-ingressroute-tcp.yaml
+│   ├── issuer-ca.yaml
+│   └── certificate-odbs-server.yaml
 ├── OdbDesignServer-SwaggerUI/            # unchanged contents
 ├── shared/                               # NEW dir
 │   ├── local-ingress.yaml                # moved from deploy/kube/
@@ -247,6 +257,12 @@ spec:
 The shared app owns the ingress + PV + PVC; the PV manifest already matches
 the live object (hostPath `/srv/odbdesign-volume`, `manual` storageClass,
 Retain) — verified 2026-09-08.
+
+Note (D10): before the `odbdesign-server` Application is created, the watched
+path must contain exactly one gRPC Service variant — the LoadBalancer one,
+matching the live cluster. Until the §6.1 reshuffle lands, `deploy.ps1`'s
+selective per-file apply is the only consumer of either variant, so the
+duplicate definition is inert but must not survive into the Argo era.
 
 `odbdesign-root.yaml` (app-of-apps):
 

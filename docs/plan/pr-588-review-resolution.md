@@ -1,6 +1,6 @@
 # PR #588 Review Comment Resolution Plan
 
-**Status:** 11 approved items executed 2026-09-12 (215/215 ctest green, benchmark script verified end-to-end: cold 3.4 s vs warm ~1 µs on `designodb_rigidflex`); W4/W5/S6 investigated and held for Nathan's decision (see §5 revised recommendations)
+**Status:** COMPLETE — all 14 review issues addressed (2026-09-12). 11 fixed in code (215/215 ctest green, benchmark verified: cold 3.4 s vs warm ~1 µs); W5+S6 fixed after maintainer approval; W4 recorded as decision **D10** in `docs/plan/argocd-deployment-plan.md` (one gRPC Service variant per watched path; TLS variant relocates in the §6.1 reshuffle)
 **Date:** 2026-09-12
 **Target:** PR #588 (`nam20485` → `development`, the standing integration PR)
 **Review source:** kilo-code-bot review of commit `ebd7901` — 14 issues (6 WARNING, 8 SUGGESTION)
@@ -271,12 +271,12 @@ selectively today (TLS → ClusterIP, non-TLS → LoadBalancer).
 - The cluster object name (`odbdesign-server-grpc-service`) is what matters; a file
   move/rename in the repo is invisible to the cluster.
 
-**Revised recommendation (pending Nathan's sign-off):** **No manifest change now.** The
-hazard requires a directory-wide apply or a GitOps app path — neither exists. The decision of
-which variant lives in the watched path belongs to the Argo CD migration plan
-(`docs/plan/argocd-deployment-plan.md`), where it should be an explicit line item (proposed:
-add a note there + warning comments in both YAML headers at that time). Thread gets a
-substantive explanation reply, resolution deferred to Nathan.
+**Revised recommendation — RESOLVED (maintainer decision 2026-09-12):** no manifest change
+now; the issue moved into the Argo CD deployment plan as decision **D10** (exactly one gRPC
+Service variant in the watched path — the LoadBalancer one, matching the live non-TLS cluster
+so adoption is a no-op; `service-grpc.yaml` relocates to a `deploy/kube/tls/` dir in the §6.1
+reshuffle, never leaving two definitions of the same Service inside an Application path).
+Thread replied + resolved with the pointer.
 
 ### W5 — Non-TLS deploy leaves Traefik gRPC entrypoint behind (WARNING)
 
@@ -308,9 +308,12 @@ conflict → no ingress IP.
   and the only one the repo ever applies is the gRPC-entrypoint one (k3s reconciles the
   packaged Traefik back to defaults when it is removed).
 
-**Revised recommendation (pending Nathan's sign-off):** safe to implement as originally
-planned (zero current impact, prevents a future breakage), but held per Nathan's feedback
-until he reviews this analysis. Thread gets the analysis reply; resolution deferred.
+**Revised recommendation — RESOLVED (approved 2026-09-12):** implemented as originally
+planned: the non-TLS branch of `deploy.ps1` now deletes the IngressRouteTCP and the Traefik
+gRPC-entrypoint HelmChartConfig (`--ignore-not-found=true`) before applying the LB service,
+with a comment explaining the :50051 hostPort contention. No-op on the current cluster
+(neither artifact exists); only affects a future TLS → non-TLS transition, where it prevents
+the breakage instead of causing it.
 
 ### S6 — localhost TLS validation fails deterministically (SUGGESTION) — PARTIAL
 
@@ -326,9 +329,10 @@ the `-Tls` validation path isn't even exercised. The fix (skip the localhost pro
 TLS termination, or the deployment. The main grpcurl check (:469) targets the ServiceLB
 ingress IP with the CA cert and is unaffected.
 
-**Revised recommendation (pending Nathan's sign-off):** safe to implement (zero deployment
-risk), but held with W5 per Nathan's feedback. Thread gets the analysis reply; resolution
-deferred.
+**Revised recommendation — RESOLVED (approved 2026-09-12):** implemented: the localhost
+probe is skipped when `-Tls`, with a log line stating the reason (serving cert carries no
+localhost/127.0.0.1 SAN). Validation-script-only change; the advertised-host probe still
+covers TLS mode.
 
 
 ---
