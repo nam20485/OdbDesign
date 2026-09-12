@@ -446,7 +446,12 @@ namespace Odb::App::Server
 
 		auto fileArchive = std::make_shared<FileArchive>();
 		fileArchive->from_json(json);
-		m_serverApp.designs().AddFileArchive(designName, fileArchive, false);
+		// designNameDecoded (not the raw route parameter) so the cache key
+		// matches every other handler, and the request body size as the
+		// in-memory byte estimate (save=false writes nothing to disk, so the
+		// LRU budget would otherwise charge only the flat 4 KiB overhead).
+		m_serverApp.designs().AddFileArchive(designNameDecoded, fileArchive, false,
+			static_cast<std::uint64_t>(req.body.size()));
 		
 		return crow::response();
 	}

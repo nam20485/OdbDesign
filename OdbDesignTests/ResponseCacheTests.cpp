@@ -285,6 +285,113 @@ namespace Odb::Test
         EXPECT_EQ(m_sharedDesignCache->designSerializationCount(), serializationsBefore);
     }
 
+    // ---- eviction uncharges the FULL budget contribution (estimate + payloads) ----
+
+    TEST_F(ResponseCacheTest, ByteBudget_EvictionUnchargesEstimateAndSerializedBytes)
+    {
+        // Regression: eviction used to subtract only estimatedBytes, stranding
+        // each warm design's serialized-payload charge in m_cachedBytes —
+        // every evict/reload cycle permanently inflated the phantom byte
+        // count and progressively defeated the budget.
+        const std::string designName = "sample_design";
+
+        grpc::Status status;
+        (void)fetchDesign(*m_service, designName, status);
+        ASSERT_TRUE(status.ok()) << status.error_message();
+        ASSERT_TRUE(waitForCondition([this, &designName]()
+        {
+            return m_sharedDesignCache->HasCachedResponse(designName);
+        }, kParseTimeout));
+
+        for (int cycle = 0; cycle < 2; ++cycle)
+        {
+            // Single design cached: the budget holds its estimate (archive
+            // size + overhead) plus its committed serialized payloads.
+            const auto charged = m_sharedDesignCache->cachedBytes();
+            ASSERT_GT(charged, 4096ull) << "cycle " << cycle
+                << ": warm design with payloads must be charged more than the flat overhead";
+
+            // Shrink the budget below the full charge: the design is evicted.
+            m_sharedDesignCache->setCacheMaxBytes(charged - 1);
+            EXPECT_FALSE(m_sharedDesignCache->HasCachedResponse(designName))
+                << "cycle " << cycle;
+            EXPECT_EQ(m_sharedDesignCache->cachedBytes(), 0ull)
+                << "cycle " << cycle << ": eviction must uncharge estimate + serialized bytes";
+
+            // Reload and re-warm for the next cycle (also the recovery path).
+            m_sharedDesignCache->setCacheMaxBytes(m_defaultMaxBytes);
+            (void)fetchDesign(*m_service, designName, status);
+            ASSERT_TRUE(status.ok()) << status.error_message();
+            ASSERT_TRUE(waitForCondition([this, &designName]()
+            {
+                return m_sharedDesignCache->HasCachedResponse(designName);
+            }, kParseTimeout)) << "cycle " << cycle;
+        }
+    }
+
+    // ---- save=false injection charges the request body estimate ----
+
+    TEST_F(ResponseCacheTest, AddFileArchive_InjectedBytes_ChargedToByteBudget)
+    {
+        // POST /filemodels (save=false) names a design with no on-disk
+        // archive; without the injected estimate the LRU charge was only the
+        // flat DESIGN_BYTES_OVERHEAD (4 KiB), bypassing the byte budget.
+        const std::string designName = "injected_only_design";
+
+        constexpr auto kInjectedBytes = 1ull * 1024ull * 1024ull;  // 1 MiB body
+        const auto before = m_sharedDesignCache->cachedBytes();
+        m_sharedDesignCache->AddFileArchive(designName,
+            std::make_shared<Odb::Lib::FileModel::Design::FileArchive>(), false, kInjectedBytes);
+
+        const auto after = m_sharedDesignCache->cachedBytes();
+        EXPECT_GE(after - before, kInjectedBytes)
+            << "the injected archive's body size must be charged to the LRU budget";
+    }
+
+    // ---- InvalidateDesign: upload-overwrite invalidation seam ----
+
+    TEST_F(ResponseCacheTest, InvalidateDesign_DropsCacheAndPayloads_NextLoadIsFreshParse)
+    {
+        // The upload path replaces the on-disk archive via rename(); the cache
+        // fast path would keep serving the stale object (LoadDesignAsync's
+        // background load hits the cache hit branch). InvalidateDesign is the
+        // seam the upload handler calls so the next load re-parses from disk.
+        const std::string designName = "sample_design";
+
+        grpc::Status status;
+        (void)fetchDesign(*m_service, designName, status);
+        ASSERT_TRUE(status.ok()) << status.error_message();
+        ASSERT_TRUE(waitForCondition([this, &designName]()
+        {
+            return m_sharedDesignCache->HasCachedResponse(designName);
+        }, kParseTimeout));
+
+        auto pFirst = m_sharedDesignCache->GetDesign(designName);
+        ASSERT_NE(pFirst, nullptr);
+        ASSERT_EQ(m_sharedDesignCache->GetLoadState(designName), DesignCache::LoadState::Loaded);
+
+        const auto generationBefore = m_sharedDesignCache->GetResponseGeneration(designName);
+
+        m_sharedDesignCache->InvalidateDesign(designName);
+
+        EXPECT_EQ(m_sharedDesignCache->GetLoadState(designName), DesignCache::LoadState::Unloaded);
+        EXPECT_FALSE(m_sharedDesignCache->HasCachedResponse(designName));
+        std::string stale;
+        EXPECT_FALSE(m_sharedDesignCache->TryGetDesignBytes(designName, stale))
+            << "serialized payloads must not survive invalidation";
+        // The generation bump is what rotates the design's ETag (checkConditionalGet
+        // folds it into the tag), so in-memory invalidations break 304 pinning.
+        EXPECT_GT(m_sharedDesignCache->GetResponseGeneration(designName), generationBefore);
+
+        // Next fetch re-parses from disk: a fresh object, not the stale one.
+        auto pReloaded = m_sharedDesignCache->GetDesign(designName);
+        ASSERT_NE(pReloaded, nullptr);
+        EXPECT_NE(pReloaded.get(), pFirst.get())
+            << "reload after invalidation must be a fresh parse";
+        EXPECT_NE(pFirst->GetFileModel(), nullptr)
+            << "the stale object stays alive (with its file model) for its holders";
+    }
+
     // ---- REST JSON payload exposure (controller follow-up wiring) ----
 
     TEST_F(ResponseCacheTest, TryGetJsonPayload_DeferredUntilRestWiring)

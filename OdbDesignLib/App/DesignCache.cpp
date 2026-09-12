@@ -70,7 +70,7 @@ namespace Odb::Lib::App
             updateState);
     }
 
-    void DesignCache::AddFileArchive(const std::string& designName, std::shared_ptr<FileModel::Design::FileArchive> fileArchive, bool save)
+    void DesignCache::AddFileArchive(const std::string& designName, std::shared_ptr<FileModel::Design::FileArchive> fileArchive, bool save, std::uint64_t injectedBytes)
     {
         {
             std::unique_lock<std::shared_mutex> writeLock(m_cacheMutex);
@@ -90,7 +90,10 @@ namespace Odb::Lib::App
 
         // Charge the injected archive to the byte budget (never its own eviction
         // victim) and reflect the externally-completed load in the state machine.
-        InsertLruAndEvict(designName);
+        // injectedBytes stands in for the archive size while nothing on disk
+        // backs the name (save=false); without it the charge is only the flat
+        // DESIGN_BYTES_OVERHEAD.
+        InsertLruAndEvict(designName, injectedBytes);
         TransitionLoadState(designName, LoadState::Loaded);
 
         if (save)
@@ -98,7 +101,33 @@ namespace Odb::Lib::App
             // SaveFileArchive calls GetFileArchive internally, which takes the locks.
             // We must release before calling to avoid deadlock. (No locks held here.)
             SaveFileArchive(designName);
+            // The estimate above ran before the file landed, so a fresh name was
+            // still charged injectedBytes-only; now that the archive exists on
+            // disk, re-estimate (real file size) and adjust the charge.
+            ResyncLruEstimate(designName);
         }
+    }
+
+    void DesignCache::InvalidateDesign(const std::string& designName)
+    {
+        {
+            std::unique_lock<std::shared_mutex> writeLock(m_cacheMutex);
+            // Same contract as AddFileArchive's re-upload invalidation: a cached
+            // Design (and the payloads derived from it) was built from the old
+            // archive contents and must not survive the replacement.
+            m_fileArchivesByName.erase(designName);
+            m_designsByName.erase(designName);
+        }
+
+        // Drop serialized response payloads (generation bump), uncharging their
+        // LRU bytes when an entry exists.
+        InvalidateResponsePayloads(designName);
+
+        // Mirror eviction's state handling: observers see Loaded -> Unloaded and
+        // the next load announces a fresh Loading -> Loaded cycle.
+        TransitionLoadState(designName, LoadState::Unloaded);
+
+        loginfo("Invalidated cached design \"" + designName + "\" (archive replaced)");
     }
 
     bool DesignCache::SaveFileArchive(const std::string& designName)
@@ -629,10 +658,10 @@ namespace Odb::Lib::App
         // the byte budget for an uncached name.
     }
 
-    void DesignCache::InsertLruAndEvict(const std::string& designName)
+    void DesignCache::InsertLruAndEvict(const std::string& designName, std::uint64_t injectedBytes)
     {
         const auto now = std::chrono::steady_clock::now();
-        const auto bytes = EstimateDesignBytes(designName);
+        const auto bytes = EstimateDesignBytes(designName, injectedBytes);
 
         std::vector<std::string> evicted;
         {
@@ -693,7 +722,12 @@ namespace Odb::Lib::App
                 break;
             }
 
-            m_cachedBytes -= victimIt->second.estimatedBytes;
+            // Uncharge the victim's FULL contribution: the archive/Design
+            // estimate plus the serialized response payloads committed on top
+            // of it (CommitResponsePayloads charges both to m_cachedBytes).
+            // Stranding the payload half would permanently inflate the byte
+            // count every time a warm design is evicted.
+            m_cachedBytes -= victimIt->second.estimatedBytes + victimIt->second.serializedBytes;
             const auto evictedName = victimIt->first;
             m_lruEntries.erase(victimIt);
             evicted.push_back(evictedName);
@@ -707,9 +741,10 @@ namespace Odb::Lib::App
         for (const auto& name : names)
         {
             // Drop the serialized response payloads (generation bump keeps a
-            // commit that raced the eviction from re-publishing them). The
-            // payload bytes were already uncharged: they lived inside the LRU
-            // entry that EvictOverBudgetLocked removed before calling this.
+            // commit that raced the eviction from re-publishing them). Their
+            // bytes were uncharged together with the estimate in
+            // EvictOverBudgetLocked — the entry (estimate + serialized charge)
+            // was removed as a whole there.
             m_responseStore.Invalidate(name);
 
             {
@@ -724,26 +759,58 @@ namespace Odb::Lib::App
         }
     }
 
-    std::uint64_t DesignCache::EstimateDesignBytes(const std::string& designName) const
+    std::uint64_t DesignCache::EstimateDesignBytes(const std::string& designName, std::uint64_t injectedBytes) const
     {
         // Estimate: archive file size on disk + a small constant + the bytes
         // currently held for the design's cached serialized response payloads
         // (M1.4). The payload term is zero for a fresh entry — payload bytes
         // are charged incrementally at commit time (CommitResponsePayloads) —
-        // but a re-insert while payloads exist stays honest.
+        // but a re-insert while payloads exist stays honest. injectedBytes
+        // covers in-memory-only archives (AddFileArchive with save=false):
+        // nothing on disk backs the name, so the request-body size stands in
+        // for the archive footprint.
         const auto archivePath = FindArchivePath(designName);
         if (archivePath.empty())
         {
-            return DESIGN_BYTES_OVERHEAD + m_responseStore.StoredBytes(designName);
+            return DESIGN_BYTES_OVERHEAD + m_responseStore.StoredBytes(designName) + injectedBytes;
         }
 
         std::error_code ec;
         const auto size = std::filesystem::file_size(archivePath, ec);
         if (ec)
         {
-            return DESIGN_BYTES_OVERHEAD + m_responseStore.StoredBytes(designName);
+            return DESIGN_BYTES_OVERHEAD + m_responseStore.StoredBytes(designName) + injectedBytes;
         }
         return static_cast<std::uint64_t>(size) + DESIGN_BYTES_OVERHEAD + m_responseStore.StoredBytes(designName);
+    }
+
+    void DesignCache::ResyncLruEstimate(const std::string& designName)
+    {
+        // Estimate outside m_lruMutex (directory scan + store lookup), the
+        // same pattern InsertLruAndEvict uses, then apply the delta under it.
+        const auto bytes = EstimateDesignBytes(designName);
+        std::lock_guard<std::mutex> lruLock(m_lruMutex);
+        auto findIt = m_lruEntries.find(designName);
+        if (findIt == m_lruEntries.end())
+        {
+            return;
+        }
+        // Signed delta: the file may be smaller than the injected estimate
+        // the entry was charged with at insert time.
+        const auto delta = static_cast<std::int64_t>(bytes) - static_cast<std::int64_t>(findIt->second.estimatedBytes);
+        findIt->second.estimatedBytes = bytes;
+        m_cachedBytes = static_cast<std::uint64_t>(static_cast<std::int64_t>(m_cachedBytes) + delta);
+    }
+
+    std::uint64_t DesignCache::GetResponseGeneration(const std::string& designName) const
+    {
+        return m_responseStore.CurrentGeneration(designName);
+    }
+
+    std::uint64_t DesignCache::cachedBytes() const
+    {
+        std::lock_guard<std::mutex> lruLock(m_lruMutex);
+        return m_cachedBytes;
     }
 
     void DesignCache::TransitionLoadState(const std::string& designName, LoadState to)

@@ -446,9 +446,11 @@ namespace Odb::Test
         EXPECT_EQ(m_pDesignCache->GetLoadState(first), DesignCache::LoadState::Unloaded);
         EXPECT_EQ(m_recorder->evictions(first), 1);
 
-        // The caller's shared_ptr stays valid — eviction drops the cache's reference,
-        // never the object itself (Design holds its FileArchive via shared_ptr).
-        EXPECT_NE(pFirst, nullptr);
+        // The caller's shared_ptr stays usable — eviction drops the cache's
+        // reference, never the object itself (Design holds its FileArchive via
+        // shared_ptr). A real dereference proves liveness; a pointer-nullity
+        // check here could never fail and would detect nothing.
+        EXPECT_NE(pFirst->GetFileModel(), nullptr);
 
         // The evicted design reloads (fresh parse) on the next request
         auto pFirstReloaded = m_pDesignCache->GetDesign(first);

@@ -52,7 +52,18 @@ namespace Odb::Lib::App
 		std::shared_ptr<ProductModel::Design> GetDesign(const std::string& designName);
 		std::shared_ptr<FileModel::Design::FileArchive> GetFileArchive(const std::string& designName);
 
-		void AddFileArchive(const std::string& designName, std::shared_ptr<FileModel::Design::FileArchive> fileArchive, bool save);
+		// Injects an externally-built archive into the cache (POST /filemodels).
+		// injectedBytes: a byte estimate for the in-memory archive (e.g. the request
+		// body size) charged to the LRU budget when no on-disk file backs the name —
+		// without it a save=false injection is charged only DESIGN_BYTES_OVERHEAD.
+		void AddFileArchive(const std::string& designName, std::shared_ptr<FileModel::Design::FileArchive> fileArchive, bool save, std::uint64_t injectedBytes = 0);
+
+		// Drops a design's cached FileArchive, Design, and serialized response
+		// payloads (invalidation generation bump), and reverts its load state to
+		// Unloaded. Idempotent for names that are not cached. Used when the on-disk
+		// archive is replaced out from under a warm cache (upload overwrite) so the
+		// next load re-parses the new file instead of returning the stale object.
+		void InvalidateDesign(const std::string& designName);
 
 		bool SaveFileArchive(const std::string& designName);
 
@@ -166,6 +177,17 @@ namespace Odb::Lib::App
 		// per generation — warm GetDesign hits add nothing). Test seam for the
 		// "exactly one to_protobuf call" acceptance criterion.
 		std::uint64_t designSerializationCount() const;
+
+		// Current invalidation generation for the design's serialized response
+		// payloads (bumped by AddFileArchive / InvalidateDesign / eviction /
+		// payload invalidation). Consumers fold it into cache validators (ETags)
+		// so in-memory-only changes invalidate them.
+		std::uint64_t GetResponseGeneration(const std::string& designName) const;
+
+		// Total bytes currently charged to the LRU byte budget (archive/Design
+		// estimates + serialized response payloads). Test seam for budget
+		// accounting (e.g. eviction uncharges the full contribution).
+		std::uint64_t cachedBytes() const;
 
 		// Total bytes currently charged to serialized payloads (already included
 		// in the LRU byte budget). Drops to 0 on eviction/invalidation/Clear().
@@ -606,10 +628,15 @@ namespace Odb::Lib::App
 		}
 
 		void TouchLru(const std::string& designName);
-		void InsertLruAndEvict(const std::string& designName);
+		void InsertLruAndEvict(const std::string& designName, std::uint64_t injectedBytes = 0);
 		std::vector<std::string> EvictOverBudgetLocked(const std::string& protectedName);
 		void EvictCacheEntries(const std::vector<std::string>& names);
-		std::uint64_t EstimateDesignBytes(const std::string& designName) const;
+		std::uint64_t EstimateDesignBytes(const std::string& designName, std::uint64_t injectedBytes = 0) const;
+
+		// Re-estimates a design's LRU charge after its on-disk archive changed
+		// (e.g. AddFileArchive(save=true) just wrote the file) and adjusts
+		// m_cachedBytes by the delta. No-op when the name has no LRU entry.
+		void ResyncLruEstimate(const std::string& designName);
 
 		void TransitionLoadState(const std::string& designName, LoadState to);
 
