@@ -348,6 +348,28 @@ namespace Odb::Test
             << "the injected archive's body size must be charged to the LRU budget";
     }
 
+    TEST_F(ResponseCacheTest, AddFileArchive_ReInjection_RefreshesByteCharge)
+    {
+        // Regression: overwriting an already-tracked save=false design used
+        // to keep the OLD injection's estimate charged — the new body size
+        // was silently ignored (InsertLruAndEvict only touched lastServed).
+        const std::string designName = "injected_only_design";
+        auto pEmptyArchive = std::make_shared<Odb::Lib::FileModel::Design::FileArchive>();
+
+        constexpr auto kFirstBytes = 1ull * 1024ull * 1024ull;
+        m_sharedDesignCache->AddFileArchive(designName, pEmptyArchive, false, kFirstBytes);
+        const auto chargedAfterFirst = m_sharedDesignCache->cachedBytes();
+        ASSERT_GE(chargedAfterFirst, kFirstBytes);
+
+        // Re-POST with a larger body: the entry must adopt the new estimate.
+        // No design is loaded, so no payloads exist and the charge is exactly
+        // overhead + injected bytes.
+        constexpr auto kSecondBytes = 3ull * 1024ull * 1024ull;
+        m_sharedDesignCache->AddFileArchive(designName, pEmptyArchive, false, kSecondBytes);
+        EXPECT_EQ(m_sharedDesignCache->cachedBytes(), chargedAfterFirst - kFirstBytes + kSecondBytes)
+            << "re-injection must refresh the LRU charge to the new body size";
+    }
+
     // ---- InvalidateDesign: upload-overwrite invalidation seam ----
 
     TEST_F(ResponseCacheTest, InvalidateDesign_DropsCacheAndPayloads_NextLoadIsFreshParse)

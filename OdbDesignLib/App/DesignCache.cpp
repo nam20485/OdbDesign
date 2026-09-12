@@ -670,6 +670,18 @@ namespace Odb::Lib::App
             if (findIt != m_lruEntries.end())
             {
                 findIt->second.lastServed = now;
+                // Re-injection over an existing entry (e.g. POST /filemodels
+                // overwriting a save=false design): refresh the charge to the
+                // new estimate instead of silently keeping the previous
+                // injection's bytes. The payload term is excluded —
+                // serialized payload bytes are charged separately via
+                // LruEntry::serializedBytes, and counting them here too would
+                // over-subtract at eviction. (m_lruMutex -> store mutex is a
+                // permitted nesting; see the lock-order note above.)
+                const auto base = bytes - m_responseStore.StoredBytes(designName);
+                const auto delta = static_cast<std::int64_t>(base) - static_cast<std::int64_t>(findIt->second.estimatedBytes);
+                findIt->second.estimatedBytes = base;
+                m_cachedBytes = static_cast<std::uint64_t>(static_cast<std::int64_t>(m_cachedBytes) + delta);
             }
             else
             {
@@ -795,10 +807,16 @@ namespace Odb::Lib::App
         {
             return;
         }
+        // Exclude the payload term: serialized payload bytes are charged via
+        // LruEntry::serializedBytes, and including them in estimatedBytes too
+        // would double-count at eviction. (Safe today either way — the only
+        // caller runs right after an invalidation emptied the store — but the
+        // exclusion keeps the invariant local instead of call-site-dependent.)
+        const auto base = bytes - m_responseStore.StoredBytes(designName);
         // Signed delta: the file may be smaller than the injected estimate
         // the entry was charged with at insert time.
-        const auto delta = static_cast<std::int64_t>(bytes) - static_cast<std::int64_t>(findIt->second.estimatedBytes);
-        findIt->second.estimatedBytes = bytes;
+        const auto delta = static_cast<std::int64_t>(base) - static_cast<std::int64_t>(findIt->second.estimatedBytes);
+        findIt->second.estimatedBytes = base;
         m_cachedBytes = static_cast<std::uint64_t>(static_cast<std::int64_t>(m_cachedBytes) + delta);
     }
 
