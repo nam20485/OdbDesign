@@ -5,7 +5,8 @@
 > specified a PowerShell script (`scripts/argocd.ps1`) for a VM with pwsh 7.x; **pwsh is not
 > installed on this VM**, so the deliverable is now a bash script following the repo's
 > bash-twin convention (`setup-vcpkg-cache.sh`, `compress-artifacts.sh`). All review findings
-> R1–R12 from `docs/plan/argocd-install-plan-review.md` remain incorporated, translated to bash.
+> (R1–R12) are incorporated, translated to bash. **Archived 2026-09-11** — the install is done
+> (Argo CD runs on the cluster); the script was never merged and is moot.
 >
 > **Branch targeting (per AGENTS.md "Branching & Merge Flow"):** all Argo CD work — this plan,
 > `scripts/argocd.sh`, and its follow-ups — lives on `nam/argocd` (cut from `nam20485`) and is

@@ -4,7 +4,7 @@
 |---|---|
 | Status | **ACTIVE — executing.** All decisions recorded (incl. REST TLS cert source = **Option C**, 2026-09-10 follow-up). First tranche on `nam/server-issues-impl`: Phase 0 + M3.1. |
 | Source | [server-issues.md](server-issues.md) (options + pros/cons + decisions) — this doc turns those decisions into sequenced, file-level work. |
-| Related | [https-tls-options.md](https-tls-options.md) (REST TLS — **DECIDED: Option C**, 2026-09-10) · [opt/phase2-grpc-optimizations.md](opt/phase2-grpc-optimizations.md) (SI19 implementation spec) · [gh-pages-coverage-integration.md](../gh-pages-coverage-integration.md) |
+| Related | [https-tls-options.md](https-tls-options.md) (REST TLS — **DECIDED: Option C**, 2026-09-10) · [opt/phase2-grpc-optimizations.md](opt/phase2-grpc-optimizations.md) (SI19 implementation spec) · [gh-pages-coverage-integration.md](../completed/gh-pages-coverage-integration.md) |
 | Method | Every milestone = one `nam/<feature>` branch → PR → `nam20485`, merged with **merge commits only** (AGENTS.md, directive 2026-09-10). C++ milestones ride the multi-platform PR builds; docs/workflow milestones ride the static checks. |
 
 ---
@@ -100,7 +100,7 @@ The recorded question: *can the spec be dynamically generated from source or liv
 ### M0.5 — SI2: per-branch coverage on Pages (`{development, release}`)
 
 - **Branch:** `nam/pages-coverage`
-- **Constraint (from [gh-pages-coverage-integration.md](../gh-pages-coverage-integration.md)):** Pages = one deployment; **only `jekyll-gh-pages.yml` may call `deploy-pages`** — it stays the sole publisher.
+- **Constraint (from [gh-pages-coverage-integration.md](../completed/gh-pages-coverage-integration.md)):** Pages = one deployment; **only `jekyll-gh-pages.yml` may call `deploy-pages`** — it stays the sole publisher.
 - **Changes, all in `.github/workflows/jekyll-gh-pages.yml`:**
   1. Keep triggers (`push: release`, `workflow_dispatch`); add `schedule: weekly` (staleness refresh).
   2. New step before `upload-pages-artifact`: for each branch in `[development, release]` — find that branch's latest **successful** `code-coverage.yml` run (`gh run list --workflow=code-coverage.yml --branch=<b> --status=success --limit=1 --json databaseId,headSha,createdAt`) and `gh run download <id> -n linux-coverage-report`, extract `html/` → `_site/coverage/<b>/`. (Degrade gracefully: missing/stale artifact → publish a placeholder page saying so, never fail the docs deploy.)

@@ -897,7 +897,7 @@ async function batchFetchSymbols(symbolNames: string[]): Promise<Map<string, Sym
 - [ODB++ Shape Definitions](./ODB_SHAPE_DEFINITIONS.md) - Detailed shape type specifications
 - [ODB++ Specification Research](./ODB++_Shape_Representation_Research.md) - Research findings
 - [API Documentation](./API.md) - Complete REST API reference
-- [Architecture Overview](../plan_docs/architecture.md) - System architecture
+- [Architecture Overview](../../../plan_docs/architecture.md) - System architecture
 
 ### Source Code References
 

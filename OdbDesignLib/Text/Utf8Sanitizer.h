@@ -15,8 +15,6 @@
  * - RFC 3629 compliant UTF-8 validation
  * - CP1252 → UTF-8 transcoding for invalid sequences
  * - Zero-allocation fast path for already-valid UTF-8
- *
- * @see https://github.com/nam20485/OdbDesign/docs/grpc/server-utf8-sanitization-prompt.md
  */
 
 #include <cstddef>

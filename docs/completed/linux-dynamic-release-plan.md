@@ -2,7 +2,6 @@
 
 > Implementation plan for replacing the `linux-release` preset/binaries with the
 > `linux-dynamic-release` preset/binaries as the main Linux build.
-> Source request: [`docs/linux-dynamic-release-plan-prompt.md`](./linux-dynamic-release-plan-prompt.md)
 
 ## Objective
 

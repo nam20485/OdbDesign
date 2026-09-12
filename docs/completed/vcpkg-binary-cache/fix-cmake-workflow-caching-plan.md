@@ -288,7 +288,7 @@ For local development, the `actions/cache` layer is not applicable. Instead:
 $env:VCPKG_BINARY_SOURCES = "clear;nuget,https://nuget.pkg.github.com/nam20485/index.json,read;interactive"
 ```
 
-See [localdev-gh-binary-cacheing.md](./localdev-gh-binary-cacheing.md) for full details.
+See [localdev-gh-binary-cacheing.md](../../reference/vcpkg/localdev-gh-binary-cacheing.md) for full details.
 
 ---
 
@@ -326,7 +326,7 @@ See [localdev-gh-binary-cacheing.md](./localdev-gh-binary-cacheing.md) for full 
 ## Related Documents
 
 - [Original Plan](./vcpkg-github-packages-plan.md)
-- [Local Development Guide](./localdev-gh-binary-cacheing.md)
+- [Local Development Guide](../../reference/vcpkg/localdev-gh-binary-cacheing.md)
 - [Microsoft Learn: Binary Caching GitHub Packages](https://learn.microsoft.com/en-us/vcpkg/consume/binary-caching-github-packages)
 - [Microsoft Learn: Binary Caching NuGet](https://learn.microsoft.com/en-us/vcpkg/consume/binary-caching-nuget)
 - [vcpkg Binary Caching Reference](https://learn.microsoft.com/en-us/vcpkg/users/binarycaching)

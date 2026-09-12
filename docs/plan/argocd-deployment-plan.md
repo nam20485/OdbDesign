@@ -538,7 +538,7 @@ and the `Trigger Deploy and Release Workflows` dispatch step in
 `docker-publish.yml` (`create-release.yml` consumes it — §3.1).
 
 **Doc updates:** `.agents/skills/k3s-admin/SKILL.md` (deploy section → Argo
-CD flow, port map gains the HTTPS host), `docs/monitoring-grafana-prometheus-trivy.md`
+CD flow, port map gains the HTTPS host), `docs/reference/monitoring-grafana-prometheus-trivy.md`
 (references to `deploy-monitoring.ps1`), `AGENTS.md` deployment-tooling
 section (deploy = git commit to `nam20485`; `deploy.ps1` gone; CLI/MCP rules
 per §12).
