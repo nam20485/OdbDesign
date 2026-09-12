@@ -1,4 +1,5 @@
 #include "OdbDesignArgs.h"
+#include <iostream>
 #include <sstream>
 
 namespace Odb::Lib::App
@@ -58,6 +59,46 @@ namespace Odb::Lib::App
 		return boolArg("disable-authentication", DEFAULT_DISABLE_AUTH);
 	}
 
+	int OdbDesignArgs::cacheMaxMb() const
+	{
+		// intArg -> std::stoi throws when CommandLineArgs stored the literal
+		// boolean `true` (missing value, or a value starting with '-' or '/');
+		// this runs unconditionally at the top of OdbAppBase::Run(), so a
+		// malformed --cache-max-mb must not std::terminate the process — fall
+		// back to the default with a warning. Negative values clamp to 0
+		// (eviction disabled), matching setCacheMaxBytes semantics.
+		try
+		{
+			const int mb = intArg("cache-max-mb", DEFAULT_CACHE_MAX_MB);
+			return mb < 0 ? 0 : mb;
+		}
+		catch (const std::exception&)
+		{
+			std::cerr << "WARNING: invalid --cache-max-mb value; using default "
+				<< DEFAULT_CACHE_MAX_MB << std::endl;
+			return DEFAULT_CACHE_MAX_MB;
+		}
+	}
+
+	int OdbDesignArgs::maxBackgroundLoads() const
+	{
+		// Same stoi-hardening as cacheMaxMb(): a malformed --max-background-loads
+		// must not std::terminate the process — fall back to the default with a
+		// warning. Negative values clamp to 0 (unbounded), matching
+		// DesignCache::setMaxBackgroundLoads semantics.
+		try
+		{
+			const int loads = intArg("max-background-loads", DEFAULT_MAX_BACKGROUND_LOADS);
+			return loads < 0 ? 0 : loads;
+		}
+		catch (const std::exception&)
+		{
+			std::cerr << "WARNING: invalid --max-background-loads value; using default "
+				<< DEFAULT_MAX_BACKGROUND_LOADS << std::endl;
+			return DEFAULT_MAX_BACKGROUND_LOADS;
+		}
+	}
+
 	std::string OdbDesignArgs::getUsageString() const
 	{
 		std::stringstream ss;
@@ -72,6 +113,8 @@ namespace Odb::Lib::App
 		ss << "  --load-design <design>   Design to load on startup (default: " << DEFAULT_LOAD_DESIGN << ")\n";
 		ss << "  --load-all               Load all designs on startup (default: " << (DEFAULT_LOAD_ALL ? "true" : "false") << ")\n";
 		ss << "  --disable-authentication Disable authentication (default: " << (DEFAULT_DISABLE_AUTH ? "true" : "false") << ")\n";
+		ss << "  --cache-max-mb <MB>      Max design cache size in MB before LRU eviction, 0 disables (default: " << DEFAULT_CACHE_MAX_MB << ")\n";
+		ss << "  --max-background-loads <N>  Max concurrent background design loads, 0 = unbounded (default: " << DEFAULT_MAX_BACKGROUND_LOADS << ")\n";
 		ss << "  --help                   Print this help message\n";
 		return ss.str();		
 	}	

@@ -24,8 +24,10 @@ add_executable(OdbDesignTests
     "MatrixFileTests.cpp"
     "ComponentHeightPipelineTests.cpp"
     "DesignCacheThreadSafetyTests.cpp"
+    "DesignCacheSingleFlightTests.cpp"
     "GrpcServiceConfigTests.cpp"
     "Utf8SanitizerTests.cpp"
+    "HttpCachingTests.cpp"
     "../OdbDesignServer/Config/GrpcServiceConfig.cpp"
 
     # Server service implementation compiled into the test executable so service-level
@@ -33,6 +35,8 @@ add_executable(OdbDesignTests
     "../OdbDesignServer/Services/OdbDesignServiceImpl.cpp"
     "GetStandardFontsTests.cpp"
     "GetLayerSymbolsTests.cpp"
+    "RequestLoadDesignTests.cpp"
+    "ResponseCacheTests.cpp"
 
     # NOTE: GrpcBatchStreamTests.cpp temporarily disabled due to CMake coupling concerns
     # Future: Will create separate test target for server component tests

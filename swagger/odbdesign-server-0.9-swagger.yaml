@@ -1061,6 +1061,37 @@ paths:
         "500":
           $ref: "#/components/responses/InternalError"
 
+  /designs/{name}/load:
+    post:
+      tags: [designs]
+      operationId: requestLoadDesign
+      summary: Request a background load of a design
+      description: |
+        Kicks a background parse of the design archive and returns immediately (the gRPC
+        twin is `OdbDesignService/RequestLoadDesign`). Never blocks on the parse: poll
+        `GET /designs/{name}` until the design is warm. Concurrent background parses are
+        capped (`--max-background-loads`, default 2); further requests queue. Designs
+        uploaded via `POST /files/upload*` are auto-warmed through the same path.
+      parameters:
+        - $ref: "#/components/parameters/DesignNameParam"
+      responses:
+        "202":
+          description: |
+            Load request processed. The body carries the resulting load status:
+            `accepted` (a background load was kicked), `already_loading`, `already_loaded`,
+            or `not_found` (no archive with that name on disk — reported in the body with
+            202, not as an HTTP 404, because the request itself succeeded).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RequestLoadDesignStatus"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /healthz/live:
     get:
       tags: [health check]
@@ -1235,6 +1266,26 @@ components:
 
   schemas:
     # ------------------------------------------------------------------ common
+    RequestLoadDesignStatus:
+      type: object
+      description: |
+        Result of a load request (`POST /designs/{name}/load` and the gRPC
+        `RequestLoadDesign` twin). The request itself always succeeds; the status
+        distinguishes what was (or was not) kicked.
+      required: [designName, status]
+      properties:
+        designName:
+          type: string
+          description: Design (archive) name the request was made for.
+        status:
+          type: string
+          enum: [accepted, already_loading, already_loaded, not_found]
+          description: |
+            Lifecycle status of the requested background load: `accepted` — a
+            background load was kicked; `already_loading` — a load is already
+            queued or parsing; `already_loaded` — the design is warm, no load
+            was kicked; `not_found` — no archive with that name exists in the
+            designs directory, nothing was kicked.
     FileArchiveList:
       type: object
       description: Listing of design archives known to the server.
@@ -1242,6 +1293,7 @@ components:
       properties:
         filearchives:
           type: array
+          description: Archives discovered in the server's designs directory.
           items:
             $ref: "#/components/schemas/FileArchiveEntry"
     FileArchiveEntry:
@@ -1263,37 +1315,45 @@ components:
           example: Design
     StepNameList:
       type: object
+      description: Names of all steps in a design.
       required: [steps]
       properties:
         steps:
           type: array
+          description: Step names (e.g. `pcb`).
           items:
             type: string
           example: [pcb]
     LayerNameList:
       type: object
+      description: Names of all layers in a step.
       required: [layers]
       properties:
         layers:
           type: array
+          description: Layer names (e.g. `top`, `ground_plane`).
           items:
             type: string
           example: [top, ground_plane, power_plane, bottom]
     SymbolNameList:
       type: object
+      description: Names of all symbol directories in a design.
       required: [symbols]
       properties:
         symbols:
           type: array
+          description: Symbol names (e.g. `r155`, `pad_square`).
           items:
             type: string
           example: [r155, pad_square]
     NetlistNameList:
       type: object
+      description: Names of all netlist files in a step.
       required: [netlists]
       properties:
         netlists:
           type: array
+          description: Netlist names (e.g. `cad-net`).
           items:
             type: string
           example: [cad-net]
@@ -1303,32 +1363,80 @@ components:
       properties:
         name:
           type: string
+          description: Property name.
         value:
           type: string
+          description: Property string value.
         floatValues:
           type: array
+          description: Optional list of floating-point values attached to the property.
           items:
             type: number
             format: double
     Color:
       type: object
+      description: RGB color (matrixfile.proto Color).
       properties:
         red:
           type: number
           format: float
+          description: Red component (0.0 - 1.0).
         green:
           type: number
           format: float
+          description: Green component (0.0 - 1.0).
         blue:
           type: number
           format: float
+          description: Blue component (0.0 - 1.0).
         noPreference:
           type: boolean
+          description: True when no color preference is set.
 
     # ---------------------------------------------------------------- file model
     FileArchive:
       type: object
       description: Parsed ODB++ file archive (file model root).
+      example:
+        productName: ODB++ v8
+        fileName: sam20200826.tgz
+        stepsByName:
+          pcb:
+            name: pcb
+            path: steps/pcb
+            layersByName:
+              top:
+                name: top
+                path: steps/pcb/layers/top
+              ground_plane:
+                name: ground_plane
+                path: steps/pcb/layers/ground_plane
+        symbolsDirectoriesByName:
+          r155:
+            name: r155
+            path: symbols/r155
+        miscInfoFile:
+          productModelName: SAM
+          jobName: sam20200826
+          units: INCH
+        matrixFile:
+          steps:
+            - column: 1
+              id: 1
+              name: pcb
+          layers:
+            - row: 1
+              context: Board
+              type: Signal
+              name: top
+              polarity: Positive
+              cuTop: 3
+              cuBottom: 3
+        miscAttrListFile:
+          directory: misc
+          path: misc/attrlist
+          attributesByName:
+            .-owned-by: ucamco
       properties:
         stepsByName:
           type: object
@@ -1336,18 +1444,26 @@ components:
             $ref: "#/components/schemas/StepDirectory"
           description: Steps keyed by step name.
         miscInfoFile:
-          $ref: "#/components/schemas/MiscInfoFile"
+          description: Design-level metadata (`misc/info`).
+          allOf:
+            - $ref: "#/components/schemas/MiscInfoFile"
         matrixFile:
-          $ref: "#/components/schemas/MatrixFile"
+          description: Board stackup (`matrix/matrix`).
+          allOf:
+            - $ref: "#/components/schemas/MatrixFile"
         standardFontsFile:
-          $ref: "#/components/schemas/StandardFontsFile"
+          description: Vector stroke font definitions (`fonts/standard`).
+          allOf:
+            - $ref: "#/components/schemas/StandardFontsFile"
         symbolsDirectoriesByName:
           type: object
           additionalProperties:
             $ref: "#/components/schemas/SymbolsDirectory"
           description: Symbol directories keyed by symbol name.
         miscAttrListFile:
-          $ref: "#/components/schemas/AttrListFile"
+          description: Top-level misc attribute list (`misc/attrlist`).
+          allOf:
+            - $ref: "#/components/schemas/AttrListFile"
         productName:
           type: string
           description: ODB++ internal product name.
@@ -1358,72 +1474,214 @@ components:
     StepDirectory:
       type: object
       description: A step directory (`steps/<step>/`).
+      example:
+        name: pcb
+        path: steps/pcb
+        layersByName:
+          top:
+            name: top
+            path: steps/pcb/layers/top
+          ground_plane:
+            name: ground_plane
+            path: steps/pcb/layers/ground_plane
+        netlistsByName:
+          cad-net:
+            name: cad-net
+            path: steps/pcb/netlists/cad-net
+            units: INCH
+        edadatafile:
+          path: steps/pcb/eda/data
+          units: INCH
+        attrlistfile:
+          directory: steps/pcb
+          path: steps/pcb/attrlist
+        stephdrfile:
+          xDatum: 0
+          yDatum: 0
+          path: steps/pcb/stephdr
       properties:
         name:
           type: string
+          description: Step name (e.g. `pcb`).
         path:
           type: string
+          description: ODB++ directory path of the step (e.g. `steps/pcb`).
         layersByName:
           type: object
           additionalProperties:
             $ref: "#/components/schemas/LayerDirectory"
+          description: Layer directories keyed by layer name.
         netlistsByName:
           type: object
           additionalProperties:
             $ref: "#/components/schemas/NetlistFile"
+          description: Netlist files keyed by netlist name.
         edadatafile:
-          $ref: "#/components/schemas/EdaDataFile"
+          description: Electrical analysis data (`eda/data`).
+          allOf:
+            - $ref: "#/components/schemas/EdaDataFile"
         attrlistfile:
-          $ref: "#/components/schemas/AttrListFile"
+          description: Step-level attribute list (`attrlist`).
+          allOf:
+            - $ref: "#/components/schemas/AttrListFile"
         profilefile:
-          $ref: "#/components/schemas/FeaturesFile"
+          description: Step profile outline as a features file (`profile`).
+          allOf:
+            - $ref: "#/components/schemas/FeaturesFile"
         stephdrfile:
-          $ref: "#/components/schemas/StepHdrFile"
+          description: Step header (`stephdr`).
+          allOf:
+            - $ref: "#/components/schemas/StepHdrFile"
 
     LayerDirectory:
       type: object
       description: A layer directory (`steps/<step>/layers/<layer>/`).
+      example:
+        name: top
+        path: steps/pcb/layers/top
+        components:
+          units: INCH
+          side: Top
+          layerName: top
+          path: steps/pcb/layers/top/components
+          componentRecords:
+            - compName: U1
+              partName: 74HC595
+              pkgRef: 1
+              locationX: 1.25
+              locationY: 0.5
+              rotation: 90
+              id: 1
+              index: 1
+        featureFile:
+          units: INCH
+          path: steps/pcb/layers/top/features
+          numFeatures: 2
+          featureRecords:
+            - type: Line
+              xs: 0
+              ys: 0
+              xe: 1.5
+              ye: 0
+              sym_num: 1
+              polarity: Positive
+              dcode: 10
+              id: 1
+            - type: Pad
+              x: 0.35
+              y: 0.2
+              sym_num: 2
+              polarity: Positive
+              dcode: 11
+              id: 2
+        attrlistFile:
+          directory: steps/pcb/layers/top
+          path: steps/pcb/layers/top/attrlist
+        toolFile:
+          directory: steps/pcb/layers/top
+          path: steps/pcb/layers/top/tools
+          units: INCH
+          tools:
+            "1":
+              toolNum: 1
+              type: Plated
+              type2: Standard
+              finishSize: 13.5
+              drillSize: 14
       properties:
         name:
           type: string
+          description: Layer name (e.g. `top`).
         path:
           type: string
+          description: ODB++ directory path of the layer (e.g. `steps/pcb/layers/top`).
         components:
-          $ref: "#/components/schemas/ComponentsFile"
+          description: Component placement records (`components`).
+          allOf:
+            - $ref: "#/components/schemas/ComponentsFile"
         attrlistFile:
-          $ref: "#/components/schemas/AttrListFile"
+          description: Layer-level attribute list (`attrlist`).
+          allOf:
+            - $ref: "#/components/schemas/AttrListFile"
         featureFile:
-          $ref: "#/components/schemas/FeaturesFile"
+          description: Layer feature records (`features`).
+          allOf:
+            - $ref: "#/components/schemas/FeaturesFile"
         toolFile:
-          $ref: "#/components/schemas/ToolsFile"
+          description: Drill tool definitions (`tools`).
+          allOf:
+            - $ref: "#/components/schemas/ToolsFile"
 
     SymbolsDirectory:
       type: object
       description: A symbol directory (`symbols/<symbol>/`).
+      example:
+        name: r155
+        path: symbols/r155
+        featureFile:
+          units: INCH
+          path: symbols/r155/features
+          numFeatures: 1
+          featureRecords:
+            - type: Line
+              xs: 0
+              ys: 0
+              xe: 0.155
+              ye: 0
+              sym_num: 1
+              polarity: Positive
+              dcode: 10
+              id: 1
+        attrlistFile:
+          directory: symbols/r155
+          path: symbols/r155/attrlist
       properties:
         name:
           type: string
+          description: Symbol name (e.g. `r155`).
         path:
           type: string
+          description: ODB++ directory path of the symbol (e.g. `symbols/r155`).
         attrlistFile:
-          $ref: "#/components/schemas/AttrListFile"
+          description: Symbol-level attribute list (`attrlist`).
+          allOf:
+            - $ref: "#/components/schemas/AttrListFile"
         featureFile:
-          $ref: "#/components/schemas/FeaturesFile"
+          description: Feature records that make up the symbol (`features`).
+          allOf:
+            - $ref: "#/components/schemas/FeaturesFile"
 
     MiscInfoFile:
       type: object
       description: "`misc/info` file — design-level metadata."
+      example:
+        productModelName: SAM
+        jobName: sam20200826
+        odbVersionMajor: "8"
+        odbVersionMinor: "0"
+        odbSource: test source
+        creationDateDate: "2020-08-26T00:00:00Z"
+        saveDate: "2020-08-26T12:00:00Z"
+        saveApp: test app
+        saveUser: user
+        units: INCH
+        maxUniqueId: 412
       properties:
         productModelName:
           type: string
+          description: ODB++ product model name (e.g. `SAM`).
         jobName:
           type: string
+          description: ODB++ job name (e.g. `sam20200826`).
         odbVersionMajor:
           type: string
+          description: ODB++ spec major version.
         odbVersionMinor:
           type: string
+          description: ODB++ spec minor version.
         odbSource:
           type: string
+          description: Free-text source annotation from the `misc/info` file.
         creationDateDate:
           type: string
           format: date-time
@@ -1434,8 +1692,10 @@ components:
           description: Last save date (RFC 3339).
         saveApp:
           type: string
+          description: Application that last saved the design.
         saveUser:
           type: string
+          description: User who last saved the design.
         units:
           type: string
           description: Design units, e.g. `INCH`, `MM`.
@@ -1448,54 +1708,95 @@ components:
     MatrixFile:
       type: object
       description: "`matrix/matrix` file — board stackup rows/columns."
+      example:
+        steps:
+          - column: 1
+            id: 1
+            name: pcb
+        layers:
+          - row: 1
+            context: Board
+            type: Signal
+            name: top
+            polarity: Positive
+            cuTop: 3
+            cuBottom: 3
+            ref: 4
+            startName: top
+            endName: ground_plane
+            oldName: top
+            addType: ""
+          - row: 2
+            context: Board
+            type: Dielectric
+            name: dielectric_1
+            polarity: Positive
+            dielectricType: Prepreg
+            dielectricName: FR-4
+            form: Rigid
       properties:
         steps:
           type: array
+          description: Step records (one per column of the matrix).
           items:
             $ref: "#/components/schemas/MatrixStepRecord"
         layers:
           type: array
+          description: Layer records (one per row of the matrix, in stackup order).
           items:
             $ref: "#/components/schemas/MatrixLayerRecord"
     MatrixStepRecord:
       type: object
+      description: One step (column) of the matrix file.
       properties:
         column:
           type: integer
           format: int32
+          description: Matrix column number of the step.
         id:
           type: integer
           format: int32
+          description: Step id.
         name:
           type: string
+          description: Step name.
           example: pcb
     MatrixLayerRecord:
       type: object
+      description: One layer (row) of the matrix file.
       properties:
         row:
           type: integer
           format: int32
+          description: Matrix row number of the layer (stackup order).
         context:
           type: string
+          description: Layer context.
           enum: [Board, Misc]
         type:
           type: string
+          description: Layer type.
           enum:
             [Signal, PowerGround, Dielectric, Mixed, SolderMask, SolderPaste,
              SilkScreen, Drill, Rout, Document, Component, Mask, ConductivePaste]
         name:
           type: string
+          description: Layer name.
           example: top
         polarity:
           type: string
+          description: Layer polarity.
           enum: [Positive, Negative]
         dielectricType:
           type: string
+          description: Dielectric material type (dielectric layers only).
           enum: [None, Prepreg, Core]
         dielectricName:
           type: string
+          description: Dielectric material name (dielectric layers only).
         form:
           type: string
+          description: Board form (rigid or flex).
           enum: [Rigid, Flex]
         cuTop:
           type: integer
@@ -1508,19 +1809,27 @@ components:
         ref:
           type: integer
           format: int32
+          description: Row number of the paired layer (e.g. the plane a signal references).
         startName:
           type: string
+          description: Name of the layer this record starts from (drill/rout layers).
         endName:
           type: string
+          description: Name of the layer this record ends at (drill/rout layers).
         oldName:
           type: string
+          description: Previous layer name (before a rename).
         addType:
           type: string
+          description: Additional type annotation.
         color:
-          $ref: "#/components/schemas/Color"
+          description: Layer display color.
+          allOf:
+            - $ref: "#/components/schemas/Color"
         id:
           type: integer
           format: int32
+          description: Layer id.
 
     AttrListFile:
       type: object
@@ -1528,10 +1837,13 @@ components:
       properties:
         directory:
           type: string
+          description: ODB++ directory containing the attrlist file.
         path:
           type: string
+          description: ODB++ path of the attrlist file.
         units:
           type: string
+          description: Units used by the attrlist file.
         attributesByName:
           type: object
           additionalProperties:
@@ -1543,70 +1855,138 @@ components:
     StandardFontsFile:
       type: object
       description: "`fonts/standard` file — vector stroke font."
+      example:
+        xSize: 0.06
+        ySize: 0.06
+        offset: 0
+        mCharacterBlocks:
+          - character: A
+            mLineRecords:
+              - xStart: 0
+                yStart: 0
+                xEnd: 0.03
+                yEnd: 0.06
+                polarity: Positive
+                shape: Square
+                width: 0.006
+          - character: B
+            mLineRecords:
+              - xStart: 0
+                yStart: 0
+                xEnd: 0.03
+                yEnd: 0
+                polarity: Positive
+                shape: Square
+                width: 0.006
       properties:
         xSize:
           type: number
           format: double
+          description: Character cell X size.
         ySize:
           type: number
           format: double
+          description: Character cell Y size.
         offset:
           type: number
           format: double
+          description: Font offset.
         mCharacterBlocks:
           type: array
+          description: Stroke definitions per character (field name matches the source model).
           items:
             $ref: "#/components/schemas/CharacterBlock"
     CharacterBlock:
       type: object
+      description: Stroke drawing of a single character of the standard font.
       properties:
         character:
           type: string
           description: The character this block draws (e.g. `A`).
         mLineRecords:
           type: array
+          description: Line strokes that draw the character.
           items:
             $ref: "#/components/schemas/FontLineRecord"
     FontLineRecord:
       type: object
+      description: One stroke line of a character block.
       properties:
         xStart:
           type: number
           format: double
+          description: Stroke start X.
         yStart:
           type: number
           format: double
+          description: Stroke start Y.
         xEnd:
           type: number
           format: double
+          description: Stroke end X.
         yEnd:
           type: number
           format: double
+          description: Stroke end Y.
         polarity:
           type: string
+          description: Stroke polarity.
           enum: [Positive, Negative]
         shape:
           type: string
+          description: Stroke end shape.
           enum: [Square, Round]
         width:
           type: number
           format: double
+          description: Stroke width.
 
     NetlistFile:
       type: object
       description: A netlist file (`netlists/<netlist>`).
+      example:
+        path: steps/pcb/netlists/cad-net
+        name: cad-net
+        units: INCH
+        optimized: false
+        staggered: "No"
+        netRecordss:
+          - serialNumber: 1
+            netName: GND
+          - serialNumber: 2
+            netName: VCC
+        netRecordsByName:
+          GND:
+            serialNumber: 1
+            netName: GND
+        netPointRecords:
+          - netNumber: 1
+            x: 0.5
+            y: 0.25
+            radius: 0
+            side: Top
+          - netNumber: 2
+            x: 1.0
+            y: 0.75
+            radius: 0
+            side: Top
       properties:
         path:
           type: string
+          description: ODB++ path of the netlist file.
         name:
           type: string
+          description: Netlist name (e.g. `cad-net`).
         units:
           type: string
+          description: Netlist units.
         optimized:
           type: boolean
+          description: Whether the netlist has been optimized.
         staggered:
           type: string
-          enum: [Yes, No, Unknown]
+          description: Whether the netlist supports staggered test points.
+          enum: ["Yes", "No", "Unknown"]
         netRecordss:
           type: array
           description: "Net records (note: field name matches the source model)."
@@ -1616,146 +1996,225 @@ components:
           type: object
           additionalProperties:
             $ref: "#/components/schemas/NetlistNetRecord"
+          description: Net records keyed by net name.
         netPointRecords:
           type: array
+          description: Net point (test probe location) records.
           items:
             $ref: "#/components/schemas/NetPointRecord"
     NetlistNetRecord:
       type: object
+      description: One net of the netlist.
       properties:
         serialNumber:
           type: integer
           format: int32
+          description: Net serial number within the netlist.
         netName:
           type: string
+          description: Net name.
           example: GND
     NetPointRecord:
       type: object
+      description: A net point record — a physical probe/access point of a net.
       properties:
         netNumber:
           type: integer
           format: int32
+          description: Serial number of the net this point belongs to.
         radius:
           type: number
           format: double
+          description: Point radius.
         x:
           type: number
           format: double
+          description: Point X coordinate.
         y:
           type: number
           format: double
+          description: Point Y coordinate.
         side:
           type: string
+          description: Board side the point is accessed from.
           enum: [Top, Down, Both, Inner]
         width:
           type: number
           format: double
+          description: Point width.
         height:
           type: number
           format: double
+          description: Point height.
         epoint:
           type: string
+          description: E-point annotation.
         exp:
           type: string
+          description: Exposure/expand annotation.
         commentPoint:
           type: boolean
+          description: True when the point is a comment point.
         staggeredX:
           type: number
           format: double
+          description: X coordinate of the staggered probe position.
         staggeredY:
           type: number
           format: double
+          description: Y coordinate of the staggered probe position.
         staggeredRadius:
           type: number
           format: double
+          description: Radius of the staggered probe position.
         viaPoint:
           type: number
           format: double
+          description: Via point marker value.
         fiducialPoint:
           type: number
           format: double
+          description: Fiducial point marker value.
         testPoint:
           type: number
           format: double
+          description: Test point marker value.
         testExecutionSide:
           type: string
+          description: Board side from which the test is executed.
 
     EdaDataFile:
       type: object
       description: "`eda/data` file — electrical analysis data."
+      example:
+        path: steps/pcb/eda/data
+        units: INCH
+        source: cad
+        layerNames: [top, bottom]
+        netRecords:
+          - name: GND
+            index: 1
+            subnetRecords:
+              - type: TOEPRINT
+                side: Top
+                componentNumber: 1
+                toeprintNumber: 1
+                index: 1
+                featureIdRecords:
+                  - type: COPPER
+                    layerNumber: 1
+                    featureNumber: 1
+        packageRecords:
+          - name: soic_8
+            pitch: 0.05
+            xMin: 0
+            yMin: 0
+            xMax: 0.4
+            yMax: 0.2
+            pinRecords:
+              - name: "1"
+                type: Surface
+                xCenter: 0.05
+                yCenter: 0.05
+                electricalType: Electrical
+                mountType: Smt
+                id: 1
+                index: 1
       properties:
         path:
           type: string
+          description: ODB++ path of the eda data file.
         units:
           type: string
+          description: Eda data units.
         source:
           type: string
+          description: Source system the eda data came from.
         layerNames:
           type: array
+          description: Names of the layers referenced by the eda data.
           items:
             type: string
         attributeNames:
           type: array
+          description: Attribute names defined in the eda data.
           items:
             type: string
         attributeTextValues:
           type: array
+          description: Attribute text values defined in the eda data.
           items:
             type: string
         netRecords:
           type: array
+          description: Eda net records.
           items:
             $ref: "#/components/schemas/EdaNetRecord"
         netRecordsByName:
           type: object
           additionalProperties:
             $ref: "#/components/schemas/EdaNetRecord"
+          description: Eda net records keyed by net name.
         packageRecords:
           type: array
+          description: Eda package records.
           items:
             $ref: "#/components/schemas/EdaPackageRecord"
         packageRecordsByName:
           type: object
           additionalProperties:
             $ref: "#/components/schemas/EdaPackageRecord"
+          description: Eda package records keyed by package name.
         propertyRecords:
           type: array
+          description: File-level property records.
           items:
             $ref: "#/components/schemas/PropertyRecord"
         featureGroupRecords:
           type: array
+          description: Feature group records.
           items:
             $ref: "#/components/schemas/EdaFeatureGroupRecord"
     EdaNetRecord:
       type: object
+      description: An eda net with its subnets.
       properties:
         name:
           type: string
+          description: Net name.
         attributesIdString:
           type: string
+          description: Comma-separated attribute ids referencing the attribute lookup table.
         index:
           type: integer
           format: int32
+          description: Net index within the eda data.
         subnetRecords:
           type: array
+          description: Subnets (vias, traces, planes, toeprints) of the net.
           items:
             $ref: "#/components/schemas/EdaSubnetRecord"
         propertyRecords:
           type: array
+          description: Net property records.
           items:
             $ref: "#/components/schemas/PropertyRecord"
         attributeLookupTable:
           type: object
           additionalProperties:
             type: string
+          description: Attribute id to value/text mapping.
     EdaSubnetRecord:
       type: object
+      description: One subnet of an eda net (via, trace, plane or toeprint).
       properties:
         type:
           type: string
+          description: Subnet type.
           enum: [VIA, TRACE, PLANE, TOEPRINT]
         featureIdRecords:
           type: array
+          description: Feature ids (layer + feature number) making up the subnet.
           items:
             $ref: "#/components/schemas/EdaFeatureIdRecord"
         fillType:
@@ -1785,246 +2244,378 @@ components:
         index:
           type: integer
           format: int32
+          description: Subnet index within the net.
     EdaFeatureIdRecord:
       type: object
+      description: Reference to a feature on a layer (copper, laminate or hole).
       properties:
         type:
           type: string
+          description: Feature id type.
           enum: [COPPER, LAMINATE, HOLE]
         layerNumber:
           type: integer
           format: int32
+          description: Layer (matrix row) number the feature is on.
         featureNumber:
           type: integer
           format: int32
+          description: Feature number within the layer's features file.
     EdaPackageRecord:
       type: object
+      description: An eda package (footprint) with its pins and outline.
       properties:
         name:
           type: string
+          description: Package name.
         pitch:
           type: number
           format: double
+          description: Pin pitch of the package.
         xMin:
           type: number
           format: double
+          description: Bounding box minimum X.
         yMin:
           type: number
           format: double
+          description: Bounding box minimum Y.
         xMax:
           type: number
           format: double
+          description: Bounding box maximum X.
         yMax:
           type: number
           format: double
+          description: Bounding box maximum Y.
         attributesIdString:
           type: string
+          description: Comma-separated attribute ids referencing the attribute lookup table.
         pinRecords:
           type: array
+          description: Package pin records.
           items:
             $ref: "#/components/schemas/EdaPinRecord"
         pinRecordsByName:
           type: object
           additionalProperties:
             $ref: "#/components/schemas/EdaPinRecord"
+          description: Package pin records keyed by pin name.
         propertyRecords:
           type: array
+          description: Package property records.
           items:
             $ref: "#/components/schemas/PropertyRecord"
         outlineRecords:
           type: array
+          description: Package outline records.
           items:
             $ref: "#/components/schemas/EdaOutlineRecord"
         attributeLookupTable:
           type: object
           additionalProperties:
             type: string
+          description: Attribute id to value/text mapping.
     EdaPinRecord:
       type: object
+      description: One pin of an eda package.
       properties:
         name:
           type: string
+          description: Pin name/number.
         type:
           type: string
+          description: Pin hole/surface type.
           enum: [ThroughHole, Blind, Surface]
         xCenter:
           type: number
           format: double
+          description: Pin center X.
         yCenter:
           type: number
           format: double
+          description: Pin center Y.
         finishedHoleSize:
           type: number
           format: double
           description: Unused (always 0).
         electricalType:
           type: string
+          description: Whether the pin is electrical.
           enum: [Electrical, NonElectrical, Undefined]
         mountType:
           type: string
+          description: Pin mount type.
           enum:
             [Smt, RecommendedSmtPad, MT_ThroughHole, RecommendedThroughHole,
              PressFit, NonBoard, Hole, MT_Undefined]
         id:
           type: integer
           format: int32
+          description: Pin id.
         index:
           type: integer
           format: int32
+          description: Pin index within the package.
     EdaOutlineRecord:
       type: object
+      description: One outline shape of an eda package.
       properties:
         type:
           type: string
+          description: Outline shape type.
           enum: [Rectangle, Circle, Square, Contour]
         lowerLeftX:
           type: number
           format: double
+          description: Lower-left corner X (rectangle outlines).
         lowerLeftY:
           type: number
           format: double
+          description: Lower-left corner Y (rectangle outlines).
         width:
           type: number
           format: double
+          description: Outline width.
         height:
           type: number
           format: double
+          description: Outline height.
         xCenter:
           type: number
           format: double
+          description: Outline center X.
         yCenter:
           type: number
           format: double
+          description: Outline center Y.
         halfSide:
           type: number
           format: double
+          description: Half side length (square outlines).
         radius:
           type: number
           format: double
+          description: Outline radius (circle outlines).
         contourPolygons:
           type: array
+          description: Contour polygons (contour outlines).
           items:
             $ref: "#/components/schemas/ContourPolygon"
     EdaFeatureGroupRecord:
       type: object
+      description: A named group of features in the eda data.
       properties:
         type:
           type: string
+          description: Feature group type.
         propertyRecords:
           type: array
+          description: Group property records.
           items:
             $ref: "#/components/schemas/PropertyRecord"
         featureIdRecords:
           type: array
+          description: Feature ids belonging to the group.
           items:
             $ref: "#/components/schemas/EdaFeatureIdRecord"
 
     StepHdrFile:
       type: object
       description: "`stephdr` file — step header."
+      example:
+        xDatum: 0
+        yDatum: 0
+        id: 1
+        xOrigin: 0
+        yOrigin: 0
+        topActive: 10
+        bottomActive: 0
+        rightActive: 8
+        leftActive: 0
+        stepRepeatRecords: []
+        path: steps/pcb/stephdr
       properties:
         xDatum:
           type: number
           format: double
+          description: Datum (origin for absolute coordinates) X.
         yDatum:
           type: number
           format: double
+          description: Datum (origin for absolute coordinates) Y.
         id:
           type: integer
           format: int32
+          description: Step header id.
         xOrigin:
           type: number
           format: double
+          description: Step origin X.
         yOrigin:
           type: number
           format: double
+          description: Step origin Y.
         topActive:
           type: number
           format: double
+          description: Active (board) area top edge Y.
         bottomActive:
           type: number
           format: double
+          description: Active (board) area bottom edge Y.
         rightActive:
           type: number
           format: double
+          description: Active (board) area right edge X.
         leftActive:
           type: number
           format: double
+          description: Active (board) area left edge X.
         affectingBom:
           type: string
+          description: BOM affected by this step.
         affectingBomChanged:
           type: boolean
+          description: True when the affecting BOM has changed.
         online:
           type: string
+          description: Raw `online` flag value from the stephdr file.
         stepRepeatRecords:
           type: array
+          description: Step-and-repeat records (panelized copies of sub-steps).
           items:
             $ref: "#/components/schemas/StepRepeatRecord"
         path:
           type: string
+          description: ODB++ path of the stephdr file.
         onlineValues:
           type: object
           additionalProperties:
             type: string
+          description: Online flag values keyed by attribute name.
     StepRepeatRecord:
       type: object
+      description: One step-and-repeat entry of the step header.
       properties:
         name:
           type: string
+          description: Repeated (sub-)step name.
         x:
           type: number
           format: double
+          description: Repeat origin X.
         y:
           type: number
           format: double
+          description: Repeat origin Y.
         dx:
           type: number
           format: double
+          description: X spacing between repeats.
         dy:
           type: number
           format: double
+          description: Y spacing between repeats.
         nx:
           type: integer
           format: int32
+          description: Number of repeats in X.
         ny:
           type: integer
           format: int32
+          description: Number of repeats in Y.
         angle:
           type: number
           format: double
           description: Rotation in degrees.
         flip:
           type: boolean
+          description: True when the repeat is flipped.
         mirror:
           type: boolean
+          description: True when the repeat is mirrored.
 
     FeaturesFile:
       type: object
       description: A features file (`features` or step `profile`).
+      example:
+        units: INCH
+        id: 1
+        path: steps/pcb/layers/top/features
+        directory: steps/pcb/layers/top
+        numFeatures: 3
+        featureRecords:
+          - type: Line
+            xs: 0
+            ys: 0
+            xe: 1.5
+            ye: 0
+            sym_num: 1
+            polarity: Positive
+            dcode: 10
+            id: 1
+          - type: Pad
+            x: 0.35
+            y: 0.2
+            sym_num: 2
+            polarity: Positive
+            dcode: 11
+            id: 2
+          - type: Text
+            x: 0.1
+            y: 0.9
+            font: standard
+            text: REFDES
+            xsize: 0.05
+            ysize: 0.05
+            polarity: Positive
+            dcode: 12
+            id: 3
+        symbolNames:
+          - name: r155
+            unitType: Imperial
+          - name: pad_square
+            unitType: None
+        symbolNamesByName:
+          r155:
+            name: r155
+            unitType: Imperial
+          pad_square:
+            name: pad_square
+            unitType: None
       properties:
         units:
           type: string
+          description: Features file units (e.g. `INCH`, `MM`).
           example: INCH
         id:
           type: integer
           format: int32
+          description: Features file id.
         path:
           type: string
+          description: ODB++ path of the features file.
         directory:
           type: string
+          description: ODB++ directory containing the features file.
         numFeatures:
           type: integer
           format: int32
+          description: Number of feature records in the file.
         featureRecords:
           type: array
+          description: The drawn feature records (arcs, pads, surfaces, barcodes, texts, lines).
           items:
             $ref: "#/components/schemas/FeatureRecord"
         symbolNamesByName:
           type: object
           additionalProperties:
             $ref: "#/components/schemas/SymbolNameRecord"
+          description: Referenced symbols keyed by symbol name.
         symbolNames:
           type: array
+          description: Referenced symbols (name + unit type).
           items:
             $ref: "#/components/schemas/SymbolNameRecord"
     FeatureRecord:
@@ -2036,6 +2627,7 @@ components:
       properties:
         type:
           type: string
+          description: Feature type.
           enum: [Arc, Pad, Surface, Barcode, Text, Line]
         xs:
           type: number
@@ -2064,12 +2656,15 @@ components:
         apt_def:
           type: integer
           format: int32
+          description: aperture_def reference (resize/aperture definition id).
         apt_def_symbol_num:
           type: integer
           format: int32
+          description: Symbol number of the aperture definition.
         apt_def_resize_factor:
           type: number
           format: double
+          description: Resize factor applied by the aperture definition.
         xc:
           type: number
           format: double
@@ -2095,37 +2690,45 @@ components:
         width_factor:
           type: number
           format: double
+          description: Text width factor.
         text:
           type: string
           description: Text content (for `Text` features).
         version:
           type: integer
           format: int32
+          description: Feature record version.
         sym_num:
           type: integer
           format: int32
           description: Symbol number (pads/lines).
         polarity:
           type: string
+          description: Feature polarity.
           enum: [Positive, Negative]
         dcode:
           type: integer
           format: int32
+          description: Gerber D-code of the feature.
         atr:
           type: integer
           format: int32
           description: Attribute reference id.
         value:
           type: string
+          description: Feature value annotation (e.g. barcode content).
         id:
           type: integer
           format: int32
+          description: Feature id.
         orient_def:
           type: integer
           format: int32
+          description: Orientation definition id.
         orient_def_rotation:
           type: number
           format: double
+          description: Orientation definition rotation in degrees.
         contourPolygons:
           type: array
           description: Contour polygons (for `Surface` features).
@@ -2135,34 +2738,44 @@ components:
           type: object
           additionalProperties:
             type: string
+          description: Attribute id to value/text mapping.
     ContourPolygon:
       type: object
+      description: One closed contour (island or hole) of a surface.
       properties:
         type:
           type: string
+          description: Whether the contour is copper (island) or a cutout (hole).
           enum: [Island, Hole]
         xStart:
           type: number
           format: double
+          description: Contour start point X.
         yStart:
           type: number
           format: double
+          description: Contour start point Y.
         polygonParts:
           type: array
+          description: Segments/arcs tracing the contour boundary.
           items:
             $ref: "#/components/schemas/PolygonPart"
     PolygonPart:
       type: object
+      description: One segment or arc of a contour polygon.
       properties:
         type:
           type: string
+          description: Part type.
           enum: [Segment, Arc]
         endX:
           type: number
           format: double
+          description: Part end point X.
         endY:
           type: number
           format: double
+          description: Part end point Y.
         xCenter:
           type: number
           format: double
@@ -2180,101 +2793,164 @@ components:
       properties:
         name:
           type: string
+          description: Symbol name (symbols directory name).
           example: r155
         unitType:
           type: string
+          description: Unit type of the symbol's coordinates.
           enum: [None, Metric, Imperial]
 
     ComponentsFile:
       type: object
       description: Layer components file (`layers/<layer>/components`).
+      example:
+        units: INCH
+        id: 1
+        side: Top
+        layerName: top
+        path: steps/pcb/layers/top/components
+        directory: steps/pcb/layers/top
+        componentRecords:
+          - compName: U1
+            partName: 74HC595
+            pkgRef: 1
+            locationX: 1.25
+            locationY: 0.5
+            rotation: 90
+            id: 1
+            index: 1
+            toeprintRecords:
+              - pinNumber: 1
+                locationX: 1.2
+                locationY: 0.55
+                netNumber: 1
+                name: "1"
+          - compName: R1
+            partName: RES-10K-0402
+            pkgRef: 2
+            locationX: 2
+            locationY: 1
+            rotation: 0
+            id: 2
+            index: 2
+        bomDescriptionRecordsByCpn:
+          "74HC595":
+            cpn: "74HC595"
+            pkg: soic_8
+            mpn: SN74HC595N
+            vnd: Texas Instruments
       properties:
         units:
           type: string
+          description: Components file units.
         id:
           type: integer
           format: int32
+          description: Components file id.
         side:
           type: string
+          description: Board side the layer's components are placed on.
           enum: [BsNone, Top, Bottom]
         layerName:
           type: string
+          description: Name of the layer this components file belongs to.
         path:
           type: string
+          description: ODB++ path of the components file.
         directory:
           type: string
+          description: ODB++ directory containing the components file.
         attributeNames:
           type: array
+          description: Attribute names defined in the components file.
           items:
             type: string
         attributeTextValues:
           type: array
+          description: Attribute text values defined in the components file.
           items:
             type: string
         componentRecords:
           type: array
+          description: Component placement records.
           items:
             $ref: "#/components/schemas/ComponentRecord"
         componentRecordsByName:
           type: object
           additionalProperties:
             $ref: "#/components/schemas/ComponentRecord"
+          description: Component records keyed by component (refdes) name.
         propertyRecords:
           type: array
+          description: File-level property records.
           items:
             $ref: "#/components/schemas/PropertyRecord"
         propertyRecordsByName:
           type: object
           additionalProperties:
             $ref: "#/components/schemas/PropertyRecord"
+          description: File-level property records keyed by property name.
         bomDescriptionRecordsByCpn:
           type: object
           additionalProperties:
             $ref: "#/components/schemas/BomDescriptionRecord"
+          description: BOM description records keyed by company part number.
     ComponentRecord:
       type: object
+      description: One placed component on the layer.
       properties:
         pkgRef:
           type: integer
           format: int32
+          description: Package id (references the eda package for the component).
         locationX:
           type: number
           format: double
+          description: Placement X coordinate.
         locationY:
           type: number
           format: double
+          description: Placement Y coordinate.
         rotation:
           type: number
           format: double
           description: Placement rotation in degrees.
         mirror:
           type: boolean
+          description: True when the component is mirrored.
         compName:
           type: string
           description: Component reference designator.
           example: U1
         partName:
           type: string
+          description: Part name (part number) of the component.
         attributes:
           type: string
+          description: Raw attribute string of the component.
         id:
           type: integer
           format: int32
+          description: Component id.
         index:
           type: integer
           format: int32
+          description: Component index (component number) within the file.
         propertyRecords:
           type: array
+          description: Component property records.
           items:
             $ref: "#/components/schemas/PropertyRecord"
         toeprintRecords:
           type: array
+          description: Toeprints (pin land patterns) of the component on this layer.
           items:
             $ref: "#/components/schemas/ToeprintRecord"
         attributeLookupTable:
           type: object
           additionalProperties:
             type: string
+          description: Attribute id to value/text mapping.
     ToeprintRecord:
       type: object
       description: A component pin's land pattern on this layer.
@@ -2282,27 +2958,36 @@ components:
         pinNumber:
           type: integer
           format: int32
+          description: Pin number of the component the toeprint belongs to.
         locationX:
           type: number
           format: double
+          description: Toeprint center X.
         locationY:
           type: number
           format: double
+          description: Toeprint center Y.
         rotation:
           type: number
           format: double
+          description: Toeprint rotation in degrees.
         mirror:
           type: boolean
+          description: True when the toeprint is mirrored.
         netNumber:
           type: integer
           format: int32
+          description: Serial number of the net connected to the pin.
         subnetNumber:
           type: integer
           format: int32
+          description: Number of the subnet connected to the pin.
         name:
           type: string
+          description: Toeprint (pin) name.
     BomDescriptionRecord:
       type: object
+      description: BOM description record for a company part number.
       properties:
         cpn:
           type: string
@@ -2315,12 +3000,15 @@ components:
           description: Internal part number.
         descriptions:
           type: array
+          description: Free-text part descriptions.
           items:
             type: string
         vpl_vnd:
           type: string
+          description: Vendor list price vendor.
         vpl_mpn:
           type: string
+          description: Vendor list price manufacturer part number.
         vnd:
           type: string
           description: Vendor name.
@@ -2331,48 +3019,83 @@ components:
     ToolsFile:
       type: object
       description: Layer tools file (`layers/<layer>/tools`) — drill tool definitions.
+      example:
+        directory: steps/pcb/layers/drill
+        path: steps/pcb/layers/drill/tools
+        units: MM
+        thickness: 1.6
+        tools:
+          "1":
+            toolNum: 1
+            type: Plated
+            type2: Standard
+            minTol: -0.05
+            maxTol: 0.05
+            finishSize: 0.3
+            drillSize: 0.3
+          "2":
+            toolNum: 2
+            type: Via
+            type2: Laser
+            finishSize: 0.1
+            drillSize: 0.1
       properties:
         directory:
           type: string
+          description: ODB++ directory containing the tools file.
         path:
           type: string
+          description: ODB++ path of the tools file.
         units:
           type: string
+          description: Tools file units.
         thickness:
           type: number
           format: double
+          description: Board thickness for depth-controlled tools.
         userParams:
           type: string
+          description: Raw user parameter string from the tools file.
         tools:
           type: object
           additionalProperties:
             $ref: "#/components/schemas/ToolsRecord"
+          description: Tool records keyed by tool number.
     ToolsRecord:
       type: object
+      description: One drill tool definition.
       properties:
         toolNum:
           type: integer
           format: int32
+          description: Tool number.
         type:
           type: string
+          description: Plating type of the tool.
           enum: [Plated, NonPlated, Via]
         type2:
           type: string
+          description: Tool technology.
           enum: [Standard, PressFit, Photo, Laser]
         minTol:
           type: number
           format: double
+          description: Minimum size tolerance of the finished hole.
         maxTol:
           type: number
           format: double
+          description: Maximum size tolerance of the finished hole.
         drillBit:
           type: string
+          description: Drill bit identifier.
         finishSize:
           type: number
           format: double
+          description: Finished hole size.
         drillSize:
           type: number
           format: double
+          description: Drill (bit) size.
 
     # ------------------------------------------------------------- diagnostics
     SymbolUnitsDiagnostics:
@@ -2382,17 +3105,22 @@ components:
       properties:
         design:
           type: string
+          description: Design name the analysis ran for.
         step:
           type: string
+          description: Step name the analysis ran for.
         layers:
           type: array
+          description: Per-layer symbol unit analysis.
           items:
             $ref: "#/components/schemas/LayerSymbolUnits"
     LayerSymbolUnits:
       type: object
+      description: Symbol unit-type analysis for one layer.
       properties:
         layer:
           type: string
+          description: Layer name.
         features_units_raw:
           type: string
           description: Raw units string from the layer features file.
@@ -2402,13 +3130,17 @@ components:
           description: Total number of symbols referenced by the layer.
         symbol_unit_counts:
           type: object
+          description: Number of referenced symbols per unit type.
           properties:
             metric:
               type: integer
+              description: Count of symbols with metric unit type.
             imperial:
               type: integer
+              description: Count of symbols with imperial unit type.
             none:
               type: integer
+              description: Count of symbols with no unit type.
         has_mixed_symbol_unit_types:
           type: boolean
           description: True when both metric and imperial symbols are present.
@@ -2420,6 +3152,63 @@ components:
     Design:
       type: object
       description: Aggregated product model for a design.
+      example:
+        productModel: SAM
+        name: sam20200826.tgz
+        nets:
+          - name: GND
+            index: 1
+            pinConnections:
+              - name: U1-1
+                component:
+                  refDes: U1
+                pin:
+                  name: "1"
+                  index: 1
+          - name: VCC
+            index: 2
+            pinConnections:
+              - name: U1-8
+                component:
+                  refDes: U1
+                pin:
+                  name: "8"
+                  index: 8
+        netsByName:
+          GND:
+            name: GND
+            index: 1
+          VCC:
+            name: VCC
+            index: 2
+        packages:
+          - name: soic_8
+            index: 1
+            pins:
+              - name: "1"
+                index: 1
+        packagesByName:
+          soic_8:
+            name: soic_8
+            index: 1
+        components:
+          - refDes: U1
+            partName: 74HC595
+            index: 1
+            side: Top
+            package:
+              name: soic_8
+        componentsByName:
+          U1:
+            refDes: U1
+            partName: 74HC595
+            index: 1
+            side: Top
+        parts:
+          - name: RES-10K-0402
+        partsByName:
+          RES-10K-0402:
+            name: RES-10K-0402
       properties:
         productModel:
           type: string
@@ -2428,39 +3217,49 @@ components:
           type: string
           description: Design name.
         fileModel:
-          $ref: "#/components/schemas/FileArchive"
+          description: Embedded file model (present only when `include_filearchive=true`).
+          allOf:
+            - $ref: "#/components/schemas/FileArchive"
         nets:
           type: array
+          description: The design's nets.
           items:
             $ref: "#/components/schemas/Net"
         netsByName:
           type: object
           additionalProperties:
             $ref: "#/components/schemas/Net"
+          description: Nets keyed by net name.
         packages:
           type: array
+          description: The design's packages.
           items:
             $ref: "#/components/schemas/Package"
         packagesByName:
           type: object
           additionalProperties:
             $ref: "#/components/schemas/Package"
+          description: Packages keyed by package name.
         components:
           type: array
+          description: The design's placed components.
           items:
             $ref: "#/components/schemas/Component"
         componentsByName:
           type: object
           additionalProperties:
             $ref: "#/components/schemas/Component"
+          description: Components keyed by reference designator.
         parts:
           type: array
+          description: The design's parts (part numbers).
           items:
             $ref: "#/components/schemas/Part"
         partsByName:
           type: object
           additionalProperties:
             $ref: "#/components/schemas/Part"
+          description: Parts keyed by part number.
     Component:
       type: object
       description: Placed component in the product model.
@@ -2471,66 +3270,90 @@ components:
           example: U1
         partName:
           type: string
+          description: Part name (part number) of the component.
         package:
-          $ref: "#/components/schemas/Package"
+          description: Package (land pattern) of the component.
+          allOf:
+            - $ref: "#/components/schemas/Package"
         index:
           type: integer
           format: int32
+          description: Component index (component number) within the design.
         side:
           type: string
+          description: Board side the component is placed on.
           enum: [BsNone, Top, Bottom]
         part:
-          $ref: "#/components/schemas/Part"
+          description: Part (part number) of the component.
+          allOf:
+            - $ref: "#/components/schemas/Part"
     Net:
       type: object
       description: Electrical net with its pin connections.
       properties:
         name:
           type: string
+          description: Net name.
           example: GND
         pinConnections:
           type: array
+          description: Component pin connections on the net.
           items:
             $ref: "#/components/schemas/PinConnection"
         index:
           type: integer
           format: int32
+          description: Net index within the design.
     PinConnection:
       type: object
+      description: One component pin's connection to a net.
       properties:
         name:
           type: string
+          description: Pin connection name (e.g. `U1-1`).
         component:
-          $ref: "#/components/schemas/Component"
+          description: The connected component.
+          allOf:
+            - $ref: "#/components/schemas/Component"
         pin:
-          $ref: "#/components/schemas/Pin"
+          description: The connected package pin.
+          allOf:
+            - $ref: "#/components/schemas/Pin"
     Pin:
       type: object
+      description: One pin of a package.
       properties:
         name:
           type: string
+          description: Pin name/number.
         index:
           type: integer
           format: int32
+          description: Pin index within the package.
     Package:
       type: object
       description: Component package (land pattern) with its pins.
       properties:
         name:
           type: string
+          description: Package name.
         pins:
           type: array
+          description: The package's pins.
           items:
             $ref: "#/components/schemas/Pin"
         pinsByName:
           type: object
           additionalProperties:
             $ref: "#/components/schemas/Pin"
+          description: Pins keyed by pin name.
         index:
           type: integer
           format: int32
+          description: Package index within the design.
     Part:
       type: object
+      description: A part number referenced by components.
       properties:
         name:
           type: string

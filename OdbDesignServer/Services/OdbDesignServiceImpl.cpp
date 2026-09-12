@@ -121,13 +121,38 @@ namespace OdbDesignServer
             try
             {
                 loginfo("[ConnTrace] GetDesign start: design_name=\"" + request->design_name() + "\"");
-                const auto design = m_designCache->GetDesign(request->design_name());
-                if (design == nullptr)
+                const auto& designName = request->design_name();
+
+                // M1.4 fast path: when the serialized-response cache is warm,
+                // fill the response from cached wire bytes with a single
+                // parse — zero ProductModel-to-proto conversions. (The sync
+                // gRPC API serializes `response` itself after this handler
+                // returns, so raw bytes cannot be handed to the framework
+                // directly; parsing the cached buffer replaces the full tree
+                // build + deep copy and is still a strict win.)
+                std::string cachedBytes;
+                if (m_designCache->TryGetDesignBytes(designName, cachedBytes))
                 {
-                    return {grpc::StatusCode::NOT_FOUND, "Design not found: " + request->design_name()};
+                    response->ParseFromString(cachedBytes);
+                    loginfo("[ConnTrace] GetDesign ok (cached bytes): design_name=\"" + designName +
+                        "\" approx_bytes=" + std::to_string(response->ByteSizeLong()));
+                    return grpc::Status::OK;
                 }
 
-                // Convert the design to protobuf message and populate the response
+                const auto design = m_designCache->GetDesign(designName);
+                if (design == nullptr)
+                {
+                    return {grpc::StatusCode::NOT_FOUND, "Design not found: " + designName};
+                }
+
+                // Cold path: serialize directly for this one response (the
+                // status-quo cost — exactly one tree build, on this thread).
+                // Cache population happens ONLY on the background
+                // pre-serialization worker scheduled at load completion —
+                // populating here as well meant two threads deep-building
+                // the full protobuf tree concurrently, which thrashed memory
+                // on large designs. The worker may land while we convert;
+                // either way the next request takes the cached-bytes path.
                 *response = *(design->to_protobuf());
 
                 loginfo("[ConnTrace] GetDesign ok: design_name=\"" + request->design_name() +
@@ -625,6 +650,25 @@ namespace OdbDesignServer
                 // that runs with insecure credentials and no authentication.
                 logerror(std::string("[ConnTrace] GetStandardFonts failed: ") + e.what());
                 return {grpc::StatusCode::INTERNAL, "Internal server error"};
+            }
+        }
+
+        grpc::Status OdbDesignServiceImpl::RequestLoadDesign(
+            grpc::ServerContext *context,
+            const Odb::Grpc::RequestLoadDesignRequest *request,
+            Odb::Grpc::RequestLoadDesignResponse *response)
+        {
+            try
+            {
+                loginfo("[ConnTrace] RequestLoadDesign: design_name=\"" + request->design_name() + "\"");
+                response->set_design_name(request->design_name());
+                response->set_status(ComputeRequestLoadStatus(*m_designCache, request->design_name()));
+                return grpc::Status::OK;
+            }
+            catch (const std::exception &e)
+            {
+                std::string error = "Internal server error: " + std::string(e.what());
+                return {grpc::StatusCode::INTERNAL, error};
             }
         }
 

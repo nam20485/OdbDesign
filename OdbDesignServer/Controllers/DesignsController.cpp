@@ -3,8 +3,10 @@
 #include "UrlEncoding.h"
 #include "App/IOdbServerApp.h"
 #include "App/RouteController.h"
+#include "../Services/OdbDesignServiceImpl.h"
 #include <Logger.h>
 #include <cstring>
+#include <utility>
 #include <vector>
 
 
@@ -73,6 +75,20 @@ namespace Odb::App::Server
 					}
 
 					return this->design_route_handler(designName, req);
+				});
+
+		CROW_ROUTE(m_serverApp.crow_app(), "/designs/<string>/load")
+			.methods(crow::HTTPMethod::POST)
+			([&](const crow::request& req, std::string designName)
+				{
+					// authenticate request before sending to handler
+					auto authResp = m_serverApp.request_auth().AuthenticateRequest(req);
+					if (authResp.code != crow::status::OK)
+					{
+						return authResp;
+					}
+
+					return this->designs_load_route_handler(designName, req);
 				});
 
 		CROW_ROUTE(m_serverApp.crow_app(), "/designs/<string>/components")
@@ -218,6 +234,28 @@ namespace Odb::App::Server
 
 		return crow::response(JsonCrowReturnable(*pDesign));
 	}
+	crow::response DesignsController::designs_load_route_handler(std::string designName, const crow::request& req)
+	{
+		auto designNameDecoded = UrlEncoding::decode(designName);
+		if (designNameDecoded.empty())
+		{
+			return crow::response(crow::status::BAD_REQUEST, "design name not specified");
+		}
+
+		// Same pure status mapping as the gRPC RequestLoadDesign twin: never
+		// blocks on a parse, the only mutating call is the async-load kick.
+		const auto status = OdbDesignServer::Services::ComputeRequestLoadStatus(
+			m_serverApp.designs(), designNameDecoded);
+
+		crow::json::wvalue wv;
+		wv["designName"] = designNameDecoded;
+		wv["status"] = OdbDesignServer::Services::LoadStatusToString(status);
+
+		// 202 even for "not_found": the request itself succeeded, the body
+		// carries the load status distinction.
+		return crow::response(crow::status::ACCEPTED, std::move(wv));
+	}
+
 	crow::response DesignsController::designs_components_route_handler(std::string designName, const crow::request& req)
 	{
 		auto designNameDecoded = UrlEncoding::decode(designName);

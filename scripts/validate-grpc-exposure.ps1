@@ -32,6 +32,21 @@ param(
     [string]$StepName,
     [Parameter(Mandatory=$false)]
     [string]$LayerName,
+    # Validate the TLS-exposed path (M3.1): gRPC is served via the Traefik
+    # IngressRouteTCP (TLS termination on the `grpc` entrypoint, node :50051)
+    # backed by a ClusterIP service — not via a LoadBalancer service. Implies
+    # the k3s shape. grpcurl runs with implicit TLS (no -plaintext).
+    [switch]$Tls = $false,
+    # Optional CA bundle grpcurl verifies the serving cert against (-cacert).
+    # Omit to use the system trust store (import the OdbDesign root CA first).
+    [Parameter(Mandatory=$false)]
+    [string]$CaCert = "",
+    # -Tls mode: Traefik LoadBalancer service the node IP is resolved from
+    # when -AdvertisedHost is omitted.
+    [Parameter(Mandatory=$false)]
+    [string]$TraefikServiceName = "traefik",
+    [Parameter(Mandatory=$false)]
+    [string]$TraefikNamespace = "kube-system",
     [switch]$SkipGrpcUrl = $false
 )
 
@@ -82,6 +97,34 @@ function Invoke-KubectlJson {
     return $json | ConvertFrom-Json
 }
 
+function Get-LbIngressIps {
+    param($Service)
+
+    # StrictMode-safe: kubectl's JSON omits "ingress" while the LoadBalancer
+    # IP is pending (status.loadBalancer: {}) and entries may omit "ip"
+    # (hostname-only) — probe PSObject.Properties instead of direct access.
+    $ingressIps = @()
+    $statusProp = $Service.PSObject.Properties['status']
+    if ($statusProp) {
+        $lbProp = $statusProp.Value.PSObject.Properties['loadBalancer']
+        if ($lbProp) {
+            $ingressProp = $lbProp.Value.PSObject.Properties['ingress']
+            if ($ingressProp) {
+                $ingressIps = @(
+                    foreach ($entry in @($ingressProp.Value)) {
+                        $ipProp = $entry.PSObject.Properties['ip']
+                        $hostProp = $entry.PSObject.Properties['hostname']
+                        if ($ipProp -and -not [string]::IsNullOrWhiteSpace("$($ipProp.Value)")) { "$($ipProp.Value)" }
+                        elseif ($hostProp -and -not [string]::IsNullOrWhiteSpace("$($hostProp.Value)")) { "$($hostProp.Value)" }
+                    }
+                )
+            }
+        }
+    }
+
+    return $ingressIps
+}
+
 function Normalize-ClusterShortName {
     param([string]$Name)
 
@@ -101,11 +144,22 @@ function Test-GrpcUrlTarget {
         [string]$ModelProtoPath,
         [string]$DesignName,
         [string]$StepName,
-        [string]$LayerName
+        [string]$LayerName,
+        [switch]$Tls = $false,
+        [string]$CaCert = ""
     )
 
-    $healthArgs = @(
-        "-plaintext",
+    # -plaintext for the default plaintext path; implicit TLS otherwise, with
+    # an optional CA bundle (default: system trust store).
+    $modeArgs = @()
+    if (-not $Tls) {
+        $modeArgs += "-plaintext"
+    }
+    elseif (-not [string]::IsNullOrWhiteSpace($CaCert)) {
+        $modeArgs += @("-cacert", $CaCert)
+    }
+
+    $healthArgs = $modeArgs + @(
         "-import-path", $GrpcProtoPath,
         "-import-path", $ModelProtoPath,
         "-proto", $ServiceProtoPath,
@@ -125,8 +179,7 @@ function Test-GrpcUrlTarget {
         -not [string]::IsNullOrWhiteSpace($StepName) -and
         -not [string]::IsNullOrWhiteSpace($LayerName)) {
 
-        $symbolsArgs = @(
-            "-plaintext",
+        $symbolsArgs = $modeArgs + @(
             "-import-path", $GrpcProtoPath,
             "-import-path", $ModelProtoPath,
             "-proto", $ServiceProtoPath,
@@ -208,7 +261,14 @@ if ($deploymentPorts.Count -eq 0) {
 Write-Step "Deployment '$DeploymentName' exposes '$GrpcPortName' on port $GrpcPort."
 
 $service = Invoke-KubectlJson -Arguments @("get", "service", $GrpcServiceName)
-if ($service.spec.type -ne "LoadBalancer") {
+if ($Tls) {
+    # -Tls mode: the service is the ClusterIP backend of the Traefik
+    # IngressRouteTCP (exposure is validated via the Traefik service below).
+    if ($service.spec.type -ne "ClusterIP") {
+        Fail "Service '$GrpcServiceName' must be type ClusterIP in -Tls mode (Traefik IngressRouteTCP backend) but was '$($service.spec.type)'. Deploy with scripts/deploy.ps1 -EnableTls."
+    }
+}
+elseif ($service.spec.type -ne "LoadBalancer") {
     Fail "Service '$GrpcServiceName' must be type LoadBalancer but was '$($service.spec.type)'."
 }
 
@@ -272,7 +332,33 @@ Write-Step "Service '$GrpcServiceName' has endpoints: $($endpointAddresses -join
 
 $grpcTarget = $AdvertisedHost
 
-if ($kind -eq 'k3d') {
+if ($Tls) {
+    # -Tls: clients hit the node IP Traefik's Service publishes (the `grpc`
+    # entrypoint, node :50051) and verify the serving cert's SANs. k3s only —
+    # the IngressRouteTCP + HelmChartConfig pieces are k3s-traefik specific.
+    if ($kind -ne 'k3s') {
+        Fail "-Tls validation is implemented for the k3s deployment shape (Traefik IngressRouteTCP); cluster kind '$kind' is not supported."
+    }
+
+    if ([string]::IsNullOrWhiteSpace($AdvertisedHost)) {
+        $traefikService = Invoke-KubectlJson -Arguments @("-n", $TraefikNamespace, "get", "service", $TraefikServiceName)
+        # @() guards against PowerShell pipeline unrolling: a single ingress IP
+        # would otherwise assign a bare [string], whose [0] yields the first
+        # character, not the IP.
+        $traefikIps = @(Get-LbIngressIps -Service $traefikService)
+
+        if ($traefikIps.Count -eq 0) {
+            Fail "Traefik service '$TraefikNamespace/$TraefikServiceName' has no LoadBalancer ingress IP. Is Traefik running? kubectl -n $TraefikNamespace get service $TraefikServiceName"
+        }
+
+        Write-Step "Traefik publishes the gRPC entrypoint on node: $($traefikIps -join ', ')"
+        $grpcTarget = $traefikIps[0]
+    }
+    else {
+        Write-Step "TLS mode: using advertised host '$AdvertisedHost' on port $GrpcPort (implicit TLS)."
+    }
+}
+elseif ($kind -eq 'k3d') {
     Require-Command "docker"
 
     $clusterShortName = Normalize-ClusterShortName -Name $ClusterName
@@ -372,7 +458,9 @@ if (-not [string]::IsNullOrWhiteSpace($computerName) -and
         -ModelProtoPath $modelProtoPath `
         -DesignName $DesignName `
         -StepName $StepName `
-        -LayerName $LayerName
+        -LayerName $LayerName `
+        -Tls:$Tls `
+        -CaCert $CaCert
 }
 else {
     Write-Step "Skipping localhost grpcurl validation (machine is '$computerName', advertised host is '$AdvertisedHost')."
@@ -386,6 +474,8 @@ Test-GrpcUrlTarget `
     -ModelProtoPath $modelProtoPath `
     -DesignName $DesignName `
     -StepName $StepName `
-    -LayerName $LayerName
+    -LayerName $LayerName `
+    -Tls:$Tls `
+    -CaCert $CaCert
 
 Write-Step "gRPC exposure validation completed successfully."

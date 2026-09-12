@@ -12,7 +12,7 @@ Sounds great! Now how do I build and run it?
 
 [Build](#building-from-source)
 
-Documentation for the currently-released version of the source code is available [here](https://nam20485.github.io/OdbDesign/api).
+Documentation for the currently-released version of the source code is available [here](https://source.odbdesignserver.com/api).
 
 ## Need Help?
 
@@ -89,7 +89,7 @@ It is built using the latest available version of the C++ standard and is compil
 
 The diagram describes the current state of parser implementation and data availability. Green color describes areas of the ODB++ archive file that are implemented and have their data available for use. ~~Red color describes areas that are not parsed so their data is not yet available.~~ **All areas of the file are now parsed, and have their data available for use.**
 
-![ODB++ file hierarchy implementation state diagram](<odb++ file hierarchy (implemented).png>)
+![ODB++ file hierarchy implementation state diagram](<reference/images/odb-file-hierarchy-implemented.png>)
 
 ### Project Security
 
@@ -139,7 +139,7 @@ The diagram describes the current state of parser implementation and data availa
 
 The OdbDesign parser is built as a C++ shared library on all three platforms. An executable running the server links to the library and provides the REST API for accessing the data the library parses. The REST API server can be run by invoking the executable directly or by running the Docker image. The server executable and library can be run on Windows, Linux, or MacOS and the Docker image can be run on any platform that supports Docker.
 
-Documentation for the currently-released version of the source code is available [here](https://nam20485.github.io/OdbDesign/api).
+Documentation for the currently-released version of the source code is available [here](https://source.odbdesignserver.com/api).
 
 [Insert Diagram Image]
 
@@ -180,7 +180,7 @@ If successful, the REST API server will be running and listening on port 8888. Y
 
 ## Building from Source
 
-Documentation for the currently-released version of the source code is available [here](https://nam20485.github.io/OdbDesign/api).
+Documentation for the currently-released version of the source code is available [here](https://source.odbdesignserver.com/api).
 
 ### Automated Setup Scripts
 
@@ -320,7 +320,7 @@ $ cmake --build --preset linux-dynamic-release
 
 ```
 
->This uses the `linux-dynamic-release` preset, which links vcpkg dependencies (protobuf, gRPC, ...) as shared libraries. Linking them statically (`linux-release` preset) loads two copies of protobuf at runtime and crashes. See [linux-dynamic-release-plan.md](./linux-dynamic-release-plan.md).
+>This uses the `linux-dynamic-release` preset, which links vcpkg dependencies (protobuf, gRPC, ...) as shared libraries. Linking them statically (`linux-release` preset) loads two copies of protobuf at runtime and crashes. See [linux-dynamic-release-plan.md](./completed/linux-dynamic-release-plan.md).
 
 This builds the C++ shared library and the REST API server executable. See the [Running the C++ Application](#running-the-c%2b%2b-application) section for more details.
 
@@ -397,7 +397,7 @@ If you are interested in using the parser in your application or code, or have a
 * [Email me (maintainer)](mailto:nmiller217@gmail.com?subject=OdbDesign)
 * [GitHub](https://github.com/nam20485/odbdesign)
 * [LinkedIn](https://www.linkedin.com/in/namiller/)
-* [OdbDesign Website](https://nam20485.github.io/OdbDesign/)
+* [OdbDesign Website](https://source.odbdesignserver.com/)
 * Gitter chat room: [odbdesign:gitter.im](https://app.gitter.im/#/room/#odbdesign:gitter.im)
 * Use the button below to schedule a video call on Google.
 
@@ -429,7 +429,7 @@ You can use this to get help or support, discuss any issues with integration int
 
 * [ODB++ Format Home](https://odbplusplus.com/design/)
 * [ODB++ Format Documentation & Resources](https://odbplusplus.com/design/our-resources/)
-* ODB++ Format Specification (included in this repo): `docs/odb_spec_user.pdf`
+* ODB++ Format Specification (included in this repo): `docs/reference/odbpp/odb_spec_user.pdf`
 * [ODB++ Format Specification v8.1 update 4 (public PDF)](https://odbplusplus.com/wp-content/uploads/sites/2/2024/08/odb_spec_user.pdf)
 
 *ODB++ is a registered trademark of Siemens*

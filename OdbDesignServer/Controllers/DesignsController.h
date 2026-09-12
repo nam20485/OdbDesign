@@ -38,6 +38,10 @@ namespace Odb::App::Server
 		crow::response designs_list_route_handler(const crow::request& req);
 		crow::response design_route_handler(std::string designName, const crow::request& req);
 
+		// REST twin of the gRPC RequestLoadDesign RPC: kicks a background load
+		// (202 Accepted) and returns the load status in the body.
+		crow::response designs_load_route_handler(std::string designName, const crow::request& req);
+
 		crow::response designs_components_route_handler(std::string designName, const crow::request& req);
 		crow::response designs_component_route_handler(std::string designName, std::string refDes, const crow::request& req);
 

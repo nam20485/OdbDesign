@@ -386,7 +386,7 @@ Applications.
 - `deploy/kube/argocd-ingress.yaml` — working path-prefix IngressRoute example
 - `.agents/rules/k3s-cluster.md` — cluster facts & conventions (source of truth)
 - `.agents/skills/k3s-admin/SKILL.md` — day-2 procedures
-- `docs/plans/.complete/argocd-install-plan.md` — install plan + outcome
+- `docs/completed/argocd-install-plan.md` — install plan + outcome
 
 **Escalation:** cluster-level anything (Argo CD upgrades, accounts/RBAC,
 tailnet ACLs, certs, capacity, Traefik) → linux-system-agent. App-level

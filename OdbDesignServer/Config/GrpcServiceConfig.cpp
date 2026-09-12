@@ -1,6 +1,7 @@
 #include "GrpcServiceConfig.h"
 #include <algorithm>
 #include <fstream>
+#include <iostream>
 #include <sstream>
 #include <crow/json.h>
 #include <filesystem>
@@ -9,6 +10,22 @@ namespace OdbDesignServer
 {
     namespace Config
     {
+        namespace
+        {
+            // Map a config string to a gRPC compression level;
+            // unknown values fall back to high (matches previous gzip behavior)
+            grpc_compression_level ParseCompressionLevel(const std::string& value)
+            {
+                if (value == "none") return GRPC_COMPRESS_LEVEL_NONE;
+                if (value == "low") return GRPC_COMPRESS_LEVEL_LOW;
+                if (value == "medium") return GRPC_COMPRESS_LEVEL_MED;
+                if (value == "high") return GRPC_COMPRESS_LEVEL_HIGH;
+                std::cerr << "WARNING: unknown grpc compression level \"" << value
+                          << "\", defaulting to \"high\"" << std::endl;
+                return GRPC_COMPRESS_LEVEL_HIGH;
+            }
+        }
+
         GrpcServiceConfig::LoadResult GrpcServiceConfig::LoadFromFile(const std::string& configPath)
         {
             LoadResult result;
@@ -78,9 +95,47 @@ namespace OdbDesignServer
                     if (grpcSection.has("compression"))
                     {
                         auto compressionSection = grpcSection["compression"];
+
+                        // Legacy boolean/algorithm keys. "enabled": false is honored as a
+                        // one-time migration (-> level "none") so an explicit opt-out never
+                        // silently re-enables compression after upgrade; "enabled": true and
+                        // "algorithm" are superseded by level-based negotiation.
+                        const bool hasLevel = compressionSection.has("level");
                         if (compressionSection.has("enabled"))
                         {
-                            result.config->compression_enabled = compressionSection["enabled"].b();
+                            const bool enabled = compressionSection["enabled"].b();
+                            if (!enabled && !hasLevel)
+                            {
+                                result.config->compression_level = GRPC_COMPRESS_LEVEL_NONE;
+                            }
+                            // The disposition must match the gating above: nothing is
+                            // migrated when an explicit "level" is present.
+                            const char* disposition;
+                            if (hasLevel)
+                            {
+                                disposition = "ignored; the explicit \"level\" applies";
+                            }
+                            else if (enabled)
+                            {
+                                disposition = "ignored (the \"level\" default applies)";
+                            }
+                            else
+                            {
+                                disposition = "migrated to \"level\": \"none\"";
+                            }
+                            std::cerr << "WARNING: deprecated grpc.compression \"enabled\" key "
+                                      << disposition
+                                      << "; use \"level\": \"none|low|medium|high\" instead" << std::endl;
+                        }
+                        if (compressionSection.has("algorithm"))
+                        {
+                            std::cerr << "WARNING: deprecated grpc.compression \"algorithm\" key ignored; "
+                                      << "algorithm selection now follows \"level\"" << std::endl;
+                        }
+
+                        if (compressionSection.has("level"))
+                        {
+                            result.config->compression_level = ParseCompressionLevel(compressionSection["level"].s());
                         }
                     }
 
