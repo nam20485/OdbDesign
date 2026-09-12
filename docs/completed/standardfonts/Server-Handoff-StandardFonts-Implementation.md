@@ -4,7 +4,7 @@
 > **From:** Server Development
 > **Date:** 2026-08-01
 > **Repo:** `nam20485/OdbDesign`, branch `nam20485`
-> **In response to:** `plan_docs/Server-Handoff-StandardFonts-Endpoint.md`
+> **In response to:** `Server-Handoff-StandardFonts-Endpoint.md`
 > **Status:** Implemented, tested, and validated (129/129 server tests passing).
 
 ---

@@ -6,7 +6,8 @@ concluded**. Kept for provenance; nothing here has open items. Active plans:
 
 | Area | Docs | Outcome |
 |---|---|---|
-| gRPC server migration | `grpc/` (4 plans + spec, v1→v3.2) | Shipped 2025 — gRPC services in `OdbDesignServer/Services/` (#561); UTF-8 sanitizer wired in (#565) |
+| gRPC server migration | `grpc/` (plans v1.0→v3.2, architecture guide, impl spec, risks, WBS) | Shipped 2025 — gRPC services in `OdbDesignServer/Services/` (#561); UTF-8 sanitizer wired in (#565) |
+| StandardFonts gRPC endpoint | `standardfonts/` | Shipped 2026-09 — `GetStandardFonts` RPC in `service.proto` (client-authored spec + implementation handoffs); tests in `OdbDesignTests/GetStandardFontsTests.cpp` |
 | Component-height data investigation | `height-data/` | Concluded Jan 2026 — server correct; default 1.0 mm height is expected behavior; no fix required |
 | Client rendering contract + debug cycle | `render-components2/` (incl. `debug-output-issues/`) | Jan 2025 — `GetLayerFeaturesBatchStream` v2 contract implemented; debug-issue fixes (150 MB limits etc.) shipped |
 | Render API gaps | `render-gaps2/`, `PR-503-TODO-PLAN.md` | PR #503 merged 2025-12-23; S1/S3 implemented |

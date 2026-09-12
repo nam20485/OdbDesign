@@ -1,6 +1,6 @@
 # Implementation Plan: `GetStandardFonts` gRPC Endpoint
 
-> **Companion to:** `plan_docs/Server-Handoff-StandardFonts-Endpoint.md` (client-authored spec)
+> **Companion to:** `Server-Handoff-StandardFonts-Endpoint.md` (client-authored spec)
 > **Branch:** `nam20485`
 > **Date:** 2026-08-01
 
@@ -28,7 +28,7 @@ this work adds only the gRPC accessor, its request message, and tests.
 
 **Decision (approved by user):** re-enable `OdbDesignServiceImpl.cpp` in the existing
 `OdbDesignTests` target and add a new `GetStandardFontsTests.cpp` mirroring the
-`GetLayerSymbolsFixture` pattern. Both deliverable docs go in `plan_docs/`.
+`GetLayerSymbolsFixture` pattern. Both deliverable docs live in `docs/completed/standardfonts/`.
 
 ---
 

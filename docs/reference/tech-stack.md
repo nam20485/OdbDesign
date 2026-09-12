@@ -155,7 +155,7 @@ gRPC Path (New):
 - **Input Format**: ODB++ v8.0+ (IPC-2581)
   - Compressed archives (.tgz, .tar.gz)
   - Directory structure with ASCII data files
-- **Specification**: `docs/odb_spec_user.pdf`
+- **Specification**: `docs/reference/odbpp/odb_spec_user.pdf`
 
 ### API Data Formats
 - **REST API**: JSON (application/json)
@@ -215,7 +215,7 @@ package odb.api.v1;
 
 ### Code Documentation
 - **Doxygen**: C++ API documentation (`OdbDesignLib/doxygen.conf`)
-- **Markdown**: Planning docs in `plan_docs/`
+- **Markdown**: Planning docs in `docs/plan/`
 
 ---
 
@@ -311,7 +311,7 @@ target_link_libraries(OdbDesignServer
 - **gRPC C++ Quick Start**: https://grpc.io/docs/languages/cpp/quickstart/
 - **Protobuf C++ Tutorial**: https://protobuf.dev/getting-started/cpptutorial/
 - **vcpkg Package Registry**: https://vcpkg.io/en/packages.html
-- **ODB++ Specification**: `docs/odb_spec_user.pdf`
+- **ODB++ Specification**: `docs/reference/odbpp/odb_spec_user.pdf`
 
 ---
 
