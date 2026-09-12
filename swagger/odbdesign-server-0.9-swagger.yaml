@@ -241,7 +241,7 @@ paths:
             ETag:
               $ref: "#/components/headers/ETag"
             Cache-Control:
-              $ref: "#/components/headers/CacheControl"
+              $ref: "#/components/headers/Cache-Control"
           description: File archive parsed and returned.
           content:
             application/json:
@@ -304,7 +304,7 @@ paths:
             ETag:
               $ref: "#/components/headers/ETag"
             Cache-Control:
-              $ref: "#/components/headers/CacheControl"
+              $ref: "#/components/headers/Cache-Control"
           description: Attrlist file.
           content:
             application/json:
@@ -338,7 +338,7 @@ paths:
             ETag:
               $ref: "#/components/headers/ETag"
             Cache-Control:
-              $ref: "#/components/headers/CacheControl"
+              $ref: "#/components/headers/Cache-Control"
           description: Misc info file.
           content:
             application/json:
@@ -381,7 +381,7 @@ paths:
             ETag:
               $ref: "#/components/headers/ETag"
             Cache-Control:
-              $ref: "#/components/headers/CacheControl"
+              $ref: "#/components/headers/Cache-Control"
           description: Matrix file.
           content:
             application/json:
@@ -431,7 +431,7 @@ paths:
             ETag:
               $ref: "#/components/headers/ETag"
             Cache-Control:
-              $ref: "#/components/headers/CacheControl"
+              $ref: "#/components/headers/Cache-Control"
           description: Standard fonts file.
           content:
             application/json:
@@ -492,7 +492,7 @@ paths:
             ETag:
               $ref: "#/components/headers/ETag"
             Cache-Control:
-              $ref: "#/components/headers/CacheControl"
+              $ref: "#/components/headers/Cache-Control"
           description: Step directory.
           content:
             application/json:
@@ -527,7 +527,7 @@ paths:
             ETag:
               $ref: "#/components/headers/ETag"
             Cache-Control:
-              $ref: "#/components/headers/CacheControl"
+              $ref: "#/components/headers/Cache-Control"
           description: Eda data file.
           content:
             application/json:
@@ -560,7 +560,7 @@ paths:
             ETag:
               $ref: "#/components/headers/ETag"
             Cache-Control:
-              $ref: "#/components/headers/CacheControl"
+              $ref: "#/components/headers/Cache-Control"
           description: Attrlist file.
           content:
             application/json:
@@ -595,7 +595,7 @@ paths:
             ETag:
               $ref: "#/components/headers/ETag"
             Cache-Control:
-              $ref: "#/components/headers/CacheControl"
+              $ref: "#/components/headers/Cache-Control"
           description: Profile features file.
           content:
             application/json:
@@ -629,7 +629,7 @@ paths:
             ETag:
               $ref: "#/components/headers/ETag"
             Cache-Control:
-              $ref: "#/components/headers/CacheControl"
+              $ref: "#/components/headers/Cache-Control"
           description: Step header file.
           content:
             application/json:
@@ -690,7 +690,7 @@ paths:
             ETag:
               $ref: "#/components/headers/ETag"
             Cache-Control:
-              $ref: "#/components/headers/CacheControl"
+              $ref: "#/components/headers/Cache-Control"
           description: Netlist file.
           content:
             application/json:
@@ -753,7 +753,7 @@ paths:
             ETag:
               $ref: "#/components/headers/ETag"
             Cache-Control:
-              $ref: "#/components/headers/CacheControl"
+              $ref: "#/components/headers/Cache-Control"
           description: Layer directory.
           content:
             application/json:
@@ -789,7 +789,7 @@ paths:
             ETag:
               $ref: "#/components/headers/ETag"
             Cache-Control:
-              $ref: "#/components/headers/CacheControl"
+              $ref: "#/components/headers/Cache-Control"
           description: Components file.
           content:
             application/json:
@@ -825,7 +825,7 @@ paths:
             ETag:
               $ref: "#/components/headers/ETag"
             Cache-Control:
-              $ref: "#/components/headers/CacheControl"
+              $ref: "#/components/headers/Cache-Control"
           description: Features file.
           content:
             application/json:
@@ -859,7 +859,7 @@ paths:
             ETag:
               $ref: "#/components/headers/ETag"
             Cache-Control:
-              $ref: "#/components/headers/CacheControl"
+              $ref: "#/components/headers/Cache-Control"
           description: Attrlist file.
           content:
             application/json:
@@ -898,7 +898,7 @@ paths:
             ETag:
               $ref: "#/components/headers/ETag"
             Cache-Control:
-              $ref: "#/components/headers/CacheControl"
+              $ref: "#/components/headers/Cache-Control"
           description: Per-layer symbol unit diagnostics.
           content:
             application/json:
@@ -967,7 +967,7 @@ paths:
             ETag:
               $ref: "#/components/headers/ETag"
             Cache-Control:
-              $ref: "#/components/headers/CacheControl"
+              $ref: "#/components/headers/Cache-Control"
           description: Symbol directory.
           content:
             application/json:
@@ -1000,7 +1000,7 @@ paths:
             ETag:
               $ref: "#/components/headers/ETag"
             Cache-Control:
-              $ref: "#/components/headers/CacheControl"
+              $ref: "#/components/headers/Cache-Control"
           description: Features file.
           content:
             application/json:
@@ -1033,7 +1033,7 @@ paths:
             ETag:
               $ref: "#/components/headers/ETag"
             Cache-Control:
-              $ref: "#/components/headers/CacheControl"
+              $ref: "#/components/headers/Cache-Control"
           description: Attrlist file.
           content:
             application/json:
@@ -1408,7 +1408,7 @@ components:
         schema:
             type: string
         example: '"a1b2c3d4e5f60718"'
-    CacheControl:
+    Cache-Control:
         description: |
             Cache policy for per-design data: private (no shared/proxy cache),
             one hour of client reuse, then mandatory revalidation.
@@ -1455,8 +1455,8 @@ components:
         headers:
             ETag:
                 $ref: "#/components/headers/ETag"
-            CacheControl:
-                $ref: "#/components/headers/CacheControl"
+            Cache-Control:
+                $ref: "#/components/headers/Cache-Control"
 
   schemas:
     # ------------------------------------------------------------------ common
