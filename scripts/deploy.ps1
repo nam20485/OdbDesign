@@ -99,6 +99,14 @@ try {
         Invoke-Kubectl @("apply", "-f", "deploy/kube/OdbDesignServer/service-grpc.yaml")
     }
     else {
+        # A previous -EnableTls deploy leaves the Traefik `grpc` entrypoint and
+        # the IngressRouteTCP behind (nothing else removes them). Their svclb
+        # hostPort-binds node :50051, which this LoadBalancer service's own
+        # svclb DaemonSet also needs -> port conflict -> the service never gets
+        # an ingress IP. Clean them up before (re)applying the LB service;
+        # --ignore-not-found keeps a never-TLS'd cluster a no-op.
+        Invoke-Kubectl @("delete", "--ignore-not-found=true", "-f", "deploy/kube/odbdesign-grpc-ingressroute-tcp.yaml")
+        Invoke-Kubectl @("delete", "--ignore-not-found=true", "helmchartconfig", "traefik", "-n", "kube-system")
         Invoke-Kubectl @("apply", "-f", "deploy/kube/OdbDesignServer/service-grpc-loadbalancer.yaml")
     }
 

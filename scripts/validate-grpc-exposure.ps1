@@ -447,7 +447,14 @@ $serviceProtoPath = Join-Path $grpcProtoPath "service.proto"
 $grpcurlPath = $grpcurlCommand.Source
 
 $computerName = $env:COMPUTERNAME
-if (-not [string]::IsNullOrWhiteSpace($computerName) -and
+if ($Tls) {
+    # The serving certificate (deploy/kube/certificate-odbs-server.yaml) has
+    # no localhost/127.0.0.1 SAN, so a TLS grpcurl against localhost fails
+    # certificate verification deterministically — there is nothing valid to
+    # probe there in TLS mode. The advertised-host probe below covers TLS.
+    Write-Step "Skipping localhost grpcurl validation in TLS mode: the serving certificate carries no localhost/127.0.0.1 SAN."
+}
+elseif (-not [string]::IsNullOrWhiteSpace($computerName) -and
     -not [string]::IsNullOrWhiteSpace($AdvertisedHost) -and
     $computerName.Equals($AdvertisedHost, [System.StringComparison]::OrdinalIgnoreCase)) {
     Test-GrpcUrlTarget `
