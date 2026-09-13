@@ -1,0 +1,28 @@
+# Option C (https-tls-options.md §5): the ingress/gRPC serving certificate.
+#
+# cert-manager signs this leaf from the CA Issuer (issuer-ca.yaml) and keeps
+# renewing it. IP SANs are the whole point of Option C: clients hitting the
+# bare node IPs verify against the SAN list, not SNI.
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: odbdesign-server-tls
+  namespace: default
+spec:
+  secretName: odbdesign-server-tls
+  issuerRef:
+    name: odbdesign-ca
+    kind: Issuer
+    group: cert-manager.io
+  # 1-year leaf; renew 30 days before expiry.
+  duration: 8760h
+  renewBefore: 720h
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+  dnsNames:
+    - odbdesign.local
+    - odbdesign
+  ipAddresses:
+    - 192.168.122.200   # LAN IP of the k3s VM (debian13vm)
+    - 100.118.225.119   # Tailscale IP of the k3s VM

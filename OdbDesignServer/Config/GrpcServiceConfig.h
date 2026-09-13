@@ -2,19 +2,33 @@
 
 #include <memory>
 #include <string>
+#include <grpc/impl/compression_types.h>
 
 namespace OdbDesignServer
 {
     namespace Config
     {
+        // Human-readable name for a gRPC compression level (for logging)
+        inline const char* CompressionLevelToString(grpc_compression_level level)
+        {
+            switch (level)
+            {
+                case GRPC_COMPRESS_LEVEL_NONE: return "none";
+                case GRPC_COMPRESS_LEVEL_LOW: return "low";
+                case GRPC_COMPRESS_LEVEL_MED: return "medium";
+                case GRPC_COMPRESS_LEVEL_HIGH: return "high";
+                default: return "unknown";
+            }
+        }
+
         struct GrpcServiceConfig
         {
             // Message size limits (in MB)
             int max_receive_message_size_mb = 250;  // Default 250MB (updated to handle large designs like Turbot)
             int max_send_message_size_mb = 250;     // Default 250MB (updated to handle large designs like Turbot)
 
-            // Compression configuration
-            bool compression_enabled = true;         // Default enabled (gRPC handles automatically)
+            // Compression configuration ("none" disables compression)
+            grpc_compression_level compression_level = GRPC_COMPRESS_LEVEL_HIGH;  // Default high (best compression)
 
             // Batch streaming configuration
             bool enable_batch_streaming = true;  // Feature flag for gradual rollout

@@ -103,7 +103,7 @@ $ cmake --build --preset linux-dynamic-release
 
 ```
 
->This uses the `linux-dynamic-release` preset, which links vcpkg dependencies (protobuf, gRPC, ...) as shared libraries. Linking them statically (`linux-release` preset) loads two copies of protobuf at runtime and crashes. See [linux-dynamic-release-plan.md](./linux-dynamic-release-plan.md).
+>This uses the `linux-dynamic-release` preset, which links vcpkg dependencies (protobuf, gRPC, ...) as shared libraries. Linking them statically (`linux-release` preset) loads two copies of protobuf at runtime and crashes. See [linux-dynamic-release-plan.md](./completed/linux-dynamic-release-plan.md).
 
 This builds the C++ shared library and the REST API server executable. See the [Running the C++ Application](#running-the-c%2b%2b-application) section for more details.
 

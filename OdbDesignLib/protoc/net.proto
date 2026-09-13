@@ -1,7 +1,7 @@
 syntax = "proto3";
+option cc_enable_arenas = true;
 
 //// https://protobuf.dev/reference/cpp/cpp-generated/#message
-//option optimize_for = CODE_SIZE;
 
 import "pinconnection.proto";
 

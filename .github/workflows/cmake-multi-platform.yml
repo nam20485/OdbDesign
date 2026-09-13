@@ -75,7 +75,7 @@ jobs:
           # Linux x64 Release (upgraded to 24.04 for newer toolchain)
           # dynamic triplet: shared protobuf/gRPC runtime — the static
           # linux-release preset loads two protobuf copies and crashes
-          # (see docs/linux-dynamic-release-plan.md)
+          # (see docs/completed/linux-dynamic-release-plan.md)
           - os: ubuntu-24.04
             preset: linux-dynamic-release
           # MacOS x64 Release

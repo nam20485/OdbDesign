@@ -1,0 +1,34 @@
+# Adds a dedicated `grpc` TCP entrypoint on :50051 to the Traefik instance
+# packaged with k3s, and publishes that port on the node through Traefik's
+# existing Service (ServiceLB binds node :50051 -> Traefik pod).
+#
+# The packaged Traefik is a HelmChart (helm.cattle.io/v1, name `traefik`,
+# namespace `kube-system`); a HelmChartConfig with the same name/namespace
+# deep-merges extra values into it (traefik helm chart `ports.<name>` schema:
+# each entry becomes a static-config entrypoint AND, with expose: true, a
+# Service port). The k3s addon controller reconciles this resource when
+# kubectl-applied; after applying it re-upgrades the chart and restarts the
+# traefik deployment (verify: kubectl -n kube-system rollout status deploy/traefik).
+#
+# Only add this manifest as part of the -EnableTls flow (scripts/deploy.ps1);
+# the default plaintext deployment exposes gRPC directly via the
+# LoadBalancer gRPC service (deploy/kube/OdbDesignServer/service-grpc-loadbalancer.yaml)
+# and must not contend for node :50051 with Traefik.
+#
+# Caveat: the name/namespace MUST equal the packaged HelmChart's
+# (traefik / kube-system). If a cluster already carries its own traefik
+# HelmChartConfig with other values, merge this ports block into it instead of
+# applying this file as-is (kubectl apply would replace its valuesContent).
+apiVersion: helm.cattle.io/v1
+kind: HelmChartConfig
+metadata:
+  name: traefik
+  namespace: kube-system
+spec:
+  valuesContent: |-
+    ports:
+      grpc:
+        port: 50051
+        exposedPort: 50051
+        protocol: TCP
+        expose: true

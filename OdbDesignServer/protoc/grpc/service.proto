@@ -1,4 +1,5 @@
 syntax = "proto3";
+option cc_enable_arenas = true;
 package Odb.Grpc;
 
 // Import existing data models defined in OdbDesignLib
@@ -31,6 +32,11 @@ service OdbDesignService {
   // The client uses this to render ODB++ text features (silkscreen labels, refdes, etc.)
   // as 3D stroke geometry.
   rpc GetStandardFonts(GetStandardFontsRequest) returns (.Odb.Lib.Protobuf.StandardFontsFile);
+
+  // Unary call to request a background load of a design archive.
+  // Returns immediately with the load status; it never blocks on the parse.
+  // A client can then poll GetDesign until the design is warm.
+  rpc RequestLoadDesign(RequestLoadDesignRequest) returns (RequestLoadDesignResponse);
 
   // A simple health check for the gRPC server
   rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
@@ -70,6 +76,29 @@ message GetLayerSymbolsResponse {
 
 message GetStandardFontsRequest {
   string design_name = 1;
+}
+
+message RequestLoadDesignRequest {
+  string design_name = 1;
+}
+
+// Result of a RequestLoadDesign call. The request itself always succeeds;
+// the status distinguishes what was (or was not) kicked.
+message RequestLoadDesignResponse {
+  string design_name = 1;
+  LoadStatus status = 2;
+}
+
+// Lifecycle status of a requested background design load.
+enum LoadStatus {
+  // A fresh background load was kicked; the design will be warm once it completes.
+  LOAD_ACCEPTED = 0;
+  // A load for this design is already queued or parsing.
+  LOAD_ALREADY_LOADING = 1;
+  // The design is already loaded (warm); no load was kicked.
+  LOAD_ALREADY_LOADED = 2;
+  // No archive with this name exists in the designs directory; nothing was kicked.
+  LOAD_NOT_FOUND = 3;
 }
 
 message HealthCheckRequest {
