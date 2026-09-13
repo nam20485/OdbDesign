@@ -229,7 +229,18 @@ namespace Odb::App::Server
 
 		if (!includeFileArchive)
 		{
-			pDesign->ClipFileModel();
+			// Serve a clipped VIEW, never the cached object itself: pDesign is
+			// the shared cache-resident Design (GetDesign returns the cached
+			// instance), and ClipFileModel() nulls the member on whatever it
+			// is called on — calling it here used to destroy the file model
+			// for every later consumer of the same cache entry (gRPC GetDesign
+			// served a fileModel-less Design message from then on, until
+			// eviction or restart). The shallow copy only bumps shared_ptr
+			// refcounts for the heavy collections; the cached Design must keep
+			// its file model (see the M1.4 note in DesignCache.h).
+			auto pClippedView = std::make_shared<Odb::Lib::ProductModel::Design>(*pDesign);
+			pClippedView->ClipFileModel();
+			return crow::response(JsonCrowReturnable(*pClippedView));
 		}
 
 		return crow::response(JsonCrowReturnable(*pDesign));

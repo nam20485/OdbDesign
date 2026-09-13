@@ -48,6 +48,11 @@ namespace Odb::Lib::ProductModel
 		bool Build(std::shared_ptr<FileModel::Design::FileArchive> pFileModel);	
 
 		std::shared_ptr<FileModel::Design::FileArchive> GetFileModel() const;
+		// Nulls the file model ON THIS INSTANCE. Only ever call this on a
+		// privately-owned Design (a copy made for serving a clipped view) —
+		// never on a cache-resident shared instance: the cached Design must
+		// keep its file model for the gRPC GetDesign path and for response
+		// pre-serialization (see DesignCache.h, M1.4).
 		void ClipFileModel();
 
 		// Inherited via IProtoBuffable

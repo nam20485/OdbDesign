@@ -414,6 +414,39 @@ namespace Odb::Test
             << "the stale object stays alive (with its file model) for its holders";
     }
 
+    // ---- REST clipped views must not mutate the cached Design ----
+
+    TEST_F(ResponseCacheTest, ClippedView_DoesNotStripFileModelFromCachedDesign)
+    {
+        // Regression: GET /designs/{name} (include_filearchive=false, the
+        // default) used to call ClipFileModel() on the shared cache-resident
+        // Design, so every later gRPC GetDesign serialized a fileModel-less
+        // message — components/EDA data unavailable to clients until eviction
+        // or restart. The handler now clips a shallow-copy view; this pins
+        // the no-shared-mutation invariant at the model level.
+        const std::string designName = "sample_design";
+
+        auto pDesign = m_sharedDesignCache->GetDesign(designName);
+        ASSERT_NE(pDesign, nullptr);
+        ASSERT_NE(pDesign->GetFileModel(), nullptr)
+            << "precondition: a loaded design carries its file model";
+
+        // The handler's clipped-view pattern: clip the copy, not the cached
+        // object.
+        auto pView = std::make_shared<Odb::Lib::ProductModel::Design>(*pDesign);
+        pView->ClipFileModel();
+        EXPECT_EQ(pView->GetFileModel(), nullptr)
+            << "the served view must not carry the file model";
+
+        // The cached object is untouched: gRPC's serialization still emits it.
+        EXPECT_NE(pDesign->GetFileModel(), nullptr)
+            << "clipping a view must never reach the cached Design";
+        auto pMessage = pDesign->to_protobuf();
+        ASSERT_NE(pMessage, nullptr);
+        EXPECT_TRUE(pMessage->has_filemodel())
+            << "GetDesign responses must keep the file model after a clipped REST fetch";
+    }
+
     // ---- REST JSON payload exposure (controller follow-up wiring) ----
 
     TEST_F(ResponseCacheTest, TryGetJsonPayload_DeferredUntilRestWiring)
