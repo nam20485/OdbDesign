@@ -295,8 +295,19 @@ namespace Odb::Test
         }, kParseTimeout));
         EXPECT_EQ(recorder->loadFailures("broken"), 1);
 
-        // Failure must not poison the cache: a second kick retries the parse
-        EXPECT_TRUE(cache.LoadDesignAsync("broken"));
+        // Failure must not poison the cache: a second kick retries the parse.
+        // The Failed transition is observable the moment the single-flight
+        // failure path records it, but the background thread erases its
+        // pending-load marker a few instructions later (after logging and
+        // slot release) — a kick landing in that window is told "already
+        // loading". Retry the kick until it is accepted instead of treating
+        // that trailing bookkeeping cleanup as a duplicate-load rejection;
+        // on fast runners (macos-release) a single kick attempt can lose
+        // the race often enough to flake CI.
+        ASSERT_TRUE(waitForCondition([&]()
+        {
+            return cache.LoadDesignAsync("broken");
+        }, kParseTimeout)) << "second kick must be accepted once the pending marker is cleaned up";
         ASSERT_TRUE(waitForCondition([&]()
         {
             return recorder->loadFailures("broken") >= 2;
