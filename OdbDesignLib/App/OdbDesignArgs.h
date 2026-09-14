@@ -14,7 +14,7 @@ namespace Odb::Lib::App
 		int port() const;
 		std::string bindAddress() const;
 		int grpcPort() const;
-		bool useHttps() const;		
+		bool useHttps() const;
 		std::string designsDir() const;
 		std::string templatesDir() const;
 		bool help() const;
@@ -22,6 +22,8 @@ namespace Odb::Lib::App
 		std::string loadDesign() const;
 		bool loadAll() const;
 		bool disableAuthentication() const;
+		int cacheMaxMb() const;
+		int maxBackgroundLoads() const;
 
 	protected:
 		// Inherited via CommandLineArgs
@@ -38,6 +40,8 @@ namespace Odb::Lib::App
 		constexpr static const char*	DEFAULT_LOAD_DESIGN =	"";		
 		constexpr static const bool		DEFAULT_LOAD_ALL =		false;
 		constexpr static const bool		DEFAULT_DISABLE_AUTH = false;
+		constexpr static const int		DEFAULT_CACHE_MAX_MB = 4096;
+		constexpr static const int		DEFAULT_MAX_BACKGROUND_LOADS = 2;
 
 	};
 }

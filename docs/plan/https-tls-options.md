@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| Status | **OPEN — no decision made yet.** This document enumerates the options and implementation outlines so a choice can be made later. |
+| Status | **DECIDED 2026-09-10 — Option C** (cert-manager + self-managed CA with IP SANs) for the primary k3s VM deployment; gRPC TLS follows via Traefik `IngressRouteTCP` sharing the same cert Secret (see `docs/plan/server-issues-implementation-plan.md` M3.1). Options A/B/D/E remain documented for other deployment shapes (e.g. the EKS/ALB case in §7). |
 | Date | 2026-08-21 |
 | Scope | REST ingress TLS (all deployment targets), gRPC TLS (orthogonal, §8), repo layout for TLS config |
 | Non-goals | Any vendor-specific default (e.g. Tailscale). OdbDesign is FOSS; other users deploy on their own infrastructure. The repo default must stay generic and the TLS layer must be pluggable per environment. |

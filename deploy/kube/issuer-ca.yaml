@@ -1,0 +1,15 @@
+# Option C (https-tls-options.md §5): cert-manager CA Issuer over the
+# operator-generated root CA secret (scripts/make-tls-ca.sh +
+# `kubectl create secret tls odbdesign-root-ca ...`).
+#
+# Namespace-scoped Issuer, in the same (default) namespace as the rest of the
+# deploy/kube manifests and the Certificate that references it. Promote to a
+# ClusterIssuer only if resources in other namespaces ever need it.
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: odbdesign-ca
+  namespace: default
+spec:
+  ca:
+    secretName: odbdesign-root-ca

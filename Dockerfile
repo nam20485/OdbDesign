@@ -103,7 +103,7 @@ COPY . .
 
 # configure & build using presets
 # linux-dynamic-release (shared protobuf/gRPC runtime — the static linux-release
-# preset loads two protobuf copies and crashes; see docs/linux-dynamic-release-plan.md)
+# preset loads two protobuf copies and crashes; see docs/completed/linux-dynamic-release-plan.md)
 RUN cmake --preset linux-dynamic-release
 RUN cmake --build --preset linux-dynamic-release
 # # linux-debug

@@ -40,7 +40,6 @@ designs/
 .cursor\rules\openmemory.mdc
 /local.nuget.config
 /nuget.generated.config
-/docs/vcpkg-binary-cache/gemini-instructions.md
 .cursor\rules\openmemory.mdc
 .vscode/c_cpp_properties.json
 gpg_keys/

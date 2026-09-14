@@ -295,7 +295,7 @@ setup_environment() {
 # Map BUILD_TYPE to the main Linux CMake preset.
 # Release uses the dynamic triplet (shared protobuf/gRPC) — the static
 # linux-release preset loads two protobuf copies at runtime and crashes;
-# see docs/linux-dynamic-release-plan.md.
+# see docs/completed/linux-dynamic-release-plan.md.
 get_preset() {
     if [[ "$BUILD_TYPE" == "Release" ]]; then
         echo "linux-dynamic-release"

@@ -3,8 +3,10 @@
 #include "UrlEncoding.h"
 #include "App/IOdbServerApp.h"
 #include "App/RouteController.h"
+#include "../Services/OdbDesignServiceImpl.h"
 #include <Logger.h>
 #include <cstring>
+#include <utility>
 #include <vector>
 
 
@@ -73,6 +75,20 @@ namespace Odb::App::Server
 					}
 
 					return this->design_route_handler(designName, req);
+				});
+
+		CROW_ROUTE(m_serverApp.crow_app(), "/designs/<string>/load")
+			.methods(crow::HTTPMethod::POST)
+			([&](const crow::request& req, std::string designName)
+				{
+					// authenticate request before sending to handler
+					auto authResp = m_serverApp.request_auth().AuthenticateRequest(req);
+					if (authResp.code != crow::status::OK)
+					{
+						return authResp;
+					}
+
+					return this->designs_load_route_handler(designName, req);
 				});
 
 		CROW_ROUTE(m_serverApp.crow_app(), "/designs/<string>/components")
@@ -213,11 +229,58 @@ namespace Odb::App::Server
 
 		if (!includeFileArchive)
 		{
-			pDesign->ClipFileModel();
+			// Serve a clipped VIEW, never the cached object itself: pDesign is
+			// the shared cache-resident Design (GetDesign returns the cached
+			// instance), and ClipFileModel() nulls the member on whatever it
+			// is called on — calling it here used to destroy the file model
+			// for every later consumer of the same cache entry (gRPC GetDesign
+			// served a fileModel-less Design message from then on, until
+			// eviction or restart). The shallow copy only bumps shared_ptr
+			// refcounts for the heavy collections; the cached Design must keep
+			// its file model (see the M1.4 note in DesignCache.h).
+			auto pClippedView = std::make_shared<Odb::Lib::ProductModel::Design>(*pDesign);
+			pClippedView->ClipFileModel();
+			return crow::response(JsonCrowReturnable(*pClippedView));
 		}
 
 		return crow::response(JsonCrowReturnable(*pDesign));
 	}
+	crow::response DesignsController::designs_load_route_handler(std::string designName, const crow::request& req)
+	{
+		auto designNameDecoded = UrlEncoding::decode(designName);
+		if (designNameDecoded.empty())
+		{
+			return crow::response(crow::status::BAD_REQUEST, "design name not specified");
+		}
+
+		// Same pure status mapping as the gRPC RequestLoadDesign twin: never
+		// blocks on a parse, the only mutating call is the async-load kick.
+		// Like the gRPC twin (and TryGetDesign above), thread-spawn failure
+		// from LoadDesignAsync maps to an error response — an uncaught escape
+		// would die in Crow's worker loop and leave the client with no
+		// response at all.
+		Odb::Grpc::LoadStatus status;
+		try
+		{
+			status = OdbDesignServer::Services::ComputeRequestLoadStatus(
+				m_serverApp.designs(), designNameDecoded);
+		}
+		catch (const std::exception& e)
+		{
+			logexception_msg(e, "failed to kick load for design \"" + designNameDecoded + "\"");
+			return crow::response(crow::status::INTERNAL_SERVER_ERROR,
+				"failed to start load for design \"" + designNameDecoded + "\"");
+		}
+
+		crow::json::wvalue wv;
+		wv["designName"] = designNameDecoded;
+		wv["status"] = OdbDesignServer::Services::LoadStatusToString(status);
+
+		// 202 even for "not_found": the request itself succeeded, the body
+		// carries the load status distinction.
+		return crow::response(crow::status::ACCEPTED, std::move(wv));
+	}
+
 	crow::response DesignsController::designs_components_route_handler(std::string designName, const crow::request& req)
 	{
 		auto designNameDecoded = UrlEncoding::decode(designName);

@@ -17,9 +17,9 @@ url: https://source.odbdesignserver.com
 # text. Add any new doc that quotes Actions expressions here, or {% raw %}-fence
 # it if the page should stay published.
 exclude:
+# completed/ is the internal work archive (done plans, investigations) — not
+# published, and several of its docs quote Actions syntax, so exclude it whole.
+- completed
 - plan/argocd-deployment-plan.md
 - plan/argocd-gitops-handoff.md
-- vcpkg-binary-cache/fix-cmake-workflow-caching-plan.md
-- vcpkg-binary-cache/github-packages-MS-tutorial.md
-- vcpkg-binary-cache/vcpkg-github-packages-plan.md
-- workflow-optimization-analysis.md
+- reference/vcpkg/github-packages-MS-tutorial.md

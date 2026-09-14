@@ -9,7 +9,7 @@
 # [ProjectName] – [FeatureName] Feature Plan
 
 ## Overview
-Summarize the feature objective, the user/business problem it solves, expected outcomes, and link to the feature brief plus supporting documents located under `plan_docs/` (e.g., `feature-brief.md`, `tech-stack.md`, `architecture.md`, ADRs, UX flows).
+Summarize the feature objective, the user/business problem it solves, expected outcomes, and link to the feature brief plus supporting documents located under `docs/plan/` (e.g., `feature-brief.md`, ADRs, UX flows). Durable overviews live in `docs/reference/` (`tech-stack.md`, `architecture.md`).
 
 ## Current State Assessment
 - Existing functionality summary
@@ -69,8 +69,9 @@ Summarize the feature objective, the user/business problem it solves, expected o
 │  ├─ [Feature].Domain.Tests/
 │  └─ [Feature].E2E/
 ├─ docs/
-│  ├─ plan_docs/
+│  ├─ plan/
 │  │  ├─ feature-brief.md
+│  ├─ reference/
 │  │  ├─ tech-stack.md
 │  │  └─ architecture.md
 └─ …existing structure…
@@ -153,9 +154,9 @@ _Document intended changes only; do not create directories/files during planning
 - [Metric 3]
 
 ## Supporting Artifacts
-- `plan_docs/feature-brief.md`
-- `plan_docs/tech-stack.md`
-- `plan_docs/architecture.md`
+- `docs/plan/feature-brief.md`
+- `docs/reference/tech-stack.md`
+- `docs/reference/architecture.md`
 - Additional diagrams / ADRs / specs: [links]
 
 ## Repository Branch & Milestones
@@ -165,7 +166,7 @@ _Document intended changes only; do not create directories/files during planning
 
 ## Acceptance Checklist
 - [ ] Feature requirements and constraints documented
-- [ ] Architecture/design deltas captured in plan_docs
+- [ ] Architecture/design deltas captured in docs/plan/
 - [ ] Implementation phases defined with validation checkpoints
 - [ ] Testing strategy (including regression coverage) documented
 - [ ] Documentation, rollout, and observability plans captured

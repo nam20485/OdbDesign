@@ -103,4 +103,4 @@ If the script fails:
 
 ## Manual Alternative
 
-If you prefer manual setup, see the [BUILD.md](docs/BUILD.md) documentation for step-by-step instructions.
+If you prefer manual setup, see the [BUILD.md](BUILD.md) documentation for step-by-step instructions.

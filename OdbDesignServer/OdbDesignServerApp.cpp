@@ -144,16 +144,18 @@ namespace Odb::App::Server
 				  << "MB (" << maxReceiveBytes << " bytes)"
 				  << ", send=" << loadResult.config->max_send_message_size_mb
 				  << "MB (" << maxSendBytes << " bytes)" << std::endl;
-	// Apply compression configuration
-	if (loadResult.config->compression_enabled)
-	{
-		builder.SetDefaultCompressionAlgorithm(GRPC_COMPRESS_GZIP);
-		std::cout << "gRPC compression enabled (gzip)" << std::endl;
-	}
-	else
-	{
-		std::cout << "gRPC compression disabled" << std::endl;
-	}
+		// Apply compression configuration
+		if (loadResult.config->compression_level != GRPC_COMPRESS_LEVEL_NONE)
+		{
+			builder.SetDefaultCompressionLevel(loadResult.config->compression_level);
+			std::cout << "gRPC compression level: "
+					  << OdbDesignServer::Config::CompressionLevelToString(loadResult.config->compression_level)
+					  << std::endl;
+		}
+		else
+		{
+			std::cout << "gRPC compression: disabled" << std::endl;
+		}
 
 		// Apply thread pool limits via ResourceQuota
 		grpc::ResourceQuota quota;
