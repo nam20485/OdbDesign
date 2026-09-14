@@ -463,6 +463,11 @@ namespace Odb::Lib::App
                 std::lock_guard<std::mutex> lock(m_backgroundMutex);
                 --m_outstandingBackgroundLoads;
             }
+            // ~DesignCache's drain waits on the CV until the count reaches
+            // zero; a decrement without this notify is a missed wakeup that
+            // hangs shutdown forever when this was the last outstanding load
+            // (mirrors the normal BackgroundLoad exit).
+            m_backgroundDoneCv.notify_all();
             {
                 std::lock_guard<std::mutex> lock(m_loadStateMutex);
                 m_pendingAsyncLoads.erase(designName);
@@ -1170,6 +1175,9 @@ namespace Odb::Lib::App
                 std::lock_guard<std::mutex> lock(m_backgroundMutex);
                 --m_outstandingBackgroundLoads;
             }
+            // Missed-wakeup guard, identical to LoadDesignAsync's catch: the
+            // destructor drains on the CV.
+            m_backgroundDoneCv.notify_all();
             // A failed pre-serialization schedule must not fail the load that
             // just succeeded; the first fetch repopulates lazily.
             logwarn("Failed to schedule response pre-serialization for design \"" + designName + "\": " + e.what());
@@ -1227,6 +1235,13 @@ namespace Odb::Lib::App
             m_cachedBytes -= entryIt->second.serializedBytes - stored;
             entryIt->second.serializedBytes = stored;
         }
+    }
+
+    void DesignCache::LogFailedStateRecordError(const std::string& designName)
+    {
+        // Lives out-of-line because the calling template is in the header,
+        // which does not include Logger.h.
+        logerror("Failed to record Failed load-state for design \"" + designName + "\" during load-failure cleanup");
     }
 
     void DesignCache::SerializeResponsePayloads(const std::string& designName)
