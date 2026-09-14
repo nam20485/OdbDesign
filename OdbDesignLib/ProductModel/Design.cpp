@@ -158,6 +158,14 @@ namespace Odb::Lib::ProductModel
 
 	std::unique_ptr<Odb::Lib::Protobuf::ProductModel::Design> Design::to_protobuf() const
 	{
+		// Full flavor (with normalized lists) — REST (to_json), to_pbstring,
+		// to_stream, and round-trip serialization tests all route through this
+		// override and must continue to see the complete payload.
+		return to_protobuf(/*includeNormalizedLists=*/true);
+	}
+
+	std::unique_ptr<Odb::Lib::Protobuf::ProductModel::Design> Design::to_protobuf(bool includeNormalizedLists) const
+	{
 		auto pDesignMsg = std::make_unique<Odb::Lib::Protobuf::ProductModel::Design>();
 		pDesignMsg->set_name(Odb::Lib::Text::ToUtf8(m_name));
 		pDesignMsg->set_productmodel(Odb::Lib::Text::ToUtf8(m_productModel));
@@ -167,33 +175,36 @@ namespace Odb::Lib::ProductModel
 			pDesignMsg->mutable_filemodel()->CopyFrom(*m_pFileModel->to_protobuf());
 		}
 
-		for (const auto& pNet : m_nets)
+		if (includeNormalizedLists)
 		{
-			pDesignMsg->add_nets()->CopyFrom(*pNet->to_protobuf());
+			for (const auto& pNet : m_nets)
+			{
+				pDesignMsg->add_nets()->CopyFrom(*pNet->to_protobuf());
+			}
+
+			FillProtobufMapWithSanitizedKeys(*pDesignMsg->mutable_netsbyname(), m_netsByName);
+
+			for (const auto& pPackage : m_packages)
+			{
+				pDesignMsg->add_packages()->CopyFrom(*pPackage->to_protobuf());
+			}
+
+			FillProtobufMapWithSanitizedKeys(*pDesignMsg->mutable_packagesbyname(), m_packagesByName);
+
+			for (const auto& pComponent : m_components)
+			{
+				pDesignMsg->add_components()->CopyFrom(*pComponent->to_protobuf());
+			}
+
+			FillProtobufMapWithSanitizedKeys(*pDesignMsg->mutable_componentsbyname(), m_componentsByName);
+
+			for (const auto& pPart : m_parts)
+			{
+				pDesignMsg->add_parts()->CopyFrom(*pPart->to_protobuf());
+			}
+
+			FillProtobufMapWithSanitizedKeys(*pDesignMsg->mutable_partsbyname(), m_partsByName);
 		}
-
-		FillProtobufMapWithSanitizedKeys(*pDesignMsg->mutable_netsbyname(), m_netsByName);
-
-		for (const auto& pPackage : m_packages)
-		{
-			pDesignMsg->add_packages()->CopyFrom(*pPackage->to_protobuf());
-		}
-
-		FillProtobufMapWithSanitizedKeys(*pDesignMsg->mutable_packagesbyname(), m_packagesByName);
-
-		for (const auto& pComponent : m_components)
-		{
-			pDesignMsg->add_components()->CopyFrom(*pComponent->to_protobuf());
-		}
-
-		FillProtobufMapWithSanitizedKeys(*pDesignMsg->mutable_componentsbyname(), m_componentsByName);
-
-		for (const auto& pPart : m_parts)
-		{
-			pDesignMsg->add_parts()->CopyFrom(*pPart->to_protobuf());
-		}
-
-		FillProtobufMapWithSanitizedKeys(*pDesignMsg->mutable_partsbyname(), m_partsByName);
 
 #ifndef NDEBUG
 		// Debug-only assertion: verify all string fields are valid UTF-8 before serialization

@@ -120,8 +120,13 @@ namespace OdbDesignServer
         {
             try
             {
-                loginfo("[ConnTrace] GetDesign start: design_name=\"" + request->design_name() + "\"");
                 const auto& designName = request->design_name();
+                // Normalized collections (nets/components/packages/parts + ByName maps)
+                // are omitted unless explicitly requested: they duplicate fileModel
+                // data clients actually read and dominate the payload.
+                const auto includeNormalizedLists = request->include_normalized_lists();
+                loginfo("[ConnTrace] GetDesign start: design_name=\"" + designName +
+                    "\" include_normalized_lists=" + (includeNormalizedLists ? "true" : "false") + "\"");
 
                 // M1.4 fast path: when the serialized-response cache is warm,
                 // fill the response from cached wire bytes with a single
@@ -131,7 +136,7 @@ namespace OdbDesignServer
                 // directly; parsing the cached buffer replaces the full tree
                 // build + deep copy and is still a strict win.)
                 std::string cachedBytes;
-                if (m_designCache->TryGetDesignBytes(designName, cachedBytes))
+                if (!includeNormalizedLists && m_designCache->TryGetDesignBytes(designName, cachedBytes))
                 {
                     if (response->ParseFromString(cachedBytes))
                     {
@@ -163,7 +168,11 @@ namespace OdbDesignServer
                 // the full protobuf tree concurrently, which thrashed memory
                 // on large designs. The worker may land while we convert;
                 // either way the next request takes the cached-bytes path.
-                *response = *(design->to_protobuf());
+                //
+                // include_normalized_lists responses are always served cold (the
+                // pre-serialization worker caches only the default pruned flavor),
+                // so opting in pays the full tree build per request.
+                *response = *(design->to_protobuf(includeNormalizedLists));
 
                 loginfo("[ConnTrace] GetDesign ok: design_name=\"" + request->design_name() +
                     "\" approx_bytes=" + std::to_string(response->ByteSizeLong()));
