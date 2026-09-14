@@ -126,7 +126,7 @@ namespace OdbDesignServer
                 // data clients actually read and dominate the payload.
                 const auto includeNormalizedLists = request->include_normalized_lists();
                 loginfo("[ConnTrace] GetDesign start: design_name=\"" + designName +
-                    "\" include_normalized_lists=" + (includeNormalizedLists ? "true" : "false") + """);
+                    "\" include_normalized_lists=" + (includeNormalizedLists ? "true" : "false") + "\"");
 
                 // M1.4 fast path: when the serialized-response cache is warm,
                 // fill the response from cached wire bytes with a single

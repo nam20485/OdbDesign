@@ -1067,7 +1067,12 @@ namespace Odb::Lib::App
         ResponsePayload payload;
 
         // One protobuf tree build serves both the wire bytes and the JSON.
-        auto pMessage = design.to_protobuf();
+        // These bytes back the gRPC GetDesign fast path, which serves the
+        // DEFAULT (pruned) flavor — serialize that flavor here explicitly.
+        // (include_normalized_lists requests are served cold from the live
+        // design; REST/JSON consumers call the full-flavor no-arg
+        // to_protobuf() on the cached Design object themselves.)
+        auto pMessage = design.to_protobuf(/*includeNormalizedLists=*/false);
         if (pMessage != nullptr)
         {
             if (!pMessage->SerializeToString(&payload.designPbBytes))

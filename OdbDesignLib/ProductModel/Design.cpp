@@ -158,7 +158,10 @@ namespace Odb::Lib::ProductModel
 
 	std::unique_ptr<Odb::Lib::Protobuf::ProductModel::Design> Design::to_protobuf() const
 	{
-		return to_protobuf(/*includeNormalizedLists=*/false);
+		// Full flavor (with normalized lists) — REST (to_json), to_pbstring,
+		// to_stream, and round-trip serialization tests all route through this
+		// override and must continue to see the complete payload.
+		return to_protobuf(/*includeNormalizedLists=*/true);
 	}
 
 	std::unique_ptr<Odb::Lib::Protobuf::ProductModel::Design> Design::to_protobuf(bool includeNormalizedLists) const

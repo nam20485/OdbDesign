@@ -57,14 +57,14 @@ namespace Odb::Lib::ProductModel
 
 		// Inherited via IProtoBuffable
 		//
-		// Produces the DEFAULT wire flavor: productModel/name + fileModel, with the
-		// normalized collections (nets/components/packages/parts + their ByName
-		// maps) OMITTED. Those lists duplicate data clients read from fileModel,
-		// embed a full component+package copy per pin connection, and serialize
-		// twice each (repeated + sanitized ByName map) — they dominate the
-		// GetDesign payload. A client that wants them sets
-		// GetDesignRequest.include_normalized_lists (served by
-		// OdbDesignServiceImpl::GetDesign via the parameterized overload below).
+		// The no-arg override produces the FULL wire flavor (normalized lists
+		// included) because REST (to_json), to_pbstring, to_stream, and the
+		// round-trip serialization tests all route through it and depend on the
+		// complete payload. The GetDesign gRPC response is served by the
+		// parameterized overload below: clients get the pruned flavor unless they
+		// set GetDesignRequest.include_normalized_lists (the normalized
+		// nets/components/packages/parts + ByName maps duplicate fileModel data
+		// and dominate the gRPC payload).
 		std::unique_ptr<Protobuf::ProductModel::Design> to_protobuf() const override;
 		std::unique_ptr<Protobuf::ProductModel::Design> to_protobuf(bool includeNormalizedLists) const;
 		void from_protobuf(const Protobuf::ProductModel::Design& message) override;
