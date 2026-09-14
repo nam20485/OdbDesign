@@ -56,7 +56,17 @@ namespace Odb::Lib::ProductModel
 		void ClipFileModel();
 
 		// Inherited via IProtoBuffable
+		//
+		// Produces the DEFAULT wire flavor: productModel/name + fileModel, with the
+		// normalized collections (nets/components/packages/parts + their ByName
+		// maps) OMITTED. Those lists duplicate data clients read from fileModel,
+		// embed a full component+package copy per pin connection, and serialize
+		// twice each (repeated + sanitized ByName map) — they dominate the
+		// GetDesign payload. A client that wants them sets
+		// GetDesignRequest.include_normalized_lists (served by
+		// OdbDesignServiceImpl::GetDesign via the parameterized overload below).
 		std::unique_ptr<Protobuf::ProductModel::Design> to_protobuf() const override;
+		std::unique_ptr<Protobuf::ProductModel::Design> to_protobuf(bool includeNormalizedLists) const;
 		void from_protobuf(const Protobuf::ProductModel::Design& message) override;
 
 		typedef std::vector<std::shared_ptr<Design>> Vector;
