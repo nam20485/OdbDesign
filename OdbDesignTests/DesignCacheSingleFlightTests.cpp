@@ -460,6 +460,72 @@ namespace Odb::Test
         EXPECT_EQ(m_recorder->loadCompletions(first), 2);
     }
 
+    TEST_F(DesignCacheSingleFlightTest, InFlightLoad_AbandonsAfterInvalidation)
+    {
+        // An in-flight load must not re-insert its (stale) result after the
+        // design is invalidated while it parses (re-upload / InvalidateDesign /
+        // eviction bump the invalidation generation the loader re-checks at
+        // completion). Without the abandon, the completing load resurrects the
+        // pre-replacement object under the fresh generation and its payloads
+        // are served indefinitely.
+        const std::string designName = "designodb_rigidflex";  // slowest parse: widest race window
+
+        m_pDesignCache->setMaxBackgroundLoads(1);
+        ASSERT_TRUE(m_pDesignCache->LoadDesignAsync(designName));
+        // The background load announced Loading and is now parsing (same
+        // inline poll idiom as the surrounding tests).
+        bool observedLoading = false;
+        const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(30);
+        while (std::chrono::steady_clock::now() < deadline)
+        {
+            if (m_pDesignCache->GetLoadState(designName) == DesignCache::LoadState::Loading)
+            {
+                observedLoading = true;
+                break;
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(5));
+        }
+        ASSERT_TRUE(observedLoading) << "background load never announced Loading";
+        std::this_thread::sleep_for(std::chrono::milliseconds(150));
+        // The invalidation must land while the parse is genuinely still in
+        // flight for the abandon path to be exercised: the state stays
+        // Loading until the loader reaches its completion checkpoint (seconds
+        // away for rigidflex), so re-checking here right before invalidating
+        // proves the race the test pins. If the parse somehow finished first,
+        // the invalidation would hit a completed load and the barrier would
+        // legitimately start a fresh load that re-inserts — SKIP rather than
+        // fail on such a runner (same idiom as the queueing-path skip in
+        // RequestLoadDesignTest.LoadDesignAsync_RespectsMaxBackgroundLoads).
+        if (m_pDesignCache->GetLoadState(designName) != DesignCache::LoadState::Loading)
+        {
+            GTEST_SKIP() << "parse finished before the invalidation could race it; "
+                            "abandon path not exercised on this runner";
+        }
+
+        // Invalidate the design while the load is in flight — the
+        // upload-overwrite path (FileUploadController overwrote the archive
+        // on disk, then InvalidateDesign erased the cached entries and bumped
+        // the invalidation generation). AddFileArchive is deliberately NOT
+        // used here: it seeds the archive map with its replacement, which
+        // makes the completing load's double-check return that entry and
+        // Build() fail — masking the stale-insert race this test pins.
+        m_pDesignCache->InvalidateDesign(designName);
+
+        // Barrier: join the DESIGN in-flight entry via GetDesign — it returns
+        // exactly when the background loader fulfils its promise (after
+        // completing or abandoning). The value delivered to this joiner may
+        // be the stale parse (delivered to direct callers only); the point
+        // is to fence the race before asserting.
+        (void)m_pDesignCache->GetDesign(designName);
+
+        // The stale parse must NOT have re-entered the cache as a Design.
+        const auto loadedNames = m_pDesignCache->getLoadedDesignNames();
+        EXPECT_FALSE(contains(loadedNames, designName))
+            << "an in-flight load that raced an invalidation must not re-insert its stale Design";
+        EXPECT_EQ(m_pDesignCache->GetLoadState(designName), DesignCache::LoadState::Unloaded)
+            << "the abandoned load must not have announced Loaded";
+    }
+
     TEST_F(DesignCacheSingleFlightTest, ByteBudgetEviction_NeverEvictsInFlightDesign)
     {
         const std::string big = "designodb_rigidflex";  // slowest parse: widest in-flight window

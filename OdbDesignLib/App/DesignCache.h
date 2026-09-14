@@ -398,6 +398,10 @@ namespace Odb::Lib::App
 		// Requires m_lruMutex NOT held.
 		void AdjustLruSerializedBytes(const std::string& designName);
 
+		// Log helper for GetOrLoadSingleFlight's failure path: the template
+		// lives in this header, where the Logger macros are not included.
+		void LogFailedStateRecordError(const std::string& designName);
+
 		// Current cache generation snapshot (for lazy serialization commits).
 		std::uint64_t CurrentEpoch() const;
 
@@ -447,7 +451,15 @@ namespace Odb::Lib::App
 				return pCached;
 			}
 
-			// Join an in-flight load, or become its only runner
+			// Join an in-flight load, or become its only runner. The design's
+			// response-payload generation is captured BEFORE the registration
+			// lock (the store's mutex must never nest inside m_loadStateMutex —
+			// lock order above): AddFileArchive / InvalidateDesign / eviction
+			// bump it when they invalidate the design, so a load that raced one
+			// of those abandons its bookkeeping on completion instead of
+			// re-inserting contents built from the pre-replacement archive
+			// (see the abandon checkpoint below).
+			const auto generationAtStart = m_responseStore.CurrentGeneration(designName);
 			std::promise<std::shared_ptr<T>> promise;
 			std::shared_future<std::shared_ptr<T>> future = promise.get_future().share();
 			bool isLoader = false;
@@ -490,6 +502,38 @@ namespace Odb::Lib::App
 				return pValue;
 			}
 
+			// Loader-exit safety net: an exception escaping between in-flight
+			// registration and the explicit fulfilment sites below (realistically
+			// std::bad_alloc from the Loading state-map insert, which runs before
+			// the try/catch around loadFn) would leave the promise unsatisfied
+			// and the in-flight entry registered — every subsequent caller would
+			// join a dead future forever, with no recovery short of process
+			// restart (Clear() deliberately leaves in-flight entries to their
+			// owning threads). On any loader exit without an explicit fulfilment,
+			// fail the promise and drop the entry.
+			bool promiseSatisfied = false;
+			struct LoaderExitGuard
+			{
+				DesignCache* m_pCache;
+				InFlightMap& m_rInFlightMap;
+				const std::string& m_rDesignName;
+				std::promise<std::shared_ptr<T>>& m_rPromise;
+				bool& m_rSatisfied;
+
+				~LoaderExitGuard()
+				{
+					if (m_rSatisfied)
+					{
+						return;
+					}
+					m_rPromise.set_exception(std::current_exception()
+						? std::current_exception()
+						: std::make_exception_ptr(std::runtime_error(
+							"DesignCache: loader exited without completing the load for \"" + m_rDesignName + "\"")));
+					m_pCache->eraseInFlight(m_rInFlightMap, m_rDesignName);
+				}
+			} loaderExitGuard{ this, inFlightMap, designName, promise, promiseSatisfied };
+
 			if (updateState)
 			{
 				// Announce Loading with the re-entry marker set: observers run
@@ -528,9 +572,24 @@ namespace Odb::Lib::App
 				// registering a fresh load whose Loading state our late Failed would
 				// overwrite (state claiming Failed while a fresh load is in flight).
 				promise.set_exception(std::current_exception());
+				promiseSatisfied = true;
 				if (updateState && !WasClearedSince(epochAtStart))
 				{
-					TransitionLoadState(designName, LoadState::Failed);
+					// The Failed transition itself can throw (bad_alloc from the
+					// state-map insert or the observer-list copy). It must not
+					// skip the erase below — that would strand an already-satisfied
+					// in-flight entry and wedge the name for every later caller
+					// (the promise is fulfilled, so joiners would see the stale
+					// failure forever and a fresh load could never register). The
+					// transition is best-effort bookkeeping; erase + rethrow are not.
+					try
+					{
+						TransitionLoadState(designName, LoadState::Failed);
+					}
+					catch (...)
+					{
+						LogFailedStateRecordError(designName);
+					}
 				}
 				eraseInFlight(inFlightMap, designName);
 				throw;
@@ -550,6 +609,7 @@ namespace Odb::Lib::App
 				// future instead of registering a fresh load whose Loading our
 				// late erase would clobber.
 				promise.set_value(nullptr);
+				promiseSatisfied = true;
 				if (updateState)
 				{
 					EraseLoadState(designName);
@@ -558,14 +618,32 @@ namespace Odb::Lib::App
 				return nullptr;
 			}
 
-			if (WasClearedSince(epochAtStart))
+			const auto invalidatedSinceRegistration =
+				m_responseStore.CurrentGeneration(designName) != generationAtStart;
+			if (WasClearedSince(epochAtStart) || invalidatedSinceRegistration)
 			{
-				// Clear() ran while we parsed: this generation of the cache is
-				// gone. Abandon the bookkeeping — no cache insert, no LRU charge,
-				// no state transition — so the just-wiped cache is not re-populated
-				// with a phantom entry, but still deliver the parsed value to our
-				// direct callers and drop the in-flight entry.
+				// Clear() ran while we parsed (epoch), or the design was
+				// invalidated meanwhile (generation bump: AddFileArchive,
+				// InvalidateDesign, or eviction) — this load's parse describes
+				// pre-replacement contents, so abandon the bookkeeping: no
+				// cache insert, no LRU charge, no state transition, no
+				// pre-serialization. Inserting anyway would resurrect the
+				// stale object under the fresh generation and serve payloads
+				// describing the old archive indefinitely. Still deliver the
+				// parsed value to our direct callers and drop the in-flight
+				// entry.
+				//
+				// Accepted residual window (bounded, by design): an
+				// invalidation/Clear() landing between this check and the
+				// unlocked inserts below can re-populate the just-wiped cache
+				// (phantom LRU entry / re-inserted object). Closing it fully
+				// would require making the check atomic with the inserts —
+				// i.e. re-ordering the lock hierarchy — for impact limited to
+				// bookkeeping that the next invalidation heals; not worth the
+				// churn (the epoch mechanism is best-effort for the same
+				// reason).
 				promise.set_value(pValue);
+				promiseSatisfied = true;
 				eraseInFlight(inFlightMap, designName);
 				return pValue;
 			}
@@ -613,6 +691,7 @@ namespace Odb::Lib::App
 
 			// Publish to joiners only once the cache entry and state are visible
 			promise.set_value(pValue);
+			promiseSatisfied = true;
 			eraseInFlight(inFlightMap, designName);
 			return pValue;
 		}

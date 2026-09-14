@@ -98,6 +98,16 @@ namespace Odb::Test
         }
 
         constexpr auto kParseTimeout = std::chrono::seconds(60);
+        // Budget for waits whose predicate only flips once a REAL (multi-MB)
+        // archive parse completes: gcov-instrumented coverage builds parse
+        // 5-10x slower than the release/debug runners, and a fixed 60s budget
+        // flakes there (the queued-slot wait in
+        // LoadDesignAsync_RespectsMaxBackgroundLoads timed out at ~192s
+        // cumulative on three consecutive coverage runs — including commits
+        // predating any DesignCache concurrency change — while the same build
+        // passed at 237s). Waits racing a state transition (Loading/
+        // Unloaded/Failed flips of cheap parses) keep kParseTimeout.
+        constexpr auto kLoadCompleteTimeout = std::chrono::minutes(5);
     }
 
     // =========================================================================
@@ -160,7 +170,7 @@ namespace Odb::Test
         ASSERT_TRUE(waitForCondition([this, &designName]()
         {
             return m_sharedDesignCache->GetLoadState(designName) == DesignCache::LoadState::Loaded;
-        }, kParseTimeout)) << "design did not reach Loaded after an accepted background load";
+        }, kLoadCompleteTimeout)) << "design did not reach Loaded after an accepted background load";
 
         EXPECT_EQ(m_recorder->loadStarts(designName), 1);
         EXPECT_EQ(m_recorder->loadCompletions(designName), 1);
@@ -226,7 +236,7 @@ namespace Odb::Test
         ASSERT_TRUE(waitForCondition([this, &designName]()
         {
             return m_sharedDesignCache->GetLoadState(designName) == DesignCache::LoadState::Loaded;
-        }, kParseTimeout));
+        }, kLoadCompleteTimeout));
 
         // The second request must not have started a second parse
         EXPECT_EQ(m_recorder->loadStarts(designName), 1);
@@ -243,7 +253,7 @@ namespace Odb::Test
         ASSERT_TRUE(waitForCondition([this, &designName]()
         {
             return m_sharedDesignCache->GetLoadState(designName) == DesignCache::LoadState::Loaded;
-        }, kParseTimeout));
+        }, kLoadCompleteTimeout));
 
         EXPECT_EQ(m_recorder->loadStarts(designName), 1);
         EXPECT_EQ(m_recorder->loadCompletions(designName), 1);
@@ -269,7 +279,7 @@ namespace Odb::Test
         ASSERT_TRUE(waitForCondition([this, &designName]()
         {
             return m_sharedDesignCache->GetLoadState(designName) == DesignCache::LoadState::Loaded;
-        }, kParseTimeout));
+        }, kLoadCompleteTimeout));
 
         EXPECT_EQ(m_recorder->loadStarts(designName), 1) << "the second kick must not start a second parse";
     }
@@ -370,11 +380,11 @@ namespace Odb::Test
         ASSERT_TRUE(waitForCondition([this, &slow]()
         {
             return m_sharedDesignCache->GetLoadState(slow) == DesignCache::LoadState::Loaded;
-        }, kParseTimeout));
+        }, kLoadCompleteTimeout));
         ASSERT_TRUE(waitForCondition([this, &queued]()
         {
             return m_sharedDesignCache->GetLoadState(queued) == DesignCache::LoadState::Loaded;
-        }, kParseTimeout));
+        }, kLoadCompleteTimeout));
 
         EXPECT_EQ(m_recorder->loadStarts(slow), 1);
         EXPECT_EQ(m_recorder->loadStarts(queued), 1);
