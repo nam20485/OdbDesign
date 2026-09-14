@@ -486,11 +486,21 @@ namespace Odb::Test
             std::this_thread::sleep_for(std::chrono::milliseconds(5));
         }
         ASSERT_TRUE(observedLoading) << "background load never announced Loading";
-        // Let the loader's nested archive parse register and get mid-flight
-        // (rigidflex's parse runs for many seconds, so 150ms in is safely
-        // inside it) — only then does the invalidation below actually race a
-        // live parse.
         std::this_thread::sleep_for(std::chrono::milliseconds(150));
+        // The invalidation must land while the parse is genuinely still in
+        // flight for the abandon path to be exercised: the state stays
+        // Loading until the loader reaches its completion checkpoint (seconds
+        // away for rigidflex), so re-checking here right before invalidating
+        // proves the race the test pins. If the parse somehow finished first,
+        // the invalidation would hit a completed load and the barrier would
+        // legitimately start a fresh load that re-inserts — SKIP rather than
+        // fail on such a runner (same idiom as the queueing-path skip in
+        // RequestLoadDesignTest.LoadDesignAsync_RespectsMaxBackgroundLoads).
+        if (m_pDesignCache->GetLoadState(designName) != DesignCache::LoadState::Loading)
+        {
+            GTEST_SKIP() << "parse finished before the invalidation could race it; "
+                            "abandon path not exercised on this runner";
+        }
 
         // Invalidate the design while the load is in flight — the
         // upload-overwrite path (FileUploadController overwrote the archive
@@ -512,6 +522,8 @@ namespace Odb::Test
         const auto loadedNames = m_pDesignCache->getLoadedDesignNames();
         EXPECT_FALSE(contains(loadedNames, designName))
             << "an in-flight load that raced an invalidation must not re-insert its stale Design";
+        EXPECT_EQ(m_pDesignCache->GetLoadState(designName), DesignCache::LoadState::Unloaded)
+            << "the abandoned load must not have announced Loaded";
     }
 
     TEST_F(DesignCacheSingleFlightTest, ByteBudgetEviction_NeverEvictsInFlightDesign)

@@ -1232,6 +1232,13 @@ namespace Odb::Lib::App
         }
     }
 
+    void DesignCache::LogFailedStateRecordError(const std::string& designName)
+    {
+        // Lives out-of-line because the calling template is in the header,
+        // which does not include Logger.h.
+        logerror("Failed to record Failed load-state for design \"" + designName + "\" during load-failure cleanup");
+    }
+
     void DesignCache::SerializeResponsePayloads(const std::string& designName)
     {
         std::shared_ptr<ProductModel::Design> pDesign;

@@ -398,6 +398,10 @@ namespace Odb::Lib::App
 		// Requires m_lruMutex NOT held.
 		void AdjustLruSerializedBytes(const std::string& designName);
 
+		// Log helper for GetOrLoadSingleFlight's failure path: the template
+		// lives in this header, where the Logger macros are not included.
+		void LogFailedStateRecordError(const std::string& designName);
+
 		// Current cache generation snapshot (for lazy serialization commits).
 		std::uint64_t CurrentEpoch() const;
 
@@ -571,7 +575,21 @@ namespace Odb::Lib::App
 				promiseSatisfied = true;
 				if (updateState && !WasClearedSince(epochAtStart))
 				{
-					TransitionLoadState(designName, LoadState::Failed);
+					// The Failed transition itself can throw (bad_alloc from the
+					// state-map insert or the observer-list copy). It must not
+					// skip the erase below — that would strand an already-satisfied
+					// in-flight entry and wedge the name for every later caller
+					// (the promise is fulfilled, so joiners would see the stale
+					// failure forever and a fresh load could never register). The
+					// transition is best-effort bookkeeping; erase + rethrow are not.
+					try
+					{
+						TransitionLoadState(designName, LoadState::Failed);
+					}
+					catch (...)
+					{
+						LogFailedStateRecordError(designName);
+					}
 				}
 				eraseInFlight(inFlightMap, designName);
 				throw;
