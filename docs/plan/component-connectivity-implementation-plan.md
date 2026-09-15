@@ -22,6 +22,7 @@ The anomaly is worth keeping in view rather than filing as resolved: `dev/*` →
 Phase 0 (now, parallel, no interdeps, no wire risk):
   M0.1 swagger FK wording [DONE]   M0.2 proto sync check     M0.3 connectivity fixture harness
   M0.4 cache flavour inventory ── feeds D4/M2.3              M0.5 client prep (both repos, unblocked)
+  M0.6 mirror spec → SwaggerUI image repo (cross-repo; M0.1 is incomplete without it)
 
 Phase 1 (server fidelity, independent of Phase 0, gated on D3):
   M1.1 component ;ID= parse ──► M1.3 attributeLookupTable de-dup
@@ -58,7 +59,9 @@ The proximate origin of the defect: swagger never stated what `componentNumber` 
 
 **The deployed copy had drifted 1,063 normalized lines.** `deploy/kube/OdbDesignServer-SwaggerUI/swagger-spec-configmap.yaml` held 2,471 against the source's 3,534 — missing the entire ETag/`Cache-Control`/304 work (#586), `RequestLoadDesign`, and the earlier annotation pass. The generator **does** exist: `scripts/deploy.ps1:129-131` runs `kubectl create configmap … --dry-run=client -o yaml > $configMapPath`, then applies it, applies the swaggerui deployment/service, and `rollout restart`s the pod (`:135-144`). So the committed manifest is a *deploy-time artifact*, and its staleness means "the spec changed but nothing has been deployed since" — not hand-maintenance. Rather than hand-edit two copies, the configmap was regenerated; running the real generator confirms my output is **byte-identical** (`diff` = 0 lines), so the next deploy will not churn it.
 
-**What actually reaches the cluster, and when.** Merging to `nam20485` publishes the *server image*, which is not where this spec lives — the swaggerui pod mounts it from the `odbdesign-server-swagger-spec` ConfigMap over the image's baked-in (2024-05-08) copy. No CI applies manifests: the only workflows touching `kubectl`/`deploy/kube` are `.github/workflows/disabled/deploy-{eks,local-k8s}.yml`, and `deploy/` contains no Argo CD `Application`. So this commit updates the repo artifact only; **the served spec refreshes when someone runs the `deploy.ps1` Swagger UI block** (regenerate → apply → `rollout restart`). Flagging rather than assuming, since that is a manual step outside this repo's automation.
+**What actually reaches the cluster, and when.** Merging to `nam20485` publishes the *server image*, which is not where this spec lives — the swaggerui pod mounts the `odbdesign-server-swagger-spec` ConfigMap over the single file (`deploy/kube/OdbDesignServer-SwaggerUI/deployment.yaml:36-40`, via `subPath`). No CI applies manifests: the only workflows touching `kubectl`/`deploy/kube` are `.github/workflows/disabled/deploy-{eks,local-k8s}.yml`, and `deploy/` contains no Argo CD `Application`. So this commit updates the repo artifact only; **the served spec refreshes when someone runs the `deploy.ps1` Swagger UI block** (regenerate → apply → `rollout restart`). Flagging rather than assuming, since that is a manual step outside this repo's automation.
+
+**There is a third copy, and it is stale — M0.1 is not complete without it.** The deployed image is `ghcr.io/nam20485/odbdesignserver-swaggerui:nam20485-latest`, built from the **sibling repo** `OdbDesignServer-SwaggerUI`, whose `Dockerfile` does `COPY spec/ /spec` and sets `SWAGGER_JSON=/spec/odbdesign-server-0.9-swagger.yaml`. That baked copy (`../OdbDesignServer-SwaggerUI/spec/odbdesign-server-0.9-swagger.yaml`) is **3,310 lines against this repo's 3,605 — 321 differing lines — and still carries all three bare `"Toeprint subnets only."` descriptions**, i.e. none of this item's annotations. In k3s the ConfigMap mount hides that; in `compose.yml:58-66` there is **no volume mount**, so the baked copy is what a local/compose user actually reads. Tracked as **M0.6**; the repo map and the three-copy rule are now in `AGENTS.md` §"The swagger/OpenAPI spec has THREE copies".
 
 ⚠️ **Gap left open:** the committed manifest can only be as fresh as the last deploy, so reviewers reading `deploy/kube/…` see a stale contract between deploys — exactly the state M0.1 found it in. Two cheap guards: a CI check that the committed file equals the generator's output, or stop committing it and let `deploy.ps1`/GitOps materialize it. A third client (`.NET` info client `Api/Dtos/`) also hand-mirrors schema shapes and is **not** covered by M0.2.
 
@@ -103,6 +106,16 @@ Answering "can the two clients start?": **they cannot finish** — there is noth
 | M3.3 conformance harness skeleton | both | Needs only M0.3's golden files, not the contract. |
 
 **Deliberately *not* in this track:** re-keying `netsByComponent` from `(side, Id)` to `refDes` today. It would stop the visible wrongness immediately, but M3.1/M3.2 delete that code path wholesale — so it is throwaway unless the merged-nets list is in front of real users right now. That is a product call, not a technical one.
+
+### M0.6 Mirror the spec into the SwaggerUI image repo — new, cross-repo
+
+**Repo:** `../OdbDesignServer-SwaggerUI`, file `spec/odbdesign-server-0.9-swagger.yaml`. It is baked into the image (`Dockerfile`: `COPY spec/ /spec`) and is what `compose.yml` serves, since compose mounts nothing.
+
+Copy this repo's annotated `swagger/odbdesign-server-0.9-swagger.yaml` over it, then that repo's `.github/workflows/docker-publish.yml` must run to republish `ghcr.io/nam20485/odbdesignserver-swaggerui:nam20485-latest`; k3s picks it up on the next pull (`imagePullPolicy: Always`) plus a rollout restart.
+
+The 321-line gap is **not** only M0.1's annotations — the image copy also predates #585/#586 and the earlier annotation pass. Ownership is settled: **this repo's `swagger/odbdesign-server-0.9-swagger.yaml` is canonical** and the flow is one-way (#1 → #2 ConfigMap, #1 → #3 image). Verified 2026-09-15 that #3 is strictly behind — it holds no paths #1 lacks (#1 has `/designs/{name}/load` extra) — so a straight overwrite from #1 loses nothing; no three-way reconcile needed.
+
+**Better end state (decide, don't default):** a hand-synced copy in a second repo is the defect. Either generate #3 from #1 in CI, or drop the baked copy and always mount the ConfigMap (compose would need the mount added). Until then, record which copies a spec change touched — the rule is now in `AGENTS.md` §"The swagger/OpenAPI spec has THREE copies".
 
 ---
 
