@@ -56,7 +56,17 @@ namespace Odb::Lib::ProductModel
 		void ClipFileModel();
 
 		// Inherited via IProtoBuffable
+		//
+		// The no-arg override produces the FULL wire flavor (normalized lists
+		// included) because REST (to_json), to_pbstring, to_stream, and the
+		// round-trip serialization tests all route through it and depend on the
+		// complete payload. The GetDesign gRPC response is served by the
+		// parameterized overload below: clients get the pruned flavor unless they
+		// set GetDesignRequest.include_normalized_lists (the normalized
+		// nets/components/packages/parts + ByName maps duplicate fileModel data
+		// and dominate the gRPC payload).
 		std::unique_ptr<Protobuf::ProductModel::Design> to_protobuf() const override;
+		std::unique_ptr<Protobuf::ProductModel::Design> to_protobuf(bool includeNormalizedLists) const;
 		void from_protobuf(const Protobuf::ProductModel::Design& message) override;
 
 		typedef std::vector<std::shared_ptr<Design>> Vector;
