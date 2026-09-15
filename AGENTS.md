@@ -360,3 +360,44 @@ See `.github/copilot-instructions.md` for:
 - The `mcp` account is **read-only** (`role:readonly`): MCP mutations (`sync_application`, `create/update/delete_application`, `run_resource_action`) are denied by design. Token policy: 1-year expiry — rotate with `argocd account generate-token --account mcp --expires-in 8760h`, update `~/.api-keys-export.sh`, restart ZCode. Platform source of truth: `linux-system-agent` `.agents/rules/tools.md`.
 - `.zcode/` is gitignored — keep MCP configs credential-free; never commit tokens.
 - Agent rule: MCP is a read-only view; early sync-triggering via the CLI; manifest/Application changes go through git on the `nam20485` deploy branch. Never `kubectl apply` / `argocd app create` / `argocd app sync --local` against app-managed resources — Argo CD selfHeal reverts them.
+
+### What deploys what (do not conflate these three paths)
+
+- **Publishing to `nam20485` builds and publishes the server *image*** — that is how the running `OdbDesignServer` container gets new code. It does **not** apply any Kubernetes manifest.
+- **`scripts/deploy.ps1` is for initial deployment creation and non-image manifest resources** (PV/PVC, Deployments, Services, IngressRoutes, the swagger ConfigMap). It is *not* the image-update path. It does `kubectl apply` + `rollout restart` for what it manages.
+- **No CI applies manifests.** The only workflows touching `kubectl`/`deploy/kube` are `.github/workflows/disabled/deploy-{eks,local-k8s}.yml`, and `deploy/` contains no Argo CD `Application`. GitOps is planned (`docs/plan/argocd-deployment-plan.md`, #568) but **not executed** — so a merged manifest change reaches the cluster only when a human runs `deploy.ps1`.
+
+## Sibling Repositories (one product, several repos)
+
+The service is spread across sibling checkouts under `/home/nam20485/src/github/nam20485/`. Confirm before assuming a change is complete — several artifacts have copies in more than one repo.
+
+| Repo | Role |
+|---|---|
+| `OdbDesign` (this) | C++ library, gRPC/REST server, tests, protos, kube manifests, `scripts/deploy.ps1` |
+| `OdbDesignServer-SwaggerUI` | **The Swagger UI / ReDoc service image.** `Dockerfile` is `FROM swaggerapi/swagger-ui:v5.11.0`, `COPY spec/ /spec`, `ENV SWAGGER_JSON=/spec/odbdesign-server-0.9-swagger.yaml`, plus `redoc/` and an nginx `templates/default.conf.template`. Published by its own `.github/workflows/docker-publish.yml` to `ghcr.io/nam20485/odbdesignserver-swaggerui:nam20485-latest` |
+| `odbdesign-3d-client-prototype` | C#/.NET 3D board client; consumes gRPC; renders from `Design.fileModel` |
+| `Odbdesign-info-client-india79-b` | C#/.NET info client; REST-first (`src/OdbDesignInfoClient.Services/Api/`), planned move to gRPC |
+| `OdbDesignTestData` | Test fixtures; `ODB_TEST_DATA_DIR` points into its `TEST_DATA/` |
+| `OdbDesign-drc` | **Not a separate repo** — a registered git *worktree* of this one, on branch `nam/drc`. `git worktree list` shows it; the daemon shell guard blocks mutating git there. Its `docs/odb_spec_user.pdf` is the offline ODB++ spec copy |
+| `ODB2kicad` | Separate project; its `samples/` are useful extra ODB++ corpora (including writer-generated designs that omit optional fields) |
+
+Both C# clients **vendor their own copy of the protos** (`odbdesign-3d-client-prototype/src/OdbDesign3DClient.Core/Protos/`, `Odbdesign-info-client-india79-b/protoc/`) and both drift silently from `OdbDesignLib/protoc/` + `OdbDesignServer/protoc/grpc/`. Nothing checks them; verify a client's vendored `service.proto` before assuming it knows about a new RPC or request field.
+
+### The swagger/OpenAPI spec has THREE copies — know which one is served
+
+1. **`swagger/odbdesign-server-0.9-swagger.yaml`** — the authoritative, hand-annotated source. Edit here.
+2. **`deploy/kube/OdbDesignServer-SwaggerUI/swagger-spec-configmap.yaml`** — a *deploy-time generated artifact*: `scripts/deploy.ps1:129-131` runs `kubectl create configmap odbdesign-server-swagger-spec --from-file=… --dry-run=client -o yaml > $configMapPath`, then applies it and `rollout restart`s `deployment/odbdesign-server-swaggerui-v1` (`:135-144`). Regenerate rather than hand-edit; it is byte-reproducible from the source. **This is what k3s serves** — `deployment.yaml:36-40` mounts it over the single file via `subPath`.
+3. **`../OdbDesignServer-SwaggerUI/spec/odbdesign-server-0.9-swagger.yaml`** — `COPY`d into the image at `/spec`. Now only what a **bare `docker run`** of that image serves: `compose.yml` and `compose.local.yml` bind-mount #1 over it (see below). Separate repo, so it needs its own PR *and* an image rebuild/republish to change.
+
+**Direction of truth is one-way: #1 → #2 and #1 → #3. Never edit #2 or #3 directly.** #3 is not an independent copy to be reconciled; it is a shipped artifact that lags until someone syncs it. Verified 2026-09-15: #3 is 3,310 lines against #1's 3,605, holds **no** paths that #1 lacks (#1 has `/designs/{name}/load` extra), and still carries the pre-annotation `description: Toeprint subnets only.` text — i.e. strictly behind, so overwriting it from #1 loses nothing.
+
+**Why not just #1 everywhere?** Because neither runtime can read a file out of a git checkout — #2 and #3 are *projections* of #1 into a form each runtime can consume, and the invariant to hold is "#1 is the only file a human edits."
+
+* **#2 is forced, and deliberately committed.** A pod volume must be backed by a ConfigMap/Secret/PVC, and under GitOps Argo CD applies manifests *from git* — hence `deploy.ps1:122-127` regenerates the committed file rather than piping `kubectl create` into `apply`. Its only defect was that nothing regenerated it when #1 changed (only a deploy run did), which is why it had drifted 1,063 lines. Fixed by `.github/workflows/swagger-spec-configmap-sync.yml` — it re-runs the deploy.ps1 command on any push to `nam20485` touching `swagger/**`, validates the result, and commits through the Contents API (the `nam20485` ruleset requires signed commits, §3.3 of the Argo CD plan). Size headroom: #1 is 118 KB, #2 is 132 KB, against etcd's ~1 MiB per-object limit.
+* **#3 is a choice, and compose no longer depends on it.** Baking the spec made the image self-contained for a bare `docker run`, which is still true for that case. But `compose.yml` and `compose.local.yml` now bind-mount #1 over `/spec/odbdesign-server-0.9-swagger.yaml` on the `swagger-ui` service — the same single-file mount k3s uses — so compose always serves the canonical spec regardless of how old the image's baked copy is. #3 only matters for someone running the image with no mount.
+
+Consequence for a spec change today: #1 is edited, #2 is kept current by CI, compose serves #1 directly — so the **only** stale surface left is a bare `docker run` of the image, until #3 is synced and the image republished (M0.6). Say which copies a spec change touched.
+
+### ODB++ specification
+
+Offline copy: `../OdbDesign-drc/docs/odb_spec_user.pdf`. Current published release is **8.1 Update 4 (August 2024)** — there is no public 8.2/8.3 (`odbplusplus.com/design` lists 8.1 U4 newest). Read it with `pdftotext -layout` then grep; anchors: p.30 Unique ID, p.148-154 components file (`CMP`/`PRP`/`TOP`/BOM grammar), p.153 `net_num`. Cite the spec for format guarantees (required vs optional) rather than inferring them from sample designs — a single design cannot establish optionality, and that mistake has already produced a wrong conclusion here.

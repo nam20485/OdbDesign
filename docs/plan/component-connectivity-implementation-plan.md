@@ -2,29 +2,34 @@
 
 | | |
 |---|---|
-| Status | **PLANNED — not started.** Design and decisions catalog in [component-connectivity.md](component-connectivity.md). D1–D6 open; Phase 2 and 3 are gated on D3/D4. |
+| Status | **EXECUTING — M0.1 and M0.7 done** (swagger FK wording; deployed copy regenerated; compose now mounts the canonical spec; `swagger-spec-configmap-sync.yml` added). Design and decisions catalog in [component-connectivity.md](component-connectivity.md). D1–D6 open; Phase 2 is gated on **D4** only (the base mismatch that blocked it was resolved 2026-09-15, see §Branch base). Client prep is unblocked now — M0.5. |
 | Source | [component-connectivity.md](component-connectivity.md) (verified findings + contract) · [component-id-issue.md](component-id-issue.md) (originating client report) |
-| Branch | `nam/component-connectivity` ← `nam20485` @ `cd9c0ce`. **Merge commits only** (AGENTS.md directive 2026-09-10); PR base is `nam20485`. |
+| Branch | `nam/component-connectivity` — cut from `nam20485` @ `cd9c0ce`, docs merged to `origin/nam20485` as `ea2c081`, then `development` reconciled back in → tip `d7d1a5b`. **Merge commits only** (AGENTS.md directive 2026-09-10); PR base is `nam20485`. |
 | Cross-repo | Phase 3 spans two other repos: `odbdesign-3d-client-prototype` and `Odbdesign-info-client-india79-b`. Their work is specified here but executed as separate PRs in those repos. |
 | Build / test | `cmake --preset linux-dynamic-release && cmake --build --preset linux-dynamic-release && ctest --preset linux-dynamic-release`. Single test: `ctest --preset linux-debug -R <TestName>`. `ODB_TEST_DATA_DIR` + `ODB_TEST_ENVIRONMENT_VARIABLE` come from `~/.bashrc`. |
 
 ---
 
-## Dependency on unmerged work
+## Branch base — resolved 2026-09-15, but record the anomaly
 
-`include_normalized_lists` (`f1484a4`) is **not** in `nam20485` — it is only on `dev/getdesign-include-lists-flag`, along with the DesignCache concurrency fixes. That branch rewrites `Design.cpp`/`Design.h` (`to_protobuf(bool)` overload) and `service.proto`, both of which M2.1/M2.3 touch.
+This plan was first cut against `nam20485` @ `cd9c0ce`, at which point `Design::to_protobuf(bool includeNormalizedLists)` and `GetDesignRequest.include_normalized_lists` — the two things M2.1/M2.3 must edit — **did not exist in the base at all**. They had shipped via PR #590 (`274d878`) and PR #591 (`ca9d5c8`), but both were merged from `dev/*` branches straight into **`development`**, skipping `nam20485`. Result: `origin/development` sat 6 commits ahead of `origin/nam20485` with `nam20485` 0 ahead, and because the documented flow (`nam/<feature>` → `nam20485` → `development`) never merges `development` back down, nothing would have carried them into `nam20485` on its own.
 
-**M2 must not start before `dev/getdesign-include-lists-flag` merges to `nam20485`**, or it must be stacked on that branch deliberately. Phases 0 and 1 are independent of it and can proceed now. Line-number citations in the design doc are the `nam20485` base and will shift once that PR lands.
+Fixed by merging `development` back into `nam20485` (`ea2c081`) and into this branch (`d7d1a5b`). **All citations in both docs are now re-verified against that tip.**
+
+The anomaly is worth keeping in view rather than filing as resolved: `dev/*` → `development` is a shortcut around the integration branch, and it silently makes `nam20485` a stale base for anyone starting work — exactly how the Phase 2 gate in the first revision of this document came out wrong. If that pattern continues, either `nam20485` needs a scheduled sync from `development`, or those PRs should retarget `nam20485` and let the promotion carry them up. **Not this plan's work; flag it if it recurs.**
 
 ```text
 Phase 0 (now, parallel, no interdeps, no wire risk):
-  M0.1 swagger FK wording      M0.2 proto sync check       M0.3 connectivity fixture harness
+  M0.1 swagger FK wording [DONE]   M0.2 proto sync check     M0.3 connectivity fixture harness
+  M0.4 cache flavour inventory ── feeds D4/M2.3              M0.5 client prep (both repos, unblocked)
+  M0.6 mirror spec → SwaggerUI image repo (cross-repo; low priority since compose now mounts #1)
+  M0.7 spec distribution fixes [DONE]: compose binds #1  +  swagger-spec-configmap-sync.yml
 
 Phase 1 (server fidelity, independent of Phase 0, gated on D3):
   M1.1 component ;ID= parse ──► M1.3 attributeLookupTable de-dup
   M1.2 feature  ;ID= parse       M1.4 componentRecordsByName populate-or-delete
 
-Phase 2 (BLOCKED on f1484a4 merge + D4):
+Phase 2 (gated on D4 only — base unblocked 2026-09-15):
   M2.1 Connectivity proto + derive ──► M2.2 NC/subnet/$NONE$ semantics ──► M2.3 gating + cache ──► M2.4 size bench
 
 Phase 3 (after Phase 2 ships; both clients, same contract):
@@ -40,21 +45,30 @@ Phase 4 (separate, deliberate):
 
 ## Phase 0 — contract hygiene, zero wire risk
 
-### M0.1 Document the foreign keys in swagger
+### M0.1 Document the foreign keys in swagger — **DONE**
 
-The proximate origin of the defect: swagger never states what `componentNumber` references. Three fields currently read only *"Toeprint subnets only."*
+The proximate origin of the defect: swagger never stated what `componentNumber` references. Three fields read only *"Toeprint subnets only."*
 
-**File:** `swagger/odbdesign-server-0.9-swagger.yaml` (`:2429`, `:2433`, `:2437`).
+**Source of truth:** `swagger/odbdesign-server-0.9-swagger.yaml`, schema **`EdaSubnetRecord`** (`side` / `componentNumber` / `toeprintNumber`) plus `ComponentRecord.id`/`.index`/`.attributeLookupTable`, `ToeprintRecord.netNumber`, and `FeatureRecord.id`.
 
-* `side` → which per-side components file the numbers index.
-* `componentNumber` → **the ordinal position of the CMP record within that side's `components` file**. Not `ComponentRecord.id`. Not design-global.
-* `toeprintNumber` → ordinal into that record's `toeprintRecords`; `pinNumber` is the resolved value, provided.
-* `ComponentRecord.id` → ODB++ product-model-wide unique ID, **optional**, permanent, and **not** a join key. `index` → per-side ordinal, positional, **not** a stable key.
-* `ComponentRecord.attributeLookupTable` → note that key `"ID"` is the UID, not an attribute index (pending D3).
+* `side` → selects which per-side `components` file the numbers index (`comp_+_top` / `comp_+_bot`).
+* `componentNumber` → 0-based ordinal of the `CMP` record **within that side's file**; equals the target's `ComponentRecord.index`; explicitly *not* `ComponentRecord.id`; not design-global.
+* `toeprintNumber` → positional index into `toeprintRecords`, not a pin number; `pinNumber` is the resolved value and may differ.
+* `id` (component + feature) → ODB++ product-model-wide UID from `ID=<id>`: sparse shared number space, permanent, **optional** ("no id present" ≠ `id 0`), and **not** a join key. Both annotated as declared-but-unpopulated, pointing at `attributeLookupTable["ID"]` as today's only carrier.
+* `attributeLookupTable` → the literal key `"ID"` is **not** an attribute (no `attributeNames` entry); resolve names only for numeric keys.
+* `netNumber` → documents the `-1` / 4294967295 unconnected sentinel and `$NONE$`, so the convention is no longer folklore.
 
-Also mirror into `deploy/kube/OdbDesignServer-SwaggerUI/swagger-spec-configmap.yaml` (the deployed copy) or the served spec goes stale.
+**The deployed copy had drifted 1,063 normalized lines.** `deploy/kube/OdbDesignServer-SwaggerUI/swagger-spec-configmap.yaml` held 2,471 against the source's 3,534 — missing the entire ETag/`Cache-Control`/304 work (#586), `RequestLoadDesign`, and the earlier annotation pass. The generator **does** exist: `scripts/deploy.ps1:129-131` runs `kubectl create configmap … --dry-run=client -o yaml > $configMapPath`, then applies it, applies the swaggerui deployment/service, and `rollout restart`s the pod (`:135-144`). So the committed manifest is a *deploy-time artifact*, and its staleness means "the spec changed but nothing has been deployed since" — not hand-maintenance. Rather than hand-edit two copies, the configmap was regenerated; running the real generator confirms my output is **byte-identical** (`diff` = 0 lines), so the next deploy will not churn it.
 
-**Exit:** docs-only; `Analyze (actions)` + Codacy green. No C++ build signal expected (AGENTS.md: builds cannot detect a docs regression).
+**What actually reaches the cluster, and when.** Merging to `nam20485` publishes the *server image*, which is not where this spec lives — the swaggerui pod mounts the `odbdesign-server-swagger-spec` ConfigMap over the single file (`deploy/kube/OdbDesignServer-SwaggerUI/deployment.yaml:36-40`, via `subPath`). No CI applies manifests: the only workflows touching `kubectl`/`deploy/kube` are `.github/workflows/disabled/deploy-{eks,local-k8s}.yml`, and `deploy/` contains no Argo CD `Application`. So this commit updates the repo artifact only; **the served spec refreshes when someone runs the `deploy.ps1` Swagger UI block** (regenerate → apply → `rollout restart`). Flagging rather than assuming, since that is a manual step outside this repo's automation.
+
+**There is a third copy, and it is stale — M0.1 is not complete without it.** The deployed image is `ghcr.io/nam20485/odbdesignserver-swaggerui:nam20485-latest`, built from the **sibling repo** `OdbDesignServer-SwaggerUI`, whose `Dockerfile` does `COPY spec/ /spec` and sets `SWAGGER_JSON=/spec/odbdesign-server-0.9-swagger.yaml`. That baked copy (`../OdbDesignServer-SwaggerUI/spec/odbdesign-server-0.9-swagger.yaml`) is **3,310 lines against this repo's 3,605 — 321 differing lines — and still carries all three bare `"Toeprint subnets only."` descriptions**, i.e. none of this item's annotations. In k3s the ConfigMap mount hides that; in `compose.yml:58-66` there is **no volume mount**, so the baked copy is what a local/compose user actually reads. Tracked as **M0.6**; the repo map and the three-copy rule are now in `AGENTS.md` §"The swagger/OpenAPI spec has THREE copies".
+
+⚠️ **Gap left open:** the committed manifest can only be as fresh as the last deploy, so reviewers reading `deploy/kube/…` see a stale contract between deploys — exactly the state M0.1 found it in. Two cheap guards: a CI check that the committed file equals the generator's output, or stop committing it and let `deploy.ps1`/GitOps materialize it. A third client (`.NET` info client `Api/Dtos/`) also hand-mirrors schema shapes and is **not** covered by M0.2.
+
+**Verification performed (all executed, not inferred):** both files parse as YAML; all 68 distinct `$ref` targets resolve in the source; the embedded copy is byte-identical to the source; old-vs-new normalized line diff is exactly **4 lines**, all accounted for (3 pre-existing formatting variants that persist in newer form — `- $ref:` allOf wrapping for `Color`/`ToolsFile`, `enum: ["Yes", …]` quoting — plus the 1 line this item rewrote); and `kubectl create configmap --dry-run=client -o yaml` was run against the annotated source, producing output identical to the committed file. Not done: nothing was applied to a cluster and no pod was restarted.
+
+**Exit:** docs/YAML only — no C++ behaviour change, so the multi-platform builds cannot signal a regression here.
 
 ### M0.2 Machine-checked proto sync across clients
 
@@ -71,6 +85,49 @@ Permitted known differences: `option cc_enable_arenas` (C++ only) and commented 
 Before either side changes, capture ground truth so M2.1 and M3.x can be differentially tested.
 
 **File:** new `OdbDesignTests/ConnectivityContractTests.cpp` (name follows the existing `SymbolContractTests.cpp` precedent). Fixtures: `sample_design` (UIDs present, 813 comps / 2,811 connections), `200-40628_Rev1_v7` (UIDs absent, 7,610 comps), `Panel g7162-31800_odb` (the 88-collision case). Golden file per design: `refDes → [(pinNumber, netOrdinal)]`, plus pin counts per net.
+
+### M0.4 Response cache flavour inventory — new, settle before M2.3
+
+`OdbDesignServiceImpl::GetDesign` (`OdbDesignServer/Services/OdbDesignServiceImpl.cpp`) keeps two paths, and M2.3 inherits a constraint it does not yet name:
+
+* **Warm path** returns a pre-serialized `std::string` (`:115-118`, built by the worker at `:200-205`) — **only the default `include_normalized_lists=false` flavour**, per the comment at `:198-199`.
+* **Cold path** calls `to_protobuf(includeLists)` (`:220-221`) and serializes per request; the `std::string` return is then copied twice (`:215`, `:230`).
+
+So any request whose flags differ from the default re-serializes the **entire cached `FileArchive`** (`:96-99`) on every call — and that is 537 MB uncompressed for `Turbot` alone. Adding `include_connectivity` as a flag would create a second per-request full-design serialization, which is the opposite of what #590 was for. Options: cache serialized bytes per flavour, or make connectivity always-on so it rides the existing warm entry. Decide this in D4, with the numbers from M2.4 — not ad hoc in code.
+
+### M0.5 Client-side prep — unblocked now, no server dependency
+
+Answering "can the two clients start?": **they cannot finish** — there is nothing to consume until M2.1 emits `Connectivity`, and deleting the joiner before its replacement exists just breaks the inspector. These four items are independent and non-throwaway:
+
+| Item | Repo | Why independent |
+|---|---|---|
+| **REST → gRPC transport switch** | info client | Prerequisite for ever seeing `Connectivity` (gRPC-only). Largest item, reviewable alone. |
+| Refresh vendored `protoc/` and `Api/Dtos/` | info client | Already stale by four service.proto features; needed regardless. |
+| refDes **case-sensitivity** fix | both | Spec p.152 makes refDes case-significant; all four name dictionaries use `OrdinalIgnoreCase` (3D `:20`/`:33`/`:183`, info `:147`). Real latent defect, unrelated to the join rewrite. |
+| M3.3 conformance harness skeleton | both | Needs only M0.3's golden files, not the contract. |
+
+**Deliberately *not* in this track:** re-keying `netsByComponent` from `(side, Id)` to `refDes` today. It would stop the visible wrongness immediately, but M3.1/M3.2 delete that code path wholesale — so it is throwaway unless the merged-nets list is in front of real users right now. That is a product call, not a technical one.
+
+### M0.6 Mirror the spec into the SwaggerUI image repo — new, cross-repo
+
+**Repo:** `../OdbDesignServer-SwaggerUI`, file `spec/odbdesign-server-0.9-swagger.yaml`. It is baked into the image (`Dockerfile`: `COPY spec/ /spec`), so it is what a **bare `docker run`** of the image serves. compose no longer depends on it (M0.7), which drops this from "the local view is silently stale" to "only affects unmounted image runs" — lower priority than when it was filed.
+
+Copy this repo's annotated `swagger/odbdesign-server-0.9-swagger.yaml` over it, then that repo's `.github/workflows/docker-publish.yml` must run to republish `ghcr.io/nam20485/odbdesignserver-swaggerui:nam20485-latest`; k3s picks it up on the next pull (`imagePullPolicy: Always`) plus a rollout restart.
+
+The 321-line gap is **not** only M0.1's annotations — the image copy also predates #585/#586 and the earlier annotation pass. Ownership is settled: **this repo's `swagger/odbdesign-server-0.9-swagger.yaml` is canonical** and the flow is one-way (#1 → #2 ConfigMap, #1 → #3 image). Verified 2026-09-15 that #3 is strictly behind — it holds no paths #1 lacks (#1 has `/designs/{name}/load` extra) — so a straight overwrite from #1 loses nothing; no three-way reconcile needed.
+
+**Better end state:** a hand-synced copy in a second repo is the defect. Option (a) — always mount — is now done for compose (M0.7); what remains is generating #3 from #1 in the sibling repo's CI, or accepting it as a fallback for unmounted image runs only.
+
+### M0.7 Spec distribution fixes — **DONE**
+
+Two changes so that #1, not a stale projection, is what people actually read:
+
+* **compose binds #1 over the baked copy.** `compose.yml` and `compose.local.yml`, `swagger-ui` service: `./swagger/odbdesign-server-0.9-swagger.yaml:/spec/odbdesign-server-0.9-swagger.yaml:ro` — the same single-file target k3s uses via `subPath`. Local runs are now immune to image staleness. Both files verified to parse and to carry the mount.
+* **`.github/workflows/swagger-spec-configmap-sync.yml` lands** (pulled forward standalone from `argocd-deployment-plan.md` §6.5, which had it as GitOps Phase 2). Triggers on `push` to `nam20485` with `paths: ["swagger/**"]` plus `workflow_dispatch`; re-runs `deploy.ps1`'s exact `kubectl create configmap … --dry-run=client -o yaml` command, validates the result (kind, configmap name, embedded spec parses as OpenAPI, ≥20 paths) and **exits before committing** if any check fails, then commits via the Contents API so the commit is GitHub-signed — required because the `nam20485` ruleset requires signed commits and defines no `pull_request` rule (§3.3).
+
+Verification actually executed, not assumed: workflow YAML parses (2 steps, no draft artifacts left behind); the `run` block passes `bash -n`; and the regenerate-and-validate core was run locally — `kubectl` present, output non-empty, **118,020 bytes embedded, 39 paths, 54 schemas**, and byte-identical to the committed manifest. So on merge the workflow takes the "already matches — nothing to do" branch and will **not** emit a bot commit for this PR. Loop-safety also holds independently: the bot commit touches only `deploy/`, outside the `swagger/**` filter, and `GITHUB_TOKEN` pushes do not create runs.
+
+⚠️ Not verified: no `gh api` PUT was exercised (needs a real `nam20485` push), and no compose stack was launched — the mount path is inferred from the working k3s `subPath` mount and the image's `SWAGGER_JSON` env, not from a live request. First `docker compose up` should confirm the served spec shows the new `componentNumber` description.
 
 ---
 
@@ -109,7 +166,7 @@ Either populate during parse (`ComponentsFile.cpp` has a standing `// TODO: add 
 
 ## Phase 2 — server-owned connectivity
 
-**Gated on the §Dependency note and D4.**
+**Gated on D4 only** (base unblocked — see §Branch base).
 
 ### M2.1 `Connectivity` message + derive
 
@@ -117,17 +174,19 @@ Either populate during parse (`ComponentsFile.cpp` has a standing `// TODO: add 
 
 `design.proto` uses tags 1–11 → `optional Connectivity connectivity = 12;`. Protos are globbed (`OdbDesignLib/CMakeLists.txt:55`, `file(GLOB PROTO_FILES "${PROTO_DIR}/*.proto")`) — a new file needs a CMake **reconfigure**, not just a build.
 
+Emit it from `Design::to_protobuf(bool includeNormalizedLists)` (`Design.cpp:167`) — the gRPC flavour. Decide in D4 whether `Connectivity` joins the normalized-lists gate or gets its own; note the no-arg `to_protobuf()` (`Design.cpp:159-165`) deliberately still emits the full flavour for REST/`to_pbstring`/round-trip tests, so a new field added only to the parameterized path will **not** appear in those tests unless wired separately.
+
 Derive from `m_nets[].GetPinConnections()`, which already holds resolved `(shared_ptr<Component>, shared_ptr<Pin>)` pairs. **This is a serialization of an existing result — do not write a second join.** Package rosters dedupe by name (71 entries, not 813). Emit `netMembers` from the same pass, sorted by net ordinal then refDes, so output is deterministic and diffable.
 
 ### M2.2 Semantics absorbed server-side
 
 `Connection.Kind`: `UNCONNECTED` for netNumber `-1`/`4294967295`; `$NONE$` mapped to `UNKNOWN`/`UNCONNECTED` rather than leaking a magic net name (the server's own `BreakSinglePinNets`/`BuildNoneNet` are disabled at `Design.cpp:138-139`, so NC pins currently ride `$NONE$` — decide whether this contract revives them or just labels them). `ComponentPin.number` resolved from the package pin, so `toeprintNumber` never reaches a client.
 
-Keep the hard failure visible: `Design.cpp:454` `GetPin(pinNumber)` null → whole load fails. Do not degrade that to omission; surface which pin failed.
+Keep the hard failure visible: `Design.cpp:465` `GetPin(pinNumber)` null → whole load fails. Do not degrade that to omission; surface which pin failed.
 
 ### M2.3 Gating + cache interaction (D4)
 
-If opt-in, add `GetDesignRequest.include_connectivity` beside the existing `include_normalized_lists`, and respect the fast-path rule from that commit: the cache pre-serializes only the default flavour, so a connectivity-requesting response serializes cold. If always-on, it becomes part of the cached default — better for clients, and the size data from M2.4 is what justifies it.
+If opt-in, add `GetDesignRequest.include_connectivity` beside `include_normalized_lists` (`service.proto:51`), and respect the fast-path rule PR #590 established in `OdbDesignServiceImpl::GetDesign`: the pre-serialization worker caches **only** the default flavour, so any non-default response serializes cold. If always-on, it becomes part of the cached default — better for clients, and the size data from M2.4 is what justifies it. Either way, check the interaction with the serialized-response cache (SI6/M1.4) so the cached bytes and the flag actually agree.
 
 ### M2.4 Size benchmark
 
@@ -164,7 +223,7 @@ Publish the M0.3 golden files to both clients as test data. Each asserts its `re
 * **M4.1** `PinConnection` reference-ification (`Component.cpp:75-76` embeds full `Package`+`Part`). Breaking wire change to the normalized lists. Lands only if it makes `include_normalized_lists` unnecessary — that's its justification.
 * **M4.2** D5 verdict on the REST surface: maintain / freeze / deprecate. Blocks on nothing; do it before someone implements `designs_component_route_handler` (`DesignsController.cpp:311`) for a client that is leaving REST.
 * **M4.3** Remove the `attributeLookupTable["ID"]` dual-write from M1.3.
-* **M4.4** The dead `BuildPlacementsFromEdaDataFile` (`Design.cpp:510`, zero call sites): delete it, or make it the authoritative path deliberately. Leaving an alternative connectivity implementation in the tree is how this divergence stayed invisible.
+* **M4.4** The dead `BuildPlacementsFromEdaDataFile` (`Design.cpp:521`, zero call sites; declared `Design.h:104`): delete it, or make it the authoritative path deliberately. Leaving an alternative connectivity implementation in the tree is how this divergence stayed invisible.
 
 ---
 
@@ -172,9 +231,10 @@ Publish the M0.3 golden files to both clients as test data. Each asserts its `re
 
 | Risk | Mitigation |
 |---|---|
-| `id` populated before a client stops resolving by `Id` → ~10% silent mis-resolution on `Panel`-shaped designs | Phase 3 deletes that resolution; M1.1 and M3.x must not both ship to the same deployed client. Verify §4.3 collision case in M3.3 fixtures. |
-| M2 built on the pre-`f1484a4` tree | §Dependency gate; re-cut from `nam20485` after that PR merges. |
+| `id` populated before a client stops resolving by `Id` → ~10% silent mis-resolution on `Panel`-shaped designs | Phase 3 deletes that resolution. **This is a deploy constraint, not a merge one** — M1.1 may merge any time, but do not ship a server build with `id` populated into an environment whose clients still resolve `componentNumber` by `Id`. Coordinate rollout per environment and verify the §4.3 collision case in the M3.3 fixtures. |
+| `Connectivity` as an opt-in flag re-serializes the whole FileArchive per request | M0.4 — measure before D4; `include_normalized_lists` already costs this, and a second flag doubles it. |
+| `nam20485` goes stale under the branch again (`dev/*` → `development` shortcuts) | Sync from `nam20485` before opening each PR; the Phase 2 gate in the first revision of this plan was wrong for exactly this reason (§Branch base). |
 | `Connectivity` and `fileModel` disagree for some design | M3.3 differential test is exactly this. A disagreement is a server bug, not a client bug, by construction. |
-| Response cache serves the wrong flavour | M2.3 — reuse the `f1484a4` fast-path rule (cache holds default flavour only). |
+| Response cache serves the wrong flavour | M2.3 — reuse PR #590's fast-path rule (cache holds the default flavour only). |
 | Feature UID delta regresses payload | M2.4 measures M1.2 before it merges. |
 | Info client transport switch swells this PR's blast radius | Separate PR in a separate repo, reviewable alone (M3.2). |

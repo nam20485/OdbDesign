@@ -1,0 +1,99 @@
+---
+name: Swagger spec ConfigMap sync
+
+# Keeps the committed ConfigMap manifest byte-identical to the canonical spec in
+# swagger/. Without it the manifest is only refreshed when a human runs
+# scripts/deploy.ps1, so it silently lags behind the contract it publishes.
+#
+# The regeneration command is deliberately identical to scripts/deploy.ps1:129-131,
+# so both producers yield the same bytes and neither churns the other.
+# Spec: docs/plan/argocd-deployment-plan.md §6.5.
+
+on:
+  push:
+    branches: [nam20485]
+    paths: ["swagger/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: swagger-spec-configmap-sync
+  cancel-in-progress: false
+
+jobs:
+  regen:
+    name: Regenerate spec ConfigMap
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          ref: nam20485
+
+      - name: Regenerate, validate, and commit if changed
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+
+          SRC="swagger/odbdesign-server-0.9-swagger.yaml"
+          FILE="deploy/kube/OdbDesignServer-SwaggerUI/swagger-spec-configmap.yaml"
+          # exported so the python validation heredoc below can read it
+          export SRC FILE
+
+          command -v kubectl >/dev/null 2>&1 || { echo "::error::kubectl not present on runner"; exit 1; }
+          test -s "$SRC" || { echo "::error::canonical spec missing or empty: $SRC"; exit 1; }
+          test -f "$FILE" || { echo "::error::manifest missing: $FILE"; exit 1; }
+
+          # Blob SHA of the COMMITTED file, captured BEFORE regeneration rewrites
+          # it — the Contents API needs it, and reading it afterwards would return
+          # the same value only because the file is unchanged (the 409 trap, §6.4).
+          SHA="$(git rev-parse "HEAD:$FILE")"
+
+          kubectl create configmap odbdesign-server-swagger-spec \
+            --from-file=odbdesign-server-0.9-swagger.yaml="$SRC" \
+            --dry-run=client -o yaml > "$FILE"
+
+          # Validate in place; any failure exits before the commit, so a truncated
+          # or emptied manifest can never be pushed.
+          test -s "$FILE" || { echo "::error::regeneration produced an empty file"; exit 1; }
+          python3 - <<'PY'
+          import os, sys, yaml
+          path = os.environ["FILE"]
+          doc = yaml.safe_load(open(path, encoding="utf-8"))
+          if doc.get("kind") != "ConfigMap":
+              sys.exit("manifest kind is not ConfigMap")
+          if doc["metadata"]["name"] != "odbdesign-server-swagger-spec":
+              sys.exit("unexpected configmap name")
+          key = "odbdesign-server-0.9-swagger.yaml"
+          body = doc["data"][key]
+          spec = yaml.safe_load(body)
+          if not spec or "paths" not in spec:
+              sys.exit("embedded spec does not parse as OpenAPI")
+          paths, schemas = len(spec["paths"]), len(spec.get("components", {}).get("schemas", {}))
+          if paths < 20:
+              sys.exit(f"suspiciously few paths: {paths}")
+          print(f"validated: {len(body)} bytes embedded, {paths} paths, {schemas} schemas")
+          PY
+
+          if git diff --quiet -- "$FILE"; then
+            echo "ConfigMap already matches the canonical spec — nothing to do."
+            exit 0
+          fi
+
+          echo "ConfigMap drifted; committing regenerated manifest."
+          git --no-pager diff --stat -- "$FILE"
+
+          # Committed through the Contents API, not git push: the nam20485 ruleset
+          # requires signed commits and defines no pull_request rule, so a
+          # GITHUB_TOKEN commit via the API is GitHub-signed (§3.3).
+          gh api --method PUT "repos/${REPO}/contents/${FILE}" \
+            -f message="chore(swagger): regenerate spec ConfigMap [skip ci]" \
+            -f content="$(base64 -w0 < "$FILE")" \
+            -f sha="$SHA" \
+            -f branch=nam20485 \
+            > /dev/null
+
+          echo "Committed regenerated ConfigMap to nam20485."

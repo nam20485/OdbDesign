@@ -3,10 +3,10 @@
 | | |
 |---|---|
 | Status | **ACTIVE — design agreed, implementation planned.** Decisions D1–D6 below are **open** and block Phase 2/3. |
-| Source | Client report: [component-id-issue.md](component-id-issue.md) (untracked drop-in from the 3D client agent, 2026-09-14). |
+| Source | Client report: [component-id-issue.md](component-id-issue.md) (drop-in from the 3D client agent, 2026-09-14; committed with this doc set). |
 | Plan | [component-connectivity-implementation-plan.md](component-connectivity-implementation-plan.md) — file-level milestones. |
 | Related | [ipc2581/spec-issues.md](ipc2581/spec-issues.md) (IPC imports leave `m_pFileModel` null) · [ipc2581/Client Migration Guide_ ODB++ to Unified API.md](ipc2581/Client%20Migration%20Guide_%20ODB%2B%2B%20to%20Unified%20API.md) · [server-issues.md](server-issues.md) (SI6 response cache, touched by M2.3) |
-| Base | Verified against `nam20485` @ `cd9c0ce`. **Line numbers in this doc are that base.** `include_normalized_lists` is *not* in `nam20485` — it lives on `dev/getdesign-include-lists-flag` and shifts `Design.cpp`/`Design.h`/`service.proto`. See §Dependencies. |
+| Base | Verified against `nam/component-connectivity` @ `d7d1a5b`. **Line numbers in this doc are that base.** It contains the normalized-lists prune (`274d878`, PR #590) and the DesignCache concurrency fixes (`ca9d5c8`, PR #591), both of which had merged to `development` and were reconciled back into `nam20485` (`ea2c081`) on 2026-09-15. See §Branch base in the plan. |
 | Method | One `nam/<feature>` branch → PR → `nam20485`, **merge commits only** (AGENTS.md, directive 2026-09-10). |
 
 ---
@@ -35,16 +35,16 @@ Every `ComponentRecord` the server emits reports `id == 0`. The 3D client keyed 
 
 `ComponentsFile.cpp:478` assigns `index` as the record's ordinal **within that file**; the spec (p.148) puts top and bottom components in separate layers → separate files. So `index` restarts at 0 per side. `(side, index)` is unique; `index` alone is not.
 
-**Correction to the report's framing.** The report concluded that `(side, index)` is "the server's real foreign key," because the netlist's `SubnetRecord.ComponentNumber` is a per-side ordinal and `Design::CreateNetConnections` joins on it (`Design.cpp:548`). That code path **never runs**. `Design::Build` calls exactly one placement routine:
+**Correction to the report's framing.** The report concluded that `(side, index)` is "the server's real foreign key," because the netlist's `SubnetRecord.ComponentNumber` is a per-side ordinal and `Design::CreateNetConnections` joins on it (`Design.cpp:559`). That code path **never runs**. `Design::Build` calls exactly one placement routine:
 
 ```text
 Design.cpp:135   BuildPlacementsFromComponentsFiles()      <-- the only one called
-Design.cpp:510   BuildPlacementsFromEdaDataFile()          <-- defined, zero call sites (Design.h:94)
+Design.cpp:521   BuildPlacementsFromEdaDataFile()          <-- defined, zero call sites (Design.h:104)
 Design.cpp:138   //if (! BuildNoneNet()) return false;      <-- disabled
 Design.cpp:139   //if (! BreakSinglePinNets()) return false; <-- disabled
 ```
 
-The live path (`Design.cpp:432-445` → `CreatePinConnection`, `:447`) resolves **component identity = refDes** (`m_componentsByName[refDes]`, `:451`) and **net reference = `ToeprintRecord.NetNumber`** (`:277` on the wire). The netlist-ordinal join is dead code. So the server and the clients run *two different implementations of connectivity* that agree only because `refDes` and the ordinal happen to line up. That divergence — not the zero `id` — is the root cause.
+The live path (`Design.cpp:433-456` → `CreatePinConnection`, `:458`) resolves **component identity = refDes** (`m_componentsByName[refDes]`, `:462`) and **net reference = `ToeprintRecord.NetNumber`** (`:277` on the wire). The netlist-ordinal join is dead code. So the server and the clients run *two different implementations of connectivity* that agree only because `refDes` and the ordinal happen to line up. That divergence — not the zero `id` — is the root cause.
 
 ### 2.3 The UID exists, is parsed, and leaks into the attribute map
 
@@ -97,7 +97,9 @@ UIDs are unique per file and **never overlap top↔bottom** in any design, exact
 
 `PinConnection` embeds a full `Component`, and `Component::to_protobuf` does `mutable_package()->CopyFrom(...)` + `mutable_part()->CopyFrom(...)` (`Component.cpp:75-76`). So 71 packages get re-serialized across 2,811 connections — ~40× redundancy, each carrying its whole pin roster.
 
-Cost modelled at ~760 B/connection ≈ 2.1 MB wire, consistent with `dev/getdesign-include-lists-flag`'s measured **5.8 MB of the 12.2 MB design JSON** once JSON's ~2.8× string inflation is applied. The same facts as a reference-keyed index: **tens of KB**.
+Cost modelled at ~760 B/connection ≈ 2.1 MB wire, consistent with the **5.8 MB of the 12.2 MB design JSON** measurement that justified PR #590 (`274d878`), once JSON's ~2.8× string inflation is applied. The same facts as a reference-keyed index: **tens of KB**.
+
+Note what #590 does and does not decide. `Design::to_protobuf()` (`Design.cpp:159-165`) still emits the **full** flavour — REST, `to_pbstring`, and the round-trip tests depend on it — and the gRPC `GetDesign` path calls `to_protobuf(false)` (`Design.cpp:167`, gated by `GetDesignRequest.include_normalized_lists`, `service.proto:51`). So the lists are *pruned from the gRPC response*, not removed from the model.
 
 ### 4.3 The mis-resolution landmine
 
@@ -196,7 +198,7 @@ It is **derived from what `BuildPlacementsFromComponentsFiles` already resolved*
 
 Three format leaks the contract absorbs, so clients stop needing ODB++ folklore:
 
-1. **NC is a magic number.** `TOP` `netNumber = -1` lands in an `unsigned int` (`m_allowToepintNetNumbersOfNegative1 = true`), so clients see **4294967295** and must infer "unconnected" → `Connection.Kind.UNCONNECTED`.
+1. **NC is a magic number.** `TOP` `netNumber = -1` lands in an `unsigned int` (`m_allowToepintNetNumbersOfNegative1 = true`), so clients see **4294967295** and must infer "unconnected" → `Connection.Kind.UNCONNECTED`. The server itself already skips those records (`Design.cpp:448`) but never tells the client it did.
 2. **`toeprintNumber → pinNumber`** is currently done in client code (3D `:479-481`, info `:448-453`) — that is a join → resolved server-side into `ComponentPin.number`.
 3. **`$NONE$`** is not broken out (`BuildNoneNet`/`BreakSinglePinNets` disabled, `Design.cpp:138-139`), so NC pins hang off a magic net name → `Kind`, not a name comparison.
 
@@ -213,7 +215,7 @@ Geometry, placement, and attributes stay in `fileModel` — that architecture is
 
 ## 8. Hazards to keep visible
 
-* ⚠️ `CreatePinConnection` calls `GetPackage()->GetPin(pinNumber)` and returns false on null (`Design.cpp:454`), which fails the **entire design load**. Publishing pin rosters must not convert that hard failure into a silent omission — keep reporting which pin failed to resolve.
+* ⚠️ `CreatePinConnection` calls `GetPackage()->GetPin(pinNumber)` and returns false on null (`Design.cpp:465`), which fails the **entire design load**. Publishing pin rosters must not convert that hard failure into a silent omission — keep reporting which pin failed to resolve.
 * ⚠️ §4.3: populate `id` only after both clients stop resolving `componentNumber` by `Id`. The plan deletes that resolution in Phase 3, so the landmine is removed rather than dodged — but the ordering must hold if a client slips.
 * ⚠️ `refDes` case sensitivity is significant (spec p.152), and **both clients ignore it**. 3D client: `ComponentDetailIndex` default (`ComponentDetailBuilder.cs:20`), net index (`:33`), `byName` (`:183`). Info client: `byName` (`:147`). All four use `StringComparer.OrdinalIgnoreCase`, which silently merges `R1`/`r1` on case-differing designs. Fix while touching the keying.
 
@@ -221,4 +223,5 @@ Geometry, placement, and attributes stay in `fileModel` — that architecture is
 
 **Verified statically:** `ComponentsFile.{h,cpp}`, `AttributeLookupTable.{h,cpp}`, `FeaturesFile.{h,cpp}`, `Design.{h,cpp}`, `Component.cpp`, `Net.cpp`, the protos, swagger, `DesignsController.{h,cpp}`; every `id` assignment in `OdbDesignLib`; both clients' `ComponentDetailBuilder.cs`, csproj proto items, and vendored proto trees (diffed against server).
 **Verified against data:** 13 `components` files across 8 designs, including two `.Z`-compressed legacy files decompressed to `/tmp` (no repo writes); `eda/data` record counts; spec sections extracted from the 8.1 U4 PDF; spec currency confirmed via odbplusplus.com.
-**Not done:** nothing was built or run. §4.2 byte figures are a cost model reconciled against a measurement from another branch, not an observed size. §4.3 counts are derived from the data plus the clients' documented resolution order, not reproduced at runtime. The client symptom itself was not observed — it is the report's, and I confirmed the mechanism in their source.
+**Re-verified after the base change:** every `Design.cpp`/`Design.h`/`service.proto` citation in this doc was re-grepped against `d7d1a5b`. The merge moved them by +11 lines (`CreatePinConnection` `:447`→`:458`, `BuildPlacementsFromEdaDataFile` `:510`→`:521`, the ordinal join `:548`→`:559`); `ComponentsFile.cpp`, `AttributeLookupTable.cpp`, `FeaturesFile.cpp`, `Component.cpp`, `DesignsController.cpp`, `design.proto` and swagger citations were unaffected (those files are not in the merged diff).
+**Not done:** nothing was built or run. §4.2 byte figures are a cost model reconciled against PR #590's published measurement, not an independently observed size. §4.3 counts are derived from the data plus the clients' documented resolution order, not reproduced at runtime. The client symptom itself was not observed — it is the report's, and I confirmed the mechanism in their source.

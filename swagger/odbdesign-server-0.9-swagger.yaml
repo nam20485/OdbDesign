@@ -2426,15 +2426,32 @@ components:
         side:
           type: string
           enum: [BsNone, Top, Bottom]
-          description: Toeprint subnets only.
+          description: >-
+            Toeprint subnets only. Selects which per-side components file the
+            `componentNumber` and `toeprintNumber` below index into:
+            `Top` -> `comp_+_top/components`, `Bottom` -> `comp_+_bot/components`.
         componentNumber:
           type: integer
           format: int32
-          description: Toeprint subnets only.
+          description: >-
+            Toeprint subnets only. The 0-based ordinal position of the referenced
+            component's `CMP` record within that side's `components` file -- i.e. it
+            equals the target record's `ComponentRecord.index`. NOT
+            `ComponentRecord.id` (a separate, optional, product-model-wide UID).
+            Not design-global either: each board side has its own file and its own
+            numbering restarting at 0, so `componentNumber` is meaningful only
+            together with `side`.
+          example: 0
         toeprintNumber:
           type: integer
           format: int32
-          description: Toeprint subnets only.
+          description: >-
+            Toeprint subnets only. The 0-based ordinal position within the resolved
+            component record's `toeprintRecords` array -- a positional index, not a
+            pin number. The pin number is `toeprintRecords[toeprintNumber].pinNumber`
+            (which is itself 0-based and corresponds to the `PIN` records of the
+            component's package); read it rather than assuming it equals this field.
+          example: 1
         index:
           type: integer
           format: int32
@@ -2914,7 +2931,13 @@ components:
         id:
           type: integer
           format: int32
-          description: Feature id.
+          description: >-
+            ODB++ unique identifier assigned to this feature (the `ID=<id>` field of the
+            `L`/`A`/`P`/`T` feature record), from the same product-model-wide number space
+            as `ComponentRecord.id`. Optional, permanent once assigned, and sparse. NOTE:
+            declared but not yet populated by the server -- every feature currently reports
+            0 here; where the source carries an id it is delivered only as the literal key
+            `"ID"` in `attributeLookupTable`.
         orient_def:
           type: integer
           format: int32
@@ -3125,11 +3148,27 @@ components:
         id:
           type: integer
           format: int32
-          description: Component id.
+          description: >-
+            ODB++ unique identifier assigned to this component (the `ID=<id>` field of the
+            `CMP` record). Per the ODB++ specification (8.1 Update 4, p.30) it is unique
+            across the entire product model -- the same number space is shared with features,
+            matrix and stephdr entities, so values are sparse -- and once assigned it never
+            changes, making it the only handle that tracks a component across re-exports.
+            It is OPTIONAL: CAD tools may omit it, and roughly half of the designs in the
+            reference corpus do, in which case no id is present rather than id 0. NOT a join
+            key: netlist `SubnetRecord.componentNumber` references components by per-side
+            ordinal (see `index`), never by this field. NOTE: this field is declared but not
+            yet populated by the server; until it is, the value is delivered only as the
+            literal key `"ID"` in `attributeLookupTable`.
         index:
           type: integer
           format: int32
-          description: Component index (component number) within the file.
+          description: >-
+            Ordinal position of this record within its own side's `components` file. This is
+            the value that netlist `SubnetRecord.componentNumber` matches. Unique only
+            together with the owning file's side -- `comp_+_top` and `comp_+_bot` are separate
+            files and each restarts at 0 -- and positional only: a re-export that reorders
+            records renumbers it. Prefer `compName` as the component key.
         propertyRecords:
           type: array
           description: Component property records.
@@ -3144,7 +3183,13 @@ components:
           type: object
           additionalProperties:
             type: string
-          description: Attribute id to value/text mapping.
+          description: >-
+            Attribute assignments parsed from the trailing field of the `CMP` record, as
+            `attribute-index -> value`. Keys are normally numeric indices into the sibling
+            `attributeNames` list. CAUTION: the literal key `"ID"` is not an attribute -- it
+            carries the component's ODB++ unique identifier, and `attributeNames` has no
+            entry for it. Resolve attribute names only for numeric keys, and read the
+            identifier from `id` (see the note there about it not yet being populated).
     ToeprintRecord:
       type: object
       description: A component pin's land pattern on this layer.
@@ -3171,7 +3216,12 @@ components:
         netNumber:
           type: integer
           format: int32
-          description: Serial number of the net connected to the pin.
+          description: >-
+            Ordinal of the net this pin connects to, matching `NetRecord.index` /
+            `SubnetRecord.netNumber` for the net's TOEPRINT subnet. Sentinels: the source
+            ODB++ value `-1` means the pin is unconnected (no net) and is carried here as
+            the unsigned wrap-around value 4294967295; nets named `$NONE$` are the
+            netlist's no-connect net. Treat both as unconnected rather than as a real net.
         subnetNumber:
           type: integer
           format: int32

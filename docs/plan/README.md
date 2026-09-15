@@ -18,7 +18,7 @@ decision records that govern it. Finished work lives in
 
 ### Component identity & server-owned connectivity
 * [`component-connectivity.md`](component-connectivity.md) — verified findings, spec evidence, the `Connectivity` contract, and decisions **D1–D6 (open)**.
-* [`component-connectivity-implementation-plan.md`](component-connectivity-implementation-plan.md) — milestone tracker. **Nothing started.** Phase 0/1 unblocked; **Phase 2 is gated on `dev/getdesign-include-lists-flag` merging** and D4; Phase 3 spans both client repos.
+* [`component-connectivity-implementation-plan.md`](component-connectivity-implementation-plan.md) — milestone tracker. **M0.1 done** (swagger foreign-key wording; deployed configmap regenerated from source). Phase 0/1 unblocked, client prep can start now (M0.5); **Phase 2 gated on D4**.
 * [`component-id-issue.md`](component-id-issue.md) — originating client report. Its symptom diagnosis is correct; its conclusion ("no design has real component IDs") is disproved in §4 of the design doc.
 
 ### Argo CD GitOps migration
