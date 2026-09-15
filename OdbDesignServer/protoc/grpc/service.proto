@@ -43,8 +43,12 @@ service OdbDesignService {
 }
 
 // === Request/Response Messages ===
-message GetDesignRequest { 
+message GetDesignRequest {
   string design_name = 1;
+  // The normalized collections (nets/components/packages/parts + their ByName
+  // maps) duplicate data clients read from fileModel, and dominate the response
+  // on connected boards. They are omitted unless explicitly requested.
+  optional bool include_normalized_lists = 2;
 }
 
 message GetLayerFeaturesRequest { 
