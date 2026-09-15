@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| Status | **PLANNED — executing. M0.1 done** (swagger FK wording + deployed copy regenerated). Design and decisions catalog in [component-connectivity.md](component-connectivity.md). D1–D6 open; Phase 2 is gated on **D4** only (the base mismatch that blocked it was resolved 2026-09-15, see §Branch base). Client prep is unblocked now — M0.5. |
+| Status | **EXECUTING — M0.1 and M0.7 done** (swagger FK wording; deployed copy regenerated; compose now mounts the canonical spec; `swagger-spec-configmap-sync.yml` added). Design and decisions catalog in [component-connectivity.md](component-connectivity.md). D1–D6 open; Phase 2 is gated on **D4** only (the base mismatch that blocked it was resolved 2026-09-15, see §Branch base). Client prep is unblocked now — M0.5. |
 | Source | [component-connectivity.md](component-connectivity.md) (verified findings + contract) · [component-id-issue.md](component-id-issue.md) (originating client report) |
 | Branch | `nam/component-connectivity` — cut from `nam20485` @ `cd9c0ce`, docs merged to `origin/nam20485` as `ea2c081`, then `development` reconciled back in → tip `d7d1a5b`. **Merge commits only** (AGENTS.md directive 2026-09-10); PR base is `nam20485`. |
 | Cross-repo | Phase 3 spans two other repos: `odbdesign-3d-client-prototype` and `Odbdesign-info-client-india79-b`. Their work is specified here but executed as separate PRs in those repos. |
@@ -22,7 +22,8 @@ The anomaly is worth keeping in view rather than filing as resolved: `dev/*` →
 Phase 0 (now, parallel, no interdeps, no wire risk):
   M0.1 swagger FK wording [DONE]   M0.2 proto sync check     M0.3 connectivity fixture harness
   M0.4 cache flavour inventory ── feeds D4/M2.3              M0.5 client prep (both repos, unblocked)
-  M0.6 mirror spec → SwaggerUI image repo (cross-repo; M0.1 is incomplete without it)
+  M0.6 mirror spec → SwaggerUI image repo (cross-repo; low priority since compose now mounts #1)
+  M0.7 spec distribution fixes [DONE]: compose binds #1  +  swagger-spec-configmap-sync.yml
 
 Phase 1 (server fidelity, independent of Phase 0, gated on D3):
   M1.1 component ;ID= parse ──► M1.3 attributeLookupTable de-dup
@@ -109,13 +110,24 @@ Answering "can the two clients start?": **they cannot finish** — there is noth
 
 ### M0.6 Mirror the spec into the SwaggerUI image repo — new, cross-repo
 
-**Repo:** `../OdbDesignServer-SwaggerUI`, file `spec/odbdesign-server-0.9-swagger.yaml`. It is baked into the image (`Dockerfile`: `COPY spec/ /spec`) and is what `compose.yml` serves, since compose mounts nothing.
+**Repo:** `../OdbDesignServer-SwaggerUI`, file `spec/odbdesign-server-0.9-swagger.yaml`. It is baked into the image (`Dockerfile`: `COPY spec/ /spec`), so it is what a **bare `docker run`** of the image serves. compose no longer depends on it (M0.7), which drops this from "the local view is silently stale" to "only affects unmounted image runs" — lower priority than when it was filed.
 
 Copy this repo's annotated `swagger/odbdesign-server-0.9-swagger.yaml` over it, then that repo's `.github/workflows/docker-publish.yml` must run to republish `ghcr.io/nam20485/odbdesignserver-swaggerui:nam20485-latest`; k3s picks it up on the next pull (`imagePullPolicy: Always`) plus a rollout restart.
 
 The 321-line gap is **not** only M0.1's annotations — the image copy also predates #585/#586 and the earlier annotation pass. Ownership is settled: **this repo's `swagger/odbdesign-server-0.9-swagger.yaml` is canonical** and the flow is one-way (#1 → #2 ConfigMap, #1 → #3 image). Verified 2026-09-15 that #3 is strictly behind — it holds no paths #1 lacks (#1 has `/designs/{name}/load` extra) — so a straight overwrite from #1 loses nothing; no three-way reconcile needed.
 
-**Better end state (decide, don't default):** a hand-synced copy in a second repo is the defect. Either generate #3 from #1 in CI, or drop the baked copy and always mount the ConfigMap (compose would need the mount added). Until then, record which copies a spec change touched — the rule is now in `AGENTS.md` §"The swagger/OpenAPI spec has THREE copies".
+**Better end state:** a hand-synced copy in a second repo is the defect. Option (a) — always mount — is now done for compose (M0.7); what remains is generating #3 from #1 in the sibling repo's CI, or accepting it as a fallback for unmounted image runs only.
+
+### M0.7 Spec distribution fixes — **DONE**
+
+Two changes so that #1, not a stale projection, is what people actually read:
+
+* **compose binds #1 over the baked copy.** `compose.yml` and `compose.local.yml`, `swagger-ui` service: `./swagger/odbdesign-server-0.9-swagger.yaml:/spec/odbdesign-server-0.9-swagger.yaml:ro` — the same single-file target k3s uses via `subPath`. Local runs are now immune to image staleness. Both files verified to parse and to carry the mount.
+* **`.github/workflows/swagger-spec-configmap-sync.yml` lands** (pulled forward standalone from `argocd-deployment-plan.md` §6.5, which had it as GitOps Phase 2). Triggers on `push` to `nam20485` with `paths: ["swagger/**"]` plus `workflow_dispatch`; re-runs `deploy.ps1`'s exact `kubectl create configmap … --dry-run=client -o yaml` command, validates the result (kind, configmap name, embedded spec parses as OpenAPI, ≥20 paths) and **exits before committing** if any check fails, then commits via the Contents API so the commit is GitHub-signed — required because the `nam20485` ruleset requires signed commits and defines no `pull_request` rule (§3.3).
+
+Verification actually executed, not assumed: workflow YAML parses (2 steps, no draft artifacts left behind); the `run` block passes `bash -n`; and the regenerate-and-validate core was run locally — `kubectl` present, output non-empty, **118,020 bytes embedded, 39 paths, 54 schemas**, and byte-identical to the committed manifest. So on merge the workflow takes the "already matches — nothing to do" branch and will **not** emit a bot commit for this PR. Loop-safety also holds independently: the bot commit touches only `deploy/`, outside the `swagger/**` filter, and `GITHUB_TOKEN` pushes do not create runs.
+
+⚠️ Not verified: no `gh api` PUT was exercised (needs a real `nam20485` push), and no compose stack was launched — the mount path is inferred from the working k3s `subPath` mount and the image's `SWAGGER_JSON` env, not from a live request. First `docker compose up` should confirm the served spec shows the new `componentNumber` description.
 
 ---
 
