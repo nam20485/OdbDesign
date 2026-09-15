@@ -142,17 +142,21 @@ The client defect was collapsing these into one field. The report's counter-conc
 
 Parse the `;ID=` section into `ComponentRecord.id`. Absent means **unset** — proto3 `optional` already gives `has_id()` / `HasId`, so clients distinguish "no UID" from "UID 0". A synthesized id is a permanent lie that consumers cache across revisions.
 
-### D3 — Stop double-storing the UID (or mark it deprecated)
+### D3 — **DECIDED 2026-09-15: remove the `"ID"` key outright.** No dual-write, no deprecation window
 
-`attributeLookupTable["ID"]` mixes a literal `"ID"` key into a map whose other keys are numeric attribute indices. Publish `id` as the typed field; either drop `"ID"` from the map or keep dual-writing it and document it deprecated. **Open** — depends on whether anything already reads `"ID"`.
+Dual-writing was proposed and rejected: the key is misleading, conflates an entity identifier with attribute assignments, and invites exactly the design error that produced this defect. Its only merit would be backwards compatibility, and there is none to preserve — verified 2026-09-15 by grep across both client repos and `OdbDesignLib`: nothing reads `attributeLookupTable["ID"]`. The only client touches are a debug log of key *counts* (`OdbDesignGrpcClient.cs:369-377`) and a mock writing `["0"]` (`MockOdbDesignClient.cs:183`); server-side the map is only round-tripped (`ComponentsFile.cpp:229`, `:265`).
 
-### D4 — `Connectivity` always-on or opt-in
+**Consequence — M1.1 and M1.3 are one atomic change.** Populate `id` and delete the `"ID"` key in the same commit, on the same branch, in the same release. Split them and a window opens where *neither* the typed field nor the map carries the UID, which is strictly worse than today. The swagger text merged in #594 currently states the UID is delivered "only as the literal key `"ID"`" — that sentence must be rewritten in the same commit, or the published contract lies in both directions.
 
-At ~tens of KB (§4.2) it is plausible as a base-contract field, unlike the 5.8 MB lists. Opt-in is cheaper to land and keeps the response-cache fast path intact. **Open** — see plan M2.3.
+### D4 — **DECIDED 2026-09-15: `Connectivity` is always-on.** No flag
 
-### D5 — REST is out of scope; the surface itself needs a verdict
+Opt-in was rejected on the evidence, not for convenience. `OdbDesignServiceImpl`'s cache warm path serves pre-serialized bytes for **the default flavour only**, so any request that sets a flag re-serializes the entire cached `FileArchive` per call — `Turbot` is ~537 MB uncompressed. A second flag would reintroduce precisely the cost PR #590 removed. At ~tens of KB (§4.2), `Connectivity` is small enough to ride the default, which also means it is cached once with everything else and is present for every consumer without them having to know to ask.
 
-The info client moves to gRPC, so the contract ships over gRPC only. The empty stubs `designs_component_route_handler` (`DesignsController.cpp:311`) and `designs_net_route_handler` (`:343`) stay unimplemented. But `/designs/<name>/{components,nets,packages,parts}` remain live, swagger-published and deployed, with their only known consumer migrating off. **maintain / freeze / deprecate is an unmade decision** — deliberately not assumed here.
+Two follow-ons this decides: it becomes part of the cached default response, so M2.4's size acceptance is a merge gate, not a preference; and `design.proto` gets `optional Connectivity connectivity = 12` populated by **both** `to_protobuf` paths, so the REST/`to_pbstring`/round-trip flavours see it too.
+
+### D5 — **DECIDED 2026-09-15: REST is frozen — security fixes only.**
+
+The surface stays live and swagger-published but takes no new endpoints and no new fields. Concretely: `designs_component_route_handler` (`DesignsController.cpp:311`) and `designs_net_route_handler` (`:343`) stay unimplemented and should be **deleted** rather than left as live scaffolding that invites someone to build for a departing consumer; the existing collection routes stay as-is; `Connectivity` ships over gRPC only. This makes M4.2 a small deletion, not a verdict still pending.
 
 ### D6 — The `PinConnection` denormalization is separate debt
 

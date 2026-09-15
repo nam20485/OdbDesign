@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| Status | **EXECUTING — M0.1 and M0.7 done** (swagger FK wording; deployed copy regenerated; compose now mounts the canonical spec; `swagger-spec-configmap-sync.yml` added). Design and decisions catalog in [component-connectivity.md](component-connectivity.md). D1–D6 open; Phase 2 is gated on **D4** only (the base mismatch that blocked it was resolved 2026-09-15, see §Branch base). Client prep is unblocked now — M0.5. |
+| Status | **EXECUTING — M0.1, M0.7 done; D3/D4/D5 resolved 2026-09-15** (UID key removed atomically with `id`; `Connectivity` always-on; REST frozen, security-only). Design + decision records in [component-connectivity.md](component-connectivity.md). **Phase 1 and Phase 2 are now unblocked.** Client work: M0.5 prep + [handoff doc](component-connectivity-client-handoff.md). |
 | Source | [component-connectivity.md](component-connectivity.md) (verified findings + contract) · [component-id-issue.md](component-id-issue.md) (originating client report) |
 | Branch | `nam/component-connectivity` — cut from `nam20485` @ `cd9c0ce`, docs merged to `origin/nam20485` as `ea2c081`, then `development` reconciled back in → tip `d7d1a5b`. **Merge commits only** (AGENTS.md directive 2026-09-10); PR base is `nam20485`. |
 | Cross-repo | Phase 3 spans two other repos: `odbdesign-3d-client-prototype` and `Odbdesign-info-client-india79-b`. Their work is specified here but executed as separate PRs in those repos. |
@@ -25,20 +25,22 @@ Phase 0 (now, parallel, no interdeps, no wire risk):
   M0.6 mirror spec → SwaggerUI image repo (cross-repo; low priority since compose now mounts #1)
   M0.7 spec distribution fixes [DONE]: compose binds #1  +  swagger-spec-configmap-sync.yml
 
-Phase 1 (server fidelity, independent of Phase 0, gated on D3):
-  M1.1 component ;ID= parse ──► M1.3 attributeLookupTable de-dup
-  M1.2 feature  ;ID= parse       M1.4 componentRecordsByName populate-or-delete
+Phase 1 (server fidelity; M1.1 + M1.3 are ATOMIC per D3 — one commit, one release):
+  M1.1 component ;ID= parse ─┐
+  M1.2 feature  ;ID= parse ──┴──► M1.3 remove attributeLookupTable["ID"] (same commit)
+  M1.4 componentRecordsByName: delete the never-populated map field
 
-Phase 2 (gated on D4 only — base unblocked 2026-09-15):
-  M2.1 Connectivity proto + derive ──► M2.2 NC/subnet/$NONE$ semantics ──► M2.3 gating + cache ──► M2.4 size bench
+Phase 2 (ALWAYS-ON per D4 — no flag; rides the cached default flavour):
+  M2.1 Connectivity proto + derive ──► M2.2 NC/subnet/$NONE$ semantics ──► M2.4 size bench (merge gate)
 
 Phase 3 (after Phase 2 ships; both clients, same contract):
   M3.1 3D client consumes + deletes joiner      M3.2 info client REST→gRPC + consumes
   M3.3 shared conformance fixture (both)        <── M3.1/M3.2 must not land before this exists
+  M3.0 client handoff doc [DONE]                → component-connectivity-client-handoff.md
 
 Phase 4 (separate, deliberate):
   M4.1 PinConnection reference-ification ──► revisit include_normalized_lists default
-  M4.2 REST surface verdict (D5)
+  M4.2 REST freeze executed as a deletion: remove the two stub handlers (D5)
 ```
 
 ---
@@ -86,14 +88,14 @@ Before either side changes, capture ground truth so M2.1 and M3.x can be differe
 
 **File:** new `OdbDesignTests/ConnectivityContractTests.cpp` (name follows the existing `SymbolContractTests.cpp` precedent). Fixtures: `sample_design` (UIDs present, 813 comps / 2,811 connections), `200-40628_Rev1_v7` (UIDs absent, 7,610 comps), `Panel g7162-31800_odb` (the 88-collision case). Golden file per design: `refDes → [(pinNumber, netOrdinal)]`, plus pin counts per net.
 
-### M0.4 Response cache flavour inventory — new, settle before M2.3
+### M0.4 Response cache flavour inventory — resolved by D4 (always-on)
 
 `OdbDesignServiceImpl::GetDesign` (`OdbDesignServer/Services/OdbDesignServiceImpl.cpp`) keeps two paths, and M2.3 inherits a constraint it does not yet name:
 
 * **Warm path** returns a pre-serialized `std::string` (`:115-118`, built by the worker at `:200-205`) — **only the default `include_normalized_lists=false` flavour**, per the comment at `:198-199`.
 * **Cold path** calls `to_protobuf(includeLists)` (`:220-221`) and serializes per request; the `std::string` return is then copied twice (`:215`, `:230`).
 
-So any request whose flags differ from the default re-serializes the **entire cached `FileArchive`** (`:96-99`) on every call — and that is 537 MB uncompressed for `Turbot` alone. Adding `include_connectivity` as a flag would create a second per-request full-design serialization, which is the opposite of what #590 was for. Options: cache serialized bytes per flavour, or make connectivity always-on so it rides the existing warm entry. Decide this in D4, with the numbers from M2.4 — not ad hoc in code.
+So any request whose flags differ from the default re-serializes the **entire cached `FileArchive`** (`:96-99`) on every call — and that is 537 MB uncompressed for `Turbot` alone. **Decided (D4): connectivity is always-on**, so no flag is added and it rides the existing warm entry. Opt-in would have meant a second per-request full-design serialization on exactly the boards where it hurts most — the opposite of what #590 was for.
 
 ### M0.5 Client-side prep — unblocked now, no server dependency
 
@@ -145,9 +147,15 @@ Verification actually executed, not assumed: workflow YAML parses (2 steps, no d
 
 Same shape, same leak: `FeaturesFile.h:66` declares `id`, `FeaturesFile.cpp:976` serializes it, and six `ParseAttributeLookupTable(attrIdString)` call sites (`:290`, `:367`, `:459`, `:554`, `:577` commented, `:621`) discard it. Wire the accessor through all live call sites, not just one. Feature volumes are far larger (11,868 UIDs in one `sample_design` layer) — measure the payload delta in M2.4, since this one *does* grow the response.
 
-### M1.3 `attributeLookupTable["ID"]` (D3)
+### M1.3 Remove `attributeLookupTable["ID"]` — **DECIDED (D3), and atomic with M1.1**
 
-Decide: drop the `"ID"` key now that `id` carries it, or dual-write + deprecate. Nothing in either client reads `"ID"` today (verified by grep across both repos), so dropping is available — but it is a behaviour change for unenumerated consumers. **Recommend dual-write + deprecate, remove in Phase 4.**
+Drop the key. Dual-write/deprecate was proposed and rejected: the entry conflates an entity identifier with attribute assignments and invites the exact design error behind this defect, and there is no compatibility to preserve — re-verified 2026-09-15, no reader in either client (only a debug log of key *counts* at `OdbDesignGrpcClient.cs:369-377` and a mock writing `["0"]` at `MockOdbDesignClient.cs:183`) and the server only round-trips the map (`ComponentsFile.cpp:229`, `:265`).
+
+**Land it inside the M1.1 commit, not after it.** Populate `id` and delete the key together: split, and there is a window where neither the typed field nor the map carries the UID — strictly worse than today.
+
+**Same commit must fix the contract text.** #594 merged swagger stating the UID arrives "only as the literal key `"ID"`" and marking `id` as not-yet-populated. Both sentences become false the moment this lands, and the spec has a CI job now that will faithfully propagate the lie to the ConfigMap. Rewrite `ComponentRecord.id`, `ComponentRecord.attributeLookupTable`, and `FeatureRecord.id` in the same change.
+
+Implementation note: the key is created by the **shared** `AttributeLookupTable::ParseAttributeLookupTable` third-section branch (`AttributeLookupTable.cpp:48-61`), which has **9 live call sites across four record types** — components (`ComponentsFile.cpp:489`), features (`FeaturesFile.cpp:290`, `:367`, `:459`, `:554`, `:621`; `:577` commented), and eda-data net + package records (`EdaDataFile.cpp:648`, `:906`). Changing only the component path leaves the `"ID"` entry in feature, net and package attribute maps. Fix it in the shared function — return the parsed id to the caller instead of inserting it into the map — and give each record type's `id` field the value, which also means NET and PKG UIDs get typed homes rather than staying smuggled.
 
 ### M1.4 `componentRecordsByName`
 
@@ -166,7 +174,7 @@ Either populate during parse (`ComponentsFile.cpp` has a standing `// TODO: add 
 
 ## Phase 2 — server-owned connectivity
 
-**Gated on D4 only** (base unblocked — see §Branch base).
+**D4 decided: `Connectivity` is always-on** — no request flag, no second flavour. See [component-connectivity.md](component-connectivity.md) §D4 for the reasoning (an opt-in flag costs a full `FileArchive` re-serialize per request; `Turbot` is ~537 MB uncompressed).
 
 ### M2.1 `Connectivity` message + derive
 
@@ -174,7 +182,7 @@ Either populate during parse (`ComponentsFile.cpp` has a standing `// TODO: add 
 
 `design.proto` uses tags 1–11 → `optional Connectivity connectivity = 12;`. Protos are globbed (`OdbDesignLib/CMakeLists.txt:55`, `file(GLOB PROTO_FILES "${PROTO_DIR}/*.proto")`) — a new file needs a CMake **reconfigure**, not just a build.
 
-Emit it from `Design::to_protobuf(bool includeNormalizedLists)` (`Design.cpp:167`) — the gRPC flavour. Decide in D4 whether `Connectivity` joins the normalized-lists gate or gets its own; note the no-arg `to_protobuf()` (`Design.cpp:159-165`) deliberately still emits the full flavour for REST/`to_pbstring`/round-trip tests, so a new field added only to the parameterized path will **not** appear in those tests unless wired separately.
+Emit it from **both** flavours, unconditionally: `Design::to_protobuf(bool)` (`Design.cpp:167`) for gRPC and the no-arg `to_protobuf()` (`Design.cpp:159-165`) for REST/`to_pbstring`/round-trip tests. Per D4 it is always-on, so it sits **outside** the `includeNormalizedLists` gate — a client must never have to know to ask for connectivity. The `ProtobufSerializationTests.cpp` round-trip should assert it survives, which only works if the no-arg override populates it.
 
 Derive from `m_nets[].GetPinConnections()`, which already holds resolved `(shared_ptr<Component>, shared_ptr<Pin>)` pairs. **This is a serialization of an existing result — do not write a second join.** Package rosters dedupe by name (71 entries, not 813). Emit `netMembers` from the same pass, sorted by net ordinal then refDes, so output is deterministic and diffable.
 
@@ -184,9 +192,11 @@ Derive from `m_nets[].GetPinConnections()`, which already holds resolved `(share
 
 Keep the hard failure visible: `Design.cpp:465` `GetPin(pinNumber)` null → whole load fails. Do not degrade that to omission; surface which pin failed.
 
-### M2.3 Gating + cache interaction (D4)
+### M2.3 Cache and payload check (D4 resolved: no flag)
 
-If opt-in, add `GetDesignRequest.include_connectivity` beside `include_normalized_lists` (`service.proto:51`), and respect the fast-path rule PR #590 established in `OdbDesignServiceImpl::GetDesign`: the pre-serialization worker caches **only** the default flavour, so any non-default response serializes cold. If always-on, it becomes part of the cached default — better for clients, and the size data from M2.4 is what justifies it. Either way, check the interaction with the serialized-response cache (SI6/M1.4) so the cached bytes and the flag actually agree.
+`GetDesignRequest` gains **nothing** - no `include_connectivity`, no second flavour - so `OdbDesignServiceImpl::GetDesign`'s warm path keeps serving the single cached `std::string` and the pre-serialization worker keeps caching exactly what it caches today (see M0.4). Verify rather than assume: assert the warm-path response for an already-warm design contains a non-empty `connectivity` block.
+
+What always-on does change is that every response grows by the connectivity payload, including responses that ignore it. That is the accepted cost of the decision, and M2.4 is what bounds it. If M2.4 measures materially more than the ~tens of KB modelled in section 4.2 for a large board, bring the number back before merging - D4 was made on the model, not on measurement.
 
 ### M2.4 Size benchmark
 
@@ -235,6 +245,6 @@ Publish the M0.3 golden files to both clients as test data. Each asserts its `re
 | `Connectivity` as an opt-in flag re-serializes the whole FileArchive per request | M0.4 — measure before D4; `include_normalized_lists` already costs this, and a second flag doubles it. |
 | `nam20485` goes stale under the branch again (`dev/*` → `development` shortcuts) | Sync from `nam20485` before opening each PR; the Phase 2 gate in the first revision of this plan was wrong for exactly this reason (§Branch base). |
 | `Connectivity` and `fileModel` disagree for some design | M3.3 differential test is exactly this. A disagreement is a server bug, not a client bug, by construction. |
-| Response cache serves the wrong flavour | M2.3 — reuse PR #590's fast-path rule (cache holds the default flavour only). |
+| Cached bytes omit `connectivity`, or a non-default flavour is served from cache | M2.3 — always-on means connectivity rides the single cached default flavour; assert the warm-path response contains it. |
 | Feature UID delta regresses payload | M2.4 measures M1.2 before it merges. |
 | Info client transport switch swells this PR's blast radius | Separate PR in a separate repo, reviewable alone (M3.2). |
