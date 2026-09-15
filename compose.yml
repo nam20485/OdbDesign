@@ -60,6 +60,10 @@ services:
     depends_on:
       - server
     # Loopback-only; nginx routes / → swagger-ui:8080.
+    # Mount the canonical spec over the copy baked into the image, mirroring the
+    # k3s ConfigMap subPath mount, so local runs never serve a stale contract.
+    volumes:
+      - ./swagger/odbdesign-server-0.9-swagger.yaml:/spec/odbdesign-server-0.9-swagger.yaml:ro
     ports:
       - 127.0.0.1:8080:8080
     expose:
