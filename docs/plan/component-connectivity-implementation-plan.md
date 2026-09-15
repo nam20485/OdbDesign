@@ -2,19 +2,21 @@
 
 | | |
 |---|---|
-| Status | **PLANNED — not started.** Design and decisions catalog in [component-connectivity.md](component-connectivity.md). D1–D6 open; Phase 2 and 3 are gated on D3/D4. |
+| Status | **PLANNED — not started.** Design and decisions catalog in [component-connectivity.md](component-connectivity.md). D1–D6 open; Phase 2 is gated on **D4** only (the base mismatch that blocked it was resolved 2026-09-15, see §Branch base). |
 | Source | [component-connectivity.md](component-connectivity.md) (verified findings + contract) · [component-id-issue.md](component-id-issue.md) (originating client report) |
-| Branch | `nam/component-connectivity` ← `nam20485` @ `cd9c0ce`. **Merge commits only** (AGENTS.md directive 2026-09-10); PR base is `nam20485`. |
+| Branch | `nam/component-connectivity` — cut from `nam20485` @ `cd9c0ce`, docs merged to `origin/nam20485` as `ea2c081`, then `development` reconciled back in → tip `d7d1a5b`. **Merge commits only** (AGENTS.md directive 2026-09-10); PR base is `nam20485`. |
 | Cross-repo | Phase 3 spans two other repos: `odbdesign-3d-client-prototype` and `Odbdesign-info-client-india79-b`. Their work is specified here but executed as separate PRs in those repos. |
 | Build / test | `cmake --preset linux-dynamic-release && cmake --build --preset linux-dynamic-release && ctest --preset linux-dynamic-release`. Single test: `ctest --preset linux-debug -R <TestName>`. `ODB_TEST_DATA_DIR` + `ODB_TEST_ENVIRONMENT_VARIABLE` come from `~/.bashrc`. |
 
 ---
 
-## Dependency on unmerged work
+## Branch base — resolved 2026-09-15, but record the anomaly
 
-`include_normalized_lists` (`f1484a4`) is **not** in `nam20485` — it is only on `dev/getdesign-include-lists-flag`, along with the DesignCache concurrency fixes. That branch rewrites `Design.cpp`/`Design.h` (`to_protobuf(bool)` overload) and `service.proto`, both of which M2.1/M2.3 touch.
+This plan was first cut against `nam20485` @ `cd9c0ce`, at which point `Design::to_protobuf(bool includeNormalizedLists)` and `GetDesignRequest.include_normalized_lists` — the two things M2.1/M2.3 must edit — **did not exist in the base at all**. They had shipped via PR #590 (`274d878`) and PR #591 (`ca9d5c8`), but both were merged from `dev/*` branches straight into **`development`**, skipping `nam20485`. Result: `origin/development` sat 6 commits ahead of `origin/nam20485` with `nam20485` 0 ahead, and because the documented flow (`nam/<feature>` → `nam20485` → `development`) never merges `development` back down, nothing would have carried them into `nam20485` on its own.
 
-**M2 must not start before `dev/getdesign-include-lists-flag` merges to `nam20485`**, or it must be stacked on that branch deliberately. Phases 0 and 1 are independent of it and can proceed now. Line-number citations in the design doc are the `nam20485` base and will shift once that PR lands.
+Fixed by merging `development` back into `nam20485` (`ea2c081`) and into this branch (`d7d1a5b`). **All citations in both docs are now re-verified against that tip.**
+
+The anomaly is worth keeping in view rather than filing as resolved: `dev/*` → `development` is a shortcut around the integration branch, and it silently makes `nam20485` a stale base for anyone starting work — exactly how the Phase 2 gate in the first revision of this document came out wrong. If that pattern continues, either `nam20485` needs a scheduled sync from `development`, or those PRs should retarget `nam20485` and let the promotion carry them up. **Not this plan's work; flag it if it recurs.**
 
 ```text
 Phase 0 (now, parallel, no interdeps, no wire risk):
@@ -24,7 +26,7 @@ Phase 1 (server fidelity, independent of Phase 0, gated on D3):
   M1.1 component ;ID= parse ──► M1.3 attributeLookupTable de-dup
   M1.2 feature  ;ID= parse       M1.4 componentRecordsByName populate-or-delete
 
-Phase 2 (BLOCKED on f1484a4 merge + D4):
+Phase 2 (gated on D4 only — base unblocked 2026-09-15):
   M2.1 Connectivity proto + derive ──► M2.2 NC/subnet/$NONE$ semantics ──► M2.3 gating + cache ──► M2.4 size bench
 
 Phase 3 (after Phase 2 ships; both clients, same contract):
@@ -109,7 +111,7 @@ Either populate during parse (`ComponentsFile.cpp` has a standing `// TODO: add 
 
 ## Phase 2 — server-owned connectivity
 
-**Gated on the §Dependency note and D4.**
+**Gated on D4 only** (base unblocked — see §Branch base).
 
 ### M2.1 `Connectivity` message + derive
 
@@ -117,17 +119,19 @@ Either populate during parse (`ComponentsFile.cpp` has a standing `// TODO: add 
 
 `design.proto` uses tags 1–11 → `optional Connectivity connectivity = 12;`. Protos are globbed (`OdbDesignLib/CMakeLists.txt:55`, `file(GLOB PROTO_FILES "${PROTO_DIR}/*.proto")`) — a new file needs a CMake **reconfigure**, not just a build.
 
+Emit it from `Design::to_protobuf(bool includeNormalizedLists)` (`Design.cpp:167`) — the gRPC flavour. Decide in D4 whether `Connectivity` joins the normalized-lists gate or gets its own; note the no-arg `to_protobuf()` (`Design.cpp:159-165`) deliberately still emits the full flavour for REST/`to_pbstring`/round-trip tests, so a new field added only to the parameterized path will **not** appear in those tests unless wired separately.
+
 Derive from `m_nets[].GetPinConnections()`, which already holds resolved `(shared_ptr<Component>, shared_ptr<Pin>)` pairs. **This is a serialization of an existing result — do not write a second join.** Package rosters dedupe by name (71 entries, not 813). Emit `netMembers` from the same pass, sorted by net ordinal then refDes, so output is deterministic and diffable.
 
 ### M2.2 Semantics absorbed server-side
 
 `Connection.Kind`: `UNCONNECTED` for netNumber `-1`/`4294967295`; `$NONE$` mapped to `UNKNOWN`/`UNCONNECTED` rather than leaking a magic net name (the server's own `BreakSinglePinNets`/`BuildNoneNet` are disabled at `Design.cpp:138-139`, so NC pins currently ride `$NONE$` — decide whether this contract revives them or just labels them). `ComponentPin.number` resolved from the package pin, so `toeprintNumber` never reaches a client.
 
-Keep the hard failure visible: `Design.cpp:454` `GetPin(pinNumber)` null → whole load fails. Do not degrade that to omission; surface which pin failed.
+Keep the hard failure visible: `Design.cpp:465` `GetPin(pinNumber)` null → whole load fails. Do not degrade that to omission; surface which pin failed.
 
 ### M2.3 Gating + cache interaction (D4)
 
-If opt-in, add `GetDesignRequest.include_connectivity` beside the existing `include_normalized_lists`, and respect the fast-path rule from that commit: the cache pre-serializes only the default flavour, so a connectivity-requesting response serializes cold. If always-on, it becomes part of the cached default — better for clients, and the size data from M2.4 is what justifies it.
+If opt-in, add `GetDesignRequest.include_connectivity` beside `include_normalized_lists` (`service.proto:51`), and respect the fast-path rule PR #590 established in `OdbDesignServiceImpl::GetDesign`: the pre-serialization worker caches **only** the default flavour, so any non-default response serializes cold. If always-on, it becomes part of the cached default — better for clients, and the size data from M2.4 is what justifies it. Either way, check the interaction with the serialized-response cache (SI6/M1.4) so the cached bytes and the flag actually agree.
 
 ### M2.4 Size benchmark
 
@@ -164,7 +168,7 @@ Publish the M0.3 golden files to both clients as test data. Each asserts its `re
 * **M4.1** `PinConnection` reference-ification (`Component.cpp:75-76` embeds full `Package`+`Part`). Breaking wire change to the normalized lists. Lands only if it makes `include_normalized_lists` unnecessary — that's its justification.
 * **M4.2** D5 verdict on the REST surface: maintain / freeze / deprecate. Blocks on nothing; do it before someone implements `designs_component_route_handler` (`DesignsController.cpp:311`) for a client that is leaving REST.
 * **M4.3** Remove the `attributeLookupTable["ID"]` dual-write from M1.3.
-* **M4.4** The dead `BuildPlacementsFromEdaDataFile` (`Design.cpp:510`, zero call sites): delete it, or make it the authoritative path deliberately. Leaving an alternative connectivity implementation in the tree is how this divergence stayed invisible.
+* **M4.4** The dead `BuildPlacementsFromEdaDataFile` (`Design.cpp:521`, zero call sites; declared `Design.h:104`): delete it, or make it the authoritative path deliberately. Leaving an alternative connectivity implementation in the tree is how this divergence stayed invisible.
 
 ---
 
@@ -173,8 +177,8 @@ Publish the M0.3 golden files to both clients as test data. Each asserts its `re
 | Risk | Mitigation |
 |---|---|
 | `id` populated before a client stops resolving by `Id` → ~10% silent mis-resolution on `Panel`-shaped designs | Phase 3 deletes that resolution; M1.1 and M3.x must not both ship to the same deployed client. Verify §4.3 collision case in M3.3 fixtures. |
-| M2 built on the pre-`f1484a4` tree | §Dependency gate; re-cut from `nam20485` after that PR merges. |
+| `nam20485` goes stale under the branch again (`dev/*` → `development` shortcuts) | Sync from `nam20485` before opening each PR; the Phase 2 gate in the first revision of this plan was wrong for exactly this reason (§Branch base). |
 | `Connectivity` and `fileModel` disagree for some design | M3.3 differential test is exactly this. A disagreement is a server bug, not a client bug, by construction. |
-| Response cache serves the wrong flavour | M2.3 — reuse the `f1484a4` fast-path rule (cache holds default flavour only). |
+| Response cache serves the wrong flavour | M2.3 — reuse PR #590's fast-path rule (cache holds the default flavour only). |
 | Feature UID delta regresses payload | M2.4 measures M1.2 before it merges. |
 | Info client transport switch swells this PR's blast radius | Separate PR in a separate repo, reviewable alone (M3.2). |
