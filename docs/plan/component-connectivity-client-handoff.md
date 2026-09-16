@@ -81,7 +81,7 @@ The pin layer answers both questions directly: *what pins a component has* (`pac
 
 ### 5a. `odbdesign-3d-client-prototype` — `src/OdbDesign3DClient.Core/Services/Implementations/ComponentDetailBuilder.cs` (562 lines; re-opened this session)
 
-**Delete now [UNBLOCKED]** — every line below verified this session:
+**Verified this session; the lines are correct, but see the split note below before acting on them:**
 
 | What | Lines |
 |---|---|
@@ -91,6 +91,8 @@ The pin layer answers both questions directly: *what pins a component has* (`pac
 | `byKey[(side, comp.Id)]` write | `:238` |
 | `ResolveComponent` — the whole method (signature `:438`; Id-first `:446`, ordinal fallback `:451`, side-blind `:456`) | ⚠️ plan cites `:440-460`; re-derive from `:438` (see §9) |
 | `ResolvePinNumber` — the `toeprintNumber→pinNumber` join | `:477-484` (join at `:479-481`) |
+
+⚠️ **Split `ResolveComponent` rather than deleting it whole.** Only its **Id-first branch is safe to remove today** — `id` is always 0, so that branch is inert (every probe is either empty or the whole-side bucket and falls through), making removal behaviour-preserving while permanently disarming the §6 landmine. The **ordinal fallback cannot go yet**: it is the only thing producing correct net→component results until `Connectivity` ships. So the table above is "delete the Id path now, delete the ordinal path in Phase 2," not "delete the method now."
 
 **Keep:** package/BOM/attribute/height enrichment (geometry is yours, by rule), the net tab as a *view*, `NetsByName`.
 
