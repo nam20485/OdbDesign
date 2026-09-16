@@ -84,12 +84,14 @@ Three consequences that shape the design: the UID is **product-model-wide unique
 | `designodb_rigidflex/cellular_flip-phone` | top / bot | 610 / 82 | **610 / 82** | 3896..4587 / 3936..4557 |
 | `Panel g7162-31800_odb` (board step) | top / bot | 847 / 593 | **847 / 593** | 759..1605 / 1621..2213 |
 | `Turbot/turbot_f200` | top / bot | 369 / 571 | **369 / 571** | 4130..5025 / 4133..5069 |
-| `200-40628_Rev1_v7/pcb` (2016) | top | 7,610 | **0** | — |
-| `350-41017_rev1_odbjob_v7/stp` (2018) | top | 11,631 | **0** | — |
+| `200-40628_Rev1_v7/pcb` (2016) | **top only** | 7,610 | **0** | — |
+| `350-41017_rev1_odbjob_v7/stp` (2018) | **top only** | 11,631 | **0** | — |
 | ODB2kicad `odb-kitchen-sink` / `odb-output` | top | 3 / 2 | **0** | — |
 | `Panel g7162` / `panel-layout` | top / bot | 0 / 0 | — | — |
 
 UIDs are unique per file and **never overlap top↔bottom** in any design, exactly as the spec promises. Half the corpus carries none at all, so optionality is not theoretical.
+
+⚠️ **The last two rows are per-side, not design totals.** Measured later from the goldens (`scripts/gen-connectivity-golden.py`): real totals are **57,774** for `200-40628/pcb` (7,610 Top + 50,164 Bottom) and **81,157** for `350-41017/stp` (11,631 Top + 69,526 Bottom) — reading the table as totals understates by ~7×. Both were compressed as `components.Z`, so the plain-text `find` used for the other rows never saw their bottom side. Also: `200-40628` has **zero** connected pins (every `TOP` line is `net_num = -1`) while `350-41017` is **100% connected** — do not generalize one into the other.
 
 ### 4.2 Why the normalized lists are unaffordable
 
@@ -159,6 +161,16 @@ Two follow-ons this decides: it becomes part of the cached default response, so 
 The surface stays live and swagger-published but takes no new endpoints and no new fields. Concretely: `designs_component_route_handler` (`DesignsController.cpp:311`) and `designs_net_route_handler` (`:343`) stay unimplemented and should be **deleted** rather than left as live scaffolding that invites someone to build for a departing consumer; the existing collection routes stay as-is. This makes M4.2 a small deletion, not a verdict still pending.
 
 **D4 vs D5, resolved.** D4 populates `connectivity` in *both* `to_protobuf` flavours, so the REST `to_json`/`to_pbstring` paths receive the field for free; D5 makes **gRPC the supported consumption path**. Not a conflict: the field is present on every flavour, and REST is simply not a surface anyone may build *new* consumption against. Read D5 as "no new REST surface", not "REST must not carry the data". (Surfaced by the m05 delegate, which flagged the apparent contradiction instead of silently picking a reading.)
+
+### D7 — **OPEN (raised 2026-09-15): how are vendored protos kept in sync?**
+
+The only remaining Phase 0 decision, and nothing in Phase 2/3 can be trusted to reach clients correctly until it is made. Both C# clients hand-vendored copies of `OdbDesignLib/protoc/` + `service.proto`; both drift silently, and the info client's copy is verifiably missing four shipped service.proto features.
+
+- **(a) Committed hash manifest** — OdbDesign publishes a hash list of the proto set; each client's build fails if its vendored files don't match. Cheap, works cross-repo, no CI federation needed. **My recommendation.**
+- **(b) `workflow_dispatch` cross-repo job** — one job clones all three repos and diffs. More complete (catches content, not just identity) but needs cross-repo tokens and only runs when someone triggers it.
+- **(c) Package the protos** — publish a NuGet/proto artifact the clients consume. Right answer long-term, largest change, and it should be decided alongside the IPC-2581 unified-API migration rather than here.
+
+A check that never runs is worse than none — that is exactly how #3 drifted. See plan M0.2.
 
 ### D6 — The `PinConnection` denormalization is separate debt
 

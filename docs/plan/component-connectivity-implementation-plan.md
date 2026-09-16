@@ -80,7 +80,9 @@ Add a CI check that diffs `OdbDesignLib/protoc/*.proto` + `OdbDesignServer/proto
 * `odbdesign-3d-client-prototype/src/OdbDesign3DClient.Core/Protos/`
 * `Odbdesign-info-client-india79-b/protoc/`
 
-Permitted known differences: `option cc_enable_arenas` (C++ only) and commented `optimize_for` lines. Everything else fails. Cross-repo checkout makes this awkward in OdbDesign-only CI — cheapest useful version is a workflow_dispatch job with both repos cloned, or a hash manifest of the proto set committed to each client. **Choose one; a check that doesn't run is worse than none.**
+Permitted known differences: `option cc_enable_arenas` (C++ only) and commented `optimize_for` lines. Everything else fails.
+
+**Still open — tracked as D7** in the design doc: pick between (a) a committed hash manifest per client, (b) a `workflow_dispatch` cross-repo diff job, or (c) packaging the protos. Recommendation is (a) for now; (c) is the long-term answer but belongs with the IPC-2581 unified-API decision. Cross-repo checkout makes this awkward in OdbDesign-only CI — cheapest useful version is a workflow_dispatch job with both repos cloned, or a hash manifest of the proto set committed to each client. **Choose one; a check that doesn't run is worse than none.**
 
 ### M0.3 Connectivity fixture harness
 
