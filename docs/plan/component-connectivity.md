@@ -156,7 +156,9 @@ Two follow-ons this decides: it becomes part of the cached default response, so 
 
 ### D5 — **DECIDED 2026-09-15: REST is frozen — security fixes only.**
 
-The surface stays live and swagger-published but takes no new endpoints and no new fields. Concretely: `designs_component_route_handler` (`DesignsController.cpp:311`) and `designs_net_route_handler` (`:343`) stay unimplemented and should be **deleted** rather than left as live scaffolding that invites someone to build for a departing consumer; the existing collection routes stay as-is; `Connectivity` ships over gRPC only. This makes M4.2 a small deletion, not a verdict still pending.
+The surface stays live and swagger-published but takes no new endpoints and no new fields. Concretely: `designs_component_route_handler` (`DesignsController.cpp:311`) and `designs_net_route_handler` (`:343`) stay unimplemented and should be **deleted** rather than left as live scaffolding that invites someone to build for a departing consumer; the existing collection routes stay as-is. This makes M4.2 a small deletion, not a verdict still pending.
+
+**D4 vs D5, resolved.** D4 populates `connectivity` in *both* `to_protobuf` flavours, so the REST `to_json`/`to_pbstring` paths receive the field for free; D5 makes **gRPC the supported consumption path**. Not a conflict: the field is present on every flavour, and REST is simply not a surface anyone may build *new* consumption against. Read D5 as "no new REST surface", not "REST must not carry the data". (Surfaced by the m05 delegate, which flagged the apparent contradiction instead of silently picking a reading.)
 
 ### D6 — The `PinConnection` denormalization is separate debt
 
