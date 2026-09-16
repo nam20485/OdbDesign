@@ -240,7 +240,7 @@ Publish the M0.3 golden files to both clients as test data. Each asserts its `re
 
 * **M4.1** `PinConnection` reference-ification (`Component.cpp:75-76` embeds full `Package`+`Part`). Breaking wire change to the normalized lists. Lands only if it makes `include_normalized_lists` unnecessary — that's its justification.
 * **M4.2** D5 verdict on the REST surface: maintain / freeze / deprecate. Blocks on nothing; do it before someone implements `designs_component_route_handler` (`DesignsController.cpp:311`) for a client that is leaving REST.
-* **M4.3** Remove the `attributeLookupTable["ID"]` dual-write from M1.3.
+* **M4.3** **Dropped as a step.** It used to read "remove the dual-write in Phase 4"; D3 rejected dual-writing outright, so the key is deleted atomically with M1.1 and nothing is left for Phase 4. Reopen only if an unenumerated consumer surfaces after M1.1/M1.3 ships — that is the sole risk D3 accepted.
 * **M4.4** The dead `BuildPlacementsFromEdaDataFile` (`Design.cpp:521`, zero call sites; declared `Design.h:104`): delete it, or make it the authoritative path deliberately. Leaving an alternative connectivity implementation in the tree is how this divergence stayed invisible.
 
 ---
