@@ -17,8 +17,9 @@ decision records that govern it. Finished work lives in
 * [`opt/phase2-grpc-optimizations.md`](opt/phase2-grpc-optimizations.md) — binding spec. Items 2.1 (proto arenas) and 2.2 (compression-level config) shipped; **item 1.3 (arena allocation in streaming RPCs) is open** — descoped from M1.4 (#587).
 
 ### Component identity & server-owned connectivity
-* [`component-connectivity.md`](component-connectivity.md) — verified findings, spec evidence, the `Connectivity` contract, and decisions **D1–D6 (open)**.
+* [`component-connectivity.md`](component-connectivity.md) — verified findings, spec evidence, the `Connectivity` contract, and decisions **D1/D2/D3/D4/D5 resolved 2026-09-15**, D6 sequenced as debt.
 * [`component-connectivity-implementation-plan.md`](component-connectivity-implementation-plan.md) — milestone tracker. **M0.1 done** (swagger foreign-key wording; deployed configmap regenerated from source). Phase 0/1 unblocked, client prep can start now (M0.5); **Phase 2 gated on D4**.
+* [`component-connectivity-client-handoff.md`](component-connectivity-client-handoff.md) — **client-team handoff**: the identity model, the two conformance rules, what each client deletes, and the deploy-order landmine.
 * [`component-id-issue.md`](component-id-issue.md) — originating client report. Its symptom diagnosis is correct; its conclusion ("no design has real component IDs") is disproved in §4 of the design doc.
 
 ### Argo CD GitOps migration

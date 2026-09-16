@@ -84,12 +84,14 @@ Three consequences that shape the design: the UID is **product-model-wide unique
 | `designodb_rigidflex/cellular_flip-phone` | top / bot | 610 / 82 | **610 / 82** | 3896..4587 / 3936..4557 |
 | `Panel g7162-31800_odb` (board step) | top / bot | 847 / 593 | **847 / 593** | 759..1605 / 1621..2213 |
 | `Turbot/turbot_f200` | top / bot | 369 / 571 | **369 / 571** | 4130..5025 / 4133..5069 |
-| `200-40628_Rev1_v7/pcb` (2016) | top | 7,610 | **0** | — |
-| `350-41017_rev1_odbjob_v7/stp` (2018) | top | 11,631 | **0** | — |
+| `200-40628_Rev1_v7/pcb` (2016) | **top only** | 7,610 | **0** | — |
+| `350-41017_rev1_odbjob_v7/stp` (2018) | **top only** | 11,631 | **0** | — |
 | ODB2kicad `odb-kitchen-sink` / `odb-output` | top | 3 / 2 | **0** | — |
 | `Panel g7162` / `panel-layout` | top / bot | 0 / 0 | — | — |
 
 UIDs are unique per file and **never overlap top↔bottom** in any design, exactly as the spec promises. Half the corpus carries none at all, so optionality is not theoretical.
+
+⚠️ **The last two rows are per-side, not design totals.** Measured later from the goldens (`scripts/gen-connectivity-golden.py`): real totals are **57,774** for `200-40628/pcb` (7,610 Top + 50,164 Bottom) and **81,157** for `350-41017/stp` (11,631 Top + 69,526 Bottom) — reading the table as totals understates by ~7×. Both were compressed as `components.Z`, so the plain-text `find` used for the other rows never saw their bottom side. Also: `200-40628` has **zero** connected pins (every `TOP` line is `net_num = -1`) while `350-41017` is **100% connected** — do not generalize one into the other.
 
 ### 4.2 Why the normalized lists are unaffordable
 
@@ -142,17 +144,34 @@ The client defect was collapsing these into one field. The report's counter-conc
 
 Parse the `;ID=` section into `ComponentRecord.id`. Absent means **unset** — proto3 `optional` already gives `has_id()` / `HasId`, so clients distinguish "no UID" from "UID 0". A synthesized id is a permanent lie that consumers cache across revisions.
 
-### D3 — Stop double-storing the UID (or mark it deprecated)
+### D3 — **DECIDED 2026-09-15: remove the `"ID"` key outright.** No dual-write, no deprecation window
 
-`attributeLookupTable["ID"]` mixes a literal `"ID"` key into a map whose other keys are numeric attribute indices. Publish `id` as the typed field; either drop `"ID"` from the map or keep dual-writing it and document it deprecated. **Open** — depends on whether anything already reads `"ID"`.
+Dual-writing was proposed and rejected: the key is misleading, conflates an entity identifier with attribute assignments, and invites exactly the design error that produced this defect. Its only merit would be backwards compatibility, and there is none to preserve — verified 2026-09-15 by grep across both client repos and `OdbDesignLib`: nothing reads `attributeLookupTable["ID"]`. The only client touches are a debug log of key *counts* (`OdbDesignGrpcClient.cs:369-377`) and a mock writing `["0"]` (`MockOdbDesignClient.cs:183`); server-side the map is only round-tripped (`ComponentsFile.cpp:229`, `:265`).
 
-### D4 — `Connectivity` always-on or opt-in
+**Consequence — M1.1 and M1.3 are one atomic change.** Populate `id` and delete the `"ID"` key in the same commit, on the same branch, in the same release. Split them and a window opens where *neither* the typed field nor the map carries the UID, which is strictly worse than today. The swagger text merged in #594 currently states the UID is delivered "only as the literal key `"ID"`" — that sentence must be rewritten in the same commit, or the published contract lies in both directions.
 
-At ~tens of KB (§4.2) it is plausible as a base-contract field, unlike the 5.8 MB lists. Opt-in is cheaper to land and keeps the response-cache fast path intact. **Open** — see plan M2.3.
+### D4 — **DECIDED 2026-09-15: `Connectivity` is always-on.** No flag
 
-### D5 — REST is out of scope; the surface itself needs a verdict
+Opt-in was rejected on the evidence, not for convenience. `OdbDesignServiceImpl`'s cache warm path serves pre-serialized bytes for **the default flavour only**, so any request that sets a flag re-serializes the entire cached `FileArchive` per call — `Turbot` is ~537 MB uncompressed. A second flag would reintroduce precisely the cost PR #590 removed. At ~tens of KB (§4.2), `Connectivity` is small enough to ride the default, which also means it is cached once with everything else and is present for every consumer without them having to know to ask.
 
-The info client moves to gRPC, so the contract ships over gRPC only. The empty stubs `designs_component_route_handler` (`DesignsController.cpp:311`) and `designs_net_route_handler` (`:343`) stay unimplemented. But `/designs/<name>/{components,nets,packages,parts}` remain live, swagger-published and deployed, with their only known consumer migrating off. **maintain / freeze / deprecate is an unmade decision** — deliberately not assumed here.
+Two follow-ons this decides: it becomes part of the cached default response, so M2.4's size acceptance is a merge gate, not a preference; and `design.proto` gets `optional Connectivity connectivity = 12` populated by **both** `to_protobuf` paths, so the REST/`to_pbstring`/round-trip flavours see it too.
+
+### D5 — **DECIDED 2026-09-15: REST is frozen — security fixes only.**
+
+The surface stays live and swagger-published but takes no new endpoints and no new fields. Concretely: `designs_component_route_handler` (`DesignsController.cpp:311`) and `designs_net_route_handler` (`:343`) stay unimplemented and should be **deleted** rather than left as live scaffolding that invites someone to build for a departing consumer; the existing collection routes stay as-is. This makes M4.2 a small deletion, not a verdict still pending.
+
+**D4 vs D5, resolved.** D4 populates `connectivity` in *both* `to_protobuf` flavours, so the REST `to_json`/`to_pbstring` paths receive the field for free; D5 makes **gRPC the supported consumption path**. Not a conflict: the field is present on every flavour, and REST is simply not a surface anyone may build *new* consumption against. Read D5 as "no new REST surface", not "REST must not carry the data". (Surfaced by the m05 delegate, which flagged the apparent contradiction instead of silently picking a reading.)
+
+### D7 — **DECIDED 2026-09-15: no sync mechanism. Server owns the protos; changes are pushed.**
+
+A hash manifest or a cross-repo CI diff was proposed and rejected as unnecessary machinery for a 3-repo problem that a convention solves. The rule:
+
+- **The server repo owns `OdbDesignLib/protoc/` and `OdbDesignServer/protoc/grpc/`.** It may change them when needed.
+- **Clients do not own them.** They hold vendored copies and receive updates as a push — a PR to each client repo — made at the same time as the server change, never discovered later by a drift check.
+- Additive only in practice: never renumber, never reuse a tag, never make an absent field ambiguous. Everything in this plan conforms — Phase 1 changes **no** `.proto` at all (`optional uint32 id = 9` already exists and was simply never assigned; removing the `"ID"` map key changes values inside a `map<string,string>`, not its type), and Phase 2 adds one field, `connectivity = 12`.
+- Consequently **M0.2 is dropped**, not deferred: the drift it would have caught is a process problem, and the durable fix is the planned `odbdesign-model-libs` repo (protos + C# client lib + C++ server lib, apps consuming the libraries) — deliberately sequenced **after** the contract works, since extracting a schema and stabilising a C++/vcpkg build surface at the same time is the expensive combination.
+
+Immediate consequence to watch: the info client's vendored copy is missing four shipped `service.proto` features *today*. Under this rule that is a debt to settle with one push PR before its `Connectivity` work starts (already listed in M3.2), not something a check would have prevented.
 
 ### D6 — The `PinConnection` denormalization is separate debt
 
