@@ -88,6 +88,14 @@ Before either side changes, capture ground truth so M2.1 and M3.x can be differe
 
 **File:** new `OdbDesignTests/ConnectivityContractTests.cpp` (name follows the existing `SymbolContractTests.cpp` precedent). Fixtures: `sample_design` (UIDs present, 813 comps / 2,811 connections), `200-40628_Rev1_v7` (UIDs absent, 7,610 comps), `Panel g7162-31800_odb` (the 88-collision case). Golden file per design: `refDes → [(pinNumber, netOrdinal)]`, plus pin counts per net.
 
+**M0.3 delivered — 2026-09-15, on this branch.** `scripts/gen-connectivity-golden.py` + four goldens in `OdbDesignTests/Fixtures/Connectivity/`. Two things the first cut got wrong and both are now fixed and verified:
+* Pretty-printed output was **66 MB** (29 MB + 35 MB for the two legacy designs). Now compact JSON, and designs over 10,000 components emit `"fidelity":"sampled"` — aggregates plus a deterministic subset (first/last 50 per side and every ordinal/UID collision) with the net roster capped at 50. Total **1.3 MB**, byte-identical on re-run. `sample_design` and `Panel-g7162` stay `"full"`.
+* My own brief handed the implementer **top-only** counts as design totals (7,610 and 11,631). Actual totals: **57,774** (7,610 Top + 50,164 Bottom) and **81,157** (11,631 Top + 69,526 Bottom). The implementer's numbers were right and mine were not — worth stating plainly, because a delegate that "matches the spec" is not automatically correct, and here the spec was the defect.
+
+⚠️ **Fixture selection consequence:** `Panel-g7162` has **zero** connected pins (all 3,078 `TOP` lines are `net_num = -1`) and `200-40628` likewise (all 129,698). So the Panel fixture validates the collision and roster cases **only** — connectivity assertions must run against `sample_design` (2,811/2,811 connected), and `350-41017` (158,742 connected) is the second connected design if a larger one is wanted. Recorded so M3.3 doesn't quietly assert an empty set and call it passing.
+
+Collision figure re-verified independently against the raw source files, not the generator: **88 on Top, 0 on Bottom** — matching design doc §4.3.
+
 ### M0.4 Response cache flavour inventory — resolved by D4 (always-on)
 
 `OdbDesignServiceImpl::GetDesign` (`OdbDesignServer/Services/OdbDesignServiceImpl.cpp`) keeps two paths, and M2.3 inherits a constraint it does not yet name:
