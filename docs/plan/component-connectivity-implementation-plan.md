@@ -72,17 +72,11 @@ The proximate origin of the defect: swagger never stated what `componentNumber` 
 
 **Exit:** docs/YAML only — no C++ behaviour change, so the multi-platform builds cannot signal a regression here.
 
-### M0.2 Machine-checked proto sync across clients
+### M0.2 ~~Machine-checked proto sync~~ — **DROPPED (D7)**
 
-Both vendored proto trees drift silently today (§4.4 of the design doc) — the info client's copy is missing four service.proto features. "All clients follow the server contract" only holds if they cannot accidentally hold an old one.
+Retired by D7 rather than deferred: the server owns the protos, clients hold vendored copies, and contract changes reach them as a push PR made alongside the server change. A CI drift check was judged unnecessary machinery for a three-repo convention problem. The durable fix is the future `odbdesign-model-libs` repo (protos + C# client lib + C++ server lib), explicitly sequenced after this plan works.
 
-Add a CI check that diffs `OdbDesignLib/protoc/*.proto` + `OdbDesignServer/protoc/grpc/service.proto` against:
-* `odbdesign-3d-client-prototype/src/OdbDesign3DClient.Core/Protos/`
-* `Odbdesign-info-client-india79-b/protoc/`
-
-Permitted known differences: `option cc_enable_arenas` (C++ only) and commented `optimize_for` lines. Everything else fails.
-
-**Still open — tracked as D7** in the design doc: pick between (a) a committed hash manifest per client, (b) a `workflow_dispatch` cross-repo diff job, or (c) packaging the protos. Recommendation is (a) for now; (c) is the long-term answer but belongs with the IPC-2581 unified-API decision. Cross-repo checkout makes this awkward in OdbDesign-only CI — cheapest useful version is a workflow_dispatch job with both repos cloned, or a hash manifest of the proto set committed to each client. **Choose one; a check that doesn't run is worse than none.**
+Note what this does *not* do: the info client's vendored `protoc/` is missing four shipped `service.proto` features right now. Under D7 that is settled by one push PR as part of M3.2, not by a check nobody maintained.
 
 ### M0.3 Connectivity fixture harness
 

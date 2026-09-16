@@ -162,15 +162,16 @@ The surface stays live and swagger-published but takes no new endpoints and no n
 
 **D4 vs D5, resolved.** D4 populates `connectivity` in *both* `to_protobuf` flavours, so the REST `to_json`/`to_pbstring` paths receive the field for free; D5 makes **gRPC the supported consumption path**. Not a conflict: the field is present on every flavour, and REST is simply not a surface anyone may build *new* consumption against. Read D5 as "no new REST surface", not "REST must not carry the data". (Surfaced by the m05 delegate, which flagged the apparent contradiction instead of silently picking a reading.)
 
-### D7 — **OPEN (raised 2026-09-15): how are vendored protos kept in sync?**
+### D7 — **DECIDED 2026-09-15: no sync mechanism. Server owns the protos; changes are pushed.**
 
-The only remaining Phase 0 decision, and nothing in Phase 2/3 can be trusted to reach clients correctly until it is made. Both C# clients hand-vendored copies of `OdbDesignLib/protoc/` + `service.proto`; both drift silently, and the info client's copy is verifiably missing four shipped service.proto features.
+A hash manifest or a cross-repo CI diff was proposed and rejected as unnecessary machinery for a 3-repo problem that a convention solves. The rule:
 
-- **(a) Committed hash manifest** — OdbDesign publishes a hash list of the proto set; each client's build fails if its vendored files don't match. Cheap, works cross-repo, no CI federation needed. **My recommendation.**
-- **(b) `workflow_dispatch` cross-repo job** — one job clones all three repos and diffs. More complete (catches content, not just identity) but needs cross-repo tokens and only runs when someone triggers it.
-- **(c) Package the protos** — publish a NuGet/proto artifact the clients consume. Right answer long-term, largest change, and it should be decided alongside the IPC-2581 unified-API migration rather than here.
+- **The server repo owns `OdbDesignLib/protoc/` and `OdbDesignServer/protoc/grpc/`.** It may change them when needed.
+- **Clients do not own them.** They hold vendored copies and receive updates as a push — a PR to each client repo — made at the same time as the server change, never discovered later by a drift check.
+- Additive only in practice: never renumber, never reuse a tag, never make an absent field ambiguous. Everything in this plan conforms — Phase 1 changes **no** `.proto` at all (`optional uint32 id = 9` already exists and was simply never assigned; removing the `"ID"` map key changes values inside a `map<string,string>`, not its type), and Phase 2 adds one field, `connectivity = 12`.
+- Consequently **M0.2 is dropped**, not deferred: the drift it would have caught is a process problem, and the durable fix is the planned `odbdesign-model-libs` repo (protos + C# client lib + C++ server lib, apps consuming the libraries) — deliberately sequenced **after** the contract works, since extracting a schema and stabilising a C++/vcpkg build surface at the same time is the expensive combination.
 
-A check that never runs is worse than none — that is exactly how #3 drifted. See plan M0.2.
+Immediate consequence to watch: the info client's vendored copy is missing four shipped `service.proto` features *today*. Under this rule that is a debt to settle with one push PR before its `Connectivity` work starts (already listed in M3.2), not something a check would have prevented.
 
 ### D6 — The `PinConnection` denormalization is separate debt
 
