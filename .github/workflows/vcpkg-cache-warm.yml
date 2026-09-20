@@ -110,19 +110,18 @@ jobs:
 
       - name: Restore vcpkg Binary Cache
         uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae  # v5.0.5
+        id: vcpkg-restore
         with:
           path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
-          # run_id probe key never matches, so restore resolves via
-          # restore-keys and the explicit save step always writes
-          key: vcpkg-archives-linux-x64-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}-${{ env.VCPKG_COMMIT }}-${{ env.RUNNER_IMAGE_VERSION }}-${{ github.run_id }}
+          # Canonical key aligned with cmake-multi-platform.yml's
+          # linux-dynamic-release restore prefix: the old vcpkg-archives-linux-x64-*
+          # name only matched the code-coverage lane, so the warm entries never fed
+          # the PR builds this job exists to protect. Warm runs on development/main
+          # scope, which later PRs restore across branch boundaries.
+          key: vcpkg-archives-linux-dynamic-release-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}-${{ env.VCPKG_COMMIT }}-${{ env.RUNNER_IMAGE_VERSION }}
           restore-keys: |
-            vcpkg-archives-linux-x64-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}-${{ env.VCPKG_COMMIT }}-${{ env.RUNNER_IMAGE_VERSION }}-
+            vcpkg-archives-linux-dynamic-release-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}-${{ env.VCPKG_COMMIT }}-${{ env.RUNNER_IMAGE_VERSION }}-
             vcpkg-archives-linux-x64-
-
-      - name: Setup NuGet API Key
-        shell: bash
-        run: |
-          mono $(which nuget) setApiKey "${{ secrets.VCPKG_PAT_TOKEN }}" -Source "${{ env.FEED_PUSH_URL }}" -NonInteractive || true
 
       - name: Install vcpkg
         run: |
@@ -131,6 +130,22 @@ jobs:
           git -C "${{ env.VCPKG_ROOT }}" fetch --depth 1 origin "${{ env.VCPKG_COMMIT }}"
           git -C "${{ env.VCPKG_ROOT }}" checkout --detach FETCH_HEAD
           "${{ env.VCPKG_ROOT }}/bootstrap-vcpkg.sh"
+
+      - name: Setup NuGet API Key
+        shell: bash
+        env:
+          VCPKG_PAT: ${{ secrets.VCPKG_PAT_TOKEN }}
+        run: |
+          if [ -z "$VCPKG_PAT" ]; then
+            echo "::error::VCPKG_PAT_TOKEN is unavailable — feeding the NuGet package store is this job's entire purpose"
+            exit 1
+          fi
+          # vcpkg pushes through its OWN nuget.exe (under mono); there is no
+          # `nuget` in the runner PATH, so the old `mono $(which nuget) ... || true`
+          # registered nothing and every push failed "No API Key could be found".
+          NUGET_EXE="$("${{ env.VCPKG_ROOT }}/vcpkg" fetch nuget | tail -n 1)"
+          mono "$NUGET_EXE" setApiKey "$VCPKG_PAT" -Source "$FEED_PUSH_URL" -ConfigFile "$GITHUB_WORKSPACE/nuget.generated.config" -NonInteractive
+          mono "$NUGET_EXE" setApiKey "$VCPKG_PAT" -Source "$FEED_PUSH_URL" -NonInteractive
 
       - name: Install Ninja
         uses: seanmiddleditch/gha-setup-ninja@8b297075da4cd2a5f1fd21fe011b499edf06e9d2 # master
@@ -143,13 +158,25 @@ jobs:
         # consumed by the linux-dynamic-release preset (cmake-multi-platform, Dockerfile)
         run: '"${{ env.VCPKG_ROOT }}/vcpkg" install --triplet x64-linux-dynamic'
 
+      - name: Evaluate vcpkg Cache Payload
+        id: cache-payload
+        shell: bash
+        run: |
+          BYTES=$(du -sb "$VCPKG_DEFAULT_BINARY_CACHE" 2>/dev/null | cut -f1 || echo 0)
+          BIG=false
+          [ "${BYTES:-0}" -ge 100000000 ] && BIG=true
+          echo "big=$BIG" >> "$GITHUB_OUTPUT"
+          echo "payload bytes=${BYTES:-0} big=$BIG"
+
       - name: Save vcpkg Binary Cache
-        # unique run_id key means the save always happens
-        if: always()
+        # Canonical key (no run_id probe): one immutable entry per ABI generation;
+        # re-running warm after an exact hit costs zero quota. Size guard stops
+        # stub saves.
+        if: always() && steps.vcpkg-restore.outputs.cache-hit != 'true' && steps.cache-payload.outputs.big == 'true'
         uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae  # v5.0.5
         with:
           path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
-          key: vcpkg-archives-linux-x64-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}-${{ env.VCPKG_COMMIT }}-${{ env.RUNNER_IMAGE_VERSION }}-${{ github.run_id }}
+          key: vcpkg-archives-linux-dynamic-release-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}-${{ env.VCPKG_COMMIT }}-${{ env.RUNNER_IMAGE_VERSION }}
 
   warm-macos:
     name: Vcpkg-Cache-Warm (macOS)
@@ -213,19 +240,18 @@ jobs:
 
       - name: Restore vcpkg Binary Cache
         uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae  # v5.0.5
+        id: vcpkg-restore
         with:
           path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
-          # run_id probe key never matches, so restore resolves via
-          # restore-keys and the explicit save step always writes
-          key: vcpkg-cache-warm-macos-release-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}-${{ env.VCPKG_COMMIT }}-${{ env.RUNNER_IMAGE_VERSION }}-${{ github.run_id }}
+          # Canonical key aligned with cmake-multi-platform.yml's macos-release
+          # restore prefix (the old vcpkg-cache-warm-macos-release-* name matched
+          # nothing on the build lane, so the warm entry was only ever re-read by
+          # the warm job itself).
+          key: vcpkg-archives-macos-release-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}-${{ env.VCPKG_COMMIT }}-${{ env.RUNNER_IMAGE_VERSION }}
           restore-keys: |
-            vcpkg-cache-warm-macos-release-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}-${{ env.VCPKG_COMMIT }}-${{ env.RUNNER_IMAGE_VERSION }}-
+            vcpkg-archives-macos-release-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}-${{ env.VCPKG_COMMIT }}-${{ env.RUNNER_IMAGE_VERSION }}-
+            vcpkg-archives-macos-release-
             vcpkg-cache-warm-macos-release-
-
-      - name: Setup NuGet API Key
-        shell: bash
-        run: |
-          mono $(which nuget) setApiKey "${{ secrets.VCPKG_PAT_TOKEN }}" -Source "${{ env.FEED_PUSH_URL }}" -NonInteractive || true
 
       - name: Install vcpkg
         run: |
@@ -235,16 +261,41 @@ jobs:
           git -C "${{ env.VCPKG_ROOT }}" checkout --detach FETCH_HEAD
           "${{ env.VCPKG_ROOT }}/bootstrap-vcpkg.sh"
 
+      - name: Setup NuGet API Key
+        shell: bash
+        env:
+          VCPKG_PAT: ${{ secrets.VCPKG_PAT_TOKEN }}
+        run: |
+          if [ -z "$VCPKG_PAT" ]; then
+            echo "::error::VCPKG_PAT_TOKEN is unavailable — feeding the NuGet package store is this job's entire purpose"
+            exit 1
+          fi
+          # vcpkg pushes through its OWN nuget.exe (under mono); there is no
+          # `nuget` in the runner PATH, so the old `mono $(which nuget) ... || true`
+          # registered nothing and every push failed "No API Key could be found".
+          NUGET_EXE="$("${{ env.VCPKG_ROOT }}/vcpkg" fetch nuget | tail -n 1)"
+          mono "$NUGET_EXE" setApiKey "$VCPKG_PAT" -Source "$FEED_PUSH_URL" -ConfigFile "$GITHUB_WORKSPACE/nuget.generated.config" -NonInteractive
+          mono "$NUGET_EXE" setApiKey "$VCPKG_PAT" -Source "$FEED_PUSH_URL" -NonInteractive
+
       - name: Install Ninja
         uses: seanmiddleditch/gha-setup-ninja@8b297075da4cd2a5f1fd21fe011b499edf06e9d2 # master
 
       - name: Warm vcpkg Binary Cache
         run: '"${{ env.VCPKG_ROOT }}/vcpkg" install'
 
+      - name: Evaluate vcpkg Cache Payload
+        id: cache-payload
+        shell: bash
+        run: |
+          BYTES=$(du -sb "$VCPKG_DEFAULT_BINARY_CACHE" 2>/dev/null | cut -f1 || echo 0)
+          BIG=false
+          [ "${BYTES:-0}" -ge 100000000 ] && BIG=true
+          echo "big=$BIG" >> "$GITHUB_OUTPUT"
+          echo "payload bytes=${BYTES:-0} big=$BIG"
+
       - name: Save vcpkg Binary Cache
-        # unique run_id key means the save always happens
-        if: always()
+        if: always() && steps.vcpkg-restore.outputs.cache-hit != 'true' && steps.cache-payload.outputs.big == 'true'
         uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae  # v5.0.5
         with:
           path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
-          key: vcpkg-cache-warm-macos-release-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}-${{ env.VCPKG_COMMIT }}-${{ env.RUNNER_IMAGE_VERSION }}-${{ github.run_id }}
+          key: vcpkg-archives-macos-release-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}-${{ env.VCPKG_COMMIT }}-${{ env.RUNNER_IMAGE_VERSION }}
