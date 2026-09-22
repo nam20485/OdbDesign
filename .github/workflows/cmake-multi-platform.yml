@@ -161,15 +161,17 @@ jobs:
           #      Persisted across runs via actions/cache step below — fast same-branch restore.
           #   2. 'nugetconfig' = GitHub Packages NuGet feed (persistent, shared across branches/PRs)
           #      Survives actions/cache eviction, provides cross-branch sharing.
-          #      Windows writes to the feed; Linux/macOS read only to avoid slow/fragile mono-based push operations.
+          #      All platforms readwrite: the feed is the only layer that outlives the
+          #      10 GB org actions/cache quota. Writes go through vcpkg's own nuget.exe
+          #      (mono on Unix) with the API key registered by the "Setup NuGet API
+          #      Key" step — previously Linux/macOS were read-only because that push
+          #      path was silently broken (its `mono $(which nuget)` found no binary
+          #      and `|| true` hid the failure, so the feed never accumulated
+          #      Linux/macOS packages and PR builds fell back to cold rebuilds).
           # Note: The x-gha and actions backends were removed in vcpkg 2025+.
           # nugettimeout overrides vcpkg's default 100s NuGet CLI timeout (large packages need more time).
           # Note: nugettimeout must come BEFORE nugetconfig to be applied to it
-          if [ "${{ matrix.os }}" = "windows-2022" ]; then
-            echo "VCPKG_BINARY_SOURCES=clear;default,readwrite;nugettimeout,900;nugetconfig,$GITHUB_WORKSPACE/nuget.generated.config,readwrite" >> $GITHUB_ENV
-          else
-            echo "VCPKG_BINARY_SOURCES=clear;default,readwrite;nugettimeout,900;nugetconfig,$GITHUB_WORKSPACE/nuget.generated.config,read" >> $GITHUB_ENV
-          fi
+          echo "VCPKG_BINARY_SOURCES=clear;default,readwrite;nugettimeout,900;nugetconfig,$GITHUB_WORKSPACE/nuget.generated.config,readwrite" >> $GITHUB_ENV
 
       # Persist vcpkg's default local binary cache across workflow runs.
       # This is the fast ephemeral layer — same-branch builds hit this first (< 1 min restore).
@@ -179,21 +181,31 @@ jobs:
         run: |
           mkdir -p "$VCPKG_DEFAULT_BINARY_CACHE"
           # runner image version feeds the cache key: image updates bump the
-          # bundled compiler (and on Windows the VS-provided vcpkg tool)
+          # bundled compiler
           echo "RUNNER_IMAGE_VERSION=${ImageVersion:-unknown}" >> "$GITHUB_ENV"
 
       - name: Restore vcpkg Binary Cache
+        id: vcpkg-restore
         uses: actions/cache/restore@v4
         with:
           path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
-          # The run_id probe key never matches a saved entry, so restore always
-          # resolves via restore-keys (newest prefix match) and the explicit
-          # save step below always writes — this avoids the exact-key-hit
-          # no-save trap that discarded rebuilt archives after ABI drift.
-          key: vcpkg-archives-${{ matrix.preset }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}-${{ env.VCPKG_COMMIT }}-${{ env.RUNNER_IMAGE_VERSION }}-${{ github.run_id }}
+          # Canonical key (no run_id): one immutable entry per ABI generation
+          # (manifest + vcpkg tool + runner image). Exact hits skip the save
+          # step below, so steady-state runs add ZERO bytes to the cache quota;
+          # the old per-run run_id probe key churned ~1.4 GB/run into the 10 GB
+          # org quota and evicted usable entries within hours (the root cause of
+          # 2.5 h cold dependency builds on PRs).
+          key: vcpkg-archives-${{ matrix.preset }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}-${{ env.VCPKG_COMMIT }}-${{ env.RUNNER_IMAGE_VERSION }}
           restore-keys: |
             vcpkg-archives-${{ matrix.preset }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}-${{ env.VCPKG_COMMIT }}-${{ env.RUNNER_IMAGE_VERSION }}-
             vcpkg-archives-${{ matrix.preset }}-
+
+      - name: Record Restored Cache Size
+        id: size-restored
+        shell: bash
+        run: |
+          BYTES=$(du -sb "$VCPKG_DEFAULT_BINARY_CACHE" 2>/dev/null | cut -f1 || echo 0)
+          echo "bytes=${BYTES:-0}" >> "$GITHUB_OUTPUT"
 
       - name: Setup NuGet Credential Provider (Windows)
         if: matrix.os == 'windows-2022'
@@ -235,25 +247,46 @@ jobs:
           # Also set in environment for vcpkg to use
           echo "NUGET_API_KEY=${{ secrets.VCPKG_PAT_TOKEN }}" >> $env:GITHUB_ENV
 
-      - name: Setup NuGet API Key (Non-Windows)
-        if: matrix.os != 'windows-2022'
-        shell: bash
-        run: |
-          # Set API key for NuGet push to GitHub Packages
-          mono $(which nuget) setApiKey "${{ secrets.VCPKG_PAT_TOKEN }}" -Source "${{ env.FEED_PUSH_URL }}" -NonInteractive || true
-
       #
       #   os != windows-2022 (i.e. Linux, MacOS)
       #
       - name: Install vcpkg
+        # All platforms now: Windows used to inherit the VS-bundled vcpkg, whose
+        # version drifts with the runner image — the vcpkg tool version is part of
+        # every package's ABI hash, so each image bump silently invalidated the
+        # Windows binary cache. Cloning the pinned VCPKG_COMMIT keeps all three
+        # platforms on identical tooling (and identical ABI).
         run: |
           git init "${{ env.VCPKG_ROOT }}"
           git -C "${{ env.VCPKG_ROOT }}" remote add origin https://github.com/Microsoft/vcpkg.git
           git -C "${{ env.VCPKG_ROOT }}" fetch --depth 1 origin "${{ env.VCPKG_COMMIT }}"
           git -C "${{ env.VCPKG_ROOT }}" checkout --detach FETCH_HEAD
-          "${{ env.VCPKG_ROOT }}/bootstrap-vcpkg.sh"
-        # (Windows comes w/ vcpkg installed as part of VS)
+          # bootstrap-vcpkg.sh runs under Git Bash on Windows and downloads the
+          # Windows vcpkg binary — one path for all three platforms. It takes no
+          # flags (it rejected the cargo-culted "-noninteractive" with "Unknown
+          # argument" on every leg).
+          bash "${{ env.VCPKG_ROOT }}/bootstrap-vcpkg.sh"
+
+      - name: Verify NuGet Feed Credentials (Non-Windows)
         if: matrix.os != 'windows-2022'
+        shell: bash
+        env:
+          VCPKG_PAT: ${{ secrets.VCPKG_PAT_TOKEN }}
+        run: |
+          if [ -z "$VCPKG_PAT" ]; then
+            echo "VCPKG_PAT_TOKEN not available (fork PR?) — feed writes will be skipped by vcpkg"
+            exit 0
+          fi
+          # No setApiKey call is needed: the generated config already persists
+          # everything it would write — <packageSourceCredentials>
+          # ClearTextPassword for reads, <config> apiKey entries for both feed
+          # URLs, and defaultPushSource for vcpkg's pushes. Invoking nuget
+          # directly would additionally depend on mono, which is not installed
+          # on every runner image. Keep the fail-loudly intent instead: verify
+          # the write path is actually wired into the config vcpkg uses —
+          # the feed is the only cache layer surviving actions/cache eviction.
+          grep -q "ClearTextPassword" "$GITHUB_WORKSPACE/nuget.generated.config"
+          grep -q "defaultPushSource" "$GITHUB_WORKSPACE/nuget.generated.config"
 
       - name: Install Ninja
         uses: seanmiddleditch/gha-setup-ninja@8b297075da4cd2a5f1fd21fe011b499edf06e9d2 # master
@@ -276,7 +309,13 @@ jobs:
         if: matrix.os == 'windows-2022'
 
       - name: Patch vcpkg
-        run: scripts/patch-vcpkg-install.ps1
+        shell: pwsh
+        run: |
+          # Re-assert the pinned vcpkg root AFTER Setup VC Tools: ilammy/msvc-dev-cmd
+          # exports VCPKG_ROOT pointing at the VS-bundled vcpkg, which would leak
+          # into $env{VCPKG_ROOT} in the CMake presets and the patch script below.
+          echo "VCPKG_ROOT=${{ github.workspace }}\vcpkg" >> $env:GITHUB_ENV
+          ./scripts/patch-vcpkg-install.ps1
         if: matrix.os == 'windows-2022'
 
       # #
@@ -313,11 +352,42 @@ jobs:
       - name: CMake Configure
         run: cmake --preset ${{matrix.preset}}
 
+      - name: Evaluate vcpkg Cache Payload
+        id: cache-payload
+        shell: bash
+        run: |
+          BYTES=$(du -sb "$VCPKG_DEFAULT_BINARY_CACHE" 2>/dev/null | cut -f1 || echo 0)
+          BASE="${{ steps.size-restored.outputs.bytes }}"
+          BASE=${BASE:-0}
+          GROWTH=$((BYTES - BASE))
+          # Only save substantial payloads: cancelled/failed runs used to persist
+          # multi-MB stubs that later restored as useless (near-)empty caches.
+          # Growth is tracked so an exact canonical hit that still rebuilt
+          # packages (evicted partial content) can self-heal via the supplemental
+          # save below.
+          BIG=false
+          [ "${BYTES:-0}" -ge 100000000 ] && BIG=true
+          GREW=false
+          [ "$GROWTH" -ge 20000000 ] && GREW=true
+          echo "big=$BIG" >> "$GITHUB_OUTPUT"
+          echo "grew=$GREW" >> "$GITHUB_OUTPUT"
+          echo "payload bytes=$BYTES restored-base=$BASE growth=$GROWTH big=$BIG grew=$GREW"
+
       - name: Save vcpkg Binary Cache
-        # vcpkg installs dependencies during configure; save immediately after
-        # so the archives survive later step failures/cancellations. Unique
-        # run_id key means the save always happens (no exact-hit skip).
-        if: always()
+        # New generation (canonical key missed): write it once, immutable. Skipped
+        # on exact hits — steady-state runs then consume ZERO cache quota instead
+        # of the old ~1.4 GB/run that evicted usable entries within hours.
+        if: always() && steps.vcpkg-restore.outputs.cache-hit != 'true' && steps.cache-payload.outputs.big == 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+          key: vcpkg-archives-${{ matrix.preset }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}-${{ env.VCPKG_COMMIT }}-${{ env.RUNNER_IMAGE_VERSION }}
+
+      - name: Save vcpkg Binary Cache (supplemental generation)
+        # Exact canonical hit but the run still rebuilt >20 MB: the restored
+        # generation was incomplete (e.g. saved by a previously cancelled run).
+        # Publish a suffixed copy so later prefix restores pick the complete one.
+        if: always() && steps.vcpkg-restore.outputs.cache-hit == 'true' && steps.cache-payload.outputs.grew == 'true' && steps.cache-payload.outputs.big == 'true'
         uses: actions/cache/save@v4
         with:
           path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
