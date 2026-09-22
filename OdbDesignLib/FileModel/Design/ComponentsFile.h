@@ -37,17 +37,17 @@ namespace Odb::Lib::FileModel::Design
 			~ComponentRecord();
 
 			// data members
-			unsigned int pkgRef;	// reference number of PKG in eda/data file
-			double locationX;
-			double locationY;
-			double rotation;
-			bool mirror;
+			unsigned int pkgRef = 0;	// reference number of PKG in eda/data file
+			double locationX = 0.0;
+			double locationY = 0.0;
+			double rotation = 0.0;
+			bool mirror = false;
 			std::string compName;	// refDes
 			std::string partName;
 			//std::string attributes;
-			unsigned int id;
+			unsigned int id = 0;
 			// TODO: deal with index of records
-			unsigned int index;
+			unsigned int index = 0;
 
 			// constants
 			constexpr inline static const char* RECORD_TOKEN = "CMP";
@@ -59,13 +59,13 @@ namespace Odb::Lib::FileModel::Design
 			struct ToeprintRecord : public IProtoBuffable<Odb::Lib::Protobuf::ComponentsFile::ComponentRecord::ToeprintRecord>
 			{
 				// TODO: use pinNumber
-				unsigned int pinNumber;		// what does this refer to? own pin # or packages pin #?
-				double locationX;
-				double locationY;
-				double rotation;
-				bool mirror;
-				unsigned int netNumber;		// net number of NET in eda/data file
-				unsigned int subnetNumber;	// subnet number of NET in eda/data file
+				unsigned int pinNumber = 0;		// what does this refer to? own pin # or packages pin #?
+				double locationX = 0.0;
+				double locationY = 0.0;
+				double rotation = 0.0;
+				bool mirror = false;
+				unsigned int netNumber = 0;		// net number of NET in eda/data file
+				unsigned int subnetNumber = 0;	// subnet number of NET in eda/data file
 				std::string name;			// pin name
 
 				// constants

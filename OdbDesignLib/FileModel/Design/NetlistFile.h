@@ -20,7 +20,7 @@ namespace Odb::Lib::FileModel::Design
 	public:
 		struct ODBDESIGN_EXPORT NetRecord : public IProtoBuffable<Odb::Lib::Protobuf::NetlistFile::NetRecord>
 		{
-			unsigned int serialNumber;
+			unsigned int serialNumber = 0;
 			std::string netName;
 
 			// Inherited via IProtoBuffable
@@ -43,24 +43,24 @@ namespace Odb::Lib::FileModel::Design
 				Inner
 			};
 
-			unsigned int netNumber;
-			double radius;
-			double x;
-			double y;
-			AccessSide side;
-			double width;
-			double height;
-			char epoint;
-			char exp;
-			bool commentPoint;
-			double staggeredX;
-			double staggeredY;
-			double staggeredRadius;
-			double viaPoint;
-			double fiducialPoint;
-			double testPoint;
+			unsigned int netNumber = 0;
+			double radius = 0.0;
+			double x = 0.0;
+			double y = 0.0;
+			AccessSide side = Top;
+			double width = 0.0;
+			double height = 0.0;
+			char epoint = '\0';
+			char exp = '\0';
+			bool commentPoint = false;
+			double staggeredX = 0.0;
+			double staggeredY = 0.0;
+			double staggeredRadius = 0.0;
+			double viaPoint = 0.0;
+			double fiducialPoint = 0.0;
+			double testPoint = 0.0;
 			// ...
-			char testExecutionSide;
+			char testExecutionSide = '\0';
 
 			// Inherited via IProtoBuffable
 			std::unique_ptr<Odb::Lib::Protobuf::NetlistFile::NetPointRecord> to_protobuf() const override;
