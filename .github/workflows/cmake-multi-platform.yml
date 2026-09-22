@@ -262,10 +262,12 @@ jobs:
           git -C "${{ env.VCPKG_ROOT }}" fetch --depth 1 origin "${{ env.VCPKG_COMMIT }}"
           git -C "${{ env.VCPKG_ROOT }}" checkout --detach FETCH_HEAD
           # bootstrap-vcpkg.sh runs under Git Bash on Windows and downloads the
-          # Windows vcpkg binary — one path for all three platforms.
-          bash "${{ env.VCPKG_ROOT }}/bootstrap-vcpkg.sh" -noninteractive
+          # Windows vcpkg binary — one path for all three platforms. It takes no
+          # flags (it rejected the cargo-culted "-noninteractive" with "Unknown
+          # argument" on every leg).
+          bash "${{ env.VCPKG_ROOT }}/bootstrap-vcpkg.sh"
 
-      - name: Setup NuGet API Key (Non-Windows)
+      - name: Verify NuGet Feed Credentials (Non-Windows)
         if: matrix.os != 'windows-2022'
         shell: bash
         env:
@@ -275,16 +277,16 @@ jobs:
             echo "VCPKG_PAT_TOKEN not available (fork PR?) — feed writes will be skipped by vcpkg"
             exit 0
           fi
-          # vcpkg runs binary caching through its OWN nuget.exe (mono on Unix),
-          # fetched via `vcpkg fetch nuget` — there is no `nuget` in the runner
-          # PATH, so the old `mono $(which nuget) ... || true` line registered
-          # nothing and feed pushes failed with "No API Key could be found".
-          NUGET_EXE="$("${{ env.VCPKG_ROOT }}/vcpkg" fetch nuget | tail -n 1)"
-          # Register in the generated config that vcpkg passes to push, and in
-          # the user-wide config as fallback (no || true: a broken write path must
-          # fail loudly, the feed is the only layer surviving cache eviction).
-          mono "$NUGET_EXE" setApiKey "$VCPKG_PAT" -Source "$FEED_PUSH_URL" -ConfigFile "$GITHUB_WORKSPACE/nuget.generated.config" -NonInteractive
-          mono "$NUGET_EXE" setApiKey "$VCPKG_PAT" -Source "$FEED_PUSH_URL" -NonInteractive
+          # No setApiKey call is needed: the generated config already persists
+          # everything it would write — <packageSourceCredentials>
+          # ClearTextPassword for reads, <config> apiKey entries for both feed
+          # URLs, and defaultPushSource for vcpkg's pushes. Invoking nuget
+          # directly would additionally depend on mono, which is not installed
+          # on every runner image. Keep the fail-loudly intent instead: verify
+          # the write path is actually wired into the config vcpkg uses —
+          # the feed is the only cache layer surviving actions/cache eviction.
+          grep -q "ClearTextPassword" "$GITHUB_WORKSPACE/nuget.generated.config"
+          grep -q "defaultPushSource" "$GITHUB_WORKSPACE/nuget.generated.config"
 
       - name: Install Ninja
         uses: seanmiddleditch/gha-setup-ninja@8b297075da4cd2a5f1fd21fe011b499edf06e9d2 # master
