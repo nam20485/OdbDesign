@@ -40,7 +40,7 @@ Phase 3 (after Phase 2 ships; both clients, same contract):
 
 Phase 4 (separate, deliberate):
   M4.1 PinConnection reference-ification ──► revisit include_normalized_lists default
-  M4.2 REST freeze executed as a deletion: remove the two stub handlers (D5)
+  M4.2 REST freeze — DECIDED 2026-09-15: leave the two stub handlers exactly as they are (deferred)
 ```
 
 ---
@@ -237,7 +237,7 @@ Publish the M0.3 golden files to both clients as test data. Each asserts its `re
 ## Phase 4 — debt, sequenced deliberately
 
 * **M4.1** `PinConnection` reference-ification (`Component.cpp:75-76` embeds full `Package`+`Part`). Breaking wire change to the normalized lists. Lands only if it makes `include_normalized_lists` unnecessary — that's its justification.
-* **M4.2** D5 verdict on the REST surface: maintain / freeze / deprecate. Blocks on nothing; do it before someone implements `designs_component_route_handler` (`DesignsController.cpp:311`) for a client that is leaving REST.
+* **M4.2** **Deferred 2026-09-15 — no action.** D5 froze REST to security fixes only; deleting the two unimplemented stub handlers (`DesignsController.cpp:311`, `:343`) was proposed here and explicitly rejected. They stay as they are, unimplemented and unregistered, until the REST surface itself is revisited. Removing them is not a security fix and so is out of scope under the freeze.
 * **M4.3** **Dropped as a step.** It used to read "remove the dual-write in Phase 4"; D3 rejected dual-writing outright, so the key is deleted atomically with M1.1 and nothing is left for Phase 4. Reopen only if an unenumerated consumer surfaces after M1.1/M1.3 ships — that is the sole risk D3 accepted.
 * **M4.4** The dead `BuildPlacementsFromEdaDataFile` (`Design.cpp:521`, zero call sites; declared `Design.h:104`): delete it, or make it the authoritative path deliberately. Leaving an alternative connectivity implementation in the tree is how this divergence stayed invisible.
 
