@@ -43,9 +43,9 @@ namespace Odb::Lib::FileModel::Design
 
 			typedef std::vector<std::shared_ptr<FeatureIdRecord>> Vector;
 
-			Type type;
-			unsigned int layerNumber;
-			unsigned int featureNumber;
+			Type type = Type::Copper;
+			unsigned int layerNumber = 0;
+			unsigned int featureNumber = 0;
 
 			// Inherited via IProtoBuffable
 			std::unique_ptr<Odb::Lib::Protobuf::EdaDataFile::FeatureIdRecord> to_protobuf() const override;
@@ -85,19 +85,19 @@ namespace Odb::Lib::FileModel::Design
 				~SubnetRecord();
 
 				// common subnet fields
-				Type type;
+				Type type = Type::Via;
 				FeatureIdRecord::Vector m_featureIdRecords;
 
 				// Toeprint subnet type fields
-				BoardSide side;
-				unsigned int componentNumber;	// component index in the layer components/placements file
-				unsigned toeprintNumber;		// toeprint index of component reference in the layer components/placements file
+				BoardSide side = BoardSide::BsNone;
+				unsigned int componentNumber = 0;	// component index in the layer components/placements file
+				unsigned toeprintNumber = 0;		// toeprint index of component reference in the layer components/placements file
 
 				// Plane subnet type fields
-				FillType fillType;
-				CutoutType cutoutType;
-				double fillSize;
-				unsigned int index;
+				FillType fillType = FillType::Solid;
+				CutoutType cutoutType = CutoutType::Circle;
+				double fillSize = 0.0;
+				unsigned int index = 0;
 
 				inline static const std::string RECORD_TOKEN = "SNT";
 				inline static const std::string RECORD_TYPE_TRACE_TOKEN = "TRC";
@@ -116,8 +116,8 @@ namespace Odb::Lib::FileModel::Design
 
 			~NetRecord();
 
-			std::string name;			
-			unsigned int index;
+			std::string name;
+			unsigned int index = 0;
 
 			SubnetRecord::Vector m_subnetRecords;
 			PropertyRecord::Vector m_propertyRecords;
@@ -147,22 +147,22 @@ namespace Odb::Lib::FileModel::Design
 					m_contourPolygons.clear();
 				}
 
-				Type type;
+				Type type = Type::Rectangle;
 
 				// Rectangle
-				double lowerLeftX;
-				double lowerLeftY;
-				double width;
-				double height;
+				double lowerLeftX = 0.0;
+				double lowerLeftY = 0.0;
+				double width = 0.0;
+				double height = 0.0;
 
 				// Square/Circle
-				double xCenter;
-				double yCenter;
+				double xCenter = 0.0;
+				double yCenter = 0.0;
 
 				// Square
-				double halfSide;
+				double halfSide = 0.0;
 				// Circle
-				double radius;
+				double radius = 0.0;
 
 				ContourPolygon::Vector m_contourPolygons;
 
@@ -215,14 +215,14 @@ namespace Odb::Lib::FileModel::Design
 				}
 
 				std::string name;
-				Type type;
-				double xCenter;
-				double yCenter;
-				double finishedHoleSize;	// unused, set to 0
-				ElectricalType electricalType;
-				MountType mountType;
-				unsigned int id;
-				unsigned int index;
+				Type type = Type::ThroughHole;
+				double xCenter = 0.0;
+				double yCenter = 0.0;
+				double finishedHoleSize = 0.0;	// unused, set to 0
+				ElectricalType electricalType = ElectricalType::Electrical;
+				MountType mountType = MountType::MT_Undefined;
+				unsigned int id = 0;
+				unsigned int index = 0;
 
 				OutlineRecord::Vector m_outlineRecords;
 
@@ -244,10 +244,10 @@ namespace Odb::Lib::FileModel::Design
 			}
 
 			std::string name;
-			double pitch;
-			double xMin, yMin;
-			double xMax, yMax;			
-			unsigned int index;
+			double pitch = 0.0;
+			double xMin = 0.0, yMin = 0.0;
+			double xMax = 0.0, yMax = 0.0;
+			unsigned int index = 0;
 
 			OutlineRecord::Vector m_outlineRecords;
 			PinRecord::Vector m_pinRecords;
