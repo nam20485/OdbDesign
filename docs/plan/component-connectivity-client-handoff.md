@@ -90,7 +90,9 @@ The pin layer answers both questions directly: *what pins a component has* (`pac
 | `netsByComponent` keyed `(side, Id)` + the `(Side, Id)` key build + inversion bookkeeping | `:110`, `:144`, `:162-178` (call site `:132`) |
 | `byKey[(side, comp.Id)]` write | `:238` |
 | `ResolveComponent` — the whole method (signature `:438`; Id-first `:446`, ordinal fallback `:451`, side-blind `:456`) | ⚠️ plan cites `:440-460`; re-derive from `:438` (see §9) |
-| `ResolvePinNumber` — the `toeprintNumber→pinNumber` join | `:477-484` (join at `:479-481`) |
+
+
+⚠️ **`ResolvePinNumber` stays too.** It is the only `toeprintNumber → pinNumber` resolution until M2.2 publishes `ComponentPin.number`, so deleting it now would leave pins unnumbered. It moves to the Phase-2 rebuild list, not the delete-now table (same reasoning as the ordinal fallback below).
 
 ⚠️ **Split `ResolveComponent` rather than deleting it whole.** Only its **Id-first branch is safe to remove today** — `id` is always 0, so that branch is inert (every probe is either empty or the whole-side bucket and falls through), making removal behaviour-preserving while permanently disarming the §6 landmine. The **ordinal fallback cannot go yet**: it is the only thing producing correct net→component results until `Connectivity` ships. So the table above is "delete the Id path now, delete the ordinal path in Phase 2," not "delete the method now."
 
@@ -100,7 +102,7 @@ The pin layer answers both questions directly: *what pins a component has* (`pac
 
 ### 5b. `Odbdesign-info-client-india79-b` — `src/OdbDesign.ProductModel/ComponentDetailBuilder.cs` (531 lines; re-opened this session)
 
-**Delete** (all lines verified this session) — same split as §5a: the Id-first probe (`:415`, return `:417`) and its side-blind twin inside the `:425` branch may go **today** (inert while every `id` is 0, so removal is behaviour-preserving and disarms §6 permanently); the ordinal fallback (`:420`) and the rest of the joiner stay until `Connectivity` ships. Lines: lookup construction `:62-67`; `netsByComponent` key `:74` (call site `:96`, key build `:108`, inversion `:126-141`); `byKey[(side, comp.Id)]` `:207`; `ResolveComponent` (`:407-439`; Id-first `:415`, ordinal `:420`, side-blind `:425` — ⚠️ plan's `:415-432` misses both ends); `ResolvePinNumber` `:446-454` (join `:448-450`).
+**Delete** (all lines verified this session) — same split as §5a, and `ResolvePinNumber` (`:446-454`) stays for the same reason it does there: the Id-first probe (`:415`, return `:417`) and its side-blind twin inside the `:425` branch may go **today** (inert while every `id` is 0, so removal is behaviour-preserving and disarms §6 permanently); the ordinal fallback (`:420`) and the rest of the joiner stay until `Connectivity` ships. Lines: lookup construction `:62-67`; `netsByComponent` key `:74` (call site `:96`, key build `:108`, inversion `:126-141`); `byKey[(side, comp.Id)]` `:207`; `ResolveComponent` (`:407-439`; Id-first `:415`, ordinal `:420`, side-blind `:425` — ⚠️ plan's `:415-432` misses both ends); `ResolvePinNumber` `:446-454` (join `:448-450`).
 
 **Prerequisite [UNBLOCKED, largest item]:** switch design reads from REST to gRPC — gRPC is the supported consumption path for `Connectivity` and REST is frozen (D5). Files confirmed present: `src/OdbDesignInfoClient.Services/Api/IOdbDesignRestApi.cs`, `Api/Dtos/`, `DesignService.cs`. You already carry gRPC codegen wired in `src/OdbDesign.ProductModel/OdbDesign.ProductModel.csproj` (`Protobuf` items from `:32`, confirmed) — the transport exists, the read path just doesn't use it. Sequence: transport switch (own PR) → refresh `protoc/` (verified missing all four current features, §1) → consume. Also hand-mirrored `Api/Dtos/` shapes are outside the M0.2 proto-sync check (implementation plan, M0.1 gap note) — don't grow them; delete as the transport switch makes them dead.
 
