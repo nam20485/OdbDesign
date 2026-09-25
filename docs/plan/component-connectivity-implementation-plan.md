@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| Status | **EXECUTING — M0.1, M0.7 done; D3/D4/D5 resolved 2026-09-15** (UID key removed atomically with `id`; `Connectivity` always-on; REST frozen, security-only). Design + decision records in [component-connectivity.md](component-connectivity.md). **Phase 1 and Phase 2 are now unblocked.** Client work: M0.5 prep + [handoff doc](component-connectivity-client-handoff.md). |
+| Status | **EXECUTING — M0.1, M0.3, M0.7 done; D3/D4/D5 resolved 2026-09-15** (UID key removed atomically with `id`; `Connectivity` always-on; REST frozen, security-only). Design + decision records in [component-connectivity.md](component-connectivity.md). **Phase 1 and Phase 2 are now unblocked.** Client work: M0.5 prep + [handoff doc](component-connectivity-client-handoff.md). |
 | Source | [component-connectivity.md](component-connectivity.md) (verified findings + contract) · [component-id-issue.md](component-id-issue.md) (originating client report) |
 | Branch | `nam/component-connectivity` — cut from `nam20485` @ `cd9c0ce`, docs merged to `origin/nam20485` as `ea2c081`, then `development` reconciled back in → tip `d7d1a5b`. **Merge commits only** (AGENTS.md directive 2026-09-10); PR base is `nam20485`. |
 | Cross-repo | Phase 3 spans two other repos: `odbdesign-3d-client-prototype` and `Odbdesign-info-client-india79-b`. Their work is specified here but executed as separate PRs in those repos. |
@@ -20,14 +20,14 @@ The anomaly is worth keeping in view rather than filing as resolved: `dev/*` →
 
 ```text
 Phase 0 (now, parallel, no interdeps, no wire risk):
-  M0.1 swagger FK wording [DONE]   M0.2 proto sync check     M0.3 connectivity fixture harness
+  M0.1 swagger FK wording [DONE]   M0.2 proto sync check     M0.3 connectivity fixture harness [DONE]
   M0.4 cache flavour inventory ── feeds D4/M2.3              M0.5 client prep (both repos, unblocked)
   M0.6 mirror spec → SwaggerUI image repo (cross-repo; low priority since compose now mounts #1)
   M0.7 spec distribution fixes [DONE]: compose binds #1  +  swagger-spec-configmap-sync.yml
 
 Phase 1 (server fidelity; M1.1 + M1.3 are ATOMIC per D3 — one commit, one release):
-  M1.1 component ;ID= parse ─┐
-  M1.2 feature  ;ID= parse ──┴──► M1.3 remove attributeLookupTable["ID"] (same commit)
+  M1.1 component ;ID= parse ──► M1.3 remove attributeLookupTable["ID"] (SAME commit, per D3)
+  M1.2 feature ;ID= parse ──► own commit; M2.4 measures its payload delta BEFORE it merges
   M1.4 componentRecordsByName: delete the never-populated map field
 
 Phase 2 (ALWAYS-ON per D4 — no flag; rides the cached default flavour):
@@ -85,7 +85,7 @@ Before either side changes, capture ground truth so M2.1 and M3.x can be differe
 **File:** new `OdbDesignTests/ConnectivityContractTests.cpp` (name follows the existing `SymbolContractTests.cpp` precedent). Fixtures: `sample_design` (UIDs present, 813 comps / 2,811 connections), `200-40628_Rev1_v7` (UIDs absent, 7,610 comps), `Panel g7162-31800_odb` (the 88-collision case). Golden file per design: `refDes → [(pinNumber, netOrdinal)]`, plus pin counts per net.
 
 **M0.3 delivered — 2026-09-15, on this branch.** `scripts/gen-connectivity-golden.py` + four goldens in `OdbDesignTests/Fixtures/Connectivity/`. Two things the first cut got wrong and both are now fixed and verified:
-* Pretty-printed output was **66 MB** (29 MB + 35 MB for the two legacy designs). Now compact JSON, and designs over 10,000 components emit `"fidelity":"sampled"` — aggregates plus a deterministic subset (first/last 50 per side and every ordinal/UID collision) with the net roster capped at 50. Total **1.3 MB**, byte-identical on re-run. `sample_design` and `Panel-g7162` stay `"full"`.
+* Pretty-printed output was **63 MB** (28 MB + 35 MB for the two legacy designs; 66,350,683 bytes = 63.3 MiB). Now compact JSON, and designs over 10,000 components emit `"fidelity":"sampled"` — aggregates plus a deterministic subset (first/last 50 per side and every ordinal/UID collision) with the net roster capped at 50. Total **1.3 MB**, byte-identical on re-run. `sample_design` and `Panel-g7162` stay `"full"`.
 * My own brief handed the implementer **top-only** counts as design totals (7,610 and 11,631). Actual totals: **57,774** (7,610 Top + 50,164 Bottom) and **81,157** (11,631 Top + 69,526 Bottom). The implementer's numbers were right and mine were not — worth stating plainly, because a delegate that "matches the spec" is not automatically correct, and here the spec was the defect.
 
 ⚠️ **Fixture selection consequence:** `Panel-g7162` has **zero** connected pins (all 3,078 `TOP` lines are `net_num = -1`) and `200-40628` likewise (all 129,698). So the Panel fixture validates the collision and roster cases **only** — connectivity assertions must run against `sample_design` (2,811/2,811 connected), and `350-41017` (158,742 connected) is the second connected design if a larger one is wanted. Recorded so M3.3 doesn't quietly assert an empty set and call it passing.
@@ -159,7 +159,7 @@ Drop the key. Dual-write/deprecate was proposed and rejected: the entry conflate
 
 **Same commit must fix the contract text.** #594 merged swagger stating the UID arrives "only as the literal key `"ID"`" and marking `id` as not-yet-populated. Both sentences become false the moment this lands, and the spec has a CI job now that will faithfully propagate the lie to the ConfigMap. Rewrite `ComponentRecord.id`, `ComponentRecord.attributeLookupTable`, and `FeatureRecord.id` in the same change.
 
-Implementation note: the key is created by the **shared** `AttributeLookupTable::ParseAttributeLookupTable` third-section branch (`AttributeLookupTable.cpp:48-61`), which has **9 live call sites across four record types** — components (`ComponentsFile.cpp:489`), features (`FeaturesFile.cpp:290`, `:367`, `:459`, `:554`, `:621`; `:577` commented), and eda-data net + package records (`EdaDataFile.cpp:648`, `:906`). Changing only the component path leaves the `"ID"` entry in feature, net and package attribute maps. Fix it in the shared function — return the parsed id to the caller instead of inserting it into the map — and give each record type's `id` field the value, which also means NET and PKG UIDs get typed homes rather than staying smuggled.
+Implementation note: the key is created by the **shared** `AttributeLookupTable::ParseAttributeLookupTable` third-section branch (`AttributeLookupTable.cpp:48-61`), which has **8 live call sites across four record types** — components (`ComponentsFile.cpp:489`), features (`FeaturesFile.cpp:290`, `:367`, `:459`, `:554`, `:621`; `:577` is commented out and does not count), and eda-data net + package records (`EdaDataFile.cpp:648`, `:906`) — 8 in total. Changing only the component path leaves the `"ID"` entry in feature, net and package attribute maps. Fix it in the shared function — return the parsed id to the caller instead of inserting it into the map — and give each record type's `id` field the value, which also means NET and PKG UIDs get typed homes rather than staying smuggled.
 
 ### M1.4 `componentRecordsByName`
 
@@ -206,7 +206,7 @@ What always-on does change is that every response grows by the connectivity payl
 
 ### M2.4 Size benchmark
 
-Extend `DesignFetchBenchmarkTests.cpp` across the three fixture designs × {pruned, +connectivity, +normalized lists}. Acceptance: `connectivity` ≤ 150 KB on `sample_design` and ≤ 10% of the fileModel payload on the 11,631-component legacy design. Also record the M1.2 feature-UID delta.
+Extend `DesignFetchBenchmarkTests.cpp` across the three fixture designs × {pruned, +connectivity, +normalized lists}. Acceptance: `connectivity` ≤ 150 KB on `sample_design` and ≤ 10% of the fileModel payload on the 81,157-component legacy design (`350-41017`; 11,631 is its Top side only). Also record the M1.2 feature-UID delta.
 
 ---
 

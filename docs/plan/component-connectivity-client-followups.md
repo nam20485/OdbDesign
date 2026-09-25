@@ -27,7 +27,7 @@ Both clients' `ComponentDetailBuilder.cs`: the netlist→component join is **ord
 
 **F5 — `Connectivity` consumption rebuild (both clients).** *Blocked on M2.1/M2.2 merge.* ~50-line lookup over `Connectivity.components` keyed `refDes` (`StringComparer.Ordinal`); net tab from `netMembers`; branch on `Connection.Kind`, never on `-1`/`4294967295`/`$NONE$`. Field numbers are provisional until the proto actually merges (handoff §7) — do not code against the §6 text before then.
 
-**F6 — Vendored-proto upkeep + sync check.** 3D: refresh `src/OdbDesign3DClient.Core/Protos/` when `Connectivity` lands in the server protos (drift claim inherited from design doc §4.4 — not independently measured). Info: folded into F3. There is deliberately **no** sync check: D7 (decided 2026-09-15) dropped M0.2 — the server owns the protos and pushes updates to clients, so every refresh is manual by design, not by omission. The durable fix is the future `odbdesign-model-libs` repo.
+**F6 — Vendored-proto upkeep (manual by design; no sync check — D7).** 3D: refresh `src/OdbDesign3DClient.Core/Protos/` when `Connectivity` lands in the server protos (drift claim inherited from design doc §4.4 — not independently measured). Info: folded into F3. There is deliberately **no** sync check: D7 (decided 2026-09-15) dropped M0.2 — the server owns the protos and pushes updates to clients, so every refresh is manual by design, not by omission. The durable fix is the future `odbdesign-model-libs` repo.
 
 **F7 — Judgment calls surfaced today, deliberately not changed.**
 - **a)** The plan docs say "all four name dictionaries" fold case; the info client actually had **six** sites across **two** files — its `ComponentDetailIndex.cs` (`Empty.ByName`, `NetsByName`) mirrors 3D's inline record but was outside the plan's scan. Both were fixed, but the plan/design docs should be corrected on the next pass.
@@ -43,4 +43,4 @@ F1 (commit) ──► F2 (harness, after goldens merge) ──► F4 (joiner del
 F6 continuous · F7 = small decisions to close in any of the above PRs
 ```
 
-Server-side gates (Phase 1 `id` population, Phase 2 `Connectivity`, M0.2, M0.3 merge) live in the implementation plan — this list is only what the client repos owe.
+Server-side gates (Phase 1 `id` population, Phase 2 `Connectivity`, M0.3 merge) live in the implementation plan — this list is only what the client repos owe.

@@ -69,7 +69,7 @@ message Connectivity {
   message NetMembers { uint32 net = 1; repeated Member members = 2; }
 
   repeated NetEntry nets = 1;
-  repeated PackagePins packages = 2;      // deduped rosters: 71 per design, not 813
+  repeated PackagePins packages = 2;      // deduped: 71 rosters, not 813
   repeated PlacedComponent components = 3;
   repeated NetMembers netMembers = 4;     // same edges, inverted, for the net tab
 }
@@ -102,13 +102,13 @@ The pin layer answers both questions directly: *what pins a component has* (`pac
 
 **Delete** (all lines verified this session) — same split as §5a: the Id-first probe (`:415`, return `:417`) and its side-blind twin inside the `:425` branch may go **today** (inert while every `id` is 0, so removal is behaviour-preserving and disarms §6 permanently); the ordinal fallback (`:420`) and the rest of the joiner stay until `Connectivity` ships. Lines: lookup construction `:62-67`; `netsByComponent` key `:74` (call site `:96`, key build `:108`, inversion `:126-141`); `byKey[(side, comp.Id)]` `:207`; `ResolveComponent` (`:407-439`; Id-first `:415`, ordinal `:420`, side-blind `:425` — ⚠️ plan's `:415-432` misses both ends); `ResolvePinNumber` `:446-454` (join `:448-450`).
 
-**Prerequisite [UNBLOCKED, largest item]:** switch design reads from REST to gRPC — `Connectivity` is never built for REST (D5). Files confirmed present: `src/OdbDesignInfoClient.Services/Api/IOdbDesignRestApi.cs`, `Api/Dtos/`, `DesignService.cs`. You already carry gRPC codegen wired in `src/OdbDesign.ProductModel/OdbDesign.ProductModel.csproj` (`Protobuf` items from `:32`, confirmed) — the transport exists, the read path just doesn't use it. Sequence: transport switch (own PR) → refresh `protoc/` (verified missing all four current features, §1) → consume. Also hand-mirrored `Api/Dtos/` shapes are outside the M0.2 proto-sync check (design doc §M0.1 gap) — don't grow them; delete as the transport switch makes them dead.
+**Prerequisite [UNBLOCKED, largest item]:** switch design reads from REST to gRPC — gRPC is the supported consumption path for `Connectivity` and REST is frozen (D5). Files confirmed present: `src/OdbDesignInfoClient.Services/Api/IOdbDesignRestApi.cs`, `Api/Dtos/`, `DesignService.cs`. You already carry gRPC codegen wired in `src/OdbDesign.ProductModel/OdbDesign.ProductModel.csproj` (`Protobuf` items from `:32`, confirmed) — the transport exists, the read path just doesn't use it. Sequence: transport switch (own PR) → refresh `protoc/` (verified missing all four current features, §1) → consume. Also hand-mirrored `Api/Dtos/` shapes are outside the M0.2 proto-sync check (implementation plan, M0.1 gap note) — don't grow them; delete as the transport switch makes them dead.
 
 **Rebuild [BLOCKED — Phase 2]:** same shape as 5a. Both teams also delete any read of `attributeLookupTable["ID"]`: the server removes that key atomically with populating `id` (D3) — nothing was found reading it, and after M1.1/M1.3 it's gone.
 
 ### 5c. Both — conformance harness [UNBLOCKED now]
 
-M3.3: assert your `refDes → (pin, net)` view equals the golden files at `OdbDesignTests/Fixtures/Connectivity/*.golden.json` (4 fixture designs; generated from raw ODB++ by `scripts/gen-connectivity-golden.py`; present on branch `nam/connectivity-fixture-harness`, not yet merged — expect them on `nam20485` soon). Needs only the goldens, not the contract.
+M3.3: assert your `refDes → (pin, net)` view equals the golden files at `OdbDesignTests/Fixtures/Connectivity/*.golden.json` (4 fixture designs; generated from raw ODB++ by `scripts/gen-connectivity-golden.py`; merged to `nam20485` via PR #595). Needs only the goldens, not the contract.
 
 ## 6. Ordering constraint — the `id` deploy landmine (design doc §4.3, plan Risks)
 
@@ -119,7 +119,7 @@ Therefore: **your delete of the Id-first resolution (§5a/§5b) must be deployed
 ## 7. Not decided / not built yet — do not code against these
 
 * **`Connectivity` itself** (M2.1/M2.2, Phase 2). The message above is the agreed design, but no `.proto` exists to compile against until Phase 2 merges. Treat field numbers as provisional until then.
-* **Payload budget can still resize it**: M2.4 gates merge at ≤150 KB on `sample_design` and ≤10% of fileModel on the 11,631-component legacy design — D4 was decided on a model (~tens of KB), not measurement; if measurement misses badly the shape gets revisited.
+* **Payload budget can still resize it**: M2.4 gates merge at ≤150 KB on `sample_design` and ≤10% of fileModel on the 81,157-component legacy design (11,631 is its Top side only) — D4 was decided on a model (~tens of KB), not measurement; if measurement misses badly the shape gets revisited.
 * **`$NONE$` semantics**: whether the contract revives `BuildNoneNet`/`BreakSinglePinNets` or merely labels their absence (`UNKNOWN` vs `UNCONNECTED`) is an open M2.2 decision. Branch on `Kind`, never on net names or `-1`, and your code survives either outcome.
 * **Unresolved-pin reporting shape**: `Design.cpp:465` (`GetPackage()->GetPin(pinNumber)` null) fails the **entire design load** today; publishing rosters must not turn that into silent omission (§8 hazard 1). How the failure is surfaced to clients may be refined in M2.2.
 * **`componentRecordsByName`** (proto field 10) is always-empty and recommended for deletion (M1.4) — never build on it.

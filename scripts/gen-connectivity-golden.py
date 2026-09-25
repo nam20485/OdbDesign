@@ -51,6 +51,7 @@ import io
 import json
 import subprocess
 import sys
+import zlib
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -114,19 +115,29 @@ def read_lines(path):
     except UnicodeDecodeError as exc:
         raise FixtureError("%s is not UTF-8 (%s); refusing to guess at ground truth"
                            % (path, exc)) from exc
+    except (OSError, zlib.error) as exc:
+        # a truncated/corrupt .gz or .Z raises these mid-iteration; without this
+        # they escape main()'s FixtureError handler and abort every later fixture
+        raise FixtureError("%s could not be decompressed (%s: %s)"
+                           % (path, type(exc).__name__, exc)) from exc
     finally:
         stream.close()
         if proc is not None:
             proc.wait()
-            if proc.returncode != 0:
+            # Only report the child's status when the body completed normally;
+            # otherwise this raise would supersede the precise FixtureError above
+            # (a killed child exits non-zero) and main() would print only that.
+            if proc.returncode != 0 and sys.exc_info()[0] is None:
                 raise FixtureError("uncompress -c failed for %s (exit %d)"
                                    % (path, proc.returncode))
 
 
 def _spawn_uncompress(path):
     try:
+        # DEVNULL, not PIPE: nothing drains stderr, and a chatty `uncompress`
+        # would fill the pipe buffer and block the child forever with no timeout.
         proc = subprocess.Popen(["uncompress", "-c", str(path)], stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE)
+                                stderr=subprocess.DEVNULL)
     except OSError as exc:
         raise FixtureError("cannot run `uncompress -c %s`: %s" % (path, exc)) from exc
     return io.TextIOWrapper(proc.stdout, encoding="utf-8"), proc
@@ -148,7 +159,11 @@ def parse_net_names(eda_data_path):
         line = raw.strip()
         if not line or line.startswith(COMMENT_TOKEN):
             continue
-        if not line.startswith(NET_RECORD_TOKEN + " "):
+        # EdaDataFile.cpp tokenizes on whitespace, so `NET\tname` is a NET record
+        # too. A literal-space prefix test would skip it and shift every later net
+        # ordinal down by one, silently misaligning the whole oracle.
+        tokens = line.split()
+        if not tokens or tokens[0] != NET_RECORD_TOKEN:
             continue
         # EdaDataFile.cpp reads the name with getline(stream, ';') and trims: it
         # is everything after "NET " up to the first ';'.
@@ -167,10 +182,12 @@ def parse_component_uid(attr_token):
     if len(sections) > ID_SECTION_INDEX and "=" in sections[ID_SECTION_INDEX]:
         key, _, value = sections[ID_SECTION_INDEX].partition("=")
         if key == "ID":
-            if not value.isdigit():
+            if not (value.isascii() and value.isdigit()):
                 raise FixtureError("component ID is not a number: %r" % sections[ID_SECTION_INDEX])
             uid = int(value)
-    return uid, uid is not None or "ID=" in attr_token
+    # per-section test: `"ID=" in attr_token` also matches attributes whose name
+    # merely ends in ID (e.g. `;VUID=5`), inflating the anomaly counts.
+    return uid, uid is not None or any(sec.startswith("ID=") for sec in sections)
 
 
 def parse_uint(text, path, line_no, what, line):
@@ -258,8 +275,11 @@ def summarize(slug, design, step, nets, components, out_path):
     unconnected = sum(1 for p in pins if p["netOrdinal"] is None)
     per_side_uids = {side: {c["uid"] for c in sides[side] if c["uid"] is not None} for side, _ in SIDES}
     top_uids, bottom_uids = per_side_uids["Top"], per_side_uids["Bottom"]
-    collisions = {side: len({u for u in values if u < len(sides[side])})
-                  for side, values in per_side_uids.items()}
+    # Same definition as the golden's aggregates.ordinal_uid_collisions: components
+    # whose per-side index equals a UID occurring exactly once on that side. Counting
+    # distinct UID values here instead made the console summary and the committed
+    # golden disagree on the same data.
+    collisions = {side: len(_colliding(sides[side])) for side, _ in SIDES}
 
     none_ordinal = next((i for i, name in enumerate(nets) if name == NET_NAME_NONE), None)
     none_pins = sum(1 for p in pins if none_ordinal is not None and p["netOrdinal"] == none_ordinal)
@@ -456,6 +476,15 @@ def main(argv=None):
     parser.add_argument("--fixture", action="append", dest="only", metavar="SLUG",
                         help="run only this slug (repeatable); default: all")
     args = parser.parse_args(argv)
+
+    known = {slug for slug, _, _ in FIXTURES}
+    unknown = [s for s in (args.only or []) if s not in known]
+    if unknown:
+        # Without this, a typo'd --fixture runs zero fixtures, reports success and
+        # leaves the previous run's goldens in place as if freshly regenerated.
+        print("unknown --fixture slug(s): %s (known: %s)"
+              % (", ".join(sorted(unknown)), ", ".join(sorted(known))))
+        return 2
 
     failures = []
     for slug, design_root_rel, pinned_step in FIXTURES:

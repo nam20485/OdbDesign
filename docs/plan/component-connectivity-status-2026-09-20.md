@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Point-in-time status of the component-connectivity epic: what is done, what is in flight, and the remaining sequence. Supersedes nothing — the living docs remain authoritative; this snapshot records where things stood on this date. |
 | Living docs | [component-connectivity.md](component-connectivity.md) (design/decisions) · [component-connectivity-implementation-plan.md](component-connectivity-implementation-plan.md) (milestones) · [component-connectivity-client-handoff.md](component-connectivity-client-handoff.md) (client contract) · [component-connectivity-client-followups.md](component-connectivity-client-followups.md) (client F-list) |
-| Position | Branch `nam/connectivity-fixture-harness`, 8 commits ahead of `nam20485`, 0 behind. **PR #595 open** ("M0.3 connectivity golden harness + M0.5 client handoff", base `nam20485`). Two doc files on the branch are uncommitted (see §In flight). |
+| Position | Branch `nam/connectivity-fixture-harness`, figures below were true at 2026-09-20 and are **stale as shipped** — at merge the branch also carries #597 from base. **PR #595 open** ("M0.3 connectivity golden harness + M0.5 client handoff", base `nam20485`). The two doc files this snapshot called uncommitted were committed in `58732fc`. |
 
 ## The epic in one paragraph
 
@@ -23,9 +23,9 @@ Net/component connectivity becomes **server-owned derived data** (`Connectivity`
 
 * **M0.3 golden harness — committed** (`35ed14a`): `scripts/gen-connectivity-golden.py` + four goldens in `OdbDesignTests/Fixtures/Connectivity/` (compact/sampled JSON, 1.3 MB total, byte-identical re-runs). Collision figure re-verified from raw source: Panel top 88, bottom 0. Note `Panel-g7162` and `200-40628` have **zero** connected pins — connectivity assertions must run against `sample_design` (2,811/2,811) and optionally `350-41017` (158,742).
 * **M0.5 client handoff — committed** (`2d9fb72`) + five correction commits (ResolveComponent guidance, D7 closure, incremental-codegen note).
-* **Uncommitted:** the handoff doc's status row (points at the followups doc) and [component-connectivity-client-followups.md](component-connectivity-client-followups.md) itself (items F1–F7).
+* **Committed in `58732fc`:** the handoff doc's status row (points at the followups doc) and [component-connectivity-client-followups.md](component-connectivity-client-followups.md) itself (items F1–F7).
 
-**To close the current work:** commit the two doc files onto PR #595 and merge to `nam20485` (merge commit only, per the standing directive). The goldens must be on `nam20485` before clients consume them (F2).
+**To close the current work:** merge PR #595 to `nam20485` (the two doc files are committed) (merge commit only, per the standing directive). The goldens must be on `nam20485` before clients consume them (F2).
 
 ## Remaining — in order
 
@@ -40,7 +40,7 @@ Net/component connectivity becomes **server-owned derived data** (`Connectivity`
 * **M2.1** `Connectivity` proto + derivation from `m_nets[].GetPinConnections()` (serialization of an existing result — no second join); adding `connectivity.proto` needs a CMake reconfigure (proto list is globbed).
 * **M2.2** sentinel/`$NONE$` semantics absorbed into `Connection.Kind`; keep the hard failure on unresolved pin visible.
 * **M2.3** assert the warm-path cached response contains `connectivity` (always-on; no new flag).
-* **M2.4** size benchmark = **merge gate**: ≤150 KB on `sample_design`, ≤10% of fileModel on the 11,631-component legacy design; also records the M1.2 delta.
+* **M2.4** size benchmark = **merge gate**: ≤150 KB on `sample_design`, ≤10% of fileModel on the 81,157-component legacy design (11,631 is its Top side only); also records the M1.2 delta.
 
 ### Blocked until Phase 2 ships
 
@@ -52,18 +52,18 @@ Net/component connectivity becomes **server-owned derived data** (`Connectivity`
 ### Debt queue — Phase 4
 
 * **M4.1** `PinConnection` reference-ification (justified only if it makes `include_normalized_lists` unnecessary).
-* **M4.2** execute the REST freeze as deletion of the two stub handlers (D5).
+* ~~M4.2~~ **deferred by D5** — the two stub handlers stay as they are; deleting them is not a security fix, so it is out of scope under the freeze.
 * **M4.4** delete the dead `BuildPlacementsFromEdaDataFile` (zero call sites).
 * ~~M4.3~~ dropped (D3 rejected dual-write; nothing left for Phase 4). **M0.6** (mirror spec into the SwaggerUI image repo) deliberately low priority — compose now mounts the canonical file.
 
 ## Sequence at a glance
 
 ```text
-NOW:      commit 2 docs ──► merge PR #595 (M0.3+M0.5 → nam20485)
+NOW:      merge PR #595 (M0.3+M0.5 → nam20485)
 PARALLEL: F1 client commits ──► F2 harness        |  Phase 1 (M1.1+M1.3 atomic, M1.2, M1.4)
 THEN:     Phase 2 (M2.1 → M2.2 → M2.3 → M2.4 gate)
 AFTER:    F3 info transport ──► F4/F5 joiner deletion + Connectivity consumption (M3.1/M3.2)
-DEBT:     M4.1, M4.2, M4.4 · F6/F7 fold into adjacent PRs
+DEBT:     M4.1, M4.4 (M4.2 deferred by D5) · F6/F7 fold into adjacent PRs
 ```
 
 ## Standing risk
