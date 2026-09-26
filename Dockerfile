@@ -6,7 +6,7 @@
 # NOTE: keep the "trixie-slim" tag in the reference. A bare "debian@sha256:..."
 # has no tag for Dependabot to track, so it gets bumped against the full
 # (non-slim) image (see reverted bump 0f10566: 1d3c811 -> 34cd9e9).
-FROM --platform=$BUILDPLATFORM debian:trixie-slim@sha256:d7e12182ce18b85b93007c1dedf31f2d29e01ccf3182cc4017c709b6259bc132 AS build
+FROM --platform=$BUILDPLATFORM debian:trixie-slim@sha256:a99cfc517144bc59b1978475ec53b46ecabec7e43635402ee5b77cc54cd1b20a AS build
 
 ARG OWNER=nam20485
 ARG VCPKG_BINARY_SOURCES=""
@@ -114,7 +114,7 @@ RUN cmake --build --preset linux-dynamic-release
 # Debian 13 (Trixie) slim - amd64
 # Version: trixie-slim (pinned digest = 13.6-slim / trixie-20260824-slim, glibc 2.41)
 # NOTE: keep in sync with the build stage digest (see note above).
-FROM debian:trixie-slim@sha256:d7e12182ce18b85b93007c1dedf31f2d29e01ccf3182cc4017c709b6259bc132 AS run
+FROM debian:trixie-slim@sha256:a99cfc517144bc59b1978475ec53b46ecabec7e43635402ee5b77cc54cd1b20a AS run
 # ARG ODBDESIGN_SERVER_REQUEST_USERNAME=""
 # ARG ODBDESIGN_SERVER_REQUEST_PASSWORD=""
 LABEL org.opencontainers.image.source=https://github.com/nam20485/OdbDesign \
