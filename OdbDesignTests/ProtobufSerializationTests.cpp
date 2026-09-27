@@ -195,7 +195,16 @@ namespace Odb::Test
 		ASSERT_TRUE(parsedOk);
 		EXPECT_EQ(reparsed.id(), 37u);
 		EXPECT_FALSE(reparsed.affectingbomchanged());
-		EXPECT_EQ(reparsed.onlinevalues().at("ONLINE_NET_STAT"), "GREEN");
+		// protobuf's map::at() CHECK-fails and abort()s the whole process when the key
+		// is absent, so a regression here reports as "Subprocess aborted" with no gtest
+		// diagnostic -- it cost four CI runs and a log hunt to name the missing key.
+		// Look the entry up explicitly so the failure names it and lists what did arrive.
+		const auto& reparsedOnlineValues = reparsed.onlinevalues();
+		const auto onlineIt = reparsedOnlineValues.find("ONLINE_NET_STAT");
+		ASSERT_TRUE(onlineIt != reparsedOnlineValues.end())
+				<< "ONLINE_NET_STAT did not survive the wire round trip; onlineValues holds "
+				<< reparsedOnlineValues.size() << " entry/entries";
+		EXPECT_EQ(onlineIt->second, "GREEN");
 	}
 
 	// The other round-trip tests in this file stop at from_protobuf(); the wire
