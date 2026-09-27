@@ -20,7 +20,7 @@ The anomaly is worth keeping in view rather than filing as resolved: `dev/*` →
 
 ```text
 Phase 0 (now, parallel, no interdeps, no wire risk):
-  M0.1 swagger FK wording [DONE]   M0.2 proto sync check     M0.3 connectivity fixture harness [DONE]
+  M0.1 swagger FK wording [DONE]   M0.2 proto sync check [DROPPED — D7]   M0.3 connectivity fixture harness [DONE]
   M0.4 cache flavour inventory ── feeds D4/M2.3              M0.5 client prep (both repos, unblocked)
   M0.6 mirror spec → SwaggerUI image repo (cross-repo; low priority since compose now mounts #1)
   M0.7 spec distribution fixes [DONE]: compose binds #1  +  swagger-spec-configmap-sync.yml

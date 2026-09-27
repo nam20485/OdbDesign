@@ -41,8 +41,15 @@ every record.
 Output is deterministic: sorted keys, fixed array order, no timestamps, no
 absolute paths, LF newlines. Running this twice yields byte-identical files.
 
-stdlib only. Exits 0 when every requested fixture produced a golden file, 1 when
-a fixture is missing or unparsable.
+stdlib only. Exit codes:
+
+    0  every requested fixture produced a golden file
+    1  a fixture was missing or unparsable (reported per fixture; the rest still run)
+    2  bad invocation - a --fixture slug matched no known fixture, so nothing was
+       regenerated and any golden already on disk is stale, not fresh
+
+Callers scripting this must treat 2 separately from 1: 1 means the data failed,
+2 means the command was wrong and no work was attempted.
 """
 
 import argparse
