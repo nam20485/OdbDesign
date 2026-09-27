@@ -5,6 +5,7 @@
 #include "FileModel/Design/StepHdrFile.h"
 #include <fstream>
 #include <memory>
+#include <cstdio>
 #include <string>
 #include "ProductModel/Component.h"
 #include "ProductModel/Design.h"
@@ -201,9 +202,34 @@ namespace Odb::Test
 		// Look the entry up explicitly so the failure names it and lists what did arrive.
 		const auto& reparsedOnlineValues = reparsed.onlinevalues();
 		const auto onlineIt = reparsedOnlineValues.find("ONLINE_NET_STAT");
+		// Sighting 2026-09-27 (intermittent, ~1 run in 3, not reproducible on demand):
+		// this assertion fired while the map held exactly one entry whose key dumped
+		// byte-identical to "ONLINE_NET_STAT" (len=15) with value "GREEN" -- i.e. the
+		// entry was present under iteration and absent under find(), same object, same
+		// thread, microseconds apart. Ruled out at the time: ASan and UBSan both silent
+		// over a 40-attempt reproduction (so not heap corruption or detected UB), and
+		// exactly one protobuf runtime in the process (single libprotobuf.so.33.4.0 for
+		// both the test binary and libOdbDesign.so, no strong protobuf symbols of its
+		// own), so not the dual-loaded-copies failure mode. Unexplained; the byte dump
+		// below stays so the next occurrence records the key rather than just a count.
 		ASSERT_TRUE(onlineIt != reparsedOnlineValues.end())
 				<< "ONLINE_NET_STAT did not survive the wire round trip; onlineValues holds "
-				<< reparsedOnlineValues.size() << " entry/entries";
+				<< reparsedOnlineValues.size() << " entry/entries: "
+				<< [&reparsedOnlineValues] {
+					std::string dump;
+					for (const auto& kv : reparsedOnlineValues)
+					{
+						dump += "[len=" + std::to_string(kv.first.size()) + " bytes=";
+						for (unsigned char c : kv.first)
+						{
+							char hex[4];
+							snprintf(hex, sizeof(hex), "%02x ", c);
+							dump += hex;
+						}
+						dump += "]=[" + kv.second + "] ";
+					}
+					return dump;
+				}();
 		EXPECT_EQ(onlineIt->second, "GREEN");
 	}
 
