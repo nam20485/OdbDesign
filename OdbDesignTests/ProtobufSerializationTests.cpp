@@ -210,8 +210,12 @@ namespace Odb::Test
 		// over a 40-attempt reproduction (so not heap corruption or detected UB), and
 		// exactly one protobuf runtime in the process (single libprotobuf.so.33.4.0 for
 		// both the test binary and libOdbDesign.so, no strong protobuf symbols of its
-		// own), so not the dual-loaded-copies failure mode. Unexplained; the byte dump
-		// below stays so the next occurrence records the key rather than just a count.
+		// own), so not the dual-loaded-copies failure mode; and stale generated code --
+		// a deep clean rebuild (--clean-first, stephdrfile.pb.{h,cc} regenerated, mtimes
+		// verified) still failed 17 of 40 runs. Failure rate is ~40%, not rare.
+		// Unexplained. The byte dump below stays so the next occurrence records the key
+		// rather than just a count. Tracked in #599, which records the reproduction,
+		// everything ruled out and how, and what has not been tried yet.
 		ASSERT_TRUE(onlineIt != reparsedOnlineValues.end())
 				<< "ONLINE_NET_STAT did not survive the wire round trip; onlineValues holds "
 				<< reparsedOnlineValues.size() << " entry/entries: "
