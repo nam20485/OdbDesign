@@ -1,5 +1,7 @@
 # Component connectivity — status snapshot 2026-09-20
 
+> **SUPERSEDED 2026-10-14** by [component-connectivity-status-2026-10-14.md](component-connectivity-status-2026-10-14.md), which re-verifies everything against origin (PR #595 merged 2026-09-27; Phase 0 complete; 3D client F1 on `main`; info-client work on open PR #22) and adds client-engagement runbooks. Kept as a dated record; the Position row below reflects what was true when written, not now.
+
 | | |
 |---|---|
 | Purpose | Point-in-time status of the component-connectivity epic: what is done, what is in flight, and the remaining sequence. Supersedes nothing — the living docs remain authoritative; this snapshot records where things stood on this date. |
