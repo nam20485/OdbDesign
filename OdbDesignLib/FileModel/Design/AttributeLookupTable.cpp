@@ -14,8 +14,10 @@ namespace Odb::Lib::FileModel::Design
 		std::string token;
 
 		// skip the content before the first semicolon
+		// a failed read here means the attribute string is absent entirely: the
+		// attribute field is optional on ODB++ records, so that is not an error
 		if (!std::getline(ss, token, ';'))
-			return false;
+			return true;
 
 		// attributes
 		if (std::getline(ss, token, ';'))
