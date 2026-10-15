@@ -3,11 +3,13 @@
 #include <random>
 #include <string>
 #include <system_error>
-#include <cstdlib>
+#include <algorithm>
+#include <cctype>
 
 #include <gtest/gtest.h>
 #include <grpcpp/server_context.h>
 
+#include "CrossPlatform.h"
 #include "OdbDesignServer/Services/OdbDesignServiceImpl.h"
 
 namespace
@@ -22,9 +24,23 @@ namespace
 	};
 
 	// The pin_invalid_type fixture design is engineered to throw parse_error:
-	// eda/data line 180, record "PIN 1 U ... ID=30", token "U", thrown from
-	// EdaDataFile.cpp (see FileArchiveLoadTests.Load_FileArchive_InvalidPinType_Throws_ParseError).
+	// eda/data record "PIN 1 U ... ID=30", token "U", thrown from EdaDataFile.cpp
+	// (see FileArchiveLoadTests.Load_FileArchive_InvalidPinType_Throws_ParseError).
 	constexpr const char* INVALID_PIN_DESIGN = "designodb_rigidflex - pin_invalid_type";
+
+	// "<marker><digits>" containment check without a regex: gtest's Windows
+	// fallback regex engine does not support character classes like [0-9].
+	bool ContainsMarkerFollowedByDigit(const std::string& message, const std::string& marker)
+	{
+		const auto pos = message.find(marker);
+		if (pos == std::string::npos)
+		{
+			return false;
+		}
+		const auto digitPos = pos + marker.size();
+		return digitPos < message.size() &&
+			std::isdigit(static_cast<unsigned char>(message[digitPos])) != 0;
+	}
 }
 
 // parse_error::what() is the bare constant "Parse error"; the gRPC status must
@@ -34,8 +50,8 @@ namespace
 TEST(GrpcParseErrorDetailTests, GetDesignStatusIncludesParseDetailAndNoPaths)
 {
 	// TestDataFixture::getTestDataDir() is protected; resolve the same env var directly.
-	const char* envDir = std::getenv("ODB_TEST_DATA_DIR");
-	if (envDir == nullptr || envDir[0] == '\0')
+	std::string envDir;
+	if (!Utils::CrossPlatform::getenv_safe("ODB_TEST_DATA_DIR", envDir) || envDir.empty())
 	{
 		GTEST_SKIP() << "ODB_TEST_DATA_DIR not set";
 	}
@@ -75,12 +91,12 @@ TEST(GrpcParseErrorDetailTests, GetDesignStatusIncludesParseDetailAndNoPaths)
 	const auto& message = status.error_message();
 	EXPECT_NE(message.find("Parse error"), std::string::npos) << message;
 	// the data file and line: "data:<line>" (line number tracks fixture revisions)
-	EXPECT_THAT(message, ::testing::ContainsRegex("data:[0-9]+")) << message;
+	EXPECT_TRUE(ContainsMarkerFollowedByDigit(message, "data:")) << message;
 	// the failing record and token
 	EXPECT_NE(message.find("PIN 1 U"), std::string::npos) << message;
 	EXPECT_NE(message.find("token [U]"), std::string::npos) << message;
 	// the throw site: "<source basename>.cpp:<line>"
-	EXPECT_THAT(message, ::testing::ContainsRegex("EdaDataFile\\.cpp:[0-9]+")) << message;
+	EXPECT_TRUE(ContainsMarkerFollowedByDigit(message, "EdaDataFile.cpp:")) << message;
 	// sanitized: no server filesystem path may reach the client
 	EXPECT_EQ(message.find('/'), std::string::npos) << message;
 	EXPECT_EQ(message.find(cacheDir.string()), std::string::npos) << message;
