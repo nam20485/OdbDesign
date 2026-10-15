@@ -40,6 +40,10 @@ namespace Odb::Lib::FileModel
 
 		const parse_info& getParseInfo() const;
 
+		// "<source basename>:<line>", e.g. "FeaturesFile.cpp:623" — the throw
+		// site without the absolute build path, for client-facing messages
+		std::string sourceLocation() const;
+
 		[[nodiscard]] char const* what() const noexcept;
 
 	private:

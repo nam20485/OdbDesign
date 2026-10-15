@@ -1,11 +1,13 @@
 #include "OdbDesignServiceImpl.h"
 #include "FileModel/Design/FeaturesFile.h"
 #include "FileModel/Design/FileArchive.h"
+#include "FileModel/parse_error.h"
 #include <utility>
 #include <odbdesign_export.h>
 #include <featuresfile.pb.h>
 #include <grpcpp/impl/status.h>
 #include <string>
+#include <sstream>
 #include <exception>
 #include <grpcpp/support/sync_stream.h>
 #include <grpcpp/support/status_code_enum.h>
@@ -41,6 +43,42 @@ namespace OdbDesignServer
                 std::string out = s;
                 std::transform(out.begin(), out.end(), out.begin(), [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
                 return out;
+            }
+
+            // Client-facing exception detail for gRPC status messages.
+            // parse_error::what() is the bare constant "Parse error"; the
+            // diagnostics (data file/line, record, token, throw site) live in
+            // toString(), which otherwise reaches only the server log. Build
+            // them into the status, but reduce the data file to its basename:
+            // the extracted-archive path is server layout and must not reach
+            // clients of a server that may run with insecure credentials and
+            // no authentication (same policy as DesignCache::LoadFileArchive
+            // and the GetStandardFonts catch below).
+            std::string FormatExceptionForStatus(const std::exception& e)
+            {
+                const auto* pParseError = dynamic_cast<const Odb::Lib::FileModel::parse_error*>(&e);
+                if (pParseError == nullptr)
+                {
+                    return e.what();
+                }
+
+                const auto& info = pParseError->getParseInfo();
+                std::ostringstream ss;
+                ss << e.what() << ": " << info.dataFile.filename().string();
+                if (info.dataLineNumber >= 0)
+                {
+                    ss << ":" << info.dataLineNumber;
+                }
+                if (!info.dataLine.empty())
+                {
+                    ss << " record [" << info.dataLine << "]";
+                }
+                if (!info.dataToken.empty())
+                {
+                    ss << " token [" << info.dataToken << "]";
+                }
+                ss << " (thrown at " << pParseError->sourceLocation() << ")";
+                return ss.str();
             }
 
             UnitsInfo normalize_units(std::string rawUnits)
@@ -219,7 +257,7 @@ namespace OdbDesignServer
             }
             catch (const std::exception &e)
             {
-                std::string error = "Internal server error: " + std::string(e.what());
+                std::string error = "Internal server error: " + FormatExceptionForStatus(e);
                 return {grpc::StatusCode::INTERNAL, error};
             }
         }
@@ -296,7 +334,7 @@ namespace OdbDesignServer
             }
             catch (const std::exception &e)
             {
-                std::string error = "Internal server error: " + std::string(e.what());
+                std::string error = "Internal server error: " + FormatExceptionForStatus(e);
                 return {grpc::StatusCode::INTERNAL, error};
             }
         }
@@ -429,7 +467,7 @@ namespace OdbDesignServer
             }
             catch (const std::exception &e)
             {
-                std::string error = "Internal server error: " + std::string(e.what());
+                std::string error = "Internal server error: " + FormatExceptionForStatus(e);
                 return {grpc::StatusCode::INTERNAL, error};
             }
         }
@@ -686,7 +724,7 @@ namespace OdbDesignServer
             }
             catch (const std::exception &e)
             {
-                std::string error = "Internal server error: " + std::string(e.what());
+                std::string error = "Internal server error: " + FormatExceptionForStatus(e);
                 return {grpc::StatusCode::INTERNAL, error};
             }
         }
@@ -710,7 +748,7 @@ namespace OdbDesignServer
             }
             catch (const std::exception &e)
             {
-                std::string error = "Internal server error: " + std::string(e.what());
+                std::string error = "Internal server error: " + FormatExceptionForStatus(e);
                 return {grpc::StatusCode::INTERNAL, error};
             }
         }
