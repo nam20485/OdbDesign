@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| Status | **EXECUTING — M0.1, M0.3, M0.7 done; D3/D4/D5 resolved 2026-09-15** (UID key removed atomically with `id`; `Connectivity` always-on; REST frozen, security-only). Design + decision records in [component-connectivity.md](component-connectivity.md). **Phase 1 and Phase 2 are now unblocked.** Client work: M0.5 prep + [handoff doc](component-connectivity-client-handoff.md). |
+| Status | **EXECUTING — M0.1, M0.3, M0.7 done; M1.1+M1.3 implemented on `nam/component-uid-parse` (all 8 `;ID=` call sites wired to typed homes, `"ID"` map key deleted atomically with `id` population; NET `id=7` / PKG `id=13` proto fields added); M1.2's call-site wiring absorbed into the atomic commit per D3's no-window rule — only the M2.4 payload measurement remains of it; M1.4 next.** Design + decision records in [component-connectivity.md](component-connectivity.md). **Phase 2 follows M1.4.** Client work: M0.5 prep + [handoff doc](component-connectivity-client-handoff.md). |
 | Source | [component-connectivity.md](component-connectivity.md) (verified findings + contract) · [component-id-issue.md](component-id-issue.md) (originating client report) |
 | Branch | `nam/component-connectivity` — cut from `nam20485` @ `cd9c0ce`, docs merged to `origin/nam20485` as `ea2c081`, then `development` reconciled back in → tip `d7d1a5b`. **Merge commits only** (AGENTS.md directive 2026-09-10); PR base is `nam20485`. |
 | Cross-repo | Phase 3 spans two other repos: `odbdesign-3d-client-prototype` and `Odbdesign-info-client-india79-b`. Their work is specified here but executed as separate PRs in those repos. |
@@ -26,8 +26,8 @@ Phase 0 (now, parallel, no interdeps, no wire risk):
   M0.7 spec distribution fixes [DONE]: compose binds #1  +  swagger-spec-configmap-sync.yml
 
 Phase 1 (server fidelity; M1.1 + M1.3 are ATOMIC per D3 — one commit, one release):
-  M1.1 component ;ID= parse ──► M1.3 remove attributeLookupTable["ID"] (SAME commit, per D3)
-  M1.2 feature ;ID= parse ──► own commit; M2.4 measures its payload delta BEFORE it merges
+  M1.1 component ;ID= parse + M1.3 remove attributeLookupTable["ID"] [DONE — nam/component-uid-parse, one commit]
+  M1.2 feature ;ID= parse [call-site wiring absorbed into the M1.1+M1.3 commit; M2.4 measures its payload delta]
   M1.4 componentRecordsByName: delete the never-populated map field
 
 Phase 2 (ALWAYS-ON per D4 — no flag; rides the cached default flavour):
@@ -151,7 +151,9 @@ Verification actually executed, not assumed: workflow YAML parses (2 steps, no d
 
 Same shape, same leak: `FeaturesFile.h:66` declares `id`, `FeaturesFile.cpp:976` serializes it, and six `ParseAttributeLookupTable(attrIdString)` call sites (`:290`, `:367`, `:459`, `:554`, `:577` commented, `:621`) discard it. Wire the accessor through all live call sites, not just one. Feature volumes are far larger (11,868 UIDs in one `sample_design` layer) — measure the payload delta in M2.4, since this one *does* grow the response.
 
-### M1.3 Remove `attributeLookupTable["ID"]` — **DECIDED (D3), and atomic with M1.1**
+### M1.3 Remove `attributeLookupTable["ID"]` — **DELIVERED (with M1.1, atomically)**
+
+**Delivered on `nam/component-uid-parse`**: `ParseAttributeLookupTable` gained a `std::optional<unsigned int>& parsedId` out-parameter (reset on every call) and the third-section branch now routes `ID=<uid>` there instead of inserting the literal `"ID"` key. All **8 live call sites across all four record types** now store the typed value: components (`ComponentsFile.cpp:497`), features (5 sites), eda-data NET and PKG — which required new proto fields (`edadatafile.proto`: NetRecord `id = 7`, PackageRecord `id = 13`) so NET/PKG UIDs get typed homes exactly as this note called for. Record `id` members became `std::optional<unsigned int>` so absent stays absent (D2). Fixes a pre-existing fidelity quirk: features previously serialized `set_id(0)` unconditionally, reporting id 0 as *present* for every record. Out-of-spec third-section names (non-`ID`) are preserved as attributes rather than dropped; non-numeric/out-of-range id values leave the id unset without failing the parse. Swagger rewritten in the same commit (ComponentRecord.id, ComponentRecord.attributeLookupTable, FeatureRecord.id — the three "not yet populated / literal ID key" claims are gone; the configmap sync workflow propagates #2 on merge). Verified: no client reads the `"ID"` key (checked both client repos), full test suite green, `AttributeLookupTableTests` extended to 10 cases, id-presence round-trip tests added for all four record types.
 
 Drop the key. Dual-write/deprecate was proposed and rejected: the entry conflates an entity identifier with attribute assignments and invites the exact design error behind this defect, and there is no compatibility to preserve — re-verified 2026-09-15, no reader in either client (only a debug log of key *counts* at `OdbDesignGrpcClient.cs:369-377` and a mock writing `["0"]` at `MockOdbDesignClient.cs:183`) and the server only round-trips the map (`ComponentsFile.cpp:229`, `:265`).
 

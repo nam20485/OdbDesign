@@ -3,6 +3,9 @@
 #include <gmock/gmock-matchers.h>
 #include "FileModel/Design/FileArchive.h"
 #include "FileModel/Design/StepHdrFile.h"
+#include "FileModel/Design/ComponentsFile.h"
+#include "FileModel/Design/FeaturesFile.h"
+#include "FileModel/Design/EdaDataFile.h"
 #include <fstream>
 #include <memory>
 #include <cstdio>
@@ -252,8 +255,72 @@ namespace Odb::Test
 		ASSERT_TRUE(pFileArchiveMsg->SerializeToString(&wire));
 		ASSERT_FALSE(wire.empty());
 
-		Odb::Lib::Protobuf::FileArchive reparsed;
-		EXPECT_TRUE(reparsed.ParseFromString(wire));
-		EXPECT_EQ(reparsed.ByteSizeLong(), pFileArchiveMsg->ByteSizeLong());
-	}
-}
+		                Odb::Lib::Protobuf::FileArchive reparsed;
+		                EXPECT_TRUE(reparsed.ParseFromString(wire));
+		                EXPECT_EQ(reparsed.ByteSizeLong(), pFileArchiveMsg->ByteSizeLong());
+		        }
+
+		        // The ODB++ record unique id is optional: "no id present" must survive the
+		        // wire distinctly from id 0 (plan D2), on every record type that carries one.
+		        TEST(ProtobufSerializationTests, ComponentRecord_IdRoundTrip_PresenceSurvivesWire)
+		        {
+		                Odb::Lib::FileModel::Design::ComponentsFile::ComponentRecord withId;
+		                withId.compName = "U1";
+		                withId.id = 1234;
+		                auto pMsg = withId.to_protobuf();
+		                ASSERT_THAT(pMsg, NotNull());
+		                ASSERT_TRUE(pMsg->has_id());
+		                EXPECT_EQ(pMsg->id(), 1234u);
+
+		                Odb::Lib::FileModel::Design::ComponentsFile::ComponentRecord roundTripped;
+		                roundTripped.from_protobuf(*pMsg);
+		                ASSERT_TRUE(roundTripped.id.has_value());
+		                EXPECT_EQ(*roundTripped.id, 1234u);
+
+		                Odb::Lib::FileModel::Design::ComponentsFile::ComponentRecord withoutId;
+		                withoutId.compName = "U2";
+		                auto pMsg2 = withoutId.to_protobuf();
+		                ASSERT_THAT(pMsg2, NotNull());
+		                EXPECT_FALSE(pMsg2->has_id());
+
+		                Odb::Lib::FileModel::Design::ComponentsFile::ComponentRecord roundTripped2;
+		                roundTripped2.from_protobuf(*pMsg2);
+		                EXPECT_FALSE(roundTripped2.id.has_value());
+		        }
+
+		        TEST(ProtobufSerializationTests, FeatureNetPackageRecord_IdRoundTrip_PresenceSurvivesWire)
+		        {
+		                Odb::Lib::FileModel::Design::FeaturesFile::FeatureRecord feature;
+		                feature.id = 2718;
+		                auto pFeatureMsg = feature.to_protobuf();
+		                ASSERT_THAT(pFeatureMsg, NotNull());
+		                ASSERT_TRUE(pFeatureMsg->has_id());
+		                EXPECT_EQ(pFeatureMsg->id(), 2718u);
+		                Odb::Lib::FileModel::Design::FeaturesFile::FeatureRecord featureRoundTripped;
+		                featureRoundTripped.from_protobuf(*pFeatureMsg);
+		                ASSERT_TRUE(featureRoundTripped.id.has_value());
+		                EXPECT_EQ(*featureRoundTripped.id, 2718u);
+
+		                Odb::Lib::FileModel::Design::EdaDataFile::NetRecord net;
+		                net.id = 3141;
+		                auto pNetMsg = net.to_protobuf();
+		                ASSERT_THAT(pNetMsg, NotNull());
+		                ASSERT_TRUE(pNetMsg->has_id());
+		                EXPECT_EQ(pNetMsg->id(), 3141u);
+		                Odb::Lib::FileModel::Design::EdaDataFile::NetRecord netRoundTripped;
+		                netRoundTripped.from_protobuf(*pNetMsg);
+		                ASSERT_TRUE(netRoundTripped.id.has_value());
+		                EXPECT_EQ(*netRoundTripped.id, 3141u);
+
+		                Odb::Lib::FileModel::Design::EdaDataFile::PackageRecord pkg;
+		                pkg.id = 1618;
+		                auto pPkgMsg = pkg.to_protobuf();
+		                ASSERT_THAT(pPkgMsg, NotNull());
+		                ASSERT_TRUE(pPkgMsg->has_id());
+		                EXPECT_EQ(pPkgMsg->id(), 1618u);
+		                Odb::Lib::FileModel::Design::EdaDataFile::PackageRecord pkgRoundTripped;
+		                pkgRoundTripped.from_protobuf(*pPkgMsg);
+		                ASSERT_TRUE(pkgRoundTripped.id.has_value());
+		                EXPECT_EQ(*pkgRoundTripped.id, 1618u);
+		        }
+		}

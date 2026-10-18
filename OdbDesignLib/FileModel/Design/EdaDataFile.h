@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <optional>
 #include "../../odbdesign_export.h"
 #include "../../enums.h"
 #include "edadatafile.pb.h"
@@ -116,10 +117,12 @@ namespace Odb::Lib::FileModel::Design
 
 			~NetRecord();
 
-			std::string name;
-			unsigned int index = 0;
+			                        std::string name;
+			                        unsigned int index = 0;
+			                        // ODB++ product-model-wide unique id from the NET record ;ID= trailer
+			                        std::optional<unsigned int> id;
 
-			SubnetRecord::Vector m_subnetRecords;
+			                        SubnetRecord::Vector m_subnetRecords;
 			PropertyRecord::Vector m_propertyRecords;
 
 			// Inherited via IProtoBuffable
@@ -243,11 +246,13 @@ namespace Odb::Lib::FileModel::Design
 				m_propertyRecords.clear();
 			}
 
-			std::string name;
-			double pitch = 0.0;
-			double xMin = 0.0, yMin = 0.0;
-			double xMax = 0.0, yMax = 0.0;
-			unsigned int index = 0;
+			                        std::string name;
+			                        double pitch = 0.0;
+			                        double xMin = 0.0, yMin = 0.0;
+			                        double xMax = 0.0, yMax = 0.0;
+			                        unsigned int index = 0;
+			                        // ODB++ product-model-wide unique id from the PKG record ;ID= trailer
+			                        std::optional<unsigned int> id;
 
 			OutlineRecord::Vector m_outlineRecords;
 			PinRecord::Vector m_pinRecords;
