@@ -336,5 +336,41 @@ namespace Odb::Test
 		                pkgRoundTripped.from_protobuf(*pPkgMsg);
 		                ASSERT_TRUE(pkgRoundTripped.id.has_value());
 		                EXPECT_EQ(*pkgRoundTripped.id, 1618u);
+
+		                // explicit zero is present on the wire for the other three record
+		                // types too: each has its own hand-written has_value() guard, and a
+		                // guard that filtered 0 would pass every nonzero case above.
+		                Odb::Lib::FileModel::Design::FeaturesFile::FeatureRecord zeroFeature;
+		                zeroFeature.id = 0u;
+		                auto pZeroFeatureMsg = zeroFeature.to_protobuf();
+		                ASSERT_THAT(pZeroFeatureMsg, NotNull());
+		                ASSERT_TRUE(pZeroFeatureMsg->has_id());
+		                EXPECT_EQ(pZeroFeatureMsg->id(), 0u);
+		                Odb::Lib::FileModel::Design::FeaturesFile::FeatureRecord zeroFeatureRoundTripped;
+		                zeroFeatureRoundTripped.from_protobuf(*pZeroFeatureMsg);
+		                ASSERT_TRUE(zeroFeatureRoundTripped.id.has_value());
+		                EXPECT_EQ(*zeroFeatureRoundTripped.id, 0u);
+
+		                Odb::Lib::FileModel::Design::EdaDataFile::NetRecord zeroNet;
+		                zeroNet.id = 0u;
+		                auto pZeroNetMsg = zeroNet.to_protobuf();
+		                ASSERT_THAT(pZeroNetMsg, NotNull());
+		                ASSERT_TRUE(pZeroNetMsg->has_id());
+		                EXPECT_EQ(pZeroNetMsg->id(), 0u);
+		                Odb::Lib::FileModel::Design::EdaDataFile::NetRecord zeroNetRoundTripped;
+		                zeroNetRoundTripped.from_protobuf(*pZeroNetMsg);
+		                ASSERT_TRUE(zeroNetRoundTripped.id.has_value());
+		                EXPECT_EQ(*zeroNetRoundTripped.id, 0u);
+
+		                Odb::Lib::FileModel::Design::EdaDataFile::PackageRecord zeroPkg;
+		                zeroPkg.id = 0u;
+		                auto pZeroPkgMsg = zeroPkg.to_protobuf();
+		                ASSERT_THAT(pZeroPkgMsg, NotNull());
+		                ASSERT_TRUE(pZeroPkgMsg->has_id());
+		                EXPECT_EQ(pZeroPkgMsg->id(), 0u);
+		                Odb::Lib::FileModel::Design::EdaDataFile::PackageRecord zeroPkgRoundTripped;
+		                zeroPkgRoundTripped.from_protobuf(*pZeroPkgMsg);
+		                ASSERT_TRUE(zeroPkgRoundTripped.id.has_value());
+		                EXPECT_EQ(*zeroPkgRoundTripped.id, 0u);
 		        }
 		}
