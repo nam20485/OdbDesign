@@ -48,9 +48,12 @@ jobs:
           test -f "$FILE" || { echo "::error::manifest missing: $FILE"; exit 1; }
 
           # Blob SHA of the COMMITTED file, captured BEFORE regeneration rewrites
-          # it — the Contents API needs it, and reading it afterwards would return
+          # it (exported for the python payload builder below — shell variables are
+          # invisible to os.environ without it, the 2026-10-18 dispatch failure)
+          # — the Contents API needs it, and reading it afterwards would return
           # the same value only because the file is unchanged (the 409 trap, §6.4).
           SHA="$(git rev-parse "HEAD:$FILE")"
+          export SHA
 
           kubectl create configmap odbdesign-server-swagger-spec \
             --from-file=odbdesign-server-0.9-swagger.yaml="$SRC" \
