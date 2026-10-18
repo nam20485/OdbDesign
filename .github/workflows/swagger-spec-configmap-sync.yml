@@ -50,7 +50,7 @@ jobs:
           # Blob SHA of the COMMITTED file, captured BEFORE regeneration rewrites
           # it (exported for the python payload builder below — shell variables are
           # invisible to os.environ without it, the 2026-10-18 dispatch failure)
-          # it — the Contents API needs it, and reading it afterwards would return
+          # — the Contents API needs it, and reading it afterwards would return
           # the same value only because the file is unchanged (the 409 trap, §6.4).
           SHA="$(git rev-parse "HEAD:$FILE")"
           export SHA
