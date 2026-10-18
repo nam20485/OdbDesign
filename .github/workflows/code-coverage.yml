@@ -106,20 +106,19 @@ jobs:
 
       - name: Restore vcpkg Binary Cache
         uses: actions/cache/restore@v4
+        id: vcpkg-restore
         with:
           path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
-          # run_id probe key never matches, so restore resolves via
-          # restore-keys and the explicit save step always writes — avoids
-          # the exact-key-hit no-save trap after ABI drift
-          key: vcpkg-archives-linux-x64-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}-${{ env.VCPKG_COMMIT }}-${{ env.RUNNER_IMAGE_VERSION }}-${{ github.run_id }}
+          # Canonical key (no run_id probe): steady-state runs that restore an
+          # exact hit write nothing (the old per-run unique save churned ~1.4 GB
+          # per coverage run into the org cache quota). The dynamic-release
+          # fallback reads the store vcpkg-cache-warm.yml maintains (it holds
+          # both static and dynamic triplets).
+          key: vcpkg-archives-linux-x64-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}-${{ env.VCPKG_COMMIT }}-${{ env.RUNNER_IMAGE_VERSION }}
           restore-keys: |
             vcpkg-archives-linux-x64-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}-${{ env.VCPKG_COMMIT }}-${{ env.RUNNER_IMAGE_VERSION }}-
+            vcpkg-archives-linux-dynamic-release-
             vcpkg-archives-linux-x64-
-
-      - name: Setup NuGet API Key
-        shell: bash
-        run: |
-          mono $(which nuget) setApiKey "${{ secrets.VCPKG_PAT_TOKEN }}" -Source "${{ env.FEED_PUSH_URL }}" -NonInteractive || true
 
       - name: Install vcpkg
         run: |
@@ -136,13 +135,14 @@ jobs:
         run: '"${{ env.VCPKG_ROOT }}/vcpkg" install'
 
       - name: Save vcpkg Binary Cache
-        # save right after the install so archives survive later step
-        # failures/cancellations; unique run_id key means it always saves
-        if: always()
+        # save right after the install so archives survive later step failures/
+        # cancellations; guarded to new generations with a real payload (this
+        # lane reads the feed, never writes it, so no API key setup here).
+        if: always() && steps.vcpkg-restore.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
         with:
           path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
-          key: vcpkg-archives-linux-x64-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}-${{ env.VCPKG_COMMIT }}-${{ env.RUNNER_IMAGE_VERSION }}-${{ github.run_id }}
+          key: vcpkg-archives-linux-x64-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}-${{ env.VCPKG_COMMIT }}-${{ env.RUNNER_IMAGE_VERSION }}
 
       - name: Configure CMake with Coverage Flags
         run: >
