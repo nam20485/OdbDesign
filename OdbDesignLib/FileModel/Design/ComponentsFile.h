@@ -2,6 +2,7 @@
 
 #include <string>
 #include <map>
+#include <optional>
 #include <memory>
 #include <filesystem>
 #include <vector>
@@ -45,7 +46,9 @@ namespace Odb::Lib::FileModel::Design
 			std::string compName;	// refDes
 			std::string partName;
 			//std::string attributes;
-			unsigned int id = 0;
+			// ODB++ product-model-wide unique id from the CMP record ;ID= trailer.
+			// Optional: absent stays absent (never reported as id 0).
+			std::optional<unsigned int> id;
 			// TODO: deal with index of records
 			unsigned int index = 0;
 

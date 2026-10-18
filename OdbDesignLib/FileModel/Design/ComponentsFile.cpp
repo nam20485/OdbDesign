@@ -207,6 +207,10 @@ namespace Odb::Lib::FileModel::Design
 		pComponentRecordMessage->set_partname(Odb::Lib::Text::ToUtf8(partName));
 		//pComponentRecordMessage->set_attributes(attributes);
 		pComponentRecordMessage->set_index(index);
+		if (id.has_value())
+		{
+			pComponentRecordMessage->set_id(*id);
+		}
 
 		for (const auto& pPropertyRecord : m_propertyRecords)
 		{
@@ -239,6 +243,10 @@ namespace Odb::Lib::FileModel::Design
 		partName = message.partname();
 		//attributes = message.attributes();
 		index = message.index();
+		if (message.has_id())
+		{
+			id = message.id();
+		}
 
 		for (const auto& propertyRecordMessage : message.propertyrecords())
 		{
@@ -480,7 +488,7 @@ namespace Odb::Lib::FileModel::Design
 							pCurrentComponentRecord->pkgRef,
 							attrIdString);
 
-						if (!pCurrentComponentRecord->ParseAttributeLookupTable(attrIdString))
+						if (!pCurrentComponentRecord->ParseAttributeLookupTable(attrIdString, pCurrentComponentRecord->id))
 						{
 							throw_parse_error(m_path, line, token, lineNumber);
 						}
