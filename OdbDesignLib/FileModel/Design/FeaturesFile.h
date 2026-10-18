@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <vector>
 #include <string>
+#include <optional>
 #include "../../enums.h"
 #include "../../IProtoBuffable.h"
 #include "featuresfile.pb.h"
@@ -63,7 +64,9 @@ namespace Odb::Lib::FileModel::Design
 			int sym_num = -1;
 			Polarity polarity = Polarity::Positive;
 			int dcode = 0;
-			unsigned int id = 0;
+			// ODB++ product-model-wide unique id from the feature record ;ID= trailer.
+			// Optional: absent stays absent (never reported as id 0).
+			std::optional<unsigned int> id;
 
 			int orient_def = 0;
 			double orient_def_rotation = 0.0;

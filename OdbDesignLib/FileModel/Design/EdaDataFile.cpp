@@ -122,6 +122,10 @@ namespace Odb::Lib::FileModel::Design
         pNetRecordMessage->set_name(Odb::Lib::Text::ToUtf8(name));
         //pNetRecordMessage->set_attributesidstring(attributesIdString);
         pNetRecordMessage->set_index(index);
+        if (id.has_value())
+        {
+            pNetRecordMessage->set_id(*id);
+        }
 
         for (const auto& propertyRecord : m_propertyRecords)
         {
@@ -146,6 +150,10 @@ namespace Odb::Lib::FileModel::Design
         name = message.name();
 		//attributesIdString = message.attributesidstring();
 		index = message.index();
+		if (message.has_id())
+		{
+			id = message.id();
+		}
 
 		for (const auto& propertyRecordMessage : message.propertyrecords())
 		{
@@ -645,7 +653,7 @@ namespace Odb::Lib::FileModel::Design
 
                         std::string attrIdString;
                         lineStream >> attrIdString;
-                        if (!pCurrentNetRecord->ParseAttributeLookupTable(attrIdString))
+                        if (!pCurrentNetRecord->ParseAttributeLookupTable(attrIdString, pCurrentNetRecord->id))
                         {
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
@@ -903,7 +911,7 @@ namespace Odb::Lib::FileModel::Design
 
                         std::string attrIdString;
                         lineStream >> attrIdString;
-                        if (!pCurrentPackageRecord->ParseAttributeLookupTable(attrIdString))
+                        if (!pCurrentPackageRecord->ParseAttributeLookupTable(attrIdString, pCurrentPackageRecord->id))
                         {
                             throw_parse_error(m_path, line, token, lineNumber);
                         }
@@ -1576,6 +1584,10 @@ namespace Odb::Lib::FileModel::Design
         pPackageRecordMessage->set_ymin(yMin);
         pPackageRecordMessage->set_xmax(xMax);
         pPackageRecordMessage->set_ymax(yMax);
+        if (id.has_value())
+        {
+            pPackageRecordMessage->set_id(*id);
+        }
         //pPackageRecordMessage->set_attributesidstring(attributesIdString);
         for (const auto& pinRecord : m_pinRecords)
         {
@@ -1611,6 +1623,10 @@ namespace Odb::Lib::FileModel::Design
         yMin = message.ymin();
         xMax = message.xmax();
         yMax = message.ymax();
+        if (message.has_id())
+        {
+            id = message.id();
+        }
         //attributesIdString = message.attributesidstring();
 
         for (const auto& pinRecordMessage : message.pinrecords())
