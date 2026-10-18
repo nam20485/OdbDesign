@@ -1,6 +1,6 @@
 #include "AttributeLookupTable.h"
 #include <sstream>
-#include <limits>
+#include <charconv>
 
 namespace Odb::Lib::FileModel::Design
 {
@@ -67,17 +67,21 @@ namespace Odb::Lib::FileModel::Design
 
 				if (name == "ID")
 				{
-					try
+					// strict numeric parse: std::from_chars rejects partial values
+					// ("5abc", "0x10" -- std::stoul would have accepted their numeric
+					// prefixes), negative values ("-5" wraps under std::stoul on
+					// platforms with a 32-bit unsigned long) and out-of-range values
+					// alike; a rejected value leaves the id unset rather than failing
+					// the whole record parse. An empty value ("ID=") never reaches
+					// here: the getline guard above fails the parse like any other
+					// malformed name=value pair, matching the attribute section's
+					// behavior.
+					unsigned int idValue = 0;
+					const auto* const valueEnd = value.data() + value.size();
+					const auto result = std::from_chars(value.data(), valueEnd, idValue);
+					if (result.ec == std::errc() && result.ptr == valueEnd)
 					{
-						const auto idValue = std::stoul(value);
-						if (idValue <= std::numeric_limits<unsigned int>::max())
-						{
-							parsedId = static_cast<unsigned int>(idValue);
-						}
-					}
-					catch (const std::exception&)
-					{
-						// non-numeric id value: leave unset rather than fail the whole parse
+						parsedId = idValue;
 					}
 				}
 				else

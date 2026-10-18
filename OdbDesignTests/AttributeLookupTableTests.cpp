@@ -148,3 +148,30 @@ TEST(AttributeLookupTableTests, ParseAttributeLookupTable_ReusedOutParam_DoesNot
 	EXPECT_TRUE(alt.ParseAttributeLookupTable("0;1=4", id));
 	EXPECT_FALSE(id.has_value());
 }
+
+// Explicit zero is a present id, not an absent one: D2's sharpest edge
+// ("no id present" is distinct from "id 0").
+TEST(AttributeLookupTableTests, ParseAttributeLookupTable_ExplicitZeroId_IsPresentNotAbsent)
+{
+	TestAttributeLookupTable alt;
+	std::optional<unsigned int> id;
+	EXPECT_TRUE(alt.ParseAttributeLookupTable("0;;ID=0", id));
+	EXPECT_TRUE(alt.GetAttributeLookupTable().empty());
+	ASSERT_TRUE(id.has_value());
+	EXPECT_EQ(*id, 0u);
+}
+
+// Partial, negative, and radix-prefixed values are rejected outright rather
+// than partially accepted: std::stoul would have taken the "5" of "5abc" and
+// the "0" of "0x10", and wrapped "-5" on platforms with a 32-bit unsigned long.
+TEST(AttributeLookupTableTests, ParseAttributeLookupTable_PartialNegativeOrRadixId_Rejected)
+{
+	TestAttributeLookupTable alt;
+	std::optional<unsigned int> id;
+	EXPECT_TRUE(alt.ParseAttributeLookupTable("0;;ID=5abc", id));
+	EXPECT_FALSE(id.has_value());
+	EXPECT_TRUE(alt.ParseAttributeLookupTable("0;;ID=-5", id));
+	EXPECT_FALSE(id.has_value());
+	EXPECT_TRUE(alt.ParseAttributeLookupTable("0;;ID=0x10", id));
+	EXPECT_FALSE(id.has_value());
+}

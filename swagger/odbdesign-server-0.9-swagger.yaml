@@ -2383,6 +2383,13 @@ components:
           type: integer
           format: int32
           description: Net index within the eda data.
+        id:
+          type: integer
+          format: int32
+          description: >-
+            ODB++ unique identifier from the NET record's `;ID=` trailer, from the same
+            product-model-wide number space as `ComponentRecord.id`. Optional: omitted
+            entirely when the source record carries no id (never reported as 0).
         subnetRecords:
           type: array
           description: Subnets (vias, traces, planes, toeprints) of the net.
@@ -2499,6 +2506,13 @@ components:
           type: number
           format: double
           description: Bounding box maximum Y.
+        id:
+          type: integer
+          format: int32
+          description: >-
+            ODB++ unique identifier from the PKG record's `;ID=` trailer, from the same
+            product-model-wide number space as `ComponentRecord.id`. Optional: omitted
+            entirely when the source record carries no id (never reported as 0).
         attributesIdString:
           type: string
           description: Comma-separated attribute ids referencing the attribute lookup table.
@@ -2935,9 +2949,11 @@ components:
             ODB++ unique identifier assigned to this feature (the `ID=<id>` field of the
             `L`/`A`/`P`/`T` feature record), from the same product-model-wide number space
             as `ComponentRecord.id`. Optional, permanent once assigned, and sparse:
-            populated from the `;ID=` trailer of the feature record whenever the source
-            carries one, and omitted entirely otherwise (never reported as 0). The
-            identifier never appears in `attributeLookupTable`.
+            populated from the `;ID=` trailer for every feature record type that parses
+            its trailer -- barcode (`B`) records do not yet parse theirs, so their `id`
+            stays unset even when the source carries one. For all other types the field
+            is omitted entirely when the source carries no id (never reported as 0), and
+            the identifier never appears in `attributeLookupTable`.
         orient_def:
           type: integer
           format: int32
@@ -3185,10 +3201,11 @@ components:
             type: string
           description: >-
             Attribute assignments parsed from the trailing field of the `CMP` record, as
-            `attribute-index -> value`. Keys are numeric indices into the sibling
-            `attributeNames` list -- resolve attribute names only for numeric keys. The
-            component's ODB++ unique identifier is not an attribute and never appears in
-            this table; read it from `id`.
+            `attribute-index -> value`. Keys are normally numeric indices into the
+            sibling `attributeNames` list -- resolve attribute names only for numeric
+            keys (out-of-spec non-numeric names are preserved verbatim rather than
+            dropped). The component's ODB++ unique identifier is not an attribute and
+            never appears in this table; read it from `id`.
     ToeprintRecord:
       type: object
       description: A component pin's land pattern on this layer.

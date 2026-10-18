@@ -286,6 +286,20 @@ namespace Odb::Test
 		                Odb::Lib::FileModel::Design::ComponentsFile::ComponentRecord roundTripped2;
 		                roundTripped2.from_protobuf(*pMsg2);
 		                EXPECT_FALSE(roundTripped2.id.has_value());
+
+		                // explicit zero is present, not absent (D2)
+		                Odb::Lib::FileModel::Design::ComponentsFile::ComponentRecord zeroId;
+		                zeroId.compName = "U3";
+		                zeroId.id = 0u;
+		                auto pMsg3 = zeroId.to_protobuf();
+		                ASSERT_THAT(pMsg3, NotNull());
+		                ASSERT_TRUE(pMsg3->has_id());
+		                EXPECT_EQ(pMsg3->id(), 0u);
+
+		                Odb::Lib::FileModel::Design::ComponentsFile::ComponentRecord roundTripped3;
+		                roundTripped3.from_protobuf(*pMsg3);
+		                ASSERT_TRUE(roundTripped3.id.has_value());
+		                EXPECT_EQ(*roundTripped3.id, 0u);
 		        }
 
 		        TEST(ProtobufSerializationTests, FeatureNetPackageRecord_IdRoundTrip_PresenceSurvivesWire)
