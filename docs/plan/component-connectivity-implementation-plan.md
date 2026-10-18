@@ -161,11 +161,13 @@ Drop the key. Dual-write/deprecate was proposed and rejected: the entry conflate
 
 Implementation note: the key is created by the **shared** `AttributeLookupTable::ParseAttributeLookupTable` third-section branch (`AttributeLookupTable.cpp:48-61`), which has **8 live call sites across four record types** — components (`ComponentsFile.cpp:489`), features (`FeaturesFile.cpp:290`, `:367`, `:459`, `:554`, `:621`; `:577` is commented out and does not count), and eda-data net + package records (`EdaDataFile.cpp:648`, `:906`) — 8 in total. Changing only the component path leaves the `"ID"` entry in feature, net and package attribute maps. Fix it in the shared function — return the parsed id to the caller instead of inserting it into the map — and give each record type's `id` field the value, which also means NET and PKG UIDs get typed homes rather than staying smuggled.
 
-### M1.4 `componentRecordsByName`
+### M1.4 `componentRecordsByName` — **DELIVERED (deleted) on `nam/delete-component-records-by-name`**
 
 Either populate during parse (`ComponentsFile.cpp` has a standing `// TODO: add records to maps by name while adding to their vectors` above the member) and serialize it in `to_protobuf`, or delete the field from `componentsfile.proto:72` and swagger. Note the key is `compName`, which is case-sensitive (spec p.152) while `std::map<std::string,…>` orders byte-wise — fine, but state it.
 
 **Populating costs payload**: it duplicates 813 full records per side. Given §4.2, **recommend delete** and let clients index `refDes → record` locally (allowed by conformance rule 1).
+
+**Delivered as the delete**: `componentsfile.proto` field 10 removed with `reserved 10; reserved "componentRecordsByName";` (tag and name never reused), the never-populated C++ member/getter/dtor-clear removed, and the swagger property dropped. Zero readers existed anywhere (verified by grep across lib/server/app/tests). Already-serialized data still parses — the field degrades to an unknown field and is ignored. The compName case-sensitivity note above is moot with the map gone; clients keying `refDes` locally use `StringComparer.Ordinal` per the handoff contract.
 
 ### Phase 1 tests
 

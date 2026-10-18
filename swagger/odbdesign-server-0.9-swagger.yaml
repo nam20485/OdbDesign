@@ -3092,11 +3092,6 @@ components:
           description: Component placement records.
           items:
             $ref: "#/components/schemas/ComponentRecord"
-        componentRecordsByName:
-          type: object
-          additionalProperties:
-            $ref: "#/components/schemas/ComponentRecord"
-          description: Component records keyed by component (refdes) name.
         propertyRecords:
           type: array
           description: File-level property records.

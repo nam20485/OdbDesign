@@ -69,7 +69,11 @@ message ComponentsFile {
     repeated string attributeTextValues = 8;
 
     repeated ComponentRecord componentRecords = 9;
-    map<string, ComponentRecord> componentRecordsByName = 10;
+    // deleted: map<string, ComponentRecord> componentRecordsByName = 10;
+    // never populated by the parser; clients index refDes -> record locally
+    // (conformance rule 1). Reserved so the tag/name are never reused.
+    reserved 10;
+    reserved "componentRecordsByName";
 
     repeated PropertyRecord propertyRecords = 11;
     map<string, PropertyRecord> propertyRecordsByName = 12;
