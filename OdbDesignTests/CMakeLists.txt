@@ -21,6 +21,7 @@ add_executable(OdbDesignTests
     "Fixtures/TestUtils.h"
     "FeatureRecordSurfaceTests.cpp"
     "SymbolContractTests.cpp"
+    "ConnectivityContractTests.cpp"
     "MatrixFileTests.cpp"
     "ComponentHeightPipelineTests.cpp"
     "DesignCacheThreadSafetyTests.cpp"
@@ -47,6 +48,9 @@ add_executable(OdbDesignTests
      "FileArchiveLoadTests.cpp")
 
 target_link_libraries(OdbDesignTests PRIVATE GTest::gtest_main GTest::gmock_main)
+
+# Source-tree paths for tests (M0.3 golden fixtures, gitignored local design corpora)
+target_compile_definitions(OdbDesignTests PRIVATE ODBDESIGN_SOURCE_DIR="${REPO_ROOT}")
 
 # link to OdbDesign library
 target_link_libraries(OdbDesignTests PRIVATE OdbDesign)

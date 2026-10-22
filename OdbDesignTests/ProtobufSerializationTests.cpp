@@ -78,6 +78,61 @@ namespace Odb::Test
 		//ASSERT_THAT(pDesign->GetComponents(), ContainerEq(pDesignFromMsg->GetComponents()));
 	}
 
+	TEST_F(FileArchiveLoadFixture, Design_Connectivity_AlwaysOnAndRoundTrip_sample_design_Succeeds)
+	{
+		// M2.1/D4: connectivity rides EVERY flavour, never gated on
+		// include_normalized_lists — the pruned default must carry it while the
+		// normalized collections stay pruned.
+		auto pDesign = m_pDesignCache->GetDesign("sample_design");
+		ASSERT_THAT(pDesign, NotNull());
+
+		const auto prunedMsg = pDesign->to_protobuf(/*includeNormalizedLists=*/false);
+		ASSERT_THAT(prunedMsg, NotNull());
+		ASSERT_TRUE(prunedMsg->has_connectivity()) << "pruned flavour must carry connectivity (D4 always-on)";
+		EXPECT_GT(prunedMsg->connectivity().components_size(), 0);
+		EXPECT_GT(prunedMsg->connectivity().nets_size(), 0);
+		EXPECT_EQ(prunedMsg->nets().size(), 0);
+		EXPECT_EQ(prunedMsg->components().size(), 0);
+
+		// Round-trip: the full flavour restores m_nets/m_components/m_packages
+		// (including the DP1-threaded UID), so a re-derive must reproduce the
+		// same connectivity. Subnet ordinals are the documented exception
+		// (DP2: in-memory only, not serialized in the normalized lists).
+		const auto fullMsg = pDesign->to_protobuf();
+		ASSERT_THAT(fullMsg, NotNull());
+		ASSERT_TRUE(fullMsg->has_connectivity());
+
+		auto pRoundTripped = std::make_unique<Odb::Lib::ProductModel::Design>();
+		pRoundTripped->from_protobuf(*fullMsg);
+		const auto rederivedMsg = pRoundTripped->to_protobuf();
+		ASSERT_THAT(rederivedMsg, NotNull());
+		ASSERT_TRUE(rederivedMsg->has_connectivity());
+
+		const auto& original = fullMsg->connectivity();
+		const auto& rederived = rederivedMsg->connectivity();
+		ASSERT_EQ(rederived.components_size(), original.components_size());
+		for (auto i = 0; i < original.components_size(); ++i)
+		{
+			const auto& o = original.components(i);
+			const auto& r = rederived.components(i);
+			EXPECT_EQ(r.refdes(), o.refdes());
+			EXPECT_EQ(r.has_id(), o.has_id()) << o.refdes() << ": UID presence must survive the round-trip (DP1)";
+			if (o.has_id()) EXPECT_EQ(r.id(), o.id());
+			EXPECT_EQ(r.side(), o.side());
+			EXPECT_EQ(r.package(), o.package());
+			ASSERT_EQ(r.pins_size(), o.pins_size());
+			for (auto p = 0; p < o.pins_size(); ++p)
+			{
+				EXPECT_EQ(r.pins(p).number(), o.pins(p).number()) << o.refdes() << " pin " << p;
+				EXPECT_EQ(r.pins(p).name(), o.pins(p).name()) << o.refdes() << " pin " << p;
+				EXPECT_EQ(r.pins(p).connection().kind(), o.pins(p).connection().kind()) << o.refdes() << " pin " << p;
+				EXPECT_EQ(r.pins(p).connection().net(), o.pins(p).connection().net()) << o.refdes() << " pin " << p;
+			}
+		}
+		EXPECT_EQ(rederived.nets_size(), original.nets_size());
+		EXPECT_EQ(rederived.netmembers_size(), original.netmembers_size());
+	}
+
 	TEST_F(FileArchiveLoadFixture, Component_ProtoBuf_RoundTrip_designodb_rigidflex_Succeeds)
 	{
 		auto pDesign = m_pDesignCache->GetDesign("designodb_rigidflex");
