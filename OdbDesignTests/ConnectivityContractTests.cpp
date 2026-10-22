@@ -114,14 +114,6 @@ namespace Odb::Test
 			return copy;
 		}
 
-		// Golden pins for one component, keyed by pin number.
-		struct GoldenPin
-		{
-			bool hasNet{ false };
-			unsigned int netOrdinal{ 0 };
-			unsigned int subnetOrdinal{ 0 };
-			std::string name;
-		};
 	}
 
 	class ConnectivityContractTest : public FileArchiveLoadFixture
@@ -184,8 +176,8 @@ namespace Odb::Test
 
 			unsigned int noneNetOrdinal = 0;
 			auto hasNoneNet = false;
-			const auto goldenNetCount = static_cast<size_t>(goldenNets->list_value().values().size());
-			ASSERT_LE(goldenNetCount, static_cast<size_t>(connectivity.nets().size()));
+			const auto goldenNetCount = static_cast<int>(goldenNets->list_value().values().size());
+			ASSERT_LE(goldenNetCount, connectivity.nets().size());
 			for (auto i = 0; i < goldenNetCount; ++i)
 			{
 				const auto* entry = at(*goldenNets, i);

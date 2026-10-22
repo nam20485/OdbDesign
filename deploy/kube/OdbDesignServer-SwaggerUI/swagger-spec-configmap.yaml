@@ -3683,6 +3683,8 @@ data:
                 type: integer
                 format: int32
         Component:
+          type: object
+          description: Placed component in the product model.
           properties:
             refDes:
               type: string
