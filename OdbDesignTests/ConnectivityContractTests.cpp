@@ -133,12 +133,18 @@ namespace Odb::Test
 			if (archiveFromTestData)
 			{
 				archive = getIsolatedDesignPath("sample_design.tgz");
+				ASSERT_FALSE(archive.empty()) << goldenName << ": archive path unresolved";
 			}
 			else
 			{
+				// An empty path here means the gitignored local corpus is not
+				// present (CI) — skip, do not fail.
 				archive = localArchiveFor(goldenName, m_scratchDir);
+				if (archive.empty())
+				{
+					GTEST_SKIP() << goldenName << ": local-only design corpus not present on this machine";
+				}
 			}
-			ASSERT_FALSE(archive.empty()) << goldenName << ": archive path unresolved";
 			if (!std::filesystem::exists(archive))
 			{
 				GTEST_SKIP() << goldenName << ": design archive not present on this machine (local-only corpus)";
