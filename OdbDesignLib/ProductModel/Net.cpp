@@ -31,14 +31,19 @@ namespace Odb::Lib::ProductModel
 		return m_pinConnections;
 	}
 
+	const PinConnection::Vector& Net::GetPinConnections() const
+	{
+		return m_pinConnections;
+	}
+
 	unsigned int Net::GetIndex() const
 	{
 		return m_index;
 	}
 
-	bool Net::AddPinConnection(std::shared_ptr<Component> pComponent, std::shared_ptr<Pin> pPin)
+	bool Net::AddPinConnection(std::shared_ptr<Component> pComponent, std::shared_ptr<Pin> pPin, unsigned int subnetNumber)
 	{
-		m_pinConnections.push_back(std::make_shared<PinConnection>(pComponent, pPin));
+		m_pinConnections.push_back(std::make_shared<PinConnection>(pComponent, pPin, subnetNumber));
 		return true;
 	}
 

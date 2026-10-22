@@ -149,6 +149,31 @@ namespace Odb::Test
             << "warm fetches and racing background pre-serialization must not re-serialize the design";
     }
 
+    // ---- M2.3: connectivity rides the cached default flavour (D4) ----
+
+    TEST_F(ResponseCacheTest, WarmCachedBytes_IncludeConnectivity_AlwaysOn)
+    {
+        // D4/M2.3: GetDesignRequest gained no connectivity flag - connectivity
+        // must ride the single cached default-flavour response. Assert on the
+        // exact bytes the warm path serves (TryGetDesignBytes), not on a
+        // re-serialization, so a cached-flavour regression cannot hide.
+        ASSERT_TRUE(m_sharedDesignCache->LoadDesignAsync("sample_design"));
+        ASSERT_TRUE(waitForCondition([this]()
+        {
+            return m_sharedDesignCache->HasCachedResponse("sample_design");
+        }, kParseTimeout)) << "background pre-serialization did not commit";
+
+        std::string cachedBytes;
+        ASSERT_TRUE(m_sharedDesignCache->TryGetDesignBytes("sample_design", cachedBytes));
+
+        Odb::Lib::Protobuf::ProductModel::Design parsed;
+        ASSERT_TRUE(parsed.ParseFromString(cachedBytes));
+        ASSERT_TRUE(parsed.has_connectivity()) << "cached default flavour lacks connectivity (D4 always-on)";
+        EXPECT_GT(parsed.connectivity().components_size(), 0);
+        EXPECT_GT(parsed.connectivity().nets_size(), 0);
+        EXPECT_EQ(parsed.nets_size(), 0) << "default flavour must stay pruned";
+    }
+
     TEST_F(ResponseCacheTest, ColdThenWarm_ResponseEqualsDirectSerialization)
     {
         // See WarmGetDesign_ServesIdenticalBytes: multi-minute full-design

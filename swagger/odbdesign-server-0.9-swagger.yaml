@@ -3515,6 +3515,170 @@ components:
           additionalProperties:
             $ref: "#/components/schemas/Part"
           description: Parts keyed by part number.
+        connectivity:
+          description: Server-owned, derived netlist view — always present (no request flag).
+          allOf:
+            - $ref: "#/components/schemas/Connectivity"
+    Connectivity:
+      type: object
+      description: >-
+        Derived, format-independent, server-owned netlist. Identity rule: refDes
+        names a component, package name names a pin roster, net ordinal names a
+        net (the NET record sequence of the eda/data file, ODB++ spec p.153).
+        Clients never join fileModel records to read it — the format
+        conventions (net_num -1 / 4294967295, $NONE$, toeprintNumber) are
+        absorbed server-side into Connection.kind and resolved pin numbers.
+        Emitted always-on by both serialization flavours.
+      properties:
+        nets:
+          type: array
+          description: Dense net roster — every eda-data NET record in sequence,
+            $NONE$ included, so `net` ordinals keep their file identity.
+          items:
+            $ref: "#/components/schemas/ConnectivityNetEntry"
+        packages:
+          type: array
+          description: Deduplicated pin rosters — one entry per package, not per component.
+          items:
+            $ref: "#/components/schemas/ConnectivityPackagePins"
+        components:
+          type: array
+          description: Placed components with per-pin connections.
+          items:
+            $ref: "#/components/schemas/ConnectivityPlacedComponent"
+        netMembers:
+          type: array
+          description: The CONNECTED edges of `components`, inverted (net to
+            members), for the net tab. $NONE$ members are excluded.
+          items:
+            $ref: "#/components/schemas/ConnectivityNetMembers"
+    ConnectivityNetEntry:
+      type: object
+      description: Net roster entry. `ordinal` is the eda-data NET record
+        sequence number (spec p.153) — the value `Connection.net` refers to.
+      properties:
+        ordinal:
+          type: integer
+          format: int32
+          description: Net ordinal (NET record sequence).
+        name:
+          type: string
+          description: Net name; "" = unnamed net. "$NONE$" keeps its literal
+            name so ordinals stay dense — branch on Connection.kind, never on
+            this name.
+    ConnectivityPackagePins:
+      type: object
+      description: Pin roster of one package.
+      properties:
+        package:
+          type: string
+          description: Package name — the value PlacedComponent.package refers to.
+        pins:
+          type: array
+          description: Package pins, pin-number ascending.
+          items:
+            $ref: "#/components/schemas/ConnectivityPackagePin"
+    ConnectivityPackagePin:
+      type: object
+      description: One pin of a package roster.
+      properties:
+        number:
+          type: integer
+          format: int32
+          description: Pin number (roster ordinal).
+        name:
+          type: string
+          description: Pin name from the package roster.
+    ConnectivityPlacedComponent:
+      type: object
+      description: One placed component and the connection state of every pin
+        of its package roster (package-roster order).
+      properties:
+        refDes:
+          type: string
+          description: Authoritative component key (spec p.152 — case-significant).
+        id:
+          type: integer
+          format: int32
+          description: ODB++ product-model-wide UID from `;ID=`. Durable handle
+            for revision diffing; never a join key. Absent when the design
+            carries no `;ID=` (never synthesized).
+        side:
+          type: string
+          description: Board side — informational only.
+          enum: [BsNone, Top, Bottom]
+        package:
+          type: string
+          description: Package name — indexes `packages`.
+        pins:
+          type: array
+          description: Every package-roster pin of this component in pin-number
+            ascending order; pins with no connection are present with
+            kind UNCONNECTED.
+          items:
+            $ref: "#/components/schemas/ConnectivityComponentPin"
+    ConnectivityComponentPin:
+      type: object
+      description: One pin of a placed component and its connection state.
+      properties:
+        number:
+          type: integer
+          format: int32
+          description: Resolved package pin number. A toeprintNumber never
+            reaches a client.
+        name:
+          type: string
+          description: Package-roster pin name.
+        connection:
+          $ref: "#/components/schemas/ConnectivityConnection"
+    ConnectivityConnection:
+      type: object
+      description: Connection state of one component pin.
+      properties:
+        kind:
+          type: string
+          description: "CONNECTED: the pin joins the net named by `net`.
+            UNCONNECTED: net_num -1/4294967295, or membership of the $NONE$
+            net — `net` is unset and there are no subnets. Clients branch on
+            this field, never on sentinel values or magic net names."
+          enum: [UNKNOWN, CONNECTED, UNCONNECTED]
+        net:
+          type: integer
+          format: int32
+          description: Ordinal into `Connectivity.nets`; meaningful only when
+            kind == CONNECTED.
+        subnets:
+          type: array
+          description: Per-net subnet ordinals (eda/data); empty unless CONNECTED.
+          items:
+            type: integer
+            format: int32
+    ConnectivityNetMembers:
+      type: object
+      description: Members of one net (the net tab view).
+      properties:
+        net:
+          type: integer
+          format: int32
+          description: Ordinal into `Connectivity.nets`.
+        members:
+          type: array
+          description: Member components, refDes ascending.
+          items:
+            $ref: "#/components/schemas/ConnectivityMember"
+    ConnectivityMember:
+      type: object
+      description: One component's membership in a net.
+      properties:
+        refDes:
+          type: string
+          description: Member component key.
+        pin:
+          type: array
+          description: Pin numbers by which this component joins the net, ascending.
+          items:
+            type: integer
+            format: int32
     Component:
       type: object
       description: Placed component in the product model.

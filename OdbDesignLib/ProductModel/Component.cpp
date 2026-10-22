@@ -21,13 +21,14 @@ namespace Odb::Lib::ProductModel
 	{
 	}
 
-	Component::Component(const std::string& refDes, const std::string& partName, std::shared_ptr<Package> pPackage, unsigned int index, BoardSide side, std::shared_ptr<Part> pPart)
+	Component::Component(const std::string& refDes, const std::string& partName, std::shared_ptr<Package> pPackage, unsigned int index, BoardSide side, std::shared_ptr<Part> pPart, std::optional<unsigned int> id)
 		: m_refDes(refDes)
 		, m_partName(partName)
 		, m_pPackage(pPackage)
 		, m_index(index)
 		, m_side(side)
 		, m_pPart(pPart)
+		, m_id(std::move(id))
 	{
 	}
 
@@ -65,6 +66,11 @@ namespace Odb::Lib::ProductModel
 		return m_pPart;
 	}
 
+	std::optional<unsigned int> Component::GetId() const
+	{
+		return m_id;
+	}
+
 	std::unique_ptr<Odb::Lib::Protobuf::ProductModel::Component> Component::to_protobuf() const
 	{
 		auto pComponentMsg = std::make_unique<Odb::Lib::Protobuf::ProductModel::Component>();
@@ -74,6 +80,10 @@ namespace Odb::Lib::ProductModel
 		pComponentMsg->set_side(static_cast<Odb::Lib::Protobuf::BoardSide>(m_side));
 		pComponentMsg->mutable_package()->CopyFrom(*m_pPackage->to_protobuf());		
 		pComponentMsg->mutable_part()->CopyFrom(*m_pPart->to_protobuf());
+		if (m_id.has_value())
+		{
+			pComponentMsg->set_id(*m_id);
+		}
 		return pComponentMsg;
 	}
 
@@ -83,6 +93,7 @@ namespace Odb::Lib::ProductModel
 		m_partName = message.partname();
 		m_index = message.index();
 		m_side = static_cast<BoardSide>(message.side());
+		m_id = message.has_id() ? std::optional<unsigned int>(message.id()) : std::nullopt;
 		m_pPackage = std::make_shared<Package>("", -1);
 		m_pPackage->from_protobuf(message.package());
 		m_pPart = std::make_shared<Part>("");

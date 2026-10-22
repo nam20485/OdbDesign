@@ -106,8 +106,14 @@ namespace Odb::Lib::ProductModel
 		bool BuildNoneNet();
 		bool BreakSinglePinNets();
 
-		// helper convienience methods
-		bool CreatePinConnection(const std::string& refDes, unsigned int netNumber, unsigned int pinNumber, const std::string& pinName);
+	// helper convienience methods
+	bool CreatePinConnection(const std::string& refDes, unsigned int netNumber, unsigned int pinNumber, const std::string& pinName, unsigned int subnetNumber = 0);
+
+	// Serializes the derived Connectivity view (connectivity.proto) from the
+	// in-memory model — a serialization of the BuildPlacements result, not a
+	// second join. Called by to_protobuf in BOTH flavours (decision D4:
+	// always-on, never gated on includeNormalizedLists).
+	void FillConnectivityMessage(Protobuf::ProductModel::Connectivity* pConnectivityMsg) const;
 		bool CreateNetConnections(const std::shared_ptr<FileModel::Design::EdaDataFile::NetRecord>& pNetRecord, const std::shared_ptr<FileModel::Design::StepDirectory>& pStepDirectory);
 
 		constexpr inline static const char* NONE_NET_NAME = "$NONE$";

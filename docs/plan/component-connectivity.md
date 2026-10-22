@@ -213,6 +213,8 @@ message Connectivity {
 
 Answers both pin questions the earlier draft missed: *what pins a component has* (`packages` roster + `components[].pins` instances) and *through which pins it reaches a net* (`pins[].connection`, inverted in `netMembers`). Both directions are the same 2,811 edges, so no client inverts anything.
 
+**As-built (Phase 2, decided 2026-10-21 — see [component-connectivity-phase2-plan.md](component-connectivity-phase2-plan.md) §2):** `PlacedComponent.pins` emit in **package-roster order** (pin-number ascending), not toeprint order (toeprint order is not reconstructible from `m_nets`); `Connection.subnets` **are populated** (subnet ordinal threaded through `PinConnection` at build, in-memory only); `$NONE$` members emit `Kind.UNCONNECTED` with `net` unset **and are excluded from `netMembers`** while the `nets` roster stays dense; `PlacedComponent.id` is threaded through the ProductModel `Component` (`component.proto` `id = 7`) so it survives round-trips. `ComponentPin.name` is the **package-roster pin name** — panelized designs namespace their raw toeprint labels per placed component (e.g. `C1418-1`), so the toeprint label is deliberately not the published name.
+
 It is **derived from what `BuildPlacementsFromComponentsFiles` already resolved** — `m_nets[].pinConnections[]` holds `(Component, Pin)` pairs in memory today. M2.1 serializes an existing result; it does not add a second join.
 
 Three format leaks the contract absorbs, so clients stop needing ODB++ folklore:
