@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | Purpose | File-level execution plan for the next steps of the connectivity epic: server Phase 2 (M2.1–M2.4), the Phase 2 deploy, and the client fan-out it unblocks (F6 → F4/F5). Derived from [program-status-2026-10-21.md](program-status-2026-10-21.md); milestones inherit their definitions from [component-connectivity-implementation-plan.md](component-connectivity-implementation-plan.md) and the contract/decisions in [component-connectivity.md](component-connectivity.md). |
-| Status | **EXECUTING on `nam/connectivity-phase2` (cut from `785ae26` 2026-10-21). DP1–DP4 adopted; M2.1+M2.2 derive, contract/round-trip/M2.3/M2.4 tests, swagger #1+#2 all implemented and green locally. M2.4 measured: sample_design connectivity 119.5 KB (gate ≤150 KB) · 350-41017 7.48 MB = 0.59% of fileModel (gate ≤10%) · M1.2 feature-UID delta 427 KB @ 86,733 ids (sample), 3.11 MB @ 622,517 ids (Panel), 0 (350-41017, no UIDs).** |
+| Status | **MERGED — PR #606 (`5a074c9`, 2026-10-22) closes server Phase 2. Differential tests pass against all four goldens; M2.4 gates passed (sample 119.5 KB ≤ 150 KB · 350-41017 0.59% ≤ 10%). Image `nam20485-1279`/`nam20485-latest` published; k3s rollout pending node access (see checklist step 10). Remaining: client fan-out (F6 → F4/F5, both client repos).** |
 | Ground truth | Verified 2026-10-21 against `nam20485` @ `785ae26` (local FF'd after arriving 5 behind). **#603 merged 2026-10-22 — Phase 1 is CLOSED**; this supersedes the program status doc, which was written while #603 was still open. Every code claim below was re-grepped on that tip, not inherited. |
 | Branch plan | One branch `nam/connectivity-phase2` cut from `nam20485`, **one PR** carrying M2.1→M2.4 as ordered commits; M2.4's size numbers in the PR description are the merge gate. PR base `nam20485`, merge commits only (`gh pr merge --merge`). |
 | Build / test | `cmake --preset linux-dynamic-release && cmake --build --preset linux-dynamic-release && ctest --preset linux-dynamic-release`. **A CMake reconfigure is required** — protos are globbed (`OdbDesignLib/CMakeLists.txt:55`), so the new `connectivity.proto` is invisible to an existing build dir. |
@@ -140,8 +140,8 @@ Executed **after** the Phase 2 merge (field numbers final then; the handoff doc 
 [x] 6. M2.3 warm-path assertion in ResponseCacheTests
 [x] 7. M2.4 size scenarios in DesignFetchBenchmarkTests; record numbers + M1.2 delta
 [x] 8. Swagger #1 schemas + regenerate #2 in-PR; living plan-doc Status row update
-[ ] 9. PR → nam20485; kilo review; numbers in description = merge gate; gh pr merge --merge
-[ ] 10. M2.5 publish → k3s rollout restart → live acceptance probe → record the roll
+[x] 9. PR #606 → nam20485; kilo review (3 findings fixed, threads resolved); all required checks green; MERGED 2026-10-22 as `5a074c9` (merge commit, per directive)
+[~] 10. M2.5 publish ✓ → k3s rollout BLOCKED → live acceptance pending. **Publish verified:** docker-publish run `39738305784` (2026-10-22 07:08 UTC, first non-skipped since 10-18) pushed `ghcr.io/nam20485/odbdesign:nam20485-1279` + `:nam20485-latest`. **Rollout blocked:** `debian13vm` is offline on the tailnet (last seen 1 day ago) — cluster unreachable from this machine; per this plan's own rule the rollout waits for access rather than being skipped. When the node is back: `kubectl rollout restart deployment/odbdesign-server-v1`, then the live acceptance probe (connectivity present + golden-conformant on `sample_design`, spot-check a `$NONE$` pin reads `UNCONNECTED`), then record the roll here. Also verified on merge: swagger-spec-configmap-sync took its "already matches" no-op branch (success, no 409).
 [ ] 11. F6 push-PRs (both clients) → their F4/F5 (client-rooted sessions)
 ```
 
