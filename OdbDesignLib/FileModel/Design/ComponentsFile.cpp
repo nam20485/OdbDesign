@@ -27,8 +27,8 @@ namespace Odb::Lib::FileModel::Design
 	{
 		m_attributeNames.clear();
 		m_attributeTextValues.clear();
-		                m_componentRecords.clear();
-		                m_bomDescriptionRecordsByCpn.clear();
+		m_componentRecords.clear();
+		m_bomDescriptionRecordsByCpn.clear();
 	}
 
 	std::string ComponentsFile::GetUnits() const
@@ -59,9 +59,9 @@ namespace Odb::Lib::FileModel::Design
 	const ComponentsFile::ComponentRecord::Vector& ComponentsFile::GetComponentRecords() const
 	{
 		return m_componentRecords;
-	        }
+	}
 
-	        const std::vector<std::string>& ComponentsFile::GetAttributeNames() const
+	const std::vector<std::string>& ComponentsFile::GetAttributeNames() const
 	{
 		return m_attributeNames;
 	}
