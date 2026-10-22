@@ -16,12 +16,18 @@ namespace Odb::Lib::ProductModel
 	class ODBDESIGN_EXPORT PinConnection : public IProtoBuffable<Odb::Lib::Protobuf::ProductModel::PinConnection>
 	{
 	public:
-		PinConnection(std::shared_ptr<Component> pComponent, std::shared_ptr<Pin> pPin);		
-		PinConnection(std::shared_ptr<Component> pComponent, std::shared_ptr<Pin> pPin, const std::string& name);
+		PinConnection(std::shared_ptr<Component> pComponent, std::shared_ptr<Pin> pPin, unsigned int subnetNumber = 0);		
+		PinConnection(std::shared_ptr<Component> pComponent, std::shared_ptr<Pin> pPin, const std::string& name, unsigned int subnetNumber = 0);
 		//~PinConnection();	
 
 		std::shared_ptr<Pin> GetPin() const;
 		std::shared_ptr<Component> GetComponent() const;
+
+		// Subnet ordinal within the connection's NET record (eda/data, spec
+		// p.153). In-memory only — deliberately not serialized into the
+		// normalized pinconnection.proto; the Connectivity derive (M2.1) is
+		// its sole consumer.
+		unsigned int GetSubnetNumber() const;
 
 		static std::string MakeName(const Component& component, const Pin& pin);
 
@@ -36,6 +42,7 @@ namespace Odb::Lib::ProductModel
 		std::string m_name;
 		std::shared_ptr<Component> m_pComponent;
 		std::shared_ptr<Pin> m_pPin;
+		unsigned int m_subnetNumber = 0;
 
 	};
 }

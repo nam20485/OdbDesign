@@ -13,15 +13,16 @@ namespace Odb::Lib::ProductModel
 	//{
 	//}
 
-	PinConnection::PinConnection(std::shared_ptr<Component> pComponent, std::shared_ptr<Pin> pPin)
-		: PinConnection(pComponent, pPin, MakeName(*pComponent, *pPin))
+	PinConnection::PinConnection(std::shared_ptr<Component> pComponent, std::shared_ptr<Pin> pPin, unsigned int subnetNumber)
+		: PinConnection(pComponent, pPin, MakeName(*pComponent, *pPin), subnetNumber)
 	{
-	}	
+	}
 
-	PinConnection::PinConnection(std::shared_ptr<Component> pComponent, std::shared_ptr<Pin> pPin, const std::string& name)
+	PinConnection::PinConnection(std::shared_ptr<Component> pComponent, std::shared_ptr<Pin> pPin, const std::string& name, unsigned int subnetNumber)
 		: m_name(name)
 		, m_pComponent(pComponent)
-		, m_pPin(pPin)		
+		, m_pPin(pPin)
+		, m_subnetNumber(subnetNumber)
 	{
 	}
 
@@ -40,6 +41,11 @@ namespace Odb::Lib::ProductModel
 	std::shared_ptr<Component> PinConnection::GetComponent() const
 	{
 		return m_pComponent;
+	}
+
+	unsigned int PinConnection::GetSubnetNumber() const
+	{
+		return m_subnetNumber;
 	}
 
 	std::unique_ptr<Protobuf::ProductModel::PinConnection> PinConnection::to_protobuf() const

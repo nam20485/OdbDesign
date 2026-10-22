@@ -206,12 +206,149 @@ namespace Odb::Lib::ProductModel
 			FillProtobufMapWithSanitizedKeys(*pDesignMsg->mutable_partsbyname(), m_partsByName);
 		}
 
+		// Connectivity is always-on (decision D4): derived here
+		// unconditionally — outside the includeNormalizedLists gate — so every
+		// flavour carries it and no client ever has to ask for it.
+		FillConnectivityMessage(pDesignMsg->mutable_connectivity());
+
 #ifndef NDEBUG
 		// Debug-only assertion: verify all string fields are valid UTF-8 before serialization
 		Odb::Lib::Text::AssertAllStringFieldsAreValidUtf8(*pDesignMsg, "Design");
 #endif
 
 		return pDesignMsg;
+	}
+
+	void Design::FillConnectivityMessage(Protobuf::ProductModel::Connectivity* pConnectivityMsg) const
+	{
+		using ConnectivityMsg = Protobuf::ProductModel::Connectivity;
+
+		// Net roster: dense — every eda-data NET record in sequence, $NONE$
+		// included — so `net` ordinals keep their spec identity (p.153: the
+		// ordinal IS the NET record sequence) and clients need no name
+		// conventions to interpret them.
+		auto noneNetOrdinal = 0u;
+		auto hasNoneNet = false;
+		for (const auto& pNet : m_nets)
+		{
+			auto pNetEntryMsg = pConnectivityMsg->add_nets();
+			pNetEntryMsg->set_ordinal(pNet->GetIndex());
+			pNetEntryMsg->set_name(Odb::Lib::Text::ToUtf8(pNet->GetName()));
+			if (!hasNoneNet && pNet->GetName() == NONE_NET_NAME)
+			{
+				noneNetOrdinal = pNet->GetIndex();
+				hasNoneNet = true;
+			}
+		}
+
+		// Package pin rosters — deduped by construction (one entry per
+		// package, not per component). Package::AddPin assigns sequential
+		// indices, so each roster is already pin-number ascending.
+		for (const auto& pPackage : m_packages)
+		{
+			auto pPackagePinsMsg = pConnectivityMsg->add_packages();
+			pPackagePinsMsg->set_package(Odb::Lib::Text::ToUtf8(pPackage->GetName()));
+			for (const auto& pPin : pPackage->GetPins())
+			{
+				auto pPackagePinMsg = pPackagePinsMsg->add_pins();
+				pPackagePinMsg->set_number(pPin->GetIndex());
+				pPackagePinMsg->set_name(Odb::Lib::Text::ToUtf8(pPin->GetName()));
+			}
+		}
+
+		// The resolved edges the product model already holds. Grouped by
+		// refDes then pin number; on a (refDes, pin) that somehow carries two
+		// edges the last one wins (no fixture design exhibits this).
+		struct Edge
+		{
+			unsigned int net;
+			unsigned int subnet;
+		};
+		std::map<std::string, std::map<unsigned int, Edge>> edgesByRefDes;
+		for (const auto& pNet : m_nets)
+		{
+			// $NONE$ membership is a labeling convention, not a connection
+			// (decision DP4): those pins emit UNCONNECTED and join no
+			// netMembers entry.
+			if (hasNoneNet && pNet->GetIndex() == noneNetOrdinal) continue;
+
+			for (const auto& pPinConnection : pNet->GetPinConnections())
+			{
+				const auto& pComponent = pPinConnection->GetComponent();
+				const auto& pPin = pPinConnection->GetPin();
+				if (pComponent == nullptr || pPin == nullptr) continue;
+
+				edgesByRefDes[pComponent->GetRefDes()][pPin->GetIndex()] = Edge{ pNet->GetIndex(), pPinConnection->GetSubnetNumber() };
+			}
+		}
+
+		// Net members: the same CONNECTED edges, inverted, for the net tab.
+		// Map iteration order gives net-ordinal-then-refDes determinism and
+		// pin numbers ascend within each member.
+		std::map<unsigned int, std::map<std::string, std::vector<unsigned int>>> membersByNet;
+		for (const auto& refDesAndPins : edgesByRefDes)
+		{
+			for (const auto& pinAndEdge : refDesAndPins.second)
+			{
+				membersByNet[pinAndEdge.second.net][refDesAndPins.first].push_back(pinAndEdge.first);
+			}
+		}
+		for (const auto& netAndMembers : membersByNet)
+		{
+			auto pNetMembersMsg = pConnectivityMsg->add_netmembers();
+			pNetMembersMsg->set_net(netAndMembers.first);
+			for (const auto& refDesAndPins : netAndMembers.second)
+			{
+				auto pMemberMsg = pNetMembersMsg->add_members();
+				pMemberMsg->set_refdes(Odb::Lib::Text::ToUtf8(refDesAndPins.first));
+				for (const auto pinNumber : refDesAndPins.second)
+				{
+					pMemberMsg->add_pin(pinNumber);
+				}
+			}
+		}
+
+		// Placed components in package-roster order (decision DP3). A pin
+		// with no edge — net_num -1 (skipped at build time) or a roster pin
+		// the design never placed a toeprint on — is UNCONNECTED with no net
+		// and no subnets; a toeprintNumber never reaches a client.
+		for (const auto& pComponent : m_components)
+		{
+			auto pPlacedComponentMsg = pConnectivityMsg->add_components();
+			pPlacedComponentMsg->set_refdes(Odb::Lib::Text::ToUtf8(pComponent->GetRefDes()));
+			const auto id = pComponent->GetId();
+			if (id.has_value())
+			{
+				pPlacedComponentMsg->set_id(*id);
+			}
+			pPlacedComponentMsg->set_side(static_cast<Odb::Lib::Protobuf::BoardSide>(pComponent->GetSide()));
+
+			const auto& pPackage = pComponent->GetPackage();
+			if (pPackage == nullptr) continue;
+			pPlacedComponentMsg->set_package(Odb::Lib::Text::ToUtf8(pPackage->GetName()));
+
+			const auto findEdgesIt = edgesByRefDes.find(pComponent->GetRefDes());
+			for (const auto& pPin : pPackage->GetPins())
+			{
+				auto pComponentPinMsg = pPlacedComponentMsg->add_pins();
+				pComponentPinMsg->set_number(pPin->GetIndex());
+				pComponentPinMsg->set_name(Odb::Lib::Text::ToUtf8(pPin->GetName()));
+
+				auto pConnectionMsg = pComponentPinMsg->mutable_connection();
+				if (findEdgesIt != edgesByRefDes.end())
+				{
+					const auto findEdgeIt = findEdgesIt->second.find(pPin->GetIndex());
+					if (findEdgeIt != findEdgesIt->second.end())
+					{
+						pConnectionMsg->set_kind(ConnectivityMsg::Connection::CONNECTED);
+						pConnectionMsg->set_net(findEdgeIt->second.net);
+						pConnectionMsg->add_subnets(findEdgeIt->second.subnet);
+						continue;
+					}
+				}
+				pConnectionMsg->set_kind(ConnectivityMsg::Connection::UNCONNECTED);
+			}
+		}
 	}
 
 	void Design::from_protobuf(const Odb::Lib::Protobuf::ProductModel::Design& message)
@@ -307,7 +444,7 @@ namespace Odb::Lib::ProductModel
 			auto& pPackage = m_packages[pComponentRecord->pkgRef];
 			auto index = pComponentRecord->index;
 			auto& pPart = m_partsByName[pComponentRecord->partName];
-			auto pComponent = std::make_shared<Component>(pComponentRecord->compName, pComponentRecord->partName, pPackage, index, pComponentsFile->GetSide(), pPart);
+			auto pComponent = std::make_shared<Component>(pComponentRecord->compName, pComponentRecord->partName, pPackage, index, pComponentsFile->GetSide(), pPart, pComponentRecord->id);
 
 			m_components.push_back(pComponent);
 			m_componentsByName[pComponent->GetRefDes()] = pComponent;
@@ -438,24 +575,24 @@ namespace Odb::Lib::ProductModel
 			const auto& toeprintRecords = pComponentRecord->m_toeprintRecords;
 			for (const auto& pToeprintRecord : toeprintRecords)
 			{				
-				auto& toeprintName = pToeprintRecord->name;
-				auto pinNumber = pToeprintRecord->pinNumber;
-				auto netNumber = pToeprintRecord->netNumber;
-				auto& refDes = pComponentRecord->compName;
-				//auto subnetNumber = pToeprintRecord->subnetNumber;
+			auto& toeprintName = pToeprintRecord->name;
+			auto pinNumber = pToeprintRecord->pinNumber;
+			auto netNumber = pToeprintRecord->netNumber;
+			auto subnetNumber = pToeprintRecord->subnetNumber;
+			auto& refDes = pComponentRecord->compName;
 
-				// -1 means no connection for the component pin
-				if (netNumber != static_cast<unsigned int>(-1))
-				{
-					if (!CreatePinConnection(refDes, netNumber, pinNumber, toeprintName)) return false;
-				}
+			// -1 means no connection for the component pin
+			if (netNumber != static_cast<unsigned int>(-1))
+			{
+				if (!CreatePinConnection(refDes, netNumber, pinNumber, toeprintName, subnetNumber)) return false;
+			}
 			}
 		}
 
 		return true;
 	}
 
-	bool Design::CreatePinConnection(const std::string& refDes, unsigned int netNumber, unsigned int pinNumber, const std::string& pinName)
+	bool Design::CreatePinConnection(const std::string& refDes, unsigned int netNumber, unsigned int pinNumber, const std::string& pinName, unsigned int subnetNumber)
 	{
 		if (netNumber < m_nets.size())
 		{
@@ -468,7 +605,7 @@ namespace Odb::Lib::ProductModel
 			auto& pNet = m_nets[netNumber];
 			if (pNet == nullptr) return false;
 
-			if (!pNet->AddPinConnection(pComponent, pPin)) return false;
+			if (!pNet->AddPinConnection(pComponent, pPin, subnetNumber)) return false;
 			return true;
 		}
 		else
