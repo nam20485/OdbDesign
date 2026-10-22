@@ -48,9 +48,12 @@ jobs:
           test -f "$FILE" || { echo "::error::manifest missing: $FILE"; exit 1; }
 
           # Blob SHA of the COMMITTED file, captured BEFORE regeneration rewrites
-          # it — the Contents API needs it, and reading it afterwards would return
+          # it (exported for the python payload builder below — shell variables are
+          # invisible to os.environ without it, the 2026-10-18 dispatch failure)
+          # — the Contents API needs it, and reading it afterwards would return
           # the same value only because the file is unchanged (the 409 trap, §6.4).
           SHA="$(git rev-parse "HEAD:$FILE")"
+          export SHA
 
           kubectl create configmap odbdesign-server-swagger-spec \
             --from-file=odbdesign-server-0.9-swagger.yaml="$SRC" \
@@ -89,11 +92,25 @@ jobs:
           # Committed through the Contents API, not git push: the nam20485 ruleset
           # requires signed commits and defines no pull_request rule, so a
           # GITHUB_TOKEN commit via the API is GitHub-signed (§3.3).
+          #
+          # The payload rides --input, not argv: the ~119 KB spec base64s to ~158 KB,
+          # past Linux's 128 KiB per-argument limit, so `-f content=...` died with
+          # "Argument list too long" (exit 126) on the first real drift, 2026-10-18.
+          python3 - <<'PY'
+          import base64, json, os
+          payload = {
+              "message": "chore(swagger): regenerate spec ConfigMap [skip ci]",
+              "content": base64.b64encode(open(os.environ["FILE"], "rb").read()).decode("ascii"),
+              "sha": os.environ["SHA"],
+              "branch": "nam20485",
+          }
+          out = os.path.join(os.environ.get("RUNNER_TEMP", "/tmp"), "configmap-payload.json")
+          with open(out, "w", encoding="utf-8") as f:
+              json.dump(payload, f)
+          print(f"payload written: {out} ({os.path.getsize(out)} bytes)")
+          PY
           gh api --method PUT "repos/${REPO}/contents/${FILE}" \
-            -f message="chore(swagger): regenerate spec ConfigMap [skip ci]" \
-            -f content="$(base64 -w0 < "$FILE")" \
-            -f sha="$SHA" \
-            -f branch=nam20485 \
+            --input "${RUNNER_TEMP:-/tmp}/configmap-payload.json" \
             > /dev/null
 
           echo "Committed regenerated ConfigMap to nam20485."
