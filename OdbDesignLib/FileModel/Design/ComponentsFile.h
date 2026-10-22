@@ -122,7 +122,6 @@ namespace Odb::Lib::FileModel::Design
 		};	// BomDescriptionRecord
 
 		const ComponentRecord::Vector& GetComponentRecords() const;
-		const ComponentRecord::StringMap& GetComponentRecordsByName() const;
 		const std::vector<std::string>& GetAttributeNames() const;
 		const std::vector<std::string>& GetAttributeTextValues() const;
 		const BomDescriptionRecord::StringMap& GetBomDescriptionRecordsByCpn() const;
@@ -146,8 +145,6 @@ namespace Odb::Lib::FileModel::Design
 		std::vector<std::string> m_attributeTextValues;
 
 		ComponentRecord::Vector m_componentRecords;
-		// TODO: add records to maps by name while adding to their vectors
-		ComponentRecord::StringMap m_componentRecordsByName;
 
 		BomDescriptionRecord::StringMap m_bomDescriptionRecordsByCpn;
 
