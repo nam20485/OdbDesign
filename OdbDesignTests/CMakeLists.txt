@@ -49,9 +49,6 @@ add_executable(OdbDesignTests
 
 target_link_libraries(OdbDesignTests PRIVATE GTest::gtest_main GTest::gmock_main)
 
-# Source-tree paths for tests (M0.3 golden fixtures, gitignored local design corpora)
-target_compile_definitions(OdbDesignTests PRIVATE ODBDESIGN_SOURCE_DIR="${REPO_ROOT}")
-
 # link to OdbDesign library
 target_link_libraries(OdbDesignTests PRIVATE OdbDesign)
 
@@ -62,6 +59,11 @@ target_link_libraries(OdbDesignTests PRIVATE gRPC::gpr gRPC::grpc gRPC::grpc++ g
 # Include directories for OdbDesignServer sources and generated gRPC files
 # The generated gRPC files are in OdbDesignServer's binary directory
 get_filename_component(REPO_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/.." ABSOLUTE)
+
+# Source-tree paths for tests (M0.3 golden fixtures, gitignored local design
+# corpora). Must follow the REPO_ROOT set() above or the define expands empty
+# and the paths silently become cwd-relative.
+target_compile_definitions(OdbDesignTests PRIVATE ODBDESIGN_SOURCE_DIR="${REPO_ROOT}")
 set(ODBDESIGN_SERVER_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/../OdbDesignServer")
 set(GRPC_CODEGEN_DIR "${ODBDESIGN_SERVER_BINARY_DIR}/grpc")
 target_include_directories(OdbDesignTests PRIVATE 

@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| Status | **EXECUTING — M0.1, M0.3, M0.7 done; M1.1+M1.3 implemented on `nam/component-uid-parse` (all 8 `;ID=` call sites wired to typed homes, `"ID"` map key deleted atomically with `id` population; NET `id=7` / PKG `id=13` proto fields added); M1.2's call-site wiring absorbed into the atomic commit per D3's no-window rule — only the M2.4 payload measurement remains of it; M1.4 next.** Design + decision records in [component-connectivity.md](component-connectivity.md). **Phase 2 follows M1.4.** Client work: M0.5 prep + [handoff doc](component-connectivity-client-handoff.md). |
+| Status | **EXECUTING — Phase 1 COMPLETE: M1.1+M1.2+M1.3 (#601, 10-18) and M1.4 (#603, merged 2026-10-22, closes Phase 1). Phase 2 (M2.1–M2.4) implemented on `nam/connectivity-phase2` — execution plan, decisions DP1–DP4 and the M2.4 measured numbers in [component-connectivity-phase2-plan.md](component-connectivity-phase2-plan.md).** Design + decision records in [component-connectivity.md](component-connectivity.md). Client work: M0.5 prep + [handoff doc](component-connectivity-client-handoff.md). |
 | Source | [component-connectivity.md](component-connectivity.md) (verified findings + contract) · [component-id-issue.md](component-id-issue.md) (originating client report) |
 | Branch | `nam/component-connectivity` — cut from `nam20485` @ `cd9c0ce`, docs merged to `origin/nam20485` as `ea2c081`, then `development` reconciled back in → tip `d7d1a5b`. **Merge commits only** (AGENTS.md directive 2026-09-10); PR base is `nam20485`. |
 | Cross-repo | Phase 3 spans two other repos: `odbdesign-3d-client-prototype` and `Odbdesign-info-client-india79-b`. Their work is specified here but executed as separate PRs in those repos. |
