@@ -206,9 +206,10 @@ jobs:
         with:
           name: linux-coverage-report
           path: coverage/
-          # 90 days so the Pages workflow (jekyll-gh-pages.yml) can still
-          # fetch a report from a quiet branch between release-window deploys.
-          retention-days: 90
+          # 30 days: still spans a release window for the Pages workflow
+          # (jekyll-gh-pages.yml) to fetch a report from a quiet branch,
+          # without accumulating quarter-scale artifact clutter.
+          retention-days: 30
 
       - name: Upload Coverage to Codacy
         if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
