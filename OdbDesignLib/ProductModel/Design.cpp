@@ -655,20 +655,6 @@ namespace Odb::Lib::ProductModel
 		return true;
 	}
 
-	bool Design::BuildPlacementsFromEdaDataFile()
-	{
-		auto pStepDirectory = m_pFileModel->GetStepDirectory();
-		if (pStepDirectory == nullptr) return false;
-
-		const auto& edaData = pStepDirectory->GetEdaDataFile();
-		
-		for (const auto& pNetRecord : edaData.GetNetRecords())
-		{			
-			if (!CreateNetConnections(pNetRecord, pStepDirectory)) return false;			
-		}		
-
-		return true;
-	}
 
 	bool Design::CreateNetConnections(const std::shared_ptr<Odb::Lib::FileModel::Design::EdaDataFile::NetRecord>& pNetRecord, const std::shared_ptr<FileModel::Design::StepDirectory>& pStepDirectory)
 	{
