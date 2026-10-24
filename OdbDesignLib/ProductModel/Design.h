@@ -101,8 +101,6 @@ namespace Odb::Lib::ProductModel
 		bool BuildPlacementsFromComponentsFiles();
 		bool BuildPlacementsFromComponentsFile(const FileModel::Design::ComponentsFile* pComponentsFile);		
 
-		bool BuildPlacementsFromEdaDataFile();
-		
 		bool BuildNoneNet();
 		bool BreakSinglePinNets();
 
