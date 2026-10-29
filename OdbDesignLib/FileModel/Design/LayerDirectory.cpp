@@ -85,13 +85,32 @@ namespace Odb::Lib::FileModel::Design
 	std::unique_ptr<Odb::Lib::Protobuf::LayerDirectory> Odb::Lib::FileModel::Design::LayerDirectory::to_protobuf() const
 	{
 		std::unique_ptr<Odb::Lib::Protobuf::LayerDirectory> pLayerDirectoryMessage(new Odb::Lib::Protobuf::LayerDirectory);
-		pLayerDirectoryMessage->set_name(Odb::Lib::Text::ToUtf8(m_name));
-		pLayerDirectoryMessage->set_path(Odb::Lib::Text::ToUtf8(m_path.string()));
-		pLayerDirectoryMessage->mutable_components()->CopyFrom(*m_componentsFile.to_protobuf());
-		pLayerDirectoryMessage->mutable_featurefile()->CopyFrom(*m_featuresFile.to_protobuf());
-		pLayerDirectoryMessage->mutable_attrlistfile()->CopyFrom(*m_attrListFile.to_protobuf());
-		pLayerDirectoryMessage->mutable_toolfile()->CopyFrom(*m_toolFile.to_protobuf());
+		FillProtobufMessage(*pLayerDirectoryMessage, /*includeFeatureRecords=*/true);
 		return pLayerDirectoryMessage;
+	}
+
+	std::unique_ptr<Odb::Lib::Protobuf::LayerDirectory> Odb::Lib::FileModel::Design::LayerDirectory::to_protobuf_skeleton() const
+	{
+		std::unique_ptr<Odb::Lib::Protobuf::LayerDirectory> pLayerDirectoryMessage(new Odb::Lib::Protobuf::LayerDirectory);
+		FillProtobufMessage(*pLayerDirectoryMessage, /*includeFeatureRecords=*/false);
+		return pLayerDirectoryMessage;
+	}
+
+	void Odb::Lib::FileModel::Design::LayerDirectory::FillProtobufMessage(Odb::Lib::Protobuf::LayerDirectory& layerDirectoryMessage, bool includeFeatureRecords) const
+	{
+		layerDirectoryMessage.set_name(Odb::Lib::Text::ToUtf8(m_name));
+		layerDirectoryMessage.set_path(Odb::Lib::Text::ToUtf8(m_path.string()));
+		layerDirectoryMessage.mutable_components()->CopyFrom(*m_componentsFile.to_protobuf());
+		if (includeFeatureRecords)
+		{
+			layerDirectoryMessage.mutable_featurefile()->CopyFrom(*m_featuresFile.to_protobuf());
+		}
+		else
+		{
+			layerDirectoryMessage.mutable_featurefile()->CopyFrom(*m_featuresFile.to_protobuf_skeleton());
+		}
+		layerDirectoryMessage.mutable_attrlistfile()->CopyFrom(*m_attrListFile.to_protobuf());
+		layerDirectoryMessage.mutable_toolfile()->CopyFrom(*m_toolFile.to_protobuf());
 	}
 
 	void Odb::Lib::FileModel::Design::LayerDirectory::from_protobuf(const Odb::Lib::Protobuf::LayerDirectory& message)
