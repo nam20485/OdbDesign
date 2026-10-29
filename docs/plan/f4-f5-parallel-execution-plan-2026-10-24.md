@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| Status | DRAFT — awaiting user feedback before any branch is cut (per plan-doc-first flow). |
+| Status | **COMPLETE — 2026-10-29 verified.** All three PRs MERGED: 3D client **#65** (`0430d86`, admin merge past the gate flake; carried gitignore + trufflehog-fix commits), info client **#26** (`8aa2b95`), server **#608** (`e3b44a9`). **The component-connectivity epic is COMPLETE** — server-owned Connectivity end-to-end, both clients consuming it, no private joins, conformance tests enforcing it. Phase 4 residue: M4.1 conditional-only, M4.2 deferred by decision. Post-merge: 3D `development` FF-carried to `0430d86`; info `main` awaits the next "Development" carry PR (#25/#26); trufflehog sweep validated by the 2026-10-26 weekly cron (success). |
 | Scope | The epic's remaining client work (F4/F5 in both clients) + the one cheap server debt item (M4.4), run as three INDEPENDENT parallel tracks. No cross-track dependencies — any track can land in any order. |
 | Execution | Parallel subagents (orchestrated): heavy codegen tracks get high reasoning, the small server deletion gets low. Each track = branch → implement → local gates → push → PR → review cycle. |
 

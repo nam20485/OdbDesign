@@ -175,3 +175,9 @@ Read the diagram bottom-up for "what unblocks what": everything in the clients' 
 - **Verification discipline:** all three repos were fetched + FF'd before this report; two of the three arrived stale. Always `git fetch` + FF + `gh`-verify before believing any status claim — including this one next time.
 
 **Scoreboard: one open PR (#603) closes server Phase 1; one unstarted phase (M2.1–M2.4) unblocks both clients' F4/F5/F6; both clients are otherwise ready and idle by design.**
+
+---
+
+## Completion update — 2026-10-29 (fresh sweep, all claims re-verified against origin)
+
+**The component-connectivity epic is COMPLETE.** Final merges: 3D client **#65** (`0430d86` — F4/F5 + the folded gitignore/trufflehog-fix commits), info client **#26** (`8aa2b95`), server **#608** M4.4 (`e3b44a9`). Server owns connectivity end-to-end; both clients consume `Connectivity` with refDes-keyed indexes and zero private joins; M4.4's dead alternative path is deleted. Phase 4 residue is decision-based only (M4.1 conditional, M4.2 frozen with REST). Trufflehog sweep validated in production by the 2026-10-26 weekly cron (success). Housekeeping: 3D `development` FF-carried; info `main` awaits the next "Development" carry PR (#25 + #26); server has one new dependabot PR (#607, vcpkg baseline 2026.10.16). Open non-epic items: 3D #64 mirrored silkscreen, 3D #11 hit-testing, info #10 (stale vs #23), Kilo credits. Next arcs: GetDesign streaming (M6, see [getdesign-streaming-oom-plan.md](getdesign-streaming-oom-plan.md)), cross-probing (info epic #7), DRC groundwork.
