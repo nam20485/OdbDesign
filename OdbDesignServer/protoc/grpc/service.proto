@@ -7,6 +7,13 @@ import "design.proto";
 import "featuresfile.proto";
 import "symbolname.proto";
 import "standardfontsfile.proto";
+import "filearchive.proto";
+import "stepdirectory.proto";
+import "net.proto";
+import "package.proto";
+import "component.proto";
+import "part.proto";
+import "connectivity.proto";
 //import "common.proto";
 
 // Service definition for ODB++ data
@@ -14,6 +21,17 @@ service OdbDesignService {
   // Unary call to get the full design (similar to existing REST endpoint)
   // Used for initial load by a client.
   rpc GetDesign(GetDesignRequest) returns (.Odb.Lib.Protobuf.ProductModel.Design); 
+
+  // Server-streaming call for the full design, emitted as ordered
+  // DesignChunk records (M6). Serves designs of any size without ever
+  // materializing the monolithic protobuf Design tree: each chunk's
+  // submessage is built fresh from the product model and released after
+  // writing. Reassembling the chunks (see DesignChunk ordering contract)
+  // reproduces the exact monolithic GetDesign bytes; designs whose
+  // estimated serialized size exceeds the monolithic serve budget are
+  // REJECTED by GetDesign with RESOURCE_EXHAUSTED and are served by this
+  // RPC only.
+  rpc GetDesignStream(GetDesignRequest) returns (stream DesignChunk);
 
   // Server-streaming call for high-performance streaming of layer features.
   // This is the primary performance-critical endpoint.
@@ -121,4 +139,95 @@ message HealthCheckResponse {
 // Batch container for feature records to reduce stream overhead
 message FeatureRecordBatch {
   repeated .Odb.Lib.Protobuf.FeaturesFile.FeatureRecord features = 1;
+}
+
+// ============================================================================
+// GetDesignStream chunk contract (M6.1, settled 2026-10-29)
+//
+// A GetDesignStream response is an ordered sequence of DesignChunk records.
+// Reassembly: assign the DesignHeader scalars once, insert each StepSkeleton
+// into fileModel.stepsByName[step_name], append each FeatureBatch's records
+// into fileModel.stepsByName[step_name].layersByName[layer_name]
+// .featureFile.featureRecords, append the Design-level repeated batches
+// (nets/packages/components/parts) in order, MergeFrom each ConnectivityBatch
+// into Design.connectivity, and merge the NormalizedMapBatch maps. Applied to
+// the chunks in the order the server emits them (header, step skeletons,
+// feature batches, net/package/component/part batches, connectivity batches,
+// normalized-map batches), the reassembled message serializes to the exact
+// bytes of the monolithic GetDesign response for the same request flavour.
+// ============================================================================
+
+message DesignChunk {
+  oneof payload {
+    DesignHeader header = 1;
+    StepSkeleton step = 2;
+    FeatureBatch features = 3;
+    NetBatch nets = 4;
+    PackageBatch packages = 5;
+    ComponentBatch components = 6;
+    PartBatch parts = 7;
+    ConnectivityBatch connectivity = 8;
+    NormalizedMapBatch normalized_maps = 9;
+  }
+}
+
+// Emitted exactly once, first. Carries the Design scalars and every bounded
+// FileArchive field; the stepsByName map is delivered by StepSkeleton chunks.
+// file_archive.stepsByName is always empty on the wire here.
+message DesignHeader {
+  optional string product_model = 1;
+  optional string name = 2;
+  optional .Odb.Lib.Protobuf.FileArchive file_archive = 3;
+}
+
+// One per design step, in stepsByName key order. Carries the full
+// StepDirectory EXCEPT each layer's FeaturesFile.featureRecords (the
+// multi-GB bulk), which is delivered by FeatureBatch chunks addressed by
+// (step_name, layer_name). The step profile file and eda/netlist/components
+// data ride here (bounded per step).
+message StepSkeleton {
+  optional string step_name = 1;
+  optional .Odb.Lib.Protobuf.StepDirectory step = 2;
+}
+
+// A bounded slice of one layer's feature records, in FeaturesFile order.
+// Empty feature-record layers emit no FeatureBatch chunks.
+message FeatureBatch {
+  optional string step_name = 1;
+  optional string layer_name = 2;
+  repeated .Odb.Lib.Protobuf.FeaturesFile.FeatureRecord records = 3;
+}
+
+// Design-level repeated-field batches (only emitted when the request sets
+// include_normalized_lists, mirroring the monolithic GetDesign flavour).
+message NetBatch {
+  repeated .Odb.Lib.Protobuf.ProductModel.Net nets = 1;
+}
+
+message PackageBatch {
+  repeated .Odb.Lib.Protobuf.ProductModel.Package packages = 1;
+}
+
+message ComponentBatch {
+  repeated .Odb.Lib.Protobuf.ProductModel.Component components = 1;
+}
+
+message PartBatch {
+  repeated .Odb.Lib.Protobuf.ProductModel.Part parts = 1;
+}
+
+// A bounded slice of the derived Connectivity view. Each batch carries
+// entries of exactly ONE section (nets, packages, components, or netMembers);
+// reassembly is Design.connectivity.MergeFrom(entries).
+message ConnectivityBatch {
+  optional .Odb.Lib.Protobuf.ProductModel.Connectivity entries = 1;
+}
+
+// The four Design ByName maps, in batches (only when include_normalized_lists
+// is set). Reassembly merges each map into the corresponding Design map.
+message NormalizedMapBatch {
+  map<string, .Odb.Lib.Protobuf.ProductModel.Net> nets_by_name = 1;
+  map<string, .Odb.Lib.Protobuf.ProductModel.Package> packages_by_name = 2;
+  map<string, .Odb.Lib.Protobuf.ProductModel.Component> components_by_name = 3;
+  map<string, .Odb.Lib.Protobuf.ProductModel.Part> parts_by_name = 4;
 }

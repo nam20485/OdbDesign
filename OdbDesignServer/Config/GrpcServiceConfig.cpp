@@ -1,7 +1,9 @@
 #include "GrpcServiceConfig.h"
 #include <algorithm>
+#include <cstdint>
 #include <fstream>
 #include <iostream>
+#include <limits>
 #include <sstream>
 #include <crow/json.h>
 #include <filesystem>
@@ -153,6 +155,36 @@ namespace OdbDesignServer
                         {
                             result.config->batch_size = static_cast<int>(batchSection["batch_size"].i());
                             result.config->ClampBatchSize(); // Ensure valid range
+                        }
+                    }
+
+                    // Extract design streaming configuration (M6)
+                    if (grpcSection.has("design_streaming"))
+                    {
+                        auto streamSection = grpcSection["design_streaming"];
+
+                        if (streamSection.has("enabled"))
+                        {
+                            result.config->enable_design_streaming = streamSection["enabled"].b();
+                        }
+
+                        if (streamSection.has("feature_batch_size"))
+                        {
+                            int value = static_cast<int>(streamSection["feature_batch_size"].i());
+                            result.config->design_stream_feature_batch_size = std::max(100, std::min(10000, value));
+                        }
+
+                        if (streamSection.has("spool_dir"))
+                        {
+                            result.config->stream_spool_dir = streamSection["spool_dir"].s();
+                        }
+
+                        if (streamSection.has("spool_max_bytes"))
+                        {
+                            const auto value = static_cast<std::uint64_t>(streamSection["spool_max_bytes"].i());
+                            result.config->stream_spool_max_bytes = (value == 0)
+                                ? std::numeric_limits<std::uint64_t>::max()
+                                : value;
                         }
                     }
 

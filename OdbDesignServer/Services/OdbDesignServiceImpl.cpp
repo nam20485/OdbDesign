@@ -1,4 +1,5 @@
 #include "OdbDesignServiceImpl.h"
+#include "DesignStreamWalker.h"
 #include "FileModel/Design/FeaturesFile.h"
 #include "FileModel/Design/FileArchive.h"
 #include "FileModel/parse_error.h"
@@ -143,13 +144,31 @@ namespace OdbDesignServer
                 return Odb::Lib::UnitType::None;
             }
 
+            // M6: spool cache construction — a configured directory wins; the
+            // default is a private per-instance directory under the system temp
+            // dir (isolated from parallel server/test instances, removed on exit).
+            std::unique_ptr<StreamSpoolCache> MakeStreamSpoolCache(const Config::GrpcServiceConfig& config)
+            {
+                if (!config.stream_spool_dir.empty())
+                {
+                    return std::make_unique<StreamSpoolCache>(
+                        std::filesystem::path(config.stream_spool_dir), config.stream_spool_max_bytes);
+                }
+                return std::make_unique<StreamSpoolCache>();
+            }
+
         }
 
 
         OdbDesignServiceImpl::OdbDesignServiceImpl(std::shared_ptr<Odb::Lib::App::DesignCache> cache,
             std::shared_ptr<Config::GrpcServiceConfig> config)
             : m_designCache(std::move(cache)),
-              m_config(config ? config : Config::GrpcServiceConfig::CreateDefault()) {}
+              m_config(config ? config : Config::GrpcServiceConfig::CreateDefault()),
+              m_streamSpool(MakeStreamSpoolCache(*m_config))
+        {
+            m_streamOptions.featureBatchSize = static_cast<std::size_t>(
+                m_config->design_stream_feature_batch_size);
+        }
 
         grpc::Status OdbDesignServiceImpl::GetDesign(
             grpc::ServerContext *context,
@@ -196,6 +215,22 @@ namespace OdbDesignServer
                 if (design == nullptr)
                 {
                     return {grpc::StatusCode::NOT_FOUND, "Design not found: " + designName};
+                }
+
+                // M6 hard guard: a design whose estimated serialized size
+                // exceeds the monolithic serve budget must not have its
+                // protobuf tree built here — that build (plus the serialized
+                // copy) is the 10 GiB-pod OOM. Clean error instead of a pod
+                // kill; the chunked GetDesignStream RPC serves these designs.
+                // (Cached bytes served above are for designs pre-serialized
+                // under this same budget, so they cannot be over it.)
+                const auto monolithicBudget = m_designCache->getMonolithicWireBudget();
+                if (monolithicBudget != 0 &&
+                    design->EstimateWireSizeBytes(includeNormalizedLists) > monolithicBudget)
+                {
+                    return {grpc::StatusCode::RESOURCE_EXHAUSTED,
+                        "Design \"" + designName + "\" exceeds the monolithic GetDesign serve budget (" +
+                        std::to_string(monolithicBudget) + " estimated wire bytes); use the GetDesignStream RPC"};
                 }
 
                 // Cold path: serialize directly for this one response (the
@@ -256,6 +291,135 @@ namespace OdbDesignServer
                 return grpc::Status::OK;
             }
             catch (const std::exception &e)
+            {
+                std::string error = "Internal server error: " + FormatExceptionForStatus(e);
+                return {grpc::StatusCode::INTERNAL, error};
+            }
+        }
+
+        grpc::Status OdbDesignServiceImpl::GetDesignStream(
+            grpc::ServerContext* context,
+            const Odb::Grpc::GetDesignRequest* request,
+            grpc::ServerWriter<Odb::Grpc::DesignChunk>* writer)
+        {
+            try
+            {
+                const auto& designName = request->design_name();
+                const auto includeNormalizedLists = request->include_normalized_lists();
+                loginfo("[ConnTrace] GetDesignStream start: design_name=\"" + designName +
+                    "\" include_normalized_lists=" + (includeNormalizedLists ? "true" : "false"));
+
+                if (!m_config->enable_design_streaming)
+                {
+                    return {grpc::StatusCode::UNIMPLEMENTED, "Design streaming is not enabled"};
+                }
+
+                // Resolve the design (parse + product-model build; the parse
+                // fits the pod budget by design — it is the monolithic
+                // serialization this RPC replaces that does not).
+                const auto design = m_designCache->GetDesign(designName);
+                if (design == nullptr)
+                {
+                    return {grpc::StatusCode::NOT_FOUND, "Design not found: " + designName};
+                }
+
+                // Warm spool (default flavour only — the normalized flavour is
+                // never cached, mirroring the monolithic response cache).
+                // Identity is (design name, response-cache generation); a
+                // generation bump (re-upload/invalidation/eviction) drops it.
+                if (!includeNormalizedLists)
+                {
+                    const auto generation = m_designCache->GetResponseGeneration(designName);
+                    StreamSpoolCache::Reader reader;
+                    if (m_streamSpool->TryOpenReader(designName, generation, reader))
+                    {
+                        Odb::Grpc::DesignChunk chunk;
+                        while (reader.Next(chunk))
+                        {
+                            if (context->IsCancelled() || !writer->Write(chunk))
+                            {
+                                loginfo("[ConnTrace] GetDesignStream client_disconnected (warm): design_name=\"" +
+                                    designName + "\" records=" + std::to_string(reader.RecordsRead()));
+                                return grpc::Status::OK;
+                            }
+                            chunk.Clear();
+                        }
+                        if (reader.Failed())
+                        {
+                            logerror("[ConnTrace] GetDesignStream spool read failed: design_name=\"" + designName + "\"");
+                            m_streamSpool->Drop(designName);
+                            return {grpc::StatusCode::INTERNAL,
+                                "Internal server error: cached stream spool read failure"};
+                        }
+                        loginfo("[ConnTrace] GetDesignStream ok (warm spool): design_name=\"" + designName +
+                            "\" records=" + std::to_string(reader.RecordsRead()));
+                        return grpc::Status::OK;
+                    }
+                }
+
+                // Cold fill: walk the product model chunk-by-chunk. Over-budget
+                // designs (the ones this RPC exists for) tee every chunk to the
+                // disk spool while writing it to the wire, so the NEXT request
+                // is served warm from page cache with no product-model walk.
+                const auto generationAtStart = m_designCache->GetResponseGeneration(designName);
+                const auto monolithicBudget = m_designCache->getMonolithicWireBudget();
+                const bool overBudget = monolithicBudget != 0 &&
+                    design->EstimateWireSizeBytes(/*includeNormalizedLists=*/false) > monolithicBudget;
+
+                StreamSpoolCache::Writer spoolWriter;
+                bool spooling = !includeNormalizedLists && overBudget &&
+                    m_streamSpool->BeginWrite(designName, generationAtStart, spoolWriter);
+
+                DesignStreamWalker::Stats stats;
+                const auto sink = [&](const Odb::Grpc::DesignChunk& chunk) -> bool
+                {
+                    if (context->IsCancelled())
+                    {
+                        return false;
+                    }
+                    if (!writer->Write(chunk))
+                    {
+                        return false;
+                    }
+                    if (spooling && !spoolWriter.Append(chunk))
+                    {
+                        // The wire response is unaffected by spool I/O trouble
+                        // (disk full, etc.): drop the spool, keep streaming.
+                        logerror("[ConnTrace] GetDesignStream spool append failed; continuing without spool");
+                        spoolWriter.Abort();
+                        spooling = false;
+                    }
+                    return true;
+                };
+
+                const bool completed = DesignStreamWalker::Walk(
+                    *design, includeNormalizedLists, m_streamOptions, sink, &stats);
+
+                if (spooling)
+                {
+                    // Publish only a complete, still-current fill: an aborted
+                    // walk (client gone) or an invalidation that raced the fill
+                    // (generation bumped) must not poison the warm path.
+                    const bool generationUnchanged =
+                        m_designCache->GetResponseGeneration(designName) == generationAtStart;
+                    if (completed && generationUnchanged)
+                    {
+                        spoolWriter.Commit();
+                    }
+                    else
+                    {
+                        spoolWriter.Abort();
+                    }
+                }
+
+                loginfo("[ConnTrace] GetDesignStream done: design_name=\"" + designName +
+                    "\" completed=" + (completed ? "true" : "false") +
+                    " chunks=" + std::to_string(stats.chunks) +
+                    " wire_bytes=" + std::to_string(stats.wireBytes) +
+                    (spooling ? " spool=committed" : (overBudget ? " spool=aborted" : "")));
+                return grpc::Status::OK;
+            }
+            catch (const std::exception& e)
             {
                 std::string error = "Internal server error: " + FormatExceptionForStatus(e);
                 return {grpc::StatusCode::INTERNAL, error};

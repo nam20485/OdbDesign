@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <grpc/impl/compression_types.h>
@@ -33,6 +34,19 @@ namespace OdbDesignServer
             // Batch streaming configuration
             bool enable_batch_streaming = true;  // Feature flag for gradual rollout
             int batch_size = 500;                // Features per batch (100-1000)
+
+            // Design streaming configuration (M6: GetDesignStream + disk spool).
+            // The monolithic serve budget itself lives on DesignCache
+            // (setMonolithicWireBudget) so the RPC guard and the background
+            // pre-serialization share one knob.
+            bool enable_design_streaming = true;       // Feature flag for GetDesignStream
+            int design_stream_feature_batch_size = 1000;  // FeatureRecords per FeatureBatch (100-10000)
+            // Disk spool for over-budget designs. Empty dir = a per-service-
+            // instance directory under the system temp dir (removed on exit).
+            std::string stream_spool_dir;
+            // Total spool byte cap (LRU-evicted beyond it). 4 GiB holds the
+            // spools of both large designs (1.0-1.34 GB each) with headroom.
+            std::uint64_t stream_spool_max_bytes = 4ull * 1024ull * 1024ull * 1024ull;
 
             // Thread pool configuration
             int max_threads = 8;       // Maximum gRPC server threads (ResourceQuota)
