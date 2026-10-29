@@ -57,3 +57,16 @@ Independent of all live work; best cut after the F4/F5 merges so the clients are
 consumers first. Single server branch M6.1→M6.3 (PR), then client push-PRs (M6.4), then M6.5
 benchmark evidence closes it. The size-threshold guard (M6.2 tail) can ship first as a
 one-line stopgap if the OOM bites before the full build lands.
+
+## M6.1 concrete chunk design (settled 2026-10-29, follows the FeatureRecordBatch precedent in service.proto:122)
+
+`DesignChunk { oneof payload }`, emitted in this order; reassembly = assign scalars once, append repeated/map entries, place fileModel parts:
+
+1. `DesignHeader` — productModel, name (+ the bounded FileArchive scalars: miscInfoFile, matrixFile, standardFontsFile, miscAttrListFile, symbolsDirectoriesByName, productName, fileName).
+2. `StepSkeleton` — one per step (map key carried alongside): the full `StepDirectory` EXCEPT each layer's `FeaturesFile.repeated FeatureRecord features` (which is the 1.34 GB bulk). StepHdr/edaData/netlist/components etc. ride here; if a single step's eda-data proves unbounded in practice (> ~64 MB serialized), split it as a follow-up kind rather than widening this design now.
+3. `FeatureBatch` — (stepName, layerName, repeated FeatureRecord): append into the addressed layer's features list; batch size target ~1–2k records. This mirrors `GetLayerFeaturesBatchStream` exactly.
+4. `NetBatch` / `PackageBatch` / `ComponentBatch` / `PartBatch` — append to the Design-level repeated fields (only kinds actually present).
+5. `ConnectivityBatch` — components then nets of the derived Connectivity message.
+6. `NormalizedMapBatch` (only when `include_normalized_lists`): netsByName / packagesByName / componentsByName / partsByName map entries.
+
+Gates unchanged (§M6.5); wire-equivalence checked by reassembling and comparing serialized bytes against the monolithic serialization on `sample_design`.
