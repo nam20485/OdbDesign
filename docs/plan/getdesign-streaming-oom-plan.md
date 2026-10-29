@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| Status | DRAFT — design captured for later execution ("at some point"). Not scheduled; not approved to build yet. |
+| Status | **M6.1–M6.3 IMPLEMENTED** (branch `nam/getdesign-streaming`, 2026-10-29) — `GetDesignStream` + DesignChunk contract, size-threshold dispatch guard (`RESOURCE_EXHAUSTED` on monolithic over-budget), disk-spool warm cache. M6.4 (clients) pending. Wire-equivalence caveat discovered during implementation: protobuf's default map serialization order is randomized per message instance (two `to_protobuf()` calls on the same Design differ), so the byte-for-byte gate is evaluated with deterministic serialization (sorted map order) applied identically to both sides — see `DesignStreamTests.cpp`. |
 | Problem | gRPC `GetDesign` OOMs the 10 Gi pod on the two large designs: `200-40628` measured ~10.1 GiB peak, `350-41017` estimated ~12.6 GiB (serialized `Design` = 1.34 GB). Node is 16 GB with ~6 Gi monitoring — **no capacity increase available** (and none wanted). |
 | Constraint | REST is frozen (D5) and Crow 1.3.3 has no chunked/SSE anyway — **gRPC is the only sanctioned streaming surface**. Parse alone already fits (both designs load post-#600); it is the *serialization/serve* path that blows the budget. |
 
