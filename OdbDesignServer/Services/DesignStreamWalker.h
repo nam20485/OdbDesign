@@ -30,6 +30,13 @@
 #include <set>
 #include <string>
 
+// The lib's generated pb headers use ODBDESIGN_EXPORT without including
+// odbdesign_export.h (OdbDesignLib/CMakeLists.txt defines it empty on
+// non-Windows only). Any TU whose first pb include is this header must
+// have the macro defined first — on Windows it is __declspec(dllimport)
+// — exactly the OdbDesignServiceImpl.h pattern.
+#include "odbdesign_export.h"
+
 #include <design.pb.h>
 #include <service.pb.h>
 
