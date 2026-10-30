@@ -893,15 +893,31 @@ namespace Odb::Lib::FileModel::Design
 		{
 			pFeaturesFileMessage->add_featurerecords()->CopyFrom(*pFeatureRecord->to_protobuf());
 		}
+		FillSymbolNames(*pFeaturesFileMessage);
+		return pFeaturesFileMessage;
+	}
+
+	std::unique_ptr<Odb::Lib::Protobuf::FeaturesFile> FeaturesFile::to_protobuf_skeleton() const
+	{
+		std::unique_ptr<Odb::Lib::Protobuf::FeaturesFile> pFeaturesFileMessage(new Odb::Lib::Protobuf::FeaturesFile);
+		pFeaturesFileMessage->set_id(m_id);
+		pFeaturesFileMessage->set_numfeatures(m_numFeatures);
+		pFeaturesFileMessage->set_units(Odb::Lib::Text::ToUtf8(m_units));
+		// featureRecords deliberately omitted (M6 streaming skeleton).
+		FillSymbolNames(*pFeaturesFileMessage);
+		return pFeaturesFileMessage;
+	}
+
+	void FeaturesFile::FillSymbolNames(Odb::Lib::Protobuf::FeaturesFile &featuresFileMessage) const
+	{
 		for (const auto &kvSymbolName : m_symbolNamesByName)
 		{
-			(*pFeaturesFileMessage->mutable_symbolnamesbyname())[Odb::Lib::Text::ToUtf8(kvSymbolName.first)] = *kvSymbolName.second->to_protobuf();
+			(*featuresFileMessage.mutable_symbolnamesbyname())[Odb::Lib::Text::ToUtf8(kvSymbolName.first)] = *kvSymbolName.second->to_protobuf();
 		}
 		for (const auto &symbolName : m_symbolNames)
 		{
-			pFeaturesFileMessage->add_symbolnames()->CopyFrom(*symbolName->to_protobuf());
+			featuresFileMessage.add_symbolnames()->CopyFrom(*symbolName->to_protobuf());
 		}
-		return pFeaturesFileMessage;
 	}
 
 	void FeaturesFile::from_protobuf(const Odb::Lib::Protobuf::FeaturesFile &message)

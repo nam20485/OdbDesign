@@ -193,6 +193,18 @@ namespace Odb::Lib::App
 		// in the LRU byte budget). Drops to 0 on eviction/invalidation/Clear().
 		std::uint64_t cachedResponseBytes() const;
 
+		// ---- monolithic serve budget (M6) ----
+		//
+		// Designs whose estimated serialized wire size (ProductModel::Design::
+		// EstimateWireSizeBytes) exceeds this budget are (a) rejected by the
+		// monolithic gRPC GetDesign handler with RESOURCE_EXHAUSTED (the tree
+		// build + serialized copy is the 10 GiB-pod OOM) and (b) skipped by the
+		// background response pre-serialization (same tree build); they are
+		// served by the chunked GetDesignStream RPC instead. 0 disables the
+		// budget (pre-M6 behavior: every design serializes monolithically).
+		void setMonolithicWireBudget(std::uint64_t maxBytes);
+		std::uint64_t getMonolithicWireBudget() const;
+
 	private:
 		std::string m_directory;
 
@@ -298,6 +310,11 @@ namespace Odb::Lib::App
 		// Protects m_lruEntries, m_cachedBytes, and m_maxBytes
 		mutable std::mutex m_lruMutex;
 
+		// Monolithic serve budget (M6); see setMonolithicWireBudget. Guarded by
+		// m_lruMutex (read on the serialization paths alongside the budget
+		// bookkeeping).
+		std::uint64_t m_monolithicWireBudget = DEFAULT_MONOLITHIC_WIRE_BUDGET;
+
 		// ---- serialized-response cache (M1.4) ----
 		//
 		// The pre-serialized response payloads for one design.
@@ -363,8 +380,10 @@ namespace Odb::Lib::App
 
 		// Builds the payload set from a loaded Design. The protobuf tree is
 		// built once: the serialized bytes and the Design JSON both come from
-		// the same message (no second ProductModel traversal).
-		static ResponsePayload BuildResponsePayload(const ProductModel::Design& design);
+		// the same message (no second ProductModel traversal). Non-static
+		// (M6): consults the monolithic serve budget to skip the tree build
+		// for over-budget designs.
+		ResponsePayload BuildResponsePayload(const ProductModel::Design& design);
 
 		// Validates (epoch, LRU presence, Design identity, generation) and
 		// commits a payload set, charging its bytes to the design's LRU entry
@@ -734,6 +753,12 @@ namespace Odb::Lib::App
 
 		constexpr inline static std::uint64_t DEFAULT_CACHE_MAX_BYTES = 4096ull * 1024ull * 1024ull;
 		constexpr inline static std::size_t DEFAULT_MAX_BACKGROUND_LOADS = 2;
+		// Default monolithic serve budget (M6): ~256 MiB of estimated serialized
+		// wire. Calibrated so every CI design (sample_design, designodb_rigidflex)
+		// stays monolithic while the two large designs (200-40628, 350-41017 —
+		// 1.0-1.34 GB serialized) are streaming-only with an order of magnitude
+		// of margin on both sides.
+		constexpr inline static std::uint64_t DEFAULT_MONOLITHIC_WIRE_BUDGET = 256ull * 1024ull * 1024ull;
 		// Rough per-design overhead added to the archive file size; serialized response
 		// sizes are added to this estimate in M1.4 (response cache).
 		constexpr inline static std::uint64_t DESIGN_BYTES_OVERHEAD = 4096;

@@ -51,6 +51,11 @@ namespace Odb::Lib::FileModel::Design
 
 		// Inherited via IProtoBuffable
 		std::unique_ptr<Odb::Lib::Protobuf::FileArchive> to_protobuf() const override;
+		// M6 streaming: same message minus the stepsByName map (delivered via
+		// StepSkeleton chunks). All bounded fields are produced by the
+		// identical code path, so skeleton + re-inserted steps serializes to
+		// the exact to_protobuf() bytes.
+		std::unique_ptr<Odb::Lib::Protobuf::FileArchive> to_protobuf_skeleton() const;
 		void from_protobuf(const Odb::Lib::Protobuf::FileArchive& message) override;
 
 		typedef std::vector<std::shared_ptr<FileArchive>> Vector;
@@ -79,6 +84,11 @@ namespace Odb::Lib::FileModel::Design
 		bool ParseMiscAttrListFile(const std::filesystem::path& path);
 
 		bool Save(const std::filesystem::path& directory) override;
+
+		// Shared body of to_protobuf() / to_protobuf_skeleton(); only the
+		// stepsByName map differs, keeping the skeleton byte-compatible with
+		// the full serialization.
+		void FillProtobufMessage(Odb::Lib::Protobuf::FileArchive& fileArchiveMessage, bool includeSteps) const;
 
 		bool ExtractDesignArchive(const std::filesystem::path& path, std::filesystem::path& extractedPath);
 

@@ -257,42 +257,39 @@ namespace Odb::Test
 		// protobuf's map::at() CHECK-fails and abort()s the whole process when the key
 		// is absent, so a regression here reports as "Subprocess aborted" with no gtest
 		// diagnostic -- it cost four CI runs and a log hunt to name the missing key.
-		// Look the entry up explicitly so the failure names it and lists what did arrive.
+		// The entry is looked up by LINEAR SCAN, not find(): #599 diagnosed the
+		// intermittent failure (~40% of runs on some binaries) as an address-layout
+		// dependent protobuf-Map lookup bug -- the entry is present under iteration
+		// and absent under find() on the same object, same thread (setarch -R makes
+		// it 100% reproducible; ASan/UBSan silent over 40 attempts, single protobuf
+		// runtime, freshly regenerated gencode -- not heap corruption, UB, dual
+		// runtime copies, or stale gencode). Never find()/at() a protobuf Map in
+		// tests; iterate. The byte dump below stays so a future miss still names
+		// the key rather than just a count.
 		const auto& reparsedOnlineValues = reparsed.onlinevalues();
-		const auto onlineIt = reparsedOnlineValues.find("ONLINE_NET_STAT");
-		// Sighting 2026-09-27 (intermittent, ~1 run in 3, not reproducible on demand):
-		// this assertion fired while the map held exactly one entry whose key dumped
-		// byte-identical to "ONLINE_NET_STAT" (len=15) with value "GREEN" -- i.e. the
-		// entry was present under iteration and absent under find(), same object, same
-		// thread, microseconds apart. Ruled out at the time: ASan and UBSan both silent
-		// over a 40-attempt reproduction (so not heap corruption or detected UB), and
-		// exactly one protobuf runtime in the process (single libprotobuf.so.33.4.0 for
-		// both the test binary and libOdbDesign.so, no strong protobuf symbols of its
-		// own), so not the dual-loaded-copies failure mode; and stale generated code --
-		// a deep clean rebuild (--clean-first, stephdrfile.pb.{h,cc} regenerated, mtimes
-		// verified) still failed 17 of 40 runs. Failure rate is ~40%, not rare.
-		// Unexplained. The byte dump below stays so the next occurrence records the key
-		// rather than just a count. Tracked in #599, which records the reproduction,
-		// everything ruled out and how, and what has not been tried yet.
-		ASSERT_TRUE(onlineIt != reparsedOnlineValues.end())
+		bool onlineStatFound = false;
+		std::string onlineStatValue;
+		std::string onlineValuesDump;
+		for (const auto& kv : reparsedOnlineValues)
+		{
+			onlineValuesDump += "[len=" + std::to_string(kv.first.size()) + " bytes=";
+			for (unsigned char c : kv.first)
+			{
+				char hex[4];
+				snprintf(hex, sizeof(hex), "%02x ", c);
+				onlineValuesDump += hex;
+			}
+			onlineValuesDump += "]=[" + kv.second + "] ";
+			if (kv.first == "ONLINE_NET_STAT")
+			{
+				onlineStatFound = true;
+				onlineStatValue = kv.second;
+			}
+		}
+		ASSERT_TRUE(onlineStatFound)
 				<< "ONLINE_NET_STAT did not survive the wire round trip; onlineValues holds "
-				<< reparsedOnlineValues.size() << " entry/entries: "
-				<< [&reparsedOnlineValues] {
-					std::string dump;
-					for (const auto& kv : reparsedOnlineValues)
-					{
-						dump += "[len=" + std::to_string(kv.first.size()) + " bytes=";
-						for (unsigned char c : kv.first)
-						{
-							char hex[4];
-							snprintf(hex, sizeof(hex), "%02x ", c);
-							dump += hex;
-						}
-						dump += "]=[" + kv.second + "] ";
-					}
-					return dump;
-				}();
-		EXPECT_EQ(onlineIt->second, "GREEN");
+				<< reparsedOnlineValues.size() << " entry/entries: " << onlineValuesDump;
+		EXPECT_EQ(onlineStatValue, "GREEN");
 	}
 
 	// The other round-trip tests in this file stop at from_protobuf(); the wire

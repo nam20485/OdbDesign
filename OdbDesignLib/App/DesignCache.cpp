@@ -1061,6 +1061,18 @@ namespace Odb::Lib::App
         return m_responseStore.TotalStoredBytes();
     }
 
+    void DesignCache::setMonolithicWireBudget(std::uint64_t maxBytes)
+    {
+        std::lock_guard<std::mutex> lruLock(m_lruMutex);
+        m_monolithicWireBudget = maxBytes;
+    }
+
+    std::uint64_t DesignCache::getMonolithicWireBudget() const
+    {
+        std::lock_guard<std::mutex> lruLock(m_lruMutex);
+        return m_monolithicWireBudget;
+    }
+
     std::uint64_t DesignCache::CurrentEpoch() const
     {
         std::lock_guard<std::mutex> stateLock(m_loadStateMutex);
@@ -1070,6 +1082,22 @@ namespace Odb::Lib::App
     DesignCache::ResponsePayload DesignCache::BuildResponsePayload(const ProductModel::Design& design)
     {
         ResponsePayload payload;
+
+        // M6 monolithic serve budget: a design whose estimated serialized
+        // size exceeds the budget must not have its protobuf tree built here
+        // (the full-tree build + serialized copy is the 10 GiB-pod OOM, and
+        // this worker runs unprompted at load completion). It stays
+        // un-cached; the chunked GetDesignStream RPC serves it, spooling to
+        // disk instead of RAM. Budget 0 = disabled (pre-M6 behavior).
+        {
+            std::lock_guard<std::mutex> lruLock(m_lruMutex);
+            if (m_monolithicWireBudget != 0 &&
+                design.EstimateWireSizeBytes(/*includeNormalizedLists=*/false) > m_monolithicWireBudget)
+            {
+                loginfo("Skipping monolithic response pre-serialization (over serve budget); design is served via GetDesignStream");
+                return payload;
+            }
+        }
 
         // One protobuf tree build serves both the wire bytes and the JSON.
         // These bytes back the gRPC GetDesign fast path, which serves the
