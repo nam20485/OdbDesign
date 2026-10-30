@@ -248,10 +248,20 @@ namespace Odb::Lib::FileModel::Design
 
         for (const auto& kvLayerDirectoryRecord : m_layersByName)
         {
-            const auto& pLayerMessage = layerSkeletons
-                ? kvLayerDirectoryRecord.second->to_protobuf_skeleton()
-                : kvLayerDirectoryRecord.second->to_protobuf();
-            (*stepDirectoryMessage.mutable_layersbyname())[Odb::Lib::Text::ToUtf8(kvLayerDirectoryRecord.first)] = *pLayerMessage;
+            // No conditional operator here: MSVC's lowering of
+            // `cond ? f() : g()` for move-only prvalues (both returning
+            // unique_ptr) synthesizes a copy of the deleted copy constructor
+            // (C2280); GCC/Clang merge the prvalues per the standard.
+            if (layerSkeletons)
+            {
+                (*stepDirectoryMessage.mutable_layersbyname())[Odb::Lib::Text::ToUtf8(kvLayerDirectoryRecord.first)] =
+                    *kvLayerDirectoryRecord.second->to_protobuf_skeleton();
+            }
+            else
+            {
+                (*stepDirectoryMessage.mutable_layersbyname())[Odb::Lib::Text::ToUtf8(kvLayerDirectoryRecord.first)] =
+                    *kvLayerDirectoryRecord.second->to_protobuf();
+            }
         }
     }
 

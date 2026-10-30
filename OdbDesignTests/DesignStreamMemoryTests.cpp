@@ -175,7 +175,10 @@ namespace Odb::Test
 
 		// ---- /proc instrumentation (Linux) ----
 
-		static bool readStatusField(const char* field, std::uint64_t& valueOut_kb)
+		// `field` is a std::string (not const char*) so the prefix length
+		// comes from size() — strlen() on a char* is an over-read pattern
+		// (CWE-126) static analysis rightly flags.
+		static bool readStatusField(const std::string& field, std::uint64_t& valueOut_kb)
 		{
 			std::ifstream status("/proc/self/status");
 			std::string line;
@@ -184,7 +187,7 @@ namespace Odb::Test
 				if (line.rfind(field, 0) == 0)
 				{
 					// "VmHWM:\t  123456 kB"
-					std::istringstream ss(line.substr(strlen(field)));
+					std::istringstream ss(line.substr(field.size()));
 					ss >> valueOut_kb;
 					return true;
 				}
