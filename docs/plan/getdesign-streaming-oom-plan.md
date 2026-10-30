@@ -70,3 +70,21 @@ one-line stopgap if the OOM bites before the full build lands.
 6. `NormalizedMapBatch` (only when `include_normalized_lists`): netsByName / packagesByName / componentsByName / partsByName map entries.
 
 Gates unchanged (§M6.5); wire-equivalence checked by reassembling and comparing serialized bytes against the monolithic serialization on `sample_design`.
+
+## M6.6 — multi-design residency governance (QUEUED behind #609; drafted 2026-10-29)
+
+**Problem.** M6 fixed the *per-request* multiplier, not *per-design residency*. Each loaded design costs its parse footprint whether or not anyone is serving it (measured: 3.22 GiB for 200-40628, 4.11 GiB for 350-41017). Two big designs resident ≈ 8.4 GiB total — fits the 10 Gi pod tightly; a third ≈ 12+ GiB → pod OOM. The cache already HAS LRU byte-budget eviction (`DesignCache.h:754` `DEFAULT_CACHE_MAX_BYTES = 4 GiB`, `setCacheMaxBytes`, `EvictOverBudgetLocked`), **but its unit of account is wrong for this failure mode**: entries are charged by archive file size (compressed `.tgz`, tens of MB) + serialized payloads — undercounting parsed resident RSS by ~20–40×. The budget can "fit" several big designs while the pod dies.
+
+**Design.**
+
+1. **One currency — resident-estimate bytes.** Re-base design-entry charges from file size to a resident estimate: `residentEstimate(design) = kResidencyFactor × Design::EstimateWireSizeBytes()`. Calibrate `kResidencyFactor` from the M6.5 measurements (parse-RSS/wire ≈ 4.1–4.4× on the two big designs; use 5.0 for margin) — the existing charge-adjustment machinery (`DesignCache.cpp` re-estimate-and-adjust path) already supports changing an entry's charge after the fact, so the estimate lands when the Design is cached post-parse. Serialized in-RAM payloads keep their real-byte charge; disk spool files are NOT charged (disk, not RAM).
+2. **Budget knob stays `setCacheMaxBytes`** (no second currency), with the default re-based for the 10 Gi pod: **8 GiB** (leaves headroom for serve marginal ~0.7 GiB, app overhead, page cache). Tests that inject byte estimates update alongside.
+3. **Evict-first admission control.** When loading a design would push Σ(resident estimates) over budget: evict LRU designs (never the requested one) to make room; refuse with `RESOURCE_EXHAUSTED` (naming the design and its estimate) ONLY when the requested design alone exceeds the budget. Load-refusal must be observable through the existing load-state machine (Failed/NotFound semantics stay intact for genuine failures).
+4. **Out of scope (separate M6.7 candidate, do NOT do here): parse-footprint reduction.** `CLIP_FILEMODEL_AFTER_BUILD` (`Design.h:173`, default `false`) looks like a lever but is wire-dangerous: the 3D client renders from `Design.fileModel` served by gRPC, so any clipping must be wire-transparent (release duplicated raw records after product-model build, lazy re-hydration). Measure and design separately.
+
+**Gates.**
+- Unit: charges re-base correctly (extend the existing budget-accounting tests via the `injectedBytes`/estimate test seams); eviction triggers on resident-estimate overflow; singleton-over-budget → `RESOURCE_EXHAUSTED`; evict-first path never evicts the requested design.
+- Bench (opt-in, `ODB_DESIGN_STREAM_BENCH=1` class): both big designs + sample resident, process RSS ≤ budget + ~1 GiB serve marginal; a third hypothetical big design triggers eviction of the LRU or clean refusal — never unbounded growth.
+- No behavior change for single-design deployments (default budget admits both current big designs simultaneously).
+
+**Sequencing.** Fast-follow PR (`nam/m66-residency-budget`) cut from the MERGED #609 tip — deliberately not a growth of #609. Client fan-out (M6.4) is independent of this and can proceed in either order.
