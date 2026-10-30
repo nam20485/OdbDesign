@@ -336,11 +336,22 @@ namespace OdbDesignServer
                         Odb::Grpc::DesignChunk chunk;
                         while (reader.Next(chunk))
                         {
-                            if (context->IsCancelled() || !writer->Write(chunk))
+                            if (context->IsCancelled())
                             {
                                 loginfo("[ConnTrace] GetDesignStream client_disconnected (warm): design_name=\"" +
                                     designName + "\" records=" + std::to_string(reader.RecordsRead()));
                                 return grpc::Status::OK;
+                            }
+                            if (!writer->Write(chunk))
+                            {
+                                // Truncation without a cancelling client must
+                                // not end in a clean OK trailer — chunk count
+                                // is the only completion signal M6.4 clients
+                                // have (see the cold path below).
+                                logerror("[ConnTrace] GetDesignStream write failed (warm): design_name=\"" +
+                                    designName + "\" records=" + std::to_string(reader.RecordsRead()));
+                                return {grpc::StatusCode::INTERNAL,
+                                    "Internal server error: GetDesignStream write failed (warm, truncated)"};
                             }
                             chunk.Clear();
                         }
@@ -417,6 +428,20 @@ namespace OdbDesignServer
                     " chunks=" + std::to_string(stats.chunks) +
                     " wire_bytes=" + std::to_string(stats.wireBytes) +
                     (spooling ? " spool=committed" : (overBudget ? " spool=aborted" : "")));
+
+                if (!completed && !context->IsCancelled())
+                {
+                    // The sink aborted for a reason other than client
+                    // cancellation (writer->Write failed — e.g. flow control
+                    // or a broken connection without a propagated cancel).
+                    // Returning OK here would hand the client a clean trailer
+                    // after a truncated chunk sequence, and the chunk count is
+                    // the only completion signal M6.4 clients have.
+                    logerror("[ConnTrace] GetDesignStream write failed (cold): design_name=\"" + designName +
+                        "\" chunks=" + std::to_string(stats.chunks));
+                    return {grpc::StatusCode::INTERNAL,
+                        "Internal server error: GetDesignStream write failed (cold, truncated)"};
+                }
                 return grpc::Status::OK;
             }
             catch (const std::exception& e)

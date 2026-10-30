@@ -474,34 +474,105 @@ namespace Odb::Lib::ProductModel
 		// (sample_design, rigidflex) stay far below the monolithic serve
 		// budget and (b) the two OOM designs (200-40628, 350-41017) land far
 		// above it; the dispatch decision only needs that separation, not an
-		// accurate size. A FeatureRecord carries ~10 scalar fields plus
-		// occasional strings/contours (~128 B), a component rides three
-		// places (components file + product-model Component + connectivity
+		// accurate size. A miss LOW costs a pod OOM (the exact failure this
+		// guard exists for); a miss HIGH costs only a streaming detour — so
+		// every serialized term below is counted, coefficients generous.
+		// A FeatureRecord carries ~10 scalar fields plus occasional
+		// strings/contours (~128 B), a component rides three places
+		// (components file + product-model Component + connectivity
 		// PlacedComponent with per-pin entries, ~768 B), a net two-to-three
 		// places (~128 B), a package record with its pin roster ~256 B.
 		constexpr std::uint64_t FEATURE_RECORD_WIRE_BYTES = 128;
 		constexpr std::uint64_t COMPONENT_WIRE_BYTES = 768;
 		constexpr std::uint64_t NET_WIRE_BYTES = 128;
 		constexpr std::uint64_t PACKAGE_WIRE_BYTES = 256;
+		// Subnet feature-id: type+layer+feature varints (~8 B wire), riding
+		// twice (EdaDataFile netRecords + netRecordsByName map).
+		constexpr std::uint64_t FEATURE_ID_RECORD_WIRE_BYTES = 16;
+		// Netlist-file records: serial#+netName (net) / ~13 numeric fields
+		// (point); both ride twice (records + ByName map).
+		constexpr std::uint64_t NETLIST_NET_WIRE_BYTES = 64;
+		constexpr std::uint64_t NETLIST_POINT_WIRE_BYTES = 64;
+		// Attribute-string entries (attrlist files, eda layer/attribute/text
+		// tables, per-record attribute lookup tables): name + value strings.
+		constexpr std::uint64_t ATTRIBUTE_ENTRY_WIRE_BYTES = 64;
+		// EdaDataFile property + feature-group records (name + value refs).
+		constexpr std::uint64_t PROPERTY_RECORD_WIRE_BYTES = 64;
+		// Tools-file drill/tool records (type, diameter, plus params).
+		constexpr std::uint64_t TOOL_RECORD_WIRE_BYTES = 64;
+		// Normalized flavour: a Part entry (name + package ref) rides the
+		// parts vector and the partsByName map.
+		constexpr std::uint64_t PART_WIRE_BYTES = 128;
+		// Header-ish files (matrix, misc/info, step headers, standard fonts)
+		// hold bounded structural payloads, not per-record bulk: a flat
+		// allowance per design plus per step covers them with margin.
+		constexpr std::uint64_t MISC_DESIGN_ALLOWANCE_BYTES = 256 * 1024;
+		constexpr std::uint64_t MISC_STEP_ALLOWANCE_BYTES = 64 * 1024;
 
 		std::uint64_t featureCount = 0;
 		std::uint64_t componentCount = 0;
 		std::uint64_t netCount = 0;
 		std::uint64_t packageCount = 0;
+		std::uint64_t featureIdCount = 0;
+		std::uint64_t netlistNetCount = 0;
+		std::uint64_t netlistPointCount = 0;
+		std::uint64_t attributeEntryCount = 0;
+		std::uint64_t propertyRecordCount = 0;
+		std::uint64_t toolCount = 0;
+		std::uint64_t stepCount = 0;
 
 		if (m_pFileModel != nullptr)
 		{
+			attributeEntryCount += m_pFileModel->GetMiscAttrListFile().GetAttributes().size();
+
+			for (const auto& kvSymbolsDirectory : m_pFileModel->GetSymbolsDirectoriesByName())
+			{
+				const auto& pSymbolsDirectory = kvSymbolsDirectory.second;
+				featureCount += pSymbolsDirectory->GetFeaturesFile().GetFeatureRecords().size();
+				attributeEntryCount += pSymbolsDirectory->GetAttrListFile().GetAttributes().size();
+			}
+
 			for (const auto& kvStep : m_pFileModel->GetStepsByName())
 			{
 				const auto& pStep = kvStep.second;
+				++stepCount;
 				featureCount += pStep->GetProfileFile().GetFeatureRecords().size();
-				netCount += pStep->GetEdaDataFile().GetNetRecords().size();
-				packageCount += pStep->GetEdaDataFile().GetPackageRecords().size();
+				attributeEntryCount += pStep->GetAttrListFile().GetAttributes().size();
+
+				const auto& edaDataFile = pStep->GetEdaDataFile();
+				netCount += edaDataFile.GetNetRecords().size();
+				packageCount += edaDataFile.GetPackageRecords().size();
+				attributeEntryCount += edaDataFile.GetLayerNames().size()
+					+ edaDataFile.GetAttributeNames().size()
+					+ edaDataFile.GetAttributeTextValues().size();
+				propertyRecordCount += edaDataFile.GetPropertyRecords().size()
+					+ edaDataFile.GetFeatureGroupRecords().size();
+				for (const auto& pNetRecord : edaDataFile.GetNetRecords())
+				{
+					for (const auto& pSubnetRecord : pNetRecord->m_subnetRecords)
+					{
+						featureIdCount += pSubnetRecord->m_featureIdRecords.size();
+					}
+					attributeEntryCount += pNetRecord->GetAttributeLookupTable().size();
+				}
+				for (const auto& pPackageRecord : edaDataFile.GetPackageRecords())
+				{
+					attributeEntryCount += pPackageRecord->GetAttributeLookupTable().size();
+				}
+
+				for (const auto& kvNetlist : pStep->GetNetlistsByName())
+				{
+					netlistNetCount += kvNetlist.second->GetNetRecords().size();
+					netlistPointCount += kvNetlist.second->GetNetPointRecords().size();
+				}
+
 				for (const auto& kvLayer : pStep->GetLayersByName())
 				{
 					const auto& pLayer = kvLayer.second;
 					featureCount += pLayer->GetFeaturesFile().GetFeatureRecords().size();
 					componentCount += pLayer->GetComponentsFile().GetComponentRecords().size();
+					attributeEntryCount += pLayer->GetAttrListFile().GetAttributes().size();
+					toolCount += pLayer->GetToolsFile().GetTools().size();
 				}
 			}
 		}
@@ -509,15 +580,24 @@ namespace Odb::Lib::ProductModel
 		auto estimate = featureCount * FEATURE_RECORD_WIRE_BYTES
 			+ componentCount * COMPONENT_WIRE_BYTES
 			+ netCount * NET_WIRE_BYTES
-			+ packageCount * PACKAGE_WIRE_BYTES;
+			+ packageCount * PACKAGE_WIRE_BYTES
+			+ featureIdCount * FEATURE_ID_RECORD_WIRE_BYTES
+			+ netlistNetCount * NETLIST_NET_WIRE_BYTES
+			+ netlistPointCount * NETLIST_POINT_WIRE_BYTES
+			+ attributeEntryCount * ATTRIBUTE_ENTRY_WIRE_BYTES
+			+ propertyRecordCount * PROPERTY_RECORD_WIRE_BYTES
+			+ toolCount * TOOL_RECORD_WIRE_BYTES
+			+ MISC_DESIGN_ALLOWANCE_BYTES + stepCount * MISC_STEP_ALLOWANCE_BYTES;
 
 		if (includeNormalizedLists)
 		{
 			// The full flavour repeats nets/components/packages (vectors plus
-			// ByName maps) on top of the fileModel-derived payload.
+			// ByName maps) on top of the fileModel-derived payload, and adds
+			// the parts vector + partsByName map.
 			estimate += netCount * NET_WIRE_BYTES
 				+ componentCount * COMPONENT_WIRE_BYTES
-				+ packageCount * PACKAGE_WIRE_BYTES;
+				+ packageCount * PACKAGE_WIRE_BYTES
+				+ m_parts.size() * PART_WIRE_BYTES;
 		}
 
 		return estimate;

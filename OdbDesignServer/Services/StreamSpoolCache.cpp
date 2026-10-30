@@ -46,6 +46,15 @@ namespace OdbDesignServer
                 return out;
             }
 
+            unsigned long current_pid()
+            {
+#if defined(_WIN32)
+                return static_cast<unsigned long>(_getpid());
+#else
+                return static_cast<unsigned long>(::getpid());
+#endif
+            }
+
             void append_varint(std::string& out, std::uint64_t value)
             {
                 while (value >= 0x80)
@@ -266,11 +275,7 @@ namespace OdbDesignServer
 
             // Unique per-instance directory (pid + steady ticks);
             // create_directory fails on collision, so retry with a fresh suffix.
-#if defined(_WIN32)
-            const auto pid = static_cast<unsigned long>(_getpid());
-#else
-            const auto pid = static_cast<unsigned long>(::getpid());
-#endif
+            const auto pid = current_pid();
             for (int attempt = 0; attempt < 8; ++attempt)
             {
                 const auto tick = static_cast<std::uint64_t>(
@@ -316,15 +321,21 @@ namespace OdbDesignServer
             m_usable = true;
         }
 
-        std::filesystem::path StreamSpoolCache::MakeSpoolPath(const std::string& designName, std::uint64_t generation) const
+        std::filesystem::path StreamSpoolCache::MakeSpoolPath(const std::string& designName, std::uint64_t generation, std::uint64_t fillId) const
         {
             auto name = sanitize_name(designName);
             if (name.empty())
             {
                 name = "design";
             }
+            // pid uniquifies across processes sharing an explicit spool
+            // directory; fillId uniquifies concurrent fills within one
+            // process. Without the per-fill suffix two cold fills of the
+            // same (design, generation) would open one path with
+            // std::ios::trunc and interleave their length-delimited writes.
             return m_directory / (name + "-" + std::to_string(fnv1a64(designName)) + "-" +
-                std::to_string(generation) + ".spool");
+                std::to_string(generation) + "-" +
+                std::to_string(current_pid()) + "-" + std::to_string(fillId) + ".spool");
         }
 
         bool StreamSpoolCache::TryOpenReader(const std::string& designName, std::uint64_t generation, Reader& readerOut)
@@ -383,13 +394,23 @@ namespace OdbDesignServer
                 return false;
             }
 
-            // The created file IS the spool file (its name embeds name +
-            // generation and is unique per fill): publishing is a bookkeeping
-            // insert, not a rename — two concurrent fills for one design each
-            // keep their own file and the last committer wins; the loser's
-            // file is removed by PublishEntry and, failing that (e.g. a warm
-            // reader holds it open on Windows), by the destructor.
-            const auto path = MakeSpoolPath(designName, generation);
+            // Each fill writes its OWN file (the path embeds a per-fill
+            // suffix — see MakeSpoolPath): concurrent cold fills of the same
+            // (design, generation) must never share a file, because the
+            // ios::trunc open would interleave their length-delimited writes
+            // and publish a corrupt spool. Publishing is a bookkeeping
+            // insert, not a rename: the last committer wins, and
+            // PublishEntry removes the loser's (distinct) file. A warm
+            // reader already streaming the loser's file is safe on POSIX
+            // (unlink-while-open keeps its fd valid); on Windows the remove
+            // can fail while the handle is open — best-effort, the orphan is
+            // reclaimed when an owned spool directory is torn down.
+            std::uint64_t fillId = 0;
+            {
+                std::lock_guard<std::mutex> lock(m_mutex);
+                fillId = ++m_fillCounter;
+            }
+            const auto path = MakeSpoolPath(designName, generation, fillId);
 
             writerOut.m_stream.open(path, std::ios::binary | std::ios::trunc);
             if (!writerOut.m_stream.is_open())

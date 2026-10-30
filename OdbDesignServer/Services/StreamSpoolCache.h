@@ -141,7 +141,7 @@ namespace OdbDesignServer
             };
 
             void InitializeDirectory(const std::filesystem::path& directory, bool ownsDirectory, std::uint64_t maxTotalBytes);
-            std::filesystem::path MakeSpoolPath(const std::string& designName, std::uint64_t generation) const;
+            std::filesystem::path MakeSpoolPath(const std::string& designName, std::uint64_t generation, std::uint64_t fillId) const;
             void PublishEntry(const std::string& designName, const Entry& entry);
             void EvictOverBudgetLocked(const std::string& protectedName);
 
@@ -152,6 +152,7 @@ namespace OdbDesignServer
             std::uint64_t m_totalBytes = 0;
             std::uint64_t m_warmOpens = 0;
             std::uint64_t m_useCounter = 0;
+            std::uint64_t m_fillCounter = 0;
             std::map<std::string, Entry> m_entriesByName;
             bool m_usable = false;
         };

@@ -6,17 +6,22 @@
 #include <grpcpp/security/credentials.h>
 
 #include <algorithm>
+#include <atomic>
 #include <chrono>
 #include <cstdint>
+#include <filesystem>
 #include <functional>
 #include <memory>
 #include <sstream>
 #include <string>
+#include <system_error>
 #include <thread>
+#include <vector>
 
 #include "Fixtures/FileArchiveLoadFixture.h"
 #include "OdbDesignServer/Services/OdbDesignServiceImpl.h"
 #include "OdbDesignServer/Services/DesignStreamWalker.h"
+#include "OdbDesignServer/Services/StreamSpoolCache.h"
 #include "OdbDesignServer/Config/GrpcServiceConfig.h"
 #include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/io/zero_copy_stream_impl_lite.h>
@@ -324,6 +329,41 @@ namespace Odb::Test
 		}
 	}
 
+	// Presence parity on a degenerate (no-file-model, no-net) design: the
+	// monolith always creates the connectivity submessage (D4 always-on) and
+	// never creates filemodel when there is none — the chunk stream must
+	// match both presence semantics byte-for-byte, not just the field
+	// contents. Every corpus design has nets, so the wire-equivalence gates
+	// above cannot catch a presence divergence.
+	TEST_F(DesignStreamTest, WalkerOutput_NoNetDesign_MatchesMonolithicPresence)
+	{
+		const Odb::Lib::ProductModel::Design noNetDesign;
+
+		const auto directBytes = SerializeDeterministic(*noNetDesign.to_protobuf(/*includeNormalizedLists=*/false));
+		EXPECT_TRUE(noNetDesign.to_protobuf(false)->has_connectivity())
+			<< "monolithic invariant: connectivity is always present (D4)";
+
+		Odb::Lib::Protobuf::ProductModel::Design reassembled;
+		DesignStreamWalker::Stats stats;
+		const bool completed = DesignStreamWalker::Walk(noNetDesign, /*includeNormalizedLists=*/false,
+			DesignStreamOptions{},
+			[&reassembled](const DesignChunk& chunk)
+			{
+				return ApplyDesignChunk(reassembled, chunk);
+			},
+			&stats);
+		ASSERT_TRUE(completed);
+		EXPECT_TRUE(reassembled.has_connectivity())
+			<< "a no-net design must still emit one (empty) ConnectivityBatch so "
+			<< "reassembly creates field 12 like the monolith";
+		EXPECT_FALSE(reassembled.has_filemodel())
+			<< "a design without a file model must not gain an empty filemodel field";
+
+		const auto streamBytes = SerializeDeterministic(reassembled);
+		EXPECT_TRUE(BytesEqual("no-net design", streamBytes, directBytes))
+			<< "walker output for a no-net design must be byte-identical to the monolith";
+	}
+
 	// ---- M6.2 dispatch: monolithic guard + streaming availability ----
 
 	TEST_F(DesignStreamTest, MonolithicGetDesign_RejectsOverBudgetDesign_WithResourceExhausted)
@@ -429,6 +469,94 @@ namespace Odb::Test
 		EXPECT_EQ(m_service->streamSpoolCache().WarmOpens(), 2ull);
 
 		m_sharedDesignCache->setMonolithicWireBudget(0);
+	}
+
+	// ---- M6.3: concurrent cold fills must not share one spool file ----
+
+	// Two cold fills of the same (design, generation) racing (two clients
+	// streaming an over-budget design before any spool exists) must each
+	// write their own file: sharing one path opened with std::ios::trunc
+	// interleaves the length-delimited frames and publishes a corrupt spool
+	// whose warm replay parses garbage mid-stream. The cache-level test
+	// reproduces the exact concurrency; the winner must publish a spool that
+	// replays the full record sequence cleanly (what a warm
+	// GetDesignStream client would receive).
+	TEST_F(DesignStreamTest, StreamSpoolCache_ConcurrentColdFills_PublishIntactSpool)
+	{
+		namespace fs = std::filesystem;
+		std::error_code ec;
+		const auto base = fs::temp_directory_path(ec);
+		ASSERT_FALSE(ec);
+		const auto dir = base / ("odbdesign-spool-concurrent-test-" +
+			std::to_string(::getpid()) + "-" +
+			std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+
+		constexpr std::uint64_t generation = 7;
+		StreamSpoolCache cache(dir, 8ull << 30);
+
+		// One deterministic chunk sequence both fills append.
+		std::vector<DesignChunk> records;
+		for (int i = 0; i < 500; ++i)
+		{
+			DesignChunk chunk;
+			chunk.mutable_header()->set_name("record-" + std::to_string(i));
+			records.push_back(chunk);
+		}
+
+		std::atomic<int> fillsReady{ 0 };
+		auto fill = [&]()
+		{
+			StreamSpoolCache::Writer writer;
+			if (!cache.BeginWrite("design", generation, writer))
+			{
+				return false;
+			}
+			// Both writers hold their file open before either appends, so
+			// the frames genuinely race if they share a path.
+			++fillsReady;
+			while (fillsReady.load() < 2)
+			{
+				std::this_thread::yield();
+			}
+			for (const auto& record : records)
+			{
+				if (!writer.Append(record))
+				{
+					return false;
+				}
+			}
+			writer.Commit();
+			return true;
+		};
+
+		std::thread fillerA(fill);
+		std::thread fillerB(fill);
+		fillerA.join();
+		fillerB.join();
+
+		EXPECT_EQ(cache.EntryCount(), std::size_t(1))
+			<< "the last committer must own the single published entry";
+
+		StreamSpoolCache::Reader reader;
+		ASSERT_TRUE(cache.TryOpenReader("design", generation, reader));
+		std::uint64_t recordsRead = 0;
+		DesignChunk chunk;
+		while (reader.Next(chunk))
+		{
+			ASSERT_LT(recordsRead, records.size())
+				<< "published spool replayed more records than were appended";
+			EXPECT_EQ(chunk.SerializeAsString(), records[recordsRead].SerializeAsString())
+				<< "published spool frame " << recordsRead << " must be intact (no interleaving)";
+			++recordsRead;
+			chunk.Clear();
+		}
+		EXPECT_FALSE(reader.Failed())
+			<< "the published spool must parse cleanly to its end (a shared/truncated "
+			<< "file would fail the varint framing or protobuf parse mid-stream)";
+		EXPECT_EQ(recordsRead, records.size())
+			<< "the published spool must replay the complete record sequence";
+
+		std::filesystem::remove_all(dir, ec);
 	}
 
 	// ---- background pre-serialization skips over-budget designs ----

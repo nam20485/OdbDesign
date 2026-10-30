@@ -236,6 +236,20 @@ namespace OdbDesignServer
             {
                 const auto index = design.BuildConnectivityIndex();
 
+                // FillConnectivityMessage runs unconditionally (D4), so the
+                // monolith always serializes field 12 — a design with no
+                // nets/packages/components as present-but-empty. Track whether
+                // any ConnectivityBatch was emitted so a no-net design still
+                // emits one (empty) batch and reassembly creates the
+                // submessage; otherwise the reassembled message would lack
+                // field 12 entirely and diverge from the monolithic bytes.
+                bool connectivityEmitted = false;
+                auto emitConnectivity = [&emit, &connectivityEmitted](const Odb::Grpc::DesignChunk& chunk)
+                {
+                    connectivityEmitted = true;
+                    return emit(chunk);
+                };
+
                 // nets
                 {
                     Odb::Grpc::DesignChunk chunk;
@@ -245,14 +259,14 @@ namespace OdbDesignServer
                         design.AddConnectivityNetEntry(i, *entries);
                         if (static_cast<std::size_t>(entries->nets_size()) >= options.entryBatchSize)
                         {
-                            if (!emit(chunk)) return false;
+                            if (!emitConnectivity(chunk)) return false;
                             chunk.Clear();
                             entries = chunk.mutable_connectivity()->mutable_entries();
                         }
                     }
                     if (entries->nets_size() > 0)
                     {
-                        if (!emit(chunk)) return false;
+                        if (!emitConnectivity(chunk)) return false;
                     }
                 }
                 // packages
@@ -264,14 +278,14 @@ namespace OdbDesignServer
                         design.AddConnectivityPackagePinEntry(i, *entries);
                         if (static_cast<std::size_t>(entries->packages_size()) >= options.entryBatchSize)
                         {
-                            if (!emit(chunk)) return false;
+                            if (!emitConnectivity(chunk)) return false;
                             chunk.Clear();
                             entries = chunk.mutable_connectivity()->mutable_entries();
                         }
                     }
                     if (entries->packages_size() > 0)
                     {
-                        if (!emit(chunk)) return false;
+                        if (!emitConnectivity(chunk)) return false;
                     }
                 }
                 // netMembers
@@ -283,14 +297,14 @@ namespace OdbDesignServer
                         design.AddConnectivityNetMemberEntry(index, membersIt, *entries);
                         if (static_cast<std::size_t>(entries->netmembers_size()) >= options.entryBatchSize)
                         {
-                            if (!emit(chunk)) return false;
+                            if (!emitConnectivity(chunk)) return false;
                             chunk.Clear();
                             entries = chunk.mutable_connectivity()->mutable_entries();
                         }
                     }
                     if (entries->netmembers_size() > 0)
                     {
-                        if (!emit(chunk)) return false;
+                        if (!emitConnectivity(chunk)) return false;
                     }
                 }
                 // components
@@ -302,14 +316,27 @@ namespace OdbDesignServer
                         design.AddConnectivityPlacedComponentEntry(index, i, *entries);
                         if (static_cast<std::size_t>(entries->components_size()) >= options.entryBatchSize)
                         {
-                            if (!emit(chunk)) return false;
+                            if (!emitConnectivity(chunk)) return false;
                             chunk.Clear();
                             entries = chunk.mutable_connectivity()->mutable_entries();
                         }
                     }
                     if (entries->components_size() > 0)
                     {
-                        if (!emit(chunk)) return false;
+                        if (!emitConnectivity(chunk)) return false;
+                    }
+                }
+
+                if (!connectivityEmitted)
+                {
+                    // Present-but-empty parity: ApplyDesignChunk's
+                    // mutable_connectivity() creates the submessage even for an
+                    // empty entries payload, matching the monolith's tag+len(0).
+                    Odb::Grpc::DesignChunk chunk;
+                    chunk.mutable_connectivity();
+                    if (!emit(chunk))
+                    {
+                        return false;
                     }
                 }
             }
@@ -357,7 +384,14 @@ namespace OdbDesignServer
             case Odb::Grpc::DesignChunk::kHeader:
                 design.set_productmodel(chunk.header().product_model());
                 design.set_name(chunk.header().name());
-                design.mutable_filemodel()->CopyFrom(chunk.header().file_archive());
+                // Presence parity with Design::to_protobuf: the monolith sets
+                // filemodel only when the design has a file model, so the
+                // header chunk carries it only then (Walk emits none for a
+                // null/clipped file model) — never create an empty one.
+                if (chunk.header().has_file_archive())
+                {
+                    design.mutable_filemodel()->CopyFrom(chunk.header().file_archive());
+                }
                 return true;
 
             case Odb::Grpc::DesignChunk::kStep:
