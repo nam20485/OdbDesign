@@ -314,6 +314,18 @@ namespace OdbDesignServer
                     return {grpc::StatusCode::UNIMPLEMENTED, "Design streaming is not enabled"};
                 }
 
+                // Read the response generation BEFORE fetching the design:
+                // an invalidation landing between the fetch and the
+                // generation read would otherwise hand the cold fill a
+                // stale Design published under the NEW generation — the
+                // commit-time re-check below compares against
+                // generationAtStart, so it cannot catch a bump that predates
+                // its read. Reading first makes any invalidation in the
+                // window abort the publish: the safe direction (the
+                // streaming client still gets its content; the next request
+                // refills).
+                const auto generationAtStart = m_designCache->GetResponseGeneration(designName);
+
                 // Resolve the design (parse + product-model build; the parse
                 // fits the pod budget by design — it is the monolithic
                 // serialization this RPC replaces that does not).
@@ -372,14 +384,28 @@ namespace OdbDesignServer
                 // designs (the ones this RPC exists for) tee every chunk to the
                 // disk spool while writing it to the wire, so the NEXT request
                 // is served warm from page cache with no product-model walk.
-                const auto generationAtStart = m_designCache->GetResponseGeneration(designName);
                 const auto monolithicBudget = m_designCache->getMonolithicWireBudget();
                 const bool overBudget = monolithicBudget != 0 &&
                     design->EstimateWireSizeBytes(/*includeNormalizedLists=*/false) > monolithicBudget;
 
+                // Spool outcome for the done-log, tracked at each transition
+                // so the label reports what actually happened. The previous
+                // expression printed "spool=aborted" for normalized-flavour
+                // requests (no spool write is ever attempted for them) and
+                // "spool=committed" for fills that aborted on client
+                // cancellation or a generation bump.
+                enum class SpoolOutcome { NoneAttempted, OpenFailed, Aborted, Committed };
+                auto spoolOutcome = SpoolOutcome::NoneAttempted;
+
                 StreamSpoolCache::Writer spoolWriter;
-                bool spooling = !includeNormalizedLists && overBudget &&
-                    m_streamSpool->BeginWrite(designName, generationAtStart, spoolWriter);
+                bool spooling = false;
+                if (!includeNormalizedLists && overBudget)
+                {
+                    spooling = m_streamSpool->BeginWrite(designName, generationAtStart, spoolWriter);
+                    // An active fill publishes only on full success; Aborted
+                    // is the default until Commit() says otherwise.
+                    spoolOutcome = spooling ? SpoolOutcome::Aborted : SpoolOutcome::OpenFailed;
+                }
 
                 DesignStreamWalker::Stats stats;
                 const auto sink = [&](const Odb::Grpc::DesignChunk& chunk) -> bool
@@ -416,6 +442,7 @@ namespace OdbDesignServer
                     if (completed && generationUnchanged)
                     {
                         spoolWriter.Commit();
+                        spoolOutcome = SpoolOutcome::Committed;
                     }
                     else
                     {
@@ -423,11 +450,15 @@ namespace OdbDesignServer
                     }
                 }
 
+                const char* spoolLabel =
+                    spoolOutcome == SpoolOutcome::Committed ? " spool=committed" :
+                    spoolOutcome == SpoolOutcome::Aborted ? " spool=aborted" :
+                    spoolOutcome == SpoolOutcome::OpenFailed ? " spool=open-failed" : "";
                 loginfo("[ConnTrace] GetDesignStream done: design_name=\"" + designName +
                     "\" completed=" + (completed ? "true" : "false") +
                     " chunks=" + std::to_string(stats.chunks) +
                     " wire_bytes=" + std::to_string(stats.wireBytes) +
-                    (spooling ? " spool=committed" : (overBudget ? " spool=aborted" : "")));
+                    spoolLabel);
 
                 if (!completed && !context->IsCancelled())
                 {

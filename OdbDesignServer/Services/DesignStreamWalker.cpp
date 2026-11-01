@@ -2,6 +2,8 @@
 #include <Logger.h>
 #include <Text/Utf8Sanitizer.h>
 
+#include <map>
+
 namespace OdbDesignServer
 {
     namespace Services
@@ -109,11 +111,57 @@ namespace OdbDesignServer
                 }
 
                 // ---- 3. FeatureBatches (step order, layer order, record
-                // order — FeaturesFile::to_protobuf's exact traversal) ----
+                // order — FeaturesFile::to_protobuf's exact traversal).
+                // Sanitized-key collisions: the monolith inserts with map
+                // assignment, so the LAST raw step/layer holding a
+                // sanitized key survives (FileArchive::to_protobuf /
+                // StepDirectory::FillProtobufMessage). StepSkeleton
+                // reassembly reproduces that by assignment, but
+                // FeatureBatches must be emitted for surviving raw entries
+                // ONLY — a shadowed entry's records would otherwise append
+                // into the survivor (duplicating features the monolith
+                // dropped) or address a layer the survivor lacks (failing
+                // reassembly). Mirrors the guard the design-level ByName
+                // maps carry (ProtobufMapHelpers.h). ----
+                std::map<std::string, Odb::Lib::FileModel::Design::StepDirectory*> survivingSteps;
                 for (const auto& kvStep : fileModel->GetStepsByName())
                 {
+                    auto stepKey = Odb::Lib::Text::ToUtf8(kvStep.first);
+                    if (survivingSteps.count(stepKey) != 0)
+                    {
+                        logwarn("UTF-8 sanitization collision in streamed stepsByName: raw step \"" +
+                            kvStep.first + "\" sanitizes to a key already held; keeping the last entry (monolith last-wins)");
+                    }
+                    survivingSteps[stepKey] = kvStep.second.get();
+                }
+
+                for (const auto& kvStep : fileModel->GetStepsByName())
+                {
+                    if (survivingSteps[Odb::Lib::Text::ToUtf8(kvStep.first)] != kvStep.second.get())
+                    {
+                        continue; // shadowed raw step: the monolith's overwrite drops it entirely
+                    }
+
+                    std::map<std::string, Odb::Lib::FileModel::Design::LayerDirectory*> survivingLayers;
                     for (const auto& kvLayer : kvStep.second->GetLayersByName())
                     {
+                        auto layerKey = Odb::Lib::Text::ToUtf8(kvLayer.first);
+                        if (survivingLayers.count(layerKey) != 0)
+                        {
+                            logwarn("UTF-8 sanitization collision in streamed layersByName (step \"" +
+                                kvStep.first + "\"): raw layer \"" + kvLayer.first +
+                                "\" sanitizes to a key already held; keeping the last entry (monolith last-wins)");
+                        }
+                        survivingLayers[layerKey] = kvLayer.second.get();
+                    }
+
+                    for (const auto& kvLayer : kvStep.second->GetLayersByName())
+                    {
+                        if (survivingLayers[Odb::Lib::Text::ToUtf8(kvLayer.first)] != kvLayer.second.get())
+                        {
+                            continue; // shadowed raw layer: the monolith's overwrite drops it
+                        }
+
                         const auto& records = kvLayer.second->GetFeaturesFile().GetFeatureRecords();
                         if (records.empty())
                         {
@@ -413,13 +461,35 @@ namespace OdbDesignServer
                 }
                 const auto& batch = chunk.features();
                 auto* stepsByName = design.mutable_filemodel()->mutable_stepsbyname();
-                auto stepIt = stepsByName->find(batch.step_name());
+                // Linear scans, not find(): #599 diagnosed an address-layout
+                // dependent protobuf-Map lookup bug (entry present under
+                // iteration, absent under find() on the same object), never
+                // root-caused. These maps hold a handful of entries, so
+                // iteration is free — and the reference reassembly models
+                // the recipe M6.4 clients will copy.
+                auto stepIt = stepsByName->end();
+                for (auto it = stepsByName->begin(); it != stepsByName->end(); ++it)
+                {
+                    if (it->first == batch.step_name())
+                    {
+                        stepIt = it;
+                        break;
+                    }
+                }
                 if (stepIt == stepsByName->end())
                 {
                     return false;
                 }
                 auto* layersByName = stepIt->second.mutable_layersbyname();
-                auto layerIt = layersByName->find(batch.layer_name());
+                auto layerIt = layersByName->end();
+                for (auto it = layersByName->begin(); it != layersByName->end(); ++it)
+                {
+                    if (it->first == batch.layer_name())
+                    {
+                        layerIt = it;
+                        break;
+                    }
+                }
                 if (layerIt == layersByName->end())
                 {
                     return false;

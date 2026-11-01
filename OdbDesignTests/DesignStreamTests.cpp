@@ -364,6 +364,114 @@ namespace Odb::Test
 			<< "walker output for a no-net design must be byte-identical to the monolith";
 	}
 
+	// ---- sanitized-key collisions follow the monolith's last-wins ----
+	//
+	// Two raw names from the CP1252 undefined slots (0x81, 0x8D) both
+	// sanitize to U+FFFD (ProtobufMapHelpers.h documents the collision
+	// class). The monolith's map assignment keeps only the LAST raw entry;
+	// the walker must emit FeatureBatches for surviving entries only, or the
+	// shadowed entry's records would append into the survivor (duplicating
+	// features the monolith dropped) or address a layer the survivor lacks
+	// (failing reassembly). The product model is built via the in-memory
+	// protobuf -> Design::from_protobuf chain; the input message carries
+	// invalid-UTF-8 map keys and must never itself be serialized.
+	TEST_F(DesignStreamTest, WalkerOutput_LayerNameCollision_LastWins_MatchesMonolith)
+	{
+		Odb::Lib::Protobuf::ProductModel::Design designMessage;
+		auto* stepMessage = &(*designMessage.mutable_filemodel()->mutable_stepsbyname())["step"];
+		const std::string rawFirst(1, '\x81');
+		const std::string rawSecond(1, '\x8D');
+		for (const auto& rawName : { rawFirst, rawSecond })
+		{
+			auto* layerMessage = &(*stepMessage->mutable_layersbyname())[rawName];
+			auto* record = layerMessage->mutable_featurefile()->add_featurerecords();
+			record->set_xs(1.0);
+			record->set_xe(2.0);
+		}
+
+		Odb::Lib::ProductModel::Design design;
+		design.from_protobuf(designMessage);
+		ASSERT_EQ(design.GetFileModel()->GetStepsByName().at("step")->GetLayersByName().size(), std::size_t(2))
+			<< "from_protobuf must rebuild both RAW layer names";
+
+		const auto monolithBytes = SerializeDeterministic(*design.to_protobuf(/*includeNormalizedLists=*/false));
+
+		std::uint64_t featureChunks = 0;
+		Odb::Lib::Protobuf::ProductModel::Design reassembled;
+		DesignStreamWalker::Stats stats;
+		const bool completed = DesignStreamWalker::Walk(design, /*includeNormalizedLists=*/false,
+			DesignStreamOptions{},
+			[&reassembled, &featureChunks](const DesignChunk& chunk)
+			{
+				if (chunk.has_features())
+				{
+					++featureChunks;
+				}
+				return ApplyDesignChunk(reassembled, chunk);
+			},
+			&stats);
+		ASSERT_TRUE(completed);
+
+		// std::map order: "\x81" < "\x8D", so the last holder of the
+		// sanitized key is the 0x8D layer — exactly one FeatureBatch.
+		EXPECT_EQ(featureChunks, 1ull)
+			<< "the shadowed raw layer's feature batch must not be emitted";
+
+		const auto streamBytes = SerializeDeterministic(reassembled);
+		EXPECT_TRUE(BytesEqual("layer-name collision", streamBytes, monolithBytes))
+			<< "colliding layer names must reassemble to the monolith's last-wins bytes";
+	}
+
+	TEST_F(DesignStreamTest, WalkerOutput_StepNameCollision_LastWins_MatchesMonolith)
+	{
+		Odb::Lib::Protobuf::ProductModel::Design designMessage;
+		const std::string rawFirst(1, '\x81');
+		const std::string rawSecond(1, '\x8D');
+		for (const auto& rawName : { rawFirst, rawSecond })
+		{
+			auto* stepMessage = &(*designMessage.mutable_filemodel()->mutable_stepsbyname())[rawName];
+			auto* layerMessage = &(*stepMessage->mutable_layersbyname())["top"];
+			auto* record = layerMessage->mutable_featurefile()->add_featurerecords();
+			record->set_xs(3.0);
+			record->set_xe(4.0);
+		}
+
+		Odb::Lib::ProductModel::Design design;
+		design.from_protobuf(designMessage);
+		ASSERT_EQ(design.GetFileModel()->GetStepsByName().size(), std::size_t(2))
+			<< "from_protobuf must rebuild both RAW step names";
+
+		const auto monolithBytes = SerializeDeterministic(*design.to_protobuf(/*includeNormalizedLists=*/false));
+
+		std::uint64_t featureChunks = 0;
+		Odb::Lib::Protobuf::ProductModel::Design reassembled;
+		DesignStreamWalker::Stats stats;
+		const bool completed = DesignStreamWalker::Walk(design, /*includeNormalizedLists=*/false,
+			DesignStreamOptions{},
+			[&reassembled, &featureChunks](const DesignChunk& chunk)
+			{
+				if (chunk.has_features())
+				{
+					++featureChunks;
+				}
+				return ApplyDesignChunk(reassembled, chunk);
+			},
+			&stats);
+		ASSERT_TRUE(completed);
+
+		EXPECT_EQ(featureChunks, 1ull)
+			<< "the shadowed raw step's feature batch must not be emitted";
+		ASSERT_EQ(reassembled.filemodel().stepsbyname().size(), std::size_t(1));
+		const auto& survivingStep = reassembled.filemodel().stepsbyname().begin()->second;
+		ASSERT_EQ(survivingStep.layersbyname().size(), std::size_t(1));
+		EXPECT_EQ(survivingStep.layersbyname().begin()->second.featurefile().featurerecords_size(), 1)
+			<< "the surviving step must carry exactly its own feature record (no duplication)";
+
+		const auto streamBytes = SerializeDeterministic(reassembled);
+		EXPECT_TRUE(BytesEqual("step-name collision", streamBytes, monolithBytes))
+			<< "colliding step names must reassemble to the monolith's last-wins bytes";
+	}
+
 	// ---- M6.2 dispatch: monolithic guard + streaming availability ----
 
 	TEST_F(DesignStreamTest, MonolithicGetDesign_RejectsOverBudgetDesign_WithResourceExhausted)
