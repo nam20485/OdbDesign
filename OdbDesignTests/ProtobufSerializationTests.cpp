@@ -257,42 +257,39 @@ namespace Odb::Test
 		// protobuf's map::at() CHECK-fails and abort()s the whole process when the key
 		// is absent, so a regression here reports as "Subprocess aborted" with no gtest
 		// diagnostic -- it cost four CI runs and a log hunt to name the missing key.
-		// Look the entry up explicitly so the failure names it and lists what did arrive.
+		// The entry is looked up by LINEAR SCAN, not find(): #599 diagnosed the
+		// intermittent failure (~40% of runs on some binaries) as an address-layout
+		// dependent protobuf-Map lookup bug -- the entry is present under iteration
+		// and absent under find() on the same object, same thread (setarch -R makes
+		// it 100% reproducible; ASan/UBSan silent over 40 attempts, single protobuf
+		// runtime, freshly regenerated gencode -- not heap corruption, UB, dual
+		// runtime copies, or stale gencode). Never find()/at() a protobuf Map in
+		// tests; iterate. The byte dump below stays so a future miss still names
+		// the key rather than just a count.
 		const auto& reparsedOnlineValues = reparsed.onlinevalues();
-		const auto onlineIt = reparsedOnlineValues.find("ONLINE_NET_STAT");
-		// Sighting 2026-09-27 (intermittent, ~1 run in 3, not reproducible on demand):
-		// this assertion fired while the map held exactly one entry whose key dumped
-		// byte-identical to "ONLINE_NET_STAT" (len=15) with value "GREEN" -- i.e. the
-		// entry was present under iteration and absent under find(), same object, same
-		// thread, microseconds apart. Ruled out at the time: ASan and UBSan both silent
-		// over a 40-attempt reproduction (so not heap corruption or detected UB), and
-		// exactly one protobuf runtime in the process (single libprotobuf.so.33.4.0 for
-		// both the test binary and libOdbDesign.so, no strong protobuf symbols of its
-		// own), so not the dual-loaded-copies failure mode; and stale generated code --
-		// a deep clean rebuild (--clean-first, stephdrfile.pb.{h,cc} regenerated, mtimes
-		// verified) still failed 17 of 40 runs. Failure rate is ~40%, not rare.
-		// Unexplained. The byte dump below stays so the next occurrence records the key
-		// rather than just a count. Tracked in #599, which records the reproduction,
-		// everything ruled out and how, and what has not been tried yet.
-		ASSERT_TRUE(onlineIt != reparsedOnlineValues.end())
+		bool onlineStatFound = false;
+		std::string onlineStatValue;
+		std::string onlineValuesDump;
+		for (const auto& kv : reparsedOnlineValues)
+		{
+			onlineValuesDump += "[len=" + std::to_string(kv.first.size()) + " bytes=";
+			for (unsigned char c : kv.first)
+			{
+				char hex[4];
+				snprintf(hex, sizeof(hex), "%02x ", c);
+				onlineValuesDump += hex;
+			}
+			onlineValuesDump += "]=[" + kv.second + "] ";
+			if (kv.first == "ONLINE_NET_STAT")
+			{
+				onlineStatFound = true;
+				onlineStatValue = kv.second;
+			}
+		}
+		ASSERT_TRUE(onlineStatFound)
 				<< "ONLINE_NET_STAT did not survive the wire round trip; onlineValues holds "
-				<< reparsedOnlineValues.size() << " entry/entries: "
-				<< [&reparsedOnlineValues] {
-					std::string dump;
-					for (const auto& kv : reparsedOnlineValues)
-					{
-						dump += "[len=" + std::to_string(kv.first.size()) + " bytes=";
-						for (unsigned char c : kv.first)
-						{
-							char hex[4];
-							snprintf(hex, sizeof(hex), "%02x ", c);
-							dump += hex;
-						}
-						dump += "]=[" + kv.second + "] ";
-					}
-					return dump;
-				}();
-		EXPECT_EQ(onlineIt->second, "GREEN");
+				<< reparsedOnlineValues.size() << " entry/entries: " << onlineValuesDump;
+		EXPECT_EQ(onlineStatValue, "GREEN");
 	}
 
 	// The other round-trip tests in this file stop at from_protobuf(); the wire
@@ -426,6 +423,48 @@ namespace Odb::Test
 		                Odb::Lib::FileModel::Design::EdaDataFile::PackageRecord zeroPkgRoundTripped;
 		                zeroPkgRoundTripped.from_protobuf(*pZeroPkgMsg);
 		                ASSERT_TRUE(zeroPkgRoundTripped.id.has_value());
-		                EXPECT_EQ(*zeroPkgRoundTripped.id, 0u);
-		        }
-		}
+	                EXPECT_EQ(*zeroPkgRoundTripped.id, 0u);
+	        }
+	}
+
+	// FeatureGroupRecord::to_protobuf must serialize PropertyRecord payloads
+	// into propertyrecords (field 2), never into featureidrecords (field 3):
+	// the old loop called add_featureidrecords() for property records — a
+	// cross-type Message::CopyFrom (type confusion / UB) whenever a design
+	// carries feature-group property records. No corpus fixture exercises the
+	// path; this test pins the field mapping and the round trip.
+	TEST(EdaDataFileFeatureGroupRecordTests, PropertyRecords_SerializeToPropertyRecordsField)
+	{
+		namespace Eda = Odb::Lib::FileModel::Design;
+
+		auto pFeatureGroup = std::make_shared<Eda::EdaDataFile::FeatureGroupRecord>();
+		pFeatureGroup->type = "TEXT";
+
+		auto pFeatureId = std::make_shared<Eda::EdaDataFile::FeatureIdRecord>();
+		pFeatureId->type = Eda::EdaDataFile::FeatureIdRecord::Type::Copper;
+		pFeatureId->layerNumber = 7;
+		pFeatureId->featureNumber = 42;
+		pFeatureGroup->m_featureIdRecords.push_back(pFeatureId);
+
+		auto pProperty = std::make_shared<Eda::PropertyRecord>();
+		pProperty->name = "attr";
+		pProperty->value = "val";
+		pFeatureGroup->m_propertyRecords.push_back(pProperty);
+
+		const auto pMessage = pFeatureGroup->to_protobuf();
+		ASSERT_NE(pMessage, nullptr);
+
+		ASSERT_EQ(pMessage->propertyrecords_size(), 1);
+		EXPECT_EQ(pMessage->propertyrecords(0).name(), "attr");
+		EXPECT_EQ(pMessage->propertyrecords(0).value(), "val");
+		ASSERT_EQ(pMessage->featureidrecords_size(), 1);
+		EXPECT_EQ(pMessage->featureidrecords(0).featurenumber(), 42u);
+
+		Eda::EdaDataFile::FeatureGroupRecord roundTripped;
+		roundTripped.from_protobuf(*pMessage);
+		ASSERT_EQ(roundTripped.m_propertyRecords.size(), std::size_t(1));
+		EXPECT_EQ(roundTripped.m_propertyRecords[0]->name, "attr");
+		EXPECT_EQ(roundTripped.m_propertyRecords[0]->value, "val");
+		ASSERT_EQ(roundTripped.m_featureIdRecords.size(), std::size_t(1));
+		EXPECT_EQ(roundTripped.m_featureIdRecords[0]->featureNumber, 42u);
+	}

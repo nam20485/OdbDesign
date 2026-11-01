@@ -6,6 +6,8 @@
 #include <filesystem>
 #include <string>
 #include <memory>
+#include <cstdint>
+#include <limits>
 
 using namespace OdbDesignServer::Config;
 using namespace Odb::Test::Utils;
@@ -225,6 +227,79 @@ namespace Odb::Test::Config
         auto result = GrpcServiceConfig::LoadFromFile(path);
         EXPECT_TRUE(result.loadedFromFile);
         EXPECT_EQ(result.config->keepalive_time_s, 3600);
+    }
+
+    // ---- design_streaming (M6) configuration ----
+    // The new keys run the OOM-guard machinery's knobs: feature_batch_size
+    // bounds peak per-chunk memory, spool_max_bytes is the disk budget (0 =
+    // unlimited sentinel), enabled is the kill-switch. Unlike the sibling
+    // clamps they had no coverage (review F13).
+
+    TEST_F(GrpcServiceConfigTest, LoadFromFile_DesignStreaming_ClampsFeatureBatchSizeLow)
+    {
+        auto path = writeConfigFile(R"({
+            "grpc": {
+                "design_streaming": {
+                    "feature_batch_size": 50
+                }
+            }
+        })");
+
+        auto result = GrpcServiceConfig::LoadFromFile(path);
+        EXPECT_TRUE(result.loadedFromFile);
+        EXPECT_EQ(result.config->design_stream_feature_batch_size, 100);
+    }
+
+    TEST_F(GrpcServiceConfigTest, LoadFromFile_DesignStreaming_ClampsFeatureBatchSizeHigh)
+    {
+        auto path = writeConfigFile(R"({
+            "grpc": {
+                "design_streaming": {
+                    "feature_batch_size": 20000
+                }
+            }
+        })");
+
+        auto result = GrpcServiceConfig::LoadFromFile(path);
+        EXPECT_TRUE(result.loadedFromFile);
+        EXPECT_EQ(result.config->design_stream_feature_batch_size, 10000);
+    }
+
+    TEST_F(GrpcServiceConfigTest, LoadFromFile_DesignStreaming_KeysPassThrough)
+    {
+        auto path = writeConfigFile(R"({
+            "grpc": {
+                "design_streaming": {
+                    "enabled": false,
+                    "feature_batch_size": 500,
+                    "spool_dir": "/var/spool/odbdesign",
+                    "spool_max_bytes": 123456789
+                }
+            }
+        })");
+
+        auto result = GrpcServiceConfig::LoadFromFile(path);
+        EXPECT_TRUE(result.loadedFromFile);
+        EXPECT_FALSE(result.config->enable_design_streaming);
+        EXPECT_EQ(result.config->design_stream_feature_batch_size, 500);
+        EXPECT_EQ(result.config->stream_spool_dir, "/var/spool/odbdesign");
+        EXPECT_EQ(result.config->stream_spool_max_bytes, 123456789ull);
+    }
+
+    TEST_F(GrpcServiceConfigTest, LoadFromFile_DesignStreaming_SpoolMaxBytesZeroMeansUnlimited)
+    {
+        auto path = writeConfigFile(R"({
+            "grpc": {
+                "design_streaming": {
+                    "spool_max_bytes": 0
+                }
+            }
+        })");
+
+        auto result = GrpcServiceConfig::LoadFromFile(path);
+        EXPECT_TRUE(result.loadedFromFile);
+        EXPECT_EQ(result.config->stream_spool_max_bytes, std::numeric_limits<std::uint64_t>::max())
+            << "spool_max_bytes: 0 is the unlimited sentinel, not a zero-byte budget";
     }
 
     TEST_F(GrpcServiceConfigTest, LoadFromFile_Keepalive_ClampsTimeoutLow)

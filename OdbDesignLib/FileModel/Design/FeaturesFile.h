@@ -106,6 +106,11 @@ namespace Odb::Lib::FileModel::Design
 
 		// Inherited via IProtoBuffable
 		std::unique_ptr<Odb::Lib::Protobuf::FeaturesFile> to_protobuf() const override;
+		// M6 streaming: same message minus the featureRecords list (the
+		// multi-GB bulk on large designs). Every other field is produced by
+		// the identical code path, so skeleton + re-appended featureRecords
+		// serializes to the exact to_protobuf() bytes.
+		std::unique_ptr<Odb::Lib::Protobuf::FeaturesFile> to_protobuf_skeleton() const;
 		void from_protobuf(const Odb::Lib::Protobuf::FeaturesFile& message) override;
 		
 	private:
@@ -118,6 +123,11 @@ namespace Odb::Lib::FileModel::Design
 		FeatureRecord::Vector m_featureRecords;
 		SymbolName::StringMap m_symbolNamesByName;
 		SymbolName::Vector m_symbolNames; // for serialization
+
+		// Shared by to_protobuf() and to_protobuf_skeleton(): everything past
+		// the featureRecords loop is identical so the skeleton stays
+		// byte-compatible with the full serialization.
+		void FillSymbolNames(Odb::Lib::Protobuf::FeaturesFile& featuresFileMessage) const;
 
 
 		std::vector<std::string> m_attributeNames;

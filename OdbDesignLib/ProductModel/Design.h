@@ -3,6 +3,7 @@
 #include "../odbdesign_export.h"
 #include <string>
 #include <memory>
+#include <cstdint>
 #include "Net.h"
 #include "Component.h"
 #include "Package.h"
@@ -68,6 +69,59 @@ namespace Odb::Lib::ProductModel
 		std::unique_ptr<Protobuf::ProductModel::Design> to_protobuf() const override;
 		std::unique_ptr<Protobuf::ProductModel::Design> to_protobuf(bool includeNormalizedLists) const;
 		void from_protobuf(const Protobuf::ProductModel::Design& message) override;
+
+		// ---- M6 streaming support ----
+
+		// Shared join state of the derived Connectivity view, computed once
+		// and consumed by the FillConnectivity* section fillers below. Public
+		// because the chunked GetDesignStream path builds the same sections
+		// batch-by-batch and must emit byte-identical entries from the SAME
+		// code (see FillConnectivityMessage).
+		struct ConnectivityIndex
+		{
+			struct Edge
+			{
+				unsigned int net;
+				unsigned int subnet;
+			};
+			std::map<std::string, std::map<unsigned int, Edge>> edgesByRefDes;
+			std::map<unsigned int, std::map<std::string, std::vector<unsigned int>>> membersByNet;
+			unsigned int noneNetOrdinal = 0;
+			bool hasNoneNet = false;
+
+			using MembersByNetConstIt = std::map<unsigned int, std::map<std::string, std::vector<unsigned int>>>::const_iterator;
+		};
+
+		// Builds the resolved-edge join state (identical to the local state
+		// FillConnectivityMessage computes) plus the $NONE$ net ordinal.
+		ConnectivityIndex BuildConnectivityIndex() const;
+
+		// Section fillers: each appends ONE repeated section of the
+		// Connectivity message in the same order FillConnectivityMessage
+		// emits it. A caller may pass any (fresh, batch-sized) Connectivity
+		// message; entries appended by these fillers are byte-identical to
+		// the monolithic sections.
+		void FillConnectivityNetEntries(Protobuf::ProductModel::Connectivity& connectivityMsg) const;
+		void FillConnectivityPackagePins(Protobuf::ProductModel::Connectivity& connectivityMsg) const;
+		void FillConnectivityPlacedComponents(const ConnectivityIndex& index, Protobuf::ProductModel::Connectivity& connectivityMsg) const;
+		void FillConnectivityNetMembers(const ConnectivityIndex& index, Protobuf::ProductModel::Connectivity& connectivityMsg) const;
+
+		// Single-entry emitters backing the section fillers above — the
+		// granularity the chunked GetDesignStream path needs (one entry per
+		// call, batched by the caller). AddConnectivityNetMemberEntry takes
+		// an iterator into index.membersByNet.
+		void AddConnectivityNetEntry(std::size_t netIndex, Protobuf::ProductModel::Connectivity& connectivityMsg) const;
+		void AddConnectivityPackagePinEntry(std::size_t packageIndex, Protobuf::ProductModel::Connectivity& connectivityMsg) const;
+		void AddConnectivityPlacedComponentEntry(const ConnectivityIndex& index, std::size_t componentIndex, Protobuf::ProductModel::Connectivity& connectivityMsg) const;
+		void AddConnectivityNetMemberEntry(const ConnectivityIndex& index, ConnectivityIndex::MembersByNetConstIt netMembersIt, Protobuf::ProductModel::Connectivity& connectivityMsg) const;
+
+		// Rough serialized-wire-size estimate from model counts (features,
+		// component records, net/package records). O(number of layers/nets),
+		// never O(records): it is the dispatch input for the monolithic-vs-
+		// streaming serve decision and the OOM guard on monolithic GetDesign,
+		// so it must stay cheap enough to run before any message is built.
+		// includeNormalizedLists scales the estimate for the full wire flavor.
+		std::uint64_t EstimateWireSizeBytes(bool includeNormalizedLists = false) const;
 
 		typedef std::vector<std::shared_ptr<Design>> Vector;
 		typedef std::map<std::string, std::shared_ptr<Design>> StringMap;

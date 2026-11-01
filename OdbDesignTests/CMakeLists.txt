@@ -34,10 +34,14 @@ add_executable(OdbDesignTests
     # Server service implementation compiled into the test executable so service-level
     # gRPC methods can be unit-tested directly (used by GetStandardFontsTests.cpp).
     "../OdbDesignServer/Services/OdbDesignServiceImpl.cpp"
+    "../OdbDesignServer/Services/DesignStreamWalker.cpp"
+    "../OdbDesignServer/Services/StreamSpoolCache.cpp"
     "GetStandardFontsTests.cpp"
     "GetLayerSymbolsTests.cpp"
     "RequestLoadDesignTests.cpp"
     "ResponseCacheTests.cpp"
+    "DesignStreamTests.cpp"
+    "DesignStreamMemoryTests.cpp"
     "DesignFetchBenchmarkTests.cpp"
     "AttributeLookupTableTests.cpp"
     "GrpcParseErrorDetailTests.cpp"
