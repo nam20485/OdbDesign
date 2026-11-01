@@ -747,6 +747,12 @@ namespace Odb::Test
 		ASSERT_TRUE(status.ok()) << status.error_message();
 		ASSERT_EQ(m_service->streamSpoolCache().EntryCount(), std::size_t(1));
 
+		// The LIVE spool is always the newest *.spool file: on Windows a
+		// Drop() whose file is still held open by the failing warm reader
+		// cannot remove it (MSVC opens without FILE_SHARE_DELETE), so the
+		// orphaned truncated file stays on disk alongside each refill's
+		// fresh spool — documented StreamSpoolCache behavior (bookkeeping
+		// is erased regardless); POSIX removes it immediately.
 		auto globSpoolFile = [&]() -> fs::path
 		{
 			std::vector<fs::path> spoolFiles;
@@ -757,8 +763,17 @@ namespace Odb::Test
 					spoolFiles.push_back(entry.path());
 				}
 			}
-			EXPECT_EQ(spoolFiles.size(), std::size_t(1)) << "one committed fill, one spool file";
-			return spoolFiles.empty() ? fs::path{} : spoolFiles.front();
+			EXPECT_GE(spoolFiles.size(), std::size_t(1)) << "a committed spool file must exist";
+			if (spoolFiles.empty())
+			{
+				return fs::path{};
+			}
+			return *std::max_element(spoolFiles.begin(), spoolFiles.end(),
+				[](const fs::path& a, const fs::path& b)
+				{
+					std::error_code e1, e2;
+					return fs::last_write_time(a, e1) < fs::last_write_time(b, e2);
+				});
 		};
 
 		// Corrupt the current spool to `newSize`, expect the warm request to
@@ -858,12 +873,14 @@ namespace Odb::Test
 
 		// Load the design (the pre-serialization worker is scheduled at load
 		// completion), then wait for it to land the cached bytes (~21 MB for
-		// sample_design, well under the default budget).
+		// sample_design, well under the default budget). 120 s: the
+		// instrumented linux-debug coverage build serializes slowly (the
+		// 30 s wait timed out there while the release legs needed ~2 s).
 		ASSERT_NE(m_sharedDesignCache->GetDesign(designName), nullptr);
 		ASSERT_TRUE(waitForCondition([this, &designName]()
 		{
 			return m_sharedDesignCache->HasCachedResponse(designName);
-		}, std::chrono::seconds(30))) << "background pre-serialization did not commit";
+		}, std::chrono::seconds(120))) << "background pre-serialization did not commit";
 
 		// Shrink the budget below the cached payload size (and below the
 		// estimate, so the cold guard also rejects): the cached-bytes path

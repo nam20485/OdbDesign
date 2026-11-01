@@ -79,7 +79,7 @@ jobs:
           - os: ubuntu-24.04
             preset: linux-dynamic-release
           # MacOS x64 Release
-          - os: macos-14
+          - os: macos-15
             preset: macos-release
           # Linux mingw x64 Release
           # - os: ubuntu-22.04
@@ -121,7 +121,7 @@ jobs:
 
       - name: Install mono (macOS)
         run: brew install mono
-        if: matrix.os == 'macos-14'
+        if: matrix.os == 'macos-15'
 
       # Generate NuGet config with PAT for GitHub Packages binary cache
       # Uses VCPKG_PAT_TOKEN secret for write access on trusted events
@@ -336,7 +336,7 @@ jobs:
 
       - name: Manual vcpkg Install (macOS)
         run: '"${{env.VCPKG_ROOT}}/vcpkg" install'
-        if: matrix.os == 'macos-14'
+        if: matrix.os == 'macos-15'
 
       - name: Manual vcpkg Install (Windows)
         run: '& "${{env.VCPKG_ROOT}}/vcpkg" install --triplet x64-windows'
@@ -444,7 +444,7 @@ jobs:
           zip -r -y ./artifacts-${{matrix.os}}.zip ./*.so* ./ossl-modules ./OdbDesignServer
 
       - name: Compress Artifacts (MacOS)
-        if: matrix.os == 'macos-14'
+        if: matrix.os == 'macos-15'
         run: |
           mkdir ${{env.ARTIFACTS_DIR}}
           cp ./out/build/${{matrix.preset}}/OdbDesignLib/*.dylib ${{env.ARTIFACTS_DIR}}
