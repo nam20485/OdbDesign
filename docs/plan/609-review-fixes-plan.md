@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| Status | **IN PROGRESS** (branch `nam/getdesign-streaming`, riding open PR #609; approved 2026-11-01) |
+| Status | **COMPLETE** (branch `nam/getdesign-streaming`, riding open PR #609; executed 2026-11-01) |
 | Source | `docs/reviews/zcode-workflow-609-review-report.md` (three-lens review, 16 findings) → `docs/reviews/zcode-workflow-609-findings-adjudication.md` (verification & adjudication) |
 | Scope decision | Fix the 13 recommended findings + 2 appendix items. F5 (fonts estimate term) accepted as documented — the F2 estimator pin is its tripwire. F6 (Windows orphan spool accounting) deferred; fix shape on record: re-add bytes on failed remove at all four removal sites (`StreamSpoolCache.cpp:437-444, :356-364, :462-464, :490-493`) or sweep `*.spool` at `InitializeDirectory`. |
 | P1 policy | F9: investigate the warm-RSS delta first (root cause); recalibrate the gate from measurements only if no fixable buffering bug is found. |
@@ -43,10 +43,13 @@ All work lands as batched commits on the open PR #609 (never a new PR — minimi
 
 ## Commit 5 — F9 (P1): warm-RSS investigation → gate recalibration
 
+**Outcome (2026-11-01): root-caused to glibc arena retention; fixed server-side with a heap-trim guard; gate kept at its original calibration and now passes 5/5 with ≥ ~295 MB worst-case margin.**
+
 1. Instrument (opt-in under `ODB_DESIGN_STREAM_BENCH`): per-phase glibc heap stats (`mallinfo2`/`malloc_trim`) + `/proc/self/smaps_rollup` in the `[BENCH]` warm lines; experiment mode resetting VmHWM + trimming between the warmUp (discard) pass and the timed warm pass to attribute the +0.4–0.65 GiB delta.
 2. Run the 350-41017 scenario several times; classify: (a) live allocations in the Reader/serve loop → fix the buffering; (b) gRPC send-path buffering → evaluate write options; (c) allocator-retention / measurement methodology → fix the measurement structure.
-3. Recalibrate from data: prefer `warmPeakKb <= coldPeakKb + slack` (warm is a strict subset of cold's work; removes the parse-baseline double variance); slack from measured spread, documented in the test comment. If (a)/(b) produced a code fix the gate may need no loosening — fix first, recalibrate second (no stopgaps).
-4. Success: 5 consecutive green `LargeDesign_350_41017_StreamWithinRssBudget` runs with ≥ 200 MB worst-case margin; `LargeDesign_200_40628_StreamWithinRssBudget` green; updated numbers into the PR body M6.5 evidence.
+   → **Measured: (c).** `heapInUse` is FLAT across a full 1.34 GB warm replay (4,231,945 → 4,232,034 KB — the reader does not buffer); `heapFree` grows ~0.36 GiB per replay; `malloc_trim(0)` collapses RSS 5,338,288 → 4,427,064 KB (−0.87 GiB) with zero live-byte change.
+3. Root-cause fix, not recalibration: `StreamHeapTrimGuard` (RAII, glibc-only) in `GetDesignStream` returns the burst's freed arena pages on every exit. The bench additionally measures the warm peak over ONE replay (VmHWM reset after the page-cache discard pass). The gate keeps its original `parse + 1 GiB` shape.
+4. Success evidence: `LargeDesign_350_41017_StreamWithinRssBudget` 5/5 green, worst margin ~295 MB (warm peaks 4,997,760–5,056,092 KB against thresholds of ~5,360,000 KB; pre-fix the same gate failed 4 of 8 runs with margins as thin as −140 KB); `LargeDesign_200_40628_StreamWithinRssBudget` green (warm peak 3.86 GiB); sample perf gate green (cold_ratio 0.61, warm stream 170 ms < warm monolithic 260 ms — the trim costs nothing). Recorded estimator evidence: sample_design estimate 13.6 MB vs actual 21.2 MB (0.64×); 350-41017 estimate 970.8 MB vs 268 MB budget (3.5× headroom).
 
 ## No-work items
 

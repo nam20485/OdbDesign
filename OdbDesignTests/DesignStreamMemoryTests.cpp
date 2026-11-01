@@ -218,6 +218,27 @@ namespace Odb::Test
 			clearRefs << "5";
 		}
 
+		// ---- glibc heap diagnostics (F9 warm-RSS attribution) ----
+		// Distinguishes the three hypotheses for the warm-over-cold delta:
+		// in-use bytes (uordblks) climbing => LIVE allocations (reader/gRPC
+		// buffering — a real bug); only free-but-held bytes (fordblks)
+		// climbing => allocator retention; and malloc_trim collapsing RSS
+		// afterwards confirms retention rather than live use.
+		static void logHeapStats(const char* phase, const std::string& designName)
+		{
+#if defined(__GLIBC__)
+			const auto mi = mallinfo2();
+			std::cout << "[BENCH] stream design=\"" << designName << "\" phase=" << phase
+				<< " heapArenaKb=" << (mi.arena / 1024)
+				<< " heapInUseKb=" << (mi.uordblks / 1024)
+				<< " heapFreeKb=" << (mi.fordblks / 1024)
+				<< " currentRssKb=" << currentRssKb() << std::endl;
+#else
+			(void)phase;
+			(void)designName;
+#endif
+		}
+
 		std::filesystem::path copyBigDesign(const std::string& archiveName, const std::string& designName)
 		{
 			const auto source = std::filesystem::path(ODBDESIGN_SOURCE_DIR) / "new_designs" / archiveName;
@@ -347,6 +368,7 @@ namespace Odb::Test
 				EXPECT_EQ(monolithic.error_code(), grpc::StatusCode::RESOURCE_EXHAUSTED);
 				EXPECT_LE(peakRssKb(), coldPeakKb + 65536)
 					<< "the monolithic rejection must not build anything";
+				logHeapStats("post-cold", designName);
 
 				// Warm: re-emitted from the disk spool (no product-model walk).
 				// The FIRST warm serve re-reads the spool from disk, so its
@@ -361,7 +383,13 @@ namespace Odb::Test
 				ASSERT_TRUE(warmUp.ok) << warmUp.error;
 				EXPECT_EQ(warmUp.chunks, cold.chunks) << "warm serve must replay the same chunk sequence";
 				EXPECT_EQ(warmUp.wireBytes, cold.wireBytes);
+				logHeapStats("post-warmup", designName);
 
+				// F9: the warm gate below measures ONE warm replay. The
+				// discard pass above exists to warm the page cache for
+				// TIMING; letting its allocations count toward the measured
+				// peak charges two replays to one gate.
+				tryResetPeakRss();
 				const auto warm = ConsumeStream(*env.stub, designName);
 				const auto warmPeakKb = peakRssKb();
 				std::cout << "[BENCH] stream design=\"" << designName << "\" phase=warm"
@@ -369,8 +397,16 @@ namespace Odb::Test
 					<< " chunks=" << warm.chunks
 					<< " wire_bytes=" << warm.wireBytes
 					<< " ms=" << warm.milliseconds
-					<< " peakRssKb=" << warmPeakKb
-					<< " currentRssKb=" << currentRssKb() << std::endl;
+				<< " peakRssKb=" << warmPeakKb
+				<< " currentRssKb=" << currentRssKb() << std::endl;
+				logHeapStats("post-warm", designName);
+#if defined(__GLIBC__)
+				// F9 attribution: if currentRss collapses after trim, the
+				// warm delta was allocator retention (free arena pages), not
+				// live buffering in the reader/serve loop.
+				malloc_trim(0);
+				logHeapStats("post-warm-trim", designName);
+#endif
 				ASSERT_TRUE(warm.ok) << warm.error;
 				EXPECT_EQ(warm.chunks, cold.chunks) << "warm serve must replay the same chunk sequence";
 				EXPECT_EQ(warm.wireBytes, cold.wireBytes);
@@ -379,11 +415,15 @@ namespace Odb::Test
 				EXPECT_EQ(env.service->streamSpoolCache().WarmOpens(), 2ull)
 					<< "discard pass + timed pass are both warm serves";
 
-				// The warm replay is part of the serve path under test, and it
-				// measured HIGHER than cold in review (5.05 vs 4.98 GiB on
-				// 350-41017) — so its peak obeys the same budgets as the cold
-				// serve (it never walks the product model; a breach here means
-				// the spool reader is buffering instead of streaming).
+				// The warm replay is part of the serve path under test and its
+				// peak obeys the same budgets as the cold serve. F9 root-caused
+				// the earlier knife-edge failures (1/5 in review, 3/3 locally):
+				// live heap is FLAT across a full replay — the reader does not
+				// buffer — but each replay left ~0.36 GiB of freed-but-retained
+				// glibc arena pages mapped; GetDesignStream now returns them on
+				// exit (StreamHeapTrimGuard). A breach today therefore means
+				// real per-serve growth again, and the peak above measures ONE
+				// replay (reset after the page-cache discard pass).
 				EXPECT_LE(warmPeakKb, kAbsoluteBudgetKb)
 					<< "warm GetDesignStream absolute peak must fit the 10 GiB pod with margin";
 				EXPECT_LE(warmPeakKb, parseOnlyPeakKb + kServeMarginalBudgetKb)

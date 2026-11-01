@@ -24,6 +24,10 @@
 #include <grpcpp/server_context.h>
 #include <FileModel/Design/ComponentHeightTracer.h>
 
+#if defined(__GLIBC__)
+#include <malloc.h>
+#endif
+
 namespace OdbDesignServer
 {
     namespace Services
@@ -156,6 +160,27 @@ namespace OdbDesignServer
                 }
                 return std::make_unique<StreamSpoolCache>();
             }
+
+            // F9 (PR 609 review): a GetDesignStream burst leaves ~0.4-1.0 GiB
+            // of FREED-but-retained glibc arena pages mapped. Measured on
+            // 350-41017 (DesignStreamMemoryTests heap diagnostics): live
+            // in-use bytes are FLAT across a full 1.34 GB warm replay — the
+            // reader does not buffer — while free-but-held arena bytes grow
+            // ~0.36 GiB per replay, and malloc_trim(0) collapses RSS by
+            // ~0.87 GiB with zero live-byte change. glibc keeps those pages
+            // for reuse; on the 10 GiB pod the retention eats serve headroom
+            // for nothing. Return the pages when the burst ends (all exits,
+            // via RAII; POSIX/glibc-only, no-op elsewhere).
+            class StreamHeapTrimGuard
+            {
+            public:
+                ~StreamHeapTrimGuard()
+                {
+#if defined(__GLIBC__)
+                    malloc_trim(0);
+#endif
+                }
+            };
 
         }
 
@@ -304,6 +329,10 @@ namespace OdbDesignServer
         {
             try
             {
+                // Return the burst's freed arena pages on every exit (see
+                // StreamHeapTrimGuard — F9 root-cause fix).
+                const StreamHeapTrimGuard heapTrimOnExit;
+
                 const auto& designName = request->design_name();
                 const auto includeNormalizedLists = request->include_normalized_lists();
                 loginfo("[ConnTrace] GetDesignStream start: design_name=\"" + designName +
