@@ -472,6 +472,42 @@ namespace Odb::Test
 			<< "colliding step names must reassemble to the monolith's last-wins bytes";
 	}
 
+	// ---- estimator pin (review F2): the serve-budget guard's sole input ----
+	// EstimateWireSizeBytes decides the monolithic reject, the spool-vs-plain
+	// streaming split and (M6.6) cache residency charging; nothing else
+	// asserts its magnitude — the over-budget unit test uses budget=1, which
+	// passes for any nonzero estimate. A dropped counting term is a
+	// systematic LOW estimate, the exact regression that would silently
+	// re-admit an over-budget design to the monolithic tree build (the pod
+	// OOM this guard exists for). Pin estimate >= 0.5x actual serialized
+	// size on the CI corpus, both flavours: the coefficients are
+	// deliberately generous, so this guards term DISAPPEARANCE, not
+	// precision.
+	TEST_F(DesignStreamTest, EstimateWireSizeBytes_StaysAboveHalfOfActualSerializedSize)
+	{
+		for (const auto& designName : { std::string("sample_design"), std::string("designodb_rigidflex") })
+		{
+			const auto pDesign = m_sharedDesignCache->GetDesign(designName);
+			ASSERT_NE(pDesign, nullptr) << designName;
+
+			for (const bool includeNormalized : { false, true })
+			{
+				const auto pMessage = pDesign->to_protobuf(includeNormalized);
+				ASSERT_NE(pMessage, nullptr);
+				const auto actualBytes = static_cast<std::uint64_t>(pMessage->ByteSizeLong());
+				ASSERT_GT(actualBytes, 0ull);
+
+				const auto estimateBytes = pDesign->EstimateWireSizeBytes(includeNormalized);
+				EXPECT_GE(estimateBytes, actualBytes / 2)
+					<< "design=" << designName
+					<< " includeNormalizedLists=" << includeNormalized
+					<< " estimate=" << estimateBytes
+					<< " actual=" << actualBytes
+					<< " — a dropped estimator term risks re-admitting over-budget designs to the monolithic build";
+			}
+		}
+	}
+
 	// ---- M6.2 dispatch: monolithic guard + streaming availability ----
 
 	TEST_F(DesignStreamTest, MonolithicGetDesign_RejectsOverBudgetDesign_WithResourceExhausted)

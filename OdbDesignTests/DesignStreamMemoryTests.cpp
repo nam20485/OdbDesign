@@ -288,11 +288,17 @@ namespace Odb::Test
 		auto cache = std::make_shared<DesignCache>(dir.string());
 		std::uint64_t parseOnlyPeakKb = 0;
 		tryResetPeakRss();
-		ASSERT_NE(cache->GetDesign(designName), nullptr) << "parse failed";
+		const auto pParsedDesign = cache->GetDesign(designName);
+		ASSERT_NE(pParsedDesign, nullptr) << "parse failed";
 		parseOnlyPeakKb = peakRssKb();
+		// Estimated wire size (the OOM-guard dispatch input, default flavour)
+		// alongside the parse peak — records the design's headroom over the
+		// 256 MiB monolithic serve budget in M6.5 evidence (review F2).
+		const auto estimatedWireBytes = pParsedDesign->EstimateWireSizeBytes(/*includeNormalizedLists=*/false);
 		std::cout << "[BENCH] stream design=\"" << designName << "\" phase=parse-only"
 			<< " peakRssKb=" << parseOnlyPeakKb
-			<< " peakRssGiB=" << (static_cast<double>(parseOnlyPeakKb) / (1024.0 * 1024.0)) << std::endl;
+			<< " peakRssGiB=" << (static_cast<double>(parseOnlyPeakKb) / (1024.0 * 1024.0))
+			<< " estWireBytes=" << estimatedWireBytes << std::endl;
 
 		// The streaming-serve budget: the serve path may add at most ~1 GiB
 		// over the parse baseline (gRPC runtime + client + one chunk + the
@@ -407,6 +413,7 @@ namespace Odb::Test
 		double coldMonolithicMs = 0.0;
 		double warmMonolithicMs = 0.0;
 		std::uint64_t monolithicBytes = 0;
+		std::uint64_t estimateBytes = 0;
 		{
 			ServeEnv env;
 			MakeServeEnv(env, std::make_shared<DesignCache>(m_scratchDir.string()), /*monolithicBudget=*/0);
@@ -416,6 +423,12 @@ namespace Odb::Test
 			coldMonolithicMs = std::chrono::duration<double, std::milli>(
 				std::chrono::steady_clock::now() - start).count();
 			ASSERT_TRUE(status.ok()) << status.error_message();
+
+			// Estimate-vs-actual on the one design small enough to serve
+			// monolithically — direct estimator-accuracy evidence (review F2).
+			const auto pBenchDesign = env.cache->GetDesign(designName);
+			ASSERT_NE(pBenchDesign, nullptr);
+			estimateBytes = pBenchDesign->EstimateWireSizeBytes(/*includeNormalizedLists=*/false);
 
 			// Give the background pre-serialization a moment to land so the
 			// warm fetch takes the cached-bytes path.
@@ -453,6 +466,7 @@ namespace Odb::Test
 
 		std::cout << "[BENCH] perf design=\"" << designName << "\""
 			<< " monolithic_bytes=" << monolithicBytes
+			<< " estimate_bytes=" << estimateBytes
 			<< " cold_monolithic_ms=" << coldMonolithicMs
 			<< " warm_monolithic_ms=" << warmMonolithicMs
 			<< " cold_stream_ms=" << coldStreamMs

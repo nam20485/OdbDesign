@@ -476,7 +476,15 @@ namespace Odb::Lib::ProductModel
 		// above it; the dispatch decision only needs that separation, not an
 		// accurate size. A miss LOW costs a pod OOM (the exact failure this
 		// guard exists for); a miss HIGH costs only a streaming detour — so
-		// every serialized term below is counted, coefficients generous.
+		// the DOMINANT BULK is counted with generous coefficients. Not every
+		// serialized term is counted per ride: ByName-map duplication of
+		// net/package/pin records and the per-record propertyrecords embedded
+		// in NetRecord/PackageRecord/FeatureGroupRecord are amortized into
+		// the per-record coefficients, and standard-fonts bulk rides the flat
+		// MISC allowance. DesignStreamTests
+		// (EstimateWireSizeBytes_StaysAboveHalfOfActualSerializedSize) pins
+		// estimate >= 0.5x actual on the CI corpus so a dropped term cannot
+		// pass CI silently.
 		// A FeatureRecord carries ~10 scalar fields plus occasional
 		// strings/contours (~128 B), a component rides three places
 		// (components file + product-model Component + connectivity
