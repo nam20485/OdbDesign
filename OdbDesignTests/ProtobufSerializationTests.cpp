@@ -423,6 +423,48 @@ namespace Odb::Test
 		                Odb::Lib::FileModel::Design::EdaDataFile::PackageRecord zeroPkgRoundTripped;
 		                zeroPkgRoundTripped.from_protobuf(*pZeroPkgMsg);
 		                ASSERT_TRUE(zeroPkgRoundTripped.id.has_value());
-		                EXPECT_EQ(*zeroPkgRoundTripped.id, 0u);
-		        }
-		}
+	                EXPECT_EQ(*zeroPkgRoundTripped.id, 0u);
+	        }
+	}
+
+	// FeatureGroupRecord::to_protobuf must serialize PropertyRecord payloads
+	// into propertyrecords (field 2), never into featureidrecords (field 3):
+	// the old loop called add_featureidrecords() for property records — a
+	// cross-type Message::CopyFrom (type confusion / UB) whenever a design
+	// carries feature-group property records. No corpus fixture exercises the
+	// path; this test pins the field mapping and the round trip.
+	TEST(EdaDataFileFeatureGroupRecordTests, PropertyRecords_SerializeToPropertyRecordsField)
+	{
+		namespace Eda = Odb::Lib::FileModel::Design;
+
+		auto pFeatureGroup = std::make_shared<Eda::EdaDataFile::FeatureGroupRecord>();
+		pFeatureGroup->type = "TEXT";
+
+		auto pFeatureId = std::make_shared<Eda::EdaDataFile::FeatureIdRecord>();
+		pFeatureId->type = Eda::EdaDataFile::FeatureIdRecord::Type::Copper;
+		pFeatureId->layerNumber = 7;
+		pFeatureId->featureNumber = 42;
+		pFeatureGroup->m_featureIdRecords.push_back(pFeatureId);
+
+		auto pProperty = std::make_shared<Eda::PropertyRecord>();
+		pProperty->name = "attr";
+		pProperty->value = "val";
+		pFeatureGroup->m_propertyRecords.push_back(pProperty);
+
+		const auto pMessage = pFeatureGroup->to_protobuf();
+		ASSERT_NE(pMessage, nullptr);
+
+		ASSERT_EQ(pMessage->propertyrecords_size(), 1);
+		EXPECT_EQ(pMessage->propertyrecords(0).name(), "attr");
+		EXPECT_EQ(pMessage->propertyrecords(0).value(), "val");
+		ASSERT_EQ(pMessage->featureidrecords_size(), 1);
+		EXPECT_EQ(pMessage->featureidrecords(0).featurenumber(), 42u);
+
+		Eda::EdaDataFile::FeatureGroupRecord roundTripped;
+		roundTripped.from_protobuf(*pMessage);
+		ASSERT_EQ(roundTripped.m_propertyRecords.size(), std::size_t(1));
+		EXPECT_EQ(roundTripped.m_propertyRecords[0]->name, "attr");
+		EXPECT_EQ(roundTripped.m_propertyRecords[0]->value, "val");
+		ASSERT_EQ(roundTripped.m_featureIdRecords.size(), std::size_t(1));
+		EXPECT_EQ(roundTripped.m_featureIdRecords[0]->featureNumber, 42u);
+	}

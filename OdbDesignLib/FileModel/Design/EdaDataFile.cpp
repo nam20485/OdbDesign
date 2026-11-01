@@ -204,7 +204,11 @@ namespace Odb::Lib::FileModel::Design
         }
         for (const auto& propertyRecord : m_propertyRecords)
         {
-            auto pPropertyRecordMessage = pFeatureGroupRecordMessage->add_featureidrecords();
+            // PropertyRecord payloads belong in propertyrecords (field 2); the
+            // previous add_featureidrecords() here was a cross-type
+            // Message::CopyFrom (type confusion / UB) whenever a design carries
+            // feature-group property records.
+            auto pPropertyRecordMessage = pFeatureGroupRecordMessage->add_propertyrecords();
             pPropertyRecordMessage->CopyFrom(*propertyRecord->to_protobuf());
         }
         return pFeatureGroupRecordMessage;
