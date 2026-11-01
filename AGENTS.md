@@ -37,7 +37,7 @@ Required checks differ per branch — check before waiting on CI:
 | Branch | Ruleset | Required status checks |
 |---|---|---|
 | `nam20485` | `186765` | `Codacy Static Code Analysis`, `CodeQL`, `Analyze (actions)`, `Analyze (c-cpp)`, `Analyze (javascript-typescript)`, `dependency-review` — **no CMake builds** |
-| `development` | `169324` | `CMake-Multi-Platform-Build` × 3 — `(windows-2022, x64-release)`, `(ubuntu-24.04, linux-dynamic-release)`, `(macos-14, macos-release)` — plus `Generate-Submit-SBOM`, `Codacy Static Code Analysis`, `dependency-review`; `strict: true`, 1 approval |
+| `development` | `169324` | `CMake-Multi-Platform-Build` × 3 — `(windows-2022, x64-release)`, `(ubuntu-24.04, linux-dynamic-release)`, `(macos-15, macos-release)` — plus `Generate-Submit-SBOM`, `Codacy Static Code Analysis`, `dependency-review`; `strict: true`, 1 approval |
 | `main`, `release`, `staging`, `production` | `169360` | Same three `CMake-Multi-Platform-Build` legs as `development`, plus `Generate-Submit-SBOM`, `Codacy Static Code Analysis`, `dependency-review` **and `Docker-Build-and-Publish`**; code-owner review and last-push approval also required |
 
 Two requirements on `169360` were unsatisfiable and were removed on 2026-09-08 — do not reintroduce either:
