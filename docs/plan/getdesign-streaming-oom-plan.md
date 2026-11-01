@@ -47,7 +47,7 @@ Push updated protos to both clients; 3D client reassembles on read (streaming co
 
 ### M6.5 — gates
 - **Wire-equivalence:** reassembled stream == monolithic `GetDesign` bytes, byte-for-byte, on `sample_design` (the golden makes this exact).
-- **Memory:** peak pod RSS ≤ ~4 GiB serving both large designs (measure, don't estimate).
+- **Memory:** peak pod RSS ≤ **6 GiB per design** (absolute; fits the 10 GiB pod with margin) and each serve phase at most ~1 GiB over the parse-only baseline (measure, don't estimate) — implemented as the `DesignStreamMemoryTests.cpp` gates; the pre-implementation "~4 GiB, both designs" sketch was re-based once the parse-only baselines themselves measured 3.2 / 4.1 GiB.
 - **Perf:** cold-stream time within ~1.5× monolithic on `sample_design`; warm (mmap) ≤ monolithic.
 - Conformance/goldens unchanged (same bytes ⇒ same differentials).
 - REST untouched (its default already clips fileModel; D5 freeze respected).

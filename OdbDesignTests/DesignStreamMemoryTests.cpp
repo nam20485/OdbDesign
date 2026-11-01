@@ -47,9 +47,10 @@ namespace Odb::Test
 	// the CI corpus (gitignored new_designs/ at the repo root) — each spec
 	// reports "skipped" when its archive is absent.
 	//
-	// Serves each large design through a real in-process gRPC server:
-	//   - cold GetDesignStream (parse + walk + spool tee) — peak RSS must stay
-	//     within the ~4 GiB budget (VmHWM high-water mark from /proc/self/status),
+// Serves each large design through a real in-process gRPC server:
+//   - cold GetDesignStream (parse + walk + spool tee) — peak RSS must fit
+//     the 10 GiB pod with margin: <= 6 GiB absolute AND at most ~1 GiB over
+//     the parse-only baseline (VmHWM high-water mark from /proc/self/status),
 	//   - monolithic GetDesign must come back RESOURCE_EXHAUSTED (the OOM path
 	//     is now a clean error),
 	//   - warm GetDesignStream served from the disk spool.
@@ -263,12 +264,12 @@ namespace Odb::Test
 			}
 			return predicate();
 		}
-	// One large design, served cold -> (monolithic rejection) -> warm, in a
-	// single process. Peak RSS is the /proc VmHWM high-water mark, reset at
-	// scenario start (Linux clear_refs); glibc-retained heap from earlier
-	// work in the process is trimmed at teardown so a following scenario in
-	// the same process starts from a settled baseline. Gate numbers should be
-	// recorded from one-process-per-design invocations (see PR evidence).
+		// One large design, served cold -> (monolithic rejection) -> warm, in a
+		// single process. Peak RSS is the /proc VmHWM high-water mark, reset at
+		// scenario start (Linux clear_refs); glibc-retained heap from earlier
+		// work in the process is trimmed at teardown so a following scenario in
+		// the same process starts from a settled baseline. Gate numbers should be
+		// recorded from one-process-per-design invocations (see PR evidence).
 		void RunLargeDesignScenario(const char* archiveName, const char* designName)
 		{
 			const auto dir = copyBigDesign(archiveName, designName);
@@ -280,118 +281,118 @@ namespace Odb::Test
 				GTEST_SKIP() << "large-design archive not present (new_designs/) — bench scenario unavailable";
 			}
 
-		// Phase 0 — parse-only baseline on THE cache the serve phases reuse
-		// (one parse total; destroying a probe cache first would leave glibc
-		// arenas resident and poison every later reading). This is also the
-		// production steady state: the pod holds the parsed design and serves
-		// streams from it.
-		auto cache = std::make_shared<DesignCache>(dir.string());
-		std::uint64_t parseOnlyPeakKb = 0;
-		tryResetPeakRss();
-		const auto pParsedDesign = cache->GetDesign(designName);
-		ASSERT_NE(pParsedDesign, nullptr) << "parse failed";
-		parseOnlyPeakKb = peakRssKb();
-		// Estimated wire size (the OOM-guard dispatch input, default flavour)
-		// alongside the parse peak — records the design's headroom over the
-		// 256 MiB monolithic serve budget in M6.5 evidence (review F2).
-		const auto estimatedWireBytes = pParsedDesign->EstimateWireSizeBytes(/*includeNormalizedLists=*/false);
-		std::cout << "[BENCH] stream design=\"" << designName << "\" phase=parse-only"
-			<< " peakRssKb=" << parseOnlyPeakKb
-			<< " peakRssGiB=" << (static_cast<double>(parseOnlyPeakKb) / (1024.0 * 1024.0))
-			<< " estWireBytes=" << estimatedWireBytes << std::endl;
-
-		// The streaming-serve budget: the serve path may add at most ~1 GiB
-		// over the parse baseline (gRPC runtime + client + one chunk + the
-		// connectivity index + spool write buffering), and the absolute peak
-		// must fit the 10 GiB pod with comfortable margin (~6 GiB cap). The
-		// pre-M6 monolithic path peaked ~10-12.6 GiB (OOM) on these designs.
-		constexpr std::uint64_t kServeMarginalBudgetKb = 1ull * 1024ull * 1024ull;
-		constexpr std::uint64_t kAbsoluteBudgetKb = 6ull * 1024ull * 1024ull;
-
-		{
-			ServeEnv env;
-			MakeServeEnv(env, cache, /*monolithicBudget=*/0 /* real default */);
-
-			// Cold: walk + spool tee + wire (the serve path under test; the
-			// design is already parsed on the cache above).
-			const auto baselineKb = currentRssKb();
-			const auto cold = ConsumeStream(*env.stub, designName);
-			const auto coldPeakKb = peakRssKb();
-			const auto marginalKb = (coldPeakKb > baselineKb) ? (coldPeakKb - baselineKb) : 0;
-
-			std::cout << "[BENCH] stream design=\"" << designName << "\" phase=cold-serve"
-				<< " ok=" << (cold.ok ? "true" : "false")
-				<< " chunks=" << cold.chunks
-				<< " wire_bytes=" << cold.wireBytes
-				<< " ms=" << cold.milliseconds
-				<< " peakRssKb=" << coldPeakKb
-				<< " peakRssGiB=" << (static_cast<double>(coldPeakKb) / (1024.0 * 1024.0))
-				<< " baselineKb=" << baselineKb
-				<< " marginalKb=" << marginalKb
-				<< " parseOnlyKb=" << parseOnlyPeakKb
-				<< std::endl;
-			ASSERT_TRUE(cold.ok) << cold.error;
-			EXPECT_GT(cold.wireBytes, 1000ull * 1000ull) << "large design stream should be >1 MB";
-			EXPECT_LE(coldPeakKb, kAbsoluteBudgetKb)
-				<< "cold GetDesignStream absolute peak must fit the 10 GiB pod with margin";
-			EXPECT_LE(coldPeakKb, parseOnlyPeakKb + kServeMarginalBudgetKb)
-				<< "the streaming serve path must add at most ~1 GiB over the parse-only baseline";
-
-			// Dispatch gate: the monolithic RPC must refuse the design (the
-			// pre-M6 OOM path is now a clean error; peak RSS must not move).
-			const auto monolithic = FetchMonolithicStatus(*env.stub, designName);
-			std::cout << "[BENCH] stream design=\"" << designName << "\" phase=monolithic"
-				<< " status=" << monolithic.error_code()
-				<< " peakRssKb=" << peakRssKb() << std::endl;
-			EXPECT_EQ(monolithic.error_code(), grpc::StatusCode::RESOURCE_EXHAUSTED);
-			EXPECT_LE(peakRssKb(), coldPeakKb + 65536)
-				<< "the monolithic rejection must not build anything";
-
-			// Warm: re-emitted from the disk spool (no product-model walk).
-			// The FIRST warm serve re-reads the spool from disk, so its
-			// latency is page-cache-cold while the cold walk above read only
-			// memory — comparing those two timings is flaky (observed warm
-			// 11.3 s vs cold 7.2 s on one run, 5.0 s vs 7.5 s on the next,
-			// with chunk identity holding both times). Serve one discard
-			// pass to pull the spool into the page cache, then time the
-			// second (hot) warm serve against the cold walk.
+			// Phase 0 — parse-only baseline on THE cache the serve phases reuse
+			// (one parse total; destroying a probe cache first would leave glibc
+			// arenas resident and poison every later reading). This is also the
+			// production steady state: the pod holds the parsed design and serves
+			// streams from it.
+			auto cache = std::make_shared<DesignCache>(dir.string());
+			std::uint64_t parseOnlyPeakKb = 0;
 			tryResetPeakRss();
-			const auto warmUp = ConsumeStream(*env.stub, designName);
-			ASSERT_TRUE(warmUp.ok) << warmUp.error;
-			EXPECT_EQ(warmUp.chunks, cold.chunks) << "warm serve must replay the same chunk sequence";
-			EXPECT_EQ(warmUp.wireBytes, cold.wireBytes);
+			const auto pParsedDesign = cache->GetDesign(designName);
+			ASSERT_NE(pParsedDesign, nullptr) << "parse failed";
+			parseOnlyPeakKb = peakRssKb();
+			// Estimated wire size (the OOM-guard dispatch input, default flavour)
+			// alongside the parse peak — records the design's headroom over the
+			// 256 MiB monolithic serve budget in M6.5 evidence (review F2).
+			const auto estimatedWireBytes = pParsedDesign->EstimateWireSizeBytes(/*includeNormalizedLists=*/false);
+			std::cout << "[BENCH] stream design=\"" << designName << "\" phase=parse-only"
+				<< " peakRssKb=" << parseOnlyPeakKb
+				<< " peakRssGiB=" << (static_cast<double>(parseOnlyPeakKb) / (1024.0 * 1024.0))
+				<< " estWireBytes=" << estimatedWireBytes << std::endl;
 
-			const auto warm = ConsumeStream(*env.stub, designName);
-			const auto warmPeakKb = peakRssKb();
-			std::cout << "[BENCH] stream design=\"" << designName << "\" phase=warm"
-				<< " ok=" << (warm.ok ? "true" : "false")
-				<< " chunks=" << warm.chunks
-				<< " wire_bytes=" << warm.wireBytes
-				<< " ms=" << warm.milliseconds
-				<< " peakRssKb=" << warmPeakKb
-				<< " currentRssKb=" << currentRssKb() << std::endl;
-			ASSERT_TRUE(warm.ok) << warm.error;
-			EXPECT_EQ(warm.chunks, cold.chunks) << "warm serve must replay the same chunk sequence";
-			EXPECT_EQ(warm.wireBytes, cold.wireBytes);
-			EXPECT_LE(warm.milliseconds, cold.milliseconds)
-				<< "warm (spool, page-cache-hot) serve must not be slower than the cold walk";
-			EXPECT_EQ(env.service->streamSpoolCache().WarmOpens(), 2ull)
-				<< "discard pass + timed pass are both warm serves";
+			// The streaming-serve budget: the serve path may add at most ~1 GiB
+			// over the parse baseline (gRPC runtime + client + one chunk + the
+			// connectivity index + spool write buffering), and the absolute peak
+			// must fit the 10 GiB pod with comfortable margin (~6 GiB cap). The
+			// pre-M6 monolithic path peaked ~10-12.6 GiB (OOM) on these designs.
+			constexpr std::uint64_t kServeMarginalBudgetKb = 1ull * 1024ull * 1024ull;
+			constexpr std::uint64_t kAbsoluteBudgetKb = 6ull * 1024ull * 1024ull;
 
-			// The warm replay is part of the serve path under test, and it
-			// measured HIGHER than cold in review (5.05 vs 4.98 GiB on
-			// 350-41017) — so its peak obeys the same budgets as the cold
-			// serve (it never walks the product model; a breach here means
-			// the spool reader is buffering instead of streaming).
-			EXPECT_LE(warmPeakKb, kAbsoluteBudgetKb)
-				<< "warm GetDesignStream absolute peak must fit the 10 GiB pod with margin";
-			EXPECT_LE(warmPeakKb, parseOnlyPeakKb + kServeMarginalBudgetKb)
-				<< "the warm spool replay must add at most ~1 GiB over the parse-only baseline";
+			{
+				ServeEnv env;
+				MakeServeEnv(env, cache, /*monolithicBudget=*/0 /* real default */);
 
-			std::cout << "[BENCH] stream design=\"" << designName << "\" spoolBytes="
-				<< env.service->streamSpoolCache().TotalSpoolBytes() << std::endl;
-		} // ServeEnv torn down: cache + spool released
-	}
+				// Cold: walk + spool tee + wire (the serve path under test; the
+				// design is already parsed on the cache above).
+				const auto baselineKb = currentRssKb();
+				const auto cold = ConsumeStream(*env.stub, designName);
+				const auto coldPeakKb = peakRssKb();
+				const auto marginalKb = (coldPeakKb > baselineKb) ? (coldPeakKb - baselineKb) : 0;
+
+				std::cout << "[BENCH] stream design=\"" << designName << "\" phase=cold-serve"
+					<< " ok=" << (cold.ok ? "true" : "false")
+					<< " chunks=" << cold.chunks
+					<< " wire_bytes=" << cold.wireBytes
+					<< " ms=" << cold.milliseconds
+					<< " peakRssKb=" << coldPeakKb
+					<< " peakRssGiB=" << (static_cast<double>(coldPeakKb) / (1024.0 * 1024.0))
+					<< " baselineKb=" << baselineKb
+					<< " marginalKb=" << marginalKb
+					<< " parseOnlyKb=" << parseOnlyPeakKb
+					<< std::endl;
+				ASSERT_TRUE(cold.ok) << cold.error;
+				EXPECT_GT(cold.wireBytes, 1000ull * 1000ull) << "large design stream should be >1 MB";
+				EXPECT_LE(coldPeakKb, kAbsoluteBudgetKb)
+					<< "cold GetDesignStream absolute peak must fit the 10 GiB pod with margin";
+				EXPECT_LE(coldPeakKb, parseOnlyPeakKb + kServeMarginalBudgetKb)
+					<< "the streaming serve path must add at most ~1 GiB over the parse-only baseline";
+
+				// Dispatch gate: the monolithic RPC must refuse the design (the
+				// pre-M6 OOM path is now a clean error; peak RSS must not move).
+				const auto monolithic = FetchMonolithicStatus(*env.stub, designName);
+				std::cout << "[BENCH] stream design=\"" << designName << "\" phase=monolithic"
+					<< " status=" << monolithic.error_code()
+					<< " peakRssKb=" << peakRssKb() << std::endl;
+				EXPECT_EQ(monolithic.error_code(), grpc::StatusCode::RESOURCE_EXHAUSTED);
+				EXPECT_LE(peakRssKb(), coldPeakKb + 65536)
+					<< "the monolithic rejection must not build anything";
+
+				// Warm: re-emitted from the disk spool (no product-model walk).
+				// The FIRST warm serve re-reads the spool from disk, so its
+				// latency is page-cache-cold while the cold walk above read only
+				// memory — comparing those two timings is flaky (observed warm
+				// 11.3 s vs cold 7.2 s on one run, 5.0 s vs 7.5 s on the next,
+				// with chunk identity holding both times). Serve one discard
+				// pass to pull the spool into the page cache, then time the
+				// second (hot) warm serve against the cold walk.
+				tryResetPeakRss();
+				const auto warmUp = ConsumeStream(*env.stub, designName);
+				ASSERT_TRUE(warmUp.ok) << warmUp.error;
+				EXPECT_EQ(warmUp.chunks, cold.chunks) << "warm serve must replay the same chunk sequence";
+				EXPECT_EQ(warmUp.wireBytes, cold.wireBytes);
+
+				const auto warm = ConsumeStream(*env.stub, designName);
+				const auto warmPeakKb = peakRssKb();
+				std::cout << "[BENCH] stream design=\"" << designName << "\" phase=warm"
+					<< " ok=" << (warm.ok ? "true" : "false")
+					<< " chunks=" << warm.chunks
+					<< " wire_bytes=" << warm.wireBytes
+					<< " ms=" << warm.milliseconds
+					<< " peakRssKb=" << warmPeakKb
+					<< " currentRssKb=" << currentRssKb() << std::endl;
+				ASSERT_TRUE(warm.ok) << warm.error;
+				EXPECT_EQ(warm.chunks, cold.chunks) << "warm serve must replay the same chunk sequence";
+				EXPECT_EQ(warm.wireBytes, cold.wireBytes);
+				EXPECT_LE(warm.milliseconds, cold.milliseconds)
+					<< "warm (spool, page-cache-hot) serve must not be slower than the cold walk";
+				EXPECT_EQ(env.service->streamSpoolCache().WarmOpens(), 2ull)
+					<< "discard pass + timed pass are both warm serves";
+
+				// The warm replay is part of the serve path under test, and it
+				// measured HIGHER than cold in review (5.05 vs 4.98 GiB on
+				// 350-41017) — so its peak obeys the same budgets as the cold
+				// serve (it never walks the product model; a breach here means
+				// the spool reader is buffering instead of streaming).
+				EXPECT_LE(warmPeakKb, kAbsoluteBudgetKb)
+					<< "warm GetDesignStream absolute peak must fit the 10 GiB pod with margin";
+				EXPECT_LE(warmPeakKb, parseOnlyPeakKb + kServeMarginalBudgetKb)
+					<< "the warm spool replay must add at most ~1 GiB over the parse-only baseline";
+
+				std::cout << "[BENCH] stream design=\"" << designName << "\" spoolBytes="
+					<< env.service->streamSpoolCache().TotalSpoolBytes() << std::endl;
+			} // ServeEnv torn down: cache + spool released
+		}
 
 	};
 	TEST_F(DesignStreamMemoryTest, LargeDesign_200_40628_StreamWithinRssBudget)

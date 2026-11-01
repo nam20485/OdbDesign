@@ -10,6 +10,7 @@
 #include <chrono>
 #include <cstdint>
 #include <filesystem>
+#include <fstream>
 #include <functional>
 #include <memory>
 #include <sstream>
@@ -277,9 +278,10 @@ namespace Odb::Test
 		ASSERT_TRUE(streamed.applyOk) << "chunk reassembly reported a malformed sequence";
 		EXPECT_GT(streamed.chunks, 1ull) << "small batch size must produce multiple chunks";
 
-		EXPECT_EQ(streamed.bytes.size(), monolithicBytes.size())
-			<< "streamed=" << streamed.bytes.size() << " monolithic=" << monolithicBytes.size();
-		EXPECT_EQ(streamed.bytes, monolithicBytes)
+		// BytesEqual, not raw EXPECT_EQ: on divergence the raw form makes
+		// googletest diff two ~21 MB strings (quadratic edit distance —
+		// effectively a hang); the helper reports sizes + first-diff offset.
+		EXPECT_TRUE(BytesEqual("default flavour", streamed.bytes, monolithicBytes))
 			<< "reassembled GetDesignStream must be byte-identical to monolithic GetDesign";
 	}
 
@@ -472,6 +474,49 @@ namespace Odb::Test
 			<< "colliding step names must reassemble to the monolith's last-wins bytes";
 	}
 
+	// ---- malformed / out-of-order reassembly is rejected (review F12) ----
+	// ApplyDesignChunk's false-returns are the corrupt/hostile-input safety
+	// property M6.4 clients inherit; every other test feeds well-formed
+	// walker output and asserts success. These drive each rejection branch.
+	TEST_F(DesignStreamTest, ApplyDesignChunk_RejectsMalformedSequences)
+	{
+		// Step before header: no filemodel exists yet.
+		Odb::Lib::Protobuf::ProductModel::Design design;
+		DesignChunk stepChunk;
+		stepChunk.mutable_step()->set_step_name("step");
+		EXPECT_FALSE(ApplyDesignChunk(design, stepChunk))
+			<< "a StepSkeleton before the header must be rejected";
+		EXPECT_FALSE(design.has_filemodel())
+			<< "the rejected step must not fabricate a filemodel";
+
+		// FeatureBatch before header.
+		DesignChunk featuresChunk;
+		auto* batch = featuresChunk.mutable_features();
+		batch->set_step_name("step");
+		batch->set_layer_name("top");
+		EXPECT_FALSE(ApplyDesignChunk(design, featuresChunk))
+			<< "a FeatureBatch before the header must be rejected";
+
+		// Header (carrying a file_archive — the walker emits one only when
+		// the design has a file model; without it no filemodel exists and
+		// every step/feature chunk would be rejected for the wrong reason),
+		// then a FeatureBatch naming a step no skeleton delivered.
+		DesignChunk headerChunk;
+		headerChunk.mutable_header()->set_name("d");
+		headerChunk.mutable_header()->mutable_file_archive();
+		EXPECT_TRUE(ApplyDesignChunk(design, headerChunk));
+
+		// ... and an existing step with an undelivered layer.
+		EXPECT_TRUE(ApplyDesignChunk(design, stepChunk));
+		EXPECT_FALSE(ApplyDesignChunk(design, featuresChunk))
+			<< "a FeatureBatch naming an undelivered layer must be rejected";
+
+		// Payload-less chunk.
+		DesignChunk emptyChunk;
+		EXPECT_FALSE(ApplyDesignChunk(design, emptyChunk))
+			<< "a payload-less chunk must be rejected";
+	}
+
 	// ---- estimator pin (review F2): the serve-budget guard's sole input ----
 	// EstimateWireSizeBytes decides the monolithic reject, the spool-vs-plain
 	// streaming split and (M6.6) cache residency charging; nothing else
@@ -615,6 +660,173 @@ namespace Odb::Test
 		m_sharedDesignCache->setMonolithicWireBudget(0);
 	}
 
+	// ---- client cancellation mid-fill (review F10) ----
+	// Contract: a cancelled stream is not a server error, and the in-flight
+	// spool fill must ABORT, never commit. The client observes CANCELLED (or
+	// OK if the trailer won the race); EntryCount()==0 proves the
+	// abort-not-publish branch ran.
+	TEST_F(DesignStreamTest, GetDesignStream_ClientCancelMidFill_AbortsSpool)
+	{
+		const std::string designName = "sample_design";
+		m_sharedDesignCache->setMonolithicWireBudget(1); // force the spooling path
+
+		grpc::ClientContext ctx;
+		GetDesignRequest req;
+		req.set_design_name(designName);
+		auto reader = m_stub->GetDesignStream(&ctx, req);
+
+		DesignChunk chunk;
+		std::uint64_t read = 0;
+		while (reader->Read(&chunk))
+		{
+			++read;
+			chunk.Clear();
+			if (read == 2)
+			{
+				ctx.TryCancel(); // thread-safe out-of-band cancel
+				break;
+			}
+		}
+		while (reader->Read(&chunk)) // drain: returns false promptly post-cancel
+		{
+			++read;
+			chunk.Clear();
+		}
+		const auto status = reader->Finish();
+		EXPECT_TRUE(status.error_code() == grpc::StatusCode::CANCELLED || status.ok())
+			<< "cancelled stream: expected CANCELLED (or a racing OK trailer), got "
+			<< status.error_code() << " (" << status.error_message() << ")";
+		EXPECT_GE(read, 1ull) << "the stream must have delivered chunks before the cancel";
+
+		// The server handler observes IsCancelled per chunk and aborts the
+		// fill; give it a moment, then assert nothing was ever published.
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		EXPECT_EQ(m_service->streamSpoolCache().EntryCount(), std::size_t(0))
+			<< "a cancelled fill must not commit its spool";
+		EXPECT_EQ(m_service->streamSpoolCache().WarmOpens(), 0ull);
+
+		m_sharedDesignCache->setMonolithicWireBudget(0);
+	}
+
+	// ---- warm-path spool corruption returns INTERNAL (review F10) ----
+	// A committed spool that goes bad on disk (truncation, bit rot) must end
+	// the warm request with INTERNAL — never a clean OK on a truncated chunk
+	// sequence — and the poisoned entry must be dropped so the next request
+	// refills cold. StreamSpoolCache exposes no path accessor, so the test
+	// configures a known spool_dir and globs the *.spool file.
+	TEST_F(DesignStreamTest, GetDesignStream_WarmSpoolCorruption_ReturnsInternalAndDrops)
+	{
+		namespace fs = std::filesystem;
+		std::error_code ec;
+		const auto spoolDir = fs::temp_directory_path(ec) / ("odbdesign-spool-corrupt-test-" +
+			std::to_string(::getpid()) + "-" +
+			std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+		ASSERT_FALSE(ec);
+
+		m_config->stream_spool_dir = spoolDir.string();
+		m_service = std::make_unique<OdbDesignServiceImpl>(m_sharedDesignCache, m_config);
+		if (m_server != nullptr)
+		{
+			m_server->Shutdown();
+			m_server = nullptr;
+		}
+		grpc::ServerBuilder builder;
+		int port = 0;
+		builder.AddListeningPort("127.0.0.1:0", grpc::InsecureServerCredentials(), &port);
+		builder.RegisterService(m_service.get());
+		m_server = builder.BuildAndStart();
+		ASSERT_NE(m_server, nullptr);
+		m_stub = OdbDesignService::NewStub(MakeChannel(port));
+
+		const std::string designName = "sample_design";
+		m_sharedDesignCache->setMonolithicWireBudget(1);
+		grpc::Status status;
+		const auto cold = StreamAndReassemble(designName, false, &status);
+		ASSERT_TRUE(status.ok()) << status.error_message();
+		ASSERT_EQ(m_service->streamSpoolCache().EntryCount(), std::size_t(1));
+
+		std::vector<fs::path> spoolFiles;
+		for (const auto& entry : fs::directory_iterator(spoolDir, ec))
+		{
+			if (entry.path().extension() == ".spool")
+			{
+				spoolFiles.push_back(entry.path());
+			}
+		}
+		ASSERT_EQ(spoolFiles.size(), std::size_t(1)) << "one committed fill, one spool file";
+		const auto spoolPath = spoolFiles.front();
+		const auto fullSize = fs::file_size(spoolPath, ec);
+		ASSERT_GT(fullSize, std::uintmax_t(0));
+		fs::resize_file(spoolPath, fullSize / 2, ec); // corrupt mid-stream
+		ASSERT_FALSE(ec);
+
+		const auto warm = StreamAndReassemble(designName, false, &status);
+		EXPECT_EQ(status.error_code(), grpc::StatusCode::INTERNAL)
+			<< "a warm read of a corrupt spool must end INTERNAL, not OK: " << status.error_message();
+		EXPECT_EQ(m_service->streamSpoolCache().EntryCount(), std::size_t(0))
+			<< "the poisoned spool must be dropped";
+
+		// And the next request refills cold and succeeds.
+		const auto refilled = StreamAndReassemble(designName, false, &status);
+		EXPECT_TRUE(status.ok()) << status.error_message();
+		EXPECT_TRUE(BytesEqual("post-corruption refill", refilled.bytes, cold.bytes));
+
+		m_sharedDesignCache->setMonolithicWireBudget(0);
+		fs::remove_all(spoolDir, ec);
+	}
+
+	// ---- spool-I/O failure degrades to unspooled streaming (review F14) ----
+	// The PR-body resilience claim: spool trouble must never fail the wire
+	// response. Configure a spool dir that cannot be created (its parent is
+	// a regular file) — the cache reports unusable, BeginWrite fails, and
+	// the over-budget stream must still complete OK with identical bytes and
+	// no published entry.
+	TEST_F(DesignStreamTest, GetDesignStream_UnusableSpoolDir_StillServesIdenticalBytes)
+	{
+		namespace fs = std::filesystem;
+		std::error_code ec;
+		const auto blocker = fs::temp_directory_path(ec) / ("odbdesign-spool-blocker-" +
+			std::to_string(::getpid()) + "-" +
+			std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+		ASSERT_FALSE(ec);
+		{
+			std::ofstream ofs(blocker); // a regular FILE...
+			ofs << "x";
+		}
+		ASSERT_TRUE(fs::is_regular_file(blocker));
+
+		m_config->stream_spool_dir = (blocker / "sub").string(); // ...whose child dir cannot exist
+		m_service = std::make_unique<OdbDesignServiceImpl>(m_sharedDesignCache, m_config);
+		if (m_server != nullptr)
+		{
+			m_server->Shutdown();
+			m_server = nullptr;
+		}
+		grpc::ServerBuilder builder;
+		int port = 0;
+		builder.AddListeningPort("127.0.0.1:0", grpc::InsecureServerCredentials(), &port);
+		builder.RegisterService(m_service.get());
+		m_server = builder.BuildAndStart();
+		ASSERT_NE(m_server, nullptr);
+		m_stub = OdbDesignService::NewStub(MakeChannel(port));
+
+		const std::string designName = "sample_design";
+		const auto pDesign = m_sharedDesignCache->GetDesign(designName);
+		ASSERT_NE(pDesign, nullptr);
+		const auto directBytes = SerializeDeterministic(*pDesign->to_protobuf(false));
+
+		m_sharedDesignCache->setMonolithicWireBudget(1); // design counts as over-budget
+		grpc::Status status;
+		const auto streamed = StreamAndReassemble(designName, false, &status);
+		EXPECT_TRUE(status.ok()) << "spool I/O trouble must never fail the stream: " << status.error_message();
+		EXPECT_TRUE(BytesEqual("unspooled degrade", streamed.bytes, directBytes))
+			<< "degraded (unspooled) streaming must stay wire-identical";
+		EXPECT_EQ(m_service->streamSpoolCache().EntryCount(), std::size_t(0));
+
+		m_sharedDesignCache->setMonolithicWireBudget(0);
+		fs::remove(blocker, ec);
+	}
+
 	// ---- M6.3: concurrent cold fills must not share one spool file ----
 
 	// Two cold fills of the same (design, generation) racing (two clients
@@ -647,21 +859,25 @@ namespace Odb::Test
 			records.push_back(chunk);
 		}
 
-		std::atomic<int> fillsReady{ 0 };
-		auto fill = [&]()
-		{
-			StreamSpoolCache::Writer writer;
-			if (!cache.BeginWrite("design", generation, writer))
+			std::atomic<int> fillsReady{ 0 };
+			auto fill = [&]()
 			{
-				return false;
-			}
-			// Both writers hold their file open before either appends, so
-			// the frames genuinely race if they share a path.
-			++fillsReady;
-			while (fillsReady.load() < 2)
-			{
-				std::this_thread::yield();
-			}
+				// Count this thread BEFORE any early return: the barrier
+				// below spins until both threads arrive, so a BeginWrite
+				// failure must still release the other thread — a red test,
+				// not a wedged binary (review F15).
+				++fillsReady;
+				StreamSpoolCache::Writer writer;
+				if (!cache.BeginWrite("design", generation, writer))
+				{
+					return false;
+				}
+				// Both writers hold their file open before either appends, so
+				// the frames genuinely race if they share a path.
+				while (fillsReady.load() < 2)
+				{
+					std::this_thread::yield();
+				}
 			for (const auto& record : records)
 			{
 				if (!writer.Append(record))
