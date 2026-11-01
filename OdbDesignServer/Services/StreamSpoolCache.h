@@ -41,10 +41,14 @@ namespace OdbDesignServer
         class StreamSpoolCache
         {
         public:
+            // Default total-bytes cap for the private-directory constructor.
+            static constexpr std::uint64_t kDefaultMaxTotalBytes = 4ull * 1024ull * 1024ull * 1024ull;
+
             // Creates a cache with a private spool directory under the system
             // temp directory (keeps parallel instances isolated; the directory
-            // is removed in the destructor).
-            StreamSpoolCache();
+            // is removed in the destructor). maxTotalBytes defaults to
+            // kDefaultMaxTotalBytes.
+            explicit StreamSpoolCache(std::uint64_t maxTotalBytes = kDefaultMaxTotalBytes);
 
             // Creates a cache rooted at an explicit directory. The directory is
             // created if missing; its spool files are NOT removed wholesale by
@@ -65,12 +69,19 @@ namespace OdbDesignServer
                 // Failed() distinguishes the two. A failure poisons the reader.
                 bool Next(google::protobuf::Message& record);
                 bool Failed() const { return m_failed; }
+                // True when the reader reached a clean EOF SHORT of the record
+                // count the entry was committed with — the file was truncated
+                // at a record boundary (or emptied), which framing alone
+                // cannot distinguish from a legitimate end-of-spool.
+                bool Truncated() const { return !m_failed && m_recordsRead < m_expectedRecords; }
                 std::uint64_t RecordsRead() const { return m_recordsRead; }
+                std::uint64_t ExpectedRecords() const { return m_expectedRecords; }
 
             private:
                 friend class StreamSpoolCache;
                 std::ifstream m_stream;
                 std::uint64_t m_recordsRead = 0;
+                std::uint64_t m_expectedRecords = 0;
                 bool m_failed = false;
             };
 
@@ -89,8 +100,11 @@ namespace OdbDesignServer
                 // serialization failure (the writer is poisoned afterwards).
                 bool Append(const google::protobuf::Message& record);
 
-                // Flushes, closes, and publishes the spool entry.
-                void Commit();
+                // Flushes, closes, and publishes the spool entry. Returns
+                // false when the flush/close failed (e.g. ENOSPC surfaced only
+                // at flush time) — the incomplete file is deleted instead of
+                // published; the already-delivered cold response stands.
+                bool Commit();
                 // Closes and deletes the spool file without publishing.
                 void Abort();
 
@@ -111,6 +125,7 @@ namespace OdbDesignServer
                 std::uint64_t m_recordsWritten = 0;
                 bool m_openForWrite = false;
                 bool m_committed = false;
+                bool m_publishSucceeded = false;
             };
 
             // True (and fills `readerOut`) when a spool valid for (name,
@@ -137,12 +152,15 @@ namespace OdbDesignServer
                 std::filesystem::path path;
                 std::uint64_t generation = 0;
                 std::uint64_t bytes = 0;
+                std::uint64_t records = 0;
                 std::uint64_t lastUsed = 0;
             };
 
             void InitializeDirectory(const std::filesystem::path& directory, bool ownsDirectory, std::uint64_t maxTotalBytes);
             std::filesystem::path MakeSpoolPath(const std::string& designName, std::uint64_t generation, std::uint64_t fillId) const;
-            void PublishEntry(const std::string& designName, const Entry& entry);
+            // Returns false when the entry was refused (individually over
+            // spool_max_bytes — file deleted, nothing published).
+            bool PublishEntry(const std::string& designName, const Entry& entry);
             void EvictOverBudgetLocked(const std::string& protectedName);
 
             mutable std::mutex m_mutex;
@@ -152,7 +170,6 @@ namespace OdbDesignServer
             std::uint64_t m_totalBytes = 0;
             std::uint64_t m_warmOpens = 0;
             std::uint64_t m_useCounter = 0;
-            std::uint64_t m_fillCounter = 0;
             std::map<std::string, Entry> m_entriesByName;
             bool m_usable = false;
         };

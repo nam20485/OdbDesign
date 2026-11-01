@@ -336,8 +336,22 @@ namespace Odb::Lib::App
 
     void DesignCache::Clear()
     {
+        std::vector<std::string> knownDesigns;
         {
             std::unique_lock<std::shared_mutex> writeLock(m_cacheMutex);
+            // Collect before wiping: every design this cache held gets its
+            // generation tombstone bumped below, so a post-Clear reload can
+            // never land on a generation a GetDesignStream spool was published
+            // at before the Clear (the disk-load path itself does not bump).
+            knownDesigns.reserve(m_fileArchivesByName.size() + m_designsByName.size());
+            for (const auto& kv : m_fileArchivesByName)
+            {
+                knownDesigns.push_back(kv.first);
+            }
+            for (const auto& kv : m_designsByName)
+            {
+                knownDesigns.push_back(kv.first);
+            }
             m_fileArchivesByName.clear();
             m_designsByName.clear();
         }
@@ -350,6 +364,9 @@ namespace Odb::Lib::App
             // Drop all serialized response payloads. A pre-serialization commit
             // in flight during this Clear() is discarded by its epoch check.
             m_responseStore.Clear();
+            // ...and advance every held design's generation so pre-Clear
+            // GetDesignStream spools (keyed by generation) go stale.
+            m_responseStore.BumpGenerations(knownDesigns);
         }
         {
             // Wipe the state map and bump the cache generation under the state
@@ -1019,11 +1036,29 @@ namespace Odb::Lib::App
         return dropped;
     }
 
+    void DesignCache::ResponseStore::BumpGenerations(const std::vector<std::string>& designNames)
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        for (const auto& name : designNames)
+        {
+            // Creates the tombstone when absent (a loaded-but-never-invalidated
+            // design sits at generation 0 with no entry here).
+            ++m_generationsByName[name];
+        }
+    }
+
     void DesignCache::ResponseStore::Clear()
     {
         std::lock_guard<std::mutex> lock(m_mutex);
         m_entriesByName.clear();
-        m_generationsByName.clear();
+        // Generation tombstones are intentionally PRESERVED (and the cache's
+        // Clear() additionally bumps one for every design it held, via
+        // BumpGenerations). The disk-load path does NOT bump generations —
+        // only re-upload (AddFileArchive), InvalidateDesign and eviction do —
+        // so erasing the tombstones (or leaving them un-bumped) would let a
+        // post-Clear reload land on the same generation a GetDesignStream
+        // spool was published at before the Clear, warm-serving content the
+        // system had invalidated.
         // Counter intentionally NOT reset: it counts work performed, not work
         // currently cached (tests read it as "how many serializations happened").
     }
@@ -1159,6 +1194,15 @@ namespace Odb::Lib::App
             if (WasClearedSince(epochAtStart))
             {
                 return; // Clear() ran since the load/serialization started
+            }
+
+            // Budget re-check at COMMIT time: BuildResponsePayload checked at
+            // serialization START; a worker that began under a higher (or
+            // disabled) budget must not publish over-budget bytes after the
+            // budget was lowered.
+            if (m_monolithicWireBudget != 0 && payload.totalBytes() > m_monolithicWireBudget)
+            {
+                return; // over the (now lower) monolithic serve budget
             }
 
             const auto storeResult = m_responseStore.TryStore(designName, generation, std::move(payload));

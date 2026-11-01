@@ -355,6 +355,9 @@ namespace Odb::Lib::App
 			std::uint64_t TotalStoredBytes() const;
 			std::uint64_t CurrentGeneration(const std::string& designName) const;
 			StoreResult TryStore(const std::string& designName, std::uint64_t generation, ResponsePayload&& payload);
+			// Bumps the generation tombstone for each named design without
+			// touching entries (Clear() companion — see ResponseStore::Clear).
+			void BumpGenerations(const std::vector<std::string>& designNames);
 			// Drops the entry and bumps the generation; returns the dropped bytes.
 			std::uint64_t Invalidate(const std::string& designName);
 			void Clear();

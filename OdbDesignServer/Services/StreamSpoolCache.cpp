@@ -1,6 +1,7 @@
 #include "StreamSpoolCache.h"
 #include <Logger.h>
 
+#include <atomic>
 #include <chrono>
 #include <system_error>
 
@@ -99,7 +100,13 @@ namespace OdbDesignServer
             // file instead of allocating them.
             constexpr std::uint64_t kMaxRecordBytes = 512ull * 1024ull * 1024ull;
 
-            constexpr std::uint64_t kDefaultMaxTotalBytes = 4ull * 1024ull * 1024ull * 1024ull;
+            // Process-global fill counter: the spool path embeds pid + fillId
+            // so concurrent fills never share a file. pid uniquifies across
+            // processes; the GLOBAL counter (not a per-instance member)
+            // uniquifies same-process cache instances sharing an explicit
+            // spool directory — two instances would otherwise both start at
+            // fill 1 and truncate-open each other's path.
+            std::atomic<std::uint64_t> g_fillCounter{ 0 };
         }
 
         // ---- Reader ----
@@ -158,11 +165,13 @@ namespace OdbDesignServer
               m_bytesWritten(other.m_bytesWritten),
               m_recordsWritten(other.m_recordsWritten),
               m_openForWrite(other.m_openForWrite),
-              m_committed(other.m_committed)
+              m_committed(other.m_committed),
+              m_publishSucceeded(other.m_publishSucceeded)
         {
             other.m_pCache = nullptr;
             other.m_openForWrite = false;
             other.m_committed = false;
+            other.m_publishSucceeded = false;
         }
 
         StreamSpoolCache::Writer& StreamSpoolCache::Writer::operator=(Writer&& other) noexcept
@@ -182,9 +191,11 @@ namespace OdbDesignServer
                 m_recordsWritten = other.m_recordsWritten;
                 m_openForWrite = other.m_openForWrite;
                 m_committed = other.m_committed;
+                m_publishSucceeded = other.m_publishSucceeded;
                 other.m_pCache = nullptr;
                 other.m_openForWrite = false;
                 other.m_committed = false;
+                other.m_publishSucceeded = false;
             }
             return *this;
         }
@@ -217,13 +228,14 @@ namespace OdbDesignServer
             return true;
         }
 
-        void StreamSpoolCache::Writer::Commit()
+        bool StreamSpoolCache::Writer::Commit()
         {
             if (!m_openForWrite || m_committed)
             {
-                return;
+                return false;
             }
             Close(/*commit=*/true);
+            return m_publishSucceeded;
         }
 
         void StreamSpoolCache::Writer::Abort()
@@ -238,18 +250,33 @@ namespace OdbDesignServer
         void StreamSpoolCache::Writer::Close(bool commit)
         {
             m_openForWrite = false;
+            bool streamOk = true;
             if (m_stream.is_open())
             {
+                // ofstream buffers; an I/O error such as ENOSPC typically
+                // surfaces only at flush/close time. A failed flush means the
+                // final bytes never reached the disk — publishing the file
+                // would poison the warm path with a silently truncated spool.
                 m_stream.flush();
+                streamOk = m_stream.good();
                 m_stream.close();
             }
 
             if (commit)
             {
                 m_committed = true;
-                if (m_pCache != nullptr)
+                m_publishSucceeded = streamOk && m_pCache != nullptr;
+                if (m_publishSucceeded)
                 {
-                    m_pCache->PublishEntry(m_designName, Entry{ m_path, m_generation, m_bytesWritten, 0 });
+                    m_publishSucceeded = m_pCache->PublishEntry(m_designName,
+                        Entry{ m_path, m_generation, m_bytesWritten, m_recordsWritten, 0 });
+                }
+                else
+                {
+                    std::error_code ec;
+                    std::filesystem::remove(m_path, ec); // best-effort
+                    logerror("StreamSpoolCache: spool flush/close failed for \"" + m_designName +
+                        "\"; incomplete spool deleted, not published (next request refills cold)");
                 }
             }
             else
@@ -261,7 +288,7 @@ namespace OdbDesignServer
 
         // ---- Cache ----
 
-        StreamSpoolCache::StreamSpoolCache()
+        StreamSpoolCache::StreamSpoolCache(std::uint64_t maxTotalBytes)
         {
             namespace fs = std::filesystem;
 
@@ -284,7 +311,7 @@ namespace OdbDesignServer
                 std::error_code createEc;
                 if (fs::create_directory(candidate, createEc) && !createEc)
                 {
-                    InitializeDirectory(candidate, /*ownsDirectory=*/true, kDefaultMaxTotalBytes);
+                    InitializeDirectory(candidate, /*ownsDirectory=*/true, maxTotalBytes);
                     return;
                 }
             }
@@ -302,6 +329,20 @@ namespace OdbDesignServer
             {
                 std::error_code ec;
                 std::filesystem::remove_all(m_directory, ec); // best-effort
+                return;
+            }
+            // Explicit (caller-owned) directory: still remove the spool files
+            // THIS instance published — the constructor's documented contract.
+            // Without it a clean shutdown leaves every entry behind, and a
+            // restarted service neither indexes nor accounts for them, so
+            // restarts accumulate multi-GB spools outside the configured cap.
+            // Unrelated files are untouched; POSIX unlink-while-open keeps
+            // any concurrent warm reader's fd valid through the removal.
+            std::lock_guard<std::mutex> lock(m_mutex);
+            for (const auto& kv : m_entriesByName)
+            {
+                std::error_code ec;
+                std::filesystem::remove(kv.second.path, ec); // best-effort
             }
         }
 
@@ -346,6 +387,7 @@ namespace OdbDesignServer
             }
 
             std::filesystem::path path;
+            std::uint64_t expectedRecords = 0;
             {
                 std::lock_guard<std::mutex> lock(m_mutex);
                 auto findIt = m_entriesByName.find(designName);
@@ -364,6 +406,7 @@ namespace OdbDesignServer
                     return false;
                 }
                 path = findIt->second.path;
+                expectedRecords = findIt->second.records;
                 findIt->second.lastUsed = ++m_useCounter;
             }
 
@@ -380,6 +423,11 @@ namespace OdbDesignServer
                 return false;
             }
             readerOut.m_recordsRead = 0;
+            // Committed record count: a clean EOF short of it means the file
+            // was truncated AT a record boundary (or emptied) — framing alone
+            // cannot distinguish that from a legitimate end-of-spool, so the
+            // reader carries the count and Truncated() reports the mismatch.
+            readerOut.m_expectedRecords = expectedRecords;
             readerOut.m_failed = false;
 
             std::lock_guard<std::mutex> lock(m_mutex);
@@ -407,8 +455,13 @@ namespace OdbDesignServer
             // reclaimed when an owned spool directory is torn down.
             std::uint64_t fillId = 0;
             {
-                std::lock_guard<std::mutex> lock(m_mutex);
-                fillId = ++m_fillCounter;
+                // Process-global counter (not a per-instance member): two
+                // cache instances in one process sharing an explicit spool
+                // directory would otherwise both start at fill 1 and produce
+                // the same pathname, trunc-opening each other's spool. The
+                // pid component in the path already uniquifies across
+                // processes.
+                fillId = ++g_fillCounter;
             }
             const auto path = MakeSpoolPath(designName, generation, fillId);
 
@@ -428,11 +481,27 @@ namespace OdbDesignServer
             return true;
         }
 
-        void StreamSpoolCache::PublishEntry(const std::string& designName, const Entry& entry)
+        bool StreamSpoolCache::PublishEntry(const std::string& designName, const Entry& entry)
         {
             std::lock_guard<std::mutex> lock(m_mutex);
             Entry published = entry;
             published.lastUsed = ++m_useCounter;
+
+            // A single entry larger than the whole budget would evict every
+            // other design and still leave the cache over cap indefinitely
+            // (the just-published design is eviction-protected). Reject it
+            // instead: the completed stream simply stays unspooled and every
+            // request for this design refills cold — raise spool_max_bytes
+            // if that design should be warm-servable.
+            if (m_maxTotalBytes != 0 && published.bytes > m_maxTotalBytes)
+            {
+                std::error_code ec;
+                std::filesystem::remove(published.path, ec); // best-effort
+                logwarn("StreamSpoolCache: spool for \"" + designName + "\" (" +
+                    std::to_string(published.bytes) + " bytes) exceeds spool_max_bytes (" +
+                    std::to_string(m_maxTotalBytes) + "); not published (design serves cold)");
+                return false;
+            }
 
             auto findIt = m_entriesByName.find(designName);
             if (findIt != m_entriesByName.end())
@@ -449,6 +518,7 @@ namespace OdbDesignServer
             m_totalBytes += published.bytes;
 
             EvictOverBudgetLocked(designName);
+            return true;
         }
 
         void StreamSpoolCache::Drop(const std::string& designName)

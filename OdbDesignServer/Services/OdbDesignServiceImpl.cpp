@@ -153,12 +153,17 @@ namespace OdbDesignServer
             // dir (isolated from parallel server/test instances, removed on exit).
             std::unique_ptr<StreamSpoolCache> MakeStreamSpoolCache(const Config::GrpcServiceConfig& config)
             {
+                // stream_spool_max_bytes applies in BOTH branches: the
+                // private-directory cache previously hardcoded 4 GiB, so
+                // changing spool_max_bytes without setting spool_dir —
+                // including the documented unlimited sentinel — silently did
+                // nothing.
                 if (!config.stream_spool_dir.empty())
                 {
                     return std::make_unique<StreamSpoolCache>(
                         std::filesystem::path(config.stream_spool_dir), config.stream_spool_max_bytes);
                 }
-                return std::make_unique<StreamSpoolCache>();
+                return std::make_unique<StreamSpoolCache>(config.stream_spool_max_bytes);
             }
 
             // F9 (PR 609 review): a GetDesignStream burst leaves ~0.4-1.0 GiB
@@ -220,20 +225,35 @@ namespace OdbDesignServer
                 std::string cachedBytes;
                 if (!includeNormalizedLists && m_designCache->TryGetDesignBytes(designName, cachedBytes))
                 {
-                    if (response->ParseFromString(cachedBytes))
+                    // Budget enforced on the warm path too: the payload was
+                    // serialized under the budget active at pre-serialization
+                    // time; if the budget has since been lowered, parsing
+                    // these bytes would allocate the exact protobuf tree the
+                    // guard exists to prevent. Skip to the cold path, whose
+                    // guard rejects over-budget designs.
+                    const auto warmBudget = m_designCache->getMonolithicWireBudget();
+                    if (warmBudget != 0 && cachedBytes.size() > warmBudget)
+                    {
+                        loginfo("[ConnTrace] GetDesign cached payload over current budget: design_name=\"" +
+                            designName + "\" cachedBytes=" + std::to_string(cachedBytes.size()) +
+                            " budget=" + std::to_string(warmBudget) + "; using cold path");
+                    }
+                    else if (response->ParseFromString(cachedBytes))
                     {
                         loginfo("[ConnTrace] GetDesign ok (cached bytes): design_name=\"" + designName +
                             "\" approx_bytes=" + std::to_string(response->ByteSizeLong()));
                         return grpc::Status::OK;
                     }
-
-                    // Corrupt cached bytes: never serve an empty/partial
-                    // message as OK. Log, clear the partially-merged message,
-                    // and fall through to the cold path below (the poisoned
-                    // payload is dropped by the next invalidation).
-                    logerror("Cached design bytes failed to parse for \"" + designName +
-                        "\"; falling back to full load");
-                    response->Clear();
+                    else
+                    {
+                        // Corrupt cached bytes: never serve an empty/partial
+                        // message as OK. Log, clear the partially-merged message,
+                        // and fall through to the cold path below (the poisoned
+                        // payload is dropped by the next invalidation).
+                        logerror("Cached design bytes failed to parse for \"" + designName +
+                            "\"; falling back to full load");
+                        response->Clear();
+                    }
                 }
 
                 const auto design = m_designCache->GetDesign(designName);
@@ -396,12 +416,22 @@ namespace OdbDesignServer
                             }
                             chunk.Clear();
                         }
-                        if (reader.Failed())
+                        if (reader.Failed() || reader.Truncated())
                         {
-                            logerror("[ConnTrace] GetDesignStream spool read failed: design_name=\"" + designName + "\"");
+                            // Read error, OR a clean EOF short of the committed
+                            // record count (truncation at a record boundary /
+                            // emptied file — framing alone cannot distinguish
+                            // that from a legitimate end-of-spool): either way
+                            // the client would get a clean trailer after a
+                            // partial chunk sequence. INTERNAL, and drop the
+                            // damaged spool.
+                            logerror("[ConnTrace] GetDesignStream spool read failed: design_name=\"" + designName +
+                                "\" failed=" + (reader.Failed() ? "true" : "false") +
+                                " recordsRead=" + std::to_string(reader.RecordsRead()) +
+                                " recordsExpected=" + std::to_string(reader.ExpectedRecords()));
                             m_streamSpool->Drop(designName);
                             return {grpc::StatusCode::INTERNAL,
-                                "Internal server error: cached stream spool read failure"};
+                                "Internal server error: cached stream spool read failure (truncated)"};
                         }
                         loginfo("[ConnTrace] GetDesignStream ok (warm spool): design_name=\"" + designName +
                             "\" records=" + std::to_string(reader.RecordsRead()));
@@ -470,8 +500,12 @@ namespace OdbDesignServer
                         m_designCache->GetResponseGeneration(designName) == generationAtStart;
                     if (completed && generationUnchanged)
                     {
-                        spoolWriter.Commit();
-                        spoolOutcome = SpoolOutcome::Committed;
+                        // Commit() reports whether the spool was actually
+                        // published: a flush/close failure (ENOSPC surfacing
+                        // at flush time) deletes the incomplete file instead.
+                        spoolOutcome = spoolWriter.Commit()
+                            ? SpoolOutcome::Committed
+                            : SpoolOutcome::Aborted;
                     }
                     else
                     {

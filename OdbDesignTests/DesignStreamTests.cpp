@@ -708,11 +708,13 @@ namespace Odb::Test
 		m_sharedDesignCache->setMonolithicWireBudget(0);
 	}
 
-	// ---- warm-path spool corruption returns INTERNAL (review F10) ----
-	// A committed spool that goes bad on disk (truncation, bit rot) must end
-	// the warm request with INTERNAL — never a clean OK on a truncated chunk
-	// sequence — and the poisoned entry must be dropped so the next request
-	// refills cold. StreamSpoolCache exposes no path accessor, so the test
+	// ---- warm-path spool corruption returns INTERNAL (review F10 + follow-up) ----
+	// A committed spool that goes bad on disk must end the warm request with
+	// INTERNAL — never a clean OK on a truncated chunk sequence — and the
+	// poisoned entry must be dropped so the next request refills cold. Three
+	// truncation shapes: mid-frame (framing error), at an exact record
+	// boundary (clean EOF short of the committed record count), and emptied
+	// to zero bytes. StreamSpoolCache exposes no path accessor, so the test
 	// configures a known spool_dir and globs the *.spool file.
 	TEST_F(DesignStreamTest, GetDesignStream_WarmSpoolCorruption_ReturnsInternalAndDrops)
 	{
@@ -745,34 +747,171 @@ namespace Odb::Test
 		ASSERT_TRUE(status.ok()) << status.error_message();
 		ASSERT_EQ(m_service->streamSpoolCache().EntryCount(), std::size_t(1));
 
-		std::vector<fs::path> spoolFiles;
-		for (const auto& entry : fs::directory_iterator(spoolDir, ec))
+		auto globSpoolFile = [&]() -> fs::path
 		{
-			if (entry.path().extension() == ".spool")
+			std::vector<fs::path> spoolFiles;
+			for (const auto& entry : fs::directory_iterator(spoolDir, ec))
 			{
-				spoolFiles.push_back(entry.path());
+				if (entry.path().extension() == ".spool")
+				{
+					spoolFiles.push_back(entry.path());
+				}
 			}
+			EXPECT_EQ(spoolFiles.size(), std::size_t(1)) << "one committed fill, one spool file";
+			return spoolFiles.empty() ? fs::path{} : spoolFiles.front();
+		};
+
+		// Corrupt the current spool to `newSize`, expect the warm request to
+		// end INTERNAL with the entry dropped, then refill cold (restores a
+		// committed spool for the next round). The refill result lands in
+		// *refillOut for the caller's byte-equality checks. ASSERTs inside
+		// return from this void lambda only.
+		auto corruptAndExpectInternal = [&](std::uintmax_t newSize, const char* what, StreamResult* refillOut)
+		{
+			const auto spoolPath = globSpoolFile();
+			ASSERT_FALSE(spoolPath.empty()) << what;
+			if (spoolPath.empty()) return;
+			fs::resize_file(spoolPath, newSize, ec);
+			ASSERT_FALSE(ec) << what;
+
+			grpc::Status s;
+			const auto warm = StreamAndReassemble(designName, false, &s);
+			EXPECT_EQ(s.error_code(), grpc::StatusCode::INTERNAL)
+				<< what << ": a warm read of a corrupt spool must end INTERNAL, not OK (" << s.error_message() << ")";
+			EXPECT_EQ(m_service->streamSpoolCache().EntryCount(), std::size_t(0))
+				<< what << ": the poisoned spool must be dropped";
+
+			*refillOut = StreamAndReassemble(designName, false, &s);
+			ASSERT_TRUE(s.ok()) << what << ": " << s.error_message();
+			ASSERT_EQ(m_service->streamSpoolCache().EntryCount(), std::size_t(1))
+				<< what << ": next request must refill cold";
+		};
+
+		// Byte offset just past the FIRST record (varint length + payload):
+		// truncating there leaves a structurally valid prefix — clean EOF one
+		// record short of the committed count.
+		auto firstRecordEnd = [](const fs::path& p) -> std::uintmax_t
+		{
+			std::ifstream in(p, std::ios::binary);
+			std::uint64_t value = 0;
+			int shift = 0;
+			std::uintmax_t consumed = 0;
+			for (int i = 0; i < 10; ++i)
+			{
+				const int b = in.get();
+				if (b == std::char_traits<char>::eof())
+				{
+					return 0;
+				}
+				++consumed;
+				value |= static_cast<std::uint64_t>(b & 0x7f) << shift;
+				if ((b & 0x80) == 0)
+				{
+					return consumed + value;
+				}
+				shift += 7;
+			}
+			return 0;
+		};
+
+		{
+			const auto spoolPath = globSpoolFile();
+			ASSERT_FALSE(spoolPath.empty());
+			const auto fullSize = fs::file_size(spoolPath, ec);
+			ASSERT_GT(fullSize, std::uintmax_t(0));
+			const auto boundary = firstRecordEnd(spoolPath);
+			ASSERT_GT(boundary, std::uintmax_t(0));
+			ASSERT_LT(boundary, fullSize) << "fixture spool must have more than one record";
+
+			// Round 1: emptied to zero bytes (degenerate boundary truncation).
+			StreamResult r1;
+			corruptAndExpectInternal(0, "zero-byte spool", &r1);
+			// Round 2: truncated at an exact record boundary (clean EOF,
+			// short of the committed record count).
+			StreamResult r2;
+			corruptAndExpectInternal(boundary, "record-boundary truncation", &r2);
+			// Round 3: mid-frame truncation (framing error path).
+			StreamResult r3;
+			corruptAndExpectInternal((boundary + fs::file_size(globSpoolFile(), ec)) / 2,
+				"mid-frame truncation", &r3);
+
+			EXPECT_TRUE(BytesEqual("post-corruption refill", r1.bytes, cold.bytes));
+			EXPECT_TRUE(BytesEqual("post-boundary refill", r2.bytes, cold.bytes));
+			EXPECT_TRUE(BytesEqual("post-mid-frame refill", r3.bytes, cold.bytes));
 		}
-		ASSERT_EQ(spoolFiles.size(), std::size_t(1)) << "one committed fill, one spool file";
-		const auto spoolPath = spoolFiles.front();
-		const auto fullSize = fs::file_size(spoolPath, ec);
-		ASSERT_GT(fullSize, std::uintmax_t(0));
-		fs::resize_file(spoolPath, fullSize / 2, ec); // corrupt mid-stream
-		ASSERT_FALSE(ec);
-
-		const auto warm = StreamAndReassemble(designName, false, &status);
-		EXPECT_EQ(status.error_code(), grpc::StatusCode::INTERNAL)
-			<< "a warm read of a corrupt spool must end INTERNAL, not OK: " << status.error_message();
-		EXPECT_EQ(m_service->streamSpoolCache().EntryCount(), std::size_t(0))
-			<< "the poisoned spool must be dropped";
-
-		// And the next request refills cold and succeeds.
-		const auto refilled = StreamAndReassemble(designName, false, &status);
-		EXPECT_TRUE(status.ok()) << status.error_message();
-		EXPECT_TRUE(BytesEqual("post-corruption refill", refilled.bytes, cold.bytes));
 
 		m_sharedDesignCache->setMonolithicWireBudget(0);
 		fs::remove_all(spoolDir, ec);
+	}
+
+	// ---- cached monolithic bytes obey a since-lowered budget (follow-up to
+	// the M6.2 dispatch guard) ----
+	// The warm GetDesign fast path parses cached bytes BEFORE the serve
+	// budget guard. The payload was serialized under the budget active at
+	// pre-serialization time; if the budget is then lowered below the cached
+	// payload's size, parsing would allocate the exact protobuf tree the
+	// guard exists to prevent. The warm path must refuse and the cold guard
+	// must reject the design.
+	TEST_F(DesignStreamTest, GetDesign_CachedBytesOverShrunkBudget_Rejected)
+	{
+		const std::string designName = "sample_design";
+
+		// Load the design (the pre-serialization worker is scheduled at load
+		// completion), then wait for it to land the cached bytes (~21 MB for
+		// sample_design, well under the default budget).
+		ASSERT_NE(m_sharedDesignCache->GetDesign(designName), nullptr);
+		ASSERT_TRUE(waitForCondition([this, &designName]()
+		{
+			return m_sharedDesignCache->HasCachedResponse(designName);
+		}, std::chrono::seconds(30))) << "background pre-serialization did not commit";
+
+		// Shrink the budget below the cached payload size (and below the
+		// estimate, so the cold guard also rejects): the cached-bytes path
+		// must not serve it.
+		m_sharedDesignCache->setMonolithicWireBudget(1000000);
+
+		grpc::Status status;
+		const auto bytes = FetchMonolithicBytes(designName, false, &status);
+		EXPECT_EQ(status.error_code(), grpc::StatusCode::RESOURCE_EXHAUSTED)
+			<< "a cached payload larger than the current budget must be rejected, not parsed: "
+			<< status.error_message();
+		EXPECT_TRUE(bytes.empty());
+
+		m_sharedDesignCache->setMonolithicWireBudget(0);
+	}
+
+	// ---- response generations survive DesignCache::Clear() ----
+	// Clear() used to erase the generation tombstones, so a re-added design's
+	// next invalidation restarted at 1 — and a spool published at generation
+	// >= 1 before the Clear would MATCH the post-Clear reload's fresh
+	// generation, warm-serving content the system had invalidated. With
+	// tombstones preserved, the reload's generation is strictly higher and
+	// the stale spool is dropped on open.
+	TEST_F(DesignStreamTest, SpoolGeneration_SurvivesCacheClear_NoStaleWarmServe)
+	{
+		const std::string designName = "sample_design";
+		m_sharedDesignCache->setMonolithicWireBudget(1);
+
+		// Bump the generation to 1 (what Clear used to erase) and fill: the
+		// committed spool is now at generation 1.
+		m_sharedDesignCache->InvalidateDesign(designName);
+		grpc::Status status;
+		const auto cold = StreamAndReassemble(designName, false, &status);
+		ASSERT_TRUE(status.ok()) << status.error_message();
+		ASSERT_EQ(m_service->streamSpoolCache().EntryCount(), std::size_t(1));
+
+		// Clear + reload: without preserved tombstones the reload lands at
+		// generation 1 again and the pre-Clear spool would warm-serve.
+		m_sharedDesignCache->Clear();
+		ASSERT_NE(m_sharedDesignCache->GetDesign(designName), nullptr) << "reload after Clear failed";
+
+		const auto after = StreamAndReassemble(designName, false, &status);
+		ASSERT_TRUE(status.ok()) << status.error_message();
+		EXPECT_EQ(m_service->streamSpoolCache().WarmOpens(), 0ull)
+			<< "a pre-Clear spool must never match after Clear + reload";
+		EXPECT_TRUE(BytesEqual("post-clear refill", after.bytes, cold.bytes));
+
+		m_sharedDesignCache->setMonolithicWireBudget(0);
 	}
 
 	// ---- spool-I/O failure degrades to unspooled streaming (review F14) ----
@@ -917,6 +1056,53 @@ namespace Odb::Test
 			<< "the published spool must replay the complete record sequence";
 
 		std::filesystem::remove_all(dir, ec);
+	}
+
+	// ---- a single spool larger than the whole budget is not published ----
+	// The just-published design is eviction-protected, so admitting an
+	// individually oversized spool would evict every other entry and still
+	// leave the cache over cap indefinitely. It must be rejected at publish:
+	// file deleted, nothing cached, Commit() reports failure (the design
+	// keeps serving; every request refills cold).
+	TEST_F(DesignStreamTest, StreamSpoolCache_SingleSpoolOverBudget_NotPublished)
+	{
+		namespace fs = std::filesystem;
+		std::error_code ec;
+		const auto dir = fs::temp_directory_path(ec) / ("odbdesign-spool-oversize-test-" +
+			std::to_string(::getpid()) + "-" +
+			std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+		ASSERT_FALSE(ec);
+
+		StreamSpoolCache cache(dir, 4096); // budget smaller than one fill
+
+		std::vector<DesignChunk> records;
+		for (int i = 0; i < 500; ++i)
+		{
+			DesignChunk chunk;
+			chunk.mutable_header()->set_name("record-" + std::to_string(i));
+			records.push_back(chunk);
+		}
+
+		StreamSpoolCache::Writer writer;
+		ASSERT_TRUE(cache.BeginWrite("design", 3, writer));
+		for (const auto& record : records)
+		{
+			ASSERT_TRUE(writer.Append(record));
+		}
+		EXPECT_FALSE(writer.Commit()) << "an oversized spool must not be published";
+		EXPECT_EQ(cache.EntryCount(), std::size_t(0));
+
+		std::size_t leftover = 0;
+		for (const auto& entry : fs::directory_iterator(dir, ec))
+		{
+			if (entry.path().extension() == ".spool")
+			{
+				++leftover;
+			}
+		}
+		EXPECT_EQ(leftover, std::size_t(0)) << "the rejected spool file must be deleted";
+
+		fs::remove_all(dir, ec);
 	}
 
 	// ---- background pre-serialization skips over-budget designs ----
