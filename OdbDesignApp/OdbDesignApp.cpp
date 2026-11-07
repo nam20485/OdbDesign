@@ -5,6 +5,8 @@
 #include "macros.h"
 #include "ExitCode.h"
 #include <iostream>
+#include <cstdlib>
+#include <filesystem>
 #include <FileModel/Design/LayerDirectory.h>
 #include <FileModel/Design/EdaDataFile.h>
 
@@ -38,16 +40,26 @@ int main()
     return (int) Utils::ExitCode::Success;
 }
 
+// Resolve a test design archive by filename from the ODB_TEST_DATA_DIR
+// directory (same convention as the test suite). Returns an empty path when
+// the environment variable is not set.
+static std::string getTestDataPath(const std::string& filename)
+{
+    const char* testDataDir = std::getenv("ODB_TEST_DATA_DIR");
+    if (testDataDir == nullptr || testDataDir[0] == '\0')
+    {
+        std::cout << "ODB_TEST_DATA_DIR is not set; cannot resolve '" << filename << "'" << std::endl;
+        return {};
+    }
+    return (std::filesystem::path(testDataDir) / filename).string();
+}
+
 bool TestSampleDesign()
 {
-    std::string sampleDesignPath;
-    if (Utils::IsWindows())
+    auto sampleDesignPath = getTestDataPath("sample_design.tgz");
+    if (sampleDesignPath.empty())
     {
-        sampleDesignPath = R"(C:\Users\nmill\OneDrive\Documents\ODB++\Samples\sample_design.tgz)";
-    }
-    else
-    {
-        sampleDesignPath = R"(/mnt/c/Users/nmill/OneDrive/Documents/ODB++/Samples/sample_design.tgz)";
+        return false;
     }
 
     std::cout << "Processing " << sampleDesignPath << "... " << std::endl;
@@ -63,15 +75,11 @@ bool TestSampleDesign()
 }
 
 bool TestRigidFlexDesign()
-{   
-    std::string rigidFlexDesignPath;
-    if (Utils::IsWindows())
+{
+    auto rigidFlexDesignPath = getTestDataPath("designodb_rigidflex.tgz");
+    if (rigidFlexDesignPath.empty())
     {
-        rigidFlexDesignPath = R"(C:\Users\nmill\OneDrive\Documents\ODB++\Samples\designodb_rigidflex.tgz)";
-    }
-    else
-    {
-        rigidFlexDesignPath = R"(/mnt/c/Users/nmill/OneDrive/Documents/ODB++/Samples/designodb_rigidflex.tgz)";
+        return false;
     }
 
     std::cout << "Processing " << rigidFlexDesignPath << "... " << std::endl;

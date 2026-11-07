@@ -78,3 +78,25 @@ target_link_libraries(OdbDesign PUBLIC protobuf::libprotobuf)
 # (see https://github.com/CrowCpp/Crow/issues/661#issuecomment-1702544225)
 list(REMOVE_ITEM _CROW_ICD "_CROW_ICD-NOTFOUND")
 set_target_properties(Crow::Crow PROPERTIES INTERFACE_COMPILE_DEFINITIONS "${_CROW_ICD}")
+
+# ===== install rules (SDK packaging) =====
+
+include(GNUInstallDirs)
+
+install(TARGETS OdbDesign
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}    # Windows DLL
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}    # shared object
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})   # Windows import library (.lib)
+
+# public headers, preserving their relative structure (FileModel/, ProductModel/,
+# App/, Text/) so quoted includes such as "FileModel/Design/FileArchive.h" and
+# "App/DesignCache.h" keep resolving under a single -I<...>/include/OdbDesign.
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/"
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/OdbDesign
+        FILES_MATCHING PATTERN "*.h")
+
+# protobuf-generated headers (filearchive.pb.h, design.pb.h, ...) are included
+# by public headers as bare filenames, so they install into the same include root.
+install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/"
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/OdbDesign
+        FILES_MATCHING PATTERN "*.pb.h")
