@@ -2,7 +2,7 @@
 
 A free open source cross-platform C++ library for parsing ODB++ Design archives, accessing their data, and building net list product models. Exposed via a REST API packaged inside of a Docker image.
 
-**UPDATE: LICENSE HAS CHANGED TO [AGPL V3.0](../LICENSE).** This is a non-permissive open source license that is not suitable for use in closed-source applications. Please contact me to obtain a license suitable for closed-source uses.
+**UPDATE: LICENSE HAS CHANGED TO [AGPL V3.0](../LICENSE).** This is a non-permissive open source license that is not suitable for use in closed-source applications. Please see [COMMERCIAL-LICENSE.md](../COMMERCIAL-LICENSE.md) for the commercial licensing process, or contact me to obtain a license suitable for closed-source uses.
 
 ## Skip to Build and Running Instructions
 
@@ -371,7 +371,7 @@ See [docs/CONTRIBUTING.md](CONTRIBUTING.md) for more details.
 
 This project is free and open source under the [AGPL V3.0](../LICENSE).
 
-> The AGPL V3.0 is a non-permissive open source license that is not suitable for use in closed-source applications. However, licenses suitable for use in closed-source applications are available. Please contact me to obtain a license suitable for your needs.
+> The AGPL V3.0 is a non-permissive open source license that is not suitable for use in closed-source applications. However, commercial licenses suitable for use in closed-source applications are available — see [COMMERCIAL-LICENSE.md](../COMMERCIAL-LICENSE.md) for the licensing process, evaluation terms, and support options.
 
 ## Credit
 

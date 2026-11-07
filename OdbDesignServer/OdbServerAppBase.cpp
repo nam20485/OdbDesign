@@ -126,7 +126,9 @@ namespace Odb::Lib::App
 	{
 		if (args().grpcPort() > 0 && m_pDesignCache)
 		{
-			std::string grpc_server_address = "0.0.0.0:" + std::to_string(args().grpcPort());
+			// honor the bind address for gRPC too (default "0.0.0.0"), so e.g.
+		// loopback-locked builds cannot be exposed via the gRPC port
+		std::string grpc_server_address = args().bindAddress() + ":" + std::to_string(args().grpcPort());
 			m_grpcThread = std::make_unique<std::thread>(&OdbServerAppBase::RunGrpcServer, this, grpc_server_address, m_pDesignCache);
 			std::cout << "gRPC server thread started on port " << args().grpcPort() << std::endl;
 		}

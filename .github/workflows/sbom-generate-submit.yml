@@ -31,8 +31,17 @@ jobs:
         env: 
           GITHUB_TOKEN: ${{ github.token }}
 
-      - name: SBOM Upload 
+      - name: SBOM Upload
         uses: advanced-security/spdx-dependency-submission-action@dc069b56ba31ce546dc419b549aceb808c632d9a # v0.0.1
         with:
             filePath: ${{ steps.sbom-generate.outputs.fileName }}
-     
+
+      # keep the SPDX document downloadable as a workflow artifact so
+      # commercial SDK deliveries can bundle it without re-running generation
+      - name: Attach SPDX SBOM artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+            name: spdx-sbom
+            path: ${{ steps.sbom-generate.outputs.fileName }}
+            retention-days: 30
+ 
