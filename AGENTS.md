@@ -275,6 +275,15 @@ constexpr inline static bool CLIP_FILEMODEL_AFTER_BUILD = false;
 
 ## Testing Patterns
 
+### MANDATORY: No grep-style pseudo-validation (user directive 2026-11-07)
+
+**Never write or accept a test, CI verification step, or self-check whose assertion is "this string exists in this file/config/log" used as proof that a runtime behavior works. This applies everywhere: unit tests, integration tests, CI workflow steps, POCs, and agent self-verification.**
+
+- A grep-style check validates the *description* of the wiring, not the wiring. It has zero power to observe an HTTP round-trip, an exit code, a build result, or a restored artifact.
+- Every validation must exercise the real code path and assert on real outcomes: run the actual command and check its exit code, do a write-then-read-back round-trip, compare produced artifacts, or query the external system's state through its API.
+- Canonical incident (why this rule exists): the "Verify NuGet Feed Credentials (Non-Windows)" CI step grepped `nuget.generated.config` for `ClearTextPassword`/`defaultPushSource` and passed on every run while every actual feed write had been failing for 9 months ("Account has reached its billing limit", surfaced only as a non-fatal nuget warning). The grep provided false confidence and hid the outage.
+- If a true end-to-end round-trip is genuinely impossible in a given context, the check must be labeled partial in its own output — never presented as verification.
+
 ### Test Fixture Pattern
 
 ```cpp
