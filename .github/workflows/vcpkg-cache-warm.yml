@@ -190,7 +190,7 @@ jobs:
           set -euo pipefail
           rm -rf "$VCPKG_DEFAULT_BINARY_CACHE" buildtrees packages vcpkg_installed
           mkdir -p "$VCPKG_DEFAULT_BINARY_CACHE"
-          export VCPKG_BINARY_SOURCES="clear;nugetconfig,$GITHUB_WORKSPACE/nuget.generated.config,read"
+          export VCPKG_BINARY_SOURCES="clear;nugettimeout,900;nugetconfig,$GITHUB_WORKSPACE/nuget.generated.config,read"
           t0=$(date +%s)
           "${{ env.VCPKG_ROOT }}/vcpkg" install
           "${{ env.VCPKG_ROOT }}/vcpkg" install --triplet x64-linux-dynamic
@@ -327,7 +327,7 @@ jobs:
           set -euo pipefail
           rm -rf "$VCPKG_DEFAULT_BINARY_CACHE" buildtrees packages vcpkg_installed
           mkdir -p "$VCPKG_DEFAULT_BINARY_CACHE"
-          export VCPKG_BINARY_SOURCES="clear;nugetconfig,$GITHUB_WORKSPACE/nuget.generated.config,read"
+          export VCPKG_BINARY_SOURCES="clear;nugettimeout,900;nugetconfig,$GITHUB_WORKSPACE/nuget.generated.config,read"
           t0=$(date +%s)
           "${{ env.VCPKG_ROOT }}/vcpkg" install
           t1=$(date +%s)
