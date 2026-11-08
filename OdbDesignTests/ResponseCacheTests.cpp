@@ -21,7 +21,17 @@ namespace Odb::Test
 {
     namespace
     {
-        constexpr auto kParseTimeout = std::chrono::seconds(60);
+        // Coverage-build budget: under the gcov-instrumented coverage build
+        // (code-coverage.yml), parse + background pre-serialization of
+        // sample_design routinely takes 100-300s on the runner (sibling
+        // tests in this suite measured 133-368s), so a 60s budget timed out
+        // intermittently (PR #615 coverage run, failed at the
+        // "load completion must pre-serialize" wait). Every wait in this
+        // file gates on load/serialization completion, so the whole constant
+        // gets the 5-minute coverage budget - same fix RequestLoadDesignTests
+        // received in 689f16b (which keeps 60s only for cheap state flips,
+        // of which this file has none).
+        constexpr auto kParseTimeout = std::chrono::minutes(5);
         constexpr auto kBackgroundGrace = std::chrono::milliseconds(250);
 
         // Bounded poll for state that changes on background threads
