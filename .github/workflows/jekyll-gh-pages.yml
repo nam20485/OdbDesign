@@ -80,8 +80,16 @@ jobs:
       # regardless of Jekyll's static-file handling; the "./dir/." form is
       # idempotent if the directory already exists. (The previously commented
       # ./OdbDesignLib/doxygen/html source never matched this config.)
+      #
+      # The Jekyll build action runs in a container and leaves ./_site
+      # root-owned, so the runner-user cp below (and the coverage step further
+      # down, which mkdirs into ./_site) failed with "Permission denied".
+      # Every scheduled refresh run since 2026-10-12 failed on this and the
+      # live site has been stale since the last successful push deploy
+      # (2026-09-09). Restore runner ownership first.
       - name: Copy Doxygen docs
         run: |
+          sudo chown -R "$(id -u):$(id -g)" ./_site
           mkdir -p ./_site/api
           cp -r ./docs/api/. ./_site/api/
 
