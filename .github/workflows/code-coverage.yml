@@ -188,6 +188,7 @@ jobs:
           lcov --remove coverage/coverage.info \
             '/usr/*' \
             '*/vcpkg/*' \
+            '*/vcpkg_installed/*' \
             '*/_deps/*' \
             '*/OdbDesignTests/*' \
             --output-file coverage/coverage.info \
