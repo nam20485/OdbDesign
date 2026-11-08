@@ -122,7 +122,7 @@ def read_lines(path):
     except UnicodeDecodeError as exc:
         raise FixtureError("%s is not UTF-8 (%s); refusing to guess at ground truth"
                            % (path, exc)) from exc
-    except (OSError, zlib.error) as exc:
+    except (OSError, zlib.error, EOFError) as exc:
         # a truncated/corrupt .gz or .Z raises these mid-iteration; without this
         # they escape main()'s FixtureError handler and abort every later fixture
         raise FixtureError("%s could not be decompressed (%s: %s)"

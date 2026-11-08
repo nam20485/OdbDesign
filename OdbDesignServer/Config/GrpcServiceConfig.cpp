@@ -181,7 +181,10 @@ namespace OdbDesignServer
 
                         if (streamSection.has("spool_max_bytes"))
                         {
-                            const auto value = static_cast<std::uint64_t>(streamSection["spool_max_bytes"].i());
+                            // Clamp negatives to 0 first: Crow's .i() is signed,
+                            // and a raw cast would wrap a negative JSON value to
+                            // a huge uint64_t, silently disabling the cap.
+                            const auto value = static_cast<std::uint64_t>(std::max<std::int64_t>(0, streamSection["spool_max_bytes"].i()));
                             result.config->stream_spool_max_bytes = (value == 0)
                                 ? std::numeric_limits<std::uint64_t>::max()
                                 : value;

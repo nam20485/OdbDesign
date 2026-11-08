@@ -141,6 +141,13 @@ namespace OdbDesignServer
             // Drops the design's spool entry (and file), if any.
             void Drop(const std::string& designName);
 
+            // Generation-guarded Drop for call sites that observed an entry
+            // outside m_mutex (e.g. after a lock-free is_regular_file probe on
+            // a captured path): removes the entry only if it still carries the
+            // observed generation, so a concurrent re-publish of the design is
+            // never dropped instead of the stale entry.
+            void DropStaleEntry(const std::string& designName, std::uint64_t generation);
+
             // Counters (observability/tests).
             std::uint64_t WarmOpens() const;
             std::uint64_t TotalSpoolBytes() const;
