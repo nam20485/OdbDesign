@@ -8,12 +8,12 @@
 
 ## Section 0 — SHORT-LIST: resolve before sending the Keiron reply (today, 2026-11-08)
 
-**Hard blockers: none.** The reply (draft: `keiron-reply-draft-2026-11-08.md`) is deliberately an information-gathering response — no binding terms, no prices, no entity signature required. The five items below are the only decisions that shape what you press "send" on:
+**Hard blockers: none.** The reply (two drafts to choose from: `keiron-reply-draft-friendly-2026-11-08.md` and `keiron-reply-draft-formal-2026-11-08.md`) is deliberately an information-gathering response — no binding terms, no prices, no entity signature required. The five items below are the only decisions that shape what you press "send" on:
 
 | # | Decision | Recommendation | Time |
 |---|---|---|---|
 | S1 | **Signature block** — personal, or The Intel Agency? (parent 1.1 / A1) | Sign personally as *maintainer/author of OdbDesign* — the entity's internal IP license (A1) isn't executed yet; switching the contracting name later is normal ("agreements will be with our company, The Intel Agency"). | 1 min |
-| S2 | **Evaluation framing** — confirm the eval-free, source-POC path (parent 2.4, decided 2026-11-08) | Already decided and folded into the guide + email: prospects POC internally on the public AGPL source; commercial license due at ship time. Nothing further to do — just be ready to explain it on the call. | 0 min |
+| S2 | **Evaluation framing** — licensed eval binaries (parent 2.4, decided + amended 2026-11-08) | Settled: NDA → 30-day watermarked evaluation license (loopback-only for sidecars) → commercial license. Both email drafts carry this framing. Nothing further before sending — the eval agreement paper (A6) is needed only when Keiron actually requests the evaluation. | 0 min |
 | S3 | **No pricing in the first email** (parent 2.3) | Confirmed approach: gather scoping info first; send tailored indicative pricing after the call. Pricing decision (B2) is needed before the *quote*, not before the *reply*. | 0 min |
 | S4 | **Scheduling link works for EU timezones** | Verify the Google Calendar link (docs/README.md) once; note your availability for CET mornings (= early PST) so Monday slots are bookable. | 2 min |
 | S5 | **Send window** | Before **23:00 PST Sunday = 08:00 CET Monday**; send this evening so it's first-in-inbox at 08:00. | — |
@@ -137,13 +137,14 @@ Steps:
 2. Screening procedure: before issuing any quote/license, check the counterparty + principals against the BIS Consolidated Screening List (https://www.bis.doc.gov/index.php/policy-guidance/consolidated-screening-list) and EU/sanctions lists; save a dated PDF/screenshot of results to the sales ledger.
 3. Record the check in the delivery runbook as a required checklist step (it already has a per-delivery checklist in the private repo README).
 
-### A6. Mutual NDA (western) + bilingual China NNN ☐
-**Parent:** guide 4.3 (scope reduced 2026-11-08: eval agreement retired — see 2.4)
+### A6. Mutual NDA + Evaluation Agreement (western) + bilingual China NNN ☐
+**Parent:** guide 4.3 (scope restored 2026-11-08 with the licensed-eval decision)
 
 1. Pick a mutual-NDA template (counsel, or a reputable free template such as the IPLC/NLTPA-style mutual NDA) — keep it mutual, 2–3 years.
-2. For PRC counterparties (e.g. LinBoard3D): use a bilingual English/中文 **NNN** (Non-Disclosure / Non-Use / Non-Circumvention) — NDAs alone are weak for PRC enforcement; NNN + governing-law choice is the standard mitigation. Have China-experienced counsel review.
-3. Add a short "POC ground rules" rider (from guide 2.4): POC use of the public AGPL source is internal-only; no distribution; no third-party network service; commercial license required to ship.
+2. Add a short **Evaluation Agreement** rider matching the enforced technical terms (guide 2.4): 30-day time limit, watermarked binaries, loopback-only for server sidecars, no benchmarking/publication, no production use, return/delete at end.
+3. For PRC counterparties (e.g. LinBoard3D): use a bilingual English/中文 **NNN** (Non-Disclosure / Non-Use / Non-Circumvention) — NDAs alone are weak for PRC enforcement; NNN + governing-law choice is the standard mitigation. Have China-experienced counsel review.
 4. Store executed copies in the sales ledger.
+5. When a prospect requests an evaluation: issue via the private repo runbook — `tools/make-license.sh` (30-day expiry, `loopback_only` for sidecars) + the packaging workflow with evaluation watermarks; record license-id + customer + expiry in the ledger.
 
 ### A7. Master Commercial License Agreement + Schedules A/B ☐
 **Parent:** guide 4.4
@@ -193,7 +194,7 @@ Steps:
 2. Extend the out-of-tree consumer check to consume via `find_package(OdbDesign)` in CI or locally.
 
 ### C5. COMMERCIAL-LICENSE.md evaluation wording ✓ (parent 2.4)
-Updated on the PR #610 branch to describe the source-POC evaluation path instead of time-locked eval binaries (2026-11-08).
+Settled on the PR #610 branch (2026-11-08, same-day amendment): evaluation described as a time-limited **licensed** evaluation build under an evaluation agreement (watermarked; loopback-only for sidecars) with the public-domain sample archive for validation — not the source-POC path.
 
 ### C6. Keiron commercial overview one-pager/PDF ☐  (parent 4.1 — after B1/B2)
 1. Once pricing is set, generate a 2-page overview from `COMMERCIAL-LICENSE.md` + guide §2 (models, process, support tiers, contact).

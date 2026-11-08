@@ -81,9 +81,9 @@ onboarding gate for foreign buyers.
 
 2.4 Evaluation / Trial Licensing Policy
 
-> **Status (2026-11-08): DECIDED — evaluation via internal-use POC on the public source; no eval binaries offered initially** (user feedback: "do we have to offer an eval? couldn't they just prove integration POC using the public repo/source… not released == not commercial use?"). **Answer: yes, that works, and it's clean.** AGPL-3.0 §0 makes *making, running, and modifying* the software for internal use completely unrestricted — the license's obligations trigger only on **distributing** the software or its derivatives, or offering a modified version as a **network service to third parties**. An OEM like Keiron can clone the public repo, integrate, and validate internally on their own machines for as long as they like, at zero cost and with no agreement from us; a commercial license becomes due exactly when the integration leaves their walls (ships with an HF2 machine, or is operated as a service for third parties). Caveats to state in the offer: (1) no distribution or external network serving during the POC; (2) AGPL applies to the POC build itself — fine internally, but their integration code must not be built on the assumption it can ship unchanged without relicensing; (3) production/shipping use requires the commercial license.
+> **Status (2026-11-08, amended same day): DECIDED — evaluation via licensed, time-locked evaluation binaries under an evaluation agreement (explicit entitlement).** An earlier same-day decision offered an eval-free path (internal-use POC on the public AGPL source); it was **reversed on reflection**: unlimited unlicensed evaluation keeps the licensor out of the loop, makes it easy for an integration to drift into production without a license, and provides no visibility into who shipped which build. The supported evaluation path is therefore: mutual NDA → **30-day evaluation license + watermarked evaluation binary** (loopback-only for server sidecars) → commercial license for production/shipping. All machinery for this already exists and is verified end-to-end (Ed25519 `expires_at` + `loopback_only` + watermark + strip; per-customer provenance answers "who shipped which build").
 >
-> The time-locked evaluation-binary machinery already built (Ed25519 `expires_at`, `loopback_only`, watermark — verified end-to-end) is **retained but not offered initially**; it remains available for leads who cannot build from source, and for future server-product trials. This also retires the "evaluation agreement" from item 4.3's scope (a plain mutual NDA still applies for commercial discussions).
+> *Honest internal note:* AGPL-3.0 §0 does legally permit a sophisticated prospect to build and evaluate the public source internally on their own — that right cannot be revoked and is the cost of the public AGPL strategy. Policy is simply to **not advertise it** as the evaluation path; our offered, supported, and papered path is the licensed evaluation. If a prospect raises the AGPL route themselves, the position is: it is permitted for internal evaluation only, and any distribution or production use requires the commercial license.
 
 2.5 Source-Code Access & Escrow Policy
 
@@ -104,7 +104,7 @@ Choose the primary licensing structures for hardware OEMs (Per-Machine Royalty v
 
 Establish concrete price ranges, minimum seat/machine commitments, and annual renewal rules for each SKU and buyer tier. 
 
-Decide whether and how to offer 30–90 day evaluation binaries, what technical restrictions apply during trials, and whether an evaluation deposit or NNN/NDA is required first. *(Resolved 2026-11-08: no eval binaries offered initially — internal-use POC on the public AGPL source instead; see the item 2.4 status above.)*
+Decide whether and how to offer 30–90 day evaluation binaries, what technical restrictions apply during trials, and whether an evaluation deposit or NNN/NDA is required first. *(Resolved 2026-11-08, amended same day: licensed 30-day evaluation binaries — watermarked, loopback-only for server sidecars — under a mutual NDA + evaluation agreement; see the item 2.4 status above.)*
 
 Decide whether commercial licenses are strictly binary only, when third-party source escrow is permitted, and who pays escrow setup/maintenance fees. *(Resolved 2026-11-08: strictly binary-only, no escrow offered at this stage — see item 2.5 status.)*
 
@@ -178,7 +178,7 @@ Draft a concise technical/commercial intake questionnaire to capture target depl
 
 4.3 Evaluation Agreement & Bilingual China NNN
 
-> **Status (2026-11-07; amended 2026-11-08): Deferred — legal drafting not started; scope reduced by the eval-free decision.** With evaluation binaries no longer offered (2.4), the evaluation-agreement half of this item retires; what remains: a Western **Mutual NDA** (Keiron path) and a bilingual **China NNN** (LinBoard3D path), plus a light "POC terms" note if desired (stating the AGPL internal-use POC ground rules from 2.4).
+> **Status (2026-11-07; amended 2026-11-08): Deferred — legal drafting not started.** Scope (restored with the amended 2.4 decision): Western **Mutual NDA + 30-day Evaluation Agreement** (Keiron path) matching the enforced technical terms (time-locked, watermarked, loopback-only sidecars, no benchmarking/disclosure), and a bilingual **China NNN** + evaluation terms (LinBoard3D path).
 
 4.4 Master Commercial License Grant &
 Schedules
@@ -880,7 +880,7 @@ On 2026-11-07 the engineering workstreams of this guide (execution-sequence Step
 | 2.1 SKU boundaries | Product | **Technical complete; SKUs/pricing deferred (user)** |
 | 2.2 Licensing model | Product | **Deferred (user)** — enforcement is model-agnostic |
 | 2.3 Pricing tiers | Product | **Deferred (user)** — nothing published by design |
-| 2.4 Evaluation policy | Product | **Decided 2026-11-08** — eval-free: internal-use POC on public AGPL source; eval-binary machinery retained but not offered |
+| 2.4 Evaluation policy | Product | **Decided 2026-11-08 (amended same day)** — licensed 30-day eval binaries (watermarked, loopback for sidecars) under NDA + evaluation agreement; explicit entitlement, no advertised source-POC path |
 | 2.5 Escrow | Product | **Decided 2026-11-08** — strictly binary-only, no escrow offered at this stage |
 | 3.1 Private build overlay | Technical | **Complete** — private repo + superbuild + packaging workflow |
 | 3.2 License enforcement | Technical | **Complete** — LicenseGuard Ed25519 (Option 2), 13/13 tests |
@@ -910,7 +910,7 @@ On 2026-11-07 the engineering workstreams of this guide (execution-sequence Step
 
 9. **Licensor entity = The Intel Agency** (item 1.1). Execution = 1-page internal IP license from Nathan Miller to the entity (draft in the action checklist, A1); transition to a dedicated WA LLC if ARR passes ~$50k.
 10. **Employer separation is factual and documented** (item 1.2): OdbDesign predates the Cincinnatus employment by ~2 years; employer work happens on a corporate ChromeOS laptop; no employer equipment/time/networks touch OdbDesign. One-page provenance memo to be written (A2).
-11. **Eval-free evaluation policy** (item 2.4): prospects prove integration via internal-use POC on the public AGPL source (internal use is unrestricted; obligations trigger only on distribution or third-party network service). No time-locked eval binaries offered initially; the machinery stays available.
+11. **Licensed evaluation policy** (item 2.4; decided 2026-11-08 and **amended the same day** — an initial eval-free/source-POC decision was reversed): evaluation runs through a mutual NDA + evaluation agreement and a 30-day, watermarked, loopback-restricted evaluation binary — explicit entitlement keeps the licensor in the loop and every shipped build attributable. The AGPL internal-use right still exists in law but is not advertised as the evaluation path.
 12. **Strictly binary-only, no escrow** (item 2.5): no source-code continuity offered at this stage.
 13. **Past-contribution carve-out** (item 1.3): the two external human contributors (wen2so, Jandody — six commits total, effectively four distinct changes) will have their contributions removed/replaced from the current tree rather than chased for retroactive releases; commercial builds then derive from 100% owner-authored code (A4).
 

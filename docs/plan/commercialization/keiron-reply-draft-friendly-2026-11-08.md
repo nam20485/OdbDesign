@@ -1,4 +1,6 @@
-# Keiron reply — DRAFT (2026-11-08)
+# Keiron reply — DRAFT, friendly version (2026-11-08)
+
+*One of two drafts — the shorter, more formal alternative is `keiron-reply-draft-formal-2026-11-08.md`.*
 
 > **Send by 23:00 PST Sunday 2026-11-08** (= 08:00 CET Monday 2026-11-09) so it is first in their inbox Monday morning.
 > **To:** Ruben van Oers <r.vanoers@keirontechnologies.com>
@@ -19,10 +21,10 @@ Let me answer your three questions directly:
 The typical path is:
 
 - A **scoping call** (30–45 min) so I understand your integration, platforms, and support expectations, and you can evaluate the fit directly with me — I'm the author and maintainer, so there's no layers-between-you-and-engineering.
-- If useful, a **mutual NDA**, after which I send a tailored **commercial proposal** (license terms, pricing, support options).
+- If useful, a **mutual NDA**, after which I can issue a **fully functional evaluation license** — typically 30 days, watermarked binaries, so your team can validate the integration on real job data under a clear entitlement — followed by a tailored **commercial proposal** (license terms, pricing, support options).
 - **Agreement and delivery**: licensed binaries (SDK / server, SBOM and third-party notices included), with updates during the subscription term.
 
-One thing worth knowing upfront: you don't need to wait for paperwork to validate the integration. The public repository is AGPL-3.0, which fully permits **internal use** — your team can build OdbDesign from source today, link it into a job-prep prototype, and evaluate it inside Keiron for as long as you like. A commercial license becomes due when the software ships with the machine (or is provided as a service to third parties). So the engineering evaluation and the commercial track can run in parallel.
+So the engineering evaluation and the commercial track can run in parallel: once the NDA is in place, the evaluation build can be in your hands the same day.
 
 **2. Available license models**
 
@@ -69,5 +71,5 @@ Author & Maintainer, OdbDesign
 - **No pricing** in this email by design (checklist S3): numbers go in the tailored proposal after the scoping call, once B1/B2 are decided.
 - **No attachment** (S0): a commercial overview PDF (C6) is worth attaching only after pricing is set; the email is self-contained and the repo link carries the technical credibility.
 - Replace both `[scheduling link]` placeholders with your live Google Calendar URL from `docs/README.md`.
-- The "internal use under AGPL is free" framing is deliberate: it removes all friction from their evaluation while making the commercial trigger (shipping with the machine) unambiguous — grounded in AGPL-3.0 §0 (guide item 2.4).
+- Evaluation framing (guide 2.4, amended 2026-11-08): licensed 30-day eval under NDA — explicit entitlement, watermarked builds. If a prospect independently raises building from the public AGPL source for internal evaluation, the position is: that is legally permitted for internal evaluation only, and any distribution or production use requires the commercial license. We do not advertise it.
 - If you'd rather not expose all six scoping questions in writing, trim to 1–4 and take 5–6 on the call.
