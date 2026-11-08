@@ -62,6 +62,19 @@ jobs:
       contents: write
       checks: write
       packages: write
+    env:
+      # Disable NuGet credential-provider plugins for the whole job. When a
+      # GitHub Packages request is challenged, nuget.exe routes auth through
+      # any installed provider (runner images ship one; the old workflow also
+      # installed artifacts-credprovider), the provider demands INTERACTIVE
+      # auth, and nuget aborts without ever trying the config's credentials —
+      # observed live on the Windows leg: every push failed "Your request
+      # could not be authenticated… credential providers requested manual
+      # action" while the identical config worked on Linux/macOS (no provider
+      # present). The mac/linux lanes already run plugin-free; this makes
+      # Windows identical. Same trick as scripts/setup-vcpkg-cache.ps1 and
+      # docs/reference/vcpkg/localdev-gh-binary-cacheing.md.
+      NUGET_PLUGIN_PATHS: " "
 
     strategy:
       # Set fail-fast to false to ensure that feedback is delivered for all matrix combinations. Consider changing this to true when your workflow is stable.
@@ -215,47 +228,14 @@ jobs:
           BYTES=$(du -sb "$VCPKG_DEFAULT_BINARY_CACHE" 2>/dev/null | cut -f1 || echo 0)
           echo "bytes=${BYTES:-0}" >> "$GITHUB_OUTPUT"
 
-      - name: Setup NuGet Credential Provider (Windows)
-        if: matrix.os == 'windows-2022'
-        shell: pwsh
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          # Install Azure Artifacts credential provider for non-interactive NuGet auth
-          # The upstream bootstrap/install scripts call api.github.com anonymously, which
-          # 403s on shared runner egress IPs (60 req/hr per IP). Resolve and fetch the
-          # installer through the authenticated API, verify its digest, then patch its
-          # remaining release lookups to send the token too.
-          $apiHeaders = @{ Authorization = "Bearer $env:GITHUB_TOKEN"; Accept = "application/vnd.github+json" }
-          $release = Invoke-RestMethod -Headers $apiHeaders "https://api.github.com/repos/microsoft/artifacts-credprovider/releases/latest"
-          $installAsset = $release.assets | Where-Object { $_.name -eq "installcredprovider.ps1" }
-          if (!$installAsset) { throw "installcredprovider.ps1 asset missing from release $($release.tag_name)" }
-          Invoke-WebRequest -Headers @{ Authorization = "Bearer $env:GITHUB_TOKEN"; Accept = "application/octet-stream" } `
-            -Uri "https://api.github.com/repos/microsoft/artifacts-credprovider/releases/assets/$($installAsset.id)" `
-            -OutFile installcredprovider.ps1
-          if ($installAsset.digest -and $installAsset.digest.StartsWith("sha256:")) {
-            $expectedHash = $installAsset.digest.Substring(7)
-            $actualHash = (Get-FileHash installcredprovider.ps1 -Algorithm SHA256).Hash
-            if ($actualHash -ne $expectedHash) { throw "installcredprovider.ps1 hash mismatch: $actualHash != $expectedHash" }
-          }
-          (Get-Content installcredprovider.ps1 -Raw) `
-            -replace 'Invoke-WebRequest -UseBasicParsing', 'Invoke-WebRequest -UseBasicParsing -Headers @{ Authorization = "Bearer " + $env:GITHUB_TOKEN }' |
-            Set-Content installcredprovider.ps1
-          Invoke-Expression "& { $(Get-Content installcredprovider.ps1 -Raw) } -AddNetfx"
-          # Set environment variable to allow credential provider to work non-interactively
-          echo "NUGET_CREDENTIALPROVIDER_SESSIONTOKENCACHE_ENABLED=true" >> $env:GITHUB_ENV
-          # Register the workflow GITHUB_TOKEN as the NuGet push API key (in the
-          # user config; the generated config already carries it as cleartext).
-          # GITHUB_TOKEN, not a user PAT: PAT-pushed packages default PRIVATE and
-          # refill the account's private-package quota (the 2026-02-14 outage).
-          $env:NUGET_API_KEY = "${{ secrets.GITHUB_TOKEN }}"
-          if ($env:NUGET_API_KEY) {
-            nuget setApiKey $env:NUGET_API_KEY -Source "${{ env.FEED_URL }}" -NonInteractive
-          } else {
-            Write-Host "Skipping nuget setApiKey: GITHUB_TOKEN not available (likely a Dependabot PR)"
-          }
-          # Also set in environment for vcpkg to use
-          echo "NUGET_API_KEY=${{ secrets.GITHUB_TOKEN }}" >> $env:GITHUB_ENV
+      # (The old "Setup NuGet Credential Provider (Windows)" step is REMOVED:
+      # its provider hijacked GitHub Packages auth on the Windows leg — on any
+      # auth challenge nuget.exe routed through the provider, which demanded
+      # interactive sign-in and aborted ("credential providers requested manual
+      # action"), never falling back to the config's credentials. Linux/macOS
+      # never had a provider and authenticate fine with the same config, and
+      # the job-level NUGET_PLUGIN_PATHS=" " above neutralizes any provider
+      # preinstalled on the runner image, making Windows identical.)
 
       #
       #   os != windows-2022 (i.e. Linux, MacOS)
