@@ -8,9 +8,9 @@ Executive Context: Two Active Inbound Commercial Opportunities dictate Dual Trac
 
 Transitioning nam20485/OdbDesign (snapshot commit 59ed1cde) from an open-source GNU Affero General Public License v3.0 (AGPL-3.0) repository into a commercial-ready B2B software product requires resolving legal, architectural, packaging, and operational decisions before issuing a binding quote or license grant. Your workspace currently holds two live commercial licensing inquiries with starkly different risk profiles and integration models: 
 
-Inquiry 1 — European Industrial SMT Hardware OEM (Keiron Printing Technologies BV): On November 5, 2026, Software Engineer Ruben van Oers (r.vanoers@keirontechnologies.com, CC: Frank Ophelders and Martin de Liefde) reached out regarding OdbDesign (Keiron OdbDesign Email Thread). Headquartered at High Tech Campus 29 in Eindhoven, Netherlands, and backed by a €20.7M Series A funding round in July 2026, Keiron builds the HF2 LiFT Printer (Laser-Induced Forward Transfer digital stencil-free solder paste printer). Keiron wants to integrate the OdbDesign library into their closed-source Job Preparation Software shipped with each HF2 machine and asked three specific questions: (1) what the process looks like to obtain a closed source/commercial license, (2) which license models are available, and (3) what future support options exist. 
+Inquiry 1 — European Industrial SMT Hardware OEM (Keiron Printing Technologies BV): On November 5, 2026, a software engineer at Keiron (personal identity, contact details, and CC'd colleagues withheld from this public copy; see the private Keiron OdbDesign Email Thread) reached out regarding OdbDesign. Headquartered in Eindhoven, Netherlands, Keiron builds the HF2 LiFT Printer (Laser-Induced Forward Transfer digital stencil-free solder paste printer). Keiron wants to integrate the OdbDesign library into their closed-source Job Preparation Software shipped with each HF2 machine and asked three specific questions: (1) what the process looks like to obtain a closed source/commercial license, (2) which license models are available, and (3) what future support options exist. 
 
-Inquiry 2 — Unverified Cross-Border Desktop/Server Prospect (LinBoard3D Studio): On October 27, 2026, Lin Qijin (林啟进, 3270963097@qq.com, Jiaxing, Zhejiang, China) requested a commercial license to bundle OdbDesignServer and its DLLs as a local loopback REST sidecar inside a closed-source Windows PCB viewer/DFM installer, while also asking about centralized enterprise on-premise server deployment, source code escrow, SBOMs, and 2–3 representative ODB++ .tgz validation archives (LinBoard3D Email Thread). Your existing forensic analysis in OdbDesign Inquiry Entity Investigation and policy decisions in LinBoard3D Studio’s OdbDesign Licensing Inquiry Stance establish strict guardrails against enterprise proxy under licensing and proprietary test fixture leakage. 
+Inquiry 2 — Unverified Cross-Border Desktop/Server Prospect (LinBoard3D Studio): On October 27, 2026, a representative of LinBoard3D Studio (personal identity, contact details, and location withheld from this public copy; see the private LinBoard3D Email Thread) requested a commercial license to bundle OdbDesignServer and its DLLs as a local loopback REST sidecar inside a closed-source Windows PCB viewer/DFM installer, while also asking about centralized enterprise on-premise server deployment, source code escrow, SBOMs, and 2–3 representative ODB++ .tgz validation archives. Your existing forensic analysis in OdbDesign Inquiry Entity Investigation and policy decisions in LinBoard3D Studio’s OdbDesign Licensing Inquiry Stance establish strict guardrails against enterprise proxy under licensing and proprietary test fixture leakage. 
 
 This guide is structured in three parts: Pass 1 provides a high-level generic checklist of every milestone required to declare commercial readiness; Pass 2 provides a concrete feasibility analysis, option matrix, pros/cons, and specific recommendation for OdbDesign across each milestone; and Part 3 catalogs verified AI skills, agents, and platforms that automate software commercialization, positioning, and pricing. 
 
@@ -357,7 +357,7 @@ customers' factory machines never time-bomb in production.
 Recommend presenting alongside Model A in Keiron's quote. 
 
 Why: Offering both an Annual OEM Unlimited/Tiered   
-Subscription (Model A) and a Base SDK \+ Per-Machine Pack Model (Model B) directly answers Ruben van Oers's question ("Which license
+Subscription (Model A) and a Base SDK \+ Per-Machine Pack Model (Model B) directly answers the Keiron engineer's question ("Which license
 
 OdbDesign Commercialization & License Grant Readiness Guide Page 5 of 12   
 Commercial Option   
@@ -681,7 +681,7 @@ invoke engineer-to-founder and developer-gtm.
 
 Run /business-model and /pricing to stress-test your OEM machine-bundling vs. Enterprise Server \+ Seat pricing tiers before quoting Keiron. 
 
-Run against docs/one\_pager.md to turn C++17 multi-threaded parsing and Phase 2 Connectivity into an executive ROI brief for Keiron's leadership (Frank Ophelders & Martin de Liefde). 
+Run against docs/one\_pager.md to turn C++17 multi-threaded parsing and Phase 2 Connectivity into an executive ROI brief for Keiron's leadership. 
 
 Run pricing-packaging-tracker and battle-card-builder to benchmark OdbDesign against commercial EDA/CAM SDKs (Valor, DownStream, Ucamco, Cadence).
 
@@ -832,7 +832,7 @@ management, and IPC-2581 enterprise features in the commercial tier.
 
 Recommended Execution Sequence: 5 Steps to Declare Immediate Readiness for Keiron 
 
-You do not need to build every long-term automation tool before replying to Ruben van Oers at Keiron Printing Technologies (Keiron Email Thread). Follow this two-stage sequence to reply to Keiron immediately while completing the underlying library and legal preparation in parallel: 
+You do not need to build every long-term automation tool before replying to the Keiron contact (Keiron Email Thread). Follow this two-stage sequence to reply to Keiron immediately while completing the underlying library and legal preparation in parallel: 
 
 1\. Step 1 — Lock In Your 4 Core Decisions (Today, 15 Minutes):
 
@@ -849,7 +849,7 @@ Onboarding Process: Define a 4-step process: (1) Technical Scoping Call / Intake
 OdbDesign Commercialization & License Grant Readiness Guide Page 11 of 12   
 2\. Step 2 — Send the Initial Reply & Commercial Overview One-Pager to Keiron (Day 1):
 
-> **Status (2026-11-07): Not started — deliberately out of the approved engineering scope.** The one-pager source material now exists (`COMMERCIAL-LICENSE.md`); the reply itself is the user's business action. Reply to Ruben van Oers (CC'ing Frank Ophelders and Martin de Liefde) answering his three questions directly, attaching a 2- page OdbDesign Commercial OEM & Enterprise Licensing Overview PDF, and inviting their team to book a 30- minute technical & licensing discovery call via your Google Calendar appointment link. 
+> **Status (2026-11-07): Not started — deliberately out of the approved engineering scope.** The one-pager source material now exists (`COMMERCIAL-LICENSE.md`); the reply itself is the user's business action. Reply to the Keiron contact (CC'ing their colleagues; identities in the private Keiron Email Thread) answering their three questions directly, attaching a 2- page OdbDesign Commercial OEM & Enterprise Licensing Overview PDF, and inviting their team to book a 30- minute technical & licensing discovery call via your Google Calendar appointment link. 
 
 3\. Step 3 — Prep the **OdbDesign** Repository for Clean SDK & Compliance Delivery (Days 2–3):
 

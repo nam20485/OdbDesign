@@ -1200,6 +1200,16 @@ namespace Odb::Lib::App
             // serialization START; a worker that began under a higher (or
             // disabled) budget must not publish over-budget bytes after the
             // budget was lowered.
+            //
+            // Note the two gates compare different sizes: the start gate uses
+            // the EstimateWireSizeBytes estimate, this gate the actual payload.
+            // For a design in the estimate < budget < actual band, the tree is
+            // built and serialized but never committed, so every fetch repeats
+            // that work (transiently re-creating the memory spike the budget
+            // exists to prevent). Accepted tradeoff: this gate exists to stop
+            // budgets lowered mid-flight from being violated; estimate-miss
+            // designs simply never get a monolithic in-RAM response and are
+            // served by GetDesignStream + spool instead.
             if (m_monolithicWireBudget != 0 && payload.totalBytes() > m_monolithicWireBudget)
             {
                 return; // over the (now lower) monolithic serve budget
