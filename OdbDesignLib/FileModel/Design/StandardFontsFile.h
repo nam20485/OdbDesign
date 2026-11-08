@@ -31,13 +31,13 @@ namespace Odb::Lib::FileModel::Design
 
 			struct LineRecord : public IProtoBuffable<Odb::Lib::Protobuf::StandardFontsFile::CharacterBlock::LineRecord>
 			{
-				double xStart;
-				double yStart;
-				double xEnd;
-				double yEnd;
-				Polarity polarity;
-				LineShape shape;
-				double width;
+				double xStart = 0.0;
+				double yStart = 0.0;
+				double xEnd = 0.0;
+				double yEnd = 0.0;
+				Polarity polarity = Polarity::Positive;
+				LineShape shape = LineShape::Square;
+				double width = 0.0;
 
 				std::unique_ptr<Odb::Lib::Protobuf::StandardFontsFile::CharacterBlock::LineRecord> to_protobuf() const override;
 				void from_protobuf(const Odb::Lib::Protobuf::StandardFontsFile::CharacterBlock::LineRecord& message) override;
@@ -67,9 +67,9 @@ namespace Odb::Lib::FileModel::Design
 		};
 
 	private:
-		double m_xSize;
-		double m_ySize;
-		double m_offset;
+		double m_xSize = 0.0;
+		double m_ySize = 0.0;
+		double m_offset = 0.0;
 
 		CharacterBlock::Vector m_characterBlocks;				
 	};

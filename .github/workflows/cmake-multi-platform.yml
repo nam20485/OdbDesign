@@ -79,7 +79,7 @@ jobs:
           - os: ubuntu-24.04
             preset: linux-dynamic-release
           # MacOS x64 Release
-          - os: macos-14
+          - os: macos-15
             preset: macos-release
           # Linux mingw x64 Release
           # - os: ubuntu-22.04
@@ -121,7 +121,7 @@ jobs:
 
       - name: Install mono (macOS)
         run: brew install mono
-        if: matrix.os == 'macos-14'
+        if: matrix.os == 'macos-15'
 
       # Generate NuGet config with PAT for GitHub Packages binary cache
       # Uses VCPKG_PAT_TOKEN secret for write access on trusted events
@@ -336,7 +336,7 @@ jobs:
 
       - name: Manual vcpkg Install (macOS)
         run: '"${{env.VCPKG_ROOT}}/vcpkg" install'
-        if: matrix.os == 'macos-14'
+        if: matrix.os == 'macos-15'
 
       - name: Manual vcpkg Install (Windows)
         run: '& "${{env.VCPKG_ROOT}}/vcpkg" install --triplet x64-windows'
@@ -350,7 +350,13 @@ jobs:
       #   CMake Build - All platforms
       #
       - name: CMake Configure
-        run: cmake --preset ${{matrix.preset}}
+        # SITE/BUILDNAME feed DartConfiguration.tcl so CDash submissions get
+        # stable per-platform/per-preset build names instead of random runner
+        # hostnames (see the Submit Test Results to CDash step below).
+        run: >
+          cmake --preset ${{matrix.preset}}
+          -DSITE=gha-${{ matrix.os }}
+          -DBUILDNAME=${{ github.ref_name }}-${{ matrix.preset }}
 
       - name: Evaluate vcpkg Cache Payload
         id: cache-payload
@@ -423,6 +429,47 @@ jobs:
           fail-on-error: true
 
       #
+      #   CDash submission (push builds only)
+      #
+      - name: Submit Test Results to CDash
+        # Push builds only, on the 5 CI branches. PR submissions would spam
+        # the dashboard, and fork PRs have no business writing to it.
+        # !cancelled() instead of the implicit success(): when tests fail,
+        # the "Report Test Results" step (fail-on-error: true) fails the job
+        # and a success()-conditioned step would be SKIPPED - the dashboard
+        # must receive failing builds too, they are the point of a CI
+        # dashboard. If the build itself failed, the submission attempt
+        # simply no-ops under continue-on-error.
+        if: github.event_name == 'push' && !cancelled()
+        # Observability sink: a CDash outage or bad submission must never
+        # fail a required status check.
+        continue-on-error: true
+        # Re-runs the suite from the build root and submits to my.cdash.org
+        # project OdbDesign via the scripts/cdash-submit.cmake driver: the
+        # dashboard requires authenticated submissions and reads the token
+        # only from an Authorization: Bearer header, which plain
+        # `ctest -T Submit` cannot send (only ctest_submit(HTTPHEADER) in a
+        # ctest -S script can). CTEST_CONFIGURATION_TYPE=Release selects the
+        # Release-built tests on the multi-config VS leg; single-config legs
+        # ignore it. CDASH_ODBDESIGN_AUTH_TOKEN is the "Submit Only" token
+        # minted on the my.cdash.org profile page; absent on fork PRs (no
+        # secrets there), but this step is push-only anyway.
+        env:
+          CDASH_SUBMIT_TOKEN: ${{ secrets.CDASH_ODBDESIGN_AUTH_TOKEN }}
+          CTEST_SOURCE_DIRECTORY: ${{ github.workspace }}
+          CTEST_BINARY_DIRECTORY: ${{ github.workspace }}/out/build/${{ matrix.preset }}
+          CTEST_SITE: gha-${{ matrix.os }}
+          CTEST_BUILD_NAME: ${{ github.ref_name }}-${{ matrix.preset }}
+          CTEST_CONFIGURATION_TYPE: Release
+          # Same env the gating "CMake Test" step sets: the suite re-run
+          # below hard-asserts this variable (CrossPlatformTests
+          # Test_CrossPlatform_GetEnvSafe_VariableExists); without it CDash
+          # would show a false failure on every push. ODB_TEST_DATA_DIR is
+          # already exported job-wide by the earlier github-script step.
+          ODB_TEST_ENVIRONMENT_VARIABLE: ${{ vars.ODB_TEST_ENVIRONMENT_VARIABLE }}
+        run: ctest -S scripts/cdash-submit.cmake
+
+      #
       #   Artifacts
       #
       - name: Compress Artifacts (Linux)
@@ -444,7 +491,7 @@ jobs:
           zip -r -y ./artifacts-${{matrix.os}}.zip ./*.so* ./ossl-modules ./OdbDesignServer
 
       - name: Compress Artifacts (MacOS)
-        if: matrix.os == 'macos-14'
+        if: matrix.os == 'macos-15'
         run: |
           mkdir ${{env.ARTIFACTS_DIR}}
           cp ./out/build/${{matrix.preset}}/OdbDesignLib/*.dylib ${{env.ARTIFACTS_DIR}}
@@ -466,4 +513,4 @@ jobs:
         with:
           name: ${{ matrix.os }}-artifacts
           path: ${{ env.ARTIFACTS_DIR }}/artifacts-${{matrix.os}}.zip
-          retention-days: 365 # 1 year
+          retention-days: 14

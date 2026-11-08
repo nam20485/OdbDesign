@@ -21,7 +21,17 @@ namespace Odb::Test
 {
     namespace
     {
-        constexpr auto kParseTimeout = std::chrono::seconds(60);
+        // Coverage-build budget: under the gcov-instrumented coverage build
+        // (code-coverage.yml), parse + background pre-serialization of
+        // sample_design routinely takes 100-300s on the runner (sibling
+        // tests in this suite measured 133-368s), so a 60s budget timed out
+        // intermittently (PR #615 coverage run, failed at the
+        // "load completion must pre-serialize" wait). Every wait in this
+        // file gates on load/serialization completion, so the whole constant
+        // gets the 5-minute coverage budget - same fix RequestLoadDesignTests
+        // received in 689f16b (which keeps 60s only for cheap state flips,
+        // of which this file has none).
+        constexpr auto kParseTimeout = std::chrono::minutes(5);
         constexpr auto kBackgroundGrace = std::chrono::milliseconds(250);
 
         // Bounded poll for state that changes on background threads
@@ -147,6 +157,31 @@ namespace Odb::Test
         std::this_thread::sleep_for(kBackgroundGrace);
         EXPECT_EQ(m_sharedDesignCache->designSerializationCount(), 1ull)
             << "warm fetches and racing background pre-serialization must not re-serialize the design";
+    }
+
+    // ---- M2.3: connectivity rides the cached default flavour (D4) ----
+
+    TEST_F(ResponseCacheTest, WarmCachedBytes_IncludeConnectivity_AlwaysOn)
+    {
+        // D4/M2.3: GetDesignRequest gained no connectivity flag - connectivity
+        // must ride the single cached default-flavour response. Assert on the
+        // exact bytes the warm path serves (TryGetDesignBytes), not on a
+        // re-serialization, so a cached-flavour regression cannot hide.
+        ASSERT_TRUE(m_sharedDesignCache->LoadDesignAsync("sample_design"));
+        ASSERT_TRUE(waitForCondition([this]()
+        {
+            return m_sharedDesignCache->HasCachedResponse("sample_design");
+        }, kParseTimeout)) << "background pre-serialization did not commit";
+
+        std::string cachedBytes;
+        ASSERT_TRUE(m_sharedDesignCache->TryGetDesignBytes("sample_design", cachedBytes));
+
+        Odb::Lib::Protobuf::ProductModel::Design parsed;
+        ASSERT_TRUE(parsed.ParseFromString(cachedBytes));
+        ASSERT_TRUE(parsed.has_connectivity()) << "cached default flavour lacks connectivity (D4 always-on)";
+        EXPECT_GT(parsed.connectivity().components_size(), 0);
+        EXPECT_GT(parsed.connectivity().nets_size(), 0);
+        EXPECT_EQ(parsed.nets_size(), 0) << "default flavour must stay pruned";
     }
 
     TEST_F(ResponseCacheTest, ColdThenWarm_ResponseEqualsDirectSerialization)

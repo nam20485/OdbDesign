@@ -4,6 +4,8 @@
 #include "service.grpc.pb.h"
 #include "App/DesignCache.h"
 #include "../Config/GrpcServiceConfig.h"
+#include "DesignStreamWalker.h"
+#include "StreamSpoolCache.h"
 #include <memory>
 #include <design.pb.h>
 #include <featuresfile.pb.h>
@@ -26,6 +28,10 @@ namespace OdbDesignServer {
             grpc::Status GetDesign(grpc::ServerContext* context,
                 const Odb::Grpc::GetDesignRequest* request,
                 Odb::Lib::Protobuf::ProductModel::Design* response) override;
+
+            grpc::Status GetDesignStream(grpc::ServerContext* context,
+                const Odb::Grpc::GetDesignRequest* request,
+                grpc::ServerWriter<Odb::Grpc::DesignChunk>* writer) override;
 
             grpc::Status GetLayerFeaturesStream(grpc::ServerContext* context,
                 const Odb::Grpc::GetLayerFeaturesRequest* request,
@@ -50,9 +56,15 @@ namespace OdbDesignServer {
             grpc::Status HealthCheck(grpc::ServerContext* context,
                 const Odb::Grpc::HealthCheckRequest* request,
                 Odb::Grpc::HealthCheckResponse* response) override;
+
+            // Test/observability seam: the design-stream disk spool.
+            const StreamSpoolCache& streamSpoolCache() const { return *m_streamSpool; }
+
         private:
             std::shared_ptr<Odb::Lib::App::DesignCache> m_designCache;
             std::shared_ptr<Config::GrpcServiceConfig> m_config;
+            std::unique_ptr<StreamSpoolCache> m_streamSpool;
+            DesignStreamOptions m_streamOptions;
         };
 
         // Shared status mapping behind RequestLoadDesign (gRPC) and its REST twin

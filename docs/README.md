@@ -16,6 +16,8 @@ Documentation for the currently-released version of the source code is available
 
 ## Need Help?
 
+All contact channels are collected on the project website's [Contact page](https://source.odbdesignserver.com/contact).
+
 Feel free to message me in the project's Gitter chat room: [odbdesign:gitter.im](https://app.gitter.im/#/room/#odbdesign:gitter.im)
 
 You can also create an issue: <https://github.com/nam20485/OdbDesign/issues>
@@ -97,7 +99,7 @@ The diagram describes the current state of parser implementation and data availa
 
 [OpenSSF Security Scorecard](https://securityscorecards.dev/#what-is-openssf-scorecard) assesses open source projects for security risks through a series of automated checks.
 
-[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/nam20485/OdbDesign/badge)](https://securityscorecards.dev/viewer/?uri=github.com/nam20485/OdbDesign)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/nam20485/OdbDesign/badge)](https://securityscorecards.io/viewer/?uri=github.com/nam20485/OdbDesign)
 
 >The majority of tested projects have a much lower score, so OdbDesign's 7.8 score represents a remarkably high level of security.
 

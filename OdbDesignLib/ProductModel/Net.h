@@ -22,8 +22,11 @@ namespace Odb::Lib::ProductModel
 
 		std::string GetName() const;
 		PinConnection::Vector& GetPinConnections();
+		// Const view for serialization-side consumers (the Connectivity derive
+		// runs inside Design::to_protobuf() const).
+		const PinConnection::Vector& GetPinConnections() const;
 		unsigned int GetIndex() const;
-		bool AddPinConnection(std::shared_ptr<Component> pComponent, std::shared_ptr<Pin> pPin);
+		bool AddPinConnection(std::shared_ptr<Component> pComponent, std::shared_ptr<Pin> pPin, unsigned int subnetNumber = 0);
 
 		// Inherited via IProtoBuffable
 		std::unique_ptr<Odb::Lib::Protobuf::ProductModel::Net> to_protobuf() const override;
