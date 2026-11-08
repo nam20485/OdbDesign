@@ -41,7 +41,7 @@ resolved by vcpkg against the pinned registry baseline
 
 All code, dependency packages, and Docker images are scanned for security vulnerabilities:
 
-* [OpenSSF Security Scorecard](https://securityscorecards.dev/viewer/?uri=github.com/nam20485/OdbDesign) &mdash; [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/nam20485/OdbDesign/badge)](https://securityscorecards.io/viewer/?uri=github.com/nam20485/OdbDesign)
+* [OpenSSF Security Scorecard](https://securityscorecards.io/viewer/?uri=github.com/nam20485/OdbDesign) &mdash; [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/nam20485/OdbDesign/badge)](https://securityscorecards.io/viewer/?uri=github.com/nam20485/OdbDesign)
 * [Docker Scout](https://github.com/nam20485/OdbDesign/actions/workflows/docker-scout-scan.yml) &mdash; scans the published server image
 * CodeQL and Codacy static analysis run on every pull request
 

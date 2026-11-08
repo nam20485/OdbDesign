@@ -52,8 +52,8 @@ reported (CDash, #611), and how visitors reach it (domain, #614).
   repo secret `CDASH_ODBDESIGN_AUTH_TOKEN`. End-to-end validated locally: four
   `token-validation*` builds submitted via the driver are live on the dashboard
   (project → buildCount 4 via GraphQL; note the legacy v1 `index.php` API reports
-  0 builds — the Vue UI reads GraphQL). Rotate the secret when the token expires
-  (~6-month max lifetime per `token_duration`).
+  0 builds — the Vue UI reads GraphQL). The minted token expires **2027-11-07** —
+  rotate the `CDASH_ODBDESIGN_AUTH_TOKEN` secret before then.
 
 ### 1.2 GH Pages site (#612)
 
@@ -212,9 +212,11 @@ adding any risk to required checks.
 
    ```yaml
    - name: Submit Test Results to CDash
-     # Push builds only, on the 5 CI branches. PR submissions would spam the
-     # dashboard and fork PRs cannot carry the secret anyway.
-     if: github.event_name == 'push'
+     # Push builds only. !cancelled() (not the implicit success()) so the
+     # dashboard also receives FAILING builds - a success()-conditioned step
+     # is skipped exactly when "Report Test Results" (fail-on-error) fails
+     # the job.
+     if: github.event_name == 'push' && !cancelled()
      # Observability sink: a CDash outage or bad submission must never fail a
      # required status check.
      continue-on-error: true
@@ -225,6 +227,7 @@ adding any risk to required checks.
        CTEST_SITE: gha-${{ matrix.os }}
        CTEST_BUILD_NAME: ${{ github.ref_name }}-${{ matrix.preset }}
        CTEST_CONFIGURATION_TYPE: Release   # multi-config (VS) legs build Release
+       ODB_TEST_ENVIRONMENT_VARIABLE: ${{ vars.ODB_TEST_ENVIRONMENT_VARIABLE }}  # suite hard-asserts it; without it CDash shows false failures
      run: ctest -S scripts/cdash-submit.cmake
    ```
 

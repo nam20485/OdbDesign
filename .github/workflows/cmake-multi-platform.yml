@@ -434,7 +434,13 @@ jobs:
       - name: Submit Test Results to CDash
         # Push builds only, on the 5 CI branches. PR submissions would spam
         # the dashboard, and fork PRs have no business writing to it.
-        if: github.event_name == 'push'
+        # !cancelled() instead of the implicit success(): when tests fail,
+        # the "Report Test Results" step (fail-on-error: true) fails the job
+        # and a success()-conditioned step would be SKIPPED - the dashboard
+        # must receive failing builds too, they are the point of a CI
+        # dashboard. If the build itself failed, the submission attempt
+        # simply no-ops under continue-on-error.
+        if: github.event_name == 'push' && !cancelled()
         # Observability sink: a CDash outage or bad submission must never
         # fail a required status check.
         continue-on-error: true
@@ -455,6 +461,12 @@ jobs:
           CTEST_SITE: gha-${{ matrix.os }}
           CTEST_BUILD_NAME: ${{ github.ref_name }}-${{ matrix.preset }}
           CTEST_CONFIGURATION_TYPE: Release
+          # Same env the gating "CMake Test" step sets: the suite re-run
+          # below hard-asserts this variable (CrossPlatformTests
+          # Test_CrossPlatform_GetEnvSafe_VariableExists); without it CDash
+          # would show a false failure on every push. ODB_TEST_DATA_DIR is
+          # already exported job-wide by the earlier github-script step.
+          ODB_TEST_ENVIRONMENT_VARIABLE: ${{ vars.ODB_TEST_ENVIRONMENT_VARIABLE }}
         run: ctest -S scripts/cdash-submit.cmake
 
       #
