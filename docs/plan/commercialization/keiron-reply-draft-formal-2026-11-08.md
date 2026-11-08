@@ -14,7 +14,7 @@ Dear Ruben,
 
 Thank you for your interest in OdbDesign, and for the clear questions — I'm glad to hear it is being considered for the HF2's job preparation software. That is precisely the kind of application it was built for, and I would welcome the opportunity to work with Keiron. My answers:
 
-**1. Process.** A short scoping call to understand your integration and requirements; a mutual NDA, followed by a fully functional evaluation license (typically 30 days, watermarked binaries); a tailored commercial proposal; and on agreement, delivery of licensed binaries with SBOM and third-party notices, plus updates during the subscription term.
+**1. Process.** A short scoping call to understand your integration and requirements; a mutual NDA, followed by a fully functional evaluation license (typically 30 days, watermarked binaries); a tailored commercial proposal; and on agreement, delivery of licensed binaries with SBOM and third-party notices, plus updates during the subscription term. Agreements are executed through The Intel Agency.
 
 **2. License models.** Flexible, and shaped to how you build and ship. For an equipment OEM, the usual structures are an annual OEM subscription tiered by machine volume, or a base SDK subscription with prepaid per-machine runtime packs; server deployments can be licensed per instance and seats. Delivery is binary-only — enabling your closed-source integration is exactly what the commercial license provides.
 
@@ -36,13 +36,13 @@ Thank you again — I look forward to speaking with you and the team.
 Best regards,
 
 **Nathan Miller**
-Author & Maintainer, OdbDesign
-[scheduling link] · https://github.com/nam20485/OdbDesign
+Author & Maintainer, OdbDesign · The Intel Agency
+nmiller@intel-agency.com · [scheduling link] · https://github.com/nam20485/OdbDesign
 
 ---
 
 ## Notes for the sender (not part of the email)
 
-- Same sender-side notes as the friendly version: personal signature (S1), no pricing in this email (S3), replace both `[scheduling link]` placeholders, send before 23:00 PST Sunday.
+- Same sender-side notes as the friendly version: reply from **nmiller@intel-agency.com**, entity-forward signature (S1, decided 2026-11-08; domain deliverability verified), no pricing in this email (S3), replace both `[scheduling link]` placeholders, send before 23:00 PST Sunday.
 - Evaluation framing per guide 2.4 (amended 2026-11-08): licensed 30-day eval under NDA.
 - ~230 body words vs ~520 in the friendly version; identical substance (3 answers + 6 scoping questions + call CTA).
