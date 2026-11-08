@@ -413,7 +413,11 @@ namespace OdbDesignServer
             std::error_code ec;
             if (!std::filesystem::is_regular_file(path, ec))
             {
-                Drop(designName);
+                // Generation-guarded: a concurrent PublishEntry may have swapped
+                // in a replacement (and unlinked the old path) between the
+                // lock-guarded lookup above and this probe; only the entry we
+                // actually observed may be dropped.
+                DropStaleEntry(designName, generation);
                 return false;
             }
 
@@ -528,6 +532,20 @@ namespace OdbDesignServer
             if (findIt == m_entriesByName.end())
             {
                 return;
+            }
+            std::error_code ec;
+            std::filesystem::remove(findIt->second.path, ec); // best-effort
+            m_totalBytes -= findIt->second.bytes;
+            m_entriesByName.erase(findIt);
+        }
+
+        void StreamSpoolCache::DropStaleEntry(const std::string& designName, std::uint64_t generation)
+        {
+            std::lock_guard<std::mutex> lock(m_mutex);
+            auto findIt = m_entriesByName.find(designName);
+            if (findIt == m_entriesByName.end() || findIt->second.generation != generation)
+            {
+                return; // replaced or removed since it was observed - leave the new entry alone
             }
             std::error_code ec;
             std::filesystem::remove(findIt->second.path, ec); // best-effort
