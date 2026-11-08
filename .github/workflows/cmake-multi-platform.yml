@@ -459,10 +459,10 @@ jobs:
           # the linux-dynamic-release build; Dockerfile.prebuilt copies *.so*
           # -P preserves vcpkg's dev symlinks (libfoo.so -> libfoo.so.N -> real
           # file) so each lib ships once; zip -y below stores them as links
-          cp -P ./out/build/${{matrix.preset}}/vcpkg_installed/x64-linux-dynamic/lib/*.so* ${{env.ARTIFACTS_DIR}}
+          cp -P ./out/vcpkg_installed/x64-linux-dynamic/lib/*.so* ${{env.ARTIFACTS_DIR}}
           # OpenSSL 3 provider modules (resolved relative to libcrypto.so's dir);
           # mirrors the full Dockerfile's ossl-modules COPY
-          cp -r ./out/build/${{matrix.preset}}/vcpkg_installed/x64-linux-dynamic/lib/ossl-modules ${{env.ARTIFACTS_DIR}}/
+          cp -r ./out/vcpkg_installed/x64-linux-dynamic/lib/ossl-modules ${{env.ARTIFACTS_DIR}}/
           cd ${{env.ARTIFACTS_DIR}}
           zip -r -y ./artifacts-${{matrix.os}}.zip ./*.so* ./ossl-modules ./OdbDesignServer
 
