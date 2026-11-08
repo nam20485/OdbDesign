@@ -6,6 +6,14 @@ on:
   push:
     branches: ["release"]
 
+  # PR build-validation lane: build the site (Doxygen + Jekyll) on PRs so a
+  # docs change that breaks the site build (e.g. raw {{ }} Liquid syntax) is
+  # caught at PR time instead of at promotion-to-release time. Nothing is
+  # deployed from PRs: the coverage-artifact step and the deploy job below
+  # are guarded with `github.event_name != 'pull_request'`.
+  pull_request:
+    branches: ["nam20485", "development", "staging", "main", "release"]
+
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -25,8 +33,10 @@ permissions:
 
 # Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
 # However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+# PR validation runs get their own per-PR group so they never queue behind
+# (or delay) a production deployment.
 concurrency:
-  group: "pages"
+  group: ${{ github.event_name == 'pull_request' && format('pages-pr-{0}', github.event.number) || 'pages' }}
   cancel-in-progress: false
 
 jobs:
@@ -83,6 +93,9 @@ jobs:
       # coverage tree is folded into this artifact here. A missing/expired
       # artifact only yields a placeholder page; it must never fail the deploy.
       - name: Add per-branch coverage reports
+        # PR runs validate the site build only: artifact downloads of other
+        # runs' coverage artifacts are deploy-time behavior.
+        if: github.event_name != 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -164,6 +177,8 @@ jobs:
 
   # Deployment job
   deploy:
+    # Never deploy from PRs — those runs are build validation only.
+    if: github.event_name != 'pull_request'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

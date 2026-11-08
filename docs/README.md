@@ -16,6 +16,8 @@ Documentation for the currently-released version of the source code is available
 
 ## Need Help?
 
+All contact channels are collected on the project website's [Contact page](https://source.odbdesignserver.com/contact).
+
 Feel free to message me in the project's Gitter chat room: [odbdesign:gitter.im](https://app.gitter.im/#/room/#odbdesign:gitter.im)
 
 You can also create an issue: <https://github.com/nam20485/OdbDesign/issues>
