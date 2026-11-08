@@ -7,12 +7,12 @@
 // header/footer but the stock #f2f2f2 content panel is blinding. This
 // re-skins only the reading surface to a neutral mid gray — darker than
 // the stock panel, lighter than the #212121 chrome. Tuned 2026-11-08:
-// #3f3f3f read too close to the chrome; #4d4d4d gives visible separation
+// #3f3f3f read too close to the chrome; #565656 gives visible separation
 // from the header/footer while staying glare-free, with brighter text
 // to hold contrast.
 #main_content_wrap
 {
-    background: #4d4d4d;
+    background: #565656;
     color: #f2f2f2;
 }
 
@@ -31,7 +31,7 @@
 {
     background: none;
     padding-bottom: 8px;
-    border-bottom: 1px solid #6e6e6e;
+    border-bottom: 1px solid #7a7a7a;
 }
 
 #main_content_wrap hr
@@ -39,23 +39,23 @@
     height: 0;
     background: none;
     border: none;
-    border-top: 1px solid #6e6e6e;
+    border-top: 1px solid #7a7a7a;
 }
 
 #main_content_wrap a
 {
-    color: #9ec4f2;
+    color: #aacdf5;
 }
 
 #main_content_wrap blockquote
 {
     color: #cccccc;
-    border-left: 3px solid #8a8a8a;
+    border-left: 3px solid #999999;
 }
 
 // The stock td border (#373737) disappears against the new background.
 #main_content_wrap td,
 #main_content_wrap table
 {
-    border-color: #6e6e6e;
+    border-color: #7a7a7a;
 }
