@@ -350,7 +350,21 @@ jobs:
       #   CMake Build - All platforms
       #
       - name: CMake Configure
-        run: cmake --preset ${{matrix.preset}}
+        # SITE/BUILDNAME feed DartConfiguration.tcl so CDash submissions get
+        # stable per-platform/per-preset build names instead of random runner
+        # hostnames (see the Submit Test Results to CDash step below).
+        # CDASH_SUBMIT_TOKEN: my.cdash.org requires authenticated
+        # submissions; CTestConfig.cmake reads this variable at configure
+        # time and appends it to the submit URL in DartConfiguration.tcl
+        # (build tree only - never committed, never in artifacts). Absent on
+        # fork PRs (no secrets there), which is fine: only push builds
+        # submit, and the submit step is continue-on-error.
+        env:
+          CDASH_SUBMIT_TOKEN: ${{ secrets.CDASH_TOKEN }}
+        run: >
+          cmake --preset ${{matrix.preset}}
+          -DSITE=gha-${{ matrix.os }}
+          -DBUILDNAME=${{ github.ref_name }}-${{ matrix.preset }}
 
       - name: Evaluate vcpkg Cache Payload
         id: cache-payload
@@ -421,6 +435,26 @@ jobs:
           path-replace-backslashes: true
           # fail job based on report results
           fail-on-error: true
+
+      #
+      #   CDash submission (push builds only)
+      #
+      - name: Submit Test Results to CDash
+        # Push builds only, on the 5 CI branches. PR submissions would spam
+        # the dashboard, and fork PRs have no business writing to it.
+        if: github.event_name == 'push'
+        # Observability sink: a CDash outage or bad submission must never
+        # fail a required status check.
+        continue-on-error: true
+        # Re-runs the suite from the build root (where include(CTest)
+        # generates DartConfiguration.tcl carrying the SITE/BUILDNAME set at
+        # configure time) and submits to my.cdash.org project OdbDesign
+        # (CTestConfig.cmake). -C Release selects the Release-built tests on
+        # the multi-config VS leg; single-config legs ignore it.
+        run: >
+          ctest --test-dir ./out/build/${{ matrix.preset }}
+          -C Release
+          -T Test -T Submit
 
       #
       #   Artifacts

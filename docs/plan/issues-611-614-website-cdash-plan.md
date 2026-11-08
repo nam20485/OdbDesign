@@ -32,13 +32,20 @@ reported (CDash, #611), and how visitors reach it (domain, #614).
   `https://my.cdash.org/index.php?project=OdbDesign` returns 200 anonymously (404
   before the visibility flip), which also confirms the project name is exactly
   `OdbDesign` (matching `CTEST_PROJECT_NAME`/submit URL). Instance runs CDash 5.5.2.
-  Probe results against `submit.php`: **open submissions** (an untokened POST passes
-  auth and advances to field validation — no `CDASH_TOKEN` secret needed), and the
-  endpoint **requires `project`/`build`/`stamp`/`site`/… as POST form fields — the
-  `?project=` query string is ignored**. CTest ≥ 3.26 (when CDash moved to Laravel)
-  sends exactly those fields; every submitting environment here qualifies (local
-  CMake 3.31.6; CI runner images newer). So `CTestConfig.cmake`'s submit URL works
-  as-is. End-to-end confirmation happens in M3 validation (§4).
+  Probe/submission results against `submit.php`: submissions **require an
+  authentication token** — a real `ctest -T Test -T Submit` without one is rejected
+  with `Invalid Token` (field validation of `project`/`build`/`stamp`/`site`/…
+  runs *before* the token gate, which is why bare field probes appeared to pass).
+  CTest ≥ 3.26 sends those fields as POST form data (the `?project=` query string
+  alone is ignored), so with a token appended to the submit URL the stock
+  `ctest -T Submit` works. Token wiring: `CTestConfig.cmake` appends
+  `&token=$ENV{CDASH_SUBMIT_TOKEN}` to the submit URL when that variable is set
+  (configure time — it lands in `DartConfiguration.tcl` in the build tree only,
+  never committed); CI passes the `CDASH_TOKEN` secret through the Configure step
+  env. **Remaining user action:** mint a CDash user auth token
+  (my.cdash.org → user menu → Auth tokens) and add it as repo secret
+  `CDASH_TOKEN`, or disable "Authenticate submissions" in the project settings
+  (token preferred — public dashboard, protected writes).
 
 ### 1.2 GH Pages site (#612)
 
@@ -221,8 +228,15 @@ adding any risk to required checks.
      group, fall back to `-T Start -T Test -T Submit`; last resort `-D Experimental`
      (re-runs configure+build as no-ops). Acceptance criterion: builds visible under
      the expected site/build names, per-platform, on the project dashboard.
-   - **No submission token needed** — open submissions confirmed by probe (§1.1);
-     the `ctest -S` driver + `CDASH_TOKEN` secret contingency is moot.
+   - **Authenticated submissions:** a real local `ctest -T Test -T Submit` without a
+     token was rejected with `Invalid Token` (§1.1 correction). Handled via
+     `CTestConfig.cmake`: the submit URL gains `&token=$ENV{CDASH_SUBMIT_TOKEN}` when
+     that env var is set at configure time (verified locally: with/without env the
+     generated `DartConfiguration.tcl` SubmitURL carries/drops the token). The
+     Configure step passes `CDASH_SUBMIT_TOKEN: ${{ secrets.CDASH_TOKEN }}`; gated on
+     the user minting the CDash auth token and adding the repo secret. Until the
+     secret exists, submissions fail harmlessly (`continue-on-error`) and everything
+     else is unaffected.
 4. **`code-coverage.yml`**: no change — PR submissions and CDash coverage submissions
    are both deferred per D4.
 5. **CDash-side configuration** (issue step 3; user, logged in to my.cdash.org):
@@ -317,7 +331,8 @@ M4 (#614)  easyDNS web forwards           — parallel, DNS-only, no PR
 | Risk | Mitigation |
 |---|---|
 | ~~CDash project private / misnamed~~ | **Resolved 2026-11-07** — public, name confirmed `OdbDesign`, open submissions (§1.1) |
-| Submit params must be POST fields (query string ignored on CDash 5.5.2) | CTest ≥ 3.26 sends them; local 3.31.6, CI runners newer; proven end-to-end in M3 validation |
+| Submit params must be POST fields (query string ignored on CDash 5.5.2) | CTest ≥ 3.26 sends them; local 3.31.6, CI runners newer — confirmed by the local submit reaching the token gate |
+| CDash rejects untokened submissions ("Invalid Token") | `CTestConfig.cmake` appends `&token=` from `CDASH_SUBMIT_TOKEN` env at configure; CI passes the `CDASH_TOKEN` secret; step is `continue-on-error` until the secret lands |
 | CDash outage or bad submission fails CI | Submit step is `continue-on-error` + push-only; gating path untouched |
 | Doubled test time on push builds (~4 min/leg) | Parallel matrix lanes; acceptable; single-pass `-T Test` fold-in noted as future optimization |
 | VS multi-config leg rebuilding in Debug | Design avoids configure/build stages (`-T Test -T Submit` only) + `CTEST_CONFIGURATION_TYPE=Release` |
@@ -348,7 +363,7 @@ publish trigger off `release`.
 
 ## 8. Work-item checklist
 
-- [x] M3.0 CDash UI: project made **public**; name confirmed exactly `OdbDesign`; submissions **open** (no token); CDash 5.5.2 wants submit params as POST fields — satisfied by CTest ≥ 3.26 (§1.1)
+- [x] M3.0 CDash UI: project made **public**; name confirmed exactly `OdbDesign`; CDash 5.5.2 wants submit params as POST fields (satisfied by CTest ≥ 3.26) — and submissions require a **token** (local submit proved it); wiring implemented, awaiting user: mint CDash auth token → repo secret `CDASH_TOKEN` (§1.1)
 - [ ] M1 doxygen.conf: `INPUT`/`PROJECT_NAME`/`BRIEF`/`EXTRACT_ALL`/`PREDEFINED`, drop stale `EXCLUDE`
 - [ ] M1 local doxygen run + per-project spot-checks
 - [ ] M2 `docs/index.md` restructure (6 required links + secondary nav)
