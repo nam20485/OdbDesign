@@ -6,11 +6,14 @@
 // Content-area neutralization: the user likes slate's dark charcoal
 // header/footer but the stock #f2f2f2 content panel is blinding. This
 // re-skins only the reading surface to a neutral mid gray — darker than
-// the stock panel, lighter than the #212121 chrome — with light text.
+// the stock panel, lighter than the #212121 chrome. Tuned 2026-11-08:
+// #3f3f3f read too close to the chrome; #4d4d4d gives visible separation
+// from the header/footer while staying glare-free, with brighter text
+// to hold contrast.
 #main_content_wrap
 {
-    background: #3f3f3f;
-    color: #dcdcdc;
+    background: #4d4d4d;
+    color: #f2f2f2;
 }
 
 #main_content_wrap h1,
@@ -20,7 +23,7 @@
 #main_content_wrap h5,
 #main_content_wrap h6
 {
-    color: #f2f2f2;
+    color: #ffffff;
 }
 
 // The stock h2/hr draw a light PNG gradient streak; replace with a quiet rule.
@@ -28,7 +31,7 @@
 {
     background: none;
     padding-bottom: 8px;
-    border-bottom: 1px solid #5a5a5a;
+    border-bottom: 1px solid #6e6e6e;
 }
 
 #main_content_wrap hr
@@ -36,23 +39,23 @@
     height: 0;
     background: none;
     border: none;
-    border-top: 1px solid #5a5a5a;
+    border-top: 1px solid #6e6e6e;
 }
 
 #main_content_wrap a
 {
-    color: #85b7eb;
+    color: #9ec4f2;
 }
 
 #main_content_wrap blockquote
 {
-    color: #b8b8b8;
-    border-left: 3px solid #777777;
+    color: #cccccc;
+    border-left: 3px solid #8a8a8a;
 }
 
 // The stock td border (#373737) disappears against the new background.
 #main_content_wrap td,
 #main_content_wrap table
 {
-    border-color: #5a5a5a;
+    border-color: #6e6e6e;
 }
