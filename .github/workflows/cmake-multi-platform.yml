@@ -445,11 +445,11 @@ jobs:
         # `ctest -T Submit` cannot send (only ctest_submit(HTTPHEADER) in a
         # ctest -S script can). CTEST_CONFIGURATION_TYPE=Release selects the
         # Release-built tests on the multi-config VS leg; single-config legs
-        # ignore it. CDASH_TOKEN is the "Submit Only" token minted on the
-        # my.cdash.org profile page; absent on fork PRs (no secrets there),
-        # but this step is push-only anyway.
+        # ignore it. CDASH_ODBDESIGN_AUTH_TOKEN is the "Submit Only" token
+        # minted on the my.cdash.org profile page; absent on fork PRs (no
+        # secrets there), but this step is push-only anyway.
         env:
-          CDASH_SUBMIT_TOKEN: ${{ secrets.CDASH_TOKEN }}
+          CDASH_SUBMIT_TOKEN: ${{ secrets.CDASH_ODBDESIGN_AUTH_TOKEN }}
           CTEST_SOURCE_DIRECTORY: ${{ github.workspace }}
           CTEST_BINARY_DIRECTORY: ${{ github.workspace }}/out/build/${{ matrix.preset }}
           CTEST_SITE: gha-${{ matrix.os }}

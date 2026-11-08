@@ -48,9 +48,12 @@ reported (CDash, #611), and how visitors reach it (domain, #614).
   "Create New Token" (Description, Expiration Date ≤ ~183 days, Scope
   **Submit Only**, Project **OdbDesign**). The `/authtokens/manage` page is
   instance-admin-only — that is why no token UI is findable elsewhere.
-  **Remaining user action:** mint that token → add it as repo secret
-  `CDASH_TOKEN` (rotate when it expires; ~6-month max lifetime per
-  `token_duration`).
+  ✅ **Done 2026-11-08:** token minted (Submit Only, project OdbDesign) and added as
+  repo secret `CDASH_ODBDESIGN_AUTH_TOKEN`. End-to-end validated locally: four
+  `token-validation*` builds submitted via the driver are live on the dashboard
+  (project → buildCount 4 via GraphQL; note the legacy v1 `index.php` API reports
+  0 builds — the Vue UI reads GraphQL). Rotate the secret when the token expires
+  (~6-month max lifetime per `token_duration`).
 
 ### 1.2 GH Pages site (#612)
 
@@ -216,7 +219,7 @@ adding any risk to required checks.
      # required status check.
      continue-on-error: true
      env:
-       CDASH_SUBMIT_TOKEN: ${{ secrets.CDASH_TOKEN }}   # Bearer header (only auth CDash 5.5.2 accepts)
+       CDASH_SUBMIT_TOKEN: ${{ secrets.CDASH_ODBDESIGN_AUTH_TOKEN }}   # Bearer header (only auth CDash 5.5.2 accepts)
        CTEST_SOURCE_DIRECTORY: ${{ github.workspace }}
        CTEST_BINARY_DIRECTORY: ${{ github.workspace }}/out/build/${{ matrix.preset }}
        CTEST_SITE: gha-${{ matrix.os }}
@@ -243,7 +246,7 @@ adding any risk to required checks.
      that runs the suite and calls
      `ctest_submit(HTTPHEADER "Authorization: Bearer $ENV{CDASH_SUBMIT_TOKEN}")`
      (smoke-tested locally: full driver cycle reaches the CDash token gate cleanly).
-     `CDASH_SUBMIT_TOKEN` comes from the `CDASH_TOKEN` repo secret — a "Submit Only"
+     `CDASH_SUBMIT_TOKEN` comes from the `CDASH_ODBDESIGN_AUTH_TOKEN` repo secret — a "Submit Only"
      token scoped to the OdbDesign project, minted on the my.cdash.org profile page
      ("Authentication Tokens" section). Until the secret exists, submissions fail
      harmlessly (`continue-on-error`) and everything else is unaffected.
@@ -342,7 +345,7 @@ M4 (#614)  easyDNS web forwards           — parallel, DNS-only, no PR
 |---|---|
 | ~~CDash project private / misnamed~~ | **Resolved 2026-11-07** — public, name confirmed `OdbDesign`, open submissions (§1.1) |
 | Submit params must be POST fields (query string ignored on CDash 5.5.2) | CTest ≥ 3.26 sends them; local 3.31.6, CI runners newer — confirmed by the local submit reaching the token gate |
-| CDash rejects untokened submissions ("Invalid Token"; Bearer header only) | `scripts/cdash-submit.cmake` driver sends `Authorization: Bearer` from the `CDASH_TOKEN` secret; step is `continue-on-error` until the secret lands; token expires ≤ ~183 days — rotate + update secret |
+| CDash rejects untokened submissions ("Invalid Token"; Bearer header only) | `scripts/cdash-submit.cmake` driver sends `Authorization: Bearer` from the `CDASH_ODBDESIGN_AUTH_TOKEN` secret; step is `continue-on-error` until the secret lands; token expires ≤ ~183 days — rotate + update secret |
 | CDash outage or bad submission fails CI | Submit step is `continue-on-error` + push-only; gating path untouched |
 | Doubled test time on push builds (~4 min/leg) | Parallel matrix lanes; acceptable; single-pass `-T Test` fold-in noted as future optimization |
 | VS multi-config leg rebuilding in Debug | Design avoids configure/build stages (`-T Test -T Submit` only) + `CTEST_CONFIGURATION_TYPE=Release` |
@@ -373,7 +376,7 @@ publish trigger off `release`.
 
 ## 8. Work-item checklist
 
-- [x] M3.0 CDash UI: project made **public**; name confirmed exactly `OdbDesign`; CDash 5.5.2 wants submit params as POST fields (satisfied by CTest ≥ 3.26) — and submissions require a **Bearer token** (local submit proved it; header-only per CDash source); driver wiring implemented + smoke-tested, awaiting user: mint token on the my.cdash.org **profile page** ("Authentication Tokens", Submit Only / project OdbDesign) → repo secret `CDASH_TOKEN` (§1.1)
+- [x] M3.0 CDash UI: project made **public**; name confirmed exactly `OdbDesign`; CDash 5.5.2 wants submit params as POST fields (satisfied by CTest ≥ 3.26) — and submissions require a **Bearer token** (local submit proved it; header-only per CDash source). Token minted + secret `CDASH_ODBDESIGN_AUTH_TOKEN` set; driver validated end-to-end — builds visible on the dashboard (§1.1)
 - [ ] M1 doxygen.conf: `INPUT`/`PROJECT_NAME`/`BRIEF`/`EXTRACT_ALL`/`PREDEFINED`, drop stale `EXCLUDE`
 - [ ] M1 local doxygen run + per-project spot-checks
 - [ ] M2 `docs/index.md` restructure (6 required links + secondary nav)
