@@ -26,7 +26,7 @@ Depending on the ordered schedule, a commercial license may include:
 ## Licensing process
 
 1. **Technical scoping** — a short call or questionnaire covering your deployment model (embedded SDK vs. server), platforms, and expected volume, so the right schedule and terms can be quoted.
-2. **NDA + evaluation (optional)** — mutual NDA. Evaluation is simplest via the public source: AGPL-3.0 permits unrestricted **internal** use, so you can build, integrate, and validate OdbDesign on your own systems for as long as you like while discussions proceed; a commercial license is required once the software ships with a product or is provided as a service to third parties. A public-domain sample ODB++ archive for validation is available in the [OdbDesignTestData](https://github.com/nam20485/OdbDesignTestData) repository.
+2. **NDA + evaluation (optional)** — mutual NDA, then a fully functional, time-limited **evaluation license** (typically 30 days): watermarked evaluation binaries under an explicit entitlement, so you can validate on your own data (loopback-only binding for server-side evaluation builds). A public-domain sample ODB++ archive for validation is available in the [OdbDesignTestData](https://github.com/nam20485/OdbDesignTestData) repository.
 3. **Order schedule** — select the license schedule (OEM bundling, enterprise server, etc.), support tier, and term; commercial terms are confirmed in a signed agreement.
 4. **Delivery** — licensed binaries, headers, SBOM, notices, and license certificate are delivered for your build/integration; invoicing per the agreed payment terms.
 
