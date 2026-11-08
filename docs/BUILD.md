@@ -112,7 +112,7 @@ The build output can be found in the following directory:
 * `~/src/OdbDesign/out/build/linux-dynamic-release`                *(Linux)*
 * `C:\Users\<YourName>\Source\OdbDesign\out\build\x64-release`    *(Windows)*
 
->The `x64-release` directory will be different if you selected a different configuration preset (`x64-release` vs. `x64-debug` or `linux-dynamic-release` vs. `linux-debug`). The `x64-release` directory will contain the shared library and the server executable. Make sure to copy the dependencies (.dll files on Windows, .so files on Linux, .dylib files on MacOS) to the same directory as the executable if you want to copy it somewhere else. On Linux, the `linux-dynamic-release` build additionally depends on the vcpkg shared libraries in `out/build/linux-dynamic-release/vcpkg_installed/x64-linux-dynamic/lib` — copy them too (or set `LD_LIBRARY_PATH` to that directory).
+>The `x64-release` directory will be different if you selected a different configuration preset (`x64-release` vs. `x64-debug` or `linux-dynamic-release` vs. `linux-debug`). The `x64-release` directory will contain the shared library and the server executable. Make sure to copy the dependencies (.dll files on Windows, .so files on Linux, .dylib files on MacOS) to the same directory as the executable if you want to copy it somewhere else. On Linux, the `linux-dynamic-release` build additionally depends on the vcpkg shared libraries in `out/vcpkg_installed/x64-linux-dynamic/lib` — copy them too (or set `LD_LIBRARY_PATH` to that directory).
 
 #### Docker Image for REST API Server
 
