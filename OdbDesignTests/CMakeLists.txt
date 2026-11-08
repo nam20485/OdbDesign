@@ -21,6 +21,7 @@ add_executable(OdbDesignTests
     "Fixtures/TestUtils.h"
     "FeatureRecordSurfaceTests.cpp"
     "SymbolContractTests.cpp"
+    "ConnectivityContractTests.cpp"
     "MatrixFileTests.cpp"
     "ComponentHeightPipelineTests.cpp"
     "DesignCacheThreadSafetyTests.cpp"
@@ -33,11 +34,17 @@ add_executable(OdbDesignTests
     # Server service implementation compiled into the test executable so service-level
     # gRPC methods can be unit-tested directly (used by GetStandardFontsTests.cpp).
     "../OdbDesignServer/Services/OdbDesignServiceImpl.cpp"
+    "../OdbDesignServer/Services/DesignStreamWalker.cpp"
+    "../OdbDesignServer/Services/StreamSpoolCache.cpp"
     "GetStandardFontsTests.cpp"
     "GetLayerSymbolsTests.cpp"
     "RequestLoadDesignTests.cpp"
     "ResponseCacheTests.cpp"
+    "DesignStreamTests.cpp"
+    "DesignStreamMemoryTests.cpp"
     "DesignFetchBenchmarkTests.cpp"
+    "AttributeLookupTableTests.cpp"
+    "GrpcParseErrorDetailTests.cpp"
 
     # NOTE: GrpcBatchStreamTests.cpp temporarily disabled due to CMake coupling concerns
     # Future: Will create separate test target for server component tests
@@ -56,6 +63,11 @@ target_link_libraries(OdbDesignTests PRIVATE gRPC::gpr gRPC::grpc gRPC::grpc++ g
 # Include directories for OdbDesignServer sources and generated gRPC files
 # The generated gRPC files are in OdbDesignServer's binary directory
 get_filename_component(REPO_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/.." ABSOLUTE)
+
+# Source-tree paths for tests (M0.3 golden fixtures, gitignored local design
+# corpora). Must follow the REPO_ROOT set() above or the define expands empty
+# and the paths silently become cwd-relative.
+target_compile_definitions(OdbDesignTests PRIVATE ODBDESIGN_SOURCE_DIR="${REPO_ROOT}")
 set(ODBDESIGN_SERVER_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/../OdbDesignServer")
 set(GRPC_CODEGEN_DIR "${ODBDESIGN_SERVER_BINARY_DIR}/grpc")
 target_include_directories(OdbDesignTests PRIVATE 

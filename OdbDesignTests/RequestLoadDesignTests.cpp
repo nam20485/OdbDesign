@@ -172,6 +172,13 @@ namespace Odb::Test
             return m_sharedDesignCache->GetLoadState(designName) == DesignCache::LoadState::Loaded;
         }, kLoadCompleteTimeout)) << "design did not reach Loaded after an accepted background load";
 
+        // The completion event trails the Loaded state flip by an instant (the
+        // observer callback fires after the state is published), so gate on the
+        // event itself before counting - a bare read races the callback.
+        ASSERT_TRUE(waitForCondition([this, &designName]()
+        {
+            return m_recorder->loadCompletions(designName) >= 1;
+        }, kLoadCompleteTimeout)) << "completion event not observed after reaching Loaded";
         EXPECT_EQ(m_recorder->loadStarts(designName), 1);
         EXPECT_EQ(m_recorder->loadCompletions(designName), 1);
 
@@ -255,6 +262,11 @@ namespace Odb::Test
             return m_sharedDesignCache->GetLoadState(designName) == DesignCache::LoadState::Loaded;
         }, kLoadCompleteTimeout));
 
+        // Same trailing-callback race as ColdDesign above: gate on the event.
+        ASSERT_TRUE(waitForCondition([this, &designName]()
+        {
+            return m_recorder->loadCompletions(designName) >= 1;
+        }, kLoadCompleteTimeout)) << "completion event not observed after reaching Loaded";
         EXPECT_EQ(m_recorder->loadStarts(designName), 1);
         EXPECT_EQ(m_recorder->loadCompletions(designName), 1);
         EXPECT_EQ(m_recorder->loadFailures(designName), 0);

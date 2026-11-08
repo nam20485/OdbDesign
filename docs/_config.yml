@@ -22,4 +22,5 @@ exclude:
 - completed
 - plan/argocd-deployment-plan.md
 - plan/argocd-gitops-handoff.md
+- plan/issues-611-614-website-cdash-plan.md
 - reference/vcpkg/github-packages-MS-tutorial.md

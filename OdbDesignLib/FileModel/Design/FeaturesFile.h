@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <vector>
 #include <string>
+#include <optional>
 #include "../../enums.h"
 #include "../../IProtoBuffable.h"
 #include "featuresfile.pb.h"
@@ -35,38 +36,40 @@ namespace Odb::Lib::FileModel::Design
 				Line
 			};			
 
-			Type type;			
-				
+			Type type = Type::Arc;
+
 			// Line
-			double xs, ys;
-			double xe, ye;
+			double xs = 0.0, ys = 0.0;
+			double xe = 0.0, ye = 0.0;
 
 			// Pad / Text
-			double x, y;
+			double x = 0.0, y = 0.0;
 			int apt_def_symbol_num = -1;
-			double apt_def_resize_factor;
+			double apt_def_resize_factor = 0.0;
 
 			// Arc
-			double xc, yc;
-			bool cw;
+			double xc = 0.0, yc = 0.0;
+			bool cw = false;
 
 			// Text
 			std::string font;
-			double xsize, ysize;
-			double width_factor;
+			double xsize = 0.0, ysize = 0.0;
+			double width_factor = 0.0;
 			std::string text;
-			int version;
+			int version = 0;
 
-			//TODO: Barcode			
+			//TODO: Barcode
 
 			// common
 			int sym_num = -1;
-			Polarity polarity;
-			int dcode;
-			unsigned int id;
+			Polarity polarity = Polarity::Positive;
+			int dcode = 0;
+			// ODB++ product-model-wide unique id from the feature record ;ID= trailer.
+			// Optional: absent stays absent (never reported as id 0).
+			std::optional<unsigned int> id;
 
-			int orient_def;
-			double orient_def_rotation;			
+			int orient_def = 0;
+			double orient_def_rotation = 0.0;
 
 			ContourPolygon::Vector m_contourPolygons;
 
@@ -103,6 +106,11 @@ namespace Odb::Lib::FileModel::Design
 
 		// Inherited via IProtoBuffable
 		std::unique_ptr<Odb::Lib::Protobuf::FeaturesFile> to_protobuf() const override;
+		// M6 streaming: same message minus the featureRecords list (the
+		// multi-GB bulk on large designs). Every other field is produced by
+		// the identical code path, so skeleton + re-appended featureRecords
+		// serializes to the exact to_protobuf() bytes.
+		std::unique_ptr<Odb::Lib::Protobuf::FeaturesFile> to_protobuf_skeleton() const;
 		void from_protobuf(const Odb::Lib::Protobuf::FeaturesFile& message) override;
 		
 	private:
@@ -115,6 +123,11 @@ namespace Odb::Lib::FileModel::Design
 		FeatureRecord::Vector m_featureRecords;
 		SymbolName::StringMap m_symbolNamesByName;
 		SymbolName::Vector m_symbolNames; // for serialization
+
+		// Shared by to_protobuf() and to_protobuf_skeleton(): everything past
+		// the featureRecords loop is identical so the skeleton stays
+		// byte-compatible with the full serialization.
+		void FillSymbolNames(Odb::Lib::Protobuf::FeaturesFile& featuresFileMessage) const;
 
 
 		std::vector<std::string> m_attributeNames;

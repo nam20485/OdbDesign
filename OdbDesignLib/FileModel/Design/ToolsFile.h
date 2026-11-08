@@ -41,17 +41,17 @@ namespace Odb::Lib::FileModel::Design
             };
 
             // data members
-            unsigned int toolNum;	// reference number of TOOLS in tools file
-            Type type;
-            Type2 type2;
+            unsigned int toolNum = 0;	// reference number of TOOLS in tools file
+            Type type = Type::Plated;
+            Type2 type2 = Type2::Standard;
 
             // Allowed tolerances
-            double minTOL;
-            double maxTOL;
+            double minTOL = 0.0;
+            double maxTOL = 0.0;
 
             std::string drillBit;
-            double finishSize;
-            double drillSize;
+            double finishSize = 0.0;
+            double drillSize = 0.0;
 
             inline static const char* RECORD_TOKEN = "TOOLS";
 

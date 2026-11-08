@@ -24,14 +24,14 @@ namespace Odb::Lib::FileModel::Design
 				Arc
 			};
 
-			Type type;
+			Type type = Type::Segment;
 
 			// Segment/Arc
-			double endX, endY;
+			double endX = 0.0, endY = 0.0;
 
 			// Arc
-			double xCenter, yCenter;
-			bool isClockwise;
+			double xCenter = 0.0, yCenter = 0.0;
+			bool isClockwise = false;
 
 			// Inherited via IProtoBuffable
 			std::unique_ptr<Odb::Lib::Protobuf::ContourPolygon::PolygonPart> to_protobuf() const override;
@@ -50,8 +50,8 @@ namespace Odb::Lib::FileModel::Design
 			Hole
 		};		
 
-		Type type;
-		double xStart, yStart;
+		Type type = Type::Island;
+		double xStart = 0.0, yStart = 0.0;
 
 		PolygonPart::Vector m_polygonParts;
 

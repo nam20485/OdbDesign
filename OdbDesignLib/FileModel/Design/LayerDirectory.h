@@ -43,16 +43,24 @@ namespace Odb::Lib::FileModel::Design
 
 		// Inherited via IProtoBuffable
 		std::unique_ptr<Odb::Lib::Protobuf::LayerDirectory> to_protobuf() const override;
+		// M6 streaming: same message with the features file serialized as a
+		// skeleton (featureRecords omitted, delivered via FeatureBatch chunks).
+		std::unique_ptr<Odb::Lib::Protobuf::LayerDirectory> to_protobuf_skeleton() const;
 		void from_protobuf(const Odb::Lib::Protobuf::LayerDirectory& message) override;
 
 	private:
 		std::string m_name;
 		std::filesystem::path m_path;
 
-		ComponentsFile m_componentsFile;	
+		ComponentsFile m_componentsFile;
 		FeaturesFile m_featuresFile;
 		AttrListFile m_attrListFile;
 		ToolsFile m_toolFile;
+
+		// Shared body of to_protobuf() / to_protobuf_skeleton(); only the
+		// features-file serialization differs, keeping the skeleton
+		// byte-compatible with the full serialization.
+		void FillProtobufMessage(Odb::Lib::Protobuf::LayerDirectory& layerDirectoryMessage, bool includeFeatureRecords) const;
 
 	};
 }

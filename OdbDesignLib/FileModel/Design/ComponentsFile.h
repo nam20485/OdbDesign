@@ -2,6 +2,7 @@
 
 #include <string>
 #include <map>
+#include <optional>
 #include <memory>
 #include <filesystem>
 #include <vector>
@@ -37,17 +38,19 @@ namespace Odb::Lib::FileModel::Design
 			~ComponentRecord();
 
 			// data members
-			unsigned int pkgRef;	// reference number of PKG in eda/data file
-			double locationX;
-			double locationY;
-			double rotation;
-			bool mirror;
+			unsigned int pkgRef = 0;	// reference number of PKG in eda/data file
+			double locationX = 0.0;
+			double locationY = 0.0;
+			double rotation = 0.0;
+			bool mirror = false;
 			std::string compName;	// refDes
 			std::string partName;
 			//std::string attributes;
-			unsigned int id;
+			// ODB++ product-model-wide unique id from the CMP record ;ID= trailer.
+			// Optional: absent stays absent (never reported as id 0).
+			std::optional<unsigned int> id;
 			// TODO: deal with index of records
-			unsigned int index;
+			unsigned int index = 0;
 
 			// constants
 			constexpr inline static const char* RECORD_TOKEN = "CMP";
@@ -59,13 +62,13 @@ namespace Odb::Lib::FileModel::Design
 			struct ToeprintRecord : public IProtoBuffable<Odb::Lib::Protobuf::ComponentsFile::ComponentRecord::ToeprintRecord>
 			{
 				// TODO: use pinNumber
-				unsigned int pinNumber;		// what does this refer to? own pin # or packages pin #?
-				double locationX;
-				double locationY;
-				double rotation;
-				bool mirror;
-				unsigned int netNumber;		// net number of NET in eda/data file
-				unsigned int subnetNumber;	// subnet number of NET in eda/data file
+				unsigned int pinNumber = 0;		// what does this refer to? own pin # or packages pin #?
+				double locationX = 0.0;
+				double locationY = 0.0;
+				double rotation = 0.0;
+				bool mirror = false;
+				unsigned int netNumber = 0;		// net number of NET in eda/data file
+				unsigned int subnetNumber = 0;	// subnet number of NET in eda/data file
 				std::string name;			// pin name
 
 				// constants
@@ -119,7 +122,6 @@ namespace Odb::Lib::FileModel::Design
 		};	// BomDescriptionRecord
 
 		const ComponentRecord::Vector& GetComponentRecords() const;
-		const ComponentRecord::StringMap& GetComponentRecordsByName() const;
 		const std::vector<std::string>& GetAttributeNames() const;
 		const std::vector<std::string>& GetAttributeTextValues() const;
 		const BomDescriptionRecord::StringMap& GetBomDescriptionRecordsByCpn() const;
@@ -143,8 +145,6 @@ namespace Odb::Lib::FileModel::Design
 		std::vector<std::string> m_attributeTextValues;
 
 		ComponentRecord::Vector m_componentRecords;
-		// TODO: add records to maps by name while adding to their vectors
-		ComponentRecord::StringMap m_componentRecordsByName;
 
 		BomDescriptionRecord::StringMap m_bomDescriptionRecordsByCpn;
 

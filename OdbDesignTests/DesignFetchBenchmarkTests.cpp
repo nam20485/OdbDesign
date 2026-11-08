@@ -1,12 +1,14 @@
 #include <gtest/gtest.h>
 #include "Fixtures/FileArchiveLoadFixture.h"
 #include <App/DesignCache.h>
+#include "ProductModel/Design.h"
 #include <algorithm>
 #include <chrono>
 #include <cstdlib>
 #include <cstdint>
 #include <filesystem>
 #include <iostream>
+#include <map>
 #include <memory>
 #include <numeric>
 #include <string>
@@ -148,5 +150,124 @@ namespace Odb::Test
 
 		report("cold", designName, std::move(coldMs));
 		report("warm", designName, std::move(warmMs));
+	}
+
+	// =========================================================================
+	// M2.4 size scenarios: the always-on connectivity payload growth, plus the
+	// outstanding M1.2 feature-UID wire delta. Opt-in with the benchmark
+	// (ODB_DESIGN_FETCH_BENCH=1); scripts/benchmark-design-fetch.sh greps the
+	// [BENCH] lines. The default-on 150 KB sample_design gate lives in
+	// ConnectivityContractTests (always available to CI); the 10%-of-fileModel
+	// acceptance on the 81k-component legacy design runs here, where the
+	// gitignored local corpus is present.
+	// =========================================================================
+	namespace
+	{
+		void clearFeatureIds(Odb::Lib::Protobuf::FeaturesFile* pFeaturesFile, std::uint64_t& clearedCount)
+		{
+			if (pFeaturesFile == nullptr) return;
+			for (auto& record : *pFeaturesFile->mutable_featurerecords())
+			{
+				if (record.has_id())
+				{
+					record.clear_id();
+					++clearedCount;
+				}
+			}
+		}
+	}
+
+	TEST_F(DesignFetchBenchmarkTest, ConnectivityPayloadSizes)
+	{
+		if (std::getenv("ODB_DESIGN_FETCH_BENCH") == nullptr)
+		{
+			GTEST_SKIP() << "benchmark opt-in (ODB_DESIGN_FETCH_BENCH=1)";
+			return;
+		}
+		if (getTestDataDir().empty())
+		{
+			GTEST_SKIP() << "Test data directory not available (ODB_TEST_DATA_DIR not set)";
+			return;
+		}
+
+		struct Spec
+		{
+			const char* designName;
+			bool fromTestData;
+		};
+		static const std::map<std::string, std::string> localArchives = {
+			{ "Panel-g7162-31800_odb", "new_designs/Panel - g7162-31800_odb.tgz" },
+			{ "350-41017_rev1_odbjob_v7", "new_designs/350-41017_rev1_odbjob_v7.tgz" },
+		};
+
+		const std::vector<Spec> specs = {
+			{ "sample_design", true },
+			{ "Panel-g7162-31800_odb", false },
+			{ "350-41017_rev1_odbjob_v7", false },
+		};
+
+		for (const auto& spec : specs)
+		{
+			std::filesystem::path archive;
+			if (spec.fromTestData)
+			{
+				archive = getIsolatedDesignPath("sample_design.tgz");
+			}
+			else
+			{
+				const auto source = std::filesystem::path(ODBDESIGN_SOURCE_DIR) / localArchives.at(spec.designName);
+				std::error_code ec;
+				if (std::filesystem::is_regular_file(source, ec))
+				{
+					const auto copy = m_scratchDir / source.filename();
+					std::filesystem::copy_file(source, copy, std::filesystem::copy_options::overwrite_existing, ec);
+					if (!ec) archive = copy;
+				}
+			}
+			if (archive.empty() || !std::filesystem::exists(archive))
+			{
+				std::cout << "[BENCH] size design=\"" << spec.designName << "\" skipped (archive not present)" << std::endl;
+				continue;
+			}
+
+			auto pDesign = std::make_shared<Odb::Lib::ProductModel::Design>();
+			ASSERT_TRUE(pDesign->Build(archive.string())) << spec.designName << ": build failed";
+			const auto pMsg = pDesign->to_protobuf(/*includeNormalizedLists=*/false);
+
+			const auto total = pMsg->ByteSizeLong();
+			const auto connectivity = pMsg->connectivity().ByteSizeLong();
+			const auto fileModel = pMsg->filemodel().ByteSizeLong();
+
+			// M1.2 delta: exact wire bytes of FeatureRecord.id values, measured
+			// by re-serializing a copy with every feature id cleared.
+			auto fmCopy = pMsg->filemodel();
+			std::uint64_t clearedFeatureIds = 0;
+			for (auto& stepEntry : *fmCopy.mutable_stepsbyname())
+			{
+				auto& step = stepEntry.second;
+				clearFeatureIds(step.has_profilefile() ? step.mutable_profilefile() : nullptr, clearedFeatureIds);
+				for (auto& layerEntry : *step.mutable_layersbyname())
+				{
+					clearFeatureIds(layerEntry.second.has_featurefile() ? layerEntry.second.mutable_featurefile() : nullptr, clearedFeatureIds);
+				}
+			}
+			const auto featureUidDelta = fileModel - fmCopy.ByteSizeLong();
+
+			std::cout << "[BENCH] size design=\"" << spec.designName
+				<< "\" total=" << total
+				<< " connectivity=" << connectivity
+				<< " fileModel=" << fileModel
+				<< " connPctOfFileModel=" << (fileModel > 0 ? (100.0 * static_cast<double>(connectivity)) / static_cast<double>(fileModel) : 0.0)
+				<< "% featureUidDelta=" << featureUidDelta
+				<< " (" << clearedFeatureIds << " ids)" << std::endl;
+
+			if (std::string(spec.designName) == "350-41017_rev1_odbjob_v7")
+			{
+				// M2.4 merge gate: connectivity <= 10% of the fileModel payload
+				// on the 81,157-component legacy design.
+				EXPECT_LE(connectivity, fileModel / 10)
+					<< "connectivity exceeds 10% of fileModel on 350-41017 (D4 size gate)";
+			}
+		}
 	}
 }
