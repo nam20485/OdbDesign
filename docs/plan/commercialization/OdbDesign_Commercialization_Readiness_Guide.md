@@ -2,7 +2,7 @@
 
 *Two-Pass Decision Playbook: High-Level Readiness Checklist, Concrete Options & Feasibility Analysis for OdbDesign (C++17 Shared Library & REST/gRPC Server), and AI Commercialization Skills, Agents & Platforms — Prepared November 6, 2026*
 
-> **EXECUTION STATUS UPDATE — November 7, 2026.** The repo-side workstreams of this guide (Steps 3–4 of the execution sequence) were implemented and verified. Each Pass 1 checklist item below now carries an inline **Status (2026-11-07)** line, and the full per-domain record — decisions, implementation details, verification evidence, and next steps for deferred items — is in the **Execution Status Update** section at the end of this document, before the references. Key artifacts: public-repo PR **#610** (`nam/commercial-readiness` → `nam20485`, all checks green) and the **private** overlay repository `nam20485/OdbDesign-Commercial`. Companion engineering plan: `commercial-readiness-execution-plan.md` (same directory).
+> **EXECUTION STATUS UPDATE — November 7, 2026 (feedback round folded in November 8, 2026).** The repo-side workstreams of this guide (Steps 3–4 of the execution sequence) were implemented and verified. Each Pass 1 checklist item below now carries an inline **Status** line, and the full per-domain record — decisions, implementation details, verification evidence, and next steps for deferred items — is in the **Execution Status Update** section at the end of this document, before the references. Key artifacts: public-repo PR **#610** (`nam/commercial-readiness` → `nam20485`, all checks green), the **private** overlay repository `nam20485/OdbDesign-Commercial`, the companion engineering plan `commercial-readiness-execution-plan.md`, and the open-items **action checklist** `commercialization-action-checklist.md` (same directory; every item ≠ Complete, with step-by-step instructions).
 
 Executive Context: Two Active Inbound Commercial Opportunities dictate Dual Track Readiness 
 
@@ -25,24 +25,19 @@ ID Readiness Domain & Item Action Type What Must Be Resolved to Declare Readines
 Investigate & Decide   
 Select the legal entity that will sign commercial contracts, hold commercial licensing rights, and shield personal assets from warranty or indemnity claims.
 
-> **Status (2026-11-07): Deferred (user decision).** Recommendation stands (The Intel Agency now → dedicated WA LLC at $50k ARR). Nothing executed yet; must be resolved before the first binding quote or grant. Next: confirm entity + execute the 1-page internal IP license. 
+> **Status (2026-11-08): DECIDED — license through The Intel Agency** (user feedback 2026-11-08). Execution steps and the 1-page internal IP-license **draft** (Nathan Miller → The Intel Agency) are item **A1** in `commercialization-action-checklist.md` (same directory). Transition to a dedicated WA LLC remains the trigger if ARR exceeds ~$50k. Nothing binding may be signed until the internal IP license is executed.
 
 1.2 Employer CIIAA & Invention Separation
 
-> **Status (2026-11-07): Deferred (ongoing discipline).** No repository action possible or taken; the conduct rule (personal hardware/time only, zero employer resources) remains a precondition on every future commercial artifact.
+> **Status (2026-11-08): Resolved — documented separation (user feedback).** OdbDesign predates the Cincinnatus employment by ~2 years; all Mercor/Cincinnatus work happens on their corporate ChromeOS laptop, and no employer equipment, time, or networks touch any OdbDesign work. Under WA RCW 49.44.140 this squarely occupies the statutory carve-out (own time, own tools). Remaining action (cheap insurance): write the one-page provenance memo recording these facts with dates/devices/repos — checklist item **A2**. Ongoing rule: keep the separation (no employer hardware/networks on any commercial artifact).
 
 1.3 Copyright Chain-of-Title & Contributor Policy
 
-> **Status (2026-11-07): In progress.** CLA text landed in PR #610 (`.github/CLA.md` — Apache-style ICLA + CCLA with the explicit commercial *relicensing* grant, §1.2(2)) plus a `docs/CONTRIBUTING.md` update; CODEOWNERS re-verified as 100% `@nam20485`. **Remaining:** CLA Assistant enablement (maintainer browser step — store signatures in a side repo, point it at `.github/CLA.md`) before accepting any external PR.
-Verify & Document Verify statutory carve-out compliance under WA RCW 49.44.140 so no employer equipment, time, or networks 
-
-touch the commercialized codebase. 
-
-Audit & Decide Confirm 100% copyright ownership across git commit history to legally relicense AGPL-3.0 code, and establish 
-
-a Contributor License Agreement (CLA) policy for future 
-
-PRs. 
+> **Status (2026-11-08): In progress — two workstreams.**
+>
+> **(a) CLA for future contributions — text done, enablement pending.** CLA text landed in PR #610 (`.github/CLA.md` — Apache-style ICLA + CCLA with the explicit commercial *relicensing* grant, §1.2(2)) plus a `docs/CONTRIBUTING.md` update. *What CLA Assistant is:* a free GitHub integration (cla-assistant.io) that automatically presents your CLA to a contributor when they open their first pull request, records their one-click acceptance (name/GitHub identity/PR link/timestamp) into a designated "signature storage" repository you control, re-checks every subsequent PR, and blocks the merge (via a required status check) if the contributor hasn't signed. You keep the CLA text in `.github/CLA.md`; CLA Assistant just automates capture and enforcement. Detailed click-by-click setup steps: checklist item **A3**.
+>
+> **(b) Chain-of-title cleanup for past contributions — DECIDED: carve out (user feedback).** Exactly two human contributors with un-relicensed copyright interest exist in the history: **wen2so** (2 commits: `212429c` MatrixFile color support; `fbe5b3b` PolygonPart::type protobuf enum fix — 2 lines) and **Jandody** (4 commits, effectively 2 changes landed twice through branch history: `a1ceda3`/`59ce5a2` the entire DRILL/ToolsFile parser + LayerDirectory/MatrixFile wiring; `231164a`/`ad1d82c` ToolsFile naming consistency). Bots (dependabot, StepSecurity) have no copyright interest; copilot-swe-agent commits were authored under the maintainer's direction/account. Since contacting the two contributors for retroactive releases is unreliable, their functionality will be **removed/replaced from the current tree** so every commercial build derives from 100% owner-authored code (the public AGPL history retains their commits — that's fine; nothing proprietary ever ships from history). Removal is confirmed non-critical. Full commit/file inventory + step-by-step: checklist item **A4**.
 
 1.4 Dual-Licensing Legal Framework
 
@@ -86,12 +81,15 @@ onboarding gate for foreign buyers.
 
 2.4 Evaluation / Trial Licensing Policy
 
-> **Status (2026-11-07): Technical enforcement complete; paperwork deferred.** 30-day time-locked evaluation is cryptographically enforced (`expires_at` in the Ed25519-signed `license.json`), `loopback_only: true` forces 127.0.0.1 on **both** REST and gRPC (proven to override even `--bind 0.0.0.0`), and eval binaries are watermarked + stripped. The Evaluation Agreement itself is item 4.3 (legal, not drafted).
+> **Status (2026-11-08): DECIDED — evaluation via internal-use POC on the public source; no eval binaries offered initially** (user feedback: "do we have to offer an eval? couldn't they just prove integration POC using the public repo/source… not released == not commercial use?"). **Answer: yes, that works, and it's clean.** AGPL-3.0 §0 makes *making, running, and modifying* the software for internal use completely unrestricted — the license's obligations trigger only on **distributing** the software or its derivatives, or offering a modified version as a **network service to third parties**. An OEM like Keiron can clone the public repo, integrate, and validate internally on their own machines for as long as they like, at zero cost and with no agreement from us; a commercial license becomes due exactly when the integration leaves their walls (ships with an HF2 machine, or is operated as a service for third parties). Caveats to state in the offer: (1) no distribution or external network serving during the POC; (2) AGPL applies to the POC build itself — fine internally, but their integration code must not be built on the assumption it can ship unchanged without relicensing; (3) production/shipping use requires the commercial license.
+>
+> The time-locked evaluation-binary machinery already built (Ed25519 `expires_at`, `loopback_only`, watermark — verified end-to-end) is **retained but not offered initially**; it remains available for leads who cannot build from source, and for future server-product trials. This also retires the "evaluation agreement" from item 4.3's scope (a plain mutual NDA still applies for commercial discussions).
 
 2.5 Source-Code Access & Escrow Policy
 
-> **Status (2026-11-07): Deferred.** Binary-only is the implemented default. The guide's position (beneficiary-paid Codekeeper/Escode escrow; Iron Mountain exited 2021) stands — select an agent when a buyer first requests continuity assurance.
-Investigate & Decide 
+> **Status (2026-11-08): DECIDED — binary-only; no source continuity offered at this stage** (user feedback). Escrow (Codekeeper/Escode) is off the table for now; revisit only if an enterprise buyer makes it a deal condition.
+
+
 
 Investigate & Decide 
 
@@ -106,16 +104,15 @@ Choose the primary licensing structures for hardware OEMs (Per-Machine Royalty v
 
 Establish concrete price ranges, minimum seat/machine commitments, and annual renewal rules for each SKU and buyer tier. 
 
-Decide whether and how to offer 30–90 day evaluation binaries, what technical restrictions apply during trials, and whether an evaluation deposit or NNN/NDA is required first. 
+Decide whether and how to offer 30–90 day evaluation binaries, what technical restrictions apply during trials, and whether an evaluation deposit or NNN/NDA is required first. *(Resolved 2026-11-08: no eval binaries offered initially — internal-use POC on the public AGPL source instead; see the item 2.4 status above.)*
 
-Decide whether commercial licenses are strictly binary only, when third-party source escrow is permitted, and who pays escrow setup/maintenance fees. 
+Decide whether commercial licenses are strictly binary only, when third-party source escrow is permitted, and who pays escrow setup/maintenance fees. *(Resolved 2026-11-08: strictly binary-only, no escrow offered at this stage — see item 2.5 status.)*
 
 3.1 Private Commercial Build Overlay & CI/CD
 
 > **Status (2026-11-07): Complete.** Private repository **`nam20485/OdbDesign-Commercial`** created (visibility verified PRIVATE on GitHub) — *not* a branch, because every ref of a public repo is fetchable (see errata). Contents: upstream git submodule pinned to the `nam20485` branch, CMake superbuild (`add_subdirectory` + upstream install rules), mirrored vcpkg manifest/baseline (plus `openssl`, `nlohmann-json`), manual-dispatch per-customer packaging workflow with GitHub-Actions vcpkg binary caching, and a delivery runbook README. Local builds seed `vcpkg_installed` from the upstream build tree to skip the ~45-min dependency rebuild.
 Architect & Build Set up a private commercial build repository/branch that pulls from upstream nam20485/OdbDesign and compiles   
 commercial binaries without exposing license-check 
-
 source publicly. 
 
 3.2 Technical License Enforcement Mechanism
@@ -181,7 +178,7 @@ Draft a concise technical/commercial intake questionnaire to capture target depl
 
 4.3 Evaluation Agreement & Bilingual China NNN
 
-> **Status (2026-11-07): Deferred — legal drafting not started.** Needed before shipping the first evaluation binary to a third party: Western Mutual NDA + 30-day Evaluation Agreement (Keiron path) and bilingual China NNN (LinBoard3D path). Technical eval restrictions are already enforced (see 2.4); the paper must match them (30 days, loopback-only, watermark acknowledgment, no benchmarking/disclosure).
+> **Status (2026-11-07; amended 2026-11-08): Deferred — legal drafting not started; scope reduced by the eval-free decision.** With evaluation binaries no longer offered (2.4), the evaluation-agreement half of this item retires; what remains: a Western **Mutual NDA** (Keiron path) and a bilingual **China NNN** (LinBoard3D path), plus a light "POC terms" note if desired (stating the AGPL internal-use POC ground rules from 2.4).
 
 4.4 Master Commercial License Grant &
 Schedules
@@ -873,9 +870,9 @@ On 2026-11-07 the engineering workstreams of this guide (execution-sequence Step
 
 | Item | Domain | Status |
 |---|---|---|
-| 1.1 Licensor entity | Legal/IP | **Deferred (user)** |
-| 1.2 Employer CIIAA separation | Legal/IP | **Deferred (ongoing discipline)** |
-| 1.3 Chain-of-title / CLA | Legal/IP | **In progress** — CLA text done (PR #610); CLA Assistant enablement pending |
+| 1.1 Licensor entity | Legal/IP | **Decided 2026-11-08 (The Intel Agency)** — execution steps pending (checklist A1) |
+| 1.2 Employer CIIAA separation | Legal/IP | **Resolved — documented separation** (provenance memo pending, checklist A2) |
+| 1.3 Chain-of-title / CLA | Legal/IP | **In progress** — CLA text done (PR #610); CLA Assistant enablement (A3) + wen2so/Jandody carve-out (A4) pending |
 | 1.4 Dual-licensing framework | Legal/IP | **Complete** (AGPL-3.0 kept + `COMMERCIAL-LICENSE.md`) |
 | 1.5 Third-party notices | Legal/IP | **Complete** (`THIRD_PARTY_NOTICES.txt` + generator) |
 | 1.6 ODB++ format-IP disclaimer | Legal/IP | **Complete in collateral**; contract clause rides 4.4 |
@@ -883,8 +880,8 @@ On 2026-11-07 the engineering workstreams of this guide (execution-sequence Step
 | 2.1 SKU boundaries | Product | **Technical complete; SKUs/pricing deferred (user)** |
 | 2.2 Licensing model | Product | **Deferred (user)** — enforcement is model-agnostic |
 | 2.3 Pricing tiers | Product | **Deferred (user)** — nothing published by design |
-| 2.4 Evaluation policy | Product | **Technical complete** (30-day + loopback enforced); paper = 4.3 |
-| 2.5 Escrow | Product | **Deferred** (binary-only default in effect) |
+| 2.4 Evaluation policy | Product | **Decided 2026-11-08** — eval-free: internal-use POC on public AGPL source; eval-binary machinery retained but not offered |
+| 2.5 Escrow | Product | **Decided 2026-11-08** — strictly binary-only, no escrow offered at this stage |
 | 3.1 Private build overlay | Technical | **Complete** — private repo + superbuild + packaging workflow |
 | 3.2 License enforcement | Technical | **Complete** — LicenseGuard Ed25519 (Option 2), 13/13 tests |
 | 3.3 Watermark + strip | Technical | **Complete** (Option 1) — proven live |
@@ -908,6 +905,14 @@ On 2026-11-07 the engineering workstreams of this guide (execution-sequence Step
 6. **Watermark for OEM production DLLs (guide Option 1); license file for eval + server (Option 2); Option 3 deferred** — same Ed25519 scheme, so Keygen.sh/LicenseSpring adoption later needs no rework.
 7. **Notices carry license text, not versions** — exact versions live in `vcpkg.json` pins + the per-build SPDX SBOM (regenerated per delivery), keeping the committed file stable.
 8. **Dev signing keypair committed as the embedded verification key** (public half only; private half gitignored at `keys/dev-signing.key`). Production rotation procedure documented in the overlay README; rotation invalidates all previously issued licenses by design.
+
+*Folded from user feedback, 2026-11-08:*
+
+9. **Licensor entity = The Intel Agency** (item 1.1). Execution = 1-page internal IP license from Nathan Miller to the entity (draft in the action checklist, A1); transition to a dedicated WA LLC if ARR passes ~$50k.
+10. **Employer separation is factual and documented** (item 1.2): OdbDesign predates the Cincinnatus employment by ~2 years; employer work happens on a corporate ChromeOS laptop; no employer equipment/time/networks touch OdbDesign. One-page provenance memo to be written (A2).
+11. **Eval-free evaluation policy** (item 2.4): prospects prove integration via internal-use POC on the public AGPL source (internal use is unrestricted; obligations trigger only on distribution or third-party network service). No time-locked eval binaries offered initially; the machinery stays available.
+12. **Strictly binary-only, no escrow** (item 2.5): no source-code continuity offered at this stage.
+13. **Past-contribution carve-out** (item 1.3): the two external human contributors (wen2so, Jandody — six commits total, effectively four distinct changes) will have their contributions removed/replaced from the current tree rather than chased for retroactive releases; commercial builds then derive from 100% owner-authored code (A4).
 
 ### Implementation record & verification evidence
 
