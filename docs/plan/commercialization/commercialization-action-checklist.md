@@ -12,7 +12,7 @@
 
 | # | Decision | Recommendation | Time |
 |---|---|---|---|
-| S1 | **Signature block** — personal, or The Intel Agency? (parent 1.1 / A1) | Sign personally as *maintainer/author of OdbDesign* — the entity's internal IP license (A1) isn't executed yet; switching the contracting name later is normal ("agreements will be with our company, The Intel Agency"). | 1 min |
+| S1 | **From-address & signature block** — personal, or The Intel Agency? (parent 1.1 / A1) | **Decided 2026-11-08: entity-forward.** Reply from `nmiller@intel-agency.com`, sign "Author & Maintainer, OdbDesign · The Intel Agency" (deliverability verified: Google Workspace MX, SPF, DMARC). Body keeps the author credibility; one clause in the process answer plants the entity. Note: the internal IP license (A1) still gates *signing* anything binding — this email commits nothing. | done |
 | S2 | **Evaluation framing** — licensed eval binaries (parent 2.4, decided + amended 2026-11-08) | Settled: NDA → 30-day watermarked evaluation license (loopback-only for sidecars) → commercial license. Both email drafts carry this framing. Nothing further before sending — the eval agreement paper (A6) is needed only when Keiron actually requests the evaluation. | 0 min |
 | S3 | **No pricing in the first email** (parent 2.3) | Confirmed approach: gather scoping info first; send tailored indicative pricing after the call. Pricing decision (B2) is needed before the *quote*, not before the *reply*. | 0 min |
 | S4 | **Scheduling link works for EU timezones** | Verify the Google Calendar link (docs/README.md) once; note your availability for CET mornings (= early PST) so Monday slots are bookable. | 2 min |
