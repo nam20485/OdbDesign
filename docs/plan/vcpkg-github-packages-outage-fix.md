@@ -84,7 +84,7 @@ warn : twirp error permission_denied: Account has reached its billing limit…
 error: Response status code does not indicate success: 403 (Forbidden).
 ```
 
-Deleting the 37 stale private packages (2026-11-08, disclosed in §6) unblocked
+Deleting the 37 stale private packages (2026-11-08, disclosed in §5.5) unblocked
 writes — runner probe D0 (dotnet+PAT) exit 0 on **both** OSes in POC run
 `42463795468`'s predecessors; the intermediate "still 403" readings within the
 first hour were billing-accounting lag.
@@ -193,7 +193,12 @@ records the same PAT-private/GITHUB_TOKEN-public asymmetry; and the POC
 Keeping the PAT would quietly re-privatize every package CI pushes and refill
 the quota — this is not cosmetic.
 
-- The workflow job already carries `permissions: packages: write`.
+- `cmake-multi-platform.yml` and `code-coverage.yml` already carry
+  `permissions: packages: write`; **`vcpkg-cache-warm.yml` does not** (only
+  `contents: read`, no job-level override) — the fix PR must add
+  `packages: write` there, or every `GITHUB_TOKEN` push from the warm job
+  (§5.3 tripwire, §6 step-3 feed seeding) would 403 and fail its own
+  tripwire.
 - Local dev (`scripts/setup-vcpkg-cache.*`) keeps the PAT (GITHUB_TOKEN
   doesn't exist locally); the localdev doc gains a note: PAT-pushed packages
   default private — flip to public in the UI once if you care about quota, or
