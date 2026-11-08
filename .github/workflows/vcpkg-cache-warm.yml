@@ -182,15 +182,19 @@ jobs:
         # this is the real replacement for the old grep-style config check.
         # Wipe every local cache layer, then re-install with the NuGet feed as
         # the ONLY source: a fast exit-0 proves the feed serves every package
-        # this warm run published. A broken feed forces full rebuilds (45+ min
-        # for both triplets) and trips the time budget; a partial miss shows as
-        # that package rebuilding in the log above.
+        # this warm run published. readwrite makes the step self-healing: any
+        # package the feed is missing (e.g. one that got file-cached during a
+        # push outage — vcpkg only pushes at build time) is REBUILT here and
+        # published, then the next warm run is fast again. A wholesale feed
+        # failure forces full rebuilds (45+ min for both triplets) and trips
+        # the time budget; a partial miss shows as that package rebuilding in
+        # the log above (and lands in the feed on this very run).
         shell: bash
         run: |
           set -euo pipefail
           rm -rf "$VCPKG_DEFAULT_BINARY_CACHE" buildtrees packages vcpkg_installed
           mkdir -p "$VCPKG_DEFAULT_BINARY_CACHE"
-          export VCPKG_BINARY_SOURCES="clear;nugettimeout,900;nugetconfig,$GITHUB_WORKSPACE/nuget.generated.config,read"
+          export VCPKG_BINARY_SOURCES="clear;nugettimeout,900;nugetconfig,$GITHUB_WORKSPACE/nuget.generated.config,readwrite"
           t0=$(date +%s)
           "${{ env.VCPKG_ROOT }}/vcpkg" install
           "${{ env.VCPKG_ROOT }}/vcpkg" install --triplet x64-linux-dynamic
@@ -327,7 +331,7 @@ jobs:
           set -euo pipefail
           rm -rf "$VCPKG_DEFAULT_BINARY_CACHE" buildtrees packages vcpkg_installed
           mkdir -p "$VCPKG_DEFAULT_BINARY_CACHE"
-          export VCPKG_BINARY_SOURCES="clear;nugettimeout,900;nugetconfig,$GITHUB_WORKSPACE/nuget.generated.config,read"
+          export VCPKG_BINARY_SOURCES="clear;nugettimeout,900;nugetconfig,$GITHUB_WORKSPACE/nuget.generated.config,readwrite"
           t0=$(date +%s)
           "${{ env.VCPKG_ROOT }}/vcpkg" install
           t1=$(date +%s)
