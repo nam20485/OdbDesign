@@ -1,7 +1,7 @@
 # Fix record: Turbot `GetDesign` corrupt protobuf (server-README BLOCKER)
 
 **Date:** 2026-09-21 · **Branch:** `nam/fix-filemodel-uninit-pod-members` → `nam20485`
-**Diagnosed from:** `docs/plan/server-README.md` BLOCKER row (client evidence in `/tmp/r1/turbot-*.log`, server `kubectl logs` 22:04–22:10 UTC 2026-09-21).
+**Diagnosed from:** `server-README.md` BLOCKER row (this archive) (client evidence in `/tmp/r1/turbot-*.log`, server `kubectl logs` 22:04–22:10 UTC 2026-09-21).
 
 ## Root cause
 
