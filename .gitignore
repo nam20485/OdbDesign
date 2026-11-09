@@ -71,8 +71,8 @@ scripts/__pycache__/
 
 docs/plan/comprehensive-security-audit/
 
-# Prospect correspondence drafts (Keiron etc.) — local working copies only, never commit
-docs/plan/commercialization/keiron-reply-draft-*.md
+# Commercialization planning + prospect correspondence — local working copies only, never commit
+docs/plan/commercialization/
 
 docs/plan/comprehensive-security-audit (copy)/
 docs/plan/commercialization (copy)/

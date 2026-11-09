@@ -31,10 +31,10 @@ decision records that govern it. Finished work lives in
 * [`client-unification-analysis.md`](client-unification-analysis.md) — adopted 2026-11-08: phased shared-library extraction toward `odbdesign-protoc` (Option 2). **Execution not started.**
 
 ### Commercialization
-* [`commercialization/`](commercialization/) — readiness guide, execution plan (public-repo prep + private overlay), action checklist, and reply drafts. Execution in progress (PR #610 + private overlay landed; checklist A–D open).
+* `commercialization/` — *kept as local working copies only (gitignored); not part of the public plan index.*
 
 ### Security audit
-* [`comprehensive-security-audit/`](comprehensive-security-audit/) — 2026-11-08 consolidated audit (25 confirmed findings, incl. 1 Critical) + proposed remediation order. **No fixes implemented yet; user approval pending.**
+* `comprehensive-security-audit/` — *kept as local working copies only (gitignored); not part of the public plan index.*
 
 ### Backlog / parked
 * [`fastBuild-presets.md`](fastBuild-presets.md) — approved plan (tooling + 4 FASTBuild CMake presets), **never executed** — no presets exist in `CMakePresets.json`.
