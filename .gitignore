@@ -68,3 +68,8 @@ gpg_keys/
 .qwen/tmp/
 # ZCode project config (MCP server defs; may hold ARGOCD_API_TOKEN)
 .zcode/
+scripts/__pycache__/
+.cache/
+
+docs/plan/comprehensive-security-audit/comprehensive-security-audit.md
+docs/plan/comprehensive-security-audit/remediation-plan.md
