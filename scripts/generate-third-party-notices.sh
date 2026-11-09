@@ -7,10 +7,10 @@
 # regenerate it per delivery).
 #
 # Usage:
-#   scripts/generate-third-party-notices.sh [<vcpkg-installed-triplet-dir>]
+#   scripts/generate-third-party-notices.sh [<vcpkg-installed-triplet-dir>] [<out-file>]
 #
-# The default triplet dir is auto-detected from the newest
-# out/build/*/vcpkg_installed/* directory that contains share/*/copyright files.
+# <vcpkg-installed-triplet-dir> defaults to auto-detection (see below);
+# <out-file> defaults to THIRD_PARTY_NOTICES.txt in the repository root.
 
 set -euo pipefail
 
@@ -18,12 +18,15 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 TRIPLET_DIR="${1:-}"
 if [[ -z "${TRIPLET_DIR}" ]]; then
-    # Default to the main release build's target triplet: prefer the dynamic
-    # triplet (the shared-runtime release configuration) inside the
-    # linux-dynamic-release build; fall back to any triplet with copyright
-    # files there, then any other build dir. Set PREFERRED_BUILD to override.
+    # Auto-detect the installed-port set, preferring the dynamic triplet (the
+    # shared-runtime release configuration). Two layouts exist:
+    #   1. shared VCPKG_INSTALLED_DIR: out/vcpkg_installed/<triplet>/ (current)
+    #   2. legacy per-build dirs: out/build/<preset>/vcpkg_installed/<triplet>/
+    # Set PREFERRED_BUILD to override the legacy fallback preset.
     prefer_build="${PREFERRED_BUILD:-linux-dynamic-release}"
-    for cand in "${REPO_ROOT}/out/build/${prefer_build}/vcpkg_installed/"*-dynamic/ \
+    for cand in "${REPO_ROOT}"/out/vcpkg_installed/*-dynamic/ \
+                "${REPO_ROOT}"/out/vcpkg_installed/*/ \
+                "${REPO_ROOT}/out/build/${prefer_build}/vcpkg_installed/"*-dynamic/ \
                 "${REPO_ROOT}/out/build/${prefer_build}/vcpkg_installed/"*/ \
                 "${REPO_ROOT}"/out/build/*/vcpkg_installed/*/; do
         [[ -d "${cand}" ]] || continue
@@ -36,10 +39,14 @@ fi
 
 if [[ -z "${TRIPLET_DIR}" ]] || ! ls "${TRIPLET_DIR}"/share/*/copyright >/dev/null 2>&1; then
     echo "error: no vcpkg_installed triplet dir with share/*/copyright files found." >&2
-    echo "usage: $0 [<vcpkg-installed-triplet-dir>]   (e.g. out/build/linux-dynamic-release/vcpkg_installed/x64-linux-dynamic)" >&2
+    echo "usage: $0 [<vcpkg-installed-triplet-dir>] [<out-file>]   (e.g. out/build/linux-dynamic-release/vcpkg_installed/x64-linux-dynamic)" >&2
     exit 1
 fi
 TRIPLET_DIR="${TRIPLET_DIR%/}"
+
+# display the triplet dir repo-relative in the generated file — absolute
+# paths would leak machine layout and churn the committed diff
+TRIPLET_DIR_DISPLAY="${TRIPLET_DIR#"$REPO_ROOT"/}"
 
 OUT="${2:-${REPO_ROOT}/THIRD_PARTY_NOTICES.txt}"
 
@@ -49,12 +56,12 @@ OUT="${2:-${REPO_ROOT}/THIRD_PARTY_NOTICES.txt}"
     echo "OdbDesign (https://github.com/nam20485/OdbDesign) is licensed under the"
     echo "GNU Affero General Public License v3.0 (see LICENSE). Binary distributions"
     echo "embed or link the following third-party components. Exact pinned versions"
-    echo "are recorded in vcpkg.json (baseline + overrides) and in the SPDX SBOM"
-    echo "generated for each build; per-port license text follows verbatim from the"
-    echo "vcpkg 'copyright' file of each installed port."
+    echo "are recorded in vcpkg.json (package overrides) and vcpkg-configuration.json"
+    echo "(registry baseline), and in the SPDX SBOM generated for each build;"
+    echo "per-port license text follows verbatim from the vcpkg 'copyright' file"
+    echo "of each installed port."
     echo
-    echo "Generated from: ${TRIPLET_DIR}"
-    echo "Generated date: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+    echo "Generated from: ${TRIPLET_DIR_DISPLAY} via scripts/generate-third-party-notices.sh"
     echo
 
     for copyright_file in "${TRIPLET_DIR}"/share/*/copyright; do

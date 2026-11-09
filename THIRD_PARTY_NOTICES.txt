@@ -3,12 +3,12 @@ THIRD-PARTY SOFTWARE NOTICES AND INFORMATION
 OdbDesign (https://github.com/nam20485/OdbDesign) is licensed under the
 GNU Affero General Public License v3.0 (see LICENSE). Binary distributions
 embed or link the following third-party components. Exact pinned versions
-are recorded in vcpkg.json (baseline + overrides) and in the SPDX SBOM
-generated for each build; per-port license text follows verbatim from the
-vcpkg 'copyright' file of each installed port.
+are recorded in vcpkg.json (package overrides) and vcpkg-configuration.json
+(registry baseline), and in the SPDX SBOM generated for each build;
+per-port license text follows verbatim from the vcpkg 'copyright' file
+of each installed port.
 
-Generated from: /home/nam20485/src/github/nam20485/OdbDesign/out/build/linux-dynamic-release/vcpkg_installed/x64-linux-dynamic
-Generated date: 2026-11-07T10:51:32Z
+Generated from: out/vcpkg_installed/x64-linux-dynamic via scripts/generate-third-party-notices.sh
 
 ================================================================================
 ### abseil

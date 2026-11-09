@@ -8,8 +8,10 @@ All contributed code must be covered by accompanying test cases. Please make sur
 
 Before your first pull request can be merged, you must agree to the
 [Contributor License Agreement](../.github/CLA.md) (individual or corporate,
-as applicable). The CLA Assistant bot will present it for one-click sign-off
-when you open your first pull request. The CLA grants the project the right to
-distribute your contribution under the open-source AGPL-3.0 license *and* under
-commercial terms — this is what keeps the project's dual-licensing model
+as applicable). Once CLA Assistant is enabled on this repository, the bot will
+present the CLA for one-click sign-off when you open your first pull request;
+until then, please state in your pull request that you accept the CLA. The CLA
+grants the project the right to distribute your contribution under the
+open-source AGPL-3.0 license *and* under commercial terms — this is what keeps
+the project's dual-licensing model
 ([COMMERCIAL-LICENSE.md](../COMMERCIAL-LICENSE.md)) legally sound.

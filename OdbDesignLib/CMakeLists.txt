@@ -32,7 +32,7 @@ target_include_directories(OdbDesign
                            PUBLIC
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
-                           $<INSTALL_INTERFACE:include>)
+                           $<INSTALL_INTERFACE:include/OdbDesign>)
 
 # PCH
 #if (NOT DEFINED ENV{CI})

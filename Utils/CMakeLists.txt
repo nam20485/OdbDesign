@@ -8,7 +8,7 @@ add_library(Utils SHARED "utils_export.h"   "ExitCode.h" "ThreadSafeQueue.h" "Wo
 target_include_directories(Utils
                            INTERFACE
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-                           $<INSTALL_INTERFACE:include>)
+                           $<INSTALL_INTERFACE:include/Utils>)
 
 ## PCH
 #if (NOT DEFINED ENV{CI})

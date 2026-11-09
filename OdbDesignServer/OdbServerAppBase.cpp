@@ -128,7 +128,14 @@ namespace Odb::Lib::App
 		{
 			// honor the bind address for gRPC too (default "0.0.0.0"), so e.g.
 		// loopback-locked builds cannot be exposed via the gRPC port
-		std::string grpc_server_address = args().bindAddress() + ":" + std::to_string(args().grpcPort());
+		auto grpcBindAddress = args().bindAddress();
+		// bracket a bare IPv6 literal so "<addr>:<port>" stays parseable
+		// (e.g. "::1" -> "[::1]:<port>"); IPv4 addresses and hostnames unchanged
+		if (!grpcBindAddress.empty() && grpcBindAddress.front() != '[' && grpcBindAddress.find(':') != std::string::npos)
+		{
+			grpcBindAddress = "[" + grpcBindAddress + "]";
+		}
+		std::string grpc_server_address = grpcBindAddress + ":" + std::to_string(args().grpcPort());
 			m_grpcThread = std::make_unique<std::thread>(&OdbServerAppBase::RunGrpcServer, this, grpc_server_address, m_pDesignCache);
 			std::cout << "gRPC server thread started on port " << args().grpcPort() << std::endl;
 		}
