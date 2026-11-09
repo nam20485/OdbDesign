@@ -8,7 +8,7 @@
 
 ## Section 0 — SHORT-LIST: resolve before sending the Keiron reply (today, 2026-11-08)
 
-**Hard blockers: none.** The reply (two drafts to choose from: `keiron-reply-draft-friendly-2026-11-08.md` and `keiron-reply-draft-formal-2026-11-08.md`) is deliberately an information-gathering response — no binding terms, no prices, no entity signature required. The five items below are the only decisions that shape what you press "send" on:
+**Hard blockers: none.** The reply (two drafts to choose from — `keiron-reply-draft-friendly-2026-11-08.md` and `keiron-reply-draft-formal-2026-11-08.md`; both are **local working copies only**, gitignored, never committed) is deliberately an information-gathering response — no binding terms, no prices, no entity signature required. The five items below are the only decisions that shape what you press "send" on:
 
 | # | Decision | Recommendation | Time |
 |---|---|---|---|
