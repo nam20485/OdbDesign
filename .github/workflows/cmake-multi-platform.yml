@@ -246,6 +246,7 @@ jobs:
         # every package's ABI hash, so each image bump silently invalidated the
         # Windows binary cache. Cloning the pinned VCPKG_COMMIT keeps all three
         # platforms on identical tooling (and identical ABI).
+        shell: bash
         run: |
           git init "${{ env.VCPKG_ROOT }}"
           git -C "${{ env.VCPKG_ROOT }}" remote add origin https://github.com/Microsoft/vcpkg.git
@@ -254,8 +255,21 @@ jobs:
           # bootstrap-vcpkg.sh runs under Git Bash on Windows and downloads the
           # Windows vcpkg binary — one path for all three platforms. It takes no
           # flags (it rejected the cargo-culted "-noninteractive" with "Unknown
-          # argument" on every leg).
-          bash "${{ env.VCPKG_ROOT }}/bootstrap-vcpkg.sh"
+          # argument" on every leg). Its internal download retry window is ~20s,
+          # which a GitHub Releases CDN 504 blip easily outlasts (2026-11-09: all
+          # three legs died to `curl: (22) 504` on "Downloading vcpkg-glibc"),
+          # so retry with backoff — a completed bootstrap is idempotent to re-run.
+          attempts=0
+          until bash "${{ env.VCPKG_ROOT }}/bootstrap-vcpkg.sh"; do
+            attempts=$((attempts + 1))
+            if [ "$attempts" -ge 5 ]; then
+              echo "::error::bootstrap-vcpkg failed after $attempts attempts"
+              exit 1
+            fi
+            delay=$((attempts * 30))
+            echo "bootstrap attempt $attempts failed — retrying in ${delay}s"
+            sleep "$delay"
+          done
 
       # (The old "Verify NuGet Feed Credentials (Non-Windows)" step grepped
       # nuget.generated.config for ClearTextPassword/defaultPushSource — it

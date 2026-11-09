@@ -138,7 +138,20 @@ jobs:
           git -C "${{ env.VCPKG_ROOT }}" remote add origin https://github.com/Microsoft/vcpkg.git
           git -C "${{ env.VCPKG_ROOT }}" fetch --depth 1 origin "${{ env.VCPKG_COMMIT }}"
           git -C "${{ env.VCPKG_ROOT }}" checkout --detach FETCH_HEAD
-          "${{ env.VCPKG_ROOT }}/bootstrap-vcpkg.sh"
+          # The tool-binary download's own retry window (~20s) is shorter than a
+          # GitHub Releases CDN 504 blip (2026-11-09: this leg died to
+          # `curl: (22) 504` on "Downloading vcpkg-glibc"); retry with backoff.
+          attempts=0
+          until "${{ env.VCPKG_ROOT }}/bootstrap-vcpkg.sh"; do
+            attempts=$((attempts + 1))
+            if [ "$attempts" -ge 5 ]; then
+              echo "::error::bootstrap-vcpkg failed after $attempts attempts"
+              exit 1
+            fi
+            delay=$((attempts * 30))
+            echo "bootstrap attempt $attempts failed — retrying in ${delay}s"
+            sleep "$delay"
+          done
 
       # (The old "Setup NuGet API Key" step is gone: mono `nuget setApiKey`
       # never contributed to vcpkg's pushes — vcpkg passes no -ApiKey and the
@@ -291,7 +304,20 @@ jobs:
           git -C "${{ env.VCPKG_ROOT }}" remote add origin https://github.com/Microsoft/vcpkg.git
           git -C "${{ env.VCPKG_ROOT }}" fetch --depth 1 origin "${{ env.VCPKG_COMMIT }}"
           git -C "${{ env.VCPKG_ROOT }}" checkout --detach FETCH_HEAD
-          "${{ env.VCPKG_ROOT }}/bootstrap-vcpkg.sh"
+          # The tool-binary download's own retry window (~20s) is shorter than a
+          # GitHub Releases CDN 504 blip (2026-11-09: Linux leg died to
+          # `curl: (22) 504` on "Downloading vcpkg-glibc"); retry with backoff.
+          attempts=0
+          until "${{ env.VCPKG_ROOT }}/bootstrap-vcpkg.sh"; do
+            attempts=$((attempts + 1))
+            if [ "$attempts" -ge 5 ]; then
+              echo "::error::bootstrap-vcpkg failed after $attempts attempts"
+              exit 1
+            fi
+            delay=$((attempts * 30))
+            echo "bootstrap attempt $attempts failed — retrying in ${delay}s"
+            sleep "$delay"
+          done
 
       # (The old "Setup NuGet API Key" step is gone: mono `nuget setApiKey`
       # never contributed to vcpkg's pushes — vcpkg passes no -ApiKey and the
