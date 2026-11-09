@@ -58,7 +58,7 @@ A branch in the public repo is not private (all refs fetchable) — separate rep
 
 ## Phase 3 — User-side checklist (documented only)
 
-CLA Assistant enablement; licensor entity decision (guide: The Intel Agency now, WA LLC at $50k ARR); Keiron reply + pricing one-pager (out of scope this round); M2 auth roadmap unaffected.
+CLA Assistant enablement; licensor entity decision (guide: Artificial Intelligence Agency LLC now, WA LLC at $50k ARR); Keiron reply + pricing one-pager (out of scope this round); M2 auth roadmap unaffected.
 
 ## Notes & risks
 

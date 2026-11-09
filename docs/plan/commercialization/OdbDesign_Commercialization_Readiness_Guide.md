@@ -25,7 +25,7 @@ ID Readiness Domain & Item Action Type What Must Be Resolved to Declare Readines
 Investigate & Decide   
 Select the legal entity that will sign commercial contracts, hold commercial licensing rights, and shield personal assets from warranty or indemnity claims.
 
-> **Status (2026-11-08): DECIDED — license through The Intel Agency** (user feedback 2026-11-08). Execution steps and the 1-page internal IP-license **draft** (Nathan Miller → The Intel Agency) are item **A1** in `commercialization-action-checklist.md` (same directory). Transition to a dedicated WA LLC remains the trigger if ARR exceeds ~$50k. Nothing binding may be signed until the internal IP license is executed.
+> **Status (2026-11-08): DECIDED — license through Artificial Intelligence Agency LLC** (user feedback 2026-11-08). *Naming note:* the registered title is **Artificial Intelligence Agency LLC**; "The Intel Agency" (from the intel-agency.com domain) is an informalism only — email/marketing may use "Artificial Intelligence Agency", while contracts, POs, and invoices always carry the full registered name. Execution steps and the 1-page internal IP-license **draft** (Nathan Miller → Artificial Intelligence Agency LLC) are item **A1** in `commercialization-action-checklist.md` (same directory). Transition to a dedicated WA LLC remains the trigger if ARR exceeds ~$50k. Nothing binding may be signed until the internal IP license is executed.
 
 1.2 Employer CIIAA & Invention Separation
 
@@ -271,9 +271,9 @@ Opt A: Already working—both Keiron and LinBoard3D explicitly contacted you bec
 Noncommercial blocks even internal corporate evaluation without a license; FSL-1.1 allows free internal corporate use, which weakens your leverage for internal factory tools.   
 Recommend Option B 
 
-immediately (The Intel Agency), transitioning to Option C if ARR exceeds \$50k. 
+immediately (Artificial Intelligence Agency LLC), transitioning to Option C if ARR exceeds \$50k.
 
-Why: Never sign an OEM or enterprise contract personally. Using The Intel Agency lets you respond to Keiron today under a corporate liability shield (RCW 25.15.126) once you execute a simple 1-page internal IP license from yourself to the entity. 
+Why: Never sign an OEM or enterprise contract personally. Using Artificial Intelligence Agency LLC lets you respond to Keiron today under a corporate liability shield (RCW 25.15.126) once you execute a simple 1-page internal IP license from yourself to the entity.
 
 Recommend Option B. 
 
@@ -517,7 +517,7 @@ Compliance Stack (Item 5.1)
 Support SLA & Capacity 
 
 Guardrails (Item 6.2)   
-Option A: Direct Corporate Invoicing \+ Wire / Stripe (via The Intel Agency / 
+Option A: Direct Corporate Invoicing \+ Wire / Stripe (via Artificial Intelligence Agency LLC /
 
 OdbDesign LLC). 
 
@@ -835,7 +835,7 @@ You do not need to build every long-term automation tool before replying to the 
 
 > **Status (2026-11-07): Partially done.** Technical decisions are locked (Ed25519 offline licensing; watermark-not-keyfile for OEM DLLs; loopback-locked evaluation; **private delivery only** — SDK archives are never public release assets). Entity, licensing model, prices, and support-tier pricing remain open user decisions (items 1.1, 2.2, 2.3).
 
-Licensor Entity: Confirm using The Intel Agency (or forming OdbDesign LLC) as the contracting entity. 
+Licensor Entity: Confirm using Artificial Intelligence Agency LLC (or forming OdbDesign LLC) as the contracting entity.
 
 Keiron Licensing Model: Present two clean options to Keiron: (a) Annual OEM Machine-Bundling Subscription (\$15k–\$28k/yr tiered by annual HF2 machine volume, or \$45k/yr unlimited, including all updates and perpetual end-customer machine runtime rights) and (b) Base R\&D SDK Subscription (\$7.5k/yr) \+ Per-Machine Royalty Packs (\$250–\$300/machine). 
 
@@ -870,7 +870,7 @@ On 2026-11-07 the engineering workstreams of this guide (execution-sequence Step
 
 | Item | Domain | Status |
 |---|---|---|
-| 1.1 Licensor entity | Legal/IP | **Decided 2026-11-08 (The Intel Agency)** — execution steps pending (checklist A1) |
+| 1.1 Licensor entity | Legal/IP | **Decided 2026-11-08 (Artificial Intelligence Agency LLC)** — execution steps pending (checklist A1) |
 | 1.2 Employer CIIAA separation | Legal/IP | **Resolved — documented separation** (provenance memo pending, checklist A2) |
 | 1.3 Chain-of-title / CLA | Legal/IP | **In progress** — CLA text done (PR #610); CLA Assistant enablement (A3) + wen2so/Jandody carve-out (A4) pending |
 | 1.4 Dual-licensing framework | Legal/IP | **Complete** (AGPL-3.0 kept + `COMMERCIAL-LICENSE.md`) |
@@ -908,7 +908,7 @@ On 2026-11-07 the engineering workstreams of this guide (execution-sequence Step
 
 *Folded from user feedback, 2026-11-08:*
 
-9. **Licensor entity = The Intel Agency** (item 1.1). Execution = 1-page internal IP license from Nathan Miller to the entity (draft in the action checklist, A1); transition to a dedicated WA LLC if ARR passes ~$50k.
+9. **Licensor entity = Artificial Intelligence Agency LLC** (item 1.1; registered name — "The Intel Agency" is an informal nickname from the domain and never appears on legal documents; email signatures use "Artificial Intelligence Agency"). Execution = 1-page internal IP license from Nathan Miller to the entity (draft in the action checklist, A1); transition to a dedicated WA LLC if ARR passes ~$50k.
 10. **Employer separation is factual and documented** (item 1.2): OdbDesign predates the Cincinnatus employment by ~2 years; employer work happens on a corporate ChromeOS laptop; no employer equipment/time/networks touch OdbDesign. One-page provenance memo to be written (A2).
 11. **Licensed evaluation policy** (item 2.4; decided 2026-11-08 and **amended the same day** — an initial eval-free/source-POC decision was reversed): evaluation runs through a mutual NDA + evaluation agreement and a 30-day, watermarked, loopback-restricted evaluation binary — explicit entitlement keeps the licensor in the loop and every shipped build attributable. The AGPL internal-use right still exists in law but is not advertised as the evaluation path.
 12. **Strictly binary-only, no escrow** (item 2.5): no source-code continuity offered at this stage.
@@ -924,7 +924,7 @@ On 2026-11-07 the engineering workstreams of this guide (execution-sequence Step
 ### Deferred items — key points and next steps
 
 **Legal / corporate (user + counsel):**
-- 1.1 entity: confirm The Intel Agency (or form WA LLC) + 1-page internal IP license — *before any binding quote*.
+- 1.1 entity: confirm Artificial Intelligence Agency LLC (or form WA LLC) + 1-page internal IP license — *before any binding quote*.
 - 4.3 / 4.4 agreements: Mutual NDA + 30-day Eval Agreement, bilingual China NNN, MCLA + Schedule A (OEM bundling) + Schedule B (Enterprise Server + Seats), carrying the Siemens ODB++ disclaimer and EAR clause. Nothing technical blocks these.
 - 1.3 remainder: enable CLA Assistant in the browser (signatures stored in a side repo, pointing at `.github/CLA.md`) **before accepting any external PR**.
 

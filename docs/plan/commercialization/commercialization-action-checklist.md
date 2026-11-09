@@ -12,7 +12,7 @@
 
 | # | Decision | Recommendation | Time |
 |---|---|---|---|
-| S1 | **From-address & signature block** — personal, or The Intel Agency? (parent 1.1 / A1) | **Decided 2026-11-08: entity-forward.** Reply from `nmiller@intel-agency.com`, sign "Author & Maintainer, OdbDesign · The Intel Agency" (deliverability verified: Google Workspace MX, SPF, DMARC). Body keeps the author credibility; one clause in the process answer plants the entity. Note: the internal IP license (A1) still gates *signing* anything binding — this email commits nothing. | done |
+| S1 | **From-address & signature block** — personal, or the company? (parent 1.1 / A1) | **Decided 2026-11-08: entity-forward.** Reply from `nmiller@intel-agency.com`, sign "Author & Maintainer, OdbDesign · Artificial Intelligence Agency". **Registered entity: Artificial Intelligence Agency LLC** — email/marketing may drop the "LLC"; contracts, POs, invoices always use the full registered name; "The Intel Agency" is an informal nickname from the domain, never for documents. Deliverability verified (Google Workspace MX, SPF, DMARC). The internal IP license (A1) still gates *signing* anything binding — this email commits nothing. | done |
 | S2 | **Evaluation framing** — licensed eval binaries (parent 2.4, decided + amended 2026-11-08) | Settled: NDA → 30-day watermarked evaluation license (loopback-only for sidecars) → commercial license. Both email drafts carry this framing. Nothing further before sending — the eval agreement paper (A6) is needed only when Keiron actually requests the evaluation. | 0 min |
 | S3 | **No pricing in the first email** (parent 2.3) | Confirmed approach: gather scoping info first; send tailored indicative pricing after the call. Pricing decision (B2) is needed before the *quote*, not before the *reply*. | 0 min |
 | S4 | **Scheduling link works for EU timezones** | Verify the Google Calendar link (docs/README.md) once; note your availability for CET mornings (= early PST) so Monday slots are bookable. | 2 min |
@@ -24,16 +24,16 @@ Also acceptable to attach: nothing. The email is self-contained; the commercial 
 
 ## Section A — Legal & corporate (user + counsel)
 
-### A1. Execute The Intel Agency as licensor entity ☐
-**Parent:** guide 1.1 · **Decided:** 2026-11-08 (The Intel Agency; WA LLC later if ARR > ~$50k)
+### A1. Execute Artificial Intelligence Agency LLC as licensor entity ☐
+**Parent:** guide 1.1 · **Decided:** 2026-11-08 (registered name **Artificial Intelligence Agency LLC**; "The Intel Agency" is an informal nickname from the intel-agency.com domain — never use it on legal documents. A dedicated WA LLC e.g. "OdbDesign LLC" remains the option if ARR > ~$50k.)
 
 Until this is done, nothing binding may be signed by the entity. Steps:
 
 1. Review (optionally with counsel) the 1-page **Internal IP License draft** below.
 2. Fill the bracketed placeholders; print two copies.
-3. Sign both (you are both parties — sign as Nathan Miller, and for The Intel Agency if you are its authorized signer).
+3. Sign both (you are both parties — sign as Nathan Miller, and for Artificial Intelligence Agency LLC if you are its authorized signer).
 4. Scan + store with the other corporate records; log the date in the provenance memo (A2).
-5. Update contract templates (when drafted, A7) so the contracting party is "The Intel Agency"; email signatures may reference the entity from then on.
+5. Update contract templates (when drafted, A7) so the contracting party is "Artificial Intelligence Agency LLC"; email signatures may use the shorter "Artificial Intelligence Agency".
 
 <details><summary><b>Internal IP License — 1-page draft</b> (template; counsel review recommended)</summary>
 
@@ -43,7 +43,8 @@ INTERNAL IP LICENSE AND COMMERCIALIZATION AGREEMENT
 Effective date: [DATE]
 
 Between: Nathan Miller, an individual ("Licensor")
-And: The Intel Agency, a [WA LLC / entity type] ("Licensee")
+And: Artificial Intelligence Agency LLC, a Washington limited liability
+     company ("Licensee")
      (each a "Party", together "the Parties")
 
 1. DEFINITIONS. "OdbDesign" means the software known as OdbDesign,
@@ -78,8 +79,9 @@ And: The Intel Agency, a [WA LLC / entity type] ("Licensee")
 Signed:
 
 _____________________________          _____________________________
-Nathan Miller, Licensor               The Intel Agency, Licensee
-Date:                                 By: Nathan Miller, [Title]
+Nathan Miller, Licensor               Artificial Intelligence Agency LLC,
+Date:                                 Licensee
+                                      By: Nathan Miller, [Title]
                                       Date:
 ```
 </details>
@@ -171,7 +173,7 @@ Steps:
 
 ### B3. Billing/tax stack ☐  (parent 5.1)
 1. Decide: direct PO + wire/Stripe invoice for ≥$10k (recommended for Keiron-class deals); Polar.sh only if you later add self-serve tiers.
-2. If invoicing from The Intel Agency: confirm the entity's bank/tax setup with your accountant (EU reverse-charge VAT handling on the invoice).
+2. If invoicing from Artificial Intelligence Agency LLC: confirm the entity's bank/tax setup with your accountant (EU reverse-charge VAT handling on the invoice).
 
 ---
 
