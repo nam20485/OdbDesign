@@ -3,7 +3,10 @@ out/
 cmake-build-*/
 build/
 build-win/
-artifacts/
+# NOTE: artifacts/ must NOT be ignored — docker-publish.yml extracts the CI
+# build artifacts there and Dockerfile.prebuilt COPYs ./artifacts/* from the
+# build context. Ignoring it (as cae5960 briefly did) breaks every prebuilt
+# image build with "COPY /artifacts/OdbDesignServer: not found".
 output/
 siteout/
 compile_commands.json
