@@ -69,8 +69,10 @@ scripts/__pycache__/
 # Generated site output
 /siteout/
 
-docs/plan/comprehensive-security-audit/comprehensive-security-audit.md
-docs/plan/comprehensive-security-audit/remediation-plan.md
+docs/plan/comprehensive-security-audit/
 
 # Prospect correspondence drafts (Keiron etc.) — local working copies only, never commit
 docs/plan/commercialization/keiron-reply-draft-*.md
+
+docs/plan/comprehensive-security-audit (copy)/
+docs/plan/commercialization (copy)/

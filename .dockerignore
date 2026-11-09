@@ -2,13 +2,29 @@
 out/
 cmake-build-*/
 build/
+build-win/
+artifacts/
+output/
+siteout/
+compile_commands.json
 log.txt
 designs/
 new_designs/
+compose-designs/
 
-# Ignore IDE files
+# Ignore IDE / agent-state directories (large or irrelevant to the build)
 .vs/
 .idea/
+.vscode/
+.cursor/
+.gemini/
+.qwen/
+.zed/
+.kilo/
+.zcode/
+.mimosa/
+.delta/
+.cache/
 
 # Ignore Git-related files
 .git/
@@ -18,8 +34,10 @@ new_designs/
 # Ignore GitHub-related files
 .github/
 
-# Ignore Docker-related files (except Dockerfile itself)
+# Ignore Docker-related files (the builder gets the Dockerfile itself)
 docker-compose.yml
+compose.yml
+compose.local.yml
 *.code-workspace
 
 # Ignore vcpkg artifacts
@@ -30,11 +48,25 @@ ssl/
 
 # Ignore testing artifacts
 Testing/
+testlog.txt
+testlog.txt.tmp*
+testlog.xml
+TEST_DATA
+TEST_DATA.zip
+OdbDesignServer/designs/
+OdbDesignServer/yaak
+
+# Ignore generated docs
+docs/api/
 
 # Ignore other Docker files
 Dockerfile*
 
-# Local environment files (may contain secrets) — never send to the builder
+# Local environment / credential files (may contain secrets) — never send to the builder
 .env
 .env.local
+.env.*.local
 local.nuget.config
+nuget.generated.config
+gpg_keys/
+deploy/kubeconfig
