@@ -8,10 +8,12 @@ including the right to offer the combined work under commercial terms.
 
 **By submitting a pull request to this repository you agree to the applicable
 agreement below (Individual for personal contributions, Corporate for
-contributions made on behalf of your employer).** The CLA Assistant bot will
-present this document for one-click sign-off when you open your first pull
-request. This file is the authoritative text; CLA Assistant only records your
-acceptance of it.
+contributions made on behalf of your employer).** Once CLA Assistant is
+enabled on this repository, the bot will present this document for one-click
+sign-off when you open your first pull request; until then, please state in
+your pull request that you accept this agreement. This file is the
+authoritative text either way; CLA Assistant only records your acceptance of
+it.
 
 > This is a template that has not been reviewed by legal counsel for your
 > jurisdiction. Contributors with questions should raise them in the pull
