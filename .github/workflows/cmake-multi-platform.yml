@@ -63,21 +63,27 @@ jobs:
       checks: write
       packages: write
     env:
-      # Disable NuGet credential-provider plugins for the whole job. When a
-      # GitHub Packages request is challenged, nuget.exe routes auth through
-      # any installed provider (runner images ship one; the old workflow also
-      # installed artifacts-credprovider), the provider demands INTERACTIVE
-      # auth, and nuget aborts without ever trying the config's credentials —
-      # observed live on the Windows leg: every push failed "Your request
-      # could not be authenticated… credential providers requested manual
-      # action" while the identical config worked on Linux/macOS (no provider
-      # present). The mac/linux lanes already run plugin-free; this makes
-      # Windows identical. Same trick as scripts/setup-vcpkg-cache.ps1 and
+      # Disable NuGet credential-provider plugins — WINDOWS ONLY (empty on
+      # Unix via the matrix). On Windows nuget.exe, a single-space value is
+      # the documented "no plugins" switch: when a GitHub Packages request is
+      # challenged, nuget otherwise routes auth through any installed provider
+      # (runner images ship one; the old workflow also installed
+      # artifacts-credprovider), the provider demands INTERACTIVE auth, and
+      # nuget aborts without ever trying the config's credentials — observed
+      # live on the Windows leg: every push failed "Your request could not be
+      # authenticated… credential providers requested manual action" while the
+      # identical config worked on Linux/macOS. Under MONO the space is NOT a
+      # switch: nuget.exe validates it as a literal plugin path and fails
+      # every feed request with "The plugin file path ' ' is invalid" — which
+      # silently broke feed RESTORES on macOS (run 42722229213: 22 packages
+      # "Unable to find version" though present in the feed, full rebuild,
+      # then 409s re-pushing existing versions). So: " " on Windows, "" on
+      # Unix. Same trick as scripts/setup-vcpkg-cache.ps1 and
       # docs/reference/vcpkg/localdev-gh-binary-cacheing.md.
-      NUGET_PLUGIN_PATHS: " "
+      NUGET_PLUGIN_PATHS: ${{ matrix.nugetPluginPaths }}
 
     strategy:
-      # Set fail-fast to false to ensure that feedback is delivered for all matrix combinations. Consider changing this to true when your workflow is stable.
+      # Set fail-fast to false to ensure that feedback is delivered for all matrix combinations. Consider changing to true when your workflow is stable.
       fail-fast: false
 
       matrix:
@@ -85,15 +91,18 @@ jobs:
           # Windows x64 Release
           - os: windows-2022
             preset: x64-release
+            nugetPluginPaths: " "
           # Linux x64 Release (upgraded to 24.04 for newer toolchain)
           # dynamic triplet: shared protobuf/gRPC runtime — the static
           # linux-release preset loads two protobuf copies and crashes
           # (see docs/completed/linux-dynamic-release-plan.md)
           - os: ubuntu-24.04
             preset: linux-dynamic-release
+            nugetPluginPaths: ""
           # MacOS x64 Release
           - os: macos-15
             preset: macos-release
+            nugetPluginPaths: ""
           # Linux mingw x64 Release
           # - os: ubuntu-22.04
           #   preset: linux-mingw-w64-release
