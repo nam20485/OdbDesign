@@ -39,7 +39,11 @@ namespace Odb::Test
 {
 	namespace
 	{
-		constexpr auto kParseTimeout = std::chrono::seconds(60);
+		// 5-minute coverage-build budget, matching ResponseCacheTests (a66552e)
+		// and RequestLoadDesignTests (689f16b): parse + background
+		// pre-serialization of the sample design routinely takes 100-300s on
+		// the gcov legs, so a 60s budget flaked there.
+		constexpr auto kParseTimeout = std::chrono::minutes(5);
 
 		// Deterministic serialization (map fields in sorted key order).
 		//
@@ -1138,10 +1142,14 @@ namespace Odb::Test
 		// The pre-serialization worker must skip the monolithic tree build for
 		// an over-budget design: no in-RAM payload appears (the design is
 		// served by GetDesignStream + spool instead).
+		// 10s window (not 2s): the benchmark comment elsewhere in this suite
+		// cites ~2s release-build serialization for the sample design, so a 2s
+		// window lets a regressed guard's late commit land just past the
+		// deadline and pass vacuously.
 		EXPECT_FALSE(waitForCondition([this, &designName]()
 		{
 			return m_sharedDesignCache->HasCachedResponse(designName);
-		}, std::chrono::seconds(2)))
+		}, std::chrono::seconds(10)))
 			<< "over-budget designs must not get a monolithic in-RAM response payload";
 
 		m_sharedDesignCache->setMonolithicWireBudget(0);

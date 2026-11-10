@@ -35,9 +35,9 @@ env:
   VCPKG_COMMIT: 4f6d4ae8247b2dcae554555a135e52bb449dd524
   # Override vcpkg's default binary cache to a known path for actions/cache
   VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}/.vcpkg-binary-cache
-  # GitHub Packages NuGet feed URLs used for package source resolution and push/API key association.
+  # GitHub Packages NuGet feed URL (v3 index.json — used for reads AND pushes;
+  # the extensionless push URL is dead, see the config-generation step).
   FEED_URL: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
-  FEED_PUSH_URL: https://nuget.pkg.github.com/${{ github.repository_owner }}
   # support for GH dependency graph vcpkg integration
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   VCPKG_FEATURE_FLAGS: dependencygraph
@@ -62,9 +62,28 @@ jobs:
       contents: write
       checks: write
       packages: write
+    env:
+      # Disable NuGet credential-provider plugins — WINDOWS ONLY (empty on
+      # Unix via the matrix). On Windows nuget.exe, a single-space value is
+      # the documented "no plugins" switch: when a GitHub Packages request is
+      # challenged, nuget otherwise routes auth through any installed provider
+      # (runner images ship one; the old workflow also installed
+      # artifacts-credprovider), the provider demands INTERACTIVE auth, and
+      # nuget aborts without ever trying the config's credentials — observed
+      # live on the Windows leg: every push failed "Your request could not be
+      # authenticated… credential providers requested manual action" while the
+      # identical config worked on Linux/macOS. Under MONO the space is NOT a
+      # switch: nuget.exe validates it as a literal plugin path and fails
+      # every feed request with "The plugin file path ' ' is invalid" — which
+      # silently broke feed RESTORES on macOS (run 42722229213: 22 packages
+      # "Unable to find version" though present in the feed, full rebuild,
+      # then 409s re-pushing existing versions). So: " " on Windows, "" on
+      # Unix. Same trick as scripts/setup-vcpkg-cache.ps1 and
+      # docs/reference/vcpkg/localdev-gh-binary-cacheing.md.
+      NUGET_PLUGIN_PATHS: ${{ matrix.nugetPluginPaths }}
 
     strategy:
-      # Set fail-fast to false to ensure that feedback is delivered for all matrix combinations. Consider changing this to true when your workflow is stable.
+      # Set fail-fast to false to ensure that feedback is delivered for all matrix combinations. Consider changing to true when your workflow is stable.
       fail-fast: false
 
       matrix:
@@ -72,15 +91,18 @@ jobs:
           # Windows x64 Release
           - os: windows-2022
             preset: x64-release
+            nugetPluginPaths: " "
           # Linux x64 Release (upgraded to 24.04 for newer toolchain)
           # dynamic triplet: shared protobuf/gRPC runtime — the static
           # linux-release preset loads two protobuf copies and crashes
           # (see docs/completed/linux-dynamic-release-plan.md)
           - os: ubuntu-24.04
             preset: linux-dynamic-release
+            nugetPluginPaths: ""
           # MacOS x64 Release
           - os: macos-15
             preset: macos-release
+            nugetPluginPaths: ""
           # Linux mingw x64 Release
           # - os: ubuntu-22.04
           #   preset: linux-mingw-w64-release
@@ -123,8 +145,13 @@ jobs:
         run: brew install mono
         if: matrix.os == 'macos-15'
 
-      # Generate NuGet config with PAT for GitHub Packages binary cache
-      # Uses VCPKG_PAT_TOKEN secret for write access on trusted events
+      # Generate NuGet config for the GitHub Packages binary cache.
+      # Auth is the workflow's GITHUB_TOKEN, NOT a user PAT: packages created
+      # by GITHUB_TOKEN inherit the repository's visibility (public) and so
+      # are free, while PAT-pushed packages default to PRIVATE and refill the
+      # account's private-package quota — the 2026-02-14 → 2026-11-08 outage
+      # (every push 403'd "billing limit"). Fork PRs get a fork GITHUB_TOKEN:
+      # feed writes fail non-fatally there (same as the old empty-PAT case).
       # Note: The ${{ }} syntax is GitHub Actions expression interpolation, which happens
       # BEFORE the bash script runs. The 'EOF' heredoc marker is quoted only to prevent
       # bash variable interpolation; it does not affect GitHub Actions expression interpolation.
@@ -143,15 +170,18 @@ jobs:
             <packageSourceCredentials>
               <GitHubPackages>
                 <add key="Username" value="${{ env.USERNAME }}" />
-                <add key="ClearTextPassword" value="${{ secrets.VCPKG_PAT_TOKEN }}" />
+                <add key="ClearTextPassword" value="${{ secrets.GITHUB_TOKEN }}" />
               </GitHubPackages>
             </packageSourceCredentials>
             <apiKeys>
-              <add key="${{ env.FEED_URL }}" value="${{ secrets.VCPKG_PAT_TOKEN }}" />
-              <add key="${{ env.FEED_PUSH_URL }}" value="${{ secrets.VCPKG_PAT_TOKEN }}" />
+              <add key="${{ env.FEED_URL }}" value="${{ secrets.GITHUB_TOKEN }}" />
             </apiKeys>
             <config>
-              <add key="defaultPushSource" value="${{ env.FEED_PUSH_URL }}" />
+              <!-- defaultPushSource MUST be the v3 index.json URL: the
+                   extensionless form is rejected by GitHub's service for
+                   repository-less nupkgs (POC-validated 2026-11-08,
+                   docs/plan/vcpkg-github-packages-outage-fix.md §3 RC2). -->
+              <add key="defaultPushSource" value="${{ env.FEED_URL }}" />
               <add key="signatureValidationMode" value="accept" />
             </config>
           </configuration>
@@ -162,12 +192,12 @@ jobs:
           #   2. 'nugetconfig' = GitHub Packages NuGet feed (persistent, shared across branches/PRs)
           #      Survives actions/cache eviction, provides cross-branch sharing.
           #      All platforms readwrite: the feed is the only layer that outlives the
-          #      10 GB org actions/cache quota. Writes go through vcpkg's own nuget.exe
-          #      (mono on Unix) with the API key registered by the "Setup NuGet API
-          #      Key" step — previously Linux/macOS were read-only because that push
-          #      path was silently broken (its `mono $(which nuget)` found no binary
-          #      and `|| true` hid the failure, so the feed never accumulated
-          #      Linux/macOS packages and PR builds fell back to cold rebuilds).
+          #      10 GB org actions/cache quota. Push auth rides the config above
+          #      (GITHUB_TOKEN as ClearTextPassword/apiKey, index.json push source)
+          #      — validated end-to-end on ubuntu-24.04 + macos-15 runners
+          #      (2026-11-08, branch nam/vcpkg-cache-poc): vcpkg push + feed-only
+          #      restore round-trips pass on both OSes. Feed health is asserted
+          #      for real by vcpkg-cache-warm.yml's round-trip tripwire.
           # Note: The x-gha and actions backends were removed in vcpkg 2025+.
           # nugettimeout overrides vcpkg's default 100s NuGet CLI timeout (large packages need more time).
           # Note: nugettimeout must come BEFORE nugetconfig to be applied to it
@@ -207,45 +237,14 @@ jobs:
           BYTES=$(du -sb "$VCPKG_DEFAULT_BINARY_CACHE" 2>/dev/null | cut -f1 || echo 0)
           echo "bytes=${BYTES:-0}" >> "$GITHUB_OUTPUT"
 
-      - name: Setup NuGet Credential Provider (Windows)
-        if: matrix.os == 'windows-2022'
-        shell: pwsh
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          # Install Azure Artifacts credential provider for non-interactive NuGet auth
-          # The upstream bootstrap/install scripts call api.github.com anonymously, which
-          # 403s on shared runner egress IPs (60 req/hr per IP). Resolve and fetch the
-          # installer through the authenticated API, verify its digest, then patch its
-          # remaining release lookups to send the token too.
-          $apiHeaders = @{ Authorization = "Bearer $env:GITHUB_TOKEN"; Accept = "application/vnd.github+json" }
-          $release = Invoke-RestMethod -Headers $apiHeaders "https://api.github.com/repos/microsoft/artifacts-credprovider/releases/latest"
-          $installAsset = $release.assets | Where-Object { $_.name -eq "installcredprovider.ps1" }
-          if (!$installAsset) { throw "installcredprovider.ps1 asset missing from release $($release.tag_name)" }
-          Invoke-WebRequest -Headers @{ Authorization = "Bearer $env:GITHUB_TOKEN"; Accept = "application/octet-stream" } `
-            -Uri "https://api.github.com/repos/microsoft/artifacts-credprovider/releases/assets/$($installAsset.id)" `
-            -OutFile installcredprovider.ps1
-          if ($installAsset.digest -and $installAsset.digest.StartsWith("sha256:")) {
-            $expectedHash = $installAsset.digest.Substring(7)
-            $actualHash = (Get-FileHash installcredprovider.ps1 -Algorithm SHA256).Hash
-            if ($actualHash -ne $expectedHash) { throw "installcredprovider.ps1 hash mismatch: $actualHash != $expectedHash" }
-          }
-          (Get-Content installcredprovider.ps1 -Raw) `
-            -replace 'Invoke-WebRequest -UseBasicParsing', 'Invoke-WebRequest -UseBasicParsing -Headers @{ Authorization = "Bearer " + $env:GITHUB_TOKEN }' |
-            Set-Content installcredprovider.ps1
-          Invoke-Expression "& { $(Get-Content installcredprovider.ps1 -Raw) } -AddNetfx"
-          # Set environment variable to allow credential provider to work non-interactively
-          echo "NUGET_CREDENTIALPROVIDER_SESSIONTOKENCACHE_ENABLED=true" >> $env:GITHUB_ENV
-          # Set API key for NuGet push to GitHub Packages
-          # Only call setApiKey if the token is available (Dependabot PRs cannot access secrets)
-          $env:NUGET_API_KEY = "${{ secrets.VCPKG_PAT_TOKEN }}"
-          if ($env:NUGET_API_KEY) {
-            nuget setApiKey $env:NUGET_API_KEY -Source "${{ env.FEED_PUSH_URL }}" -NonInteractive
-          } else {
-            Write-Host "Skipping nuget setApiKey: VCPKG_PAT_TOKEN is not available (likely a Dependabot PR)"
-          }
-          # Also set in environment for vcpkg to use
-          echo "NUGET_API_KEY=${{ secrets.VCPKG_PAT_TOKEN }}" >> $env:GITHUB_ENV
+      # (The old "Setup NuGet Credential Provider (Windows)" step is REMOVED:
+      # its provider hijacked GitHub Packages auth on the Windows leg — on any
+      # auth challenge nuget.exe routed through the provider, which demanded
+      # interactive sign-in and aborted ("credential providers requested manual
+      # action"), never falling back to the config's credentials. Linux/macOS
+      # never had a provider and authenticate fine with the same config, and
+      # the job-level NUGET_PLUGIN_PATHS=" " above neutralizes any provider
+      # preinstalled on the runner image, making Windows identical.)
 
       #
       #   os != windows-2022 (i.e. Linux, MacOS)
@@ -256,6 +255,7 @@ jobs:
         # every package's ABI hash, so each image bump silently invalidated the
         # Windows binary cache. Cloning the pinned VCPKG_COMMIT keeps all three
         # platforms on identical tooling (and identical ABI).
+        shell: bash
         run: |
           git init "${{ env.VCPKG_ROOT }}"
           git -C "${{ env.VCPKG_ROOT }}" remote add origin https://github.com/Microsoft/vcpkg.git
@@ -264,29 +264,28 @@ jobs:
           # bootstrap-vcpkg.sh runs under Git Bash on Windows and downloads the
           # Windows vcpkg binary — one path for all three platforms. It takes no
           # flags (it rejected the cargo-culted "-noninteractive" with "Unknown
-          # argument" on every leg).
-          bash "${{ env.VCPKG_ROOT }}/bootstrap-vcpkg.sh"
+          # argument" on every leg). Its internal download retry window is ~20s,
+          # which a GitHub Releases CDN 504 blip easily outlasts (2026-11-09: all
+          # three legs died to `curl: (22) 504` on "Downloading vcpkg-glibc"),
+          # so retry with backoff — a completed bootstrap is idempotent to re-run.
+          attempts=0
+          until bash "${{ env.VCPKG_ROOT }}/bootstrap-vcpkg.sh"; do
+            attempts=$((attempts + 1))
+            if [ "$attempts" -ge 5 ]; then
+              echo "::error::bootstrap-vcpkg failed after $attempts attempts"
+              exit 1
+            fi
+            delay=$((attempts * 30))
+            echo "bootstrap attempt $attempts failed — retrying in ${delay}s"
+            sleep "$delay"
+          done
 
-      - name: Verify NuGet Feed Credentials (Non-Windows)
-        if: matrix.os != 'windows-2022'
-        shell: bash
-        env:
-          VCPKG_PAT: ${{ secrets.VCPKG_PAT_TOKEN }}
-        run: |
-          if [ -z "$VCPKG_PAT" ]; then
-            echo "VCPKG_PAT_TOKEN not available (fork PR?) — feed writes will be skipped by vcpkg"
-            exit 0
-          fi
-          # No setApiKey call is needed: the generated config already persists
-          # everything it would write — <packageSourceCredentials>
-          # ClearTextPassword for reads, <config> apiKey entries for both feed
-          # URLs, and defaultPushSource for vcpkg's pushes. Invoking nuget
-          # directly would additionally depend on mono, which is not installed
-          # on every runner image. Keep the fail-loudly intent instead: verify
-          # the write path is actually wired into the config vcpkg uses —
-          # the feed is the only cache layer surviving actions/cache eviction.
-          grep -q "ClearTextPassword" "$GITHUB_WORKSPACE/nuget.generated.config"
-          grep -q "defaultPushSource" "$GITHUB_WORKSPACE/nuget.generated.config"
+      # (The old "Verify NuGet Feed Credentials (Non-Windows)" step grepped
+      # nuget.generated.config for ClearTextPassword/defaultPushSource — it
+      # validated the config text, not the write path, and passed every run of
+      # the 9-month feed outage. Removed per the AGENTS.md ban on grep-style
+      # pseudo-validation; real feed-write detection is vcpkg-cache-warm.yml's
+      # round-trip tripwire.)
 
       - name: Install Ninja
         uses: seanmiddleditch/gha-setup-ninja@8b297075da4cd2a5f1fd21fe011b499edf06e9d2 # master
@@ -350,7 +349,13 @@ jobs:
       #   CMake Build - All platforms
       #
       - name: CMake Configure
-        run: cmake --preset ${{matrix.preset}}
+        # SITE/BUILDNAME feed DartConfiguration.tcl so CDash submissions get
+        # stable per-platform/per-preset build names instead of random runner
+        # hostnames (see the Submit Test Results to CDash step below).
+        run: >
+          cmake --preset ${{matrix.preset}}
+          -DSITE=gha-${{ matrix.os }}
+          -DBUILDNAME=${{ github.ref_name }}-${{ matrix.preset }}
 
       - name: Evaluate vcpkg Cache Payload
         id: cache-payload
@@ -423,6 +428,47 @@ jobs:
           fail-on-error: true
 
       #
+      #   CDash submission (push builds only)
+      #
+      - name: Submit Test Results to CDash
+        # Push builds only, on the 5 CI branches. PR submissions would spam
+        # the dashboard, and fork PRs have no business writing to it.
+        # !cancelled() instead of the implicit success(): when tests fail,
+        # the "Report Test Results" step (fail-on-error: true) fails the job
+        # and a success()-conditioned step would be SKIPPED - the dashboard
+        # must receive failing builds too, they are the point of a CI
+        # dashboard. If the build itself failed, the submission attempt
+        # simply no-ops under continue-on-error.
+        if: github.event_name == 'push' && !cancelled()
+        # Observability sink: a CDash outage or bad submission must never
+        # fail a required status check.
+        continue-on-error: true
+        # Re-runs the suite from the build root and submits to my.cdash.org
+        # project OdbDesign via the scripts/cdash-submit.cmake driver: the
+        # dashboard requires authenticated submissions and reads the token
+        # only from an Authorization: Bearer header, which plain
+        # `ctest -T Submit` cannot send (only ctest_submit(HTTPHEADER) in a
+        # ctest -S script can). CTEST_CONFIGURATION_TYPE=Release selects the
+        # Release-built tests on the multi-config VS leg; single-config legs
+        # ignore it. CDASH_ODBDESIGN_AUTH_TOKEN is the "Submit Only" token
+        # minted on the my.cdash.org profile page; absent on fork PRs (no
+        # secrets there), but this step is push-only anyway.
+        env:
+          CDASH_SUBMIT_TOKEN: ${{ secrets.CDASH_ODBDESIGN_AUTH_TOKEN }}
+          CTEST_SOURCE_DIRECTORY: ${{ github.workspace }}
+          CTEST_BINARY_DIRECTORY: ${{ github.workspace }}/out/build/${{ matrix.preset }}
+          CTEST_SITE: gha-${{ matrix.os }}
+          CTEST_BUILD_NAME: ${{ github.ref_name }}-${{ matrix.preset }}
+          CTEST_CONFIGURATION_TYPE: Release
+          # Same env the gating "CMake Test" step sets: the suite re-run
+          # below hard-asserts this variable (CrossPlatformTests
+          # Test_CrossPlatform_GetEnvSafe_VariableExists); without it CDash
+          # would show a false failure on every push. ODB_TEST_DATA_DIR is
+          # already exported job-wide by the earlier github-script step.
+          ODB_TEST_ENVIRONMENT_VARIABLE: ${{ vars.ODB_TEST_ENVIRONMENT_VARIABLE }}
+        run: ctest -S scripts/cdash-submit.cmake
+
+      #
       #   Artifacts
       #
       - name: Compress Artifacts (Linux)
@@ -436,10 +482,10 @@ jobs:
           # the linux-dynamic-release build; Dockerfile.prebuilt copies *.so*
           # -P preserves vcpkg's dev symlinks (libfoo.so -> libfoo.so.N -> real
           # file) so each lib ships once; zip -y below stores them as links
-          cp -P ./out/build/${{matrix.preset}}/vcpkg_installed/x64-linux-dynamic/lib/*.so* ${{env.ARTIFACTS_DIR}}
+          cp -P ./out/vcpkg_installed/x64-linux-dynamic/lib/*.so* ${{env.ARTIFACTS_DIR}}
           # OpenSSL 3 provider modules (resolved relative to libcrypto.so's dir);
           # mirrors the full Dockerfile's ossl-modules COPY
-          cp -r ./out/build/${{matrix.preset}}/vcpkg_installed/x64-linux-dynamic/lib/ossl-modules ${{env.ARTIFACTS_DIR}}/
+          cp -r ./out/vcpkg_installed/x64-linux-dynamic/lib/ossl-modules ${{env.ARTIFACTS_DIR}}/
           cd ${{env.ARTIFACTS_DIR}}
           zip -r -y ./artifacts-${{matrix.os}}.zip ./*.so* ./ossl-modules ./OdbDesignServer
 

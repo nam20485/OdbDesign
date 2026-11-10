@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | Status | **COMPLETE** (branch `nam/getdesign-streaming`, riding open PR #609; executed 2026-11-01) |
-| Source | `docs/reviews/zcode-workflow-609-review-report.md` (three-lens review, 16 findings) → `docs/reviews/zcode-workflow-609-findings-adjudication.md` (verification & adjudication) |
+| Source | [`zcode-workflow-609-review-report.md`](zcode-workflow-609-review-report.md) (three-lens review, 16 findings) → [`zcode-workflow-609-findings-adjudication.md`](zcode-workflow-609-findings-adjudication.md) (verification & adjudication) |
 | Scope decision | Fix the 13 recommended findings + 2 appendix items. F5 (fonts estimate term) accepted as documented — the F2 estimator pin is its tripwire. F6 (Windows orphan spool accounting) deferred; fix shape on record: re-add bytes on failed remove at all four removal sites (`StreamSpoolCache.cpp:437-444, :356-364, :462-464, :490-493`) or sweep `*.spool` at `InitializeDirectory`. |
 | P1 policy | F9: investigate the warm-RSS delta first (root cause); recalibrate the gate from measurements only if no fixable buffering bug is found. |
 

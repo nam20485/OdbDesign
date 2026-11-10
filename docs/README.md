@@ -16,6 +16,8 @@ Documentation for the currently-released version of the source code is available
 
 ## Need Help?
 
+All contact channels are collected on the project website's [Contact page](https://source.odbdesignserver.com/contact).
+
 Feel free to message me in the project's Gitter chat room: [odbdesign:gitter.im](https://app.gitter.im/#/room/#odbdesign:gitter.im)
 
 You can also create an issue: <https://github.com/nam20485/OdbDesign/issues>
@@ -97,7 +99,7 @@ The diagram describes the current state of parser implementation and data availa
 
 [OpenSSF Security Scorecard](https://securityscorecards.dev/#what-is-openssf-scorecard) assesses open source projects for security risks through a series of automated checks.
 
-[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/nam20485/OdbDesign/badge)](https://securityscorecards.dev/viewer/?uri=github.com/nam20485/OdbDesign)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/nam20485/OdbDesign/badge)](https://securityscorecards.io/viewer/?uri=github.com/nam20485/OdbDesign)
 
 >The majority of tested projects have a much lower score, so OdbDesign's 7.8 score represents a remarkably high level of security.
 
@@ -329,7 +331,7 @@ The build output can be found in the following directory:
 * `~/src/OdbDesign/out/build/linux-dynamic-release`                *(Linux)*
 * `C:\Users\<YourName>\Source\OdbDesign\out\build\x64-release`    *(Windows)*
 
->The `x64-release` directory will be different if you selected a different configuration preset (`x64-release` vs. `x64-debug` or `linux-dynamic-release` vs. `linux-debug`). The `x64-release` directory will contain the shared library and the server executable. Make sure to copy the dependencies (.dll files on Windows, .so files on Linux, .dylib files on MacOS) to the same directory as the executable if you want to copy it somewhere else. On Linux, the `linux-dynamic-release` build additionally depends on the vcpkg shared libraries in `out/build/linux-dynamic-release/vcpkg_installed/x64-linux-dynamic/lib` — copy them too (or set `LD_LIBRARY_PATH` to that directory).
+>The `x64-release` directory will be different if you selected a different configuration preset (`x64-release` vs. `x64-debug` or `linux-dynamic-release` vs. `linux-debug`). The `x64-release` directory will contain the shared library and the server executable. Make sure to copy the dependencies (.dll files on Windows, .so files on Linux, .dylib files on MacOS) to the same directory as the executable if you want to copy it somewhere else. On Linux, the `linux-dynamic-release` build additionally depends on the vcpkg shared libraries in `out/vcpkg_installed/x64-linux-dynamic/lib` — copy them too (or set `LD_LIBRARY_PATH` to that directory).
 
 #### Docker Image for REST API Server
 

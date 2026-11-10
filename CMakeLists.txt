@@ -68,7 +68,11 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 # otherwise fire alongside the project's own)
 set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
-enable_testing()
+# include(CTest) calls enable_testing() and generates DartConfiguration.tcl from
+# CTestConfig.cmake, enabling CTest dashboard actions (ctest -T Test -T Submit),
+# used by CI to submit results to the CDash dashboard (my.cdash.org, project
+# OdbDesign). SITE/BUILDNAME cache variables control the dashboard identifiers.
+include(CTest)
 
 # Enable Hot Reload for MSVC compilers if supported.
 if (POLICY CMP0141)

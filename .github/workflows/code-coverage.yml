@@ -31,7 +31,6 @@ env:
   VCPKG_COMMIT: 4f6d4ae8247b2dcae554555a135e52bb449dd524
   VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}/.vcpkg-binary-cache
   FEED_URL: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
-  FEED_PUSH_URL: https://nuget.pkg.github.com/${{ github.repository_owner }}
   VCPKG_FEATURE_FLAGS: dependencygraph
   USERNAME: ${{ github.repository_owner }}
   NUGET_XMLDOC_MODE: skip
@@ -72,6 +71,8 @@ jobs:
       - name: Generate NuGet Config for Binary Cache
         shell: bash
         run: |
+          # Same shape as cmake-multi-platform.yml (GITHUB_TOKEN auth, v3
+          # index.json push source) though this lane only reads the feed.
           cat > "$GITHUB_WORKSPACE/nuget.generated.config" << 'EOF'
           <?xml version="1.0" encoding="utf-8"?>
           <configuration>
@@ -82,15 +83,14 @@ jobs:
             <packageSourceCredentials>
               <GitHubPackages>
                 <add key="Username" value="${{ env.USERNAME }}" />
-                <add key="ClearTextPassword" value="${{ secrets.VCPKG_PAT_TOKEN }}" />
+                <add key="ClearTextPassword" value="${{ secrets.GITHUB_TOKEN }}" />
               </GitHubPackages>
             </packageSourceCredentials>
             <apiKeys>
-              <add key="${{ env.FEED_URL }}" value="${{ secrets.VCPKG_PAT_TOKEN }}" />
-              <add key="${{ env.FEED_PUSH_URL }}" value="${{ secrets.VCPKG_PAT_TOKEN }}" />
+              <add key="${{ env.FEED_URL }}" value="${{ secrets.GITHUB_TOKEN }}" />
             </apiKeys>
             <config>
-              <add key="defaultPushSource" value="${{ env.FEED_PUSH_URL }}" />
+              <add key="defaultPushSource" value="${{ env.FEED_URL }}" />
               <add key="signatureValidationMode" value="accept" />
             </config>
           </configuration>
@@ -188,6 +188,7 @@ jobs:
           lcov --remove coverage/coverage.info \
             '/usr/*' \
             '*/vcpkg/*' \
+            '*/vcpkg_installed/*' \
             '*/_deps/*' \
             '*/OdbDesignTests/*' \
             --output-file coverage/coverage.info \
