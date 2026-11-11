@@ -1,0 +1,47 @@
+syntax = "proto3";
+option cc_enable_arenas = true;
+
+package Odb.Lib.Protobuf;
+
+//
+//  ToolsFile.h
+//
+
+message ToolsFile {
+
+    enum ToolType {
+        UNKNOWN_TYPE = 0;
+        PLATED = 1;
+        NON_PLATED = 2;
+        VIA = 3;
+    }
+
+    enum ToolSubType {
+        UNKNOWN_SUB_TYPE = 0;
+        STANDARD = 1;
+        PRESS_FIT = 2;
+        PHOTO = 3;
+        LASER = 4;
+    }
+
+    message Tool {
+        optional uint32 num = 1;
+        optional ToolType type = 2;
+        optional ToolSubType subType = 3;
+        optional double minTol = 4;
+        optional double maxTol = 5;
+        optional string bit = 6;
+        // spec: -1 when not set
+        optional double finishSize = 7;
+        // spec: optional
+        optional double drillSize = 8;
+    }
+
+    optional string units = 1;
+    // spec: obsolete; retained losslessly for round-tripping only
+    optional double thickness = 2;
+    repeated string userParams = 3;
+    repeated Tool tools = 4;
+    optional string directory = 5;
+    optional string path = 6;
+}
