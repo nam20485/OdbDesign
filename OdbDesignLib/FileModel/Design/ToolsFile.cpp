@@ -1,7 +1,6 @@
 #include "ToolsFile.h"
 #include <fstream>
 #include <sstream>
-#include <cstring>
 #include <charconv>
 #include "../parse_error.h"
 #include "../invalid_odb_error.h"
@@ -191,7 +190,10 @@ namespace Odb::Lib::FileModel::Design
 					// parameter line is never mistaken for a record open.
 					if (line.rfind(TOOLS_ARRAY_TOKEN, 0) == 0)
 					{
-						auto afterToken = line.substr(strlen(TOOLS_ARRAY_TOKEN));
+						// char_traits::length over strlen: constexpr and provably bounded
+						// for this class constant (Flawfinder CWE-126 flags strlen on
+						// non-literal pointers as a potential over-read)
+						auto afterToken = line.substr(std::char_traits<char>::length(TOOLS_ARRAY_TOKEN));
 						Utils::str_trim(afterToken);
 						if (afterToken != Constants::ARRAY_RECORD_OPEN_TOKEN)
 						{
