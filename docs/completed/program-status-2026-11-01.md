@@ -135,7 +135,7 @@ flowchart TD
 **Nothing is blocked or red right now** — every in-flight item is waiting on a human action (review, merge, cut, commit), not on a fix:
 
 1. **3D PR #67 (the hot item)** — implemented 2026-11-01, all CI green (ubuntu/windows build, coverage, OS matrix, gitleaks, nuget), MERGEABLE, base `development`, no review yet. Merging it closes the client side of both epics. *Note: intel-agency Actions randomly cancels runs — rerun before re-diagnosing any "failure."*
-2. **M6.6 — multi-design residency budget (queued, next server PR)** — cut `nam/m66-residency-budget` from `99f03f3` per [getdesign-streaming-oom-plan.md](getdesign-streaming-oom-plan.md) §M6.6: re-base cache charges from file size to a resident estimate (`kResidencyFactor` ≈ 5.0, calibrated from the 4.1–4.4× parse-RSS/wire measurements); `FixtureCapture --stream` rides the same PR. M6.7 (parse-footprint reduction) is explicitly *out* of scope.
+2. **M6.6 — multi-design residency budget (queued, next server PR)** — cut `nam/m66-residency-budget` from `99f03f3` per [getdesign-streaming-oom-plan.md](../plan/getdesign-streaming-oom-plan.md) §M6.6: re-base cache charges from file size to a resident estimate (`kResidencyFactor` ≈ 5.0, calibrated from the 4.1–4.4× parse-RSS/wire measurements); `FixtureCapture --stream` rides the same PR. M6.7 (parse-footprint reduction) is explicitly *out* of scope.
 3. **Working-tree docs (this repo)** — `docs/plan/m6-4-client-fanout.md` and this file are untracked; both belong on the `nam20485` line. The m6-4 §4 stale-premise correction has been applied in place (see §4.3 below) — both docs are commit-ready.
 4. **Promotion debt** — `origin/development` is 91 commits behind `nam20485` (0 ahead — clean merge). That pile contains the entire connectivity epic, streaming epic, and the CI repairs. Nothing has flowed down the `development → staging → main → release` chain recently.
 
@@ -205,7 +205,7 @@ flowchart TD
 3. **Commit the plan docs** — m6-4-client-fanout.md (§4 premise corrected in place, §4.3 below) and this file.
 4. **Promote `nam20485` → `development`** — clean merge (0 ahead), then let the strict check gate run; schedule the rest of the chain (`staging`→`main`→`release` + a development-based docker publish) deliberately rather than letting the `nam20485-latest` tag keep being the only thing deployed.
 5. **Hygiene batch** — close #599; fold dependabot #607/#598 into the next PR (or one small chore PR), per the minimize-PR-count directive.
-6. **Start Argo CD GitOps execution** — the server line is stable and the cluster is freshly deployed; the [execution plan](argocd-deployment-plan.md) is already merged.
+6. **Start Argo CD GitOps execution** — the server line is stable and the cluster is freshly deployed; the [execution plan](../plan/argocd-deployment-plan.md) is already merged.
 7. **Mid-term**: server-issues M2 auth track (Keycloak first) and M3.2 WS events; 3D #64 silkscreen; info-client stream decision.
 
 ### 4.3 Stale premise in m6-4-client-fanout.md §4 — corrected 2026-11-01

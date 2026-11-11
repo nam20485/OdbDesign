@@ -48,6 +48,9 @@ namespace Odb::Lib::FileModel::Design
 		xCenter = message.xcenter();
 		yCenter = message.ycenter();
 		isClockwise = message.isclockwise();
+
+		// the wire type is the proto enum's integer value; map it back to the
+		// FileModel enum so part-type-dependent logic sees the right variant
 		type = static_cast<Type>(message.type());
 	}
 }

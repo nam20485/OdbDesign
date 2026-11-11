@@ -1,7 +1,7 @@
 # Client Unification Analysis — Info Client + 3D Viewer
 
-- **Date:** 2026-11-07
-- **Status:** Proposed — awaiting free-form feedback before any execution
+- **Date:** 2026-11-07 (analysis) · 2026-11-08 (user feedback folded in; decisions locked)
+- **Status:** Decided — locked decisions in §9; execution not started
 - **Scope:** Architectural options for the two out-of-process client apps, `odbdesign-3d-client-prototype` (3D viewer) and `Odbdesign-info-client-india79-b` (info client), and their relationship to the planned `odbdesign-protoc` unified C++/C# contract library.
 - **All facts below verified against the three checkouts this session** (2026-11-07). LOC excludes `obj/`, `bin/`, `.delta/worktrees/`.
 
@@ -9,9 +9,9 @@
 
 ## 1. Executive summary
 
-**Recommendation: Option 2 — phased shared-library extraction (Option 3 only until Phase 0 lands; Option 1 rejected for now, not forever).**
+**Recommendation (adopted 2026-11-08): Option 2 — phased shared-library extraction (Option 3 only until Phase 0 lands; Option 1 reviewed and retired — §9 decision 5).**
 
-The codebase has already chosen this direction in miniature and just hasn't executed it: the info client's `src/OdbDesign.ProductModel` csproj explicitly declares itself *"Portable library intended for reuse across OdbDesign clients (eventually a NuGet package) … every consumer (info client, and later the 3D client) uses one product-model implementation"*, and `plan_docs/Cross-Probing-Design.md` (rev 2) already plans a second shared library, `OdbDesign.CrossProbing`. Option 2 is finishing a decision that is already written down, and it is the direct on-ramp to the `odbdesign-protoc` vision. Option 1 (merge the apps) is technically feasible — both are Avalonia 12 / .NET 10 — but it couples release trains and crash domains while leaving the actual hard part (the duplicated contract/product-model core) unsolved; if a merged "workbench" app is ever wanted, the SDK from Option 2 is precisely the core it would be built on. Option 2 is therefore the no-regret move.
+The codebase has already chosen this direction in miniature and just hasn't executed it: the info client's `src/OdbDesign.ProductModel` csproj explicitly declares itself *"Portable library intended for reuse across OdbDesign clients (eventually a NuGet package) … every consumer (info client, and later the 3D client) uses one product-model implementation"*, and `plan_docs/Cross-Probing-Design.md` (rev 2) already plans a second shared library, `OdbDesign.CrossProbing`. Option 2 is finishing a decision that is already written down, and it is the direct on-ramp to the `odbdesign-protoc` vision. Option 1 (merge the apps) is technically feasible — both are Avalonia 12 / .NET 10 — but it couples release trains and crash domains while leaving the actual hard part (the duplicated contract/product-model core) unsolved; it has been reviewed and **retired** (§9 decision 5). Option 2 is therefore the committed target architecture, its shape fixed by the §9 decisions: NuGet on GH Packages from day one, `odbdesign-protoc` as sole owner of the protos and all codegen, a proto-invisible interface contract as the **destination — staged, not day-one** (§9 decision 6: the transitional generated-type surface ships first and is retired slice by slice), the server repo as a consumer, and a C++ shared library to complete the vision.
 
 ---
 
@@ -90,13 +90,13 @@ Combine both apps into a single Avalonia app retaining all functionality (grids 
 
 ### Verdict
 
-**Reject for now.** Feasible but premature: it couples release and failure domains before the shared core exists, and it doesn't deliver the one thing that pays off in every scenario (extracted contracts + product model). Keep a merged "workbench" app as a *possible* post-SDK end state — after Option 2, a merge becomes mostly a UI-shell project instead of an architecture project.
+**Rejected and retired** *(user decision 2026-11-08: "not considered a feasible approach in current form" — §9 decision 5)*. The analysis stands independently of that call: merging couples release and failure domains before the shared core exists and doesn't deliver the one thing that pays off in every scenario (extracted contracts + product model). The merged-workbench idea is off the roadmap in any form.
 
 ---
 
 ## 4. Option 2 — Refactor to shared libraries (phased)
 
-Extract the duplicated contract/product-model/service-client core into shared libraries consumed by both apps, keeping the apps separate. Phased so each step is independently valuable and abortable.
+Extract the duplicated contract/product-model/service-client core into shared libraries consumed by both apps — and, once the C++ half lands, by the **server** as well (§9 decision 3) — keeping the apps separate. Phased so each step is independently valuable and abortable.
 
 ### Pros
 
@@ -106,7 +106,7 @@ Extract the duplicated contract/product-model/service-client core into shared li
 - **M2 auth implemented once** (token acquisition/refresh/headers in the SDK) instead of twice.
 - **Direct on-ramp to `odbdesign-protoc`**: the C# SDK *is* the C# half of that vision; the repo, codegen pipeline, versioning and packaging created here are exactly what the C++ half would join.
 - **Apps keep their cadences, gates, publish pipelines, and crash isolation.** No user-facing change, no release coupling.
-- **No-regret:** if the apps are ever merged (Option 1 later), the SDK is the core the merged app is built on; if they never merge, the SDK pays off continuously. It is the only option that is a prerequisite of both others.
+- **The committed end state** (Option 1 retired): the phased SDK *is* the target architecture — C# NuGet first (Phase 1), C++ shared lib to complete it (Phase 3) — not a hedge against a future merge.
 
 ### Cons
 
@@ -120,9 +120,10 @@ Extract the duplicated contract/product-model/service-client core into shared li
 | Phase | Content | Size / cost | Value even if we stop after |
 |---|---|---|---|
 | **0. Drift tripwire** | CI check in each client repo: diff vendored protos against the server repo at a pinned ref; fail on drift. Same pattern as `swagger-spec-configmap-sync.yml` in the server repo. | Hours. No architecture change. | Silent drift becomes loud drift — the single cheapest risk reduction available. |
-| **1. C# client SDK** (`odbdesign-protoc` repo, C# half) | Canonical proto sync + codegen; `OdbDesign.Client` (channel factory, `OdbDesignGrpcClient`, reassembler, capability probes, auth handlers + env conventions, health); `OdbDesign.ProductModel` moved from info repo (reader + converged `ComponentDetailBuilder` + conformance fixtures + capture tooling). Both apps cut over. | ~4–5K LOC extracted/converged; 1–2 weeks agent-assisted across 3 coordinated PRs (SDK repo + 2 client cutovers). | Duplication gone; auth once; streaming available to both; `odbdesign-protoc` exists with its first two consumers. |
+| **1. C# client SDK** (`odbdesign-protoc` repo, C# half) | Create the repo and **move the protos in — it becomes the canonical, sole owner of all protoc messages + service definitions and all codegen** (§9 decision 3). C# half: `OdbDesign.Client` (channel factory, `OdbDesignGrpcClient`, reassembler, capability probes, auth handlers + env conventions, health) + `OdbDesign.ProductModel` moved from info repo (reader + converged `ComponentDetailBuilder` + conformance fixtures + capture tooling), **published to NuGet on GH Packages from day one** (§9 decision 1). **The SDK also publishes the generated contract types as a transitional public surface, namespaces unchanged** (`Odb.Lib.Protobuf.*`, same service client — §9 decision 6), so each client cutover is "delete local protos + Grpc.Tools, add PackageReference" — **zero renderer/converter churn**; the proto-free object model ships only where it already exists (ProductModel/Connectivity). Both clients consume the package and delete their vendored proto dirs. The server repo keeps a **vendored, tripwire-guarded copy** of the protos until Phase 3 replaces its gencode (it cannot consume the C++ half yet). | ~4–5K LOC extracted/converged (unchanged — decision 6 keeps object-model expansion out of the first cut); 1–2 weeks agent-assisted across 3 coordinated PRs (SDK repo + 2 client cutovers). | Duplication gone; auth once; streaming available to both; `odbdesign-protoc` exists with its first two consumers and owns the contract. |
 | **2. `OdbDesign.CrossProbing`** | Implement per rev-2 design: pipe contract, versioned envelope, echo suppression; viewer-side pipe server + wire the existing info-side client (give `SelectionReceived` subscribers). | Days–1 week. | The cross-linking feature actually works end-to-end for the first time. |
-| **3. C++ half of `odbdesign-protoc`** (optional, driver-based) | Server consumes generated C++ messages/service base from the central repo (vcpkg registry or submodule). | Larger; touches the healthy server build. | Only when a real driver exists (second C++ consumer, commercialization packaging). Do **not** do this speculatively. |
+| **3. C++ half of `odbdesign-protoc`** (**committed** — no longer optional; §9 decisions 1 & 3) | C++ **shared library** built from the canonical protos, **initially exposing the generated message/service types** (§9 decision 6): the server's code keeps compiling against the same types it uses today — new provenance, not a new API — and **deletes `OdbDesignLib/protoc/` + its own gencode**. Consumed by the server as a **vcpkg port from a registry hosted inside the SDK repo** (`vcpkg-configuration.json` + baseline pin — no submodules, §9 decision 7). Proto-invisible C++ headers follow later as Phase 4 slices. | Build/packaging migration, not an API migration (risks in §8). | Single codegen source across all three apps; the `odbdesign-protoc` vision functionally complete; the server repo is a pure consumer with minimal regression surface. |
+| **4. Object-model expansion & proto-type retirement** (staged, driver-based — §9 decision 6) | Expand the SDK's proto-free object model slice by slice (the 3D renderers' features/geometry surface is the largest), each slice deleting the corresponding transitional generated-type exposure. Ratchet: consumer references to the transitional surface never increase — enforced by a compiled architecture test (e.g. NetArchTest on assembly reference graphs against a frozen, shrinking allowlist). | Slices ride feature work (M2 auth, cross-probe rev-2, future viewer work); no big-bang pass. | Full §9-decision-3 destination: protobuf invisible behind the interface contract, everywhere. |
 
 ### Verdict
 
@@ -163,7 +164,7 @@ Extract the duplicated contract/product-model/service-client core into shared li
 | Ongoing cost | Medium (one big train) | Low-medium (version bumps) | High (×2 everything) |
 | `odbdesign-protoc` alignment | Partial (3→2 consumers) | **Direct on-ramp (all phases)** | None |
 | User-facing gain | One install | None (by design) | None |
-| No-regret property | ✗ | **✓ (prerequisite of both other end states)** | ✗ |
+| No-regret property | ✗ | **✓ — committed target architecture** | ✗ |
 
 ---
 
@@ -174,7 +175,7 @@ Extract the duplicated contract/product-model/service-client core into shared li
 1. **The evidence is already in the repos.** A library explicitly named for cross-client reuse exists (`OdbDesign.ProductModel`), a second shared lib is specified (`OdbDesign.CrossProbing`), golden fixtures are deliberately mirrored into both test suites, and the refDes fix was applied twice by hand. The system has voted; only the extraction is missing.
 2. **Duplication cost is measured, not hypothetical** (§2.3), and every scheduled workstream (M2 auth, info-client streaming, cross-probe rev-2, M6.6-era large-design handling) multiplies it.
 3. **Option 1's one genuine prize — killing the cross-probe protocol — is achievable without merging** (Phase 2), while its costs (release coupling, crash coupling, gate collision, workflow regression) are permanent.
-4. **Option 2 is the only no-regret move:** it is the C# half of `odbdesign-protoc` *and* the facilitator of any future merged workbench. The other two options each foreclose something; this one forecloses nothing.
+4. **Option 2 is the end state, not a hedge:** with Option 1 retired, the phased SDK is the committed target architecture — C# NuGet first (Phase 1), C++ shared lib to complete it (Phase 3).
 5. **Sequencing guards:** land 3D PR #67 first (it carries the reassembler and freshest proto sync Phase 1 lifts); do Phase 0 in parallel — it is independent and takes hours.
 
 ---
@@ -185,16 +186,25 @@ Extract the duplicated contract/product-model/service-client core into shared li
 |---|---|
 | SDK becomes an unbounded "common" dumping ground | Explicit surface rule in the repo README: transport, contract, product model, cross-probe contract. ViewModels/rendering/UI never enter. Code-review gate. |
 | Version-skew choreography annoys (SDK bump ×2 clients) | Phase 0 tripwire generalized to watch SDK↔server; clients pin exact versions; breaking proto changes are already rare (contract settled 2026-10-29). |
-| Packaging/billing complexity (private NuGet auth in 2 CIs, GH Packages costs) | Start with source-level consumption (git submodule or repo-relative project reference) — zero infrastructure; introduce NuGet only when a third consumer or commercialization demands it. Decide explicitly at Phase 1 kickoff (open question 1). |
+| Packaging/billing complexity (private NuGet auth in 2 CIs, GH Packages costs) | **Decided: private NuGet packages on GH Packages from day one** (§9 decisions 1 & 8). Budget: ~2–5 MB per version across the two packages; the 500 MB Free-plan quota ≈ 100–250 versions — a scheduled pruning job (REST `DELETE` package-version; keep last N + anything a consumer still pins) keeps storage flat indefinitely, and an account with no payment method/spending limit hard-caps at the included quota rather than silently billing overage. Cross-account consumption: nam20485-owned private packages ← intel-agency CI via a classic PAT (`read:packages` — fine-grained PATs don't work on this feed) stored as an intel-agency secret, plus a package-access grant in package settings. Deterministic versioning (semver + CI run number). |
+| Server-side C++ migration (Phase 3): protobuf runtime version skew between shared lib and server; dual descriptor pools already caused one release-only SIGABRT | Build the shared lib against the same vcpkg baseline as the server (`4f6d4ae8`, protobuf 6.33.4#2); dynamic protobuf runtime on both sides (the `linux-dynamic-*` lesson); a round-trip contract test in server CI before the old gencode is deleted. |
+| Canonical moves before the server can consume it (Phase 1 → 3 gap) | Invert the Phase 0 tripwire at Phase 1: every consumer repo — **including the server until Phase 3** — carries a vendored copy diffed against the SDK repo's canonical set, failing CI on drift. |
 | Convergence conflicts between the two `ComponentDetailBuilder` variants | Both conformance suites (3D's + info's, incl. golden fixtures) become the SDK's gate; the merged implementation must pass both unchanged before either app cutover merges. |
 | Coordinated-cutover window stalls | Cutovers are per-app and independent (SDK additive first, then app switchover PRs); no lockstep merge required. |
+| Transitional proto-typed surface invites new dependencies — the Phase 4 migration stalls and never completes | Ratchet enforced by a compiled architecture test (e.g. NetArchTest asserting consumer assemblies reference no transitional SDK namespaces beyond a frozen allowlist); the allowlist only ever shrinks; each slice is scheduled onto feature work that already touches that area. |
 
 ---
 
-## 9. Open questions (decide at Phase 1 kickoff)
+## 9. Decisions (user feedback, locked 2026-11-08)
 
-1. **Distribution:** NuGet on GH Packages vs git submodule vs source inclusion — bearing in mind private-package billing/auth history (3D client org) and that only two consumers exist today. *Lean: submodule/source now, NuGet at third consumer.*
-2. **Repo placement:** personal `nam20485/odbdesign-protoc` (name is free — verified), or hosted alongside whichever account owns the long-term product.
-3. **Canonical proto home:** keep protos canonical in the OdbDesign server repo (SDK syncs from it, tripwire-enforced) vs move to `odbdesign-protoc` and have the server consume them. *Lean: server stays canonical until Phase 3 — the C++ build owns them today and shouldn't be destabilized speculatively.*
-4. **Timing vs in-flight work:** 3D PR #67 merge, M2 auth start, M6.6 — Phase 1 slots cleanly after #67 and before M2 (so auth lands once, in the SDK).
-5. **Long-term end state:** keep the merged "workbench" app (Option 1) on the roadmap as a post-SDK possibility, or retire the idea?
+1. **Distribution: NuGet immediately.** The C# SDK ships as NuGet packages on GH Packages from day one — not deferred to a third consumer. The **C++ deliverable must be a shared library** (not static, not header-only, not source-inclusion).
+2. **Repo placement: `nam20485/odbdesign-protoc`** (name free — verified). Cross-account consequence (owners verified this session): `intel-agency/odbdesign-3d-client-prototype` consumes a package owned by `nam20485` — explicit package-access grant + CI credential required.
+3. **Canonical proto home: the new repo owns all protoc messages and service definitions and is solely responsible for code generation.** The server repo is a *consumer* of the SDK — it consumes the protoc messages and service definitions from the SDK, exactly as the clients do. **Consumers will not even know the object model and services were created from protos** — protobuf is an implementation detail hidden behind the SDK's interface contract. Consequences: protos move in Phase 1; the server's C++ consumption lands with the Phase 3 shared lib; until then the server carries a tripwired vendored copy.
+4. **Timing: as proposed** — Phase 1 lands after 3D PR #67 and before M2 auth, so auth is implemented once, in the SDK.
+5. **Option 1 (merged workbench): retired.** Not considered a feasible approach in current form; removed from the roadmap.
+6. **Proto-invisibility is staged, not day-one** *(round-2 feedback, 2026-11-08 — resolves the former "reach of the proto-invisible surface" open question)*. The destination stands (decision 3), but the initial implementation **ships the generated contract types as a transitional public surface** (namespaces unchanged) — the 3D client keeps consuming proto-generated objects directly in Phase 1, and the server's C++ shared lib (Phase 3) initially exposes the generated types too. Wrappers replace the transitional surface **slice by slice** in Phase 4, with a ratchet: the transitional surface never grows. Rationale: the info client's object model covers only the Connectivity/design-summary slice (~840 LOC) — a day-one invisible surface would require mirroring the whole fileModel read surface *and* re-typing the 3D render pipeline (the most perf/memory-sensitive code in either app), roughly tripling the first cut to 10–15K+ LOC with a perf re-validation workstream. Staging keeps Phase 1 at ~4–5K LOC, leaves the renderer untouched, and makes Phase 3 a provenance swap rather than an API migration. What staging does **not** give up: contract ownership and drift elimination come from single-source codegen, not from invisibility — the SDK publishes the generated types themselves, so there is still exactly one codegen source from day one.
+7. **C++ delivery: vcpkg registry — no submodules** *(round-3 feedback, 2026-11-08)*. The SDK repo hosts its own vcpkg registry (`registry/` dir + portfile building from the repo's release tags); the server consumes via `vcpkg-configuration.json` + baseline pin. Why this beats the alternatives: a vcpkg port rides the **existing vcpkg binary cache** (GH Packages feed) so the ~60K LOC gencode compiles once per SDK version, not in every CI run — FetchContent recompiles it every run and CI deliberately has no compiler cache; submodules are vetoed; prebuilt release binaries lose to source-building on cross-platform shared-lib compatibility. Side benefit: the SDK builds inside the server's own vcpkg toolchain/triplet world (x64-linux-dynamic / x64-windows), which structurally guarantees the protobuf-runtime alignment this plan already demands (§8). FetchContent at a pinned tag remains acceptable as a Phase 3 bootstrap before the port exists.
+
+8. **Packages stay private** *(round-4 feedback, 2026-11-08 — closes the final open question)*. Affordability confirmed: ~2–5 MB per version across the two packages against the 500 MB Free-plan quota ≈ 100–250 versions of headroom, and REST version pruning (keep last N + anything a consumer still pins) keeps it flat for as long as needed. The wire contract stays unexposed, consistent with the pre-launch commercialization posture. If usage ever approaches the cap anyway, flipping visibility public later remains a one-settings-click fallback — billing follows current visibility, not history. Consequence: the cross-account credential (nam20485 classic PAT `read:packages` + package-access grant for intel-agency CI, §8) is on the Phase 1 critical path.
+
+**No open questions remain** — all resolved through round 4 (2026-11-08). The plan is execution-ready per the §4 roadmap.

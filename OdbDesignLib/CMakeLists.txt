@@ -15,7 +15,7 @@ add_library(OdbDesign SHARED
          "enums.h"
          "App/OdbDesignArgs.h" "App/OdbDesignArgs.cpp"       
         "FileModel/parse_error.h"    "FileModel/parse_info.h" "FileModel/parse_info.cpp" "FileModel/parse_error.cpp" "FileModel/invalid_odb_error.h" "FileModel/invalid_odb_error.cpp"  "FileModel/Design/PropertyRecord.h" "FileModel/Design/PropertyRecord.cpp" "FileModel/Design/FeaturesFile.h" "FileModel/Design/FeaturesFile.cpp" "FileModel/Design/ContourPolygon.h" "FileModel/Design/ContourPolygon.cpp" "FileModel/Design/SymbolName.h" "FileModel/Design/SymbolName.cpp" "FileModel/Design/SymbolsDirectory.h" "FileModel/Design/SymbolsDirectory.cpp"         "FileModel/Design/StepHdrFile.h" "FileModel/Design/StepHdrFile.cpp" "FileModel/Design/AttributeLookupTable.h" "FileModel/Design/AttributeLookupTable.cpp" "FileModel/Design/ComponentHeightTracer.h" "FileModel/Design/ComponentHeightTracer.cpp"
-        "App/RequestAuthenticationBase.h" "App/RequestAuthenticationBase.cpp" "App/BasicRequestAuthentication.h" "App/BasicRequestAuthentication.cpp" "FileModel/IStreamSaveable.h"  "FileModel/Design/ToolsFile.h" "FileModel/Design/ToolsFile.cpp"
+        "App/RequestAuthenticationBase.h" "App/RequestAuthenticationBase.cpp" "App/BasicRequestAuthentication.h" "App/BasicRequestAuthentication.cpp" "FileModel/IStreamSaveable.h"
         "Text/Utf8Sanitizer.h" "Text/Utf8Sanitizer.cpp"
         "ProductModel/ProtobufMapHelpers.h")
 
@@ -32,7 +32,7 @@ target_include_directories(OdbDesign
                            PUBLIC
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
-                           $<INSTALL_INTERFACE:include>)
+                           $<INSTALL_INTERFACE:include/OdbDesign>)
 
 # PCH
 #if (NOT DEFINED ENV{CI})
@@ -78,3 +78,25 @@ target_link_libraries(OdbDesign PUBLIC protobuf::libprotobuf)
 # (see https://github.com/CrowCpp/Crow/issues/661#issuecomment-1702544225)
 list(REMOVE_ITEM _CROW_ICD "_CROW_ICD-NOTFOUND")
 set_target_properties(Crow::Crow PROPERTIES INTERFACE_COMPILE_DEFINITIONS "${_CROW_ICD}")
+
+# ===== install rules (SDK packaging) =====
+
+include(GNUInstallDirs)
+
+install(TARGETS OdbDesign
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}    # Windows DLL
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}    # shared object
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})   # Windows import library (.lib)
+
+# public headers, preserving their relative structure (FileModel/, ProductModel/,
+# App/, Text/) so quoted includes such as "FileModel/Design/FileArchive.h" and
+# "App/DesignCache.h" keep resolving under a single -I<...>/include/OdbDesign.
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/"
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/OdbDesign
+        FILES_MATCHING PATTERN "*.h")
+
+# protobuf-generated headers (filearchive.pb.h, design.pb.h, ...) are included
+# by public headers as bare filenames, so they install into the same include root.
+install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/"
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/OdbDesign
+        FILES_MATCHING PATTERN "*.pb.h")

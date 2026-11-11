@@ -5,7 +5,7 @@
 | Status | **ACTIVE — design agreed, implementation planned.** Decisions D1–D6 below are **open** and block Phase 2/3. |
 | Source | Client report: [component-id-issue.md](component-id-issue.md) (drop-in from the 3D client agent, 2026-09-14; committed with this doc set). |
 | Plan | [component-connectivity-implementation-plan.md](component-connectivity-implementation-plan.md) — file-level milestones. |
-| Related | [ipc2581/spec-issues.md](ipc2581/spec-issues.md) (IPC imports leave `m_pFileModel` null) · [ipc2581/Client Migration Guide_ ODB++ to Unified API.md](ipc2581/Client%20Migration%20Guide_%20ODB%2B%2B%20to%20Unified%20API.md) · [server-issues.md](server-issues.md) (SI6 response cache, touched by M2.3) |
+| Related | [ipc2581/spec-issues.md](../../plan/ipc2581/spec-issues.md) (IPC imports leave `m_pFileModel` null) · [ipc2581/Client Migration Guide_ ODB++ to Unified API.md](../../plan/ipc2581/Client%20Migration%20Guide_%20ODB%2B%2B%20to%20Unified%20API.md) · [server-issues.md](../../plan/server-issues.md) (SI6 response cache, touched by M2.3) |
 | Base | Verified against `nam/component-connectivity` @ `d7d1a5b`. **Line numbers in this doc are that base.** It contains the normalized-lists prune (`274d878`, PR #590) and the DesignCache concurrency fixes (`ca9d5c8`, PR #591), both of which had merged to `development` and were reconciled back into `nam20485` (`ea2c081`) on 2026-09-15. See §Branch base in the plan. |
 | Method | One `nam/<feature>` branch → PR → `nam20485`, **merge commits only** (AGENTS.md, directive 2026-09-10). |
 

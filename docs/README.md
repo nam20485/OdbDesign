@@ -2,7 +2,7 @@
 
 A free open source cross-platform C++ library for parsing ODB++ Design archives, accessing their data, and building net list product models. Exposed via a REST API packaged inside of a Docker image.
 
-**UPDATE: LICENSE HAS CHANGED TO [AGPL V3.0](../LICENSE).** This is a non-permissive open source license that is not suitable for use in closed-source applications. Please contact me to obtain a license suitable for closed-source uses.
+**UPDATE: LICENSE HAS CHANGED TO [AGPL V3.0](../LICENSE).** This is a non-permissive open source license that is not suitable for use in closed-source applications. Please see [COMMERCIAL-LICENSE.md](../COMMERCIAL-LICENSE.md) for the commercial licensing process, or contact me to obtain a license suitable for closed-source uses.
 
 ## Skip to Build and Running Instructions
 
@@ -331,7 +331,7 @@ The build output can be found in the following directory:
 * `~/src/OdbDesign/out/build/linux-dynamic-release`                *(Linux)*
 * `C:\Users\<YourName>\Source\OdbDesign\out\build\x64-release`    *(Windows)*
 
->The `x64-release` directory will be different if you selected a different configuration preset (`x64-release` vs. `x64-debug` or `linux-dynamic-release` vs. `linux-debug`). The `x64-release` directory will contain the shared library and the server executable. Make sure to copy the dependencies (.dll files on Windows, .so files on Linux, .dylib files on MacOS) to the same directory as the executable if you want to copy it somewhere else. On Linux, the `linux-dynamic-release` build additionally depends on the vcpkg shared libraries in `out/build/linux-dynamic-release/vcpkg_installed/x64-linux-dynamic/lib` — copy them too (or set `LD_LIBRARY_PATH` to that directory).
+>The `x64-release` directory will be different if you selected a different configuration preset (`x64-release` vs. `x64-debug` or `linux-dynamic-release` vs. `linux-debug`). The `x64-release` directory will contain the shared library and the server executable. Make sure to copy the dependencies (.dll files on Windows, .so files on Linux, .dylib files on MacOS) to the same directory as the executable if you want to copy it somewhere else. On Linux, the `linux-dynamic-release` build additionally depends on the vcpkg shared libraries in `out/vcpkg_installed/x64-linux-dynamic/lib` — copy them too (or set `LD_LIBRARY_PATH` to that directory).
 
 #### Docker Image for REST API Server
 
@@ -371,9 +371,9 @@ See [docs/CONTRIBUTING.md](CONTRIBUTING.md) for more details.
 
 ## License
 
-This project is free and open source under the [AGPL V3.0](../LICENSE).
+This project is free and open source under the [AGPL V3.0](../LICENSE). Commercial licenses for closed-source use are available — see [COMMERCIAL-LICENSE.md](../COMMERCIAL-LICENSE.md) and the [licensing & IP protection story](licensing.md).
 
-> The AGPL V3.0 is a non-permissive open source license that is not suitable for use in closed-source applications. However, licenses suitable for use in closed-source applications are available. Please contact me to obtain a license suitable for your needs.
+> The AGPL V3.0 is a non-permissive open source license that is not suitable for use in closed-source applications. However, commercial licenses suitable for use in closed-source applications are available — see [COMMERCIAL-LICENSE.md](../COMMERCIAL-LICENSE.md) for the licensing process, evaluation terms, and support options.
 
 ## Credit
 

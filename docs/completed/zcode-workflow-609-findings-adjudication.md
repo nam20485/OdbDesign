@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| Source report | `docs/reviews/zcode-workflow-609-review-report.md` (three-lens review, 16 findings: 1×P1, 15×P2) |
+| Source report | [`zcode-workflow-609-review-report.md`](zcode-workflow-609-review-report.md) (three-lens review, 16 findings: 1×P1, 15×P2) |
 | Verified against | branch `nam/getdesign-streaming` @ `645a65c` (2026-11-01) |
 | Method | every cited `file:line` re-read at HEAD; the report's grep evidence re-run; the contested P1 gate independently re-executed (3 fresh runs of `LargeDesign_350_41017_StreamWithinRssBudget`, binary confirmed current — `ninja: no work to do`); no code changed for this document |
 | Structure | per finding: **Verification** (confirmed / corrected / refuted, with evidence), **Detail** (what is actually happening), **Recommendation** (fix or not, where the work should ride), **If not fixed** (concrete consequence) |

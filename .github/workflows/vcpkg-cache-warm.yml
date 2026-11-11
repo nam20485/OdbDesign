@@ -21,6 +21,12 @@ on:
 
 permissions:
   contents: read
+  # packages:write is REQUIRED: this job pushes the binary cache to GitHub
+  # Packages with the workflow GITHUB_TOKEN (packages created by GITHUB_TOKEN
+  # inherit the repo's public visibility → free storage; PAT-pushed packages
+  # default private and refill the account's private-package quota — the
+  # 2026-02-14 → 2026-11-08 feed outage).
+  packages: write
 
 env:
   VCPKG_ROOT: ${{ github.workspace }}/vcpkg
@@ -29,7 +35,6 @@ env:
   VCPKG_COMMIT: 4f6d4ae8247b2dcae554555a135e52bb449dd524
   VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}/.vcpkg-binary-cache
   FEED_URL: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
-  FEED_PUSH_URL: https://nuget.pkg.github.com/${{ github.repository_owner }}
   VCPKG_FEATURE_FLAGS: dependencygraph
   USERNAME: ${{ github.repository_owner }}
   NUGET_XMLDOC_MODE: skip
@@ -76,6 +81,11 @@ jobs:
       - name: Generate NuGet Config for Binary Cache
         shell: bash
         run: |
+          # GITHUB_TOKEN (not a user PAT): packages pushed with it inherit the
+          # repo's public visibility → free storage. defaultPushSource must be
+          # the v3 index.json URL — the extensionless form is rejected by
+          # GitHub's service (POC-validated 2026-11-08; see
+          # docs/plan/vcpkg-github-packages-outage-fix.md §3).
           cat > "$GITHUB_WORKSPACE/nuget.generated.config" << 'EOF'
           <?xml version="1.0" encoding="utf-8"?>
           <configuration>
@@ -86,15 +96,14 @@ jobs:
             <packageSourceCredentials>
               <GitHubPackages>
                 <add key="Username" value="${{ env.USERNAME }}" />
-                <add key="ClearTextPassword" value="${{ secrets.VCPKG_PAT_TOKEN }}" />
+                <add key="ClearTextPassword" value="${{ secrets.GITHUB_TOKEN }}" />
               </GitHubPackages>
             </packageSourceCredentials>
             <apiKeys>
-              <add key="${{ env.FEED_URL }}" value="${{ secrets.VCPKG_PAT_TOKEN }}" />
-              <add key="${{ env.FEED_PUSH_URL }}" value="${{ secrets.VCPKG_PAT_TOKEN }}" />
+              <add key="${{ env.FEED_URL }}" value="${{ secrets.GITHUB_TOKEN }}" />
             </apiKeys>
             <config>
-              <add key="defaultPushSource" value="${{ env.FEED_PUSH_URL }}" />
+              <add key="defaultPushSource" value="${{ env.FEED_URL }}" />
               <add key="signatureValidationMode" value="accept" />
             </config>
           </configuration>
@@ -129,23 +138,26 @@ jobs:
           git -C "${{ env.VCPKG_ROOT }}" remote add origin https://github.com/Microsoft/vcpkg.git
           git -C "${{ env.VCPKG_ROOT }}" fetch --depth 1 origin "${{ env.VCPKG_COMMIT }}"
           git -C "${{ env.VCPKG_ROOT }}" checkout --detach FETCH_HEAD
-          "${{ env.VCPKG_ROOT }}/bootstrap-vcpkg.sh"
+          # The tool-binary download's own retry window (~20s) is shorter than a
+          # GitHub Releases CDN 504 blip (2026-11-09: this leg died to
+          # `curl: (22) 504` on "Downloading vcpkg-glibc"); retry with backoff.
+          attempts=0
+          until "${{ env.VCPKG_ROOT }}/bootstrap-vcpkg.sh"; do
+            attempts=$((attempts + 1))
+            if [ "$attempts" -ge 5 ]; then
+              echo "::error::bootstrap-vcpkg failed after $attempts attempts"
+              exit 1
+            fi
+            delay=$((attempts * 30))
+            echo "bootstrap attempt $attempts failed — retrying in ${delay}s"
+            sleep "$delay"
+          done
 
-      - name: Setup NuGet API Key
-        shell: bash
-        env:
-          VCPKG_PAT: ${{ secrets.VCPKG_PAT_TOKEN }}
-        run: |
-          if [ -z "$VCPKG_PAT" ]; then
-            echo "::error::VCPKG_PAT_TOKEN is unavailable — feeding the NuGet package store is this job's entire purpose"
-            exit 1
-          fi
-          # vcpkg pushes through its OWN nuget.exe (under mono); there is no
-          # `nuget` in the runner PATH, so the old `mono $(which nuget) ... || true`
-          # registered nothing and every push failed "No API Key could be found".
-          NUGET_EXE="$("${{ env.VCPKG_ROOT }}/vcpkg" fetch nuget | tail -n 1)"
-          mono "$NUGET_EXE" setApiKey "$VCPKG_PAT" -Source "$FEED_PUSH_URL" -ConfigFile "$GITHUB_WORKSPACE/nuget.generated.config" -NonInteractive
-          mono "$NUGET_EXE" setApiKey "$VCPKG_PAT" -Source "$FEED_PUSH_URL" -NonInteractive
+      # (The old "Setup NuGet API Key" step is gone: mono `nuget setApiKey`
+      # never contributed to vcpkg's pushes — vcpkg passes no -ApiKey and the
+      # config above carries everything (POC-validated 2026-11-08: pushes
+      # succeed with the generated config alone, with or without an apiKeys
+      # section, once the push source is the v3 index.json URL).)
 
       - name: Install Ninja
         uses: seanmiddleditch/gha-setup-ninja@8b297075da4cd2a5f1fd21fe011b499edf06e9d2 # master
@@ -178,6 +190,35 @@ jobs:
           path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
           key: vcpkg-archives-linux-dynamic-release-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}-${{ env.VCPKG_COMMIT }}-${{ env.RUNNER_IMAGE_VERSION }}
 
+      - name: Verify Feed Round-Trip (tripwire)
+        # A green warm run whose writes nobody can read back is a failure —
+        # this is the real replacement for the old grep-style config check.
+        # Wipe every local cache layer, then re-install with the NuGet feed as
+        # the ONLY source: a fast exit-0 proves the feed serves every package
+        # this warm run published. readwrite makes the step self-healing: any
+        # package the feed is missing (e.g. one that got file-cached during a
+        # push outage — vcpkg only pushes at build time) is REBUILT here and
+        # published, then the next warm run is fast again. A wholesale feed
+        # failure forces full rebuilds (45+ min for both triplets) and trips
+        # the time budget; a partial miss shows as that package rebuilding in
+        # the log above (and lands in the feed on this very run).
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf "$VCPKG_DEFAULT_BINARY_CACHE" buildtrees packages vcpkg_installed
+          mkdir -p "$VCPKG_DEFAULT_BINARY_CACHE"
+          export VCPKG_BINARY_SOURCES="clear;nugettimeout,900;nugetconfig,$GITHUB_WORKSPACE/nuget.generated.config,readwrite"
+          t0=$(date +%s)
+          "${{ env.VCPKG_ROOT }}/vcpkg" install
+          "${{ env.VCPKG_ROOT }}/vcpkg" install --triplet x64-linux-dynamic
+          t1=$(date +%s)
+          elapsed=$((t1 - t0))
+          echo "feed-only reinstall: ${elapsed}s (budget 900s)"
+          if [ "$elapsed" -ge 900 ]; then
+            echo "::error::feed-only reinstall took ${elapsed}s — packages were REBUILT, not restored; the feed round-trip is broken"
+            exit 1
+          fi
+
   warm-macos:
     name: Vcpkg-Cache-Warm (macOS)
     if: >
@@ -206,6 +247,11 @@ jobs:
       - name: Generate NuGet Config for Binary Cache
         shell: bash
         run: |
+          # GITHUB_TOKEN (not a user PAT): packages pushed with it inherit the
+          # repo's public visibility → free storage. defaultPushSource must be
+          # the v3 index.json URL — the extensionless form is rejected by
+          # GitHub's service (POC-validated 2026-11-08; see
+          # docs/plan/vcpkg-github-packages-outage-fix.md §3).
           cat > "$GITHUB_WORKSPACE/nuget.generated.config" << 'EOF'
           <?xml version="1.0" encoding="utf-8"?>
           <configuration>
@@ -216,15 +262,14 @@ jobs:
             <packageSourceCredentials>
               <GitHubPackages>
                 <add key="Username" value="${{ env.USERNAME }}" />
-                <add key="ClearTextPassword" value="${{ secrets.VCPKG_PAT_TOKEN }}" />
+                <add key="ClearTextPassword" value="${{ secrets.GITHUB_TOKEN }}" />
               </GitHubPackages>
             </packageSourceCredentials>
             <apiKeys>
-              <add key="${{ env.FEED_URL }}" value="${{ secrets.VCPKG_PAT_TOKEN }}" />
-              <add key="${{ env.FEED_PUSH_URL }}" value="${{ secrets.VCPKG_PAT_TOKEN }}" />
+              <add key="${{ env.FEED_URL }}" value="${{ secrets.GITHUB_TOKEN }}" />
             </apiKeys>
             <config>
-              <add key="defaultPushSource" value="${{ env.FEED_PUSH_URL }}" />
+              <add key="defaultPushSource" value="${{ env.FEED_URL }}" />
               <add key="signatureValidationMode" value="accept" />
             </config>
           </configuration>
@@ -259,23 +304,26 @@ jobs:
           git -C "${{ env.VCPKG_ROOT }}" remote add origin https://github.com/Microsoft/vcpkg.git
           git -C "${{ env.VCPKG_ROOT }}" fetch --depth 1 origin "${{ env.VCPKG_COMMIT }}"
           git -C "${{ env.VCPKG_ROOT }}" checkout --detach FETCH_HEAD
-          "${{ env.VCPKG_ROOT }}/bootstrap-vcpkg.sh"
+          # The tool-binary download's own retry window (~20s) is shorter than a
+          # GitHub Releases CDN 504 blip (2026-11-09: Linux leg died to
+          # `curl: (22) 504` on "Downloading vcpkg-glibc"); retry with backoff.
+          attempts=0
+          until "${{ env.VCPKG_ROOT }}/bootstrap-vcpkg.sh"; do
+            attempts=$((attempts + 1))
+            if [ "$attempts" -ge 5 ]; then
+              echo "::error::bootstrap-vcpkg failed after $attempts attempts"
+              exit 1
+            fi
+            delay=$((attempts * 30))
+            echo "bootstrap attempt $attempts failed — retrying in ${delay}s"
+            sleep "$delay"
+          done
 
-      - name: Setup NuGet API Key
-        shell: bash
-        env:
-          VCPKG_PAT: ${{ secrets.VCPKG_PAT_TOKEN }}
-        run: |
-          if [ -z "$VCPKG_PAT" ]; then
-            echo "::error::VCPKG_PAT_TOKEN is unavailable — feeding the NuGet package store is this job's entire purpose"
-            exit 1
-          fi
-          # vcpkg pushes through its OWN nuget.exe (under mono); there is no
-          # `nuget` in the runner PATH, so the old `mono $(which nuget) ... || true`
-          # registered nothing and every push failed "No API Key could be found".
-          NUGET_EXE="$("${{ env.VCPKG_ROOT }}/vcpkg" fetch nuget | tail -n 1)"
-          mono "$NUGET_EXE" setApiKey "$VCPKG_PAT" -Source "$FEED_PUSH_URL" -ConfigFile "$GITHUB_WORKSPACE/nuget.generated.config" -NonInteractive
-          mono "$NUGET_EXE" setApiKey "$VCPKG_PAT" -Source "$FEED_PUSH_URL" -NonInteractive
+      # (The old "Setup NuGet API Key" step is gone: mono `nuget setApiKey`
+      # never contributed to vcpkg's pushes — vcpkg passes no -ApiKey and the
+      # config above carries everything (POC-validated 2026-11-08: pushes
+      # succeed with the generated config alone, with or without an apiKeys
+      # section, once the push source is the v3 index.json URL).)
 
       - name: Install Ninja
         uses: seanmiddleditch/gha-setup-ninja@8b297075da4cd2a5f1fd21fe011b499edf06e9d2 # master
@@ -299,3 +347,23 @@ jobs:
         with:
           path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
           key: vcpkg-archives-macos-release-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}-${{ env.VCPKG_COMMIT }}-${{ env.RUNNER_IMAGE_VERSION }}
+
+      - name: Verify Feed Round-Trip (tripwire)
+        # See the linux job's tripwire: prove the feed actually serves what
+        # this warm run published, by wiping local caches and re-installing
+        # from the feed alone (cold rebuild would take 45+ min — budget 900s).
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf "$VCPKG_DEFAULT_BINARY_CACHE" buildtrees packages vcpkg_installed
+          mkdir -p "$VCPKG_DEFAULT_BINARY_CACHE"
+          export VCPKG_BINARY_SOURCES="clear;nugettimeout,900;nugetconfig,$GITHUB_WORKSPACE/nuget.generated.config,readwrite"
+          t0=$(date +%s)
+          "${{ env.VCPKG_ROOT }}/vcpkg" install
+          t1=$(date +%s)
+          elapsed=$((t1 - t0))
+          echo "feed-only reinstall: ${elapsed}s (budget 900s)"
+          if [ "$elapsed" -ge 900 ]; then
+            echo "::error::feed-only reinstall took ${elapsed}s — packages were REBUILT, not restored; the feed round-trip is broken"
+            exit 1
+          fi

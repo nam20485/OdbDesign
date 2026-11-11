@@ -22,10 +22,9 @@ non-0/1 byte and desynced a whole protobuf stream.
 export VCPKG_ROOT=/home/nam20485/src/github/microsoft/vcpkg   # not set in every shell
 export PATH="$HOME/.local/bin:$PATH"
 
-# One-time: the preset has its own build dir and needs the vcpkg tree. In an agent
-# session the vcpkg registry fetch is blocked, so reuse an existing install instead:
-mkdir -p out/build/linux-asan
-ln -sfn ../linux-dynamic-release/vcpkg_installed out/build/linux-asan/vcpkg_installed
+# No dependency setup needed: every native preset shares the vcpkg tree at
+# out/vcpkg_installed (VCPKG_INSTALLED_DIR in CMakePresets.json), so the asan
+# preset finds protobuf/gRPC there.
 
 VCPKG_MANIFEST_INSTALL=OFF cmake --preset linux-asan
 VCPKG_MANIFEST_INSTALL=OFF cmake --build --preset linux-asan --target OdbDesignTests
@@ -36,8 +35,9 @@ ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=print_stacktrace=1 \
 ```
 
 `VCPKG_MANIFEST_INSTALL=OFF` is required in agent sessions because the shell guard blocks
-vcpkg's internal `git fetch` into `~/.cache/vcpkg/registries/git`. The symlink above is what
-makes that viable — without a `vcpkg_installed` tree, configure cannot find protobuf/gRPC.
+vcpkg's internal `git fetch` into `~/.cache/vcpkg/registries/git`. It is viable because the
+shared `out/vcpkg_installed` tree already holds protobuf/gRPC — without a populated installed
+tree, configure cannot find them.
 
 ## Reading the output
 
