@@ -49,7 +49,8 @@ add_executable(OdbDesignTests
     # NOTE: GrpcBatchStreamTests.cpp temporarily disabled due to CMake coupling concerns
     # Future: Will create separate test target for server component tests
     # "GrpcBatchStreamTests.cpp"
-     "FileArchiveLoadTests.cpp")
+     "FileArchiveLoadTests.cpp"
+    "ParserOnlyHeaderTests.cpp")
 
 target_link_libraries(OdbDesignTests PRIVATE GTest::gtest_main GTest::gmock_main)
 
@@ -97,3 +98,8 @@ gtest_discover_tests(OdbDesignTests DISCOVERY_MODE PRE_TEST)
     file (GLOB_RECURSE OdbDesignTests_HEADER_FILES "*.h")
     target_precompile_headers(OdbDesignTests PRIVATE ${OdbDesignTests_HEADER_FILES})
 #endif()
+
+# The parser-only surface test must NOT receive the force-included fixture
+# headers from the PCH: its point is proving the TU compiles with nothing but
+# OdbDesignParser.h (no App/, no Crow).
+set_source_files_properties("ParserOnlyHeaderTests.cpp" PROPERTIES SKIP_PRECOMPILE_HEADERS ON)

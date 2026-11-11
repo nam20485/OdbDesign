@@ -1,17 +1,19 @@
 # OdbDesign Contributor License Agreement
 
 OdbDesign is distributed under a **dual-license** model: the open-source
-AGPL-3.0 and separate commercial licenses. To keep the commercial licensing
-of the project legally sound, every contributor must grant the project owner
-the same rights the owner holds over their own code — including the right to
-offer the combined work under commercial terms.
+[AGPL-3.0](../LICENSE) and separate commercial licenses. To keep the
+commercial licensing of the project legally sound, every contributor must
+grant the project owner the same rights the owner holds over their own code —
+including the right to offer the combined work under commercial terms.
 
 **By submitting a pull request to this repository you agree to the applicable
 agreement below (Individual for personal contributions, Corporate for
-contributions made on behalf of your employer).** The CLA Assistant bot will
-present this document for one-click sign-off when you open your first pull
-request. This document is the authoritative text; CLA Assistant only records
-your acceptance of it.
+contributions made on behalf of your employer).** Once CLA Assistant is
+enabled on this repository, the bot will present this document for one-click
+sign-off when you open your first pull request; until then, please state in
+your pull request that you accept this agreement. This file is the
+authoritative text either way; CLA Assistant only records your acceptance of
+it.
 
 > This is a template that has not been reviewed by legal counsel for your
 > jurisdiction. Contributors with questions should raise them in the pull
@@ -41,7 +43,7 @@ license to reproduce, prepare derivative works of, publicly display,
 publicly perform, sublicense, and distribute Your Contributions and such
 derivative works:
 
-1. under the [GNU Affero General Public License v3.0](https://github.com/nam20485/OdbDesign/blob/nam20485/LICENSE) or any later
+1. under the [GNU Affero General Public License v3.0](../LICENSE) or any later
    version, **and**
 2. **under any other license or sublicense the Project Owner chooses**
    (including commercial, proprietary, or dual-license terms), so that the
