@@ -202,18 +202,33 @@ TEST(ToolsFileTests, SaveThenReParse_ProducesIdenticalProtobuf)
 
 TEST(ToolsFileTests, Parse_MalformedNumericField_ThrowsParseError)
 {
-	// hostile/malformed numeric values surface as parse_error with context,
-	// never as an escaping std::invalid_argument from stoi/stod
-	const auto dir = writeTempToolsFile(
-		"UNITS=INCH\n"
-		"TOOLS {\n"
-		"    NUM=not-a-number\n"
-		"    TYPE=VIA\n"
-		"    FINISH_SIZE=1e999x\n"
-		"}\n", "malformed_numeric");
-
-	ToolsFile toolsFile;
-	ASSERT_THROW(toolsFile.Parse(dir), Odb::Lib::FileModel::parse_error);
+	// hostile/malformed numeric values surface as parse_error with context —
+	// never an escaping exception, never a silently-wrong partial parse
+	const std::vector<std::pair<std::string, std::string>> badValues = {
+		{"NUM", "not-a-number"},
+		{"NUM", "5abc"},              // trailing garbage
+		{"NUM", "-5"},                // sign on unsigned field
+		{"NUM", "4294967296"},        // > UINT_MAX (LP64 truncation class)
+		{"FINISH_SIZE", "12abc"},
+		{"THICKNESS", "1e999"},
+	};
+	int caseIndex = 0;
+	for (const auto& [key, badValue] : badValues)
+	{
+		std::string contents;
+		if (key == "THICKNESS")
+		{
+			contents = "UNITS=INCH\n" + key + "=" + badValue + "\n";
+		}
+		else
+		{
+			contents = "UNITS=INCH\nTOOLS {\n    " + key + "=" + badValue + "\n    TYPE=VIA\n}\n";
+		}
+		const auto dir = writeTempToolsFile(contents, "malformed_" + std::to_string(caseIndex++));
+		ToolsFile toolsFile;
+		ASSERT_THROW(toolsFile.Parse(dir), Odb::Lib::FileModel::parse_error)
+			<< key << "=" << badValue << " was not rejected";
+	}
 }
 
 TEST(ToolsFileTests, Parse_ToolsPrefixedGarbageLine_ThrowsParseError)

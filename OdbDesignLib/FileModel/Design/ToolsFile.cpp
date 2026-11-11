@@ -26,34 +26,37 @@ namespace
 	}
 
 	// numeric fields parse through validated helpers: a malformed or
-	// hostile tools file surfaces as parse_error with file/line context
-	// instead of an escaping std::invalid_argument / std::out_of_range
+	// hostile tools file surfaces as parse_error with file/line context.
+	// from_chars (not stoi/stoul/stod) so that validation is total rather
+	// than exception-only: trailing garbage, sign abuse on unsigned fields,
+	// and out-of-target-range values are all rejected — sto* would accept
+	// "5abc", wrap "-5", or truncate >UINT_MAX on LP64
 	using Odb::Lib::FileModel::parse_error;
 
 	unsigned int parseUnsigned(const std::filesystem::path& path, const std::string& line,
 		int lineNumber, const std::string& token, const std::string& value)
 	{
-		try
-		{
-			return static_cast<unsigned int>(std::stoul(value));
-		}
-		catch (const std::exception&)
+		unsigned int result = 0;
+		const auto* last = value.data() + value.size();
+		const auto [ptr, ec] = std::from_chars(value.data(), last, result);
+		if (ec != std::errc() || ptr != last)
 		{
 			throw_parse_error(path, line, token, lineNumber);
 		}
+		return result;
 	}
 
 	double parseDouble(const std::filesystem::path& path, const std::string& line,
 		int lineNumber, const std::string& token, const std::string& value)
 	{
-		try
-		{
-			return std::stod(value);
-		}
-		catch (const std::exception&)
+		double result = 0.0;
+		const auto* last = value.data() + value.size();
+		const auto [ptr, ec] = std::from_chars(value.data(), last, result);
+		if (ec != std::errc() || ptr != last)
 		{
 			throw_parse_error(path, line, token, lineNumber);
 		}
+		return result;
 	}
 }
 
