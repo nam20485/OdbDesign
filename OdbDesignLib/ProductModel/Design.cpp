@@ -526,6 +526,10 @@ namespace Odb::Lib::ProductModel
 		std::uint64_t netlistPointCount = 0;
 		std::uint64_t attributeEntryCount = 0;
 		std::uint64_t propertyRecordCount = 0;
+		// deliberately retained at zero: tools files are not currently parsed
+		// (contributor carve-out, PR #623); the count term is reactivated by
+		// the clean-room tools-file reimplementation
+		// (docs/plan/clean-room-reimplementation-plan.md §3.5)
 		std::uint64_t toolCount = 0;
 		std::uint64_t stepCount = 0;
 
@@ -580,7 +584,6 @@ namespace Odb::Lib::ProductModel
 					featureCount += pLayer->GetFeaturesFile().GetFeatureRecords().size();
 					componentCount += pLayer->GetComponentsFile().GetComponentRecords().size();
 					attributeEntryCount += pLayer->GetAttrListFile().GetAttributes().size();
-					toolCount += pLayer->GetToolsFile().GetTools().size();
 				}
 			}
 		}

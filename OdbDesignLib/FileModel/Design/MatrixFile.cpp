@@ -315,7 +315,9 @@ namespace Odb::Lib::FileModel::Design
                                 }
                                 else if (attribute == "COLOR" || attribute == "color")
                                 {
-                                    if (!pCurrentLayerRecord->color.from_string(value)) return false;
+                                    // COLOR is a spec-defined matrix attribute; its value is
+                                    // recognized and skipped here (color storage returns with
+                                    // the upcoming color reimplementation)
                                 }
                                 else
                                 {
@@ -441,7 +443,6 @@ namespace Odb::Lib::FileModel::Design
             os << '\t' << LayerRecord::END_NAME_KEY << "=" << layerRecord->endName << std::endl;
             os << '\t' << LayerRecord::OLD_NAME_KEY << "=" << layerRecord->oldName << std::endl;
             os << '\t' << LayerRecord::ADD_TYPE_KEY << "=" << layerRecord->addType << std::endl;
-            os << '\t' << LayerRecord::COLOR_KEY << "=" << layerRecord->color.to_string() << std::endl;
             os << '\t' << LayerRecord::ID_KEY << "=" << layerRecord->id << std::endl;
             
             os << Constants::ARRAY_RECORD_CLOSE_TOKEN << std::endl;            
@@ -486,11 +487,6 @@ namespace Odb::Lib::FileModel::Design
         pLayerRecordMessage->set_row(row);
         pLayerRecordMessage->set_startname(Odb::Lib::Text::ToUtf8(startName));
         pLayerRecordMessage->set_type(static_cast<Odb::Lib::Protobuf::MatrixFile::LayerRecord::Type>(type));
-        pLayerRecordMessage->mutable_color()->set_red(color.red);
-        pLayerRecordMessage->mutable_color()->set_green(color.green);
-        pLayerRecordMessage->mutable_color()->set_blue(color.blue);
-        pLayerRecordMessage->mutable_color()->set_nopreference(color.noPreference);
-
 
         return pLayerRecordMessage;
     }       
@@ -513,9 +509,5 @@ namespace Odb::Lib::FileModel::Design
 		row = message.row();
 		startName = message.startname();
 		type = static_cast<Type>(message.type());
-        color.red = message.color().red();
-        color.green = message.color().green();
-        color.blue = message.color().blue();
-        color.noPreference = message.color().nopreference();
     }   
 }
