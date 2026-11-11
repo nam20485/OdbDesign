@@ -2,6 +2,9 @@
 #include <fstream>
 #include <sstream>
 #include <charconv>
+#include <cerrno>
+#include <cmath>
+#include <cstdlib>
 #include "../parse_error.h"
 #include "../invalid_odb_error.h"
 #include "Logger.h"
@@ -49,10 +52,18 @@ namespace
 	double parseDouble(const std::filesystem::path& path, const std::string& line,
 		int lineNumber, const std::string& token, const std::string& value)
 	{
-		double result = 0.0;
-		const auto* last = value.data() + value.size();
-		const auto [ptr, ec] = std::from_chars(value.data(), last, result);
-		if (ec != std::errc() || ptr != last)
+		// std::from_chars for floating point is unavailable on libc++
+		// (Xcode), so the double path uses strtod with equivalent
+		// strictness: full consumption (end pointer), range (errno), and a
+		// finite result — "1e999", "12abc", and "inf" all reject
+		if (value.empty())
+		{
+			throw_parse_error(path, line, token, lineNumber);
+		}
+		errno = 0;
+		char* end = nullptr;
+		const double result = std::strtod(value.c_str(), &end);
+		if (end != value.c_str() + value.size() || errno == ERANGE || !std::isfinite(result))
 		{
 			throw_parse_error(path, line, token, lineNumber);
 		}

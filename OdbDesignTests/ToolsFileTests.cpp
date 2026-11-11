@@ -211,6 +211,8 @@ TEST(ToolsFileTests, Parse_MalformedNumericField_ThrowsParseError)
 		{"NUM", "4294967296"},        // > UINT_MAX (LP64 truncation class)
 		{"FINISH_SIZE", "12abc"},
 		{"THICKNESS", "1e999"},
+		{"FINISH_SIZE", "inf"},        // non-finite
+		{"THICKNESS", "nan"},         // non-finite
 	};
 	int caseIndex = 0;
 	for (const auto& [key, badValue] : badValues)
