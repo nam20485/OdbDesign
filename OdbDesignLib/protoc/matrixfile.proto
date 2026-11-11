@@ -3,7 +3,6 @@ option cc_enable_arenas = true;
 
 package Odb.Lib.Protobuf;
 
-import "color.proto";
 import "enums.proto";
 
 //
@@ -68,7 +67,12 @@ message MatrixFile {
         string endName = 13;
         string oldName = 14;
         string addType = 15;
-        Color color = 16;
+
+        // 16 was the third-party Color field; removed with the contributor
+        // carve-out (see git history). Reserved so the number is never reused.
+        reserved 16;
+        reserved "color";
+
         uint32 id = 17;
     }
 

@@ -8,7 +8,6 @@
 #include <filesystem>
 #include <vector>
 #include <memory>
-#include "RgbColor.h"
 #include "../../enums.h"
 #include "../../IProtoBuffable.h"
 #include "matrixfile.pb.h"
@@ -101,7 +100,6 @@ namespace Odb::Lib::FileModel::Design
             std::string endName;
             std::string oldName;
             std::string addType;
-            RgbColor color{ "0" };
             unsigned int id = (unsigned int)-1;
 
             inline static const char* RECORD_TOKEN = "LAYER";
@@ -121,7 +119,6 @@ namespace Odb::Lib::FileModel::Design
             inline static const char* END_NAME_KEY = "END_NAME";
             inline static const char* OLD_NAME_KEY = "OLD_NAME";
             inline static const char* ADD_TYPE_KEY = "ADD_TYPE";
-            inline static const char* COLOR_KEY = "COLOR";
             inline static const char* ID_KEY = "ID";
 
             // Inherited via IProtoBuffable

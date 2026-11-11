@@ -580,7 +580,6 @@ namespace Odb::Lib::ProductModel
 					featureCount += pLayer->GetFeaturesFile().GetFeatureRecords().size();
 					componentCount += pLayer->GetComponentsFile().GetComponentRecords().size();
 					attributeEntryCount += pLayer->GetAttrListFile().GetAttributes().size();
-					toolCount += pLayer->GetToolsFile().GetTools().size();
 				}
 			}
 		}
