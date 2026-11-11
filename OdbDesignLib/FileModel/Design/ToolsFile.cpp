@@ -25,6 +25,37 @@ namespace
 		}
 		return std::string(buffer, result.ptr);
 	}
+
+	// numeric fields parse through validated helpers: a malformed or
+	// hostile tools file surfaces as parse_error with file/line context
+	// instead of an escaping std::invalid_argument / std::out_of_range
+	using Odb::Lib::FileModel::parse_error;
+
+	unsigned int parseUnsigned(const std::filesystem::path& path, const std::string& line,
+		int lineNumber, const std::string& token, const std::string& value)
+	{
+		try
+		{
+			return static_cast<unsigned int>(std::stoul(value));
+		}
+		catch (const std::exception&)
+		{
+			throw_parse_error(path, line, token, lineNumber);
+		}
+	}
+
+	double parseDouble(const std::filesystem::path& path, const std::string& line,
+		int lineNumber, const std::string& token, const std::string& value)
+	{
+		try
+		{
+			return std::stod(value);
+		}
+		catch (const std::exception&)
+		{
+			throw_parse_error(path, line, token, lineNumber);
+		}
+	}
 }
 
 namespace Odb::Lib::FileModel::Design
@@ -193,7 +224,7 @@ namespace Odb::Lib::FileModel::Design
 						std::string value;
 						std::getline(lineStream, value);
 						Utils::str_trim(value);
-						m_thickness = value.empty() ? 0.0 : std::stod(value);
+						m_thickness = value.empty() ? 0.0 : parseDouble(m_path, line, lineNumber, key, value);
 					}
 					else if (key == USER_PARAMS_KEY)
 					{
@@ -244,7 +275,7 @@ namespace Odb::Lib::FileModel::Design
 
 					if (key == NUM_KEY)
 					{
-						pCurrentRecord->num = static_cast<unsigned int>(std::stoul(value));
+						pCurrentRecord->num = parseUnsigned(m_path, line, lineNumber, key, value);
 					}
 					else if (key == TYPE_KEY)
 					{
@@ -263,11 +294,11 @@ namespace Odb::Lib::FileModel::Design
 					}
 					else if (key == MIN_TOL_KEY)
 					{
-						pCurrentRecord->minTol = value.empty() ? 0.0 : std::stod(value);
+						pCurrentRecord->minTol = value.empty() ? 0.0 : parseDouble(m_path, line, lineNumber, key, value);
 					}
 					else if (key == MAX_TOL_KEY)
 					{
-						pCurrentRecord->maxTol = value.empty() ? 0.0 : std::stod(value);
+						pCurrentRecord->maxTol = value.empty() ? 0.0 : parseDouble(m_path, line, lineNumber, key, value);
 					}
 					else if (key == BIT_KEY)
 					{
@@ -276,11 +307,11 @@ namespace Odb::Lib::FileModel::Design
 					else if (key == FINISH_SIZE_KEY)
 					{
 						// spec: -1 when not set
-						pCurrentRecord->finishSize = value.empty() ? -1.0 : std::stod(value);
+						pCurrentRecord->finishSize = value.empty() ? -1.0 : parseDouble(m_path, line, lineNumber, key, value);
 					}
 					else if (key == DRILL_SIZE_KEY)
 					{
-						pCurrentRecord->drillSize = value.empty() ? -1.0 : std::stod(value);
+						pCurrentRecord->drillSize = value.empty() ? -1.0 : parseDouble(m_path, line, lineNumber, key, value);
 					}
 					else
 					{

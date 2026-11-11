@@ -200,6 +200,22 @@ TEST(ToolsFileTests, SaveThenReParse_ProducesIdenticalProtobuf)
 	EXPECT_DOUBLE_EQ(second.GetTools()[0]->finishSize, 7.87402);
 }
 
+TEST(ToolsFileTests, Parse_MalformedNumericField_ThrowsParseError)
+{
+	// hostile/malformed numeric values surface as parse_error with context,
+	// never as an escaping std::invalid_argument from stoi/stod
+	const auto dir = writeTempToolsFile(
+		"UNITS=INCH\n"
+		"TOOLS {\n"
+		"    NUM=not-a-number\n"
+		"    TYPE=VIA\n"
+		"    FINISH_SIZE=1e999x\n"
+		"}\n", "malformed_numeric");
+
+	ToolsFile toolsFile;
+	ASSERT_THROW(toolsFile.Parse(dir), Odb::Lib::FileModel::parse_error);
+}
+
 TEST(ToolsFileTests, Parse_ToolsPrefixedGarbageLine_ThrowsParseError)
 {
 	// "TOOLS" followed by anything other than "{" is not a record open; it
