@@ -55,6 +55,7 @@ It is built using the latest available version of the C++ standard and is compil
 * [Code coverage](coverage/) &mdash; per-branch HTML test coverage reports (`development` and `release` branches)
 * [CDash dashboard](https://my.cdash.org/index.php?project=OdbDesign) &mdash; continuous integration build &amp; test results from all platforms
 * [Dependencies &amp; SBOM](dependencies.md) &mdash; third-party software packages, dependency and SBOM reports, security scanning
+* [Licensing &amp; IP protection](licensing.md) &mdash; the dual-license model, the commercial licensing process, and how the codebase is kept safe for closed-source use
 
 ## Community
 
@@ -62,7 +63,7 @@ It is built using the latest available version of the C++ standard and is compil
 
 ## More documentation
 
-* [Build](BUILD.html) &nbsp;&middot;&nbsp; [Setup](README-SETUP.html) &nbsp;&middot;&nbsp; [Testing](TESTING.html) &nbsp;&middot;&nbsp; [Contributing](CONTRIBUTING.md) &nbsp;&middot;&nbsp; [Security](SECURITY.html) &nbsp;&middot;&nbsp; [Code of Conduct](CODE_OF_CONDUCT.md) &nbsp;&middot;&nbsp; [One-pager](one_pager.html)
+* [Build](BUILD.html) &nbsp;&middot;&nbsp; [Setup](README-SETUP.html) &nbsp;&middot;&nbsp; [Testing](TESTING.html) &nbsp;&middot;&nbsp; [Contributing](CONTRIBUTING.md) &nbsp;&middot;&nbsp; [Security](SECURITY.html) &nbsp;&middot;&nbsp; [Code of Conduct](CODE_OF_CONDUCT.md) &nbsp;&middot;&nbsp; [One-pager](one_pager.html) &nbsp;&middot;&nbsp; [Licensing](licensing.html)
 
 * Internal working documents: [active plans](plan/README.md) &nbsp;&middot;&nbsp; [reference material](reference/README.md)
 
