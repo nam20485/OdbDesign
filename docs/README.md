@@ -371,7 +371,7 @@ See [docs/CONTRIBUTING.md](CONTRIBUTING.md) for more details.
 
 ## License
 
-This project is free and open source under the [AGPL V3.0](../LICENSE).
+This project is free and open source under the [AGPL V3.0](../LICENSE). Commercial licenses for closed-source use are available — see [COMMERCIAL-LICENSE.md](../COMMERCIAL-LICENSE.md) and the [licensing & IP protection story](licensing.md).
 
 > The AGPL V3.0 is a non-permissive open source license that is not suitable for use in closed-source applications. However, commercial licenses suitable for use in closed-source applications are available — see [COMMERCIAL-LICENSE.md](../COMMERCIAL-LICENSE.md) for the licensing process, evaluation terms, and support options.
 
