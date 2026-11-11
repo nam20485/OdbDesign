@@ -25,10 +25,19 @@ namespace Odb::Lib::FileModel::Design
             auto strGreen = str.substr(2, 2);
             auto strBlue = str.substr(4, 2);
 
-            // valid values are [0,100]
-            red = static_cast<uint8_t>(std::stoi(strRed));
-            blue = static_cast<uint8_t>(std::stoi(strBlue));
-            green = static_cast<uint8_t>(std::stoi(strGreen));
+            try
+            {
+                // valid values are [0,100]
+                red = static_cast<uint8_t>(std::stoi(strRed));
+                green = static_cast<uint8_t>(std::stoi(strGreen));
+                blue = static_cast<uint8_t>(std::stoi(strBlue));
+            }
+            catch (const std::exception&)
+            {
+                // non-numeric component; report as unparsable rather than
+                // letting stoi escape as an unrelated exception
+                return false;
+            }
 
             noPreference = false;
             return true;
@@ -53,7 +62,18 @@ namespace Odb::Lib::FileModel::Design
         }
         else
         {
-            return std::to_string(red) + std::to_string(green) + std::to_string(blue);
+            // each component is a two-digit zero-padded decimal, so the
+            // concatenation is exactly the six-character form from_string
+            // parses (e.g. (6, 6, 6) -> "060606", not "666")
+            auto twoDigits = [](uint8_t value) -> std::string
+            {
+                if (value < 10) return "0" + std::to_string(value);
+                return std::to_string(value);
+            };
+            // note: a component of exactly 100 emits three digits and cannot
+            // round-trip through the six-character form; the ODB matrix
+            // samples use two-digit percent values
+            return twoDigits(red) + twoDigits(green) + twoDigits(blue);
         }
     }
 }

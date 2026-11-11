@@ -1,6 +1,7 @@
 #include "ToolsFile.h"
 #include <fstream>
 #include <sstream>
+#include <cstring>
 #include <charconv>
 #include "../parse_error.h"
 #include "../invalid_odb_error.h"
@@ -154,9 +155,17 @@ namespace Odb::Lib::FileModel::Design
 				if (!parsingRecord)
 				{
 					// a TOOLS array record opens with "TOOLS {" — no '=' on the
-					// line, so check the array token before key/value parsing
+					// line, so check the array token before key/value parsing.
+					// Require the brace (optionally spaced) so a TOOLS-prefixed
+					// parameter line is never mistaken for a record open.
 					if (line.rfind(TOOLS_ARRAY_TOKEN, 0) == 0)
 					{
+						auto afterToken = line.substr(strlen(TOOLS_ARRAY_TOKEN));
+						Utils::str_trim(afterToken);
+						if (afterToken != Constants::ARRAY_RECORD_OPEN_TOKEN)
+						{
+							throw_parse_error(m_path, line, TOOLS_ARRAY_TOKEN, lineNumber);
+						}
 						pCurrentRecord = std::make_shared<ToolRecord>();
 						parsingRecord = true;
 						continue;
@@ -390,7 +399,11 @@ namespace Odb::Lib::FileModel::Design
 	{
 		num = message.num();
 		type = static_cast<Type>(message.type());
-		subType = static_cast<SubType>(message.subtype());
+		// absent sub-type deserializes to the parse-time default (STANDARD),
+		// not Unknown — matches a record parsed from a file without TYPE2
+		subType = message.has_subtype()
+			? static_cast<SubType>(message.subtype())
+			: SubType::Standard;
 		minTol = message.mintol();
 		maxTol = message.maxtol();
 		bit = message.bit();

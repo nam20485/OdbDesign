@@ -315,7 +315,10 @@ namespace Odb::Lib::FileModel::Design
                                 }
                                 else if (attribute == "COLOR" || attribute == "color")
                                 {
-                                    if (!pCurrentLayerRecord->color.from_string(value)) return false;
+                                    if (!pCurrentLayerRecord->color.from_string(value))
+                                    {
+                                        throw_parse_error(m_path, line, value, lineNumber);
+                                    }
                                 }
                                 else
                                 {
@@ -512,9 +515,14 @@ namespace Odb::Lib::FileModel::Design
 		row = message.row();
 		startName = message.startname();
 		type = static_cast<Type>(message.type());
-        color.red = static_cast<decltype(color.red)>(message.color().red());
-        color.green = static_cast<decltype(color.green)>(message.color().green());
-        color.blue = static_cast<decltype(color.blue)>(message.color().blue());
-        color.noPreference = message.color().nopreference();
+        if (message.has_color())
+        {
+            color.red = static_cast<decltype(color.red)>(message.color().red());
+            color.green = static_cast<decltype(color.green)>(message.color().green());
+            color.blue = static_cast<decltype(color.blue)>(message.color().blue());
+            color.noPreference = message.color().nopreference();
+        }
+        // color unset: keep the parsed/default no-preference color rather
+        // than overwriting it with an empty message's zeros
     }   
 }

@@ -6,6 +6,8 @@
 
 #include "FileModel/Design/ToolsFile.h"
 #include "FileModel/Design/MatrixFile.h"
+#include "FileModel/Design/RgbColor.h"
+#include "FileModel/Design/FileArchive.h"
 #include "FileModel/parse_error.h"
 #include "Fixtures/TestDataFixture.h"
 
@@ -16,15 +18,20 @@
 #include <fstream>
 #include <ostream>
 #include <sstream>
+#include <array>
+#include <vector>
 
 namespace fs = std::filesystem;
 using namespace Odb::Lib::FileModel::Design;
 
 namespace
 {
-	fs::path writeTempToolsFile(const std::string& contents)
+	// each test writes into its own subdirectory (keyed by test name): the
+	// suite registers via gtest_discover_tests, so parallel ctest runs each
+	// test as its own process and a shared path would race
+	fs::path writeTempToolsFile(const std::string& contents, const std::string& tag)
 	{
-		auto dir = fs::temp_directory_path() / "odbdesign_toolsfile_tests";
+		auto dir = fs::temp_directory_path() / "odbdesign_toolsfile_tests" / tag;
 		fs::create_directories(dir);
 		auto path = dir / "tools";
 		std::ofstream out(path, std::ios::trunc);
@@ -65,7 +72,7 @@ TEST(ToolsFileTests, Parse_SyntheticGrammar_ExtractsFields)
 		"    BIT=\n"
 		"    FINISH_SIZE=15\n"
 		"    DRILL_SIZE=19\n"
-		"}\n");
+		"}\n", "synthetic");
 
 	ToolsFile toolsFile;
 	ASSERT_TRUE(toolsFile.Parse(dir));
@@ -111,7 +118,7 @@ TEST(ToolsFileTests, Parse_IllegalSubTypeForType_ThrowsParseError)
 		"    NUM=1\n"
 		"    TYPE=NON_PLATED\n"
 		"    TYPE2=PHOTO\n"
-		"}\n");
+		"}\n", "illegal_subtype");
 
 	ToolsFile toolsFile;
 	ASSERT_THROW(toolsFile.Parse(dir), Odb::Lib::FileModel::parse_error);
@@ -124,7 +131,7 @@ TEST(ToolsFileTests, Parse_UnknownType_ThrowsParseError)
 		"TOOLS {\n"
 		"    NUM=1\n"
 		"    TYPE=GALVANIC\n"
-		"}\n");
+		"}\n", "unknown_type");
 
 	ToolsFile toolsFile;
 	ASSERT_THROW(toolsFile.Parse(dir), Odb::Lib::FileModel::parse_error);
@@ -138,7 +145,7 @@ TEST(ToolsFileTests, Parse_EmptyFinishSize_UsesSpecSentinel)
 		"    NUM=1\n"
 		"    TYPE=VIA\n"
 		"    FINISH_SIZE=\n"
-		"}\n");
+		"}\n", "empty_finish");
 
 	ToolsFile toolsFile;
 	ASSERT_TRUE(toolsFile.Parse(dir));
@@ -161,7 +168,7 @@ TEST(ToolsFileTests, SaveThenReParse_ProducesIdenticalProtobuf)
 		"    BIT=\n"
 		"    FINISH_SIZE=7.87402\n"
 		"    DRILL_SIZE=7.87402\n"
-		"}\n");
+		"}\n", "roundtrip");
 
 	ToolsFile first;
 	ASSERT_TRUE(first.Parse(dir));
@@ -191,6 +198,58 @@ TEST(ToolsFileTests, SaveThenReParse_ProducesIdenticalProtobuf)
 	EXPECT_EQ(second.GetUnits(), "INCH");
 	ASSERT_EQ(second.GetTools().size(), 1U);
 	EXPECT_DOUBLE_EQ(second.GetTools()[0]->finishSize, 7.87402);
+}
+
+TEST(ToolsFileTests, Parse_ToolsPrefixedGarbageLine_ThrowsParseError)
+{
+	// "TOOLS" followed by anything other than "{" is not a record open; it
+	// must surface as a parse error, not silently start a record
+	const auto dir = writeTempToolsFile(
+		"UNITS=INCH\n"
+		"TOOLS_GARBAGE {\n"
+		"    NUM=1\n"
+		"}\n", "tools_prefix_garbage");
+
+	ToolsFile toolsFile;
+	ASSERT_THROW(toolsFile.Parse(dir), Odb::Lib::FileModel::parse_error);
+}
+
+TEST(RgbColorTests, StringRoundTrip_PreservesComponents)
+{
+	// explicit colors: to_string must emit the six-character zero-padded
+	// decimal form from_string parses (the (6,6,6) -> "666" regression)
+	const std::vector<std::array<uint8_t, 3>> explicitColors = {
+		{60, 60, 90}, {0, 0, 0}, {6, 6, 6}, {9, 5, 99},
+	};
+	for (const auto& rgb : explicitColors)
+	{
+		const auto six = [](int v) {
+			return std::string(1, '0' + v / 10) + std::string(1, '0' + v % 10);
+		};
+		RgbColor original;
+		ASSERT_TRUE(original.from_string(six(rgb[0]) + six(rgb[1]) + six(rgb[2])));
+		EXPECT_FALSE(original.noPreference);
+
+		RgbColor reparsed;
+		ASSERT_TRUE(reparsed.from_string(original.to_string()))
+			<< "to_string output not re-parsable: " << original.to_string();
+		EXPECT_EQ(reparsed.red, original.red);
+		EXPECT_EQ(reparsed.green, original.green);
+		EXPECT_EQ(reparsed.blue, original.blue);
+		EXPECT_EQ(reparsed.noPreference, original.noPreference);
+	}
+
+	// no-preference sentinel round-trips
+	RgbColor noPref("0");
+	EXPECT_TRUE(noPref.noPreference);
+	RgbColor reparsedNoPref;
+	EXPECT_TRUE(reparsedNoPref.from_string(noPref.to_string()));
+	EXPECT_TRUE(reparsedNoPref.noPreference);
+
+	// non-numeric component is rejected (returns false), not an escaping
+	// exception
+	RgbColor bad;
+	EXPECT_FALSE(bad.from_string("ABCDEF"));
 }
 
 TEST(ToolsFileTests, RealDesigns_LayersCarryParsedTools)
