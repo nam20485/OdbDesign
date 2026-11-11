@@ -50,7 +50,8 @@ add_executable(OdbDesignTests
     # Future: Will create separate test target for server component tests
     # "GrpcBatchStreamTests.cpp"
      "FileArchiveLoadTests.cpp"
-    "ParserOnlyHeaderTests.cpp")
+    "ParserOnlyHeaderTests.cpp"
+    "ToolsFileTests.cpp")
 
 target_link_libraries(OdbDesignTests PRIVATE GTest::gtest_main GTest::gmock_main)
 

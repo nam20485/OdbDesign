@@ -9,6 +9,15 @@ import "enums.proto";
 //  MatrixFile.h
 //
 
+// serialization form of FileModel::RgbColor (percent components per the
+// project-owned struct; authored with the clean-room color restoration)
+message RgbColor {
+    optional uint32 red = 1;
+    optional uint32 green = 2;
+    optional uint32 blue = 3;
+    optional bool noPreference = 4;
+}
+
 message MatrixFile {
     
     message StepRecord {
@@ -68,12 +77,13 @@ message MatrixFile {
         string oldName = 14;
         string addType = 15;
 
-        // 16 was the third-party Color field; removed with the contributor
-        // carve-out (see git history). Reserved so the number is never reused.
+        // 16 was the short-lived third-party color field; removed with the
+        // contributor carve-out. The number stays reserved; the color
+        // storage itself returns as field 18 (clean-room reimplementation).
         reserved 16;
-        reserved "color";
 
         uint32 id = 17;
+        RgbColor color = 18;
     }
 
     repeated StepRecord steps = 1;
