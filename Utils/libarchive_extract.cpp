@@ -17,8 +17,88 @@ using namespace std::filesystem;
 
 namespace Utils
 {
-    const size_t BYTES_PER_KB = 1024UL;
-    const size_t READ_OPEN_BLOCK_SIZE = BYTES_PER_KB * 10UL;
+    namespace
+    {
+        const size_t BYTES_PER_KB = 1024UL;
+        const size_t READ_OPEN_BLOCK_SIZE = BYTES_PER_KB * 10UL;
+
+        // Walk the entry's relative path under destDir one component at a
+        // time, refusing to traverse a symlink at any level (a pre-planted
+        // symlink inside destDir would otherwise redirect directory creation
+        // and ofstream writes outside the extraction root - the guarantee the
+        // old ARCHIVE_EXTRACT_SECURE_SYMLINKS flag provided). create_directory
+        // (singular) is used deliberately: it fails rather than follows when
+        // the name already exists, and a symlink check after a failed create
+        // closes the create-then-swap window as far as the filesystem allows.
+        bool securely_create_directories(const std::filesystem::path& base,
+                                         const std::filesystem::path& relativePath,
+                                         std::string& errorOut)
+        {
+            // the caller-supplied destination root may not exist yet; it is
+            // trusted (operator-configured, canonicalized by ArchiveExtractor
+            // before it reaches us), so create it recursively
+            std::error_code baseEc;
+            if (!exists(base, baseEc) || baseEc)
+            {
+                create_directories(base, baseEc);
+                if (baseEc)
+                {
+                    errorOut = "failed creating destination root [" + base.string() + "]: " + baseEc.message();
+                    return false;
+                }
+            }
+
+            std::filesystem::path current = base;
+            for (const auto& component : relativePath)
+            {
+                const auto name = component.string();
+                // a trailing separator ("step/") iterates as one real
+                // component plus an empty artifact - skip the artifact; the
+                // entry-name validation has already applied the real policy
+                if (name.empty())
+                {
+                    continue;
+                }
+                if (name == "." || name == "..")
+                {
+                    errorOut = "unsafe component [" + name + "]";
+                    return false;
+                }
+
+                current /= component;
+
+                std::error_code symlinkEc;
+                if (is_symlink(current, symlinkEc))
+                {
+                    errorOut = "refusing symlink component [" + current.string() + "]";
+                    return false;
+                }
+
+                std::error_code ec;
+                if (!exists(current, ec))
+                {
+                    create_directory(current, ec);
+                    if (ec)
+                    {
+                        std::error_code swapEc;
+                        if (is_symlink(current, swapEc))
+                        {
+                            errorOut = "refusing symlink component [" + current.string() + "]";
+                            return false;
+                        }
+                        errorOut = "failed creating [" + current.string() + "]: " + ec.message();
+                        return false;
+                    }
+                }
+                else if (!is_directory(current, ec))
+                {
+                    errorOut = "path component is not a directory [" + current.string() + "]";
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
 
     bool extract(const char* filename, const char* destDir)
     {
@@ -79,20 +159,30 @@ namespace Utils
                 archive_read_free(a);
                 return false;
             }
-            const auto entryDestinationPath = destinationDir / entryPathname;
+            const std::filesystem::path relativeEntryPath(entryPathname);
+            const auto entryDestinationPath = destinationDir / relativeEntryPath;
 
             logdebug("Extracting, destination dir: [" + std::string(destDir) + "]");
             logdebug("Extracting, entry path name: [" + entryPathname + "]");
             logdebug("Extracting, destination path name: [" + entryDestinationPath.string() + "]");
 
+            // tar hardlink entries ('1') surface as AE_IFREG with the target
+            // in archive_entry_hardlink() and size 0 - check the link targets
+            // explicitly so a hardlink cannot create an alias/truncation
+            // primitive inside the root
+            if (archive_entry_hardlink(entry) != nullptr || archive_entry_symlink(entry) != nullptr)
+            {
+                logerror("Refusing link archive entry: [" + entryPathname + "]");
+                archive_read_free(a);
+                return false;
+            }
             const auto fileType = archive_entry_filetype(entry);
             if (fileType == AE_IFDIR)
             {
-                std::error_code ec;
-                create_directories(entryDestinationPath, ec);
-                if (ec)
+                std::string walkError;
+                if (!securely_create_directories(destinationDir, relativeEntryPath, walkError))
                 {
-                    logerror("Failed creating extraction directory [" + entryDestinationPath.string() + "]: " + ec.message());
+                    logerror("Failed creating extraction directory for [" + entryPathname + "]: " + walkError);
                     archive_read_free(a);
                     return false;
                 }
@@ -101,23 +191,31 @@ namespace Utils
 
             if (fileType != AE_IFREG)
             {
-                // symlinks/hardlinks/devices/fifos have no place in a design
-                // archive and are write primitives in every other context
+                // symlinks/devices/fifos have no place in a design archive
+                // and are write primitives in every other context
                 logerror("Refusing non-regular archive entry: [" + entryPathname + "]");
                 archive_read_free(a);
                 return false;
             }
 
-            std::error_code ec;
-            if (entryDestinationPath.has_parent_path())
             {
-                create_directories(entryDestinationPath.parent_path(), ec);
-                if (ec)
+                std::string walkError;
+                if (!securely_create_directories(destinationDir, relativeEntryPath.parent_path(), walkError))
                 {
-                    logerror("Failed creating extraction parent directory [" + entryDestinationPath.parent_path().string() + "]: " + ec.message());
+                    logerror("Failed creating extraction parent directory for [" + entryPathname + "]: " + walkError);
                     archive_read_free(a);
                     return false;
                 }
+            }
+
+            // a pre-planted symlink AT the final name would make ofstream
+            // clobber its target outside the root
+            std::error_code targetSymlinkEc;
+            if (is_symlink(entryDestinationPath, targetSymlinkEc))
+            {
+                logerror("Refusing symlink extraction target [" + entryDestinationPath.string() + "]");
+                archive_read_free(a);
+                return false;
             }
 
             std::ofstream outputStream(entryDestinationPath, std::ios::binary | std::ios::trunc);
@@ -129,7 +227,12 @@ namespace Utils
             }
 
             // stream the entry payload block by block; read_data_block
-            // reports EOF at the end of THIS entry's data
+            // reports EOF at the end of THIS entry's data. Sparse entries
+            // legitimately return non-contiguous extents: honor each block's
+            // offset and zero-fill any gap so the file content is never
+            // silently shifted.
+            la_int64_t expectedOffset = 0;
+            static const char zeroPadding[512] = {};
             for (;;)
             {
                 const void* buff = nullptr;
@@ -148,6 +251,24 @@ namespace Utils
                     return false;
                 }
 
+                if (offset > expectedOffset)
+                {
+                    // sparse hole: zero-fill up to the next extent
+                    auto gap = offset - expectedOffset;
+                    while (gap > 0)
+                    {
+                        const auto chunk = static_cast<std::streamsize>(std::min<la_int64_t>(gap, static_cast<la_int64_t>(sizeof(zeroPadding))));
+                        outputStream.write(zeroPadding, chunk);
+                        gap -= chunk;
+                    }
+                    if (!outputStream)
+                    {
+                        logerror("Failed writing extraction file [" + entryDestinationPath.string() + "]");
+                        archive_read_free(a);
+                        return false;
+                    }
+                }
+
                 outputStream.write(static_cast<const char*>(buff), static_cast<std::streamsize>(size));
                 if (!outputStream)
                 {
@@ -155,8 +276,17 @@ namespace Utils
                     archive_read_free(a);
                     return false;
                 }
+                expectedOffset = offset + static_cast<la_int64_t>(size);
             }
+            // the final flush happens at close - check it so ENOSPC/EIO is
+            // not reported as a successful extraction
             outputStream.close();
+            if (!outputStream)
+            {
+                logerror("Failed flushing extraction file [" + entryDestinationPath.string() + "]");
+                archive_read_free(a);
+                return false;
+            }
         }
 
         archive_read_close(a);

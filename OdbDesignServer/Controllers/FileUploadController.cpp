@@ -2,6 +2,7 @@
 #include <string>
 #include "fastmove.h"
 #include "PathSafety.h"
+#include "UrlEncoding.h"
 #include <system_error>
 #include <fstream>
 #include <App/RouteController.h>
@@ -145,8 +146,10 @@ namespace Odb::App::Server
     {
         // Security-audit F002: route-parameter filenames are fully
         // client-controlled (including Windows backslash traversal via the
-        // URL path) - reject anything that is not one safe component.
-        auto safeName = sanitizeFilename(filename);
+        // URL path) - URL-decode first (crow route params arrive encoded;
+        // every other controller decodes manually), then reject anything
+        // that is not one safe component.
+        auto safeName = sanitizeFilename(UrlEncoding::decode(filename));
         if (!safeName.has_value())
         {
             return crow::response(crow::status::BAD_REQUEST, "invalid filename");
@@ -179,8 +182,6 @@ namespace Odb::App::Server
         }
 
         autoWarmDesign(m_serverApp.designs(), safeName.value());
-
-        std::string responseBody = "{ \"filename\": \"" + safeName.value() + "\" }";
 
         return makeLoadedFileModelsResponse(true);
     }

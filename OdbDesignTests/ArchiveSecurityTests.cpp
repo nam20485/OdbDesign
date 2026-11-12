@@ -1,5 +1,4 @@
 #include <gtest/gtest.h>
-#include "Fixtures/TestDataFixture.h"
 #include "Fixtures/TestUtils.h"
 #include "ArchiveExtractor.h"
 #include "PathSafety.h"
@@ -15,7 +14,6 @@
 #include <string>
 #include <vector>
 
-using namespace Odb::Test::Fixtures;
 using namespace Odb::Test::Utils;
 using namespace Utils;
 using namespace std::filesystem;
@@ -36,7 +34,7 @@ namespace Odb::Test
 			std::snprintf(field, fieldSize, "%0*llo", static_cast<int>(fieldSize - 1), value);
 		}
 
-		void write_ustar_header(std::ostream& os, const std::string& pathname, std::uintmax_t size, char typeflag, unsigned mode = 0644)
+		void write_ustar_header(std::ostream& os, const std::string& pathname, std::uintmax_t size, char typeflag, unsigned mode = 0644, const std::string& linkname = "")
 		{
 			char header[512]{};
 			std::memcpy(header, pathname.c_str(), std::min<std::size_t>(pathname.size(), 100));
@@ -47,6 +45,10 @@ namespace Odb::Test
 			write_octal(header + 136, 12, 0);			// mtime
 			std::memset(header + 148, ' ', 8);			// chksum field = spaces while summing
 			header[156] = typeflag;
+			if (!linkname.empty())
+			{
+				std::memcpy(header + 157, linkname.c_str(), std::min<std::size_t>(linkname.size(), 100));
+			}
 			std::memcpy(header + 257, "ustar", 5);		// magic "ustar\0" at [257..262]
 			header[262] = '\0';
 			header[263] = '0';							// POSIX version "00" at [263..264]
@@ -74,6 +76,13 @@ namespace Odb::Test
 			os.write(zeros, padding);
 		}
 
+		void write_ustar_hardlink_entry(std::ostream& os, const std::string& pathname, const std::string& target)
+		{
+			// a hardlink is a zero-size header-only entry with the target in
+			// the linkname field
+			write_ustar_header(os, pathname, 0, '1', 0644, target);
+		}
+
 		void write_ustar_end(std::ostream& os)
 		{
 			static const char zeros[1024]{};
@@ -99,7 +108,7 @@ namespace Odb::Test
 	// F002: upload filename validation vocabulary
 	// =========================================================================
 
-	TEST_F(TestDataFixture, PathSafety_AcceptsLegalFilenameComponents)
+	TEST(ArchiveSecurity, PathSafety_AcceptsLegalFilenameComponents)
 	{
 		EXPECT_TRUE(is_safe_filename_component("design.tgz"));
 		EXPECT_TRUE(is_safe_filename_component("my design (rev2).tar.gz"));
@@ -107,7 +116,7 @@ namespace Odb::Test
 		EXPECT_TRUE(is_safe_filename_component("hidden.tgz"));
 	}
 
-	TEST_F(TestDataFixture, PathSafety_RejectsHostileFilenameComponents)
+	TEST(ArchiveSecurity, PathSafety_RejectsHostileFilenameComponents)
 	{
 		// traversal / separators
 		EXPECT_FALSE(is_safe_filename_component(""));
@@ -132,7 +141,7 @@ namespace Odb::Test
 		EXPECT_FALSE(is_safe_filename_component(std::string(256, 'a')));
 	}
 
-	TEST_F(TestDataFixture, PathSafety_RelativeEntryPathRules)
+	TEST(ArchiveSecurity, PathSafety_RelativeEntryPathRules)
 	{
 		// interior structure is fine - nested ODB++ members use it
 		EXPECT_TRUE(is_safe_relative_entry_path("step/layers/features.Z"));
@@ -155,7 +164,7 @@ namespace Odb::Test
 	// F002: fastmove no-overwrite contract
 	// =========================================================================
 
-	TEST_F(TestDataFixture, FastMove_NoOverwrite_RefusesExistingDestination)
+	TEST(ArchiveSecurity, FastMove_NoOverwrite_RefusesExistingDestination)
 	{
 		auto dir = TestUtils::createManagedTempDirectory("odbtest_fastmove");
 		const auto src = dir->path() / "src.tmp";
@@ -173,7 +182,7 @@ namespace Odb::Test
 		EXPECT_TRUE(exists(src)) << "source must survive a refused move";
 	}
 
-	TEST_F(TestDataFixture, FastMove_Overwrite_ReplacesDestination)
+	TEST(ArchiveSecurity, FastMove_Overwrite_ReplacesDestination)
 	{
 		auto dir = TestUtils::createManagedTempDirectory("odbtest_fastmove_ow");
 		const auto src = dir->path() / "src.tmp";
@@ -195,7 +204,7 @@ namespace Odb::Test
 		EXPECT_FALSE(exists(src));
 	}
 
-	TEST_F(TestDataFixture, FastMove_NoOverwrite_AllowsFreshDestination)
+	TEST(ArchiveSecurity, FastMove_NoOverwrite_AllowsFreshDestination)
 	{
 		auto dir = TestUtils::createManagedTempDirectory("odbtest_fastmove_fresh");
 		const auto src = dir->path() / "src.tmp";
@@ -216,7 +225,7 @@ namespace Odb::Test
 	// F003: hostile archive entries must not escape the extraction root
 	// =========================================================================
 
-	TEST_F(TestDataFixture, Extract_AbsoluteEntryName_Refused)
+	TEST(ArchiveSecurity, Extract_AbsoluteEntryName_Refused)
 	{
 		auto dir = TestUtils::createManagedTempDirectory("odbtest_f003_abs");
 		const auto archive = write_hostile_tar(dir->path() / "hostile.tar", "/pwn-f003-absolute", "payload");
@@ -228,7 +237,7 @@ namespace Odb::Test
 		EXPECT_TRUE(is_empty(dest)) << "nothing may be written for a rejected entry";
 	}
 
-	TEST_F(TestDataFixture, Extract_TraversalEntryName_Refused)
+	TEST(ArchiveSecurity, Extract_TraversalEntryName_Refused)
 	{
 		auto dir = TestUtils::createManagedTempDirectory("odbtest_f003_trav");
 		const auto archive = write_hostile_tar(dir->path() / "hostile.tar", "../outside-f003", "payload");
@@ -241,7 +250,7 @@ namespace Odb::Test
 		EXPECT_FALSE(exists(dir->path() / "outside-f003")) << "nothing may land outside the extraction root";
 	}
 
-	TEST_F(TestDataFixture, Extract_BackslashTraversalEntryName_Refused)
+	TEST(ArchiveSecurity, Extract_BackslashTraversalEntryName_Refused)
 	{
 		auto dir = TestUtils::createManagedTempDirectory("odbtest_f003_bslash");
 		const auto archive = write_hostile_tar(dir->path() / "hostile.tar", "..\\outside-f003", "payload");
@@ -253,7 +262,7 @@ namespace Odb::Test
 		EXPECT_FALSE(exists(dir->path() / "outside-f003"));
 	}
 
-	TEST_F(TestDataFixture, Extract_ControlCharacterEntryName_Refused)
+	TEST(ArchiveSecurity, Extract_ControlCharacterEntryName_Refused)
 	{
 		auto dir = TestUtils::createManagedTempDirectory("odbtest_f003_ctrl");
 		const auto archive = write_hostile_tar(dir->path() / "hostile.tar", "bad\nname", "payload");
@@ -264,7 +273,7 @@ namespace Odb::Test
 		EXPECT_FALSE(extractor.Extract(dest.string()));
 	}
 
-	TEST_F(TestDataFixture, Extract_AttackerModesNotRestored)
+	TEST(ArchiveSecurity, Extract_AttackerModesNotRestored)
 	{
 		auto dir = TestUtils::createManagedTempDirectory("odbtest_f003_mode");
 		// entry declares mode 0777 - extractor must NOT restore it
@@ -285,7 +294,7 @@ namespace Odb::Test
 		EXPECT_EQ(read_file(extracted), "payload");
 	}
 
-	TEST_F(TestDataFixture, Extract_LegalRelativeEntries_RoundTrip)
+	TEST(ArchiveSecurity, Extract_LegalRelativeEntries_RoundTrip)
 	{
 		// over-rejection guard: the ODB++ layout (nested relative paths) must
 		// keep extracting normally
@@ -306,12 +315,88 @@ namespace Odb::Test
 		EXPECT_EQ(read_file(dest / "matrix/matrix"), "matrix content");
 	}
 
+
+	// =========================================================================
+	// kilo round-1 follow-ups: Windows-alias components, reserved device
+	// names, hardlink entries, pre-planted symlinks inside destDir
+	// =========================================================================
+
+	TEST(ArchiveSecurity, PathSafety_WindowsAliasComponents_Rejected)
+	{
+		// ".. " (dot-dot-space) is ".." after Windows name normalization - a
+		// traversal that passes byte-equality checks
+		EXPECT_FALSE(is_safe_relative_entry_path(".. "));
+		EXPECT_FALSE(is_safe_relative_entry_path("x/.. /y"));
+		EXPECT_FALSE(is_safe_relative_entry_path("step/file."));
+		EXPECT_FALSE(is_safe_relative_entry_path("step/file "));
+		EXPECT_FALSE(is_safe_filename_component(".. "));
+	}
+
+	TEST(ArchiveSecurity, PathSafety_WindowsReservedDeviceNames_Rejected)
+	{
+		EXPECT_FALSE(is_safe_filename_component("CON"));
+		EXPECT_FALSE(is_safe_filename_component("NUL.tgz"));
+		EXPECT_FALSE(is_safe_filename_component("com1"));
+		EXPECT_FALSE(is_safe_relative_entry_path("step/LPT9"));
+		EXPECT_FALSE(is_safe_relative_entry_path("aux/data"));
+		// similar-but-not-reserved names stay legal
+		EXPECT_TRUE(is_safe_filename_component("console.tgz"));
+		EXPECT_TRUE(is_safe_filename_component("design.tgz"));
+		EXPECT_TRUE(is_safe_relative_entry_path("step/contrast"));
+	}
+
+	TEST(ArchiveSecurity, Extract_HardlinkEntry_Refused)
+	{
+		// tar hardlinks surface as AE_IFREG with the target in the link
+		// field - they must not extract as empty/truncating files
+		auto dir = TestUtils::createManagedTempDirectory("odbtest_kilo_hardlink");
+		const auto archive = dir->path() / "hostile.tar";
+		{
+			std::ofstream os(archive, std::ios::binary | std::ios::trunc);
+			write_ustar_entry(os, "real", "legit content");
+			write_ustar_hardlink_entry(os, "evil", "real");
+			write_ustar_end(os);
+		}
+		const auto dest = dir->path() / "dest";
+		create_directories(dest);
+
+		ArchiveExtractor extractor(archive.string());
+		EXPECT_FALSE(extractor.Extract(dest.string())) << "hardlink entry must fail extraction";
+	}
+
+	TEST(ArchiveSecurity, Extract_PrePlantedSymlinkInsideDest_Refused)
+	{
+		// a symlink planted under destDir must not redirect extraction
+		auto dir = TestUtils::createManagedTempDirectory("odbtest_kilo_symlink");
+		const auto archive = dir->path() / "evil.tar";
+		{
+			std::ofstream os(archive, std::ios::binary | std::ios::trunc);
+			write_ustar_entry(os, "step/hole/features", "payload");
+			write_ustar_end(os);
+		}
+		const auto dest = dir->path() / "dest";
+		const auto outside = dir->path() / "outside";
+		create_directories(outside);
+		create_directories(dest / "step");
+#if !defined(_WIN32)
+		create_directory_symlink(outside, dest / "step" / "hole");
+#endif
+
+		ArchiveExtractor extractor(archive.string());
+#if !defined(_WIN32)
+		EXPECT_FALSE(extractor.Extract(dest.string())) << "extraction through a symlink must fail";
+		EXPECT_FALSE(exists(outside / "features")) << "nothing may be written through the symlink";
+#else
+		GTEST_SKIP() << "symlink planting not testable on Windows runners";
+#endif
+	}
+
 	// =========================================================================
 	// F001: argv-based process spawning - metacharacters are data, not syntax
 	// =========================================================================
 
 #if !defined(_WIN32)
-	TEST_F(TestDataFixture, RunProcess_MetacharacterArgument_IsDataNotSyntax)
+	TEST(ArchiveSecurity, RunProcess_MetacharacterArgument_IsDataNotSyntax)
 	{
 		auto dir = TestUtils::createManagedTempDirectory("odbtest_f001_argv");
 		// Under a shell, "touch <dir>/a;touch_shell_pwned" would create
@@ -327,12 +412,12 @@ namespace Odb::Test
 	}
 #endif
 
-	TEST_F(TestDataFixture, RunProcess_MissingProgram_ReturnsFailure)
+	TEST(ArchiveSecurity, RunProcess_MissingProgram_ReturnsFailure)
 	{
 		EXPECT_EQ(run_process("odb-nonexistent-tool-f001", { "--probe" }), -1);
 	}
 
-	TEST_F(TestDataFixture, GetUncompressedFilePath_HostileName_ReturnsEmpty)
+	TEST(ArchiveSecurity, GetUncompressedFilePath_HostileName_ReturnsEmpty)
 	{
 		auto dir = TestUtils::createManagedTempDirectory("odbtest_f001_nested");
 		EXPECT_TRUE(ArchiveExtractor::getUncompressedFilePath(dir->path(), "../escape").empty());
@@ -340,7 +425,7 @@ namespace Odb::Test
 		EXPECT_TRUE(ArchiveExtractor::getUncompressedFilePath(dir->path(), "").empty());
 	}
 
-	TEST_F(TestDataFixture, GetUncompressedFilePath_LegalNames_StillResolve)
+	TEST(ArchiveSecurity, GetUncompressedFilePath_LegalNames_StillResolve)
 	{
 		auto dir = TestUtils::createManagedTempDirectory("odbtest_f001_nested_ok");
 		create_directories(dir->path() / "sub");
@@ -355,7 +440,7 @@ namespace Odb::Test
 		EXPECT_EQ(ArchiveExtractor::getUncompressedFilePath(dir->path(), "sub/nested"), dir->path() / "sub" / "nested");
 	}
 
-	TEST_F(TestDataFixture, ExtractLzma_MetacharacterArchivePath_NoShellSideEffects)
+	TEST(ArchiveSecurity, ExtractLzma_MetacharacterArchivePath_NoShellSideEffects)
 	{
 		// End-to-end F001: a .lzma archive whose own path contains shell
 		// metacharacters (the shape a hostile nested step/layer name

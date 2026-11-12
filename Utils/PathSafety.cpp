@@ -14,35 +14,56 @@ namespace Utils
 			return c < 0x20 || c == 0x7F;
 		}
 
-		// Split on both separators and apply a per-component policy. A component
-		// must be non-empty, not "." or "..", and (optionally) component-flat-safe.
-		bool split_components_all_safe(const std::string& name, bool flatPolicy)
+		bool is_windows_reserved_device_name(const std::string& component)
 		{
-			std::size_t begin = 0;
-			for (std::size_t i = 0; i <= name.size(); ++i)
+			// Windows resolves "NUL.tgz" to the NUL device: the name up to the
+			// first dot is the device match. Reject the classic reserved set
+			// (case-insensitive, per component).
+			const auto stem = component.substr(0, component.find('.'));
+
+			std::string upper;
+			upper.reserve(stem.size());
+			for (const auto c : stem)
 			{
-				const bool atSeparator = (i == name.size()) || (name[i] == '/') || (name[i] == '\\');
-				if (!atSeparator)
-				{
-					continue;
-				}
+				upper.push_back(c >= 'a' && c <= 'z' ? static_cast<char>(c - 'a' + 'A') : c);
+			}
 
-				const auto component = name.substr(begin, i - begin);
-				if (component.empty())
-				{
-					// "//", trailing '/', or empty name
-					return false;
-				}
-				if (component == "." || component == "..")
-				{
-					return false;
-				}
-				if (flatPolicy && !is_safe_filename_component(component))
-				{
-					return false;
-				}
+			if (upper == "CON" || upper == "PRN" || upper == "AUX" || upper == "NUL")
+			{
+				return true;
+			}
+			if ((upper.size() == 4) &&
+				(upper.compare(0, 3, "COM") == 0 || upper.compare(0, 3, "LPT") == 0) &&
+				(upper[3] >= '1' && upper[3] <= '9'))
+			{
+				return true;
+			}
+			return false;
+		}
 
-				begin = i + 1;
+		// Full per-component policy applied identically by both validators:
+		// no empty, ".", "..", Windows name-normalization aliases (".. ",
+		// "file.", "file "), or reserved device names. Windows strips trailing
+		// dots/spaces before hitting the filesystem, so ".. " IS ".." there -
+		// a traversal that would pass a byte-equality check alone.
+		bool is_safe_path_component(const std::string& component)
+		{
+			if (component.empty())
+			{
+				return false;
+			}
+			if (component == "." || component == "..")
+			{
+				return false;
+			}
+			const auto last = component.back();
+			if (last == '.' || last == ' ')
+			{
+				return false;
+			}
+			if (is_windows_reserved_device_name(component))
+			{
+				return false;
 			}
 			return true;
 		}
@@ -76,16 +97,7 @@ namespace Utils
 			}
 		}
 
-		// Windows strips trailing dots and spaces before hitting the filesystem,
-		// so "design.tgz." and "design.tgz " would alias an existing file while
-		// reading back as a different name - reject the ambiguity.
-		const auto last = name.back();
-		if (last == '.' || last == ' ')
-		{
-			return false;
-		}
-
-		return true;
+		return is_safe_path_component(name);
 	}
 
 	bool is_safe_relative_entry_path(const std::string& name)
@@ -129,6 +141,24 @@ namespace Utils
 			}
 		}
 
-		return split_components_all_safe(trimmed, /*flatPolicy=*/false);
+		// apply the full per-component policy to every component (split on
+		// both separators; a '\' is treated as a separator everywhere so a
+		// Windows-shaped name cannot smuggle components past validation)
+		std::size_t begin = 0;
+		for (std::size_t i = 0; i <= trimmed.size(); ++i)
+		{
+			const bool atSeparator = (i == trimmed.size()) || (trimmed[i] == '/') || (trimmed[i] == '\\');
+			if (!atSeparator)
+			{
+				continue;
+			}
+
+			if (!is_safe_path_component(trimmed.substr(begin, i - begin)))
+			{
+				return false;
+			}
+			begin = i + 1;
+		}
+		return true;
 	}
 }

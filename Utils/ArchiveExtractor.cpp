@@ -158,6 +158,12 @@ namespace Utils
 		// before they can become filesystem paths (or 7z arguments).
 		if (filename.empty() || !is_safe_relative_entry_path(filename))
 		{
+			// distinguish a rejected hostile name from a merely missing file:
+			// ODB++-derived content failing the safety check is audit-worthy
+			if (!filename.empty())
+			{
+				logwarn("getUncompressedFilePath refused unsafe member name: [" + filename + "]");
+			}
 			return uncompressedPath;
 		}
 

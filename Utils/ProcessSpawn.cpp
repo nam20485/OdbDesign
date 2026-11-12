@@ -6,10 +6,13 @@
 #include <sys/wait.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <cerrno>
+#include <filesystem>
 
 extern char** environ;
 #else
 #include <windows.h>
+#include <filesystem>
 #include <string>
 #endif
 
@@ -51,7 +54,16 @@ namespace Utils
 		}
 
 		int status = 0;
-		if (waitpid(pid, &status, 0) == -1)
+		// EINTR: a signal during the blocking wait is not a child failure -
+		// retry until waitpid gives a real verdict, else the child zombies
+		// and we report a bogus "could not start" error
+		int waitResult;
+		do
+		{
+			waitResult = waitpid(pid, &status, 0);
+		} while (waitResult == -1 && errno == EINTR);
+
+		if (waitResult == -1)
 		{
 			return -1;
 		}
@@ -112,11 +124,15 @@ namespace Utils
 
 	int run_process(const std::string& program, const std::vector<std::string>& args, bool discardOutput /* = true*/)
 	{
-		std::wstring commandLine = quote_windows_argument(std::wstring(program.begin(), program.end()));
+		// widen via std::filesystem::path so the conversion matches however
+		// the system encoded the string in the first place (path::string() on
+		// Windows uses the active ANSI code page; path(string) inverts it).
+		// Byte-wise wstring construction would mangle every non-ASCII path.
+		std::wstring commandLine = std::filesystem::path(program).wstring();
 		for (const auto& arg : args)
 		{
 			commandLine += L" ";
-			commandLine += quote_windows_argument(std::wstring(arg.begin(), arg.end()));
+			commandLine += quote_windows_argument(std::filesystem::path(arg).wstring());
 		}
 
 		// NUL-device handles for the child's streams

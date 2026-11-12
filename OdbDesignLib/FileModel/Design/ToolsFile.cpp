@@ -481,12 +481,27 @@ namespace Odb::Lib::FileModel::Design
 	void ToolsFile::ToolRecord::from_protobuf(const Odb::Lib::Protobuf::ToolsFile::Tool& message)
 	{
 		num = message.num();
-		type = static_cast<Type>(message.type());
+		// proto3 delivers out-of-range enum values from hostile/foreign wire
+		// messages verbatim; coerce them to Unknown so Save()'s existing
+		// Unknown refusal catches them instead of writing TYPE2=<integer
+		// garbage> that cannot re-parse
+		const auto typeValue = message.type();
+		type = Protobuf::ToolsFile::ToolType_IsValid(typeValue)
+			? static_cast<Type>(typeValue)
+			: Type::Unknown;
 		// absent sub-type deserializes to the parse-time default (STANDARD),
 		// not Unknown — matches a record parsed from a file without TYPE2
-		subType = message.has_subtype()
-			? static_cast<SubType>(message.subtype())
-			: SubType::Standard;
+		if (!message.has_subtype())
+		{
+			subType = SubType::Standard;
+		}
+		else
+		{
+			const auto subTypeValue = message.subtype();
+			subType = Protobuf::ToolsFile::ToolSubType_IsValid(subTypeValue)
+				? static_cast<SubType>(subTypeValue)
+				: SubType::Unknown;
+		}
 		minTol = message.mintol();
 		maxTol = message.maxtol();
 		bit = message.bit();
