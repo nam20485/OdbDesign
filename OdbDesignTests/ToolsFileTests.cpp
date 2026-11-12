@@ -417,6 +417,30 @@ TEST(MatrixColorTests, ExplicitColor_ProtobufRoundTrip_NonVacuous)
 	EXPECT_FALSE(roundTripped.color.noPreference);
 }
 
+
+TEST(ToolsFileTests, FromProtobuf_OutOfRangeEnums_CoercedToUnknown)
+{
+	// proto3 delivers out-of-range enum values verbatim from hostile wire
+	// messages; they must coerce to Unknown so Save()'s refusal catches them
+	// instead of writing unparseable TYPE2=<integer>
+	Odb::Lib::Protobuf::ToolsFile message;
+	auto* pTool = message.add_tools();
+	pTool->set_num(1);
+	pTool->set_type(static_cast<Odb::Lib::Protobuf::ToolsFile::ToolType>(99));
+	pTool->set_subtype(static_cast<Odb::Lib::Protobuf::ToolsFile::ToolSubType>(99));
+
+	ToolsFile toolsFile;
+	toolsFile.from_protobuf(message);
+
+	const auto& pParsedTool = toolsFile.GetTools().at(0);
+	EXPECT_EQ(pParsedTool->type, ToolsFile::ToolRecord::Type::Unknown);
+	EXPECT_EQ(pParsedTool->subType, ToolsFile::ToolRecord::SubType::Unknown);
+
+	// and Save must refuse the coerced record (cannot round-trip Unknown)
+	std::ostringstream out;
+	ASSERT_THROW(toolsFile.Save(out), Odb::Lib::FileModel::parse_error);
+}
+
 TEST(ToolsFileTests, RealDesigns_LayersCarryParsedTools)
 {
 	const char* testDataDir = std::getenv("ODB_TEST_DATA_DIR");

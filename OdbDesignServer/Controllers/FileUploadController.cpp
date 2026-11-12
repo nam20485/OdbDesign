@@ -1,6 +1,8 @@
 #include "FileUploadController.h"
 #include <string>
 #include "fastmove.h"
+#include "PathSafety.h"
+#include "UrlEncoding.h"
 #include <system_error>
 #include <fstream>
 #include <App/RouteController.h>
@@ -142,6 +144,17 @@ namespace Odb::App::Server
     
     crow::response FileUploadController::handleOctetStreamUpload(const std::string& filename, const crow::request& req)
     {
+        // Security-audit F002: route-parameter filenames are fully
+        // client-controlled (including Windows backslash traversal via the
+        // URL path) - URL-decode first (crow route params arrive encoded;
+        // every other controller decodes manually), then reject anything
+        // that is not one safe component.
+        auto safeName = sanitizeFilename(UrlEncoding::decode(filename));
+        if (!safeName.has_value())
+        {
+            return crow::response(crow::status::BAD_REQUEST, "invalid filename");
+        }
+
         std::string tempName;
         if (!CrossPlatform::tmpnam_safe(tempName))
         {
@@ -152,20 +165,23 @@ namespace Odb::App::Server
         outfile << req.body;
         outfile.close();
 
-        auto safeName = sanitizeFilename(filename);
         path finalPath(m_serverApp.args().designsDir());
-        finalPath /= safeName;
+        finalPath /= safeName.value();
 
         std::error_code ec;
         fastmove_file(tempPath, finalPath, false, ec);
+        if (ec == std::errc::file_exists)
+        {
+            std::error_code removeEc;
+            remove(tempPath, removeEc);
+            return crow::response(crow::status::CONFLICT, "a design with that filename already exists");
+        }
         if (ec.value() != 0)
         {
             return crow::response(crow::status::INTERNAL_SERVER_ERROR, "failed handling new file");
         }
 
-        autoWarmDesign(m_serverApp.designs(), safeName);
-
-        std::string responseBody = "{ \"filename\": \"" + safeName + "\" }";
+        autoWarmDesign(m_serverApp.designs(), safeName.value());
 
         return makeLoadedFileModelsResponse(true);
     }
@@ -235,18 +251,34 @@ namespace Odb::App::Server
             out_file << part_value.body;
             out_file.close();
 
+            // Security-audit F002: multipart Content-Disposition filenames are
+            // fully client-controlled (traversal, absolute paths) - reject
+            // anything that is not one safe component.
             auto safeName = sanitizeFilename(outfile_name);
+            if (!safeName.has_value())
+            {
+                std::error_code removeEc;
+                remove(tempPath, removeEc);
+                return crow::response(crow::status::BAD_REQUEST, "invalid filename");
+            }
+
             path finalPath(m_serverApp.args().designsDir());
-            finalPath /= safeName;
+            finalPath /= safeName.value();
 
             std::error_code ec;
             fastmove_file(tempPath, finalPath, false, ec);
+            if (ec == std::errc::file_exists)
+            {
+                std::error_code removeEc;
+                remove(tempPath, removeEc);
+                return crow::response(crow::status::CONFLICT, "a design with that filename already exists");
+            }
             if (ec.value() != 0)
             {
                 return crow::response(crow::status::INTERNAL_SERVER_ERROR, "failed handling new file");
             }
 
-            autoWarmDesign(m_serverApp.designs(), safeName);
+            autoWarmDesign(m_serverApp.designs(), safeName.value());
 
             CROW_LOG_INFO << " Contents written to " << outfile_name << '\n';
         }
@@ -254,9 +286,38 @@ namespace Odb::App::Server
         return makeLoadedFileModelsResponse(true);
     }
 
-    std::string FileUploadController::sanitizeFilename(const std::string& filename) const
+    std::optional<std::string> FileUploadController::sanitizeFilename(const std::string& filename) const
     {
-        // TODO: implement sanitize filename
+        // Security-audit F002: rejection, not laundering. The name must be a
+        // single safe component (no separators, traversal, rooted/drive forms,
+        // control characters, trailing dots/spaces, sane length). The shared
+        // validator is also used by the archive extraction paths (F003/F001),
+        // so upload and extraction enforce one vocabulary.
+        if (!Utils::is_safe_filename_component(filename))
+        {
+            // the name is URL-decoded by now and may carry raw control
+            // bytes; escape them so one rejection cannot forge additional
+            // log lines (audit F017 class)
+            std::string printable;
+            printable.reserve(filename.size());
+            for (const auto c : filename)
+            {
+                const auto uc = static_cast<unsigned char>(c);
+                if (uc < 0x20 || uc == 0x7F)
+                {
+                    printable += "\\x";
+                    const char hex[] = "0123456789ABCDEF";
+                    printable += hex[uc >> 4];
+                    printable += hex[uc & 0x0F];
+                }
+                else
+                {
+                    printable += c;
+                }
+            }
+            CROW_LOG_ERROR << "Rejected unsafe upload filename: [" << printable << "]";
+            return std::nullopt;
+        }
         return filename;
     }
 }
