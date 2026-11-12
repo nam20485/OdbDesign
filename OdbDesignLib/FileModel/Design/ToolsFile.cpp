@@ -60,9 +60,12 @@ namespace
 		int lineNumber, const std::string& token, const std::string& value)
 	{
 		// std::from_chars for floating point is unavailable on libc++
-		// (Xcode), so the double path uses strtod with equivalent
-		// strictness: full consumption (end pointer), range (errno), and a
-		// finite result — "1e999", "12abc", and "inf" all reject
+		// (Xcode), so the double path uses strtod. Strictness matches
+		// from_chars for the grammar we care about: full consumption,
+		// range, finite result. Known deviation: C99 strtod also accepts
+		// hex-float literals ("0x10") which from_chars would reject; a
+		// hex value is still a valid double and re-serializes as decimal,
+		// so this is a documented difference, not a defect
 		if (value.empty())
 		{
 			throw_parse_error(path, line, token, lineNumber);
@@ -273,6 +276,12 @@ namespace Odb::Lib::FileModel::Design
 						{
 							throw_parse_error(m_path, line, TYPE_KEY, lineNumber);
 						}
+						else if (!pCurrentRecord->hasNum)
+						{
+							// spec requires a tool number; without this a
+							// NUM-less record silently commits with num=0
+						throw_parse_error(m_path, line, NUM_KEY, lineNumber);
+						}
 						else if (!pCurrentRecord->subTypeIsLegal())
 						{
 							throw_parse_error(m_path, line, TYPE2_KEY, lineNumber);
@@ -305,6 +314,7 @@ namespace Odb::Lib::FileModel::Design
 					if (key == NUM_KEY)
 					{
 						pCurrentRecord->num = parseUnsigned(m_path, line, lineNumber, key, value);
+						pCurrentRecord->hasNum = true;
 					}
 					else if (key == TYPE_KEY)
 					{
@@ -394,6 +404,10 @@ namespace Odb::Lib::FileModel::Design
 				// TYPE=UNKNOWN is not part of the file grammar; a record with
 				// no type cannot round-trip and must fail loudly, not corrupt
 				throw_parse_error(m_path, "", TYPE_KEY, 0);
+			}
+			if (pTool->subType == ToolRecord::SubType::Unknown)
+			{
+				throw_parse_error(m_path, "", TYPE2_KEY, 0);
 			}
 			os << TOOLS_ARRAY_TOKEN << " " << Constants::ARRAY_RECORD_OPEN_TOKEN << std::endl;
 			os << '\t' << NUM_KEY << "=" << pTool->num << std::endl;
