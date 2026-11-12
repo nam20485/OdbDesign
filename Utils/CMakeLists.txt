@@ -24,6 +24,14 @@ target_link_libraries(Utils PRIVATE LibArchive::LibArchive)
 find_package(Crow CONFIG REQUIRED)
 target_link_libraries(Utils PRIVATE Crow::Crow)
 
+# Crow uses Winsock on Windows; MSVC picks ws2_32 up via #pragma comment(lib)
+# inside crow.h, which MinGW/GCC ignores - link it explicitly so MinGW
+# builds (commercial overlay, mingw presets) resolve WSAStartup/WSACleanup.
+# PUBLIC so static-Utils consumers inherit the dependency.
+if(WIN32)
+    target_link_libraries(Utils PUBLIC ws2_32)
+endif()
+
 # ===== install rules (SDK packaging) =====
 
 include(GNUInstallDirs)
