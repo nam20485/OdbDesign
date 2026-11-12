@@ -1,8 +1,12 @@
+---
+title: Documentation
+---
+
 # OdbDesign
 
 A free open source cross-platform C++ library for parsing ODB++ Design archives, accessing their data, and building net list product models. Exposed via a REST API packaged inside of a Docker image.
 
-**UPDATE: LICENSE HAS CHANGED TO [AGPL V3.0](../LICENSE).** This is a non-permissive open source license that is not suitable for use in closed-source applications. Please see [COMMERCIAL-LICENSE.md](../COMMERCIAL-LICENSE.md) for the commercial licensing process, or contact me to obtain a license suitable for closed-source uses.
+**UPDATE: LICENSE HAS CHANGED TO [AGPL V3.0](https://github.com/nam20485/OdbDesign/blob/development/LICENSE).** This is a non-permissive open source license that is not suitable for use in closed-source applications. Please see [COMMERCIAL-LICENSE.md](https://github.com/nam20485/OdbDesign/blob/development/COMMERCIAL-LICENSE.md) for the commercial licensing process, or contact me to obtain a license suitable for closed-source uses.
 
 ## Skip to Build and Running Instructions
 
@@ -219,7 +223,7 @@ Use `.\scripts\setup-windows.ps1 -Help` for additional options.
 $ ./scripts/setup-linux.sh
 ```
 
-See [Linux setup details](README-SETUP.md) for full documentation.
+See [Linux setup details](README-SETUP.html) for full documentation.
 
 ### Manual Build Dependencies
 
@@ -227,7 +231,7 @@ If you prefer to set up the build environment manually, you'll need the followin
 
 > If you are building on Windows and have a modern version of Visual Studio installed then all of the dependencies listed below are already installed on your system (except for maybe Docker). You can use the automated setup scripts above or skip to the next section.
 
-> **Linux users**: For an automated setup experience, use the provided setup script: `./scripts/setup-linux.sh` (see [docs/README-SETUP.md](README-SETUP.md) for details)
+> **Linux users**: For an automated setup experience, use the provided setup script: `./scripts/setup-linux.sh` (see [docs/README-SETUP.md](README-SETUP.html) for details)
 
 > If you are building on a Linux system manually, the dependencies listed below can be installed using your package manager. For example on Ubuntu/Debian/Mint you can install them (except for vcpkg and Docker) using the following command:
 
@@ -322,7 +326,7 @@ $ cmake --build --preset linux-dynamic-release
 
 ```
 
->This uses the `linux-dynamic-release` preset, which links vcpkg dependencies (protobuf, gRPC, ...) as shared libraries. Linking them statically (`linux-release` preset) loads two copies of protobuf at runtime and crashes. See [linux-dynamic-release-plan.md](./completed/linux-dynamic-release-plan.md).
+>This uses the `linux-dynamic-release` preset, which links vcpkg dependencies (protobuf, gRPC, ...) as shared libraries. Linking them statically (`linux-release` preset) loads two copies of protobuf at runtime and crashes. See [linux-dynamic-release-plan.md](https://github.com/nam20485/OdbDesign/blob/development/docs/completed/linux-dynamic-release-plan.md).
 
 This builds the C++ shared library and the REST API server executable. See the [Running the C++ Application](#running-the-c%2b%2b-application) section for more details.
 
@@ -367,13 +371,13 @@ The project is happy to accept pull requests if you would like to contribute. Pl
 
 All contributed code must be covered by accompanying test cases. Please make sure your changes are covered by test cases before submitting a pull request.
 
-See [docs/CONTRIBUTING.md](CONTRIBUTING.md) for more details.
+See [docs/CONTRIBUTING.md](CONTRIBUTING.html) for more details.
 
 ## License
 
-This project is free and open source under the [AGPL V3.0](../LICENSE). Commercial licenses for closed-source use are available — see [COMMERCIAL-LICENSE.md](../COMMERCIAL-LICENSE.md) and the [licensing & IP protection story](licensing.md).
+This project is free and open source under the [AGPL V3.0](https://github.com/nam20485/OdbDesign/blob/development/LICENSE). Commercial licenses for closed-source use are available — see [COMMERCIAL-LICENSE.md](https://github.com/nam20485/OdbDesign/blob/development/COMMERCIAL-LICENSE.md) and the [licensing & IP protection story](licensing.html).
 
-> The AGPL V3.0 is a non-permissive open source license that is not suitable for use in closed-source applications. However, commercial licenses suitable for use in closed-source applications are available — see [COMMERCIAL-LICENSE.md](../COMMERCIAL-LICENSE.md) for the licensing process, evaluation terms, and support options.
+> The AGPL V3.0 is a non-permissive open source license that is not suitable for use in closed-source applications. However, commercial licenses suitable for use in closed-source applications are available — see [COMMERCIAL-LICENSE.md](https://github.com/nam20485/OdbDesign/blob/development/COMMERCIAL-LICENSE.md) for the licensing process, evaluation terms, and support options.
 
 ## Credit
 
