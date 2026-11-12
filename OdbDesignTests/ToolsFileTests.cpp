@@ -201,6 +201,23 @@ TEST(ToolsFileTests, SaveThenReParse_ProducesIdenticalProtobuf)
 	EXPECT_DOUBLE_EQ(second.GetTools()[0]->finishSize, 7.87402);
 }
 
+TEST(ToolsFileTests, Parse_BareKeyInsideRecord_Throws)
+{
+	// inside a TOOLS record, a line with no '=' at all must be a parse
+	// error via the in-record find('=') guard (a bare key there is never
+	// a legal field); exercises the record branch, not the global one
+	const auto dir = writeTempToolsFile(
+		"UNITS=INCH\n"
+		"TOOLS {\n"
+		"    GARBAGETOKEN\n"
+		"    NUM=1\n"
+		"    TYPE=VIA\n"
+		"}\n", "bare_key_in_record");
+
+	ToolsFile toolsFile;
+	ASSERT_THROW(toolsFile.Parse(dir), Odb::Lib::FileModel::parse_error);
+}
+
 TEST(ToolsFileTests, Parse_MalformedNumericField_ThrowsParseError)
 {
 	// hostile/malformed numeric values surface as parse_error with context —
