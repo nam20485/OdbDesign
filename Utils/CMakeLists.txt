@@ -8,7 +8,7 @@ add_library(Utils SHARED "utils_export.h"   "ExitCode.h" "ThreadSafeQueue.h" "Wo
 target_include_directories(Utils
                            INTERFACE
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-                           $<INSTALL_INTERFACE:include>)
+                           $<INSTALL_INTERFACE:include/Utils>)
 
 ## PCH
 #if (NOT DEFINED ENV{CI})
@@ -23,3 +23,17 @@ target_link_libraries(Utils PRIVATE LibArchive::LibArchive)
 # Link to Crow (needed for crow_win.h)
 find_package(Crow CONFIG REQUIRED)
 target_link_libraries(Utils PRIVATE Crow::Crow)
+
+# ===== install rules (SDK packaging) =====
+
+include(GNUInstallDirs)
+
+install(TARGETS Utils
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}    # Windows DLL
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}    # shared object
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})   # Windows import library (.lib)
+
+# public headers (utils_export.h, CommandLineArgs.h, crow_win.h, StringVector.h, ...)
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/"
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/Utils
+        FILES_MATCHING PATTERN "*.h")

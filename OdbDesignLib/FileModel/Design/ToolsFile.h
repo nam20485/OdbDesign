@@ -1,14 +1,10 @@
-//
-// Created by Jandody on 08/26/2025.
-//
 #pragma once
 
 #include <string>
 #include <map>
-#include <filesystem>
 #include <memory>
-#include <EnumMap.h>
-
+#include <vector>
+#include <filesystem>
 #include "../../odbdesign_export.h"
 #include "../../IProtoBuffable.h"
 #include "toolsfile.pb.h"
@@ -16,108 +12,110 @@
 
 namespace Odb::Lib::FileModel::Design
 {
-    class ODBDESIGN_EXPORT ToolsFile : public IProtoBuffable<Odb::Lib::Protobuf::ToolsFile>, public IStreamSaveable
-    {
-    public:
-        ToolsFile();
-        ~ToolsFile();
+	/// ODB++ layer drill-tools table (<layer>/tools, spec "Layer Entities — Drill Tools").
+	/// Clean-room implementation authored from the ODB++ specification and
+	/// sample design data; see docs/plan/clean-room-reimplementation-plan.md.
+	class ODBDESIGN_EXPORT ToolsFile : public IProtoBuffable<Odb::Lib::Protobuf::ToolsFile>, public IStreamSaveable
+	{
+	public:
+		ToolsFile();
 
-        // ToolsRecord
-        struct ToolsRecord : public IProtoBuffable<Odb::Lib::Protobuf::ToolsFile::ToolsRecord>
-        {
-            enum class Type
-            {
-                Plated,
-                NonPlated,
-                Via,
-            };
+		struct ToolRecord : public IProtoBuffable<Odb::Lib::Protobuf::ToolsFile::Tool>
+		{
+			enum class Type
+			{
+				Unknown = 0,
+				Plated,
+				NonPlated,
+				Via
+			};
 
-            enum class Type2
-            {
-                Standard,
-                PressFit,
-                Photo,
-                Laser,
-            };
+			enum class SubType
+			{
+				Unknown = 0,
+				Standard,
+				PressFit,
+				Photo,
+				Laser
+			};
 
-            // data members
-            unsigned int toolNum;	// reference number of TOOLS in tools file
-            Type type;
-            Type2 type2;
+			// spec: tool number
+			unsigned int num = 0;
+			// tracked for close-brace validation (NUM must be present)
+			bool hasNum = false;
+			// spec: PLATED | NON_PLATED | VIA
+			Type type = Type::Unknown;
+			// spec: legality depends on type; defaults to STANDARD when absent
+			SubType subType = SubType::Standard;
+			// spec: allowed tolerance (mils or microns per UNITS)
+			double minTol = 0.0;
+			double maxTol = 0.0;
+			// spec: drill bit string
+			std::string bit;
+			// spec: required finished drill size; -1 when not set
+			double finishSize = -1.0;
+			// spec: optional drill tool size
+			double drillSize = -1.0;
 
-            // Allowed tolerances
-            double minTOL;
-            double maxTOL;
+			// constants
+			constexpr inline static const char* TYPE_PLATED = "PLATED";
+			constexpr inline static const char* TYPE_NON_PLATED = "NON_PLATED";
+			constexpr inline static const char* TYPE_VIA = "VIA";
+			constexpr inline static const char* SUB_TYPE_STANDARD = "STANDARD";
+			constexpr inline static const char* SUB_TYPE_PRESS_FIT = "PRESS_FIT";
+			constexpr inline static const char* SUB_TYPE_PHOTO = "PHOTO";
+			constexpr inline static const char* SUB_TYPE_LASER = "LASER";
 
-            std::string drillBit;
-            double finishSize;
-            double drillSize;
+			// spec: legal sub-type per type (TYPE2 field); TYPE2 defaults to
+			// STANDARD when absent
+			bool subTypeIsLegal() const;
 
-            inline static const char* RECORD_TOKEN = "TOOLS";
+			// names as they appear in the file grammar (used by Save)
+			static const char* typeName(Type type);
+			static const char* subTypeName(SubType subType);
 
-            inline static const char* NUM_KEY = "NUM";
-            inline static const char* TYPE_KEY = "TYPE";
-            inline static const char* TYPE2_KEY = "TYPE2";
-            inline static const char* MIN_TOL_KEY = "MIN_TOL";
-            inline static const char* MAX_TOL_KEY = "MAX_TOL";
-            inline static const char* BIT_KEY = "BIT";
-            inline static const char* FINISH_SIZE_KEY = "FINISH_SIZE";
-            inline static const char* DRILL_SIZE_KEY = "DRILL_SIZE";
+			// typedefs
+			typedef std::vector<std::shared_ptr<ToolRecord>> Vector;
+			typedef std::map<unsigned int, std::shared_ptr<ToolRecord>> NumMap;
 
-            // Inherited via IProtoBuffable
-            std::unique_ptr<Odb::Lib::Protobuf::ToolsFile::ToolsRecord> to_protobuf() const override;
-            void from_protobuf(const Odb::Lib::Protobuf::ToolsFile::ToolsRecord& message) override;
+			// Inherited via IProtoBuffable
+			std::unique_ptr<Odb::Lib::Protobuf::ToolsFile::Tool> to_protobuf() const override;
+			void from_protobuf(const Odb::Lib::Protobuf::ToolsFile::Tool& message) override;
+		};
 
-            inline static const Utils::EnumMap<Type> typeMap{
-                {
-                    "PLATED",
-                    "NON_PLATED",
-                    "VIA"
-                }
-            };
+		bool Parse(std::filesystem::path directory);
+		// Inherited via IStreamSaveable
+		bool Save(std::ostream& os) override;
 
-            inline static const Utils::EnumMap<Type2> type2Map{
-                {
-                    "STANDARD",
-                    "PRESS_FIT",
-                    "PHOTO",
-                    "LASER"
-                }
-            };
+		std::string GetUnits() const;
+		double GetThickness() const;
+		const std::vector<std::string>& GetUserParams() const;
+		const ToolRecord::Vector& GetTools() const;
+		std::filesystem::path GetPath() const;
 
-        };  // ToolsRecord
+		// Inherited via IProtoBuffable
+		std::unique_ptr<Odb::Lib::Protobuf::ToolsFile> to_protobuf() const override;
+		void from_protobuf(const Odb::Lib::Protobuf::ToolsFile& message) override;
 
-        // typedefs
-        typedef std::map<unsigned int, std::shared_ptr<ToolsRecord>> ToolsMap;
+		constexpr inline static const char* TOOLS_FILENAME = "tools";
+		constexpr inline static const char* TOOLS_ARRAY_TOKEN = "TOOLS";
+		constexpr inline static const char* THICKNESS_KEY = "THICKNESS";
+		constexpr inline static const char* USER_PARAMS_KEY = "USER_PARAMS";
+		constexpr inline static const char* NUM_KEY = "NUM";
+		constexpr inline static const char* TYPE_KEY = "TYPE";
+		constexpr inline static const char* TYPE2_KEY = "TYPE2";
+		constexpr inline static const char* MIN_TOL_KEY = "MIN_TOL";
+		constexpr inline static const char* MAX_TOL_KEY = "MAX_TOL";
+		constexpr inline static const char* BIT_KEY = "BIT";
+		constexpr inline static const char* FINISH_SIZE_KEY = "FINISH_SIZE";
+		constexpr inline static const char* DRILL_SIZE_KEY = "DRILL_SIZE";
 
-        std::string GetUnits() const;
-        double GetThickness() const;
-        std::string GetUserParams() const;
-        const ToolsMap& GetTools() const;
-
-        bool Parse(std::filesystem::path directory);
-        // Inherited via IStreamSaveable
-        bool Save(std::ostream& os) override;
-
-        // Inherited via IProtoBuffable
-        std::unique_ptr<Odb::Lib::Protobuf::ToolsFile> to_protobuf() const override;
-        void from_protobuf(const Odb::Lib::Protobuf::ToolsFile& message) override;
-
-    private:
-        std::filesystem::path m_directory;
-        std::filesystem::path m_path;
-
-        std::string m_units;
-        double m_thickness;
-        std::string m_user_params;
-        ToolsMap m_toolsByNum;
-
-        inline static const auto TOOLS_FILENAMES = { "tools" };
-
-        inline static const char* UNITS_TOKEN = "UNITS";
-        inline static const char* THICKNESS_TOKEN = "THICKNESS";
-        inline static const char* USER_PARAMS_TOKEN = "USER_PARAMS";
-    };
+	private:
+		std::filesystem::path m_path;
+		std::filesystem::path m_directory;
+		std::string m_units;
+		double m_thickness = 0.0;
+		std::vector<std::string> m_userParams;
+		ToolRecord::Vector m_tools;
+	};
 }
-
-

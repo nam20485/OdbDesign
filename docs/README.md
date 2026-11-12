@@ -2,7 +2,7 @@
 
 A free open source cross-platform C++ library for parsing ODB++ Design archives, accessing their data, and building net list product models. Exposed via a REST API packaged inside of a Docker image.
 
-**UPDATE: LICENSE HAS CHANGED TO [AGPL V3.0](../LICENSE).** This is a non-permissive open source license that is not suitable for use in closed-source applications. Please contact me to obtain a license suitable for closed-source uses.
+**UPDATE: LICENSE HAS CHANGED TO [AGPL V3.0](https://github.com/nam20485/OdbDesign/blob/development/LICENSE).** This is a non-permissive open source license that is not suitable for use in closed-source applications. Please see [COMMERCIAL-LICENSE.md](https://github.com/nam20485/OdbDesign/blob/development/COMMERCIAL-LICENSE.md) for the commercial licensing process, or contact me to obtain a license suitable for closed-source uses.
 
 ## Skip to Build and Running Instructions
 
@@ -12,9 +12,11 @@ Sounds great! Now how do I build and run it?
 
 [Build](#building-from-source)
 
-Documentation for the currently-released version of the source code is available [here](https://nam20485.github.io/OdbDesign/api).
+Documentation for the currently-released version of the source code is available [here](https://source.odbdesignserver.com/api).
 
 ## Need Help?
+
+All contact channels are collected on the project website's [Contact page](https://source.odbdesignserver.com/contact).
 
 Feel free to message me in the project's Gitter chat room: [odbdesign:gitter.im](https://app.gitter.im/#/room/#odbdesign:gitter.im)
 
@@ -89,7 +91,7 @@ It is built using the latest available version of the C++ standard and is compil
 
 The diagram describes the current state of parser implementation and data availability. Green color describes areas of the ODB++ archive file that are implemented and have their data available for use. ~~Red color describes areas that are not parsed so their data is not yet available.~~ **All areas of the file are now parsed, and have their data available for use.**
 
-![ODB++ file hierarchy implementation state diagram](<odb++ file hierarchy (implemented).png>)
+![ODB++ file hierarchy implementation state diagram](<reference/images/odb-file-hierarchy-implemented.png>)
 
 ### Project Security
 
@@ -97,7 +99,7 @@ The diagram describes the current state of parser implementation and data availa
 
 [OpenSSF Security Scorecard](https://securityscorecards.dev/#what-is-openssf-scorecard) assesses open source projects for security risks through a series of automated checks.
 
-[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/nam20485/OdbDesign/badge)](https://securityscorecards.dev/viewer/?uri=github.com/nam20485/OdbDesign)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/nam20485/OdbDesign/badge)](https://securityscorecards.io/viewer/?uri=github.com/nam20485/OdbDesign)
 
 >The majority of tested projects have a much lower score, so OdbDesign's 7.8 score represents a remarkably high level of security.
 
@@ -139,7 +141,7 @@ The diagram describes the current state of parser implementation and data availa
 
 The OdbDesign parser is built as a C++ shared library on all three platforms. An executable running the server links to the library and provides the REST API for accessing the data the library parses. The REST API server can be run by invoking the executable directly or by running the Docker image. The server executable and library can be run on Windows, Linux, or MacOS and the Docker image can be run on any platform that supports Docker.
 
-Documentation for the currently-released version of the source code is available [here](https://nam20485.github.io/OdbDesign/api).
+Documentation for the currently-released version of the source code is available [here](https://source.odbdesignserver.com/api).
 
 [Insert Diagram Image]
 
@@ -180,7 +182,7 @@ If successful, the REST API server will be running and listening on port 8888. Y
 
 ## Building from Source
 
-Documentation for the currently-released version of the source code is available [here](https://nam20485.github.io/OdbDesign/api).
+Documentation for the currently-released version of the source code is available [here](https://source.odbdesignserver.com/api).
 
 ### Automated Setup Scripts
 
@@ -217,7 +219,7 @@ Use `.\scripts\setup-windows.ps1 -Help` for additional options.
 $ ./scripts/setup-linux.sh
 ```
 
-See [Linux setup details](README-SETUP.md) for full documentation.
+See [Linux setup details](README-SETUP.html) for full documentation.
 
 ### Manual Build Dependencies
 
@@ -225,7 +227,7 @@ If you prefer to set up the build environment manually, you'll need the followin
 
 > If you are building on Windows and have a modern version of Visual Studio installed then all of the dependencies listed below are already installed on your system (except for maybe Docker). You can use the automated setup scripts above or skip to the next section.
 
-> **Linux users**: For an automated setup experience, use the provided setup script: `./scripts/setup-linux.sh` (see [docs/README-SETUP.md](README-SETUP.md) for details)
+> **Linux users**: For an automated setup experience, use the provided setup script: `./scripts/setup-linux.sh` (see [docs/README-SETUP.md](README-SETUP.html) for details)
 
 > If you are building on a Linux system manually, the dependencies listed below can be installed using your package manager. For example on Ubuntu/Debian/Mint you can install them (except for vcpkg and Docker) using the following command:
 
@@ -320,7 +322,7 @@ $ cmake --build --preset linux-dynamic-release
 
 ```
 
->This uses the `linux-dynamic-release` preset, which links vcpkg dependencies (protobuf, gRPC, ...) as shared libraries. Linking them statically (`linux-release` preset) loads two copies of protobuf at runtime and crashes. See [linux-dynamic-release-plan.md](./linux-dynamic-release-plan.md).
+>This uses the `linux-dynamic-release` preset, which links vcpkg dependencies (protobuf, gRPC, ...) as shared libraries. Linking them statically (`linux-release` preset) loads two copies of protobuf at runtime and crashes. See [linux-dynamic-release-plan.md](https://github.com/nam20485/OdbDesign/blob/development/docs/completed/linux-dynamic-release-plan.md).
 
 This builds the C++ shared library and the REST API server executable. See the [Running the C++ Application](#running-the-c%2b%2b-application) section for more details.
 
@@ -329,7 +331,7 @@ The build output can be found in the following directory:
 * `~/src/OdbDesign/out/build/linux-dynamic-release`                *(Linux)*
 * `C:\Users\<YourName>\Source\OdbDesign\out\build\x64-release`    *(Windows)*
 
->The `x64-release` directory will be different if you selected a different configuration preset (`x64-release` vs. `x64-debug` or `linux-dynamic-release` vs. `linux-debug`). The `x64-release` directory will contain the shared library and the server executable. Make sure to copy the dependencies (.dll files on Windows, .so files on Linux, .dylib files on MacOS) to the same directory as the executable if you want to copy it somewhere else. On Linux, the `linux-dynamic-release` build additionally depends on the vcpkg shared libraries in `out/build/linux-dynamic-release/vcpkg_installed/x64-linux-dynamic/lib` — copy them too (or set `LD_LIBRARY_PATH` to that directory).
+>The `x64-release` directory will be different if you selected a different configuration preset (`x64-release` vs. `x64-debug` or `linux-dynamic-release` vs. `linux-debug`). The `x64-release` directory will contain the shared library and the server executable. Make sure to copy the dependencies (.dll files on Windows, .so files on Linux, .dylib files on MacOS) to the same directory as the executable if you want to copy it somewhere else. On Linux, the `linux-dynamic-release` build additionally depends on the vcpkg shared libraries in `out/vcpkg_installed/x64-linux-dynamic/lib` — copy them too (or set `LD_LIBRARY_PATH` to that directory).
 
 #### Docker Image for REST API Server
 
@@ -365,13 +367,13 @@ The project is happy to accept pull requests if you would like to contribute. Pl
 
 All contributed code must be covered by accompanying test cases. Please make sure your changes are covered by test cases before submitting a pull request.
 
-See [docs/CONTRIBUTING.md](CONTRIBUTING.md) for more details.
+See [docs/CONTRIBUTING.md](CONTRIBUTING.html) for more details.
 
 ## License
 
-This project is free and open source under the [AGPL V3.0](../LICENSE).
+This project is free and open source under the [AGPL V3.0](https://github.com/nam20485/OdbDesign/blob/development/LICENSE). Commercial licenses for closed-source use are available — see [COMMERCIAL-LICENSE.md](https://github.com/nam20485/OdbDesign/blob/development/COMMERCIAL-LICENSE.md) and the [licensing & IP protection story](licensing.html).
 
-> The AGPL V3.0 is a non-permissive open source license that is not suitable for use in closed-source applications. However, licenses suitable for use in closed-source applications are available. Please contact me to obtain a license suitable for your needs.
+> The AGPL V3.0 is a non-permissive open source license that is not suitable for use in closed-source applications. However, commercial licenses suitable for use in closed-source applications are available — see [COMMERCIAL-LICENSE.md](https://github.com/nam20485/OdbDesign/blob/development/COMMERCIAL-LICENSE.md) for the licensing process, evaluation terms, and support options.
 
 ## Credit
 
@@ -397,7 +399,7 @@ If you are interested in using the parser in your application or code, or have a
 * [Email me (maintainer)](mailto:nmiller217@gmail.com?subject=OdbDesign)
 * [GitHub](https://github.com/nam20485/odbdesign)
 * [LinkedIn](https://www.linkedin.com/in/namiller/)
-* [OdbDesign Website](https://nam20485.github.io/OdbDesign/)
+* [OdbDesign Website](https://source.odbdesignserver.com/)
 * Gitter chat room: [odbdesign:gitter.im](https://app.gitter.im/#/room/#odbdesign:gitter.im)
 * Use the button below to schedule a video call on Google.
 
@@ -429,7 +431,7 @@ You can use this to get help or support, discuss any issues with integration int
 
 * [ODB++ Format Home](https://odbplusplus.com/design/)
 * [ODB++ Format Documentation & Resources](https://odbplusplus.com/design/our-resources/)
-* ODB++ Format Specification (included in this repo): `docs/odb_spec_user.pdf`
+* ODB++ Format Specification (included in this repo): `docs/reference/odbpp/odb_spec_user.pdf`
 * [ODB++ Format Specification v8.1 update 4 (public PDF)](https://odbplusplus.com/wp-content/uploads/sites/2/2024/08/odb_spec_user.pdf)
 
 *ODB++ is a registered trademark of Siemens*

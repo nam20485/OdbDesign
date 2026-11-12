@@ -147,41 +147,14 @@ namespace Odb::Test::Enhanced
         }
     }
 
-    // Test resource cleanup and lifecycle
+    // Test resource cleanup and lifecycle. Note: no TearDown sweep of the
+    // shared temp directory - under parallel ctest, sibling test processes
+    // hold live odbtest_* files in that same directory and a global sweep
+    // deletes them mid-test. TempResourceManagement verifies cleanup of
+    // exactly the resources it created; the TempResource RAII destructor
+    // handles the rest.
     class ResourceLifecycleTest : public TestDataFixture
     {
-    protected:
-        void TearDown() override
-        {
-            // Verify no temp files leaked
-            cleanupTempResources();
-            TestDataFixture::TearDown();
-        }
-
-        void cleanupTempResources()
-        {
-            // Clean up any test resources that might have been left behind
-            auto tempDir = std::filesystem::temp_directory_path();
-            
-            try
-            {
-                for (const auto& entry : std::filesystem::directory_iterator(tempDir))
-                {
-                    if (entry.is_regular_file() || entry.is_directory())
-                    {
-                        auto filename = entry.path().filename().string();
-                        if (filename.find("odbtest_") == 0)
-                        {
-                            std::filesystem::remove_all(entry.path());
-                        }
-                    }
-                }
-            }
-            catch (...)
-            {
-                // Ignore cleanup errors
-            }
-        }
     };
 
     TEST_F(ResourceLifecycleTest, TempResourceManagement)

@@ -1,24 +1,52 @@
 #pragma once
 
+#include <cstdint>
 #include <memory>
 #include <string>
+#include <grpc/impl/compression_types.h>
 
 namespace OdbDesignServer
 {
     namespace Config
     {
+        // Human-readable name for a gRPC compression level (for logging)
+        inline const char* CompressionLevelToString(grpc_compression_level level)
+        {
+            switch (level)
+            {
+                case GRPC_COMPRESS_LEVEL_NONE: return "none";
+                case GRPC_COMPRESS_LEVEL_LOW: return "low";
+                case GRPC_COMPRESS_LEVEL_MED: return "medium";
+                case GRPC_COMPRESS_LEVEL_HIGH: return "high";
+                default: return "unknown";
+            }
+        }
+
         struct GrpcServiceConfig
         {
             // Message size limits (in MB)
             int max_receive_message_size_mb = 250;  // Default 250MB (updated to handle large designs like Turbot)
             int max_send_message_size_mb = 250;     // Default 250MB (updated to handle large designs like Turbot)
 
-            // Compression configuration
-            bool compression_enabled = true;         // Default enabled (gRPC handles automatically)
+            // Compression configuration ("none" disables compression)
+            grpc_compression_level compression_level = GRPC_COMPRESS_LEVEL_HIGH;  // Default high (best compression)
 
             // Batch streaming configuration
             bool enable_batch_streaming = true;  // Feature flag for gradual rollout
             int batch_size = 500;                // Features per batch (100-1000)
+
+            // Design streaming configuration (M6: GetDesignStream + disk spool).
+            // The monolithic serve budget itself lives on DesignCache
+            // (setMonolithicWireBudget) so the RPC guard and the background
+            // pre-serialization share one knob.
+            bool enable_design_streaming = true;       // Feature flag for GetDesignStream
+            int design_stream_feature_batch_size = 1000;  // FeatureRecords per FeatureBatch (100-10000)
+            // Disk spool for over-budget designs. Empty dir = a per-service-
+            // instance directory under the system temp dir (removed on exit).
+            std::string stream_spool_dir;
+            // Total spool byte cap (LRU-evicted beyond it). 4 GiB holds the
+            // spools of both large designs (1.0-1.34 GB each) with headroom.
+            std::uint64_t stream_spool_max_bytes = 4ull * 1024ull * 1024ull * 1024ull;
 
             // Thread pool configuration
             int max_threads = 8;       // Maximum gRPC server threads (ResourceQuota)

@@ -47,6 +47,10 @@ namespace Odb::Lib::FileModel::Design
 
 		// Inherited via IProtoBuffable
 		std::unique_ptr<Odb::Lib::Protobuf::StepDirectory> to_protobuf() const override;
+		// M6 streaming: same message with every layer's feature records
+		// omitted (layers serialized as skeletons; the records are delivered
+		// via FeatureBatch chunks). Profile/eda/netlist/components ride whole.
+		std::unique_ptr<Odb::Lib::Protobuf::StepDirectory> to_protobuf_skeleton() const;
 		void from_protobuf(const Odb::Lib::Protobuf::StepDirectory& message) override;
 
 	private:
@@ -66,6 +70,12 @@ namespace Odb::Lib::FileModel::Design
 		bool ParseAttrListFile(std::filesystem::path attrListFileDirectory);
 		bool ParseProfileFile(std::filesystem::path profileFileDirectory);
 		bool ParseStepHdrFile(std::filesystem::path stepHdrFileDirectory);
+
+		// Shared body of to_protobuf() / to_protobuf_skeleton(); only the
+		// layer serialization differs, keeping the skeleton byte-compatible
+		// with the full serialization.
+		void FillProtobufMessage(Odb::Lib::Protobuf::StepDirectory& stepDirectoryMessage, bool layerSkeletons) const;
+
 
 		constexpr inline static const char* PROFILE_FILENAME = "profile";
 		

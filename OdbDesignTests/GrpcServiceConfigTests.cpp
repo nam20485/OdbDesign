@@ -6,6 +6,8 @@
 #include <filesystem>
 #include <string>
 #include <memory>
+#include <cstdint>
+#include <limits>
 
 using namespace OdbDesignServer::Config;
 using namespace Odb::Test::Utils;
@@ -19,6 +21,8 @@ namespace Odb::Test::Config
     // =========================================================================
     // Tests for Phase 1 config additions: thread_pool (max_threads, min_pollers),
     // keepalive (time_s, timeout_s, permit_without_calls), and value clamping.
+    // Tests for Phase 2 config additions: compression level string parsing
+    // ("none"/"low"/"medium"/"high", unknown fallback to "high").
     // =========================================================================
 
     class GrpcServiceConfigTest : public ::testing::Test
@@ -57,7 +61,7 @@ namespace Odb::Test::Config
         // Pre-existing defaults
         EXPECT_EQ(config->max_receive_message_size_mb, 250);
         EXPECT_EQ(config->max_send_message_size_mb, 250);
-        EXPECT_TRUE(config->compression_enabled);
+        EXPECT_EQ(config->compression_level, GRPC_COMPRESS_LEVEL_HIGH);
         EXPECT_TRUE(config->enable_batch_streaming);
         EXPECT_EQ(config->batch_size, 500);
 
@@ -225,6 +229,79 @@ namespace Odb::Test::Config
         EXPECT_EQ(result.config->keepalive_time_s, 3600);
     }
 
+    // ---- design_streaming (M6) configuration ----
+    // The new keys run the OOM-guard machinery's knobs: feature_batch_size
+    // bounds peak per-chunk memory, spool_max_bytes is the disk budget (0 =
+    // unlimited sentinel), enabled is the kill-switch. Unlike the sibling
+    // clamps they had no coverage (review F13).
+
+    TEST_F(GrpcServiceConfigTest, LoadFromFile_DesignStreaming_ClampsFeatureBatchSizeLow)
+    {
+        auto path = writeConfigFile(R"({
+            "grpc": {
+                "design_streaming": {
+                    "feature_batch_size": 50
+                }
+            }
+        })");
+
+        auto result = GrpcServiceConfig::LoadFromFile(path);
+        EXPECT_TRUE(result.loadedFromFile);
+        EXPECT_EQ(result.config->design_stream_feature_batch_size, 100);
+    }
+
+    TEST_F(GrpcServiceConfigTest, LoadFromFile_DesignStreaming_ClampsFeatureBatchSizeHigh)
+    {
+        auto path = writeConfigFile(R"({
+            "grpc": {
+                "design_streaming": {
+                    "feature_batch_size": 20000
+                }
+            }
+        })");
+
+        auto result = GrpcServiceConfig::LoadFromFile(path);
+        EXPECT_TRUE(result.loadedFromFile);
+        EXPECT_EQ(result.config->design_stream_feature_batch_size, 10000);
+    }
+
+    TEST_F(GrpcServiceConfigTest, LoadFromFile_DesignStreaming_KeysPassThrough)
+    {
+        auto path = writeConfigFile(R"({
+            "grpc": {
+                "design_streaming": {
+                    "enabled": false,
+                    "feature_batch_size": 500,
+                    "spool_dir": "/var/spool/odbdesign",
+                    "spool_max_bytes": 123456789
+                }
+            }
+        })");
+
+        auto result = GrpcServiceConfig::LoadFromFile(path);
+        EXPECT_TRUE(result.loadedFromFile);
+        EXPECT_FALSE(result.config->enable_design_streaming);
+        EXPECT_EQ(result.config->design_stream_feature_batch_size, 500);
+        EXPECT_EQ(result.config->stream_spool_dir, "/var/spool/odbdesign");
+        EXPECT_EQ(result.config->stream_spool_max_bytes, 123456789ull);
+    }
+
+    TEST_F(GrpcServiceConfigTest, LoadFromFile_DesignStreaming_SpoolMaxBytesZeroMeansUnlimited)
+    {
+        auto path = writeConfigFile(R"({
+            "grpc": {
+                "design_streaming": {
+                    "spool_max_bytes": 0
+                }
+            }
+        })");
+
+        auto result = GrpcServiceConfig::LoadFromFile(path);
+        EXPECT_TRUE(result.loadedFromFile);
+        EXPECT_EQ(result.config->stream_spool_max_bytes, std::numeric_limits<std::uint64_t>::max())
+            << "spool_max_bytes: 0 is the unlimited sentinel, not a zero-byte budget";
+    }
+
     TEST_F(GrpcServiceConfigTest, LoadFromFile_Keepalive_ClampsTimeoutLow)
     {
         auto path = writeConfigFile(R"({
@@ -255,6 +332,157 @@ namespace Odb::Test::Config
         EXPECT_EQ(result.config->keepalive_timeout_s, 300);
     }
 
+    // ---- Compression level config loading (Phase 2) ----
+
+    TEST_F(GrpcServiceConfigTest, LoadFromFile_CompressionLevelNone_ParsesCorrectly)
+    {
+        auto path = writeConfigFile(R"({
+            "grpc": {
+                "compression": {
+                    "level": "none"
+                }
+            }
+        })");
+
+        auto result = GrpcServiceConfig::LoadFromFile(path);
+        EXPECT_TRUE(result.loadedFromFile);
+        EXPECT_EQ(result.config->compression_level, GRPC_COMPRESS_LEVEL_NONE);
+    }
+
+    TEST_F(GrpcServiceConfigTest, LoadFromFile_CompressionLevelLow_ParsesCorrectly)
+    {
+        auto path = writeConfigFile(R"({
+            "grpc": {
+                "compression": {
+                    "level": "low"
+                }
+            }
+        })");
+
+        auto result = GrpcServiceConfig::LoadFromFile(path);
+        EXPECT_TRUE(result.loadedFromFile);
+        EXPECT_EQ(result.config->compression_level, GRPC_COMPRESS_LEVEL_LOW);
+    }
+
+    TEST_F(GrpcServiceConfigTest, LoadFromFile_CompressionLevelMedium_ParsesCorrectly)
+    {
+        auto path = writeConfigFile(R"({
+            "grpc": {
+                "compression": {
+                    "level": "medium"
+                }
+            }
+        })");
+
+        auto result = GrpcServiceConfig::LoadFromFile(path);
+        EXPECT_TRUE(result.loadedFromFile);
+        EXPECT_EQ(result.config->compression_level, GRPC_COMPRESS_LEVEL_MED);
+    }
+
+    TEST_F(GrpcServiceConfigTest, LoadFromFile_CompressionLevelHigh_ParsesCorrectly)
+    {
+        auto path = writeConfigFile(R"({
+            "grpc": {
+                "compression": {
+                    "level": "high"
+                }
+            }
+        })");
+
+        auto result = GrpcServiceConfig::LoadFromFile(path);
+        EXPECT_TRUE(result.loadedFromFile);
+        EXPECT_EQ(result.config->compression_level, GRPC_COMPRESS_LEVEL_HIGH);
+    }
+
+    TEST_F(GrpcServiceConfigTest, LoadFromFile_CompressionLevelUnknown_FallsBackToHigh)
+    {
+        auto path = writeConfigFile(R"({
+            "grpc": {
+                "compression": {
+                    "level": "turbo"
+                }
+            }
+        })");
+
+        auto result = GrpcServiceConfig::LoadFromFile(path);
+        EXPECT_TRUE(result.loadedFromFile);
+        EXPECT_EQ(result.config->compression_level, GRPC_COMPRESS_LEVEL_HIGH);
+    }
+
+    TEST_F(GrpcServiceConfigTest, LoadFromFile_NoCompressionLevel_KeepsDefaultHigh)
+    {
+        auto path = writeConfigFile(R"({
+            "grpc": {
+                "compression": {}
+            }
+        })");
+
+        auto result = GrpcServiceConfig::LoadFromFile(path);
+        EXPECT_TRUE(result.loadedFromFile);
+        EXPECT_EQ(result.config->compression_level, GRPC_COMPRESS_LEVEL_HIGH);
+    }
+
+    TEST_F(GrpcServiceConfigTest, LoadFromFile_CompressionLegacyEnabledFalse_MigratesToNone)
+    {
+        // Legacy "enabled": false is honored as a migration: an explicit opt-out
+        // must not silently re-enable compression at the default level
+        auto path = writeConfigFile(R"({
+            "grpc": {
+                "compression": {
+                    "enabled": false,
+                    "algorithm": "gzip"
+                }
+            }
+        })");
+
+        auto result = GrpcServiceConfig::LoadFromFile(path);
+        EXPECT_TRUE(result.loadedFromFile);
+        EXPECT_EQ(result.config->compression_level, GRPC_COMPRESS_LEVEL_NONE);
+    }
+
+    TEST_F(GrpcServiceConfigTest, LoadFromFile_CompressionLegacyEnabledTrue_KeepsDefault)
+    {
+        // "enabled": true with no "level" keeps the level default (high)
+        auto path = writeConfigFile(R"({
+            "grpc": {
+                "compression": {
+                    "enabled": true,
+                    "algorithm": "gzip"
+                }
+            }
+        })");
+
+        auto result = GrpcServiceConfig::LoadFromFile(path);
+        EXPECT_TRUE(result.loadedFromFile);
+        EXPECT_EQ(result.config->compression_level, GRPC_COMPRESS_LEVEL_HIGH);
+    }
+
+    TEST_F(GrpcServiceConfigTest, LoadFromFile_CompressionLegacyKeysWithLevel_LevelWins)
+    {
+        // When both legacy keys and "level" are present, "level" is honored
+        auto path = writeConfigFile(R"({
+            "grpc": {
+                "compression": {
+                    "enabled": false,
+                    "algorithm": "gzip",
+                    "level": "low"
+                }
+            }
+        })");
+
+        auto result = GrpcServiceConfig::LoadFromFile(path);
+        EXPECT_TRUE(result.loadedFromFile);
+        EXPECT_EQ(result.config->compression_level, GRPC_COMPRESS_LEVEL_LOW);
+    }
+
+    TEST_F(GrpcServiceConfigTest, CompressionLevelToString_MatchesConfigStrings)
+    {
+        EXPECT_STREQ(OdbDesignServer::Config::CompressionLevelToString(GRPC_COMPRESS_LEVEL_NONE), "none");
+        EXPECT_STREQ(OdbDesignServer::Config::CompressionLevelToString(GRPC_COMPRESS_LEVEL_LOW), "low");
+        EXPECT_STREQ(OdbDesignServer::Config::CompressionLevelToString(GRPC_COMPRESS_LEVEL_MED), "medium");
+        EXPECT_STREQ(OdbDesignServer::Config::CompressionLevelToString(GRPC_COMPRESS_LEVEL_HIGH), "high");
+    }
+
     // ---- Full config loading (all sections) ----
 
     TEST_F(GrpcServiceConfigTest, LoadFromFile_FullConfig_ParsesAllSections)
@@ -264,7 +492,7 @@ namespace Odb::Test::Config
                 "max_receive_message_size_mb": 200,
                 "max_send_message_size_mb": 200,
                 "compression": {
-                    "enabled": false
+                    "level": "medium"
                 },
                 "batch_streaming": {
                     "enabled": false,
@@ -289,7 +517,7 @@ namespace Odb::Test::Config
         // Pre-existing fields
         EXPECT_EQ(result.config->max_receive_message_size_mb, 200);
         EXPECT_EQ(result.config->max_send_message_size_mb, 200);
-        EXPECT_FALSE(result.config->compression_enabled);
+        EXPECT_EQ(result.config->compression_level, GRPC_COMPRESS_LEVEL_MED);
         EXPECT_FALSE(result.config->enable_batch_streaming);
         EXPECT_EQ(result.config->batch_size, 250);
 

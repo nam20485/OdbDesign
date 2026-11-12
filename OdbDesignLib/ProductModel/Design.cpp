@@ -5,6 +5,7 @@
 #include "../enums.h"
 #include "Part.h"
 #include "ProtobufMapHelpers.h"
+#include <cstdint>
 #include <memory>
 #include "Net.h"
 #include "../FileModel/Design/FileArchive.h"
@@ -158,6 +159,14 @@ namespace Odb::Lib::ProductModel
 
 	std::unique_ptr<Odb::Lib::Protobuf::ProductModel::Design> Design::to_protobuf() const
 	{
+		// Full flavor (with normalized lists) — REST (to_json), to_pbstring,
+		// to_stream, and round-trip serialization tests all route through this
+		// override and must continue to see the complete payload.
+		return to_protobuf(/*includeNormalizedLists=*/true);
+	}
+
+	std::unique_ptr<Odb::Lib::Protobuf::ProductModel::Design> Design::to_protobuf(bool includeNormalizedLists) const
+	{
 		auto pDesignMsg = std::make_unique<Odb::Lib::Protobuf::ProductModel::Design>();
 		pDesignMsg->set_name(Odb::Lib::Text::ToUtf8(m_name));
 		pDesignMsg->set_productmodel(Odb::Lib::Text::ToUtf8(m_productModel));
@@ -167,33 +176,41 @@ namespace Odb::Lib::ProductModel
 			pDesignMsg->mutable_filemodel()->CopyFrom(*m_pFileModel->to_protobuf());
 		}
 
-		for (const auto& pNet : m_nets)
+		if (includeNormalizedLists)
 		{
-			pDesignMsg->add_nets()->CopyFrom(*pNet->to_protobuf());
+			for (const auto& pNet : m_nets)
+			{
+				pDesignMsg->add_nets()->CopyFrom(*pNet->to_protobuf());
+			}
+
+			FillProtobufMapWithSanitizedKeys(*pDesignMsg->mutable_netsbyname(), m_netsByName);
+
+			for (const auto& pPackage : m_packages)
+			{
+				pDesignMsg->add_packages()->CopyFrom(*pPackage->to_protobuf());
+			}
+
+			FillProtobufMapWithSanitizedKeys(*pDesignMsg->mutable_packagesbyname(), m_packagesByName);
+
+			for (const auto& pComponent : m_components)
+			{
+				pDesignMsg->add_components()->CopyFrom(*pComponent->to_protobuf());
+			}
+
+			FillProtobufMapWithSanitizedKeys(*pDesignMsg->mutable_componentsbyname(), m_componentsByName);
+
+			for (const auto& pPart : m_parts)
+			{
+				pDesignMsg->add_parts()->CopyFrom(*pPart->to_protobuf());
+			}
+
+			FillProtobufMapWithSanitizedKeys(*pDesignMsg->mutable_partsbyname(), m_partsByName);
 		}
 
-		FillProtobufMapWithSanitizedKeys(*pDesignMsg->mutable_netsbyname(), m_netsByName);
-
-		for (const auto& pPackage : m_packages)
-		{
-			pDesignMsg->add_packages()->CopyFrom(*pPackage->to_protobuf());
-		}
-
-		FillProtobufMapWithSanitizedKeys(*pDesignMsg->mutable_packagesbyname(), m_packagesByName);
-
-		for (const auto& pComponent : m_components)
-		{
-			pDesignMsg->add_components()->CopyFrom(*pComponent->to_protobuf());
-		}
-
-		FillProtobufMapWithSanitizedKeys(*pDesignMsg->mutable_componentsbyname(), m_componentsByName);
-
-		for (const auto& pPart : m_parts)
-		{
-			pDesignMsg->add_parts()->CopyFrom(*pPart->to_protobuf());
-		}
-
-		FillProtobufMapWithSanitizedKeys(*pDesignMsg->mutable_partsbyname(), m_partsByName);
+		// Connectivity is always-on (decision D4): derived here
+		// unconditionally — outside the includeNormalizedLists gate — so every
+		// flavour carries it and no client ever has to ask for it.
+		FillConnectivityMessage(pDesignMsg->mutable_connectivity());
 
 #ifndef NDEBUG
 		// Debug-only assertion: verify all string fields are valid UTF-8 before serialization
@@ -201,6 +218,188 @@ namespace Odb::Lib::ProductModel
 #endif
 
 		return pDesignMsg;
+	}
+
+	void Design::FillConnectivityMessage(Protobuf::ProductModel::Connectivity* pConnectivityMsg) const
+	{
+		// Monolithic path: one message, all four sections. The section
+		// fillers are the single implementation — the chunked GetDesignStream
+		// path (M6) calls them with batch-sized Connectivity messages so both
+		// paths emit byte-identical entries by construction.
+		const auto index = BuildConnectivityIndex();
+		FillConnectivityNetEntries(*pConnectivityMsg);
+		FillConnectivityPackagePins(*pConnectivityMsg);
+		FillConnectivityNetMembers(index, *pConnectivityMsg);
+		FillConnectivityPlacedComponents(index, *pConnectivityMsg);
+	}
+
+	Design::ConnectivityIndex Design::BuildConnectivityIndex() const
+	{
+		ConnectivityIndex index;
+
+		// $NONE$ ordinal (the roster loop in FillConnectivityNetEntries
+		// detects it too; the index needs it for the edge filter below).
+		for (const auto& pNet : m_nets)
+		{
+			if (!index.hasNoneNet && pNet->GetName() == NONE_NET_NAME)
+			{
+				index.noneNetOrdinal = pNet->GetIndex();
+				index.hasNoneNet = true;
+			}
+		}
+
+		// The resolved edges the product model already holds. Grouped by
+		// refDes then pin number; on a (refDes, pin) that somehow carries two
+		// edges the last one wins (no fixture design exhibits this).
+		for (const auto& pNet : m_nets)
+		{
+			// $NONE$ membership is a labeling convention, not a connection
+			// (decision DP4): those pins emit UNCONNECTED and join no
+			// netMembers entry.
+			if (index.hasNoneNet && pNet->GetIndex() == index.noneNetOrdinal) continue;
+
+			for (const auto& pPinConnection : pNet->GetPinConnections())
+			{
+				const auto& pComponent = pPinConnection->GetComponent();
+				const auto& pPin = pPinConnection->GetPin();
+				if (pComponent == nullptr || pPin == nullptr) continue;
+
+				index.edgesByRefDes[pComponent->GetRefDes()][pPin->GetIndex()] =
+					ConnectivityIndex::Edge{ pNet->GetIndex(), pPinConnection->GetSubnetNumber() };
+			}
+		}
+
+		// Net members: the same CONNECTED edges, inverted, for the net tab.
+		// Map iteration order gives net-ordinal-then-refDes determinism and
+		// pin numbers ascend within each member.
+		for (const auto& refDesAndPins : index.edgesByRefDes)
+		{
+			for (const auto& pinAndEdge : refDesAndPins.second)
+			{
+				index.membersByNet[pinAndEdge.second.net][refDesAndPins.first].push_back(pinAndEdge.first);
+			}
+		}
+		return index;
+	}
+
+	void Design::FillConnectivityNetEntries(Protobuf::ProductModel::Connectivity& connectivityMsg) const
+	{
+		for (std::size_t netIndex = 0; netIndex < m_nets.size(); ++netIndex)
+		{
+			AddConnectivityNetEntry(netIndex, connectivityMsg);
+		}
+	}
+
+	void Design::FillConnectivityPackagePins(Protobuf::ProductModel::Connectivity& connectivityMsg) const
+	{
+		for (std::size_t packageIndex = 0; packageIndex < m_packages.size(); ++packageIndex)
+		{
+			AddConnectivityPackagePinEntry(packageIndex, connectivityMsg);
+		}
+	}
+
+	void Design::FillConnectivityNetMembers(const ConnectivityIndex& index, Protobuf::ProductModel::Connectivity& connectivityMsg) const
+	{
+		for (auto membersIt = index.membersByNet.begin(); membersIt != index.membersByNet.end(); ++membersIt)
+		{
+			AddConnectivityNetMemberEntry(index, membersIt, connectivityMsg);
+		}
+	}
+
+	void Design::FillConnectivityPlacedComponents(const ConnectivityIndex& index, Protobuf::ProductModel::Connectivity& connectivityMsg) const
+	{
+		for (std::size_t componentIndex = 0; componentIndex < m_components.size(); ++componentIndex)
+		{
+			AddConnectivityPlacedComponentEntry(index, componentIndex, connectivityMsg);
+		}
+	}
+
+	void Design::AddConnectivityNetEntry(std::size_t netIndex, Protobuf::ProductModel::Connectivity& connectivityMsg) const
+	{
+		// Net roster: dense — every eda-data NET record in sequence, $NONE$
+		// included — so `net` ordinals keep their spec identity (p.153: the
+		// ordinal IS the NET record sequence) and clients need no name
+		// conventions to interpret them.
+		const auto& pNet = m_nets[netIndex];
+		auto pNetEntryMsg = connectivityMsg.add_nets();
+		pNetEntryMsg->set_ordinal(pNet->GetIndex());
+		pNetEntryMsg->set_name(Odb::Lib::Text::ToUtf8(pNet->GetName()));
+	}
+
+	void Design::AddConnectivityPackagePinEntry(std::size_t packageIndex, Protobuf::ProductModel::Connectivity& connectivityMsg) const
+	{
+		// Package pin rosters — deduped by construction (one entry per
+		// package, not per component). Package::AddPin assigns sequential
+		// indices, so each roster is already pin-number ascending.
+		const auto& pPackage = m_packages[packageIndex];
+		auto pPackagePinsMsg = connectivityMsg.add_packages();
+		pPackagePinsMsg->set_package(Odb::Lib::Text::ToUtf8(pPackage->GetName()));
+		for (const auto& pPin : pPackage->GetPins())
+		{
+			auto pPackagePinMsg = pPackagePinsMsg->add_pins();
+			pPackagePinMsg->set_number(pPin->GetIndex());
+			pPackagePinMsg->set_name(Odb::Lib::Text::ToUtf8(pPin->GetName()));
+		}
+	}
+
+	void Design::AddConnectivityNetMemberEntry(const ConnectivityIndex& index, ConnectivityIndex::MembersByNetConstIt netMembersIt, Protobuf::ProductModel::Connectivity& connectivityMsg) const
+	{
+		auto pNetMembersMsg = connectivityMsg.add_netmembers();
+		pNetMembersMsg->set_net(netMembersIt->first);
+		for (const auto& refDesAndPins : netMembersIt->second)
+		{
+			auto pMemberMsg = pNetMembersMsg->add_members();
+			pMemberMsg->set_refdes(Odb::Lib::Text::ToUtf8(refDesAndPins.first));
+			for (const auto pinNumber : refDesAndPins.second)
+			{
+				pMemberMsg->add_pin(pinNumber);
+			}
+		}
+	}
+
+	void Design::AddConnectivityPlacedComponentEntry(const ConnectivityIndex& index, std::size_t componentIndex, Protobuf::ProductModel::Connectivity& connectivityMsg) const
+	{
+		using ConnectivityMsg = Protobuf::ProductModel::Connectivity;
+
+		// Placed components in package-roster order (decision DP3). A pin
+		// with no edge — net_num -1 (skipped at build time) or a roster pin
+		// the design never placed a toeprint on — is UNCONNECTED with no net
+		// and no subnets; a toeprintNumber never reaches a client.
+		const auto& pComponent = m_components[componentIndex];
+		auto pPlacedComponentMsg = connectivityMsg.add_components();
+		pPlacedComponentMsg->set_refdes(Odb::Lib::Text::ToUtf8(pComponent->GetRefDes()));
+		const auto id = pComponent->GetId();
+		if (id.has_value())
+		{
+			pPlacedComponentMsg->set_id(*id);
+		}
+		pPlacedComponentMsg->set_side(static_cast<Odb::Lib::Protobuf::BoardSide>(pComponent->GetSide()));
+
+		const auto& pPackage = pComponent->GetPackage();
+		if (pPackage == nullptr) return;
+		pPlacedComponentMsg->set_package(Odb::Lib::Text::ToUtf8(pPackage->GetName()));
+
+		const auto findEdgesIt = index.edgesByRefDes.find(pComponent->GetRefDes());
+		for (const auto& pPin : pPackage->GetPins())
+		{
+			auto pComponentPinMsg = pPlacedComponentMsg->add_pins();
+			pComponentPinMsg->set_number(pPin->GetIndex());
+			pComponentPinMsg->set_name(Odb::Lib::Text::ToUtf8(pPin->GetName()));
+
+			auto pConnectionMsg = pComponentPinMsg->mutable_connection();
+			if (findEdgesIt != index.edgesByRefDes.end())
+			{
+				const auto findEdgeIt = findEdgesIt->second.find(pPin->GetIndex());
+				if (findEdgeIt != findEdgesIt->second.end())
+				{
+					pConnectionMsg->set_kind(ConnectivityMsg::Connection::CONNECTED);
+					pConnectionMsg->set_net(findEdgeIt->second.net);
+					pConnectionMsg->add_subnets(findEdgeIt->second.subnet);
+					continue;
+				}
+			}
+			pConnectionMsg->set_kind(ConnectivityMsg::Connection::UNCONNECTED);
+		}
 	}
 
 	void Design::from_protobuf(const Odb::Lib::Protobuf::ProductModel::Design& message)
@@ -268,6 +467,150 @@ namespace Odb::Lib::ProductModel
 		}
 	}
 
+	std::uint64_t Design::EstimateWireSizeBytes(bool includeNormalizedLists) const
+	{
+		// Per-record wire-byte coefficients. These are deliberately rough
+		// upper-mid estimates, calibrated so that (a) the small CI designs
+		// (sample_design, rigidflex) stay far below the monolithic serve
+		// budget and (b) the two OOM designs (200-40628, 350-41017) land far
+		// above it; the dispatch decision only needs that separation, not an
+		// accurate size. A miss LOW costs a pod OOM (the exact failure this
+		// guard exists for); a miss HIGH costs only a streaming detour — so
+		// the DOMINANT BULK is counted with generous coefficients. Not every
+		// serialized term is counted per ride: ByName-map duplication of
+		// net/package/pin records and the per-record propertyrecords embedded
+		// in NetRecord/PackageRecord/FeatureGroupRecord are amortized into
+		// the per-record coefficients, and standard-fonts bulk rides the flat
+		// MISC allowance. DesignStreamTests
+		// (EstimateWireSizeBytes_StaysAboveHalfOfActualSerializedSize) pins
+		// estimate >= 0.5x actual on the CI corpus so a dropped term cannot
+		// pass CI silently.
+		// A FeatureRecord carries ~10 scalar fields plus occasional
+		// strings/contours (~128 B), a component rides three places
+		// (components file + product-model Component + connectivity
+		// PlacedComponent with per-pin entries, ~768 B), a net two-to-three
+		// places (~128 B), a package record with its pin roster ~256 B.
+		constexpr std::uint64_t FEATURE_RECORD_WIRE_BYTES = 128;
+		constexpr std::uint64_t COMPONENT_WIRE_BYTES = 768;
+		constexpr std::uint64_t NET_WIRE_BYTES = 128;
+		constexpr std::uint64_t PACKAGE_WIRE_BYTES = 256;
+		// Subnet feature-id: type+layer+feature varints (~8 B wire), riding
+		// twice (EdaDataFile netRecords + netRecordsByName map).
+		constexpr std::uint64_t FEATURE_ID_RECORD_WIRE_BYTES = 16;
+		// Netlist-file records: serial#+netName (net) / ~13 numeric fields
+		// (point); both ride twice (records + ByName map).
+		constexpr std::uint64_t NETLIST_NET_WIRE_BYTES = 64;
+		constexpr std::uint64_t NETLIST_POINT_WIRE_BYTES = 64;
+		// Attribute-string entries (attrlist files, eda layer/attribute/text
+		// tables, per-record attribute lookup tables): name + value strings.
+		constexpr std::uint64_t ATTRIBUTE_ENTRY_WIRE_BYTES = 64;
+		// EdaDataFile property + feature-group records (name + value refs).
+		constexpr std::uint64_t PROPERTY_RECORD_WIRE_BYTES = 64;
+		// Tools-file drill/tool records (type, diameter, plus params).
+		constexpr std::uint64_t TOOL_RECORD_WIRE_BYTES = 64;
+		// Normalized flavour: a Part entry (name + package ref) rides the
+		// parts vector and the partsByName map.
+		constexpr std::uint64_t PART_WIRE_BYTES = 128;
+		// Header-ish files (matrix, misc/info, step headers, standard fonts)
+		// hold bounded structural payloads, not per-record bulk: a flat
+		// allowance per design plus per step covers them with margin.
+		constexpr std::uint64_t MISC_DESIGN_ALLOWANCE_BYTES = 256 * 1024;
+		constexpr std::uint64_t MISC_STEP_ALLOWANCE_BYTES = 64 * 1024;
+
+		std::uint64_t featureCount = 0;
+		std::uint64_t componentCount = 0;
+		std::uint64_t netCount = 0;
+		std::uint64_t packageCount = 0;
+		std::uint64_t featureIdCount = 0;
+		std::uint64_t netlistNetCount = 0;
+		std::uint64_t netlistPointCount = 0;
+		std::uint64_t attributeEntryCount = 0;
+		std::uint64_t propertyRecordCount = 0;
+		std::uint64_t toolCount = 0;
+		std::uint64_t stepCount = 0;
+
+		if (m_pFileModel != nullptr)
+		{
+			attributeEntryCount += m_pFileModel->GetMiscAttrListFile().GetAttributes().size();
+
+			for (const auto& kvSymbolsDirectory : m_pFileModel->GetSymbolsDirectoriesByName())
+			{
+				const auto& pSymbolsDirectory = kvSymbolsDirectory.second;
+				featureCount += pSymbolsDirectory->GetFeaturesFile().GetFeatureRecords().size();
+				attributeEntryCount += pSymbolsDirectory->GetAttrListFile().GetAttributes().size();
+			}
+
+			for (const auto& kvStep : m_pFileModel->GetStepsByName())
+			{
+				const auto& pStep = kvStep.second;
+				++stepCount;
+				featureCount += pStep->GetProfileFile().GetFeatureRecords().size();
+				attributeEntryCount += pStep->GetAttrListFile().GetAttributes().size();
+
+				const auto& edaDataFile = pStep->GetEdaDataFile();
+				netCount += edaDataFile.GetNetRecords().size();
+				packageCount += edaDataFile.GetPackageRecords().size();
+				attributeEntryCount += edaDataFile.GetLayerNames().size()
+					+ edaDataFile.GetAttributeNames().size()
+					+ edaDataFile.GetAttributeTextValues().size();
+				propertyRecordCount += edaDataFile.GetPropertyRecords().size()
+					+ edaDataFile.GetFeatureGroupRecords().size();
+				for (const auto& pNetRecord : edaDataFile.GetNetRecords())
+				{
+					for (const auto& pSubnetRecord : pNetRecord->m_subnetRecords)
+					{
+						featureIdCount += pSubnetRecord->m_featureIdRecords.size();
+					}
+					attributeEntryCount += pNetRecord->GetAttributeLookupTable().size();
+				}
+				for (const auto& pPackageRecord : edaDataFile.GetPackageRecords())
+				{
+					attributeEntryCount += pPackageRecord->GetAttributeLookupTable().size();
+				}
+
+				for (const auto& kvNetlist : pStep->GetNetlistsByName())
+				{
+					netlistNetCount += kvNetlist.second->GetNetRecords().size();
+					netlistPointCount += kvNetlist.second->GetNetPointRecords().size();
+				}
+
+				for (const auto& kvLayer : pStep->GetLayersByName())
+				{
+					const auto& pLayer = kvLayer.second;
+					featureCount += pLayer->GetFeaturesFile().GetFeatureRecords().size();
+					componentCount += pLayer->GetComponentsFile().GetComponentRecords().size();
+					attributeEntryCount += pLayer->GetAttrListFile().GetAttributes().size();
+					toolCount += pLayer->GetToolsFile().GetTools().size();
+				}
+			}
+		}
+
+		auto estimate = featureCount * FEATURE_RECORD_WIRE_BYTES
+			+ componentCount * COMPONENT_WIRE_BYTES
+			+ netCount * NET_WIRE_BYTES
+			+ packageCount * PACKAGE_WIRE_BYTES
+			+ featureIdCount * FEATURE_ID_RECORD_WIRE_BYTES
+			+ netlistNetCount * NETLIST_NET_WIRE_BYTES
+			+ netlistPointCount * NETLIST_POINT_WIRE_BYTES
+			+ attributeEntryCount * ATTRIBUTE_ENTRY_WIRE_BYTES
+			+ propertyRecordCount * PROPERTY_RECORD_WIRE_BYTES
+			+ toolCount * TOOL_RECORD_WIRE_BYTES
+			+ MISC_DESIGN_ALLOWANCE_BYTES + stepCount * MISC_STEP_ALLOWANCE_BYTES;
+
+		if (includeNormalizedLists)
+		{
+			// The full flavour repeats nets/components/packages (vectors plus
+			// ByName maps) on top of the fileModel-derived payload, and adds
+			// the parts vector + partsByName map.
+			estimate += netCount * NET_WIRE_BYTES
+				+ componentCount * COMPONENT_WIRE_BYTES
+				+ packageCount * PACKAGE_WIRE_BYTES
+				+ m_parts.size() * PART_WIRE_BYTES;
+		}
+
+		return estimate;
+	}
+
 	bool Design::BuildAllComponents()
 	{
 		if (m_pFileModel == nullptr) return false;
@@ -296,7 +639,7 @@ namespace Odb::Lib::ProductModel
 			auto& pPackage = m_packages[pComponentRecord->pkgRef];
 			auto index = pComponentRecord->index;
 			auto& pPart = m_partsByName[pComponentRecord->partName];
-			auto pComponent = std::make_shared<Component>(pComponentRecord->compName, pComponentRecord->partName, pPackage, index, pComponentsFile->GetSide(), pPart);
+			auto pComponent = std::make_shared<Component>(pComponentRecord->compName, pComponentRecord->partName, pPackage, index, pComponentsFile->GetSide(), pPart, pComponentRecord->id);
 
 			m_components.push_back(pComponent);
 			m_componentsByName[pComponent->GetRefDes()] = pComponent;
@@ -427,24 +770,24 @@ namespace Odb::Lib::ProductModel
 			const auto& toeprintRecords = pComponentRecord->m_toeprintRecords;
 			for (const auto& pToeprintRecord : toeprintRecords)
 			{				
-				auto& toeprintName = pToeprintRecord->name;
-				auto pinNumber = pToeprintRecord->pinNumber;
-				auto netNumber = pToeprintRecord->netNumber;
-				auto& refDes = pComponentRecord->compName;
-				//auto subnetNumber = pToeprintRecord->subnetNumber;
+			auto& toeprintName = pToeprintRecord->name;
+			auto pinNumber = pToeprintRecord->pinNumber;
+			auto netNumber = pToeprintRecord->netNumber;
+			auto subnetNumber = pToeprintRecord->subnetNumber;
+			auto& refDes = pComponentRecord->compName;
 
-				// -1 means no connection for the component pin
-				if (netNumber != static_cast<unsigned int>(-1))
-				{
-					if (!CreatePinConnection(refDes, netNumber, pinNumber, toeprintName)) return false;
-				}
+			// -1 means no connection for the component pin
+			if (netNumber != static_cast<unsigned int>(-1))
+			{
+				if (!CreatePinConnection(refDes, netNumber, pinNumber, toeprintName, subnetNumber)) return false;
+			}
 			}
 		}
 
 		return true;
 	}
 
-	bool Design::CreatePinConnection(const std::string& refDes, unsigned int netNumber, unsigned int pinNumber, const std::string& pinName)
+	bool Design::CreatePinConnection(const std::string& refDes, unsigned int netNumber, unsigned int pinNumber, const std::string& pinName, unsigned int subnetNumber)
 	{
 		if (netNumber < m_nets.size())
 		{
@@ -457,7 +800,7 @@ namespace Odb::Lib::ProductModel
 			auto& pNet = m_nets[netNumber];
 			if (pNet == nullptr) return false;
 
-			if (!pNet->AddPinConnection(pComponent, pPin)) return false;
+			if (!pNet->AddPinConnection(pComponent, pPin, subnetNumber)) return false;
 			return true;
 		}
 		else
@@ -507,20 +850,6 @@ namespace Odb::Lib::ProductModel
 		return true;
 	}
 
-	bool Design::BuildPlacementsFromEdaDataFile()
-	{
-		auto pStepDirectory = m_pFileModel->GetStepDirectory();
-		if (pStepDirectory == nullptr) return false;
-
-		const auto& edaData = pStepDirectory->GetEdaDataFile();
-		
-		for (const auto& pNetRecord : edaData.GetNetRecords())
-		{			
-			if (!CreateNetConnections(pNetRecord, pStepDirectory)) return false;			
-		}		
-
-		return true;
-	}
 
 	bool Design::CreateNetConnections(const std::shared_ptr<Odb::Lib::FileModel::Design::EdaDataFile::NetRecord>& pNetRecord, const std::shared_ptr<FileModel::Design::StepDirectory>& pStepDirectory)
 	{
