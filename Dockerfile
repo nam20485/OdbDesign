@@ -103,7 +103,7 @@ COPY . .
 
 # configure & build using presets
 # linux-dynamic-release (shared protobuf/gRPC runtime — the static linux-release
-# preset loads two protobuf copies and crashes; see docs/linux-dynamic-release-plan.md)
+# preset loads two protobuf copies and crashes; see docs/completed/linux-dynamic-release-plan.md)
 RUN cmake --preset linux-dynamic-release
 RUN cmake --build --preset linux-dynamic-release
 # # linux-debug
@@ -166,9 +166,9 @@ COPY --from=build /src/OdbDesign/out/build/linux-dynamic-release/OdbDesignServer
 COPY --from=build /src/OdbDesign/out/build/linux-dynamic-release/OdbDesignServer/*.so ./bin/
 # vcpkg shared libraries (protobuf, gRPC, libarchive, ...) required by the
 # linux-dynamic-release build; discovered via LD_LIBRARY_PATH=/OdbDesign/bin
-COPY --from=build /src/OdbDesign/out/build/linux-dynamic-release/vcpkg_installed/x64-linux-dynamic/lib/*.so* ./bin/
+COPY --from=build /src/OdbDesign/out/vcpkg_installed/x64-linux-dynamic/lib/*.so* ./bin/
 # OpenSSL 3 provider modules (resolved relative to libcrypto.so's directory)
-COPY --from=build /src/OdbDesign/out/build/linux-dynamic-release/vcpkg_installed/x64-linux-dynamic/lib/ossl-modules ./bin/ossl-modules
+COPY --from=build /src/OdbDesign/out/vcpkg_installed/x64-linux-dynamic/lib/ossl-modules ./bin/ossl-modules
 # gRPC service config (loaded by RunGrpcServer from exeDir/config.json)
 COPY --from=build /src/OdbDesign/OdbDesignServer/config.json ./bin/config.json
 COPY --from=build /src/OdbDesign/out/build/linux-dynamic-release/OdbDesignTests/OdbDesignTests ./bin/

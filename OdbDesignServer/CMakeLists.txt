@@ -1,8 +1,12 @@
 # CMakeList.txt : CMake project for OdbDesignServer
 #
+# OdbDesignServerLib holds all server app logic (app base, controllers,
+# services, config) as a static library so it can be linked into the
+# OdbDesignServer executable and, under a commercial license, into
+# downstream server products built from a private overlay repository.
+# OdbDesignServer remains a thin executable shell (main.cpp only).
 
-add_executable(OdbDesignServer
-    "main.cpp"
+add_library(OdbDesignServerLib STATIC
     "Controllers/HelloWorldController.h"
     "Controllers/HelloWorldController.cpp"
     "OdbDesignServerApp.h"
@@ -18,10 +22,18 @@ add_executable(OdbDesignServer
     "Controllers/DesignsController.cpp"
     "Services/OdbDesignServiceImpl.h"
     "Services/OdbDesignServiceImpl.cpp"
+    "Services/DesignStreamWalker.h"
+    "Services/DesignStreamWalker.cpp"
+    "Services/StreamSpoolCache.h"
+    "Services/StreamSpoolCache.cpp"
     "Config/GrpcServiceConfig.h"
     "Config/GrpcServiceConfig.cpp"
     "OdbServerAppBase.h"
     "OdbServerAppBase.cpp"
+)
+
+add_executable(OdbDesignServer
+    "main.cpp"
 )
 
 ## PCH
@@ -31,7 +43,8 @@ add_executable(OdbDesignServer
 #endif()
 
 # link to OdbDesign library
-target_link_libraries(OdbDesignServer PUBLIC OdbDesign)
+target_link_libraries(OdbDesignServerLib PUBLIC OdbDesign)
+target_link_libraries(OdbDesignServer PRIVATE OdbDesignServerLib)
 
 
 # ===== gRPC Configuration (moved from OdbDesignLib) =====
@@ -63,7 +76,7 @@ find_package(gRPC CONFIG REQUIRED)
 
 # Generate protobuf messages for gRPC proto files
 protobuf_generate(
-    TARGET OdbDesignServer
+    TARGET OdbDesignServerLib
     PROTOS ${GRPC_PROTO_FILES}
     IMPORT_DIRS ${GRPC_PROTO_DIR} ${PROTO_DIR}
     PROTOC_OUT_DIR ${GRPC_CODEGEN_DIR}
@@ -73,7 +86,7 @@ protobuf_generate(
 
 # Generate gRPC service stubs
 protobuf_generate(
-    TARGET OdbDesignServer
+    TARGET OdbDesignServerLib
     LANGUAGE grpc
     GENERATE_EXTENSIONS .grpc.pb.h .grpc.pb.cc
     PLUGIN "protoc-gen-grpc=$<TARGET_FILE:gRPC::grpc_cpp_plugin>"
@@ -84,10 +97,15 @@ protobuf_generate(
 )
 
 # Link gRPC libraries
-target_link_libraries(OdbDesignServer PUBLIC gRPC::gpr gRPC::grpc gRPC::grpc++ gRPC::grpc++_reflection)
+target_link_libraries(OdbDesignServerLib PUBLIC gRPC::gpr gRPC::grpc gRPC::grpc++ gRPC::grpc++_reflection)
 
-# Include generated gRPC files directory
-target_include_directories(OdbDesignServer PRIVATE ${CMAKE_CURRENT_BINARY_DIR} ${GRPC_CODEGEN_DIR})
+# Include dirs are PUBLIC so the executable shell (and downstream products
+# linking OdbDesignServerLib) can compile the server headers, which include
+# the generated gRPC files by bare filename.
+target_include_directories(OdbDesignServerLib PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR}
+    ${GRPC_CODEGEN_DIR})
 
 # mark the generated Protobuf C++ files as generated
 set_source_files_properties(${GRPC_PROTO_SRCS} ${GRPC_PROTO_HDRS} PROPERTIES GENERATED TRUE)
@@ -118,5 +136,27 @@ if (WIN32)
 endif()
 
 # add the generated Protobuf C++ files to the target
-target_sources(OdbDesignServer PRIVATE ${GRPC_PROTO_SRCS} ${GRPC_PROTO_HDRS})
+target_sources(OdbDesignServerLib PRIVATE ${GRPC_PROTO_SRCS} ${GRPC_PROTO_HDRS})
 
+# ===== install rules (SDK packaging) =====
+
+include(GNUInstallDirs)
+
+install(TARGETS OdbDesignServer
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+
+install(TARGETS OdbDesignServerLib
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+
+# Server app headers (OdbServerAppBase.h, OdbDesignServerApp.h, Controllers/, Services/, Config/).
+# The generated gRPC/protobuf headers install into the same include root because
+# the server headers include them by bare filename (e.g. "service.grpc.pb.h").
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/"
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/OdbDesignServer
+        FILES_MATCHING
+          PATTERN "*.h"
+          PATTERN "templates" EXCLUDE)
+
+install(DIRECTORY "${GRPC_CODEGEN_DIR}/"
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/OdbDesignServer
+        FILES_MATCHING PATTERN "*.pb.h")

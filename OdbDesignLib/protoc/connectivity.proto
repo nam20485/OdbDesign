@@ -1,0 +1,83 @@
+syntax = "proto3";
+option cc_enable_arenas = true;
+
+//// https://protobuf.dev/reference/cpp/cpp-generated/#message
+
+import "enums.proto";
+
+package Odb.Lib.Protobuf.ProductModel;
+
+//
+//  Connectivity — derived, format-independent, server-owned view of the
+//  electrical netlist (component-connectivity.md §6).
+//
+//  Identity rule: refDes names a component, package name names a pin roster,
+//  net ordinal names a net (the NET record sequence of the eda/data file,
+//  ODB++ spec p.153). Message-local ordinals are never persisted and never
+//  cross a request.
+//
+//  Emitted always-on (decision D4): Design::to_protobuf derives it
+//  unconditionally in both flavours, so no request flag exists and no client
+//  ever has to ask for it. Clients never join fileModel records to read it —
+//  the format conventions (net_num -1 / 4294967295, $NONE$, toeprintNumber)
+//  are absorbed server-side into Connection.Kind and resolved pin numbers.
+//
+
+message Connectivity {
+
+    message NetEntry {
+        uint32 ordinal = 1;
+        string name = 2;    // "" = unnamed net; "$NONE$" keeps its literal name so ordinals stay dense
+    }
+
+    message PackagePin {
+        uint32 number = 1;
+        string name = 2;
+    }
+
+    message PackagePins {
+        string package = 1;             // names an entry in `packages`
+        repeated PackagePin pins = 2;   // pin-number ascending
+    }
+
+    message Connection {
+        enum Kind {
+            UNKNOWN = 0;
+            CONNECTED = 1;
+            UNCONNECTED = 2;    // net_num -1/4294967295, or membership of the $NONE$ net
+        }
+
+        Kind kind = 1;
+        uint32 net = 2;                 // ordinal into `nets`; meaningful only when kind == CONNECTED
+        repeated uint32 subnets = 3;    // per-net subnet ordinals (eda/data); empty unless CONNECTED
+    }
+
+    message ComponentPin {
+        uint32 number = 1;              // resolved package pin number; a toeprintNumber never reaches a client
+        string name = 2;
+        Connection connection = 3;
+    }
+
+    message PlacedComponent {
+        string refDes = 1;              // authoritative key (spec p.152: case-significant)
+        optional uint32 id = 2;         // ODB++ UID: durable handle, never a join key; absent when the design carries no ;ID=
+        BoardSide side = 3;             // informational only
+        string package = 4;             // names an entry in `packages`
+        repeated ComponentPin pins = 5; // package-roster order (pin number ascending)
+    }
+
+    message Member {
+        string refDes = 1;
+        repeated uint32 pin = 2;
+    }
+
+    message NetMembers {
+        uint32 net = 1;                 // ordinal into `nets`
+        repeated Member members = 2;    // refDes ascending
+    }
+
+    repeated NetEntry nets = 1;             // dense: every eda-data NET record in sequence, $NONE$ included
+    repeated PackagePins packages = 2;      // deduped rosters: 71 entries, not one per component
+    repeated PlacedComponent components = 3;
+    repeated NetMembers netMembers = 4;     // the CONNECTED edges of `components`, inverted, for the net tab
+}

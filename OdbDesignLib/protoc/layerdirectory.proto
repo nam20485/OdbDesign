@@ -1,7 +1,7 @@
 syntax = "proto3";
+option cc_enable_arenas = true;
 
 //// https://protobuf.dev/reference/cpp/cpp-generated/#message
-//option optimize_for = CODE_SIZE;
 
 import "componentsfile.proto";
 import "attrlistfile.proto";
@@ -22,6 +22,12 @@ message LayerDirectory  {
     optional ComponentsFile components = 3;
     optional AttrListFile attrlistFile = 4;
     optional FeaturesFile featureFile = 5;
-	optional ToolsFile toolFile = 6;
+    optional ToolsFile tools = 7;
 
-} 
+    // 6 was the short-lived third-party ToolsFile field; removed with the
+    // contributor carve-out (see git history). Reserved so the number is
+    // never reused for an incompatible type.
+    reserved 6;
+    reserved "toolFile";
+
+}

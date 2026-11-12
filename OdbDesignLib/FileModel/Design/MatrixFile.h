@@ -28,7 +28,7 @@ namespace Odb::Lib::FileModel::Design
 
         struct StepRecord : public IProtoBuffable<Odb::Lib::Protobuf::MatrixFile::StepRecord>
         {
-            unsigned int column;
+            unsigned int column = 0;
             unsigned int id = (unsigned int)-1;
             std::string name;
 
@@ -86,11 +86,11 @@ namespace Odb::Lib::FileModel::Design
 
             typedef std::vector<std::shared_ptr<LayerRecord>> Vector;
 
-            int row;
-            Context context;
-            Type type;
+            int row = 0;
+            Context context = Context::Board;
+            Type type = Type::Signal;
             std::string name;
-            Polarity polarity;
+            Polarity polarity = Polarity::Positive;
             DielectricType dielectricType = DielectricType::NotSet;
             std::string dielectricName;
             Form form = Form::NotSet;

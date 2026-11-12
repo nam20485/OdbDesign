@@ -47,6 +47,13 @@ namespace Odb::Lib::App
 			designs().setDirectory(args().designsDir());
 		}
 
+        // set the design cache byte budget (--cache-max-mb, 0 disables eviction)
+        designs().setCacheMaxBytes(static_cast<std::uint64_t>(args().cacheMaxMb()) * 1024ull * 1024ull);
+
+        // cap concurrent background parses kicked via LoadDesignAsync
+        // (--max-background-loads, 0 = unbounded)
+        designs().setMaxBackgroundLoads(static_cast<std::size_t>(args().maxBackgroundLoads()));
+
         // load a design if specified via command line args
         if (!args().loadDesign().empty())
         {

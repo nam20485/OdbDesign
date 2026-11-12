@@ -221,24 +221,48 @@ namespace Odb::Lib::FileModel::Design
     std::unique_ptr<Odb::Lib::Protobuf::StepDirectory> StepDirectory::to_protobuf() const
     {
         std::unique_ptr<Odb::Lib::Protobuf::StepDirectory> pStepDirectoryMessage(new Odb::Lib::Protobuf::StepDirectory);
-        pStepDirectoryMessage->set_name(Odb::Lib::Text::ToUtf8(m_name));
-        pStepDirectoryMessage->set_path(Odb::Lib::Text::ToUtf8(m_path.string()));
-        pStepDirectoryMessage->mutable_edadatafile()->CopyFrom(*m_edaData.to_protobuf());
-        pStepDirectoryMessage->mutable_attrlistfile()->CopyFrom(*m_attrListFile.to_protobuf());
-        pStepDirectoryMessage->mutable_profilefile()->CopyFrom(*m_profileFile.to_protobuf());
-        pStepDirectoryMessage->mutable_stephdrfile()->CopyFrom(*m_stepHdrFile.to_protobuf());
+        FillProtobufMessage(*pStepDirectoryMessage, /*layerSkeletons=*/false);
+        return pStepDirectoryMessage;
+    }
+
+    std::unique_ptr<Odb::Lib::Protobuf::StepDirectory> StepDirectory::to_protobuf_skeleton() const
+    {
+        std::unique_ptr<Odb::Lib::Protobuf::StepDirectory> pStepDirectoryMessage(new Odb::Lib::Protobuf::StepDirectory);
+        FillProtobufMessage(*pStepDirectoryMessage, /*layerSkeletons=*/true);
+        return pStepDirectoryMessage;
+    }
+
+    void StepDirectory::FillProtobufMessage(Odb::Lib::Protobuf::StepDirectory& stepDirectoryMessage, bool layerSkeletons) const
+    {
+        stepDirectoryMessage.set_name(Odb::Lib::Text::ToUtf8(m_name));
+        stepDirectoryMessage.set_path(Odb::Lib::Text::ToUtf8(m_path.string()));
+        stepDirectoryMessage.mutable_edadatafile()->CopyFrom(*m_edaData.to_protobuf());
+        stepDirectoryMessage.mutable_attrlistfile()->CopyFrom(*m_attrListFile.to_protobuf());
+        stepDirectoryMessage.mutable_profilefile()->CopyFrom(*m_profileFile.to_protobuf());
+        stepDirectoryMessage.mutable_stephdrfile()->CopyFrom(*m_stepHdrFile.to_protobuf());
 
         for (const auto& kvNetlistFile : m_netlistsByName)
         {
-            (*pStepDirectoryMessage->mutable_netlistsbyname())[Odb::Lib::Text::ToUtf8(kvNetlistFile.first)] = *kvNetlistFile.second->to_protobuf();
+            (*stepDirectoryMessage.mutable_netlistsbyname())[Odb::Lib::Text::ToUtf8(kvNetlistFile.first)] = *kvNetlistFile.second->to_protobuf();
         }
 
         for (const auto& kvLayerDirectoryRecord : m_layersByName)
         {
-            (*pStepDirectoryMessage->mutable_layersbyname())[Odb::Lib::Text::ToUtf8(kvLayerDirectoryRecord.first)] = *kvLayerDirectoryRecord.second->to_protobuf();
+            // No conditional operator here: MSVC's lowering of
+            // `cond ? f() : g()` for move-only prvalues (both returning
+            // unique_ptr) synthesizes a copy of the deleted copy constructor
+            // (C2280); GCC/Clang merge the prvalues per the standard.
+            if (layerSkeletons)
+            {
+                (*stepDirectoryMessage.mutable_layersbyname())[Odb::Lib::Text::ToUtf8(kvLayerDirectoryRecord.first)] =
+                    *kvLayerDirectoryRecord.second->to_protobuf_skeleton();
+            }
+            else
+            {
+                (*stepDirectoryMessage.mutable_layersbyname())[Odb::Lib::Text::ToUtf8(kvLayerDirectoryRecord.first)] =
+                    *kvLayerDirectoryRecord.second->to_protobuf();
+            }
         }
-
-        return pStepDirectoryMessage;
     }
 
     void StepDirectory::from_protobuf(const Odb::Lib::Protobuf::StepDirectory& message)

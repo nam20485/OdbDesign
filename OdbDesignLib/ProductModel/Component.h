@@ -5,6 +5,7 @@
 #include <vector>
 #include <map>
 #include <memory>
+#include <optional>
 #include "Package.h"
 #include "../enums.h"
 #include "Part.h"
@@ -18,7 +19,7 @@ namespace Odb::Lib::ProductModel
 	{
 	public:
 		Component();
-		Component(const std::string& refDes, const std::string& partName, std::shared_ptr<Package> pPackage, unsigned int index, BoardSide side, std::shared_ptr<Part> pPart);
+		Component(const std::string& refDes, const std::string& partName, std::shared_ptr<Package> pPackage, unsigned int index, BoardSide side, std::shared_ptr<Part> pPart, std::optional<unsigned int> id = std::nullopt);
 		~Component();
 
 		std::string GetRefDes() const;
@@ -27,6 +28,10 @@ namespace Odb::Lib::ProductModel
 		unsigned int GetIndex() const;
 		BoardSide GetSide() const;
 		std::shared_ptr<Part> GetPart() const;
+
+		// ODB++ product-model-wide UID from ;ID= (spec p.30/p.152). Optional:
+		// absent stays absent (decision D2) — never synthesized, never a join key.
+		std::optional<unsigned int> GetId() const;
 
 		// Inherited via IProtoBuffable
 		std::unique_ptr<Odb::Lib::Protobuf::ProductModel::Component> to_protobuf() const override;
@@ -39,10 +44,11 @@ namespace Odb::Lib::ProductModel
 
 	private:
 		std::string m_refDes;
-		std::string m_partName;		
+		std::string m_partName;
 		std::shared_ptr<Package> m_pPackage;
 		unsigned int m_index;
 		BoardSide m_side;
 		std::shared_ptr<Part> m_pPart;
+		std::optional<unsigned int> m_id;
 	};
 }

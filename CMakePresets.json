@@ -18,6 +18,7 @@
           "value": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
           "type": "FILEPATH"
         },
+        "VCPKG_INSTALLED_DIR": "${sourceDir}/out/vcpkg_installed",
         "CMAKE_SUPPRESS_DEVELOPER_WARNINGS": "TRUE"
       },
       "condition": {
@@ -101,6 +102,7 @@
           "value": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
           "type": "FILEPATH"
         },
+        "VCPKG_INSTALLED_DIR": "${sourceDir}/out/vcpkg_installed",
         "CMAKE_C_COMPILER": "cc",
         "CMAKE_CXX_COMPILER": "c++",
         "CMAKE_SUPPRESS_DEVELOPER_WARNINGS": "TRUE"
@@ -143,6 +145,17 @@
       }
     },
     {
+      "name": "linux-asan",
+      "displayName": "Linux ASan+UBSan (memory-error diagnosis)",
+      "inherits": "linux-dynamic-debug",
+      "cacheVariables": {
+        "CMAKE_CXX_FLAGS": "-fsanitize=address,undefined -fno-omit-frame-pointer -fno-sanitize-recover=all",
+        "CMAKE_C_FLAGS": "-fsanitize=address,undefined -fno-omit-frame-pointer -fno-sanitize-recover=all",
+        "CMAKE_EXE_LINKER_FLAGS": "-fsanitize=address,undefined",
+        "CMAKE_SHARED_LINKER_FLAGS": "-fsanitize=address,undefined"
+      }
+    },
+    {
       "name": "linux-dynamic-release",
       "displayName": "Linux Dynamic Release",
       "inherits": "linux-base",
@@ -158,6 +171,7 @@
       "cacheVariables": {
         "CMAKE_C_COMPILER": "x86_64-w64-mingw32-gcc",
         "CMAKE_CXX_COMPILER": "x86_64-w64-mingw32-g++",
+        "VCPKG_INSTALLED_DIR": "${sourceDir}/out/build/${presetName}/vcpkg_installed",
         "CMAKE_CXX_FLAGS": "-static-libgcc -static-libstdc++"
       }
     },
@@ -168,6 +182,7 @@
       "cacheVariables": {
         "CMAKE_C_COMPILER": "x86_64-w64-mingw32-gcc",
         "CMAKE_CXX_COMPILER": "x86_64-w64-mingw32-g++",
+        "VCPKG_INSTALLED_DIR": "${sourceDir}/out/build/${presetName}/vcpkg_installed",
         "CMAKE_CXX_FLAGS": "-static-libgcc -static-libstdc++"
       }
     },
@@ -182,6 +197,7 @@
           "value": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
           "type": "FILEPATH"
         },
+        "VCPKG_INSTALLED_DIR": "${sourceDir}/out/vcpkg_installed",
         "CMAKE_C_COMPILER": "cc",
         "CMAKE_CXX_COMPILER": "c++",
         "CMAKE_SUPPRESS_DEVELOPER_WARNINGS": "TRUE"
@@ -296,6 +312,11 @@
       "description": "Build Linux Dynamic Debug (shared protobuf/gRPC)"
     },
     {
+      "name": "linux-asan",
+      "configurePreset": "linux-asan",
+      "jobs": 8
+    },
+    {
       "name": "linux-dynamic-release",
       "displayName": "Linux Dynamic Release",
       "configurePreset": "linux-dynamic-release",
@@ -407,6 +428,13 @@
       "displayName": "Test Linux Dynamic Debug",
       "configurePreset": "linux-dynamic-debug",
       "inherits": "linux-base"
+    },
+    {
+      "name": "linux-asan",
+      "configurePreset": "linux-asan",
+      "output": {
+        "outputOnFailure": true
+      }
     },
     {
       "name": "linux-dynamic-release",

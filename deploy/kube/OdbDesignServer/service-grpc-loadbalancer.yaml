@@ -1,0 +1,24 @@
+##################################################################################################
+# OdbDesignServer gRPC service (k3d ServiceLB / klipper-lb)
+#
+# Default (no -EnableTls) gRPC exposure: LoadBalancer publishes node :50051
+# directly. Content-identical to service-grpc.yaml before the M3.1 change, so
+# a no-flag scripts/deploy.ps1 run reproduces the pre-TLS deployment exactly.
+# See service-grpc.yaml (ClusterIP variant) for the TLS path.
+##################################################################################################
+apiVersion: v1
+kind: Service
+metadata:
+  name: odbdesign-server-grpc-service
+  labels:
+    app: odbdesign-server
+    service: odbdesign-server-grpc
+spec:
+  type: LoadBalancer
+  ports:
+    - name: ods-grpc-port
+      port: 50051
+      targetPort: ods-grpc-port
+      protocol: TCP
+  selector:
+    app: odbdesign-server

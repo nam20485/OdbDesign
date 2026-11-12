@@ -20,15 +20,15 @@ namespace Odb::Lib::FileModel::Design
 		struct StepRepeatRecord : public IProtoBuffable<Odb::Lib::Protobuf::StepHdrFile::StepRepeatRecord>
 		{
 			std::string name;
-			double x;
-			double y;
-			double dx;
-			double dy;
-			int nx;
-			int ny;
-			double angle;
-			bool flip;
-			bool mirror;
+			double x = 0.0;
+			double y = 0.0;
+			double dx = 0.0;
+			double dy = 0.0;
+			int nx = 0;
+			int ny = 0;
+			double angle = 0.0;
+			bool flip = false;
+			bool mirror = false;
 
 			typedef std::vector<std::shared_ptr<StepRepeatRecord>> Vector;
 
@@ -47,19 +47,24 @@ namespace Odb::Lib::FileModel::Design
 		std::unique_ptr<Odb::Lib::Protobuf::StepHdrFile> to_protobuf() const override;
 		void from_protobuf(const Odb::Lib::Protobuf::StepHdrFile& message) override;
 
-	private:	
+	private:
+		// POD members carry in-class initializers: ODB++ makes every stephdr
+		// attribute optional, and to_protobuf() serializes whatever an unset
+		// member holds. An uninitialized bool read in optimized builds puts a
+		// non-0/1 raw byte on the wire as a multi-byte varint, desyncing the
+		// whole serialized stream (the Turbot GetDesign corruption).
 		std::string m_units;
-		double xDatum;
-		double yDatum;
-		unsigned id;
-		double xOrigin;
-		double yOrigin;
-		double topActive;
-		double bottomActive;
-		double rightActive;
-		double leftActive;
+		double xDatum = 0.0;
+		double yDatum = 0.0;
+		unsigned id = 0;
+		double xOrigin = 0.0;
+		double yOrigin = 0.0;
+		double topActive = 0.0;
+		double bottomActive = 0.0;
+		double rightActive = 0.0;
+		double leftActive = 0.0;
 		std::string affectingBom;
-		bool affectingBomChanged;		
+		bool affectingBomChanged = false;
 		std::map<std::string, std::string> m_onlineValues;
 
 		StepRepeatRecord::Vector m_stepRepeatRecords;

@@ -13,7 +13,7 @@
 
 For engineers and developers working with PCB manufacturing, ODB++ archives contain critical, dense design data. OdbDesign simplifies the extraction of this data. Instead of writing custom parsers from scratch to decode the proprietary-style ODB++ format, engineers can use this library to instantly access parsed data and net list models. This accelerates the development of Electronic Design Automation (EDA), Design for Manufacturing (DFM), and PCB viewing tools.
 
->*The project operates under the strict [AGPL V3.0 license](https://www.gnu.org/licenses/agpl-3.0.en.html), which is a copy-left license. Use in closed-source commercial applications **requires** contacting the author to obtain a separate commercial license, while open-source projects can use the library freely under the AGPL V3.0 terms.*
+>*The project operates under the strict [AGPL V3.0 license](https://www.gnu.org/licenses/agpl-3.0.en.html), which is a copy-left license. Use in closed-source commercial applications **requires** a separate commercial license — see [COMMERCIAL-LICENSE.md](https://github.com/nam20485/OdbDesign/blob/development/COMMERCIAL-LICENSE.md) for the licensing process — while open-source projects can use the library freely under the AGPL V3.0 terms.*
 
 ### **How the REST API Integration Works**
 

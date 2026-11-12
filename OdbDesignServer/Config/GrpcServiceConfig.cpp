@@ -1,6 +1,9 @@
 #include "GrpcServiceConfig.h"
 #include <algorithm>
+#include <cstdint>
 #include <fstream>
+#include <iostream>
+#include <limits>
 #include <sstream>
 #include <crow/json.h>
 #include <filesystem>
@@ -9,6 +12,22 @@ namespace OdbDesignServer
 {
     namespace Config
     {
+        namespace
+        {
+            // Map a config string to a gRPC compression level;
+            // unknown values fall back to high (matches previous gzip behavior)
+            grpc_compression_level ParseCompressionLevel(const std::string& value)
+            {
+                if (value == "none") return GRPC_COMPRESS_LEVEL_NONE;
+                if (value == "low") return GRPC_COMPRESS_LEVEL_LOW;
+                if (value == "medium") return GRPC_COMPRESS_LEVEL_MED;
+                if (value == "high") return GRPC_COMPRESS_LEVEL_HIGH;
+                std::cerr << "WARNING: unknown grpc compression level \"" << value
+                          << "\", defaulting to \"high\"" << std::endl;
+                return GRPC_COMPRESS_LEVEL_HIGH;
+            }
+        }
+
         GrpcServiceConfig::LoadResult GrpcServiceConfig::LoadFromFile(const std::string& configPath)
         {
             LoadResult result;
@@ -78,9 +97,47 @@ namespace OdbDesignServer
                     if (grpcSection.has("compression"))
                     {
                         auto compressionSection = grpcSection["compression"];
+
+                        // Legacy boolean/algorithm keys. "enabled": false is honored as a
+                        // one-time migration (-> level "none") so an explicit opt-out never
+                        // silently re-enables compression after upgrade; "enabled": true and
+                        // "algorithm" are superseded by level-based negotiation.
+                        const bool hasLevel = compressionSection.has("level");
                         if (compressionSection.has("enabled"))
                         {
-                            result.config->compression_enabled = compressionSection["enabled"].b();
+                            const bool enabled = compressionSection["enabled"].b();
+                            if (!enabled && !hasLevel)
+                            {
+                                result.config->compression_level = GRPC_COMPRESS_LEVEL_NONE;
+                            }
+                            // The disposition must match the gating above: nothing is
+                            // migrated when an explicit "level" is present.
+                            const char* disposition;
+                            if (hasLevel)
+                            {
+                                disposition = "ignored; the explicit \"level\" applies";
+                            }
+                            else if (enabled)
+                            {
+                                disposition = "ignored (the \"level\" default applies)";
+                            }
+                            else
+                            {
+                                disposition = "migrated to \"level\": \"none\"";
+                            }
+                            std::cerr << "WARNING: deprecated grpc.compression \"enabled\" key "
+                                      << disposition
+                                      << "; use \"level\": \"none|low|medium|high\" instead" << std::endl;
+                        }
+                        if (compressionSection.has("algorithm"))
+                        {
+                            std::cerr << "WARNING: deprecated grpc.compression \"algorithm\" key ignored; "
+                                      << "algorithm selection now follows \"level\"" << std::endl;
+                        }
+
+                        if (compressionSection.has("level"))
+                        {
+                            result.config->compression_level = ParseCompressionLevel(compressionSection["level"].s());
                         }
                     }
 
@@ -98,6 +155,39 @@ namespace OdbDesignServer
                         {
                             result.config->batch_size = static_cast<int>(batchSection["batch_size"].i());
                             result.config->ClampBatchSize(); // Ensure valid range
+                        }
+                    }
+
+                    // Extract design streaming configuration (M6)
+                    if (grpcSection.has("design_streaming"))
+                    {
+                        auto streamSection = grpcSection["design_streaming"];
+
+                        if (streamSection.has("enabled"))
+                        {
+                            result.config->enable_design_streaming = streamSection["enabled"].b();
+                        }
+
+                        if (streamSection.has("feature_batch_size"))
+                        {
+                            int value = static_cast<int>(streamSection["feature_batch_size"].i());
+                            result.config->design_stream_feature_batch_size = std::max(100, std::min(10000, value));
+                        }
+
+                        if (streamSection.has("spool_dir"))
+                        {
+                            result.config->stream_spool_dir = streamSection["spool_dir"].s();
+                        }
+
+                        if (streamSection.has("spool_max_bytes"))
+                        {
+                            // Clamp negatives to 0 first: Crow's .i() is signed,
+                            // and a raw cast would wrap a negative JSON value to
+                            // a huge uint64_t, silently disabling the cap.
+                            const auto value = static_cast<std::uint64_t>(std::max<std::int64_t>(0, streamSection["spool_max_bytes"].i()));
+                            result.config->stream_spool_max_bytes = (value == 0)
+                                ? std::numeric_limits<std::uint64_t>::max()
+                                : value;
                         }
                     }
 

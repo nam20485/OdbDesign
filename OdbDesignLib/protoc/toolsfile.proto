@@ -1,4 +1,5 @@
 syntax = "proto3";
+option cc_enable_arenas = true;
 
 package Odb.Lib.Protobuf;
 
@@ -8,37 +9,49 @@ package Odb.Lib.Protobuf;
 
 message ToolsFile {
 
-    message ToolsRecord {
-
-        enum Type {
-            Plated   = 0;
-            NonPlated = 1;
-            Via      = 2;
-        }
-
-        enum Type2 {
-            Standard = 0;
-            PressFit = 1;
-            Photo    = 2;
-            Laser    = 3;
-        }
-
-        uint32 tool_num    = 1;
-        Type type          = 2;
-        Type2 type2        = 3;
-        double min_tol     = 4;
-        double max_tol     = 5;
-        string drill_bit   = 6;
-        double finish_size = 7;
-        double drill_size  = 8;
-		
+    enum ToolType {
+        UNKNOWN_TYPE = 0;
+        PLATED = 1;
+        NON_PLATED = 2;
+        VIA = 3;
     }
 
-    string directory   = 1;
-    string path        = 2;
-    string units       = 3;
-    double thickness   = 4;
-    string user_params = 5;
+    enum ToolSubType {
+        UNKNOWN_SUB_TYPE = 0;
+        STANDARD = 1;
+        PRESS_FIT = 2;
+        PHOTO = 3;
+        LASER = 4;
+    }
 
-    map<uint32, ToolsRecord> tools = 6;
+    message Tool {
+        optional uint32 num = 1;
+        optional ToolType type = 2;
+        optional ToolSubType subType = 3;
+        optional double minTol = 4;
+        optional double maxTol = 5;
+        optional string bit = 6;
+        // spec: -1 when not set
+        optional double finishSize = 7;
+        // spec: optional
+        optional double drillSize = 8;
+    }
+
+    optional string units = 1;
+    // spec: obsolete; retained losslessly for round-tripping only
+    optional double thickness = 2;
+    repeated string userParams = 3;
+    repeated Tool tools = 4;
+    optional string directory = 5;
+    optional string path = 6;
+
+    // Reserved ranges from the clean-room rewrite: the pre-carve-out
+    // ToolsFile used directory=1, path=2, units=3, thickness=4,
+    // user_params=5, tools(map)=6. This schema reuses those tag numbers
+    // for different fields (deliberate — old and new are incompatible by
+    // design), so reserving is not possible without changing the new
+    // schema. The old wire format is intentionally non-loadable; any
+    // legacy data is re-parseable only from the original ODB++ files.
+    // Note: the Tool message tags 1-8 are a fresh allocation, not a
+    // migration; the old map-value message had different fields/tags.
 }

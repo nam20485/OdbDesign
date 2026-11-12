@@ -1,7 +1,7 @@
 syntax = "proto3";
+option cc_enable_arenas = true;
 
 //// https://protobuf.dev/reference/cpp/cpp-generated/#message
-//option optimize_for = CODE_SIZE;
 
 import "common.proto";
 import "enums.proto";
@@ -69,7 +69,11 @@ message ComponentsFile {
     repeated string attributeTextValues = 8;
 
     repeated ComponentRecord componentRecords = 9;
-    map<string, ComponentRecord> componentRecordsByName = 10;
+    // deleted: map<string, ComponentRecord> componentRecordsByName = 10;
+    // never populated by the parser; clients index refDes -> record locally
+    // (conformance rule 1). Reserved so the tag/name are never reused.
+    reserved 10;
+    reserved "componentRecordsByName";
 
     repeated PropertyRecord propertyRecords = 11;
     map<string, PropertyRecord> propertyRecordsByName = 12;
