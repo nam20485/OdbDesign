@@ -75,6 +75,9 @@ message EdaDataFile {
         repeated SubnetRecord subnetRecords = 4;
         repeated PropertyRecord propertyRecords = 5;
         map<string, string> attributeLookupTable = 6;  
+
+        // ODB++ product-model-wide unique id from the NET record ;ID= trailer
+        optional uint32 id = 7;
     }
 
     message PackageRecord {    
@@ -92,6 +95,9 @@ message EdaDataFile {
         repeated PropertyRecord propertyRecords = 10;
         repeated OutlineRecord outlineRecords = 11;
         map<string, string> attributeLookupTable = 12;  
+
+        // ODB++ product-model-wide unique id from the PKG record ;ID= trailer
+        optional uint32 id = 13;
 
         message OutlineRecord {
 

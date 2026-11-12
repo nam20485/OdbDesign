@@ -1,4 +1,4 @@
-remote_theme: pages-themes/minimal@v0.2.0
+remote_theme: pages-themes/slate@v0.2.0
 plugins:
 - jekyll-remote-theme # add this line to the plugins list if you already have one
 
@@ -16,10 +16,20 @@ url: https://source.odbdesignserver.com
 # quote-free expression instead renders as empty and silently holes the published
 # text. Add any new doc that quotes Actions expressions here, or {% raw %}-fence
 # it if the page should stay published.
+# jekyll-optional-front-matter (bundled with the GitHub Pages build)
+# deliberately skips README.md / CONTRIBUTING.md / CODE_OF_CONDUCT.md unless
+# they are front-mattered or explicitly included. Front matter would render
+# as a table in GitHub's markdown viewer, so include them instead.
+include:
+- README.md
+- CONTRIBUTING.md
+- CODE_OF_CONDUCT.md
+
 exclude:
 # completed/ is the internal work archive (done plans, investigations) — not
 # published, and several of its docs quote Actions syntax, so exclude it whole.
 - completed
 - plan/argocd-deployment-plan.md
 - plan/argocd-gitops-handoff.md
+- plan/issues-611-614-website-cdash-plan.md
 - reference/vcpkg/github-packages-MS-tutorial.md

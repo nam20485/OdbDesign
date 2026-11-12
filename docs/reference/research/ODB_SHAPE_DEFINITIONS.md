@@ -1143,10 +1143,10 @@ R 1000 0 1000 500    # 100×50 µm rectangle at offset
 
 ### Related Documentation
 
-- [`API.md`](./API.md) - API endpoints and integration guide
-- [`CONTRIBUTING.md`](../../CONTRIBUTING.md) - Development guidelines
-- [`DEPLOYMENT.md`](./DEPLOYMENT.md) - Deployment procedures
-- [`../README.md`](../README.md) - Project overview
+- [`API.md`](./API.html) - API endpoints and integration guide
+- [`CONTRIBUTING.md`](../../CONTRIBUTING.html) - Development guidelines
+- [Deployment & running](../../README.html#running) - Deployment procedures
+- [`../README.md`](../../README.html) - Project overview
 
 ### External Resources
 

@@ -17,6 +17,11 @@ namespace Odb::Lib::FileModel
         return m_parseInfo;
     }
 
+    std::string parse_error::sourceLocation() const
+    {
+        return sourceFile.filename().string() + ":" + std::to_string(sourceLine);
+    }
+
     char const* parse_error::what() const noexcept
     {
         return WHAT_STR;

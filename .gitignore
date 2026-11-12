@@ -5,12 +5,10 @@
 /.vs
 /out
 /compile_commands.json
-/cmake-build-debug
+/cmake-build-*/
 build/
 /vcpkg_installed
 /OdbDesignServer/designs/
-/cmake-build-debug-visual-studio
-/.idea/workspace.xml
 ssl/
 artifacts/
 /TEST_DATA
@@ -30,23 +28,17 @@ perfertto-tracing-span-events-SQL.md
 # Corrected spelling to ensure both variants are ignored
 perfetto-tracing-span-events-SQL.md
 build-win/
-.gemini/settings.json.origg
+.gemini/settings.json.orig*
 
-# OpenMemory - IDE/Assistant specific rules
-.cursor\rules\openmemory.mdc
 designs/
 /OdbDesignServer/yaak
 /log.txt
-.cursor\rules\openmemory.mdc
 /local.nuget.config
 /nuget.generated.config
-.cursor\rules\openmemory.mdc
 .vscode/c_cpp_properties.json
 gpg_keys/
 
 
-#Ignore insiders AI rules
-.github\instructions\codacy.instructions.md
 /new_designs/
 .kimchi/plans/plan-1781877149619.md
 .cursor/hooks/state/continual-learning.json
@@ -68,3 +60,16 @@ gpg_keys/
 .qwen/tmp/
 # ZCode project config (MCP server defs; may hold ARGOCD_API_TOKEN)
 .zcode/
+scripts/__pycache__/
+.cache/
+
+# Delta agent state (git clones/worktrees) — can be huge; never commit
+/.delta/
+
+# Generated site output
+/siteout/
+
+docs/plan/comprehensive-security-audit/
+
+# Commercialization planning + prospect correspondence — local working copies only, never commit
+docs/plan/commercialization/

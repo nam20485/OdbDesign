@@ -287,7 +287,7 @@ namespace Odb::Lib::FileModel::Design
 						std::string attrIdString;
 						lineStream >> attrIdString;
 
-						if (!pFeatureRecord->ParseAttributeLookupTable(attrIdString))
+						if (!pFeatureRecord->ParseAttributeLookupTable(attrIdString, pFeatureRecord->id))
 						{
 							throw_parse_error(m_path, line, token, lineNumber);
 						}
@@ -364,7 +364,7 @@ namespace Odb::Lib::FileModel::Design
 						std::string attrIdString;
 						lineStream >> attrIdString;
 
-						if (!pFeatureRecord->ParseAttributeLookupTable(attrIdString))
+						if (!pFeatureRecord->ParseAttributeLookupTable(attrIdString, pFeatureRecord->id))
 						{
 							throw_parse_error(m_path, line, token, lineNumber);
 						}
@@ -456,7 +456,7 @@ namespace Odb::Lib::FileModel::Design
 						std::string attrIdString;
 						lineStream >> attrIdString;
 
-						if (!pFeatureRecord->ParseAttributeLookupTable(attrIdString))
+						if (!pFeatureRecord->ParseAttributeLookupTable(attrIdString, pFeatureRecord->id))
 						{
 							throw_parse_error(m_path, line, token, lineNumber);
 						}
@@ -551,7 +551,7 @@ namespace Odb::Lib::FileModel::Design
 						std::string attrIdString;
 						lineStream >> attrIdString;
 
-						if (!pFeatureRecord->ParseAttributeLookupTable(attrIdString))
+						if (!pFeatureRecord->ParseAttributeLookupTable(attrIdString, pFeatureRecord->id))
 						{
 							throw_parse_error(m_path, line, token, lineNumber);
 						}
@@ -574,7 +574,7 @@ namespace Odb::Lib::FileModel::Design
 						// std::string attrIdString;
 						// lineStream >> attrIdString;
 
-						// if (!pFeatureRecord->ParseAttributeLookupTable(attrIdString))
+						// if (!pFeatureRecord->ParseAttributeLookupTable(attrIdString, pFeatureRecord->id))
 						//{
 						//	throw_parse_error(m_path, line, token, lineNumber);
 						// }
@@ -618,7 +618,7 @@ namespace Odb::Lib::FileModel::Design
 						std::string attrIdString;
 						lineStream >> attrIdString;
 
-						if (!pCurrentFeatureRecord->ParseAttributeLookupTable(attrIdString))
+						if (!pCurrentFeatureRecord->ParseAttributeLookupTable(attrIdString, pCurrentFeatureRecord->id))
 						{
 							throw_parse_error(m_path, line, token, lineNumber);
 						}
@@ -893,15 +893,31 @@ namespace Odb::Lib::FileModel::Design
 		{
 			pFeaturesFileMessage->add_featurerecords()->CopyFrom(*pFeatureRecord->to_protobuf());
 		}
+		FillSymbolNames(*pFeaturesFileMessage);
+		return pFeaturesFileMessage;
+	}
+
+	std::unique_ptr<Odb::Lib::Protobuf::FeaturesFile> FeaturesFile::to_protobuf_skeleton() const
+	{
+		std::unique_ptr<Odb::Lib::Protobuf::FeaturesFile> pFeaturesFileMessage(new Odb::Lib::Protobuf::FeaturesFile);
+		pFeaturesFileMessage->set_id(m_id);
+		pFeaturesFileMessage->set_numfeatures(m_numFeatures);
+		pFeaturesFileMessage->set_units(Odb::Lib::Text::ToUtf8(m_units));
+		// featureRecords deliberately omitted (M6 streaming skeleton).
+		FillSymbolNames(*pFeaturesFileMessage);
+		return pFeaturesFileMessage;
+	}
+
+	void FeaturesFile::FillSymbolNames(Odb::Lib::Protobuf::FeaturesFile &featuresFileMessage) const
+	{
 		for (const auto &kvSymbolName : m_symbolNamesByName)
 		{
-			(*pFeaturesFileMessage->mutable_symbolnamesbyname())[Odb::Lib::Text::ToUtf8(kvSymbolName.first)] = *kvSymbolName.second->to_protobuf();
+			(*featuresFileMessage.mutable_symbolnamesbyname())[Odb::Lib::Text::ToUtf8(kvSymbolName.first)] = *kvSymbolName.second->to_protobuf();
 		}
 		for (const auto &symbolName : m_symbolNames)
 		{
-			pFeaturesFileMessage->add_symbolnames()->CopyFrom(*symbolName->to_protobuf());
+			featuresFileMessage.add_symbolnames()->CopyFrom(*symbolName->to_protobuf());
 		}
-		return pFeaturesFileMessage;
 	}
 
 	void FeaturesFile::from_protobuf(const Odb::Lib::Protobuf::FeaturesFile &message)
@@ -972,8 +988,11 @@ namespace Odb::Lib::FileModel::Design
 			pFeatureRecordMessage->set_sym_num(sym_num);
 		}
 		pFeatureRecordMessage->set_polarity(static_cast<Odb::Lib::Protobuf::Polarity>(polarity));
-		pFeatureRecordMessage->set_dcode(dcode);
-		pFeatureRecordMessage->set_id(id);
+		                pFeatureRecordMessage->set_dcode(dcode);
+		                if (id.has_value())
+		                {
+		                        pFeatureRecordMessage->set_id(*id);
+		                }
 		pFeatureRecordMessage->set_orient_def(orient_def);
 		pFeatureRecordMessage->set_orient_def_rotation(orient_def_rotation);
 		pFeatureRecordMessage->set_type(static_cast<Odb::Lib::Protobuf::FeaturesFile::FeatureRecord::Type>(type));
@@ -1012,9 +1031,12 @@ namespace Odb::Lib::FileModel::Design
 		version = message.version();
 		sym_num = message.has_sym_num() ? message.sym_num() : -1;
 		polarity = static_cast<Polarity>(message.polarity());
-		dcode = message.dcode();
-		id = message.id();
-		orient_def = message.orient_def();
+		                dcode = message.dcode();
+		                if (message.has_id())
+		                {
+		                        id = message.id();
+		                }
+		                orient_def = message.orient_def();
 		orient_def_rotation = message.orient_def_rotation();
 		type = static_cast<Type>(message.type());
 		xs = message.xs();

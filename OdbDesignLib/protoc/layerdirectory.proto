@@ -22,6 +22,12 @@ message LayerDirectory  {
     optional ComponentsFile components = 3;
     optional AttrListFile attrlistFile = 4;
     optional FeaturesFile featureFile = 5;
-	optional ToolsFile toolFile = 6;
+    optional ToolsFile tools = 7;
 
-} 
+    // 6 was the short-lived third-party ToolsFile field; removed with the
+    // contributor carve-out (see git history). Reserved so the number is
+    // never reused for an incompatible type.
+    reserved 6;
+    reserved "toolFile";
+
+}

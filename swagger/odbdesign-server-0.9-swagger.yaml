@@ -1567,22 +1567,19 @@ components:
           items:
             type: number
             format: double
-    Color:
+    RgbColor:
       type: object
-      description: RGB color (matrixfile.proto Color).
+      description: RGB color (matrixfile.proto RgbColor) — percent components, 0-99 (100 is unrepresentable in the two-digit COLOR form).
       properties:
         red:
-          type: number
-          format: float
-          description: Red component (0.0 - 1.0).
+          type: integer
+          description: Red component (0 - 99, percent).
         green:
-          type: number
-          format: float
-          description: Green component (0.0 - 1.0).
+          type: integer
+          description: Green component (0 - 99, percent).
         blue:
-          type: number
-          format: float
-          description: Blue component (0.0 - 1.0).
+          type: integer
+          description: Blue component (0 - 99, percent).
         noPreference:
           type: boolean
           description: True when no color preference is set.
@@ -1771,15 +1768,14 @@ components:
         attrlistFile:
           directory: steps/pcb/layers/top
           path: steps/pcb/layers/top/attrlist
-        toolFile:
+        tools:
           directory: steps/pcb/layers/top
           path: steps/pcb/layers/top/tools
           units: INCH
           tools:
-            "1":
-              toolNum: 1
+            - num: 1
               type: Plated
-              type2: Standard
+              subType: Standard
               finishSize: 13.5
               drillSize: 14
       properties:
@@ -1801,8 +1797,8 @@ components:
           description: Layer feature records (`features`).
           allOf:
             - $ref: "#/components/schemas/FeaturesFile"
-        toolFile:
-          description: Drill tool definitions (`tools`).
+        tools:
+          description: Drill tool definitions (`tools`) — proto field 7.
           allOf:
             - $ref: "#/components/schemas/ToolsFile"
 
@@ -2019,7 +2015,7 @@ components:
         color:
           description: Layer display color.
           allOf:
-            - $ref: "#/components/schemas/Color"
+            - $ref: "#/components/schemas/RgbColor"
         id:
           type: integer
           format: int32
@@ -2383,6 +2379,13 @@ components:
           type: integer
           format: int32
           description: Net index within the eda data.
+        id:
+          type: integer
+          format: int32
+          description: >-
+            ODB++ unique identifier from the NET record's `;ID=` trailer, from the same
+            product-model-wide number space as `ComponentRecord.id`. Optional: omitted
+            entirely when the source record carries no id (never reported as 0).
         subnetRecords:
           type: array
           description: Subnets (vias, traces, planes, toeprints) of the net.
@@ -2426,15 +2429,32 @@ components:
         side:
           type: string
           enum: [BsNone, Top, Bottom]
-          description: Toeprint subnets only.
+          description: >-
+            Toeprint subnets only. Selects which per-side components file the
+            `componentNumber` and `toeprintNumber` below index into:
+            `Top` -> `comp_+_top/components`, `Bottom` -> `comp_+_bot/components`.
         componentNumber:
           type: integer
           format: int32
-          description: Toeprint subnets only.
+          description: >-
+            Toeprint subnets only. The 0-based ordinal position of the referenced
+            component's `CMP` record within that side's `components` file -- i.e. it
+            equals the target record's `ComponentRecord.index`. NOT
+            `ComponentRecord.id` (a separate, optional, product-model-wide UID).
+            Not design-global either: each board side has its own file and its own
+            numbering restarting at 0, so `componentNumber` is meaningful only
+            together with `side`.
+          example: 0
         toeprintNumber:
           type: integer
           format: int32
-          description: Toeprint subnets only.
+          description: >-
+            Toeprint subnets only. The 0-based ordinal position within the resolved
+            component record's `toeprintRecords` array -- a positional index, not a
+            pin number. The pin number is `toeprintRecords[toeprintNumber].pinNumber`
+            (which is itself 0-based and corresponds to the `PIN` records of the
+            component's package); read it rather than assuming it equals this field.
+          example: 1
         index:
           type: integer
           format: int32
@@ -2482,6 +2502,13 @@ components:
           type: number
           format: double
           description: Bounding box maximum Y.
+        id:
+          type: integer
+          format: int32
+          description: >-
+            ODB++ unique identifier from the PKG record's `;ID=` trailer, from the same
+            product-model-wide number space as `ComponentRecord.id`. Optional: omitted
+            entirely when the source record carries no id (never reported as 0).
         attributesIdString:
           type: string
           description: Comma-separated attribute ids referencing the attribute lookup table.
@@ -2914,7 +2941,15 @@ components:
         id:
           type: integer
           format: int32
-          description: Feature id.
+          description: >-
+            ODB++ unique identifier assigned to this feature (the `ID=<id>` field of the
+            `L`/`A`/`P`/`T` feature record), from the same product-model-wide number space
+            as `ComponentRecord.id`. Optional, permanent once assigned, and sparse:
+            populated from the `;ID=` trailer for every feature record type that parses
+            its trailer -- barcode (`B`) records do not yet parse theirs, so their `id`
+            stays unset even when the source carries one. For all other types the field
+            is omitted entirely when the source carries no id (never reported as 0), and
+            the identifier never appears in `attributeLookupTable`.
         orient_def:
           type: integer
           format: int32
@@ -3069,11 +3104,6 @@ components:
           description: Component placement records.
           items:
             $ref: "#/components/schemas/ComponentRecord"
-        componentRecordsByName:
-          type: object
-          additionalProperties:
-            $ref: "#/components/schemas/ComponentRecord"
-          description: Component records keyed by component (refdes) name.
         propertyRecords:
           type: array
           description: File-level property records.
@@ -3125,11 +3155,27 @@ components:
         id:
           type: integer
           format: int32
-          description: Component id.
+          description: >-
+            ODB++ unique identifier assigned to this component (the `ID=<id>` field of the
+            `CMP` record). Per the ODB++ specification (8.1 Update 4, p.30) it is unique
+            across the entire product model -- the same number space is shared with features,
+            matrix and stephdr entities, so values are sparse -- and once assigned it never
+            changes, making it the only handle that tracks a component across re-exports.
+            It is OPTIONAL: CAD tools may omit it, and roughly half of the designs in the
+            reference corpus do, in which case no id is present rather than id 0. NOT a join
+            key: netlist `SubnetRecord.componentNumber` references components by per-side
+            ordinal (see `index`), never by this field. Populated from the `;ID=` trailer
+            of the `CMP` record whenever the source carries one; designs without ids omit
+            the field entirely rather than reporting 0.
         index:
           type: integer
           format: int32
-          description: Component index (component number) within the file.
+          description: >-
+            Ordinal position of this record within its own side's `components` file. This is
+            the value that netlist `SubnetRecord.componentNumber` matches. Unique only
+            together with the owning file's side -- `comp_+_top` and `comp_+_bot` are separate
+            files and each restarts at 0 -- and positional only: a re-export that reorders
+            records renumbers it. Prefer `compName` as the component key.
         propertyRecords:
           type: array
           description: Component property records.
@@ -3144,7 +3190,13 @@ components:
           type: object
           additionalProperties:
             type: string
-          description: Attribute id to value/text mapping.
+          description: >-
+            Attribute assignments parsed from the trailing field of the `CMP` record, as
+            `attribute-index -> value`. Keys are normally numeric indices into the
+            sibling `attributeNames` list -- resolve attribute names only for numeric
+            keys (out-of-spec non-numeric names are preserved verbatim rather than
+            dropped). The component's ODB++ unique identifier is not an attribute and
+            never appears in this table; read it from `id`.
     ToeprintRecord:
       type: object
       description: A component pin's land pattern on this layer.
@@ -3171,7 +3223,12 @@ components:
         netNumber:
           type: integer
           format: int32
-          description: Serial number of the net connected to the pin.
+          description: >-
+            Ordinal of the net this pin connects to, matching `NetRecord.index` /
+            `SubnetRecord.netNumber` for the net's TOEPRINT subnet. Sentinels: the source
+            ODB++ value `-1` means the pin is unconnected (no net) and is carried here as
+            the unsigned wrap-around value 4294967295; nets named `$NONE$` are the
+            netlist's no-connect net. Treat both as unconnected rather than as a real net.
         subnetNumber:
           type: integer
           format: int32
@@ -3219,18 +3276,17 @@ components:
         units: MM
         thickness: 1.6
         tools:
-          "1":
-            toolNum: 1
+          - num: 1
             type: Plated
-            type2: Standard
+            subType: Standard
             minTol: -0.05
             maxTol: 0.05
+            bit: D3
             finishSize: 0.3
             drillSize: 0.3
-          "2":
-            toolNum: 2
+          - num: 2
             type: Via
-            type2: Laser
+            subType: Laser
             finishSize: 0.1
             drillSize: 0.1
       properties:
@@ -3248,29 +3304,33 @@ components:
           format: double
           description: Board thickness for depth-controlled tools.
         userParams:
-          type: string
-          description: Raw user parameter string from the tools file.
+          type: array
+          items:
+            type: string
+          description: Raw user parameter lines from the tools file.
         tools:
-          type: object
-          additionalProperties:
+          type: array
+          items:
             $ref: "#/components/schemas/ToolsRecord"
-          description: Tool records keyed by tool number.
+          description: Tool records, in file order.
     ToolsRecord:
       type: object
       description: One drill tool definition.
       properties:
-        toolNum:
+        num:
           type: integer
-          format: int32
           description: Tool number.
         type:
           type: string
           description: Plating type of the tool.
           enum: [Plated, NonPlated, Via]
-        type2:
+        subType:
           type: string
-          description: Tool technology.
+          description: Tool technology (legal values depend on type).
           enum: [Standard, PressFit, Photo, Laser]
+        bit:
+          type: string
+          description: Drill bit string.
         minTol:
           type: number
           format: double
@@ -3279,9 +3339,6 @@ components:
           type: number
           format: double
           description: Maximum size tolerance of the finished hole.
-        drillBit:
-          type: string
-          description: Drill bit identifier.
         finishSize:
           type: number
           format: double
@@ -3454,6 +3511,170 @@ components:
           additionalProperties:
             $ref: "#/components/schemas/Part"
           description: Parts keyed by part number.
+        connectivity:
+          description: Server-owned, derived netlist view — always present (no request flag).
+          allOf:
+            - $ref: "#/components/schemas/Connectivity"
+    Connectivity:
+      type: object
+      description: >-
+        Derived, format-independent, server-owned netlist. Identity rule: refDes
+        names a component, package name names a pin roster, net ordinal names a
+        net (the NET record sequence of the eda/data file, ODB++ spec p.153).
+        Clients never join fileModel records to read it — the format
+        conventions (net_num -1 / 4294967295, $NONE$, toeprintNumber) are
+        absorbed server-side into Connection.kind and resolved pin numbers.
+        Emitted always-on by both serialization flavours.
+      properties:
+        nets:
+          type: array
+          description: Dense net roster — every eda-data NET record in sequence,
+            $NONE$ included, so `net` ordinals keep their file identity.
+          items:
+            $ref: "#/components/schemas/ConnectivityNetEntry"
+        packages:
+          type: array
+          description: Deduplicated pin rosters — one entry per package, not per component.
+          items:
+            $ref: "#/components/schemas/ConnectivityPackagePins"
+        components:
+          type: array
+          description: Placed components with per-pin connections.
+          items:
+            $ref: "#/components/schemas/ConnectivityPlacedComponent"
+        netMembers:
+          type: array
+          description: The CONNECTED edges of `components`, inverted (net to
+            members), for the net tab. $NONE$ members are excluded.
+          items:
+            $ref: "#/components/schemas/ConnectivityNetMembers"
+    ConnectivityNetEntry:
+      type: object
+      description: Net roster entry. `ordinal` is the eda-data NET record
+        sequence number (spec p.153) — the value `Connection.net` refers to.
+      properties:
+        ordinal:
+          type: integer
+          format: int32
+          description: Net ordinal (NET record sequence).
+        name:
+          type: string
+          description: Net name; "" = unnamed net. "$NONE$" keeps its literal
+            name so ordinals stay dense — branch on Connection.kind, never on
+            this name.
+    ConnectivityPackagePins:
+      type: object
+      description: Pin roster of one package.
+      properties:
+        package:
+          type: string
+          description: Package name — the value PlacedComponent.package refers to.
+        pins:
+          type: array
+          description: Package pins, pin-number ascending.
+          items:
+            $ref: "#/components/schemas/ConnectivityPackagePin"
+    ConnectivityPackagePin:
+      type: object
+      description: One pin of a package roster.
+      properties:
+        number:
+          type: integer
+          format: int32
+          description: Pin number (roster ordinal).
+        name:
+          type: string
+          description: Pin name from the package roster.
+    ConnectivityPlacedComponent:
+      type: object
+      description: One placed component and the connection state of every pin
+        of its package roster (package-roster order).
+      properties:
+        refDes:
+          type: string
+          description: Authoritative component key (spec p.152 — case-significant).
+        id:
+          type: integer
+          format: int32
+          description: ODB++ product-model-wide UID from `;ID=`. Durable handle
+            for revision diffing; never a join key. Absent when the design
+            carries no `;ID=` (never synthesized).
+        side:
+          type: string
+          description: Board side — informational only.
+          enum: [BsNone, Top, Bottom]
+        package:
+          type: string
+          description: Package name — indexes `packages`.
+        pins:
+          type: array
+          description: Every package-roster pin of this component in pin-number
+            ascending order; pins with no connection are present with
+            kind UNCONNECTED.
+          items:
+            $ref: "#/components/schemas/ConnectivityComponentPin"
+    ConnectivityComponentPin:
+      type: object
+      description: One pin of a placed component and its connection state.
+      properties:
+        number:
+          type: integer
+          format: int32
+          description: Resolved package pin number. A toeprintNumber never
+            reaches a client.
+        name:
+          type: string
+          description: Package-roster pin name.
+        connection:
+          $ref: "#/components/schemas/ConnectivityConnection"
+    ConnectivityConnection:
+      type: object
+      description: Connection state of one component pin.
+      properties:
+        kind:
+          type: string
+          description: "CONNECTED: the pin joins the net named by `net`.
+            UNCONNECTED: net_num -1/4294967295, or membership of the $NONE$
+            net — `net` is unset and there are no subnets. Clients branch on
+            this field, never on sentinel values or magic net names."
+          enum: [UNKNOWN, CONNECTED, UNCONNECTED]
+        net:
+          type: integer
+          format: int32
+          description: Ordinal into `Connectivity.nets`; meaningful only when
+            kind == CONNECTED.
+        subnets:
+          type: array
+          description: Per-net subnet ordinals (eda/data); empty unless CONNECTED.
+          items:
+            type: integer
+            format: int32
+    ConnectivityNetMembers:
+      type: object
+      description: Members of one net (the net tab view).
+      properties:
+        net:
+          type: integer
+          format: int32
+          description: Ordinal into `Connectivity.nets`.
+        members:
+          type: array
+          description: Member components, refDes ascending.
+          items:
+            $ref: "#/components/schemas/ConnectivityMember"
+    ConnectivityMember:
+      type: object
+      description: One component's membership in a net.
+      properties:
+        refDes:
+          type: string
+          description: Member component key.
+        pin:
+          type: array
+          description: Pin numbers by which this component joins the net, ascending.
+          items:
+            type: integer
+            format: int32
     Component:
       type: object
       description: Placed component in the product model.

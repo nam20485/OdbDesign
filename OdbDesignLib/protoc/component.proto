@@ -21,6 +21,7 @@ message Component {
     // unsigned int m_index;
     // BoardSide m_side;
     // std::shared_ptr<Part> m_pPart;
+    // std::optional<unsigned int> m_id;    // ODB++ UID from ;ID= (optional, spec p.30/p.152)
 
     optional string refDes = 1;
     optional string partName = 2;
@@ -28,5 +29,5 @@ message Component {
     optional uint32 index = 4;
     optional BoardSide side = 5;
     optional Part part = 6;
-    
+    optional uint32 id = 7;   // ODB++ product-model-wide UID; absent when the design carries no ;ID= (never synthesized)
 }

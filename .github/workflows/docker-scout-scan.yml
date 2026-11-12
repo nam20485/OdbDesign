@@ -37,7 +37,7 @@ jobs:
   scan:
     name: Docker-Scout-Scan
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       packages: read
@@ -80,6 +80,12 @@ jobs:
           safe_branch_name="${branch_name//\//-}"
           printf 'BRANCH_NAME=%s\n' "$safe_branch_name" >> "$GITHUB_ENV"
           printf 'SCAN_TAG=%s-latest\n' "$safe_branch_name" >> "$GITHUB_ENV"
+
+          # GHCR stores the repository name lowercased (nam20485/odbdesign).
+          # The scout-action normalizes image refs itself, but raw docker CLI
+          # (docker manifest inspect in the compare gate) does not, so a
+          # mixed-case IMAGE_NAME 404s and the compare step is always skipped.
+          printf 'IMAGE_NAME=%s\n' "${IMAGE_NAME,,}" >> "$GITHUB_ENV"
 
       # Login against Docker Hub to allow running Docker Scout
       - name: Log into Docker Hub registry

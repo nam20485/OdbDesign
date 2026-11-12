@@ -1,9 +1,11 @@
-//
-// Created by Jandody on 08/26/2025.
-//
-
 #include "ToolsFile.h"
 #include <fstream>
+#include <sstream>
+#include <charconv>
+#include <stdexcept>
+#include <cerrno>
+#include <cmath>
+#include <cstdlib>
 #include "../parse_error.h"
 #include "../invalid_odb_error.h"
 #include "Logger.h"
@@ -12,20 +14,115 @@
 #include <ArchiveExtractor.h>
 #include "../../Text/Utf8Sanitizer.h"
 
+namespace
+{
+	// shortest round-trippable decimal form (avoids both precision loss and
+	// fixed/scientific surprises in Save output)
+	std::string format_double(double value)
+	{
+		// non-finite values have no ODB++ representation; emitting inf/nan
+		// would produce a file our own parser (isfinite check) rejects
+		if (!std::isfinite(value))
+		{
+			throw std::domain_error("non-finite numeric value cannot be serialized to the tools file grammar");
+		}
+		char buffer[64];
+		const auto result = std::to_chars(buffer, buffer + sizeof(buffer), value);
+		if (result.ec != std::errc())
+		{
+			return "0";
+		}
+		return std::string(buffer, result.ptr);
+	}
+
+	// numeric fields parse through validated helpers: a malformed or
+	// hostile tools file surfaces as parse_error with file/line context.
+	// from_chars (not stoi/stoul/stod) so that validation is total rather
+	// than exception-only: trailing garbage, sign abuse on unsigned fields,
+	// and out-of-target-range values are all rejected — sto* would accept
+	// "5abc", wrap "-5", or truncate >UINT_MAX on LP64
+	using Odb::Lib::FileModel::parse_error;
+
+	unsigned int parseUnsigned(const std::filesystem::path& path, const std::string& line,
+		int lineNumber, const std::string& token, const std::string& value)
+	{
+		unsigned int result = 0;
+		const auto* last = value.data() + value.size();
+		const auto [ptr, ec] = std::from_chars(value.data(), last, result);
+		if (ec != std::errc() || ptr != last)
+		{
+			throw_parse_error(path, line, token, lineNumber);
+		}
+		return result;
+	}
+
+	double parseDouble(const std::filesystem::path& path, const std::string& line,
+		int lineNumber, const std::string& token, const std::string& value)
+	{
+		// std::from_chars for floating point is unavailable on libc++
+		// (Xcode), so the double path uses strtod with equivalent
+		// strictness: full consumption (end pointer), range (errno), and a
+		// finite result — "1e999", "12abc", and "inf" all reject
+		if (value.empty())
+		{
+			throw_parse_error(path, line, token, lineNumber);
+		}
+		errno = 0;
+		char* end = nullptr;
+		const double result = std::strtod(value.c_str(), &end);
+		if (end != value.c_str() + value.size() || errno == ERANGE || !std::isfinite(result))
+		{
+			throw_parse_error(path, line, token, lineNumber);
+		}
+		return result;
+	}
+}
+
 namespace Odb::Lib::FileModel::Design
 {
 	ToolsFile::ToolsFile()
-		: m_directory("")
-		, m_path("")
+		: m_path("")
+		, m_directory("")
 		, m_units("")
-		, m_thickness(0)
-		, m_user_params("")
 	{
 	}
 
-	ToolsFile::~ToolsFile()
+	bool ToolsFile::ToolRecord::subTypeIsLegal() const
 	{
-		m_toolsByNum.clear();
+		switch (type)
+		{
+		case Type::Plated:
+			return subType == SubType::Standard || subType == SubType::PressFit;
+		case Type::NonPlated:
+			return subType == SubType::Standard;
+		case Type::Via:
+			return subType == SubType::Standard || subType == SubType::Photo || subType == SubType::Laser;
+		default:
+			return false;
+		}
+	}
+
+	const char* ToolsFile::ToolRecord::typeName(Type type)
+	{
+		switch (type)
+		{
+		case Type::Plated: return TYPE_PLATED;
+		case Type::NonPlated: return TYPE_NON_PLATED;
+		case Type::Via: return TYPE_VIA;
+		default: return "UNKNOWN";
+		}
+	}
+
+	const char* ToolsFile::ToolRecord::subTypeName(SubType subType)
+	{
+		switch (subType)
+		{
+		case SubType::Standard: return SUB_TYPE_STANDARD;
+		case SubType::PressFit: return SUB_TYPE_PRESS_FIT;
+		case SubType::Photo: return SUB_TYPE_PHOTO;
+		case SubType::Laser: return SUB_TYPE_LASER;
+		default: return "UNKNOWN";
+		}
 	}
 
 	std::string ToolsFile::GetUnits() const
@@ -38,17 +135,22 @@ namespace Odb::Lib::FileModel::Design
 		return m_thickness;
 	}
 
-	std::string ToolsFile::GetUserParams() const
+	const std::vector<std::string>& ToolsFile::GetUserParams() const
 	{
-		return m_user_params;
+		return m_userParams;
 	}
 
-	const ToolsFile::ToolsMap& ToolsFile::GetTools() const
+	const ToolsFile::ToolRecord::Vector& ToolsFile::GetTools() const
 	{
-		return m_toolsByNum;
+		return m_tools;
 	}
 
-	bool Lib::FileModel::Design::ToolsFile::Parse(std::filesystem::path directory)
+	std::filesystem::path ToolsFile::GetPath() const
+	{
+		return m_path;
+	}
+
+	bool ToolsFile::Parse(std::filesystem::path directory)
 	{
 		std::ifstream toolsFile;
 		int lineNumber = 0;
@@ -60,29 +162,20 @@ namespace Odb::Lib::FileModel::Design
 
 			loginfo("checking for extraction...");
 
-			std::filesystem::path toolsFilePath;
-			for (const std::string toolsFilename : TOOLS_FILENAMES)
+			auto toolsFilePath = Utils::ArchiveExtractor::getUncompressedFilePath(m_directory, TOOLS_FILENAME);
+			if (std::filesystem::exists(toolsFilePath) && std::filesystem::is_regular_file(toolsFilePath))
 			{
-				loginfo("trying tools file: [" + toolsFilename + "]...");
-
-				toolsFilePath = Utils::ArchiveExtractor::getUncompressedFilePath(m_directory, toolsFilename);
-				if (exists(toolsFilePath) && is_regular_file(toolsFilePath))
-				{
-					loginfo("found tools file: [" + toolsFilePath.string() + "]");
-					break;
-				}
+				loginfo("found tools file: [" + toolsFilePath.string() + "]");
 			}
 
 			m_path = toolsFilePath;
 
-			loginfo("any extraction complete, parsing data...");
-
 			if (!std::filesystem::exists(m_path))
 			{
-				auto message = "tools file does not exist: [" + m_directory.string() + "]";
-				logwarn(message);
+				// not every layer carries a drill tools table (only drill/rout
+				// layers do); absence is not an error
+				logwarn("tools file does not exist: [" + m_directory.string() + "]");
 				return true;
-				//throw invalid_odb_error(message.c_str());
 			}
 			else if (!std::filesystem::is_regular_file(m_path))
 			{
@@ -97,227 +190,168 @@ namespace Odb::Lib::FileModel::Design
 				throw invalid_odb_error(message.c_str());
 			}
 
-			std::shared_ptr<ToolsRecord> pCurrentToolsRecord;
-			bool openBraceFound = false;
+			auto parsingRecord = false;
+			std::shared_ptr<ToolRecord> pCurrentRecord;
 
 			while (std::getline(toolsFile, line))
 			{
 				lineNumber++;
 
-				// trim whitespace from beginning and end of line
 				Utils::str_trim(line);
-				if (!line.empty())
+				if (line.empty()) continue;
+				if (line.find(Constants::COMMENT_TOKEN) == 0) continue;
+
+				std::stringstream lineStream(line);
+
+				if (!parsingRecord)
 				{
-					std::stringstream lineStream(line);
-					//char firstChar = line[0];			
-
-					if (line.find(Constants::COMMENT_TOKEN) == 0)
+					// a TOOLS array record opens with "TOOLS {" — no '=' on the
+					// line, so check the array token before key/value parsing.
+					// Require the brace (optionally spaced) so a TOOLS-prefixed
+					// parameter line is never mistaken for a record open.
+					if (line.rfind(TOOLS_ARRAY_TOKEN, 0) == 0)
 					{
-						// comment line
-					}
-					else if (line.find(ToolsFile::UNITS_TOKEN) == 0)
-					{
-						// units line
-						std::string token;
-						if (!std::getline(lineStream, token, '='))
+						// char_traits::length over strlen: constexpr and provably bounded
+						// for this class constant (Flawfinder CWE-126 flags strlen on
+						// non-literal pointers as a potential over-read)
+						auto afterToken = line.substr(std::char_traits<char>::length(TOOLS_ARRAY_TOKEN));
+						Utils::str_trim(afterToken);
+						if (afterToken != Constants::ARRAY_RECORD_OPEN_TOKEN)
 						{
-							throw_parse_error(m_path, line, token, lineNumber);
+							throw_parse_error(m_path, line, TOOLS_ARRAY_TOKEN, lineNumber);
 						}
-
-						m_units = token;
+						pCurrentRecord = std::make_shared<ToolRecord>();
+						parsingRecord = true;
+						continue;
 					}
-					else if (line.find(ToolsFile::THICKNESS_TOKEN) == 0)
+
+					// global parameter
+					std::string key;
+					if (!std::getline(lineStream, key, '='))
 					{
-						// thickness line
+						throw_parse_error(m_path, line, "", lineNumber);
+					}
+
+					Utils::str_trim(key);
+
+					if (key == Constants::UNITS_TOKEN)
+					{
 						std::string value;
-						if (!std::getline(lineStream, value, '='))
-						{
-							throw_parse_error(m_path, line, value, lineNumber);
-						}
-
-						if (std::getline(lineStream, value))
-						{
-							Utils::str_trim(value);
-							m_thickness = std::stod(value);
-						}
-						else
-						{
-							// Obsolete, Default=0
-							m_thickness = 0;
-						}
-
+						std::getline(lineStream, value);
+						Utils::str_trim(value);
+						m_units = value;
 					}
-					else if (line.find(ToolsFile::USER_PARAMS_TOKEN) == 0)
+					else if (key == THICKNESS_KEY)
 					{
-						// user_params line
+						// obsolete per spec; tolerated and preserved for round-tripping
 						std::string value;
-						if (!std::getline(lineStream, value, '='))
-						{
-							throw_parse_error(m_path, line, value, lineNumber);
-						}
-
-						if (std::getline(lineStream, value))
-						{
-							Utils::str_trim(value);
-							m_user_params = value;
-						}
+						std::getline(lineStream, value);
+						Utils::str_trim(value);
+						m_thickness = value.empty() ? 0.0 : parseDouble(m_path, line, lineNumber, key, value);
 					}
-					else if (line.find(ToolsRecord::RECORD_TOKEN) == 0)
+					else if (key == USER_PARAMS_KEY)
 					{
-						std::string token;
-						if (!(lineStream >> token))
+						std::string value;
+						std::getline(lineStream, value);
+						Utils::str_trim(value);
+						if (!value.empty())
 						{
-							throw_parse_error(m_path, line, token, lineNumber);
-						}
-
-						if (token != ToolsRecord::RECORD_TOKEN || pCurrentToolsRecord != nullptr)
-						{
-							throw_parse_error(m_path, line, token, lineNumber);
-						}
-
-						// open a new TOOL array record
-						pCurrentToolsRecord = std::make_shared<ToolsRecord>();
-
-						if (lineStream >> token)
-						{
-							// open brace is on same line as tool record open token
-							if (token == Constants::ARRAY_RECORD_OPEN_TOKEN)
-							{
-								openBraceFound = true;
-							}
-						}
-					}
-					else if (line.find(Constants::ARRAY_RECORD_OPEN_TOKEN) == 0)
-					{
-						// no current opening of a tool array record found yet
-						if (pCurrentToolsRecord == nullptr)
-						{
-							throw_parse_error(m_path, line, "", lineNumber);
-						}
-
-						// found another open brace while still parsing after the previous record's open brace
-						if (openBraceFound)
-						{
-							throw_parse_error(m_path, line, "", lineNumber);
-						}
-
-						openBraceFound = true;
-					}
-					else if (line.find(Constants::ARRAY_RECORD_CLOSE_TOKEN) == 0)
-					{
-						if (pCurrentToolsRecord != nullptr && openBraceFound && pCurrentToolsRecord->toolNum != 0)
-						{
-							m_toolsByNum[pCurrentToolsRecord->toolNum] = pCurrentToolsRecord;
-							pCurrentToolsRecord.reset();
-							openBraceFound = false;
-						}
-						else
-						{
-							// found a close brace but aren't currently parsing a tools map record
-							throw_parse_error(m_path, line, "", lineNumber);
+							m_userParams.push_back(value);
 						}
 					}
 					else
 					{
-						std::string attribute;
-						std::string value;
-
-						if (!std::getline(lineStream, attribute, '='))
-						{
-							throw_parse_error(m_path, line, "", lineNumber);
-						}
-
-						if (std::getline(lineStream, value))
-						{
-							Utils::str_trim(attribute);
-							Utils::str_trim(value);
-							
-							if (pCurrentToolsRecord != nullptr && openBraceFound)
-							{
-								if (attribute == ToolsRecord::NUM_KEY || attribute == "num")
-								{
-									pCurrentToolsRecord->toolNum = std::stoi(value);
-								}
-								else if (attribute == ToolsRecord::TYPE_KEY || attribute == "type")
-								{
-									if (ToolsRecord::typeMap.contains(value))
-									{
-										pCurrentToolsRecord->type = ToolsRecord::typeMap.getValue(value);
-									}
-									else
-									{
-										throw_parse_error(m_path, line, attribute, lineNumber);
-									}
-								}
-								else if (attribute == ToolsRecord::TYPE2_KEY || attribute == "type2")
-								{
-									if (ToolsRecord::type2Map.contains(value))
-									{
-										auto type = pCurrentToolsRecord->type;
-										auto type2 = ToolsRecord::type2Map.getValue(value);
-										
-										if (type2 != ToolsRecord::Type2::Standard)
-										{
-											bool invalid = false;
-											switch (type2)
-											{
-											case ToolsRecord::Type2::PressFit:
-												invalid = (type != ToolsRecord::Type::Plated);
-												break;
-
-											case ToolsRecord::Type2::Photo:
-											case ToolsRecord::Type2::Laser:
-												invalid = (type != ToolsRecord::Type::Via);
-												break;
-											}
-											if (invalid)
-											{
-												throw_parse_error(m_path, line, attribute, lineNumber);
-											}
-										}
-										pCurrentToolsRecord->type2 = type2;
-									}
-									else
-									{
-										pCurrentToolsRecord->type2 = ToolsRecord::Type2::Standard;
-									}
-								}
-								else if (attribute == ToolsRecord::MIN_TOL_KEY || attribute == "min_tol")
-								{
-									pCurrentToolsRecord->minTOL = std::stod(value);
-								}
-								else if (attribute == ToolsRecord::MAX_TOL_KEY || attribute == "max_tol")
-								{
-									pCurrentToolsRecord->maxTOL = std::stod(value);
-								}
-								else if (attribute == ToolsRecord::BIT_KEY || attribute == "bit")
-								{
-									pCurrentToolsRecord->drillBit = value;
-								}
-								else if (attribute == ToolsRecord::FINISH_SIZE_KEY || attribute == "finish_size")
-								{
-									pCurrentToolsRecord->finishSize = std::stod(value);
-								}
-								else if (attribute == ToolsRecord::DRILL_SIZE_KEY || attribute == "drill_size")
-								{
-									pCurrentToolsRecord->drillSize = std::stod(value);
-								}
-								else
-								{
-									throw_parse_error(m_path, line, attribute, lineNumber);
-								}
-							}
-							else
-							{
-								// found a name-value pair but aren't currently parsing a step or layer array record
-								//return false;
-								throw_parse_error(m_path, line, attribute, lineNumber);
-							}
-
-						}
-
+						throw_parse_error(m_path, line, key, lineNumber);
 					}
 				}
+				else
+				{
+					// inside a TOOLS record
+					if (line == Constants::ARRAY_RECORD_CLOSE_TOKEN)
+					{
+						if (pCurrentRecord->type == ToolRecord::Type::Unknown)
+						{
+							throw_parse_error(m_path, line, TYPE_KEY, lineNumber);
+						}
+						else if (!pCurrentRecord->subTypeIsLegal())
+						{
+							throw_parse_error(m_path, line, TYPE2_KEY, lineNumber);
+						}
+
+						m_tools.push_back(pCurrentRecord);
+						pCurrentRecord = nullptr;
+						parsingRecord = false;
+						continue;
+					}
+
+					std::string key;
+					if (!std::getline(lineStream, key, '='))
+					{
+						throw_parse_error(m_path, line, "", lineNumber);
+					}
+
+					Utils::str_trim(key);
+
+					if (line.find('=') == std::string::npos)
+					{
+						// no '=' on the line at all — not a key/value field
+						// (trailing '=' with empty value, e.g. BIT=, is legal)
+						throw_parse_error(m_path, line, key, lineNumber);
+					}
+					std::string value;
+					std::getline(lineStream, value);
+					Utils::str_trim(value);
+
+					if (key == NUM_KEY)
+					{
+						pCurrentRecord->num = parseUnsigned(m_path, line, lineNumber, key, value);
+					}
+					else if (key == TYPE_KEY)
+					{
+						if (value == ToolRecord::TYPE_PLATED) pCurrentRecord->type = ToolRecord::Type::Plated;
+						else if (value == ToolRecord::TYPE_NON_PLATED) pCurrentRecord->type = ToolRecord::Type::NonPlated;
+						else if (value == ToolRecord::TYPE_VIA) pCurrentRecord->type = ToolRecord::Type::Via;
+						else throw_parse_error(m_path, line, value, lineNumber);
+					}
+					else if (key == TYPE2_KEY)
+					{
+						if (value == ToolRecord::SUB_TYPE_STANDARD) pCurrentRecord->subType = ToolRecord::SubType::Standard;
+						else if (value == ToolRecord::SUB_TYPE_PRESS_FIT) pCurrentRecord->subType = ToolRecord::SubType::PressFit;
+						else if (value == ToolRecord::SUB_TYPE_PHOTO) pCurrentRecord->subType = ToolRecord::SubType::Photo;
+						else if (value == ToolRecord::SUB_TYPE_LASER) pCurrentRecord->subType = ToolRecord::SubType::Laser;
+						else throw_parse_error(m_path, line, value, lineNumber);
+					}
+					else if (key == MIN_TOL_KEY)
+					{
+						pCurrentRecord->minTol = value.empty() ? 0.0 : parseDouble(m_path, line, lineNumber, key, value);
+					}
+					else if (key == MAX_TOL_KEY)
+					{
+						pCurrentRecord->maxTol = value.empty() ? 0.0 : parseDouble(m_path, line, lineNumber, key, value);
+					}
+					else if (key == BIT_KEY)
+					{
+						pCurrentRecord->bit = value;
+					}
+					else if (key == FINISH_SIZE_KEY)
+					{
+						// spec: -1 when not set
+						pCurrentRecord->finishSize = value.empty() ? -1.0 : parseDouble(m_path, line, lineNumber, key, value);
+					}
+					else if (key == DRILL_SIZE_KEY)
+					{
+						pCurrentRecord->drillSize = value.empty() ? -1.0 : parseDouble(m_path, line, lineNumber, key, value);
+					}
+					else
+					{
+						throw_parse_error(m_path, line, key, lineNumber);
+					}
+				}
+			}
+
+			if (parsingRecord)
+			{
+				throw_parse_error(m_path, "EOF", Constants::ARRAY_RECORD_CLOSE_TOKEN, lineNumber);
 			}
 
 			toolsFile.close();
@@ -327,7 +361,7 @@ namespace Odb::Lib::FileModel::Design
 			auto m = pe.toString("Parse Error:");
 			logerror(m);
 			toolsFile.close();
-			throw pe;
+			throw;
 		}
 		catch (std::exception& e)
 		{
@@ -335,7 +369,10 @@ namespace Odb::Lib::FileModel::Design
 			const auto m = pi.toString();
 			logexception_msg(e, m);
 			toolsFile.close();
-			throw e;
+			// bare rethrow preserves the original exception type; rethrowing
+			// the caught variable would slice invalid_odb_error/parse_error to
+			// std::exception
+			throw;
 		}
 
 		return true;
@@ -343,93 +380,104 @@ namespace Odb::Lib::FileModel::Design
 
 	bool ToolsFile::Save(std::ostream& os)
 	{
-		os << Constants::UNITS_TOKEN << " = " << m_units << std::endl;
-		os << ToolsFile::THICKNESS_TOKEN << " = " << std::to_string(m_thickness) << std::endl;
-		os << ToolsFile::USER_PARAMS_TOKEN << " = " << m_user_params << std::endl;
-
-		for (const auto& [toolNum, tool_info] : m_toolsByNum)
+		os << Constants::UNITS_TOKEN << "=" << m_units << std::endl;
+		os << THICKNESS_KEY << "=" << format_double(m_thickness) << std::endl;
+		for (const auto& userParam : m_userParams)
 		{
-			os << ToolsRecord::RECORD_TOKEN << " " << Constants::ARRAY_RECORD_OPEN_TOKEN << std::endl;
+			os << USER_PARAMS_KEY << "=" << userParam << std::endl;
+		}
 
-			os << '\t' << ToolsRecord::NUM_KEY << "=" << toolNum << std::endl;
-			os << '\t' << ToolsRecord::TYPE_KEY << "=" << ToolsRecord::typeMap.getValue(tool_info->type) << std::endl;
-			os << '\t' << ToolsRecord::TYPE2_KEY << "=" << ToolsRecord::type2Map.getValue(tool_info->type2) << std::endl;
-			os << '\t' << ToolsRecord::MIN_TOL_KEY << "=" << tool_info->minTOL << std::endl;
-			os << '\t' << ToolsRecord::MAX_TOL_KEY << "=" << tool_info->maxTOL << std::endl;
-			os << '\t' << ToolsRecord::BIT_KEY << "=" << tool_info->drillBit << std::endl;
-			os << '\t' << ToolsRecord::FINISH_SIZE_KEY << "=" << tool_info->finishSize << std::endl;
-			os << '\t' << ToolsRecord::DRILL_SIZE_KEY << "=" << tool_info->drillSize << std::endl;
-
+		for (const auto& pTool : m_tools)
+		{
+			if (pTool->type == ToolRecord::Type::Unknown)
+			{
+				// TYPE=UNKNOWN is not part of the file grammar; a record with
+				// no type cannot round-trip and must fail loudly, not corrupt
+				throw_parse_error(m_path, "", TYPE_KEY, 0);
+			}
+			os << TOOLS_ARRAY_TOKEN << " " << Constants::ARRAY_RECORD_OPEN_TOKEN << std::endl;
+			os << '\t' << NUM_KEY << "=" << pTool->num << std::endl;
+			os << '\t' << TYPE_KEY << "=" << ToolRecord::typeName(pTool->type) << std::endl;
+			os << '\t' << TYPE2_KEY << "=" << ToolRecord::subTypeName(pTool->subType) << std::endl;
+			os << '\t' << MIN_TOL_KEY << "=" << format_double(pTool->minTol) << std::endl;
+			os << '\t' << MAX_TOL_KEY << "=" << format_double(pTool->maxTol) << std::endl;
+			os << '\t' << BIT_KEY << "=" << pTool->bit << std::endl;
+			os << '\t' << FINISH_SIZE_KEY << "=" << format_double(pTool->finishSize) << std::endl;
+			os << '\t' << DRILL_SIZE_KEY << "=" << format_double(pTool->drillSize) << std::endl;
 			os << Constants::ARRAY_RECORD_CLOSE_TOKEN << std::endl;
-			os << std::endl;
 		}
 
 		return true;
 	}
 
-	std::unique_ptr<Odb::Lib::Protobuf::ToolsFile::ToolsRecord>Odb::Lib::FileModel::Design::ToolsFile::ToolsRecord::to_protobuf() const
-	{
-		std::unique_ptr<Odb::Lib::Protobuf::ToolsFile::ToolsRecord> pToolsRecordMessage(new Odb::Lib::Protobuf::ToolsFile::ToolsRecord);
-		pToolsRecordMessage->set_tool_num(toolNum);
-		pToolsRecordMessage->set_type(static_cast<Odb::Lib::Protobuf::ToolsFile::ToolsRecord::Type>(type));
-		pToolsRecordMessage->set_type2(static_cast<Odb::Lib::Protobuf::ToolsFile::ToolsRecord::Type2>(type2));
-		pToolsRecordMessage->set_min_tol(minTOL);
-		pToolsRecordMessage->set_max_tol(maxTOL);
-		pToolsRecordMessage->set_drill_bit(Odb::Lib::Text::ToUtf8(drillBit));
-		pToolsRecordMessage->set_finish_size(finishSize);
-		pToolsRecordMessage->set_drill_size(drillSize);
-
-		return pToolsRecordMessage;
-	}
-
-	void Odb::Lib::FileModel::Design::ToolsFile::ToolsRecord::from_protobuf(const Odb::Lib::Protobuf::ToolsFile::ToolsRecord& message)
-	{
-		toolNum = message.tool_num();
-		type = static_cast<Type>(message.type());
-		type2 = static_cast<Type2>(message.type2());
-		minTOL = message.min_tol();
-		maxTOL = message.max_tol();
-		drillBit = message.drill_bit();
-		finishSize = message.finish_size();
-		drillSize = message.drill_size();
-	}
-
-	std::unique_ptr<Odb::Lib::Protobuf::ToolsFile> Lib::FileModel::Design::ToolsFile::to_protobuf() const
+	std::unique_ptr<Odb::Lib::Protobuf::ToolsFile> ToolsFile::to_protobuf() const
 	{
 		auto message = std::make_unique<Odb::Lib::Protobuf::ToolsFile>();
 
 		message->set_directory(Odb::Lib::Text::ToUtf8(m_directory.string()));
 		message->set_path(Odb::Lib::Text::ToUtf8(m_path.string()));
 		message->set_units(Odb::Lib::Text::ToUtf8(m_units));
-
 		message->set_thickness(m_thickness);
-		message->set_user_params(Odb::Lib::Text::ToUtf8(m_user_params));
-
-		auto* tools_map = message->mutable_tools();
-		for (const auto& [toolNum, toolsRecord] : m_toolsByNum)
+		for (const auto& userParam : m_userParams)
 		{
-			auto& recordMsg = (*tools_map)[toolNum];
-			recordMsg.CopyFrom(*toolsRecord->to_protobuf());
+			message->add_userparams(Odb::Lib::Text::ToUtf8(userParam));
+		}
+		for (const auto& pTool : m_tools)
+		{
+			message->add_tools()->CopyFrom(*pTool->to_protobuf());
 		}
 
 		return message;
 	}
 
-	void Lib::FileModel::Design::ToolsFile::from_protobuf(const Odb::Lib::Protobuf::ToolsFile& message)
+	void ToolsFile::from_protobuf(const Odb::Lib::Protobuf::ToolsFile& message)
 	{
 		m_directory = message.directory();
 		m_path = message.path();
-
 		m_units = message.units();
 		m_thickness = message.thickness();
-		m_user_params = message.user_params();
-
-		for (const auto& [toolNum, toolsRecord] : message.tools())
+		for (const auto& userParam : message.userparams())
 		{
-			auto ptoolsRecord = std::make_shared<ToolsRecord>();
-			ptoolsRecord->from_protobuf(toolsRecord);
-			m_toolsByNum.emplace(toolNum, ptoolsRecord);
+			m_userParams.push_back(userParam);
+		}
+		for (const auto& tool : message.tools())
+		{
+			auto pTool = std::make_shared<ToolRecord>();
+			pTool->from_protobuf(tool);
+			m_tools.push_back(pTool);
 		}
 	}
 
-} // namespace Odb::Lib::FileModel::Design
+	std::unique_ptr<Odb::Lib::Protobuf::ToolsFile::Tool> ToolsFile::ToolRecord::to_protobuf() const
+	{
+		auto message = std::make_unique<Odb::Lib::Protobuf::ToolsFile::Tool>();
+
+		message->set_num(num);
+		message->set_type(static_cast<Odb::Lib::Protobuf::ToolsFile::ToolType>(type));
+		message->set_subtype(static_cast<Odb::Lib::Protobuf::ToolsFile::ToolSubType>(subType));
+		message->set_mintol(minTol);
+		message->set_maxtol(maxTol);
+		message->set_bit(Odb::Lib::Text::ToUtf8(bit));
+		message->set_finishsize(finishSize);
+		message->set_drillsize(drillSize);
+
+		return message;
+	}
+
+	void ToolsFile::ToolRecord::from_protobuf(const Odb::Lib::Protobuf::ToolsFile::Tool& message)
+	{
+		num = message.num();
+		type = static_cast<Type>(message.type());
+		// absent sub-type deserializes to the parse-time default (STANDARD),
+		// not Unknown — matches a record parsed from a file without TYPE2
+		subType = message.has_subtype()
+			? static_cast<SubType>(message.subtype())
+			: SubType::Standard;
+		minTol = message.mintol();
+		maxTol = message.maxtol();
+		bit = message.bit();
+		// absent sizes keep the spec's -1 "unset" sentinel rather than 0.0
+		finishSize = message.has_finishsize() ? message.finishsize() : -1.0;
+		drillSize = message.has_drillsize() ? message.drillsize() : -1.0;
+	}
+}
