@@ -7,20 +7,20 @@ ms.topic: reference
 # vcpkg-configuration.json Reference
 
 The `vcpkg-configuration.json` file forms part of a project's
-[manifest](../concepts/manifest-mode.md), along with
-[`vcpkg.json`](vcpkg-json.md). All fields in the `vcpkg-configuration.json` file
+[manifest](https://learn.microsoft.com/en-us/vcpkg/concepts/manifest-mode), along with
+[`vcpkg.json`](https://learn.microsoft.com/en-us/vcpkg/reference/vcpkg-json). All fields in the `vcpkg-configuration.json` file
 are only used from the top-level project -- the `vcpkg-configuration.json` files
 in any dependencies are ignored.
 
-In [Manifest Mode](../concepts/manifest-mode.md), `vcpkg-configuration.json` can
-be in a separate file beside [`vcpkg.json`](vcpkg-json.md) or it can be embedded
-in the [`"configuration" field`](vcpkg-json.md#configuration).
+In [Manifest Mode](https://learn.microsoft.com/en-us/vcpkg/concepts/manifest-mode), `vcpkg-configuration.json` can
+be in a separate file beside [`vcpkg.json`](https://learn.microsoft.com/en-us/vcpkg/reference/vcpkg-json) or it can be embedded
+in the [`"configuration" field`](https://learn.microsoft.com/en-us/vcpkg/reference/vcpkg-json#configuration).
 
-In [Classic Mode](../concepts/classic-mode.md), vcpkg will use the
+In [Classic Mode](https://learn.microsoft.com/en-us/vcpkg/concepts/classic-mode), vcpkg will use the
 `vcpkg-configuration.json` file in the
-[root](../commands/common-options.md#vcpkg-root) of the vcpkg instance.
+[root](https://learn.microsoft.com/en-us/vcpkg/commands/common-options#vcpkg-root) of the vcpkg instance.
 
-For an overview of using registries with vcpkg, see [Using Registries](../consume/git-registries.md).
+For an overview of using registries with vcpkg, see [Using Registries](https://learn.microsoft.com/en-us/vcpkg/consume/git-registries).
 
 The latest JSON Schema is available at [https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg-configuration.schema.json](https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg-configuration.schema.json). IDEs with JSON Schema support such as Visual Studio and Visual Studio Code can use this file to provide autocomplete and syntax checking. For most IDEs, you should set `"$schema"` in your `vcpkg-configuration.json` to this URL.
 
@@ -68,7 +68,7 @@ The example also configures custom overlays for ports and triplets that are pres
 
 The registry to use for all ports without a more specific registry. A [Registry][] or null. Optional.
 
-Ports that do not match any [`"packages"`](#registry-packages) pattern are resolved to the default registry. If the default registry is specified as `null`, ports that do not match will fail to resolve. If the default registry is omitted, it will implicitly be set to a [Builtin Registry][] using the value of [`"builtin-baseline"`](vcpkg-json.md#builtin-baseline) as the [`"baseline"`](#registry-baseline).
+Ports that do not match any [`"packages"`](#registry-packages) pattern are resolved to the default registry. If the default registry is specified as `null`, ports that do not match will fail to resolve. If the default registry is omitted, it will implicitly be set to a [Builtin Registry][] using the value of [`"builtin-baseline"`](https://learn.microsoft.com/en-us/vcpkg/reference/vcpkg-json#builtin-baseline) as the [`"baseline"`](#registry-baseline).
 
 ### <a name="registries"></a> `"registries"`
 
@@ -89,7 +89,7 @@ Relative paths are resolved relative to the `vcpkg-configuration.json` file. Abs
 
 A list of triplet overlay paths. An array of strings. Optional.
 
-Each path in the array must point to a directory of triplet files ([see triplets documentation](../users/triplets.md)). Relative paths are resolved relative to the `vcpkg-configuration.json` file. Absolute paths can be used but are discouraged.
+Each path in the array must point to a directory of triplet files ([see triplets documentation](https://learn.microsoft.com/en-us/vcpkg/users/triplets)). Relative paths are resolved relative to the `vcpkg-configuration.json` file. Absolute paths can be used but are discouraged.
 
 ## <a name="registry"></a> Registry Fields
 
@@ -168,8 +168,8 @@ Package patterns may contain only lowercase letters, digits, and `-`, with an op
 * `a+` (`+` is not a valid pattern character)
 * `a?` (`?` is not a valid pattern character)
 
-See the [Using Registries documentation](../concepts/package-name-resolution.md) for more information on how port names are resolved.
+See the [Using Registries documentation](https://learn.microsoft.com/en-us/vcpkg/concepts/package-name-resolution) for more information on how port names are resolved.
 
-[Git Registry]: ../concepts/registries.md#git-registries
-[Filesystem Registry]: ../concepts/registries.md#filesystem-registries
-[Builtin Registry]: ../concepts/registries.md#built-in-registry
+[Git Registry]: https://learn.microsoft.com/en-us/vcpkg/concepts/registries#git-registries
+[Filesystem Registry]: https://learn.microsoft.com/en-us/vcpkg/concepts/registries#filesystem-registries
+[Builtin Registry]: https://learn.microsoft.com/en-us/vcpkg/concepts/registries#built-in-registry
