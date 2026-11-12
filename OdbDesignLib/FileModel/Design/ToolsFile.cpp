@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <charconv>
+#include <stdexcept>
 #include <cerrno>
 #include <cmath>
 #include <cstdlib>
@@ -19,6 +20,12 @@ namespace
 	// fixed/scientific surprises in Save output)
 	std::string format_double(double value)
 	{
+		// non-finite values have no ODB++ representation; emitting inf/nan
+		// would produce a file our own parser (isfinite check) rejects
+		if (!std::isfinite(value))
+		{
+			throw std::domain_error("non-finite numeric value cannot be serialized to the tools file grammar");
+		}
 		char buffer[64];
 		const auto result = std::to_chars(buffer, buffer + sizeof(buffer), value);
 		if (result.ec != std::errc())
@@ -285,6 +292,12 @@ namespace Odb::Lib::FileModel::Design
 
 					Utils::str_trim(key);
 
+					if (line.find('=') == std::string::npos)
+					{
+						// no '=' on the line at all — not a key/value field
+						// (trailing '=' with empty value, e.g. BIT=, is legal)
+						throw_parse_error(m_path, line, key, lineNumber);
+					}
 					std::string value;
 					std::getline(lineStream, value);
 					Utils::str_trim(value);
@@ -348,7 +361,7 @@ namespace Odb::Lib::FileModel::Design
 			auto m = pe.toString("Parse Error:");
 			logerror(m);
 			toolsFile.close();
-			throw pe;
+			throw;
 		}
 		catch (std::exception& e)
 		{
@@ -356,7 +369,10 @@ namespace Odb::Lib::FileModel::Design
 			const auto m = pi.toString();
 			logexception_msg(e, m);
 			toolsFile.close();
-			throw e;
+			// bare rethrow preserves the original exception type; rethrowing
+			// the caught variable would slice invalid_odb_error/parse_error to
+			// std::exception
+			throw;
 		}
 
 		return true;
@@ -373,6 +389,12 @@ namespace Odb::Lib::FileModel::Design
 
 		for (const auto& pTool : m_tools)
 		{
+			if (pTool->type == ToolRecord::Type::Unknown)
+			{
+				// TYPE=UNKNOWN is not part of the file grammar; a record with
+				// no type cannot round-trip and must fail loudly, not corrupt
+				throw_parse_error(m_path, "", TYPE_KEY, 0);
+			}
 			os << TOOLS_ARRAY_TOKEN << " " << Constants::ARRAY_RECORD_OPEN_TOKEN << std::endl;
 			os << '\t' << NUM_KEY << "=" << pTool->num << std::endl;
 			os << '\t' << TYPE_KEY << "=" << ToolRecord::typeName(pTool->type) << std::endl;
@@ -454,7 +476,8 @@ namespace Odb::Lib::FileModel::Design
 		minTol = message.mintol();
 		maxTol = message.maxtol();
 		bit = message.bit();
-		finishSize = message.finishsize();
-		drillSize = message.drillsize();
+		// absent sizes keep the spec's -1 "unset" sentinel rather than 0.0
+		finishSize = message.has_finishsize() ? message.finishsize() : -1.0;
+		drillSize = message.has_drillsize() ? message.drillsize() : -1.0;
 	}
 }

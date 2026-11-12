@@ -19,6 +19,7 @@
 #include <ostream>
 #include <sstream>
 #include <array>
+#include <limits>
 #include <vector>
 
 namespace fs = std::filesystem;
@@ -283,6 +284,121 @@ TEST(RgbColorTests, StringRoundTrip_PreservesComponents)
 	// exception
 	RgbColor bad;
 	EXPECT_FALSE(bad.from_string("ABCDEF"));
+}
+
+TEST(ToolsFileTests, FromProtobuf_AbsentSizes_UseUnsetSentinel)
+{
+	// protobuf-built record with no sizes set: -1 sentinel, not 0.0
+	Odb::Lib::Protobuf::ToolsFile::Tool message;
+	message.set_num(7);
+	message.set_type(Odb::Lib::Protobuf::ToolsFile::VIA);
+
+	ToolsFile::ToolRecord record;
+	record.from_protobuf(message);
+	EXPECT_DOUBLE_EQ(record.finishSize, -1.0);
+	EXPECT_DOUBLE_EQ(record.drillSize, -1.0);
+	EXPECT_EQ(record.subType, ToolsFile::ToolRecord::SubType::Standard);
+
+	// unset sub-type: parse-time default Standard, never Unknown
+	EXPECT_NE(record.subType, ToolsFile::ToolRecord::SubType::Unknown);
+}
+
+TEST(ToolsFileTests, Save_UnknownToolType_Throws)
+{
+	// a tool with no type set deserializes to Unknown; serializing it back
+	// would emit TYPE=UNKNOWN which no parser accepts — Save must refuse
+	Odb::Lib::Protobuf::ToolsFile message;
+	auto* pTool = message.add_tools(); // deliberately no type set
+
+	ToolsFile toolsFile;
+	toolsFile.from_protobuf(message);
+	std::ostringstream out;
+	ASSERT_THROW(toolsFile.Save(out), Odb::Lib::FileModel::parse_error);
+}
+
+TEST(ToolsFileTests, Save_NonFiniteSize_Throws)
+{
+	// a hostile protobuf carrying inf must not be serializable to the
+	// grammar (parseDouble would reject "inf" on re-parse)
+	Odb::Lib::Protobuf::ToolsFile message;
+	auto* pTool = message.add_tools();
+	pTool->set_num(1);
+	pTool->set_type(Odb::Lib::Protobuf::ToolsFile::VIA);
+	pTool->set_finishsize(std::numeric_limits<double>::infinity());
+
+	ToolsFile toolsFile;
+	toolsFile.from_protobuf(message);
+	std::ostringstream out;
+	ASSERT_THROW(toolsFile.Save(out), std::domain_error);
+}
+
+TEST(ToolsFileTests, Parse_BareKeyWithoutEquals_Throws)
+{
+	// "GARBAGELINE" (no '=' at all) must be a parse error, not a silently
+	// accepted empty-valued parameter
+	const auto dir = writeTempToolsFile(
+		"UNITS=INCH\n"
+		"GARBAGELINE\n", "bare_key");
+
+	ToolsFile toolsFile;
+	ASSERT_THROW(toolsFile.Parse(dir), Odb::Lib::FileModel::parse_error);
+
+	// explicit empty value (USER_PARAMS=) is still legal
+	const auto dir2 = writeTempToolsFile(
+		"UNITS=INCH\n"
+		"USER_PARAMS=\n", "empty_value_ok");
+	ToolsFile toolsFile2;
+	ASSERT_TRUE(toolsFile2.Parse(dir2));
+}
+
+TEST(RgbColorTests, FromString_RejectsOutOfDomain)
+{
+	RgbColor color;
+	EXPECT_FALSE(color.from_string("-10101"));  // negative component
+	EXPECT_FALSE(color.from_string("AB12CD"));   // non-numeric
+	EXPECT_FALSE(color.from_string("6060 0"));   // whitespace inside
+	// note: values above 99 are unrepresentable in the two-digit-per-
+	// component form, so parsing can never produce them; only negative
+	// signs and non-numerics can violate the domain
+
+	EXPECT_TRUE(color.from_string("606090"));
+	EXPECT_FALSE(color.noPreference);
+	EXPECT_EQ(color.red, 60);
+	EXPECT_EQ(color.green, 60);
+	EXPECT_EQ(color.blue, 90);
+
+	RgbColor zero;
+	EXPECT_TRUE(zero.from_string("000000"));
+	EXPECT_EQ(zero.red, 0);
+}
+
+TEST(RgbColorTests, ToString_HundredComponent_Throws)
+{
+	RgbColor color;
+	ASSERT_TRUE(color.from_string("990099"));
+	color.red = 100;
+	EXPECT_THROW(color.to_string(), std::domain_error);
+}
+
+TEST(MatrixColorTests, ExplicitColor_ProtobufRoundTrip_NonVacuous)
+{
+	// non-vacuous: an explicit (non-default) color must survive the
+	// protobuf round-trip — guards against assertions passing on defaults
+	MatrixFile::LayerRecord record;
+	ASSERT_TRUE(record.color.from_string("606090"));
+	EXPECT_FALSE(record.color.noPreference);
+
+	auto pMessage = record.to_protobuf();
+	EXPECT_EQ(pMessage->color().red(), 60);
+	EXPECT_EQ(pMessage->color().green(), 60);
+	EXPECT_EQ(pMessage->color().blue(), 90);
+
+	MatrixFile::LayerRecord roundTripped;
+	roundTripped.from_protobuf(*pMessage);
+	EXPECT_EQ(roundTripped.color.red, 60);
+	EXPECT_EQ(roundTripped.color.green, 60);
+	EXPECT_EQ(roundTripped.color.blue, 90);
+	EXPECT_FALSE(roundTripped.color.noPreference);
 }
 
 TEST(ToolsFileTests, RealDesigns_LayersCarryParsedTools)

@@ -1,5 +1,7 @@
 #include "RgbColor.h"
 #include <cstdint>
+#include <charconv>
+#include <stdexcept>
 
 namespace Odb::Lib::FileModel::Design
 {
@@ -21,24 +23,24 @@ namespace Odb::Lib::FileModel::Design
     {
         if (str.length() == 6)
         {
-            auto strRed = str.substr(0, 2);
-            auto strGreen = str.substr(2, 2);
-            auto strBlue = str.substr(4, 2);
-
-            try
+            // parse each two-digit component with from_chars: full
+            // consumption (rejects "-1", "+1", "1x"), no exceptions, and
+            // an explicit [0,100] domain check on the result
+            int components[3] = { 0, 0, 0 };
+            for (int i = 0; i < 3; ++i)
             {
-                // valid values are [0,100]
-                red = static_cast<uint8_t>(std::stoi(strRed));
-                green = static_cast<uint8_t>(std::stoi(strGreen));
-                blue = static_cast<uint8_t>(std::stoi(strBlue));
-            }
-            catch (const std::exception&)
-            {
-                // non-numeric component; report as unparsable rather than
-                // letting stoi escape as an unrelated exception
-                return false;
+                const auto* first = str.data() + i * 2;
+                const auto* last = first + 2;
+                const auto [ptr, ec] = std::from_chars(first, last, components[i]);
+                if (ec != std::errc() || ptr != last || components[i] < 0 || components[i] > 100)
+                {
+                    return false;
+                }
             }
 
+            red = static_cast<uint8_t>(components[0]);
+            green = static_cast<uint8_t>(components[1]);
+            blue = static_cast<uint8_t>(components[2]);
             noPreference = false;
             return true;
         }
@@ -65,14 +67,18 @@ namespace Odb::Lib::FileModel::Design
             // each component is a two-digit zero-padded decimal, so the
             // concatenation is exactly the six-character form from_string
             // parses (e.g. (6, 6, 6) -> "060606", not "666")
+            // the six-character form holds exactly two digits per component;
+            // a value of 100 is unrepresentable and must fail loudly rather
+            // than emit a three-digit run our own parser rejects
+            if (red > 99 || green > 99 || blue > 99)
+            {
+                throw std::domain_error("color component of 100 is not representable in the two-digit ODB COLOR form");
+            }
             auto twoDigits = [](uint8_t value) -> std::string
             {
                 if (value < 10) return "0" + std::to_string(value);
                 return std::to_string(value);
             };
-            // note: a component of exactly 100 emits three digits and cannot
-            // round-trip through the six-character form; the ODB matrix
-            // samples use two-digit percent values
             return twoDigits(red) + twoDigits(green) + twoDigits(blue);
         }
     }
