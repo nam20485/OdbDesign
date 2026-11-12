@@ -4,6 +4,7 @@
 #include <iostream>
 #include <filesystem>
 #include "Logger.h"
+#include "PathSafety.h"
 #include <cstdio>
 #include "FileReader.h"
 #include <sys/stat.h>
@@ -16,48 +17,42 @@ using namespace std::filesystem;
 
 namespace Utils
 {
-    int copy_data(struct archive* ar, struct archive* aw);
-
-    const bool SECURE_EXTRACTION = true;
     const size_t BYTES_PER_KB = 1024UL;
     const size_t READ_OPEN_BLOCK_SIZE = BYTES_PER_KB * 10UL;
 
     bool extract(const char* filename, const char* destDir)
     {
+        // Security-audit F003: this extractor previously handed every entry to
+        // archive_write_disk with PERM/ACL/FFLAGS restoration enabled, so a
+        // crafted archive chose its own file modes, and ARCHIVE_EXTRACT_SECURE_
+        // NOABSOLUTEPATHS could not simply be turned on: the write path
+        // PREPENDS destDir to each entry and writes the joined ABSOLUTE
+        // pathname, which that flag rejects outright (why it was commented
+        // out). Instead of patching flags onto a write path we do not
+        // control, extraction now takes write ownership itself: every entry
+        // name is validated BEFORE any join, regular files are written
+        // through ofstream (umask permissions - archive modes are never
+        // applied), directories are created with default permissions, and
+        // every other entry type (symlink, hardlink, device, fifo) is
+        // refused. ODB++ design archives carry only files and directories,
+        // so nothing legitimate is lost.
         struct archive* a;
-        struct archive* ext;
         struct archive_entry* entry;
-        int flags;
         int r;
-
-        /* Select which attributes we want to restore. */
-        flags = ARCHIVE_EXTRACT_TIME;
-        flags |= ARCHIVE_EXTRACT_PERM;
-        flags |= ARCHIVE_EXTRACT_ACL;
-        flags |= ARCHIVE_EXTRACT_FFLAGS;
-
-        if (SECURE_EXTRACTION)
-        {
-            flags |= ARCHIVE_EXTRACT_SECURE_SYMLINKS;
-            flags |= ARCHIVE_EXTRACT_SECURE_NODOTDOT;
-            //flags |= ARCHIVE_EXTRACT_SECURE_NOABSOLUTEPATHS;
-        }        
 
         a = archive_read_new();
         archive_read_support_format_all(a);
         archive_read_support_filter_all(a);
-        //archive_read_support_format_tar(a);
-        //archive_read_support_filter_gzip(a);
-        ext = archive_write_disk_new();
-        archive_write_disk_set_options(ext, flags);
-        archive_write_disk_set_standard_lookup(ext);
         r = archive_read_open_filename(a, filename, READ_OPEN_BLOCK_SIZE);
         if (r != ARCHIVE_OK)
         {
             auto errNo = archive_errno(a);
             fprintf(stderr, "%s (%d)\n", archive_error_string(a), errNo);
+            archive_read_free(a);
             return false;
         }
+
+        const std::filesystem::path destinationDir(destDir);
 
         for (;;) {
             r = archive_read_next_header(a, &entry);
@@ -67,79 +62,109 @@ namespace Utils
                 fprintf(stderr, "%s\n", archive_error_string(a));
             if (r < ARCHIVE_WARN)
             {
+                archive_read_free(a);
                 return false;
             }
 
-            // prepend destPath to beginning of entry to extract it in the destination path
+            // Validate the entry name BEFORE joining. std::filesystem
+            // "base / name" discards the base entirely for a rooted name, and
+            // a ".." component climbs out - reject both (and control
+            // characters, drive forms, and backslash traversal). A hostile
+            // entry fails the whole extraction: silently skipping an entry
+            // would yield a design that parses wrong.
             std::string entryPathname = archive_entry_pathname(entry);
-            std::filesystem::path entryDestinationPathname(destDir);
-            entryDestinationPathname /= entryPathname;  
-            //auto relativeEntryDestinationPathname = relative(entryDestinationPathname, current_path());
+            if (entryPathname.empty() || !is_safe_relative_entry_path(entryPathname))
+            {
+                logerror("Refusing unsafe archive entry name: [" + entryPathname + "]");
+                archive_read_free(a);
+                return false;
+            }
+            const auto entryDestinationPath = destinationDir / entryPathname;
 
             logdebug("Extracting, destination dir: [" + std::string(destDir) + "]");
             logdebug("Extracting, entry path name: [" + entryPathname + "]");
-            logdebug("Extracting, destination path name: [" + entryDestinationPathname.string() + "]");
-            //loginfo("Extracting, relative destination path name: [" + relativeEntryDestinationPathname.string() + "]");
+            logdebug("Extracting, destination path name: [" + entryDestinationPath.string() + "]");
 
-            archive_entry_set_pathname(entry, entryDestinationPathname.string().c_str());
-
-            r = archive_write_header(ext, entry);
-            if (r < ARCHIVE_OK)
-                fprintf(stderr, "archive_write_header failed: %s\n", archive_error_string(ext));
-            else if (archive_entry_size(entry) > 0)
+            const auto fileType = archive_entry_filetype(entry);
+            if (fileType == AE_IFDIR)
             {
-                r = copy_data(a, ext);
-                if (r < ARCHIVE_OK)
-                    fprintf(stderr, "%s\n", archive_error_string(ext));
-                if (r < ARCHIVE_WARN)
+                std::error_code ec;
+                create_directories(entryDestinationPath, ec);
+                if (ec)
                 {
+                    logerror("Failed creating extraction directory [" + entryDestinationPath.string() + "]: " + ec.message());
+                    archive_read_free(a);
+                    return false;
+                }
+                continue;
+            }
+
+            if (fileType != AE_IFREG)
+            {
+                // symlinks/hardlinks/devices/fifos have no place in a design
+                // archive and are write primitives in every other context
+                logerror("Refusing non-regular archive entry: [" + entryPathname + "]");
+                archive_read_free(a);
+                return false;
+            }
+
+            std::error_code ec;
+            if (entryDestinationPath.has_parent_path())
+            {
+                create_directories(entryDestinationPath.parent_path(), ec);
+                if (ec)
+                {
+                    logerror("Failed creating extraction parent directory [" + entryDestinationPath.parent_path().string() + "]: " + ec.message());
+                    archive_read_free(a);
                     return false;
                 }
             }
-            r = archive_write_finish_entry(ext);
-            if (r < ARCHIVE_OK)
-                fprintf(stderr, "%s\n", archive_error_string(ext));
-            if (r < ARCHIVE_WARN)
+
+            std::ofstream outputStream(entryDestinationPath, std::ios::binary | std::ios::trunc);
+            if (!outputStream)
             {
+                logerror("Failed opening extraction file [" + entryDestinationPath.string() + "]");
+                archive_read_free(a);
                 return false;
             }
+
+            // stream the entry payload block by block; read_data_block
+            // reports EOF at the end of THIS entry's data
+            for (;;)
+            {
+                const void* buff = nullptr;
+                size_t size = 0;
+                la_int64_t offset = 0;
+
+                r = archive_read_data_block(a, &buff, &size, &offset);
+                if (r == ARCHIVE_EOF)
+                {
+                    break;
+                }
+                if (r < ARCHIVE_OK)
+                {
+                    fprintf(stderr, "%s\n", archive_error_string(a));
+                    archive_read_free(a);
+                    return false;
+                }
+
+                outputStream.write(static_cast<const char*>(buff), static_cast<std::streamsize>(size));
+                if (!outputStream)
+                {
+                    logerror("Failed writing extraction file [" + entryDestinationPath.string() + "]");
+                    archive_read_free(a);
+                    return false;
+                }
+            }
+            outputStream.close();
         }
+
         archive_read_close(a);
         archive_read_free(a);
-        archive_write_close(ext);
-        archive_write_free(ext);
 
         return true;
-    }  
-
-    int copy_data(struct archive* ar, struct archive* aw)
-    {
-        int r;
-        const void* buff;
-        size_t size;
-        la_int64_t offset;
-        la_ssize_t written;
-
-        for (;;)
-        {
-            r = archive_read_data_block(ar, &buff, &size, &offset);
-            if (r == ARCHIVE_EOF)
-            {
-                return (ARCHIVE_OK);
-            }
-            else if (r < ARCHIVE_OK)
-            {
-                return (r);
-            }
-
-            written = archive_write_data_block(aw, buff, size, offset);
-            if (written < ARCHIVE_OK)
-            {
-                fprintf(stderr, "%s\n", archive_error_string(aw));
-                return (r);
-            }
-        }
     }
+
 
     constexpr inline static const char* TGZ_EXTENSION = ".tgz";
     constexpr static const int READ_BUFF_SIZE = 1024;    

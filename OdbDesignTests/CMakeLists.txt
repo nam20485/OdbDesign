@@ -15,6 +15,7 @@ add_executable(OdbDesignTests
     "Fixtures/TestDataFixture.h"
     "Fixtures/TestDataFixture.cpp"
     "ArchiveExtractorTests.cpp"
+    "ArchiveSecurityTests.cpp"
     "PerformanceTests.cpp"
     "EnhancedTests.cpp"
     "IntegrationTests.cpp"
