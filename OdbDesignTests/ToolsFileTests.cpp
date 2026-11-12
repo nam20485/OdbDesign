@@ -209,10 +209,9 @@ TEST(ToolsFileTests, Parse_BareKeyInsideRecord_Throws)
 	const auto dir = writeTempToolsFile(
 		"UNITS=INCH\n"
 		"TOOLS {\n"
-		"    GARBAGETOKEN\n"
-		"    NUM=1\n"
+		"    NUM\n"
 		"    TYPE=VIA\n"
-		"}\n", "bare_key_in_record");
+		"}\n", "bare_known_key_in_record");
 
 	ToolsFile toolsFile;
 	ASSERT_THROW(toolsFile.Parse(dir), Odb::Lib::FileModel::parse_error);
