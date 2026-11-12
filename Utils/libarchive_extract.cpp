@@ -232,7 +232,6 @@ namespace Utils
             // offset and zero-fill any gap so the file content is never
             // silently shifted.
             la_int64_t expectedOffset = 0;
-            static const char zeroPadding[512] = {};
             for (;;)
             {
                 const void* buff = nullptr;
@@ -251,22 +250,19 @@ namespace Utils
                     return false;
                 }
 
-                if (offset > expectedOffset)
+                // Design archives are contiguous by construction (CAD tools
+                // do not emit sparse tars): ANY non-contiguous extent - a
+                // declared sparse hole (offset > expected, which zero-filling
+                // would materialize as attacker-declared unbounded zeros: a
+                // disk-exhaustion DoS) or a backwards/overlapping map
+                // (offset < expected, which silently shifts/duplicates
+                // content) - is malformed or hostile, so fail closed.
+                if (offset != expectedOffset)
                 {
-                    // sparse hole: zero-fill up to the next extent
-                    auto gap = offset - expectedOffset;
-                    while (gap > 0)
-                    {
-                        const auto chunk = static_cast<std::streamsize>(std::min<la_int64_t>(gap, static_cast<la_int64_t>(sizeof(zeroPadding))));
-                        outputStream.write(zeroPadding, chunk);
-                        gap -= chunk;
-                    }
-                    if (!outputStream)
-                    {
-                        logerror("Failed writing extraction file [" + entryDestinationPath.string() + "]");
-                        archive_read_free(a);
-                        return false;
-                    }
+                    logerror("Non-contiguous data extents for archive entry [" + entryPathname + "] (expected offset "
+                        + std::to_string(expectedOffset) + ", got " + std::to_string(offset) + ")");
+                    archive_read_free(a);
+                    return false;
                 }
 
                 outputStream.write(static_cast<const char*>(buff), static_cast<std::streamsize>(size));

@@ -128,7 +128,11 @@ namespace Utils
 		// the system encoded the string in the first place (path::string() on
 		// Windows uses the active ANSI code page; path(string) inverts it).
 		// Byte-wise wstring construction would mangle every non-ASCII path.
-		std::wstring commandLine = std::filesystem::path(program).wstring();
+		// the program token must be quoted too: with lpApplicationName NULL,
+		// CreateProcessW resolves the executable by whitespace-prefix
+		// progression over the head of the command line, so an unquoted
+		// "C:\Program Files\...\7z.exe" mis-resolves
+		std::wstring commandLine = quote_windows_argument(std::filesystem::path(program).wstring());
 		for (const auto& arg : args)
 		{
 			commandLine += L" ";
