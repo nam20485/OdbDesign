@@ -295,7 +295,27 @@ namespace Odb::App::Server
         // so upload and extraction enforce one vocabulary.
         if (!Utils::is_safe_filename_component(filename))
         {
-            CROW_LOG_ERROR << "Rejected unsafe upload filename: [" << filename << "]";
+            // the name is URL-decoded by now and may carry raw control
+            // bytes; escape them so one rejection cannot forge additional
+            // log lines (audit F017 class)
+            std::string printable;
+            printable.reserve(filename.size());
+            for (const auto c : filename)
+            {
+                const auto uc = static_cast<unsigned char>(c);
+                if (uc < 0x20 || uc == 0x7F)
+                {
+                    printable += "\\x";
+                    const char hex[] = "0123456789ABCDEF";
+                    printable += hex[uc >> 4];
+                    printable += hex[uc & 0x0F];
+                }
+                else
+                {
+                    printable += c;
+                }
+            }
+            CROW_LOG_ERROR << "Rejected unsafe upload filename: [" << printable << "]";
             return std::nullopt;
         }
         return filename;

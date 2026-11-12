@@ -227,10 +227,9 @@ namespace Utils
             }
 
             // stream the entry payload block by block; read_data_block
-            // reports EOF at the end of THIS entry's data. Sparse entries
-            // legitimately return non-contiguous extents: honor each block's
-            // offset and zero-fill any gap so the file content is never
-            // silently shifted.
+            // reports EOF at the end of THIS entry's data. Extents must be
+            // contiguous: any gap or regression fails the extraction (see
+            // the check below).
             la_int64_t expectedOffset = 0;
             for (;;)
             {
