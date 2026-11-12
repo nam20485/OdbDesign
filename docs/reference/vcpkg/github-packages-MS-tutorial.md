@@ -106,7 +106,7 @@ You may need to replace the value of `VCPKG_EXE` with the location of the vcpkg 
 generated in the [bootstrap vcpkg](#2---bootstrap-vcpkg) step.
 
 In this step you are configuring `VCPKG_BINARY_SOURCES` to use your GitHub Packages feed as a binary
-caching source, read the [binary caching reference](../users/binarycaching.md) to learn more.
+caching source, read the [binary caching reference](https://learn.microsoft.com/en-us/vcpkg/users/binarycaching) to learn more.
 
 ## 4 - Add GitHub Packages as a NuGet source
 
@@ -205,7 +205,7 @@ Packages inside your GitHub Actions workflow.
 ## Next steps
 
 > [!div class="nextstepaction"]
-> [Authenticate to private NuGet feeds](../reference/binarycaching.md#nuget-credentials)
+> [Authenticate to private NuGet feeds](https://learn.microsoft.com/en-us/vcpkg/reference/binarycaching#nuget-credentials)
 
 Here are other tasks to try next:
 

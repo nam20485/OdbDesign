@@ -47,4 +47,4 @@ All code, dependency packages, and Docker images are scanned for security vulner
 
 ## License
 
-The project is licensed under [AGPL V3.0](https://github.com/nam20485/OdbDesign/blob/development/LICENSE). Licenses suitable for closed-source use are available &mdash; see [Contact](contact.md).
+The project is licensed under [AGPL V3.0](https://github.com/nam20485/OdbDesign/blob/development/LICENSE). Licenses suitable for closed-source use are available &mdash; see [Contact](contact.html).

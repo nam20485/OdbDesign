@@ -169,8 +169,8 @@ In `.github/workflows/cmake-multi-platform.yml` (the "Generate NuGet Config
 for Binary Cache" step), `vcpkg-cache-warm.yml`, and `code-coverage.yml`
 wherever the same heredoc exists:
 
-- `<config><add key="defaultPushSource" value="${{ env.FEED_PUSH_URL }}" />`
-  → value `${{ env.FEED_URL }}` (i.e. `https://nuget.pkg.github.com/nam20485/index.json`).
+{% raw %}- `<config><add key="defaultPushSource" value="${{ env.FEED_PUSH_URL }}" />`{% endraw %}
+{% raw %}  → value `${{ env.FEED_URL }}` (i.e. `https://nuget.pkg.github.com/nam20485/index.json`).{% endraw %}
 - The `<apiKeys>` entries can stay (P5 proves they are harmless) — keep them
   for the local-dev script which uses the same config shape.
 - Same change in `scripts/setup-vcpkg-cache.ps1` / `.sh` and
@@ -181,7 +181,7 @@ Validated by: P0/P1 fail vs P3/P4/P5 pass (both OSes); E2E round-trip §4.
 
 ### 5.2 CI pushes with `GITHUB_TOKEN` (prevents RC1 recurrence — the keystone)
 
-Same-repo CI runs push with `${{ secrets.GITHUB_TOKEN }}` (password in
+{% raw %}Same-repo CI runs push with `${{ secrets.GITHUB_TOKEN }}` (password in{% endraw %}
 `packageSourceCredentials`, apiKeys values) instead of `VCPKG_PAT_TOKEN`:
 workflow-created packages **inherit the repository's visibility** — OdbDesign
 is public, so cache packages land **public → storage is free**, the private

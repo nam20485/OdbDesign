@@ -1570,22 +1570,19 @@ data:
               items:
                 type: number
                 format: double
-        Color:
+        RgbColor:
           type: object
-          description: RGB color (matrixfile.proto Color).
+          description: RGB color (matrixfile.proto RgbColor) — percent components, 0-99 (100 is unrepresentable in the two-digit COLOR form).
           properties:
             red:
-              type: number
-              format: float
-              description: Red component (0.0 - 1.0).
+              type: integer
+              description: Red component (0 - 99, percent).
             green:
-              type: number
-              format: float
-              description: Green component (0.0 - 1.0).
+              type: integer
+              description: Green component (0 - 99, percent).
             blue:
-              type: number
-              format: float
-              description: Blue component (0.0 - 1.0).
+              type: integer
+              description: Blue component (0 - 99, percent).
             noPreference:
               type: boolean
               description: True when no color preference is set.
@@ -1774,15 +1771,14 @@ data:
             attrlistFile:
               directory: steps/pcb/layers/top
               path: steps/pcb/layers/top/attrlist
-            toolFile:
+            tools:
               directory: steps/pcb/layers/top
               path: steps/pcb/layers/top/tools
               units: INCH
               tools:
-                "1":
-                  toolNum: 1
+                - num: 1
                   type: Plated
-                  type2: Standard
+                  subType: Standard
                   finishSize: 13.5
                   drillSize: 14
           properties:
@@ -1804,8 +1800,8 @@ data:
               description: Layer feature records (`features`).
               allOf:
                 - $ref: "#/components/schemas/FeaturesFile"
-            toolFile:
-              description: Drill tool definitions (`tools`).
+            tools:
+              description: Drill tool definitions (`tools`) — proto field 7.
               allOf:
                 - $ref: "#/components/schemas/ToolsFile"
 
@@ -2022,7 +2018,7 @@ data:
             color:
               description: Layer display color.
               allOf:
-                - $ref: "#/components/schemas/Color"
+                - $ref: "#/components/schemas/RgbColor"
             id:
               type: integer
               format: int32
@@ -3283,18 +3279,17 @@ data:
             units: MM
             thickness: 1.6
             tools:
-              "1":
-                toolNum: 1
+              - num: 1
                 type: Plated
-                type2: Standard
+                subType: Standard
                 minTol: -0.05
                 maxTol: 0.05
+                bit: D3
                 finishSize: 0.3
                 drillSize: 0.3
-              "2":
-                toolNum: 2
+              - num: 2
                 type: Via
-                type2: Laser
+                subType: Laser
                 finishSize: 0.1
                 drillSize: 0.1
           properties:
@@ -3312,29 +3307,33 @@ data:
               format: double
               description: Board thickness for depth-controlled tools.
             userParams:
-              type: string
-              description: Raw user parameter string from the tools file.
+              type: array
+              items:
+                type: string
+              description: Raw user parameter lines from the tools file.
             tools:
-              type: object
-              additionalProperties:
+              type: array
+              items:
                 $ref: "#/components/schemas/ToolsRecord"
-              description: Tool records keyed by tool number.
+              description: Tool records, in file order.
         ToolsRecord:
           type: object
           description: One drill tool definition.
           properties:
-            toolNum:
+            num:
               type: integer
-              format: int32
               description: Tool number.
             type:
               type: string
               description: Plating type of the tool.
               enum: [Plated, NonPlated, Via]
-            type2:
+            subType:
               type: string
-              description: Tool technology.
+              description: Tool technology (legal values depend on type).
               enum: [Standard, PressFit, Photo, Laser]
+            bit:
+              type: string
+              description: Drill bit string.
             minTol:
               type: number
               format: double
@@ -3343,9 +3342,6 @@ data:
               type: number
               format: double
               description: Maximum size tolerance of the finished hole.
-            drillBit:
-              type: string
-              description: Drill bit identifier.
             finishSize:
               type: number
               format: double

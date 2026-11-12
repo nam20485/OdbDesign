@@ -36,7 +36,7 @@ In this tutorial, you'll learn how to:
 ::: zone pivot="shell-cmd, shell-powershell"
 
 * A terminal
-* [vcpkg](../get_started/get-started.md#1---set-up-vcpkg)
+* [vcpkg](https://learn.microsoft.com/en-us/vcpkg/get_started/get-started#1---set-up-vcpkg)
 * A NuGet package feed, or if you don't, an Azure DevOps account to follow along
 
 ::: zone-end
@@ -44,7 +44,7 @@ In this tutorial, you'll learn how to:
 ::: zone pivot="shell-bash"
 
 * A terminal
-* [vcpkg](../get_started/get-started.md#1---set-up-vcpkg)
+* [vcpkg](https://learn.microsoft.com/en-us/vcpkg/get_started/get-started#1---set-up-vcpkg)
 * A NuGet package feed, or if you don't, an Azure DevOps account to follow along
 * The `mono` package installed in your system
 
@@ -55,7 +55,7 @@ In this tutorial, you'll learn how to:
 Skip this step if you already have an existing NuGet packages feed.
 
 Follow the instructions to [set up an Azure Artifacts NuGet
-feed](/azure/devops/artifacts/get-started-nuget?view=azure-devops&preserve-view=true).
+feed](https://learn.microsoft.com/azure/devops/artifacts/get-started-nuget?view=azure-devops&preserve-view=true).
 
 You can also use any other NuGet packages feed provider of your choice.
 
@@ -157,7 +157,7 @@ nuget sources add -Name my-packages -Source https://my.nuget.feed/vcpkg-cache/in
 ```
 
 Some providers like Azure Artifacts may require different authentication methods, read the 
-[Authenticate to private NuGet feeds](../reference/binarycaching.md#nuget-credentials) article to learn
+[Authenticate to private NuGet feeds](https://learn.microsoft.com/en-us/vcpkg/reference/binarycaching#nuget-credentials) article to learn
 more.
 
 ### Use a `nuget.config` file
@@ -280,10 +280,10 @@ And that's it! vcpkg will now upload or restore packages from your NuGet feed.
 ## Next steps
 
 > [!div class="nextstepaction"]
-> [Authenticate to private NuGet feeds](../reference/binarycaching.md#nuget-credentials)
+> [Authenticate to private NuGet feeds](https://learn.microsoft.com/en-us/vcpkg/reference/binarycaching#nuget-credentials)
 
 Here are other tasks to try next:
 
-* [Change the default binary cache location](binary-caching-default.md)
-* [Set up a local binary cache](binary-caching-local.md)
-* [Set up a binary cache in your GitHub Actions workflow using GitHub Packages](binary-caching-github-packages.md)
+* [Change the default binary cache location](https://learn.microsoft.com/en-us/vcpkg/reference/binarycaching)
+* [Set up a local binary cache](https://learn.microsoft.com/en-us/vcpkg/reference/binarycaching)
+* [Set up a binary cache in your GitHub Actions workflow using GitHub Packages](https://learn.microsoft.com/en-us/vcpkg/reference/binarycaching)

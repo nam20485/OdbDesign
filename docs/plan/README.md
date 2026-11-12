@@ -2,7 +2,7 @@
 
 Everything in `docs/plan/` is **live**: either work still to implement or the
 decision records that govern it. Finished work lives in
-[`docs/completed/`](../completed/README.md); durable reference material lives in
+[`docs/completed/`](https://github.com/nam20485/OdbDesign/blob/development/docs/completed/README.md); durable reference material lives in
 [`docs/reference/`](../reference/README.md).
 
 ## In-flight / next up

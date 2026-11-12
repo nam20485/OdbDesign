@@ -67,6 +67,7 @@ All public, all verifiable:
 
 If you would like more information:
 
+- [The complete story as a printable PDF](assets/OdbDesign-IP-Protection-Story.pdf) — this page in white-paper form, suitable for sharing with legal and procurement teams
 - [The GNU Affero General Public License v3.0 — full license text](https://www.gnu.org/licenses/agpl-3.0.en.html)
 - [AGPLv3 explained in plain language](https://choosealicense.com/licenses/agpl-v3/) — a friendly, neutral guide to what the license permits and requires
 
