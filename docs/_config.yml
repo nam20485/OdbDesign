@@ -16,6 +16,15 @@ url: https://source.odbdesignserver.com
 # quote-free expression instead renders as empty and silently holes the published
 # text. Add any new doc that quotes Actions expressions here, or {% raw %}-fence
 # it if the page should stay published.
+# jekyll-optional-front-matter (bundled with the GitHub Pages build)
+# deliberately skips README.md / CONTRIBUTING.md / CODE_OF_CONDUCT.md unless
+# they are front-mattered or explicitly included. Front matter would render
+# as a table in GitHub's markdown viewer, so include them instead.
+include:
+- README.md
+- CONTRIBUTING.md
+- CODE_OF_CONDUCT.md
+
 exclude:
 # completed/ is the internal work archive (done plans, investigations) — not
 # published, and several of its docs quote Actions syntax, so exclude it whole.
