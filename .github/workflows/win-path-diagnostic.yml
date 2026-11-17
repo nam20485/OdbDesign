@@ -1,0 +1,143 @@
+# TEMPORARY diagnostic (delete before merge): reproduces the Windows-only
+# FileArchiveLoadFixture failures (designodb_rigidflex - missing_fonts_standard
+# / pin_invalid_electricaltype) without the 40-min C++ build. Probes the exact
+# filesystem primitives Utils::extract() uses (std::filesystem create_directory
+# / exists / ofstream) at the exact paths the fixture produces, plus system
+# bsdtar (= libarchive write_disk, the pre-#630 path) on the real archives.
+name: Win Path Diagnostic
+
+on:
+  pull_request:
+    branches: ["nam20485"]
+
+jobs:
+  diag:
+    runs-on: windows-2022
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      - name: Checkout OdbDesign Test Data Repository
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          repository: "nam20485/OdbDesignTestData"
+          path: "OdbDesignTestData"
+          ref: "main"
+
+      - name: Probe filesystem primitives at fixture-path shapes
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Continue'
+          Write-Host "TEMP=[$env:TEMP] TMP=[$env:TMP] RUNNER_TEMP=[$env:RUNNER_TEMP]"
+
+          # Replicate FileArchiveLoadFixture::createUniqueScratchDir exactly.
+          $hex = -join ((1..16) | ForEach-Object { '{0:x}' -f (Get-Random -Maximum 16) })
+          $scratch = Join-Path $env:TEMP "odbdesign_tests\$hex`_0"
+          New-Item -ItemType Directory -Force -Path $scratch | Out-Null
+          $resolved = [IO.Path]::GetFullPath($scratch)
+          Write-Host "scratch=[$scratch] resolved=[$resolved] len=$($resolved.Length)"
+
+          $designs = @(
+            'designodb_rigidflex - pin_invalid_electricaltype',
+            'designodb_rigidflex - pin_invalid_type',
+            'designodb_rigidflex - missing_fonts_standard',
+            'designodb_rigidflex - missing_misc_info'
+          )
+
+          foreach ($d in $designs) {
+            $src = "OdbDesignTestData\TEST_DATA\$d.tgz"
+            $dst = Join-Path $scratch "$d.tgz"
+            Copy-Item $src $dst
+            $dstLen = (Join-Path $resolved "$d.tgz").Length
+            Write-Host "`n=== $d (archive abs len $dstLen) ==="
+
+            # 1) system bsdtar = libarchive write_disk (the pre-#630 code path)
+            $outDir = Join-Path $scratch $d
+            & tar -xzf $dst -C $scratch
+            Write-Host "bsdtar exit=$LASTEXITCODE"
+            if (Test-Path (Join-Path $outDir 'misc\info')) { Write-Host "bsdtar extracted root dirs OK" }
+
+            # 2) .NET primitives at the deepest real entry path
+            $deep = 'steps\cellular_flip-phone\chk\valor_fabrication\actions\8\res\sres\soldermask_bottom\.disp_p.sum'
+            $deepPath = Join-Path $outDir $deep
+            Write-Host "deepest path len: $($deepPath.Length)"
+            try {
+              New-Item -ItemType Directory -Force -Path (Split-Path $deepPath) | Out-Null
+              [IO.File]::WriteAllText($deepPath, 'probe')
+              Write-Host "dotnet write OK at len $($deepPath.Length)"
+            } catch { Write-Host "dotnet write FAILED: $($_.Exception.Message)" }
+          }
+
+          # 3) length sweep with plain names (no spaces) for pure-limit comparison
+          Write-Host "`n=== length sweep (plain names) ==="
+          foreach ($len in 150,170,180,190,200,210,220,230,240,250,255,260,270,300) {
+            $rel = 'a' * 30
+            $p = $resolved
+            # build nested path of exact total length
+            $p = Join-Path $p ('n' * [Math]::Min(60, [Math]::Max(1, $len - $resolved.Length - 2)))
+            while ($p.Length -lt $len - 1) { $p = Join-Path $p 'b' * 10 }
+            try {
+              New-Item -ItemType Directory -Force -Path $p | Out-Null
+              $f = Join-Path $p 'f'
+              [IO.File]::WriteAllText($f, 'x')
+              Write-Host "len $($f.Length): OK"
+            } catch { Write-Host "len ~$len (actual $((Split-Path $p -Leaf).Length)): FAIL $($_.Exception.Message)" }
+          }
+
+      - name: C++ probe (MSVC: filesystem + ofstream at real fixture paths)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          @'
+          #include <filesystem>
+          #include <fstream>
+          #include <iostream>
+          #include <string>
+          namespace fs = std::filesystem;
+          int main() {
+            std::cout << "temp_directory_path=[" << fs::temp_directory_path().string() << "]\n";
+            auto scratch = fs::temp_directory_path() / "odbdesign_tests" / "diag_cpp_probe";
+            std::error_code ec;
+            fs::create_directories(scratch, ec);
+            const char* names[] = {
+              "designodb_rigidflex - pin_invalid_electricaltype",
+              "designodb_rigidflex - pin_invalid_type",
+              "designodb_rigidflex - missing_fonts_standard",
+              "designodb_rigidflex - missing_misc_info"};
+            for (auto n : names) {
+              fs::path root = scratch / n;
+              // replicate securely_create_directories walk for "X/steps/cellular_flip-phone/layers"
+              fs::path cur = root;
+              const char* comps[] = {"steps", "cellular_flip-phone", "layers", "top"};
+              bool ok = true;
+              for (auto c : comps) {
+                cur /= c;
+                if (fs::is_symlink(cur, ec)) { std::cout << n << ": SYMLINK refusal at " << cur.string() << "\n"; ok = false; break; }
+                if (!fs::exists(cur, ec)) {
+                  fs::create_directory(cur, ec);
+                  if (ec) { std::cout << n << ": create_directory FAILED [" << cur.string() << "] len=" << cur.string().size() << " ec=" << ec.message() << "\n"; ok = false; break; }
+                } else if (!fs::is_directory(cur, ec)) { std::cout << n << ": NOT DIR " << cur.string() << "\n"; ok = false; break; }
+              }
+              if (!ok) continue;
+              fs::path f = cur / "probefile.bin";
+              std::ofstream os(f, std::ios::binary | std::ios::trunc);
+              if (!os) { std::cout << n << ": ofstream OPEN FAILED [" << f.string() << "] len=" << f.string().size() << "\n"; continue; }
+              os << "probe"; os.close();
+              if (!os) { std::cout << n << ": ofstream WRITE/CLOSE FAILED [" << f.string() << "]\n"; continue; }
+              std::cout << n << ": OK (deepest len=" << f.string().size() << ")\n";
+            }
+            // forward-slash form (as libarchive entry names are joined)
+            fs::path fwd = scratch / "designodb_rigidflex - pin_invalid_electricaltype/fwd/probe.bin";
+            fs::create_directories(fwd.parent_path(), ec);
+            std::ofstream os2(fwd, std::ios::binary | std::ios::trunc);
+            std::cout << (os2 ? "fwd-slash ofstream: OK" : "fwd-slash ofstream: FAILED") << " [" << fwd.string() << "]\n";
+            return 0;
+          }
+          '@ | Out-File -Encoding ascii probe.cpp
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $vsPath = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          Import-Module (Join-Path $vsPath "Common7\Tools\Microsoft.VisualStudio.DevShell.dll")
+          Enter-VsDevShell -VsInstallPath $vsPath -SkipAutomaticLocation -DevCmdArguments "-arch=x64"
+          cl /nologo /EHsc /std:c++17 probe.cpp
+          .\probe.exe
+          Write-Host "probe exit=$LASTEXITCODE"
