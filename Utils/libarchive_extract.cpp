@@ -372,7 +372,11 @@ namespace Utils
             {                                              
                 auto relativePath = relative(it.path(), srcDir);
                 auto dir_entry = archive_entry_new();
-                archive_entry_set_pathname(dir_entry, (rootDir / relativePath).string().c_str());
+                // generic_string(): tar entry names must use '/' on every
+                // host OS - a Windows-written archive with '\' names extracts
+                // as literal-backslash filenames on POSIX (and ustar's
+                // prefix/name split only works at '/' boundaries).
+                archive_entry_set_pathname(dir_entry, (rootDir / relativePath).generic_string().c_str());
                 archive_entry_set_filetype(dir_entry, AE_IFDIR);
                 stat(it.path().string().c_str(), &st);
                 archive_entry_copy_stat(dir_entry, &st);
@@ -385,7 +389,7 @@ namespace Utils
                 // write header				
                 auto relativePath = relative(it.path(), srcDir);
                 auto file_entry = archive_entry_new();
-                archive_entry_set_pathname(file_entry, (rootDir / relativePath).string().c_str());
+                archive_entry_set_pathname(file_entry, (rootDir / relativePath).generic_string().c_str());
                 stat(it.path().string().c_str(), &st);
                 archive_entry_set_filetype(file_entry, AE_IFREG);
                 archive_entry_set_size(file_entry, st.st_size);  // Note 2

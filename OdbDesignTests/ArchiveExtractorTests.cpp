@@ -14,6 +14,28 @@ using namespace Odb::Test::Utils;
 using namespace std::filesystem;
 using namespace Utils;
 
+namespace
+{
+	// On Windows the extracted tree can exceed MAX_PATH; verification must
+	// use the same \\?\ long-path form the extractor writes with, or
+	// exists()/ifstream cannot address files that are really there (the
+	// unprefixed form fails past 260 characters even for existing files).
+	path longPathForm(const path& p)
+	{
+#if defined(_WIN32)
+		auto absolute = std::filesystem::absolute(p);
+		auto wide = absolute.wstring();
+		if (wide.rfind(L"\\\\?\\", 0) == 0)
+		{
+			return absolute;
+		}
+		return path(L"\\\\?\\" + wide);
+#else
+		return p;
+#endif
+	}
+}
+
 namespace Odb::Test
 {
 	TEST_F(TestDataFixture, Test_ArchiveExtractor_CompressDir)
@@ -79,10 +101,16 @@ namespace Odb::Test
 			extractedLeaf /= segmentName + std::to_string(i);
 		}
 		extractedLeaf /= "leaf.bin";
-		ASSERT_TRUE(exists(extractedLeaf)) << "deepest path: " << extractedLeaf.string();
+		const auto leafToVerify = longPathForm(extractedLeaf);
+		ASSERT_TRUE(exists(leafToVerify)) << "deepest path: " << extractedLeaf.string();
 
-		std::ifstream in(extractedLeaf, std::ios::binary);
+		std::ifstream in(leafToVerify, std::ios::binary);
 		std::string readBack((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
 		EXPECT_EQ(readBack, payload);
+
+		// Best-effort cleanup through the long-path form: the managed temp
+		// dir's RAII remove_all cannot address >MAX_PATH entries on Windows.
+		std::error_code cleanupEc;
+		std::filesystem::remove_all(longPathForm(path(extractor.GetExtractionDirectory())), cleanupEc);
 	}
 }
