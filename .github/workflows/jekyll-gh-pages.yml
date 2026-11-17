@@ -164,13 +164,16 @@ jobs:
 
                 # Lines/Functions percentages from the artifact's lcov summary
                 # (coverage_summary.txt ships in the same artifact as html/).
+                # lcov --summary prints e.g. "  lines......: 72.4% (18901 of
+                # 26103 lines)" - NO space before the percent sign (byte-
+                # verified against lcov 2.0-1, CI's version).
                 summary="$tmp_root/$branch/coverage_summary.txt"
-                lines_pct="$(sed -n 's/^ *lines[^:]*: *\([0-9][0-9.]*\) %.*/\1/p' "$summary" 2>/dev/null | head -n1 || true)"
-                funcs_pct="$(sed -n 's/^ *functions[^:]*: *\([0-9][0-9.]*\) %.*/\1/p' "$summary" 2>/dev/null | head -n1 || true)"
+                lines_pct="$(sed -n 's/^ *lines[^:]*: *\([0-9][0-9.]*\) *%.*/\1/p' "$summary" 2>/dev/null | head -n1 || true)"
+                funcs_pct="$(sed -n 's/^ *functions[^:]*: *\([0-9][0-9.]*\) *%.*/\1/p' "$summary" 2>/dev/null | head -n1 || true)"
                 lines_cls="$(chip_class "$lines_pct")"
                 funcs_cls="$(chip_class "$funcs_pct")"
-                [ -n "$lines_pct" ] || lines_pct="&ndash;"
-                [ -n "$funcs_pct" ] || funcs_pct="&ndash;"
+                if [ -n "$lines_pct" ]; then lines_chip="Lines $lines_pct%"; else lines_chip="Lines n/a"; fi
+                if [ -n "$funcs_pct" ]; then funcs_chip="Functions $funcs_pct%"; else funcs_chip="Functions n/a"; fi
 
                 cat >> "$rows_file" <<ROW
           <tr class="cov-row">
@@ -180,15 +183,15 @@ jobs:
             </td>
             <td class="cov-meta"><code>$short_sha</code> &middot; $run_date</td>
             <td class="cov-chips">
-              <span class="chip $lines_cls" title="Line coverage (lcov legend: green &gt;= 90%, amber &gt;= 75%, red &lt; 75%)">Lines $lines_pct%</span>
-              <span class="chip $funcs_cls" title="Function coverage">Functions $funcs_pct%</span>
+              <span class="chip $lines_cls" title="Line coverage (lcov legend: green &gt;= 90%, amber &gt;= 75%, red &lt; 75%)">$lines_chip</span>
+              <span class="chip $funcs_cls" title="Function coverage">$funcs_chip</span>
             </td>
             <td class="cov-open"><a class="cov-link" href="./$branch/">Open report &rarr;</a></td>
           </tr>
           ROW
                 continue
               fi
-              echo "warning: could not fetch linux-coverage-report artifact for branch '$branch'; publishing placeholder page" 2>&1
+              echo "warning: could not fetch linux-coverage-report artifact for branch '$branch'; publishing placeholder page" >&2
             else
               echo "no successful code-coverage run found for branch '$branch'; publishing placeholder page"
             fi
