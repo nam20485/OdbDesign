@@ -84,53 +84,113 @@ jobs:
             } catch { Write-Host "len ~$len (actual $((Split-Path $p -Leaf).Length)): FAIL $($_.Exception.Message)" }
           }
 
-      - name: "C++ probe (MSVC: filesystem + ofstream at real fixture paths)"
+      - name: "C++ probe (replay real entry list through extract()'s write path)"
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
+          # Dump the REAL entry lists with system bsdtar (= what libarchive reads).
+          foreach ($d in 'designodb_rigidflex - pin_invalid_electricaltype','designodb_rigidflex - pin_invalid_type','designodb_rigidflex - missing_fonts_standard','designodb_rigidflex - missing_misc_info') {
+            & tar -tzf "OdbDesignTestData\TEST_DATA\$d.tgz" | Out-File -Encoding ascii "entries_$(($d -replace ' - ','_')).txt"
+          }
           @'
+          // Faithful replay of Utils::extract()'s write path (libarchive_extract.cpp)
+          // over the real entry lists: same securely_create_directories walk, same
+          // ofstream open/write/close, same weakly_canonical destination handling.
           #include <filesystem>
           #include <fstream>
           #include <iostream>
           #include <string>
+          #include <vector>
           namespace fs = std::filesystem;
-          int main() {
-            std::cout << "temp_directory_path=[" << fs::temp_directory_path().string() << "]\n";
-            auto scratch = fs::temp_directory_path() / "odbdesign_tests" / "diag_cpp_probe";
-            std::error_code ec;
-            fs::create_directories(scratch, ec);
-            const char* names[] = {
-              "designodb_rigidflex - pin_invalid_electricaltype",
-              "designodb_rigidflex - pin_invalid_type",
-              "designodb_rigidflex - missing_fonts_standard",
-              "designodb_rigidflex - missing_misc_info"};
-            for (auto n : names) {
-              fs::path root = scratch / n;
-              // replicate securely_create_directories walk for "X/steps/cellular_flip-phone/layers"
-              fs::path cur = root;
-              const char* comps[] = {"steps", "cellular_flip-phone", "layers", "top"};
-              bool ok = true;
-              for (auto c : comps) {
-                cur /= c;
-                if (fs::is_symlink(cur, ec)) { std::cout << n << ": SYMLINK refusal at " << cur.string() << "\n"; ok = false; break; }
-                if (!fs::exists(cur, ec)) {
-                  fs::create_directory(cur, ec);
-                  if (ec) { std::cout << n << ": create_directory FAILED [" << cur.string() << "] len=" << cur.string().size() << " ec=" << ec.message() << "\n"; ok = false; break; }
-                } else if (!fs::is_directory(cur, ec)) { std::cout << n << ": NOT DIR " << cur.string() << "\n"; ok = false; break; }
-              }
-              if (!ok) continue;
-              fs::path f = cur / "probefile.bin";
-              std::ofstream os(f, std::ios::binary | std::ios::trunc);
-              if (!os) { std::cout << n << ": ofstream OPEN FAILED [" << f.string() << "] len=" << f.string().size() << "\n"; continue; }
-              os << "probe"; os.close();
-              if (!os) { std::cout << n << ": ofstream WRITE/CLOSE FAILED [" << f.string() << "]\n"; continue; }
-              std::cout << n << ": OK (deepest len=" << f.string().size() << ")\n";
+
+          static bool securely_create_directories(const fs::path& base, const fs::path& relativePath, std::string& errorOut) {
+            std::error_code baseEc;
+            if (!fs::exists(base, baseEc) || baseEc) {
+              fs::create_directories(base, baseEc);
+              if (baseEc) { errorOut = "failed creating destination root: " + baseEc.message(); return false; }
             }
-            // forward-slash form (as libarchive entry names are joined)
-            fs::path fwd = scratch / "designodb_rigidflex - pin_invalid_electricaltype/fwd/probe.bin";
-            fs::create_directories(fwd.parent_path(), ec);
-            std::ofstream os2(fwd, std::ios::binary | std::ios::trunc);
-            std::cout << (os2 ? "fwd-slash ofstream: OK" : "fwd-slash ofstream: FAILED") << " [" << fwd.string() << "]\n";
+            fs::path current = base;
+            for (const auto& component : relativePath) {
+              const auto name = component.string();
+              if (name.empty()) continue;
+              if (name == "." || name == "..") { errorOut = "unsafe component"; return false; }
+              current /= component;
+              std::error_code symlinkEc;
+              if (fs::is_symlink(current, symlinkEc)) { errorOut = "refusing symlink component [" + current.string() + "]"; return false; }
+              std::error_code ec;
+              if (!fs::exists(current, ec)) {
+                fs::create_directory(current, ec);
+                if (ec) {
+                  std::error_code swapEc;
+                  if (fs::is_symlink(current, swapEc)) { errorOut = "refusing symlink (post-create)"; return false; }
+                  errorOut = "failed creating [" + current.string() + "] len=" + std::to_string(current.string().size()) + ": " + ec.message();
+                  return false;
+                }
+              } else if (!fs::is_directory(current, ec)) { errorOut = "path component is not a directory [" + current.string() + "]"; return false; }
+            }
+            return true;
+          }
+
+          int main(int argc, char** argv) {
+            if (argc != 3) { std::cout << "usage: probe <entries-file> <archive-path>\n"; return 2; }
+            std::cout << "temp_directory_path=[" << fs::temp_directory_path().string() << "]\n";
+
+            // replicate FileArchiveLoadFixture::createUniqueScratchDir
+            std::error_code ec;
+            auto base = fs::temp_directory_path() / "odbdesign_tests";
+            fs::create_directories(base, ec);
+            static unsigned long counter = 0;
+            auto scratch = base / ("diag" + std::to_string(counter++) + "abcdef0123456789");
+            fs::create_directory(scratch, ec);
+            auto resolved = fs::weakly_canonical(scratch, ec);
+            if (!ec) scratch = resolved;
+            std::cout << "scratch=[" << scratch.string() << "] len=" << scratch.string().size() << "\n";
+
+            // replicate ArchiveExtractor::Extract dest + weakly_canonical
+            fs::path archivePath(argv[2]);
+            std::filesystem::copy_file(argv[2], scratch / archivePath.filename(), std::filesystem::copy_options::overwrite_existing, ec);
+            if (ec) { std::cout << "copy_file FAILED: " << ec.message() << "\n"; return 1; }
+            fs::path dest = scratch / archivePath.stem();
+            auto canonicalDest = fs::weakly_canonical(dest, ec);
+            if (ec) canonicalDest = dest;
+            std::cout << "canonicalDest=[" << canonicalDest.string() << "] len=" << canonicalDest.string().size() << "\n";
+
+            std::vector<std::string> entries;
+            std::ifstream in(argv[1]);
+            std::string line;
+            while (std::getline(in, line)) {
+              if (!line.empty() && line.back() == '\r') line.pop_back();
+              if (!line.empty()) entries.push_back(line);
+            }
+            std::cout << "entries: " << entries.size() << "\n";
+
+            size_t files = 0, dirs = 0;
+            for (const auto& e : entries) {
+              const fs::path rel(e);
+              bool isDir = e.back() == '/';
+              std::string err;
+              if (isDir) {
+                if (!securely_create_directories(canonicalDest, rel, err)) {
+                  std::cout << "DIR FAIL at [" << e << "]: " << err << "\n"; return 1;
+                }
+                ++dirs;
+              } else {
+                if (!securely_create_directories(canonicalDest, rel.parent_path(), err)) {
+                  std::cout << "PARENT FAIL at [" << e << "]: " << err << "\n"; return 1;
+                }
+                fs::path f = canonicalDest / rel;
+                std::error_code slEc;
+                if (fs::is_symlink(f, slEc)) { std::cout << "SYMLINK TARGET [" << f.string() << "]\n"; return 1; }
+                std::ofstream os(f, std::ios::binary | std::ios::trunc);
+                if (!os) { std::cout << "OFSTREAM OPEN FAILED [" << f.string() << "] len=" << f.string().size() << "\n"; return 1; }
+                os << "probe";
+                os.close();
+                if (!os) { std::cout << "OFSTREAM CLOSE FAILED [" << f.string() << "] len=" << f.string().size() << "\n"; return 1; }
+                ++files;
+              }
+            }
+            std::cout << "REPLAY OK: " << dirs << " dirs, " << files << " files written\n";
+            fs::remove_all(scratch, ec);
             return 0;
           }
           '@ | Out-File -Encoding ascii probe.cpp
@@ -139,5 +199,8 @@ jobs:
           Import-Module (Join-Path $vsPath "Common7\Tools\Microsoft.VisualStudio.DevShell.dll")
           Enter-VsDevShell -VsInstallPath $vsPath -SkipAutomaticLocation -DevCmdArguments "-arch=x64"
           cl /nologo /EHsc /std:c++17 probe.cpp
-          .\probe.exe
-          Write-Host "probe exit=$LASTEXITCODE"
+          foreach ($d in 'designodb_rigidflex - pin_invalid_electricaltype','designodb_rigidflex - pin_invalid_type','designodb_rigidflex - missing_fonts_standard','designodb_rigidflex - missing_misc_info') {
+            Write-Host "===== $d ====="
+            .\probe.exe "entries_$(($d -replace ' - ','_')).txt" "OdbDesignTestData\TEST_DATA\$d.tgz"
+            Write-Host "exit=$LASTEXITCODE"
+          }
