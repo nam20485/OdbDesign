@@ -132,7 +132,44 @@ namespace Utils
             return false;
         }
 
-        const std::filesystem::path destinationDir(destDir);
+        // Windows long-path safety (security-audit F003 follow-up): libarchive's
+        // write path silently applied \\?\ prefixes on Windows
+        // (__la_win_permissive_name), which lifted the 248-character
+        // CreateDirectoryW directory limit (and the 260-character file limit).
+        // Taking write ownership with std::filesystem + ofstream lost that:
+        // extraction destinations nest the archive stem twice by design
+        // (dest/<stem>/<stem>/... - findRootDir descends one level), and deep
+        // legitimate design trees crossed 248 chars, failing extraction with
+        // ERROR_FILENAME_EXCED_RANGE ("The filename or extension is too
+        // long"). Prefix the absolute destination with the literal wide-path
+        // form so every create/open below can address the full tree. The
+        // entry names joined onto it are validated relative paths (no . or ..
+        // components), and ArchiveExtractor canonicalizes the destination
+        // before it reaches us. No-op on non-Windows.
+        std::filesystem::path destinationDir(destDir);
+#if defined(_WIN32)
+        {
+            std::error_code absoluteError;
+            const auto absoluteDestination = std::filesystem::absolute(destinationDir, absoluteError);
+            if (!absoluteError)
+            {
+                auto wide = absoluteDestination.wstring();
+                if (wide.rfind(L"\\\\?\\", 0) == 0)
+                {
+                    destinationDir = std::filesystem::path(std::move(wide));
+                }
+                else if (wide.rfind(L"\\\\", 0) == 0)
+                {
+                    wide.insert(2, L"?\\UNC\\");
+                    destinationDir = std::filesystem::path(std::move(wide));
+                }
+                else
+                {
+                    destinationDir = std::filesystem::path(L"\\\\?\\" + wide);
+                }
+            }
+        }
+#endif
 
         for (;;) {
             r = archive_read_next_header(a, &entry);
