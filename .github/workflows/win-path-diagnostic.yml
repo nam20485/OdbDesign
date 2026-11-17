@@ -1,0 +1,118 @@
+# TEMPORARY diagnostic v2 (delete before merge): validates the \\?\ +
+# make_preferred() extraction-destination fix against the REAL failing
+# archive entry lists before trusting the 45-minute CMake Windows lane.
+# v1 of the fix failed because a \\?\ path is literal and the tar entry
+# names' forward slashes made every joined path invalid (79 test failures).
+name: Win Path Diagnostic
+
+on:
+  pull_request:
+    branches: ["nam20485"]
+
+jobs:
+  diag:
+    runs-on: windows-2022
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      - name: Checkout OdbDesign Test Data Repository
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          repository: "nam20485/OdbDesignTestData"
+          path: "OdbDesignTestData"
+          ref: "main"
+
+      - name: "Replay v2 fix (backslash + make_preferred join)"
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          foreach ($d in 'designodb_rigidflex - pin_invalid_electricaltype','designodb_rigidflex - pin_invalid_type','designodb_rigidflex - missing_fonts_standard','designodb_rigidflex - missing_misc_info') {
+            & tar -tzf "OdbDesignTestData\TEST_DATA\$d.tgz" | Out-File -Encoding ascii "entries_$(($d -replace ' - ','_')).txt"
+          }
+          @'
+          // Exact replay of the v2 extract() write path: \\?\-prefixed absolute
+          // destination + make_preferred() join, over the real entry lists.
+          #include <filesystem>
+          #include <fstream>
+          #include <iostream>
+          #include <string>
+          #include <vector>
+          namespace fs = std::filesystem;
+
+          static bool securely_create_directories(const fs::path& base, const fs::path& relativePath, std::string& errorOut) {
+            std::error_code baseEc;
+            if (!fs::exists(base, baseEc) || baseEc) {
+              fs::create_directories(base, baseEc);
+              if (baseEc) { errorOut = "failed creating destination root: " + baseEc.message(); return false; }
+            }
+            fs::path current = base;
+            for (const auto& component : relativePath) {
+              const auto name = component.string();
+              if (name.empty()) continue;
+              if (name == "." || name == "..") { errorOut = "unsafe component"; return false; }
+              current /= component;
+              std::error_code symlinkEc;
+              if (fs::is_symlink(current, symlinkEc)) { errorOut = "refusing symlink component"; return false; }
+              std::error_code ec;
+              if (!fs::exists(current, ec)) {
+                fs::create_directory(current, ec);
+                if (ec) { errorOut = "failed creating [" + current.string() + "] len=" + std::to_string(current.string().size()) + ": " + ec.message(); return false; }
+              } else if (!fs::is_directory(current, ec)) { errorOut = "not a directory [" + current.string() + "]"; return false; }
+            }
+            return true;
+          }
+
+          int main(int argc, char** argv) {
+            if (argc != 2) { std::cout << "usage: probe <entries-file>\n"; return 2; }
+            fs::path dest = fs::temp_directory_path() / "odbdesign_tests" / "diagv2_deep_tree_root_name_padding_0123456789";
+            std::error_code ec;
+
+            // v2 destination form: absolute + \\?\ prefix (as in the fix)
+            auto abs = fs::absolute(dest, ec);
+            if (ec) { std::cout << "absolute failed\n"; return 1; }
+            auto wide = abs.wstring();
+            fs::path destRoot = wide.rfind(L"\\\\?\\", 0) == 0 ? fs::path(std::move(wide)) : fs::path(L"\\\\?\\" + wide);
+            std::cout << "destRoot=[" << destRoot.string() << "]\n";
+
+            std::vector<std::string> entries;
+            std::ifstream in(argv[1]);
+            std::string line;
+            while (std::getline(in, line)) {
+              if (!line.empty() && line.back() == '\r') line.pop_back();
+              if (!line.empty()) entries.push_back(line);
+            }
+            size_t files = 0, dirs = 0;
+            for (const auto& e : entries) {
+              const fs::path rel(e);
+              bool isDir = e.back() == '/';
+              std::string err;
+              if (isDir) {
+                if (!securely_create_directories(destRoot, rel, err)) { std::cout << "DIR FAIL [" << e << "]: " << err << "\n"; return 1; }
+                ++dirs;
+              } else {
+                if (!securely_create_directories(destRoot, rel.parent_path(), err)) { std::cout << "PARENT FAIL [" << e << "]: " << err << "\n"; return 1; }
+                fs::path f = destRoot / rel;
+                f.make_preferred();   // the v2 fix
+                std::ofstream os(f, std::ios::binary | std::ios::trunc);
+                if (!os) { std::cout << "OFSTREAM OPEN FAILED [" << f.string() << "] len=" << f.string().size() << "\n"; return 1; }
+                os << "probe"; os.close();
+                if (!os) { std::cout << "OFSTREAM CLOSE FAILED [" << f.string() << "]\n"; return 1; }
+                ++files;
+              }
+            }
+            std::cout << "REPLAY v2 OK: " << dirs << " dirs, " << files << " files\n";
+            fs::remove_all(destRoot.parent_path() / "diagv2_deep_tree_root_name_padding_0123456789", ec);
+            return 0;
+          }
+          '@ | Out-File -Encoding ascii probe.cpp
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $vsPath = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          Import-Module (Join-Path $vsPath "Common7\Tools\Microsoft.VisualStudio.DevShell.dll")
+          Enter-VsDevShell -VsInstallPath $vsPath -SkipAutomaticLocation -DevCmdArguments "-arch=x64"
+          cl /nologo /EHsc /std:c++17 probe.cpp
+          foreach ($d in 'designodb_rigidflex - pin_invalid_electricaltype','designodb_rigidflex - pin_invalid_type','designodb_rigidflex - missing_fonts_standard','designodb_rigidflex - missing_misc_info') {
+            Write-Host "===== $d ====="
+            .\probe.exe "entries_$(($d -replace ' - ','_')).txt"
+            Write-Host "exit=$LASTEXITCODE"
+          }

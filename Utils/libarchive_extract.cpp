@@ -197,7 +197,12 @@ namespace Utils
                 return false;
             }
             const std::filesystem::path relativeEntryPath(entryPathname);
-            const auto entryDestinationPath = destinationDir / relativeEntryPath;
+            // A \\?\-prefixed destination is interpreted literally: the
+            // forward slashes carried by tar entry names must be normalized
+            // to native separators before the join, or every create/open
+            // below fails with invalid path syntax on Windows.
+            std::filesystem::path entryDestinationPath = destinationDir / relativeEntryPath;
+            entryDestinationPath.make_preferred();
 
             logdebug("Extracting, destination dir: [" + std::string(destDir) + "]");
             logdebug("Extracting, entry path name: [" + entryPathname + "]");
