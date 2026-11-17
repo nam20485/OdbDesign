@@ -1,1 +1,0 @@
-I'd like to add regression test cases for all ODB++ parsing errors in the proprietary designs, but without including them in the tree obvisouly- so youd have to catalogue
