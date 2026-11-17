@@ -84,7 +84,7 @@ jobs:
             } catch { Write-Host "len ~$len (actual $((Split-Path $p -Leaf).Length)): FAIL $($_.Exception.Message)" }
           }
 
-      - name: C++ probe (MSVC: filesystem + ofstream at real fixture paths)
+      - name: "C++ probe (MSVC: filesystem + ofstream at real fixture paths)"
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
