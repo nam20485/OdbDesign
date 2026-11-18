@@ -11,15 +11,19 @@ on:
     branches: ["development", "staging", "main", "release", "nam20485"]
 
 concurrency:
-  # Group by head repo + branch instead of github.ref: a same-repo PR fires
-  # both the push lane (refs/heads/<branch>) and the pull_request lane
-  # (refs/pull/<n>/merge) for the same commit, and without a shared group
-  # neither the duplicate nor superseded runs of older commits are ever
-  # cancelled. Keying on the head branch makes the newest commit cancel
-  # older runs across both lanes; fork PRs stay isolated by their own repo
-  # full name. Required status checks only gate on the latest commit, which
-  # always gets a fresh run.
-  group: cmake-multi-platform-${{ github.event_name == 'pull_request' && format('{0}/{1}', github.event.pull_request.head.repo.full_name, github.head_ref) || format('{0}/{1}', github.repository, github.ref_name) }}
+  # Group by EVENT + head repo + branch. A same-repo PR fires both the push
+  # lane (refs/heads/<branch>) and the pull_request lane (refs/pull/<n>/merge)
+  # for the same commit. The two lanes must NOT cancel each other: a
+  # cancelled lane leaves CANCELLED check runs on the head commit, and
+  # GitHub can evaluate those as the effective result for required status
+  # check contexts — permanently blocking the PR even though the other lane
+  # completed green (promotion #632, 2026-11-18: every context had both a
+  # CANCELLED push-lane run and a SUCCESS PR-lane run; rollup = FAILURE).
+  # Within one lane, keying on the head branch still lets the newest commit
+  # cancel superseded runs; fork PRs stay isolated by their own repo full
+  # name. Cost: both lanes run to completion on promotion pushes (public
+  # repo, parallel, ~15 min each).
+  group: cmake-multi-platform-${{ github.event_name }}-${{ github.event_name == 'pull_request' && format('{0}/{1}', github.event.pull_request.head.repo.full_name, github.head_ref) || format('{0}/{1}', github.repository, github.ref_name) }}
   cancel-in-progress: true
 
 permissions:
