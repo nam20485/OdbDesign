@@ -166,9 +166,13 @@ jobs:
           --output-junit ${{ github.workspace }}/coverage-testlog.xml
           --output-on-failure
 
+      # Annotation only — Run Tests above gates the job on ctest's exit code.
+      # dorny's check-run API intermittently 404s (HttpError: Not Found);
+      # that must not fail a green coverage run (see cmake-multi-platform.yml).
       - name: Report Test Results
         uses: dorny/test-reporter@31a54ee7ebcacc03a09ea97a7e5465a47b84aea5 # v1.9.1
         if: ${{ !cancelled() }}
+        continue-on-error: true
         with:
           name: linux-coverage-test-results
           path: ${{ github.workspace }}/coverage-testlog.xml

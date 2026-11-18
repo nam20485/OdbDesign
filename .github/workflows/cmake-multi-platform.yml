@@ -421,13 +421,19 @@ jobs:
           ODB_TEST_DATA_DIR: ${{github.workspace}}/OdbDesignTestData/TEST_DATA
           ODB_TEST_ENVIRONMENT_VARIABLE: ${{vars.ODB_TEST_ENVIRONMENT_VARIABLE}}
         run: ctest --test-dir ./out/build/${{matrix.preset}}/OdbDesignTests --output-log ${{github.workspace}}/testlog.txt --output-junit ${{github.workspace}}/testlog.xml --output-on-failure
-        # let the report step fail the job if it finds failed tests...
-        continue-on-error: true
+        # ctest's exit code gates the job directly (no continue-on-error):
+        # the test gate must not depend on the reporter's API round-trip.
 
-      # report test results
+      # Report test results — ANNOTATION ONLY. dorny's check-run API calls
+      # intermittently return HttpError: Not Found (4+ occurrences on
+      # 2026-11-18 across all three OS legs, on green test runs), which used
+      # to fail the job because this step carried the test gate. The gate now
+      # lives in CMake Test above; a reporter API failure must never fail a
+      # green build or poison a required check context.
       - name: Report Test Results
         uses: dorny/test-reporter@31a54ee7ebcacc03a09ea97a7e5465a47b84aea5 # v1.9.1
         if: steps.cmake-test.outcome == 'success' || steps.cmake-test.outcome == 'failure'
+        continue-on-error: true
         with:
           name: ${{ matrix.os }}_test-results
           path: ${{github.workspace}}/testlog.xml
@@ -443,11 +449,10 @@ jobs:
         # Push builds only, on the 5 CI branches. PR submissions would spam
         # the dashboard, and fork PRs have no business writing to it.
         # !cancelled() instead of the implicit success(): when tests fail,
-        # the "Report Test Results" step (fail-on-error: true) fails the job
-        # and a success()-conditioned step would be SKIPPED - the dashboard
-        # must receive failing builds too, they are the point of a CI
-        # dashboard. If the build itself failed, the submission attempt
-        # simply no-ops under continue-on-error.
+        # the "CMake Test" step fails the job and a success()-conditioned
+        # step would be SKIPPED - the dashboard must receive failing builds
+        # too, they are the point of a CI dashboard. If the build itself
+        # failed, the submission attempt simply no-ops under continue-on-error.
         if: github.event_name == 'push' && !cancelled()
         # Observability sink: a CDash outage or bad submission must never
         # fail a required status check.
