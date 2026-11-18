@@ -56,7 +56,16 @@ env:
 
 jobs:
   build:
-    name: CMake-Multi-Platform-Build
+    # Explicit name template: a static job name gets ALL matrix keys
+    # auto-appended, and the nugetPluginPaths key (single space on Windows,
+    # the documented "no plugins" switch - see env below) leaked into the
+    # check name as "(windows-2022, x64-release,  )", which no longer matched
+    # the required-status-check context "(windows-2022, x64-release)" in
+    # rulesets 169324/169360 - permanently blocking development promotions
+    # (same failure class as the old linux-release context incident).
+    # Naming only os+preset keeps the check contexts stable regardless of
+    # auxiliary matrix keys.
+    name: CMake-Multi-Platform-Build (${{ matrix.os }}, ${{ matrix.preset }})
     runs-on: ${{ matrix.os }}
     permissions:
       contents: write
