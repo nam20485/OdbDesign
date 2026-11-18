@@ -30,8 +30,9 @@ namespace Odb::Test
 
 		void write_octal(char* field, std::size_t fieldSize, std::uint64_t value)
 		{
-			// zero-terminated octal ASCII in a fixed-width field
-			std::snprintf(field, fieldSize, "%0*llo", static_cast<int>(fieldSize - 1), value);
+			// zero-terminated octal ASCII in a fixed-width field; %llo wants
+			// unsigned long long, which uint64_t is not on LP64 Linux/macOS
+			std::snprintf(field, fieldSize, "%0*llo", static_cast<int>(fieldSize - 1), static_cast<unsigned long long>(value));
 		}
 
 		void write_ustar_header(std::ostream& os, const std::string& pathname, std::uintmax_t size, char typeflag, unsigned mode = 0644, const std::string& linkname = "")
@@ -292,6 +293,29 @@ namespace Odb::Test
 			<< "execute bits from the archive entry must not survive extraction";
 #endif
 		EXPECT_EQ(read_file(extracted), "payload");
+	}
+
+	TEST(ArchiveSecurity, Extract_TruncatedEntry_FailsClosed)
+	{
+		auto dir = TestUtils::createManagedTempDirectory("odbtest_f003_short");
+		const auto archive = dir->path() / "short.tar";
+		{
+			std::ofstream os(archive, std::ios::binary);
+			// header declares 600 bytes of payload but only one 512-byte
+			// data block exists before EOF - the entry is truncated
+			write_ustar_header(os, "truncated", 600, '0');
+			std::string block(512, '\0');
+			std::memcpy(block.data(), "partial", 7);
+			os.write(block.data(), 512);
+			// no second data block, no end-of-archive marker
+		}
+		const auto dest = dir->path() / "dest";
+		create_directories(dest);
+
+		ArchiveExtractor extractor(archive.string());
+		EXPECT_FALSE(extractor.Extract(dest.string()))
+			<< "an entry shorter than its declared size must fail closed "
+			<< "(reader truncation error or the size-completeness check)";
 	}
 
 	TEST(ArchiveSecurity, Extract_LegalRelativeEntries_RoundTrip)

@@ -67,15 +67,23 @@ namespace Utils
 
                 current /= component;
 
-                std::error_code symlinkEc;
-                if (is_symlink(current, symlinkEc))
+                // Derive existence AND type from symlink_status (lstat - never
+                // follows links). exists()/is_directory() follow symlinks, so
+                // a link swapped in after a separate is_symlink probe would
+                // silently redirect the rest of the walk outside the root.
+                // One non-following status call closes that traversal window;
+                // the create-then-swap case stays covered by the post-create
+                // re-check below. (A swap between this status call and a later
+                // syscall is inherent to path-based APIs; the per-component
+                // refusal and the entry-name policy bound what it can reach.)
+                std::error_code ec;
+                const auto status = symlink_status(current, ec);
+                if (ec && ec != std::errc::no_such_file_or_directory)
                 {
-                    errorOut = "refusing symlink component [" + current.string() + "]";
+                    errorOut = "failed stat-ing [" + current.string() + "]: " + ec.message();
                     return false;
                 }
-
-                std::error_code ec;
-                if (!exists(current, ec))
+                if (status.type() == std::filesystem::file_type::not_found)
                 {
                     create_directory(current, ec);
                     if (ec)
@@ -90,8 +98,10 @@ namespace Utils
                         return false;
                     }
                 }
-                else if (!is_directory(current, ec))
+                else if (status.type() != std::filesystem::file_type::directory)
                 {
+                    // symlink, regular file, device... anything that is not a
+                    // real directory component is refused
                     errorOut = "path component is not a directory [" + current.string() + "]";
                     return false;
                 }
@@ -314,6 +324,18 @@ namespace Utils
                     return false;
                 }
                 expectedOffset = offset + static_cast<la_int64_t>(size);
+            }
+            // the entry must be COMPLETE: an entry whose declared size
+            // exceeds its actual data (e.g. a sparse record with a trailing
+            // hole) would otherwise write a short file and report success -
+            // inconsistent with the fail-closed extents posture above
+            if (expectedOffset != archive_entry_size(entry))
+            {
+                logerror("Incomplete archive entry [" + entryPathname + "] (declared "
+                    + std::to_string(archive_entry_size(entry)) + " bytes, got "
+                    + std::to_string(expectedOffset) + ")");
+                archive_read_free(a);
+                return false;
             }
             // the final flush happens at close - check it so ENOSPC/EIO is
             // not reported as a successful extraction
