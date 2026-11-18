@@ -132,7 +132,44 @@ namespace Utils
             return false;
         }
 
-        const std::filesystem::path destinationDir(destDir);
+        // Windows long-path safety (security-audit F003 follow-up): libarchive's
+        // write path silently applied \\?\ prefixes on Windows
+        // (__la_win_permissive_name), which lifted the 248-character
+        // CreateDirectoryW directory limit (and the 260-character file limit).
+        // Taking write ownership with std::filesystem + ofstream lost that:
+        // extraction destinations nest the archive stem twice by design
+        // (dest/<stem>/<stem>/... - findRootDir descends one level), and deep
+        // legitimate design trees crossed 248 chars, failing extraction with
+        // ERROR_FILENAME_EXCED_RANGE ("The filename or extension is too
+        // long"). Prefix the absolute destination with the literal wide-path
+        // form so every create/open below can address the full tree. The
+        // entry names joined onto it are validated relative paths (no . or ..
+        // components), and ArchiveExtractor canonicalizes the destination
+        // before it reaches us. No-op on non-Windows.
+        std::filesystem::path destinationDir(destDir);
+#if defined(_WIN32)
+        {
+            std::error_code absoluteError;
+            const auto absoluteDestination = std::filesystem::absolute(destinationDir, absoluteError);
+            if (!absoluteError)
+            {
+                auto wide = absoluteDestination.wstring();
+                if (wide.rfind(L"\\\\?\\", 0) == 0)
+                {
+                    destinationDir = std::filesystem::path(std::move(wide));
+                }
+                else if (wide.rfind(L"\\\\", 0) == 0)
+                {
+                    wide.insert(2, L"?\\UNC\\");
+                    destinationDir = std::filesystem::path(std::move(wide));
+                }
+                else
+                {
+                    destinationDir = std::filesystem::path(L"\\\\?\\" + wide);
+                }
+            }
+        }
+#endif
 
         for (;;) {
             r = archive_read_next_header(a, &entry);
@@ -160,7 +197,12 @@ namespace Utils
                 return false;
             }
             const std::filesystem::path relativeEntryPath(entryPathname);
-            const auto entryDestinationPath = destinationDir / relativeEntryPath;
+            // A \\?\-prefixed destination is interpreted literally: the
+            // forward slashes carried by tar entry names must be normalized
+            // to native separators before the join, or every create/open
+            // below fails with invalid path syntax on Windows.
+            std::filesystem::path entryDestinationPath = destinationDir / relativeEntryPath;
+            entryDestinationPath.make_preferred();
 
             logdebug("Extracting, destination dir: [" + std::string(destDir) + "]");
             logdebug("Extracting, entry path name: [" + entryPathname + "]");
@@ -330,7 +372,11 @@ namespace Utils
             {                                              
                 auto relativePath = relative(it.path(), srcDir);
                 auto dir_entry = archive_entry_new();
-                archive_entry_set_pathname(dir_entry, (rootDir / relativePath).string().c_str());
+                // generic_string(): tar entry names must use '/' on every
+                // host OS - a Windows-written archive with '\' names extracts
+                // as literal-backslash filenames on POSIX (and ustar's
+                // prefix/name split only works at '/' boundaries).
+                archive_entry_set_pathname(dir_entry, (rootDir / relativePath).generic_string().c_str());
                 archive_entry_set_filetype(dir_entry, AE_IFDIR);
                 stat(it.path().string().c_str(), &st);
                 archive_entry_copy_stat(dir_entry, &st);
@@ -343,7 +389,7 @@ namespace Utils
                 // write header				
                 auto relativePath = relative(it.path(), srcDir);
                 auto file_entry = archive_entry_new();
-                archive_entry_set_pathname(file_entry, (rootDir / relativePath).string().c_str());
+                archive_entry_set_pathname(file_entry, (rootDir / relativePath).generic_string().c_str());
                 stat(it.path().string().c_str(), &st);
                 archive_entry_set_filetype(file_entry, AE_IFREG);
                 archive_entry_set_size(file_entry, st.st_size);  // Note 2
