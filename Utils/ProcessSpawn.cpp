@@ -20,7 +20,7 @@ namespace Utils
 {
 #if !IS_WINDOWS
 
-	int run_process(const std::string& program, const std::vector<std::string>& args, bool discardOutput /* = true*/)
+	std::int64_t run_process(const std::string& program, const std::vector<std::string>& args, bool discardOutput /* = true*/)
 	{
 		// Build the child's argv: argv[0] is the program by convention. posix_spawnp
 		// PATH-searches the program; every argument below is a distinct argv entry,
@@ -70,6 +70,13 @@ namespace Utils
 		if (WIFEXITED(status))
 		{
 			return WEXITSTATUS(status);
+		}
+		if (WIFSIGNALED(status))
+		{
+			// shell convention: 128+signal, positive and distinct from the
+			// -1 "could not start" sentinel (a crashed child is a command
+			// failure, not a spawn failure)
+			return 128 + WTERMSIG(status);
 		}
 		return -1;
 	}
@@ -122,7 +129,7 @@ namespace Utils
 		}
 	}
 
-	int run_process(const std::string& program, const std::vector<std::string>& args, bool discardOutput /* = true*/)
+	std::int64_t run_process(const std::string& program, const std::vector<std::string>& args, bool discardOutput /* = true*/)
 	{
 		// widen via std::filesystem::path so the conversion matches however
 		// the system encoded the string in the first place (path::string() on
@@ -176,13 +183,21 @@ namespace Utils
 			return -1;
 		}
 
-		DWORD exitCode = static_cast<DWORD>(-1);
+		DWORD exitCode = 0;
 		WaitForSingleObject(processInfo.hProcess, INFINITE);
-		GetExitCodeProcess(processInfo.hProcess, &exitCode);
+		const BOOL gotExitCode = GetExitCodeProcess(processInfo.hProcess, &exitCode);
 		CloseHandle(processInfo.hThread);
 		CloseHandle(processInfo.hProcess);
 
-		return static_cast<int>(exitCode);
+		if (!gotExitCode)
+		{
+			// exit status undeterminable - report the spawn-failure class
+			return -1;
+		}
+		// zero-extend the unsigned 32-bit code into int64: crash codes like
+		// 0xC0000005 stay positive (command failure) instead of colliding
+		// with the -1 "could not start" sentinel
+		return static_cast<std::int64_t>(exitCode);
 	}
 
 #endif // IS_WINDOWS

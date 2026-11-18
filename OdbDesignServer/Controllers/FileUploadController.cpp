@@ -293,22 +293,38 @@ namespace Odb::App::Server
 
         for (const auto& validated : validatedParts)
         {
-            // Create a new file with the extracted file name and write file contents to it
+            // Create a new file with the extracted file name and write file
+            // contents to it. Any failure here fails the WHOLE request (roll
+            // back already-committed parts + 5xx): silently skipping a part
+            // would return success for an upload that lost data, and a retry
+            // would then 409 on the parts that did commit. Write and close
+            // are both checked so an ENOSPC mid-write cannot commit a
+            // truncated file (same posture as the extraction write path).
             std::string tempName;
             if (!CrossPlatform::tmpnam_safe(tempName))
             {
                 CROW_LOG_ERROR << " Failed to generate temp file name\n";
-                continue;
+                rollbackCommitted();
+                return crow::response(crow::status::INTERNAL_SERVER_ERROR, "failed handling new file");
             }
             const auto tempPath = temp_directory_path() / tempName;
             std::ofstream out_file(tempPath, std::ofstream::binary);
             if (!out_file)
             {
                 CROW_LOG_ERROR << " Write to file failed\n";
-                continue;
+                rollbackCommitted();
+                return crow::response(crow::status::INTERNAL_SERVER_ERROR, "failed handling new file");
             }
             out_file << validated.pPart->body;
             out_file.close();
+            if (!out_file)
+            {
+                CROW_LOG_ERROR << " Write to file failed (write/close)\n";
+                std::error_code removeEc;
+                remove(tempPath, removeEc);
+                rollbackCommitted();
+                return crow::response(crow::status::INTERNAL_SERVER_ERROR, "failed handling new file");
+            }
 
             std::error_code ec;
             fastmove_file(tempPath, validated.finalPath, false, ec);

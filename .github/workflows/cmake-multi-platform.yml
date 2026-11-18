@@ -440,7 +440,11 @@ jobs:
       # green build or poison a required check context.
       - name: Report Test Results
         uses: dorny/test-reporter@31a54ee7ebcacc03a09ea97a7e5465a47b84aea5 # v1.9.1
-        if: steps.cmake-test.outcome == 'success' || steps.cmake-test.outcome == 'failure'
+        # !cancelled() (no implicit success() conjunction): with the gate on
+        # CMake Test's exit code, a red run fails the job BEFORE this step —
+        # an outcome-only `if` would be skipped on failure and annotations
+        # would never appear on red runs, where they matter most.
+        if: ${{ !cancelled() }}
         continue-on-error: true
         with:
           name: ${{ matrix.os }}_test-results
