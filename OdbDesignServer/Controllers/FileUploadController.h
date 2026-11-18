@@ -2,6 +2,8 @@
 
 #include "App/RouteController.h"
 #include "App/IOdbServerApp.h"
+#include <optional>
+#include <string>
 
 namespace Odb::App::Server
 {
@@ -16,8 +18,11 @@ namespace Odb::App::Server
 		crow::response handleOctetStreamUpload(const std::string& filename, const crow::request& req);
 		crow::response handleMultipartFormUpload(const crow::request& req);
 
-		// TODO: actually implement sanitizeFilename()
-		std::string sanitizeFilename(const std::string& filename) const;
+		// Security-audit F002: reject upload filenames that are not a single
+		// safe component (separators, traversal, rooted/drive forms, control
+		// characters, trailing dots/spaces, over-length). Returns nullopt for
+		// rejected names - callers must fail the request, never launder it.
+		std::optional<std::string> sanitizeFilename(const std::string& filename) const;
 
 		constexpr static const inline char MULTIPART_FORM_DATA_PART_NAME[] = "file";
 		constexpr static const inline char MULTIPART_FORM_DATA_PART_FILENAME[] = "filename";

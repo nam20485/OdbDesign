@@ -1,6 +1,10 @@
 #include "FileUploadController.h"
 #include <string>
+#include <vector>
+#include <filesystem>
 #include "fastmove.h"
+#include "PathSafety.h"
+#include "UrlEncoding.h"
 #include <system_error>
 #include <fstream>
 #include <App/RouteController.h>
@@ -142,6 +146,17 @@ namespace Odb::App::Server
     
     crow::response FileUploadController::handleOctetStreamUpload(const std::string& filename, const crow::request& req)
     {
+        // Security-audit F002: route-parameter filenames are fully
+        // client-controlled (including Windows backslash traversal via the
+        // URL path) - URL-decode first (crow route params arrive encoded;
+        // every other controller decodes manually), then reject anything
+        // that is not one safe component.
+        auto safeName = sanitizeFilename(UrlEncoding::decode(filename));
+        if (!safeName.has_value())
+        {
+            return crow::response(crow::status::BAD_REQUEST, "invalid filename");
+        }
+
         std::string tempName;
         if (!CrossPlatform::tmpnam_safe(tempName))
         {
@@ -152,20 +167,23 @@ namespace Odb::App::Server
         outfile << req.body;
         outfile.close();
 
-        auto safeName = sanitizeFilename(filename);
         path finalPath(m_serverApp.args().designsDir());
-        finalPath /= safeName;
+        finalPath /= safeName.value();
 
         std::error_code ec;
         fastmove_file(tempPath, finalPath, false, ec);
+        if (ec == std::errc::file_exists)
+        {
+            std::error_code removeEc;
+            remove(tempPath, removeEc);
+            return crow::response(crow::status::CONFLICT, "a design with that filename already exists");
+        }
         if (ec.value() != 0)
         {
             return crow::response(crow::status::INTERNAL_SERVER_ERROR, "failed handling new file");
         }
 
-        autoWarmDesign(m_serverApp.designs(), safeName);
-
-        std::string responseBody = "{ \"filename\": \"" + safeName + "\" }";
+        autoWarmDesign(m_serverApp.designs(), safeName.value());
 
         return makeLoadedFileModelsResponse(true);
     }
@@ -173,6 +191,23 @@ namespace Odb::App::Server
     crow::response FileUploadController::handleMultipartFormUpload(const crow::request& req)
     {
         crow::multipart::message file_message(req);
+
+        // Pass 1 — validate EVERY part before committing any of them to disk.
+        // The old single loop fastmove'd + cache-warmed each part as it went
+        // and then returned 400/409 on a later bad part, leaving earlier
+        // parts permanently stored behind a response implying total failure
+        // (a retry then 409'd on the already-stored part). Filenames and
+        // target conflicts are checked up front; the commit pass below keeps
+        // fastmove's no-overwrite as the atomic race guard and rolls back on
+        // a mid-commit failure.
+        struct ValidatedPart
+        {
+            const crow::multipart::part* pPart;
+            std::string safeName;
+            path finalPath;
+        };
+        std::vector<ValidatedPart> validatedParts;
+
         for (const auto& part : file_message.part_map)
         {
             const auto& part_name = part.first;
@@ -183,9 +218,9 @@ namespace Odb::App::Server
             {
                 // log to debug and skip rest of the loop
                 CROW_LOG_DEBUG << " Value: " << part_value.body << '\n';
-                CROW_LOG_ERROR 
-                    << "multipart/form-data POST failed! Part name was: [" << part_name 
-                    << "], which is not supported. Part name should be [" << MULTIPART_FORM_DATA_PART_NAME 
+                CROW_LOG_ERROR
+                    << "multipart/form-data POST failed! Part name was: [" << part_name
+                    << "], which is not supported. Part name should be [" << MULTIPART_FORM_DATA_PART_NAME
                     << "].";
                 continue;
             }
@@ -194,14 +229,14 @@ namespace Odb::App::Server
             auto headers_it = part_value.headers.find(CONTENT_DISPOSITION_HEADER_NAME);
             if (headers_it == part_value.headers.end())
             {
-                CROW_LOG_ERROR << "No " << CONTENT_DISPOSITION_HEADER_NAME << " found";                
+                CROW_LOG_ERROR << "No " << CONTENT_DISPOSITION_HEADER_NAME << " found";
                 return crow::response(crow::status::BAD_REQUEST);
             }
             auto params_it = headers_it->second.params.find(MULTIPART_FORM_DATA_PART_FILENAME);
             if (params_it == headers_it->second.params.end())
             {
                 CROW_LOG_ERROR << "Part with name \"" << "MULTIPART_FORMDATA_PART_NAME" << "\" should have a \"" << "MULTIPART_FORMDATA_PART_FILENAME" << "\" parameter";
-                return crow::response(crow::status::BAD_REQUEST);                               
+                return crow::response(crow::status::BAD_REQUEST);
             }
             const std::string outfile_name = params_it->second;
 
@@ -218,45 +253,137 @@ namespace Odb::App::Server
                 }
             }
 
-            // Create a new file with the extracted file name and write file contents to it
+            // Security-audit F002: multipart Content-Disposition filenames are
+            // fully client-controlled (traversal, absolute paths) - reject
+            // anything that is not one safe component.
+            auto safeName = sanitizeFilename(outfile_name);
+            if (!safeName.has_value())
+            {
+                return crow::response(crow::status::BAD_REQUEST, "invalid filename");
+            }
+
+            path finalPath(m_serverApp.args().designsDir());
+            finalPath /= safeName.value();
+
+            std::error_code existEc;
+            if (exists(finalPath, existEc))
+            {
+                return crow::response(crow::status::CONFLICT, "a design with that filename already exists");
+            }
+
+            validatedParts.push_back({ &part_value, safeName.value(), std::move(finalPath) });
+        }
+
+        // Pass 2 — commit the validated parts. On any mid-commit failure,
+        // roll back the parts this request already moved (and their warmed
+        // cache entries) so a failed upload leaves no partial state.
+        std::vector<std::string> committedNames;
+        const auto rollbackCommitted = [&]()
+        {
+            for (const auto& name : committedNames)
+            {
+                path committedPath(m_serverApp.args().designsDir());
+                committedPath /= name;
+                std::error_code removeEc;
+                remove(committedPath, removeEc);
+                // cache keys are design names = archive file stems (see autoWarmDesign)
+                m_serverApp.designs().InvalidateDesign(path(name).stem().string());
+            }
+        };
+
+        for (const auto& validated : validatedParts)
+        {
+            // Create a new file with the extracted file name and write file
+            // contents to it. Any failure here fails the WHOLE request (roll
+            // back already-committed parts + 5xx): silently skipping a part
+            // would return success for an upload that lost data, and a retry
+            // would then 409 on the parts that did commit. Write and close
+            // are both checked so an ENOSPC mid-write cannot commit a
+            // truncated file (same posture as the extraction write path).
             std::string tempName;
             if (!CrossPlatform::tmpnam_safe(tempName))
             {
                 CROW_LOG_ERROR << " Failed to generate temp file name\n";
-                continue;
+                rollbackCommitted();
+                return crow::response(crow::status::INTERNAL_SERVER_ERROR, "failed handling new file");
             }
             const auto tempPath = temp_directory_path() / tempName;
             std::ofstream out_file(tempPath, std::ofstream::binary);
             if (!out_file)
             {
                 CROW_LOG_ERROR << " Write to file failed\n";
-                continue;
+                rollbackCommitted();
+                return crow::response(crow::status::INTERNAL_SERVER_ERROR, "failed handling new file");
             }
-            out_file << part_value.body;
+            out_file << validated.pPart->body;
             out_file.close();
-
-            auto safeName = sanitizeFilename(outfile_name);
-            path finalPath(m_serverApp.args().designsDir());
-            finalPath /= safeName;
-
-            std::error_code ec;
-            fastmove_file(tempPath, finalPath, false, ec);
-            if (ec.value() != 0)
+            if (!out_file)
             {
+                CROW_LOG_ERROR << " Write to file failed (write/close)\n";
+                std::error_code removeEc;
+                remove(tempPath, removeEc);
+                rollbackCommitted();
                 return crow::response(crow::status::INTERNAL_SERVER_ERROR, "failed handling new file");
             }
 
-            autoWarmDesign(m_serverApp.designs(), safeName);
+            std::error_code ec;
+            fastmove_file(tempPath, validated.finalPath, false, ec);
+            if (ec == std::errc::file_exists)
+            {
+                std::error_code removeEc;
+                remove(tempPath, removeEc);
+                rollbackCommitted();
+                return crow::response(crow::status::CONFLICT, "a design with that filename already exists");
+            }
+            if (ec.value() != 0)
+            {
+                std::error_code removeEc;
+                remove(tempPath, removeEc);
+                rollbackCommitted();
+                return crow::response(crow::status::INTERNAL_SERVER_ERROR, "failed handling new file");
+            }
 
-            CROW_LOG_INFO << " Contents written to " << outfile_name << '\n';
+            autoWarmDesign(m_serverApp.designs(), validated.safeName);
+            committedNames.push_back(validated.safeName);
+
+            CROW_LOG_INFO << " Contents written to " << validated.safeName << '\n';
         }
 
         return makeLoadedFileModelsResponse(true);
     }
 
-    std::string FileUploadController::sanitizeFilename(const std::string& filename) const
+    std::optional<std::string> FileUploadController::sanitizeFilename(const std::string& filename) const
     {
-        // TODO: implement sanitize filename
+        // Security-audit F002: rejection, not laundering. The name must be a
+        // single safe component (no separators, traversal, rooted/drive forms,
+        // control characters, trailing dots/spaces, sane length). The shared
+        // validator is also used by the archive extraction paths (F003/F001),
+        // so upload and extraction enforce one vocabulary.
+        if (!Utils::is_safe_filename_component(filename))
+        {
+            // the name is URL-decoded by now and may carry raw control
+            // bytes; escape them so one rejection cannot forge additional
+            // log lines (audit F017 class)
+            std::string printable;
+            printable.reserve(filename.size());
+            for (const auto c : filename)
+            {
+                const auto uc = static_cast<unsigned char>(c);
+                if (uc < 0x20 || uc == 0x7F)
+                {
+                    printable += "\\x";
+                    const char hex[] = "0123456789ABCDEF";
+                    printable += hex[uc >> 4];
+                    printable += hex[uc & 0x0F];
+                }
+                else
+                {
+                    printable += c;
+                }
+            }
+            CROW_LOG_ERROR << "Rejected unsafe upload filename: [" << printable << "]";
+            return std::nullopt;
+        }
         return filename;
     }
 }

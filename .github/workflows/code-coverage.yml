@@ -166,9 +166,13 @@ jobs:
           --output-junit ${{ github.workspace }}/coverage-testlog.xml
           --output-on-failure
 
+      # Annotation only — Run Tests above gates the job on ctest's exit code.
+      # dorny's check-run API intermittently 404s (HttpError: Not Found);
+      # that must not fail a green coverage run (see cmake-multi-platform.yml).
       - name: Report Test Results
         uses: dorny/test-reporter@31a54ee7ebcacc03a09ea97a7e5465a47b84aea5 # v1.9.1
         if: ${{ !cancelled() }}
+        continue-on-error: true
         with:
           name: linux-coverage-test-results
           path: ${{ github.workspace }}/coverage-testlog.xml
@@ -199,8 +203,14 @@ jobs:
             --output-directory coverage/html \
             --quiet \
             --title "OdbDesign Test Coverage" \
+            --css-file scripts/gcov-dark.css \
             --show-details \
             --legend
+          # genhtml installs --css-file as gcov.css, replacing the stock
+          # light theme (site dark-chrome match, see scripts/gcov-dark.css).
+          # The bar-segment PNGs cannot be swapped via a flag: overwrite the
+          # white "uncovered" segment so it does not glare on the dark panels.
+          cp scripts/snow-dark.png coverage/html/snow.png
 
       - name: Upload Coverage Artifact
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2

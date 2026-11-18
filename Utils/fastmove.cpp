@@ -21,29 +21,38 @@ namespace Utils
 		}
 	}
 
-	void fastmove_file(const path& source, const path& dest, bool overwriteExisting, std::error_code& ec)
-	{
-		//try
-		{
-			rename(source, dest, ec);
-			if (ec.value() == static_cast<int>(std::errc::cross_device_link))
-			{
-				move_file(source, dest, overwriteExisting, ec);
-			}
-		}
-		//catch (filesystem_error& fe)
-		//{
-		//	// can't rename across devices- try standard copy and remove
-		//	if (fe.code() == std::errc::cross_device_link)
-		//	{
-		//		ec = move_file(source, dest, overwriteExisting);
-		//	}
-		//	else
-		//	{
-		//		throw fe;
-		//	}
-		//}
+    void fastmove_file(const path& source, const path& dest, bool overwriteExisting, std::error_code& ec)
+    {
+        // Security-audit F002: POSIX rename() silently replaces an existing
+        // destination, which made the overwriteExisting=false contract a no-op
+        // - callers asking for no-overwrite (design upload) were overwriting
+        // stored files anyway. Honor the flag: refuse when the destination
+        // exists unless overwrite was explicitly requested. Note the check is
+        // not atomic with rename(): two concurrent no-overwrite moves of the
+        // same name race to last-writer-wins (still contained to the caller's
+        // destination directory, so this is a correctness nicety, not a
+        // containment hole).
+        ec.clear();
+        if (!overwriteExisting)
+        {
+            std::error_code existsEc;
+            const bool destExists = exists(dest, existsEc);
+            if (existsEc)
+            {
+                ec = existsEc;
+                return;
+            }
+            if (destExists)
+            {
+                ec = std::make_error_code(std::errc::file_exists);
+                return;
+            }
+        }
 
-		//return ec;
-	}
+        rename(source, dest, ec);
+        if (ec.value() == static_cast<int>(std::errc::cross_device_link))
+        {
+            move_file(source, dest, overwriteExisting, ec);
+        }
+    }
 }
