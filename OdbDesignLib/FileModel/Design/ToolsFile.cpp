@@ -481,6 +481,10 @@ namespace Odb::Lib::FileModel::Design
 	void ToolsFile::ToolRecord::from_protobuf(const Odb::Lib::Protobuf::ToolsFile::Tool& message)
 	{
 		num = message.num();
+		// keep the NUM-present invariant consistent with the parse path
+		// (hasNum gates the close-brace NUM-required check); proto presence
+		// is the wire equivalent of "NUM= appeared in the file"
+		hasNum = message.has_num();
 		// proto3 delivers out-of-range enum values from hostile/foreign wire
 		// messages verbatim; coerce them to Unknown so Save()'s existing
 		// Unknown refusal catches them instead of writing TYPE2=<integer
