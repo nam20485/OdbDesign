@@ -19,11 +19,15 @@ concurrency:
   # check contexts — permanently blocking the PR even though the other lane
   # completed green (promotion #632, 2026-11-18: every context had both a
   # CANCELLED push-lane run and a SUCCESS PR-lane run; rollup = FAILURE).
-  # Within one lane, keying on the head branch still lets the newest commit
-  # cancel superseded runs; fork PRs stay isolated by their own repo full
-  # name. Cost: both lanes run to completion on promotion pushes (public
-  # repo, parallel, ~15 min each).
-  group: cmake-multi-platform-${{ github.event_name }}-${{ github.event_name == 'pull_request' && format('{0}/{1}', github.event.pull_request.head.repo.full_name, github.head_ref) || format('{0}/{1}', github.repository, github.ref_name) }}
+  # Within one lane, newer commits still cancel superseded runs. The PR-lane
+  # key uses the PR NUMBER (not head_ref): two sibling PRs from the same head
+  # branch (stacked promotions, e.g. nam20485 -> development and a direct
+  # nam20485 -> staging open at once) must not cancel each other's runs —
+  # that would recreate the CANCELLED-check-run deadlock within the PR lane.
+  # Fork PRs stay isolated by their own repo full name prefix. Cost: both
+  # lanes run to completion on promotion pushes (public repo, parallel,
+  # ~15 min each).
+  group: cmake-multi-platform-${{ github.event_name }}-${{ github.event_name == 'pull_request' && format('{0}/{1}', github.event.pull_request.head.repo.full_name, github.event.number) || format('{0}/{1}', github.repository, github.ref_name) }}
   cancel-in-progress: true
 
 permissions:
