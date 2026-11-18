@@ -44,4 +44,14 @@ message ToolsFile {
     repeated Tool tools = 4;
     optional string directory = 5;
     optional string path = 6;
+
+    // Reserved ranges from the clean-room rewrite: the pre-carve-out
+    // ToolsFile used directory=1, path=2, units=3, thickness=4,
+    // user_params=5, tools(map)=6. This schema reuses those tag numbers
+    // for different fields (deliberate — old and new are incompatible by
+    // design), so reserving is not possible without changing the new
+    // schema. The old wire format is intentionally non-loadable; any
+    // legacy data is re-parseable only from the original ODB++ files.
+    // Note: the Tool message tags 1-8 are a fresh allocation, not a
+    // migration; the old map-value message had different fields/tags.
 }

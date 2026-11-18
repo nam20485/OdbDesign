@@ -41,6 +41,8 @@ namespace Odb::Lib::FileModel::Design
 
 			// spec: tool number
 			unsigned int num = 0;
+			// tracked for close-brace validation (NUM must be present)
+			bool hasNum = false;
 			// spec: PLATED | NON_PLATED | VIA
 			Type type = Type::Unknown;
 			// spec: legality depends on type; defaults to STANDARD when absent

@@ -11,15 +11,23 @@ on:
     branches: ["development", "staging", "main", "release", "nam20485"]
 
 concurrency:
-  # Group by head repo + branch instead of github.ref: a same-repo PR fires
-  # both the push lane (refs/heads/<branch>) and the pull_request lane
-  # (refs/pull/<n>/merge) for the same commit, and without a shared group
-  # neither the duplicate nor superseded runs of older commits are ever
-  # cancelled. Keying on the head branch makes the newest commit cancel
-  # older runs across both lanes; fork PRs stay isolated by their own repo
-  # full name. Required status checks only gate on the latest commit, which
-  # always gets a fresh run.
-  group: cmake-multi-platform-${{ github.event_name == 'pull_request' && format('{0}/{1}', github.event.pull_request.head.repo.full_name, github.head_ref) || format('{0}/{1}', github.repository, github.ref_name) }}
+  # Group by EVENT + head repo + branch. A same-repo PR fires both the push
+  # lane (refs/heads/<branch>) and the pull_request lane (refs/pull/<n>/merge)
+  # for the same commit. The two lanes must NOT cancel each other: a
+  # cancelled lane leaves CANCELLED check runs on the head commit, and
+  # GitHub can evaluate those as the effective result for required status
+  # check contexts — permanently blocking the PR even though the other lane
+  # completed green (promotion #632, 2026-11-18: every context had both a
+  # CANCELLED push-lane run and a SUCCESS PR-lane run; rollup = FAILURE).
+  # Within one lane, newer commits still cancel superseded runs. The PR-lane
+  # key uses the PR NUMBER (not head_ref): two sibling PRs from the same head
+  # branch (stacked promotions, e.g. nam20485 -> development and a direct
+  # nam20485 -> staging open at once) must not cancel each other's runs —
+  # that would recreate the CANCELLED-check-run deadlock within the PR lane.
+  # Fork PRs stay isolated by their own repo full name prefix. Cost: both
+  # lanes run to completion on promotion pushes (public repo, parallel,
+  # ~15 min each).
+  group: cmake-multi-platform-${{ github.event_name }}-${{ github.event_name == 'pull_request' && format('{0}/{1}', github.event.pull_request.head.repo.full_name, github.event.number) || format('{0}/{1}', github.repository, github.ref_name) }}
   cancel-in-progress: true
 
 permissions:
@@ -56,7 +64,16 @@ env:
 
 jobs:
   build:
-    name: CMake-Multi-Platform-Build
+    # Explicit name template: a static job name gets ALL matrix keys
+    # auto-appended, and the nugetPluginPaths key (single space on Windows,
+    # the documented "no plugins" switch - see env below) leaked into the
+    # check name as "(windows-2022, x64-release,  )", which no longer matched
+    # the required-status-check context "(windows-2022, x64-release)" in
+    # rulesets 169324/169360 - permanently blocking development promotions
+    # (same failure class as the old linux-release context incident).
+    # Naming only os+preset keeps the check contexts stable regardless of
+    # auxiliary matrix keys.
+    name: CMake-Multi-Platform-Build (${{ matrix.os }}, ${{ matrix.preset }})
     runs-on: ${{ matrix.os }}
     permissions:
       contents: write
@@ -412,13 +429,19 @@ jobs:
           ODB_TEST_DATA_DIR: ${{github.workspace}}/OdbDesignTestData/TEST_DATA
           ODB_TEST_ENVIRONMENT_VARIABLE: ${{vars.ODB_TEST_ENVIRONMENT_VARIABLE}}
         run: ctest --test-dir ./out/build/${{matrix.preset}}/OdbDesignTests --output-log ${{github.workspace}}/testlog.txt --output-junit ${{github.workspace}}/testlog.xml --output-on-failure
-        # let the report step fail the job if it finds failed tests...
-        continue-on-error: true
+        # ctest's exit code gates the job directly (no continue-on-error):
+        # the test gate must not depend on the reporter's API round-trip.
 
-      # report test results
+      # Report test results — ANNOTATION ONLY. dorny's check-run API calls
+      # intermittently return HttpError: Not Found (4+ occurrences on
+      # 2026-11-18 across all three OS legs, on green test runs), which used
+      # to fail the job because this step carried the test gate. The gate now
+      # lives in CMake Test above; a reporter API failure must never fail a
+      # green build or poison a required check context.
       - name: Report Test Results
         uses: dorny/test-reporter@31a54ee7ebcacc03a09ea97a7e5465a47b84aea5 # v1.9.1
         if: steps.cmake-test.outcome == 'success' || steps.cmake-test.outcome == 'failure'
+        continue-on-error: true
         with:
           name: ${{ matrix.os }}_test-results
           path: ${{github.workspace}}/testlog.xml
@@ -434,11 +457,10 @@ jobs:
         # Push builds only, on the 5 CI branches. PR submissions would spam
         # the dashboard, and fork PRs have no business writing to it.
         # !cancelled() instead of the implicit success(): when tests fail,
-        # the "Report Test Results" step (fail-on-error: true) fails the job
-        # and a success()-conditioned step would be SKIPPED - the dashboard
-        # must receive failing builds too, they are the point of a CI
-        # dashboard. If the build itself failed, the submission attempt
-        # simply no-ops under continue-on-error.
+        # the "CMake Test" step fails the job and a success()-conditioned
+        # step would be SKIPPED - the dashboard must receive failing builds
+        # too, they are the point of a CI dashboard. If the build itself
+        # failed, the submission attempt simply no-ops under continue-on-error.
         if: github.event_name == 'push' && !cancelled()
         # Observability sink: a CDash outage or bad submission must never
         # fail a required status check.
