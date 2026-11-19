@@ -100,6 +100,13 @@ jobs:
       # per repo; a second publisher would wipe the site), which is why the
       # coverage tree is folded into this artifact here. A missing/expired
       # artifact only yields a placeholder page; it must never fail the deploy.
+      #
+      # The coverage hub page is hand-built here (it lands in _site/ after the
+      # Jekyll build, so it cannot use the site layouts): it reproduces the
+      # slate chrome (theme wrapper divs + /assets/css/style.css) and presents
+      # the branch table with Lines/Functions chips parsed from the artifact's
+      # coverage_summary.txt, so the page reads as a picker for the full
+      # per-branch reports instead of masquerading as the report itself.
       - name: Add per-branch coverage reports
         # PR runs validate the site build only: artifact downloads of other
         # runs' coverage artifacts are deploy-time behavior.
@@ -113,6 +120,26 @@ jobs:
           tmp_root="$(mktemp -d)"
           rows_file="$tmp_root/coverage-rows.html"
           : > "$rows_file"
+
+          # lcov/genhtml legend thresholds for the coverage chips:
+          # high >= 90 %, medium >= 75 %, low < 75 %; anything unparsable
+          # (or a missing artifact) degrades to a gray chip.
+          chip_class() {
+            awk -v p="$1" 'BEGIN {
+              if (p == "" || p !~ /^[0-9]+(\.[0-9]+)?$/) { print "chip-none"; exit }
+              if (p + 0 >= 90) { print "chip-hi"; exit }
+              if (p + 0 >= 75) { print "chip-med"; exit }
+              print "chip-lo"
+            }'
+          }
+
+          branch_desc() {
+            case "$1" in
+              development) echo "default integration branch" ;;
+              release)     echo "release line feeding published versions" ;;
+              *)           echo "" ;;
+            esac
+          }
 
           for branch in development release; do
             branch_dir="$coverage_root/$branch"
@@ -133,7 +160,35 @@ jobs:
                  && mkdir -p "$branch_dir" \
                  && cp -r "$tmp_root/$branch/html/." "$branch_dir/"; then
                 short_sha="$(printf '%s' "$head_sha" | cut -c1-7)"
-                printf '<tr><td><a href="./%s/">%s</a></td><td><code>%s</code></td><td>%s</td></tr>\n' "$branch" "$branch" "$short_sha" "$created" >> "$rows_file"
+                run_date="${created%%T*}"
+
+                # Lines/Functions percentages from the artifact's lcov summary
+                # (coverage_summary.txt ships in the same artifact as html/).
+                # lcov --summary prints e.g. "  lines......: 72.4% (18901 of
+                # 26103 lines)" - NO space before the percent sign (byte-
+                # verified against lcov 2.0-1, CI's version).
+                summary="$tmp_root/$branch/coverage_summary.txt"
+                lines_pct="$(sed -n 's/^ *lines[^:]*: *\([0-9][0-9.]*\) *%.*/\1/p' "$summary" 2>/dev/null | head -n1 || true)"
+                funcs_pct="$(sed -n 's/^ *functions[^:]*: *\([0-9][0-9.]*\) *%.*/\1/p' "$summary" 2>/dev/null | head -n1 || true)"
+                lines_cls="$(chip_class "$lines_pct")"
+                funcs_cls="$(chip_class "$funcs_pct")"
+                if [ -n "$lines_pct" ]; then lines_chip="Lines $lines_pct%"; else lines_chip="Lines n/a"; fi
+                if [ -n "$funcs_pct" ]; then funcs_chip="Functions $funcs_pct%"; else funcs_chip="Functions n/a"; fi
+
+                cat >> "$rows_file" <<ROW
+          <tr class="cov-row">
+            <td class="cov-branch">
+              <a class="cov-link" href="./$branch/"><strong>$branch</strong></a>
+              <span class="cov-desc">$(branch_desc "$branch")</span>
+            </td>
+            <td class="cov-meta"><code>$short_sha</code> &middot; $run_date</td>
+            <td class="cov-chips">
+              <span class="chip $lines_cls" title="Line coverage (lcov legend: green &gt;= 90%, amber &gt;= 75%, red &lt; 75%)">$lines_chip</span>
+              <span class="chip $funcs_cls" title="Function coverage">$funcs_chip</span>
+            </td>
+            <td class="cov-open"><a class="cov-link" href="./$branch/">Open report &rarr;</a></td>
+          </tr>
+          ROW
                 continue
               fi
               echo "warning: could not fetch linux-coverage-report artifact for branch '$branch'; publishing placeholder page" >&2
@@ -145,15 +200,42 @@ jobs:
             cat > "$branch_dir/index.html" <<HTML
           <!DOCTYPE html>
           <html lang="en">
-          <head><meta charset="utf-8"><title>OdbDesign test coverage - $branch</title></head>
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <title>OdbDesign test coverage &ndash; $branch</title>
+            <link rel="stylesheet" href="/assets/css/style.css">
+          </head>
           <body>
-          <h1>OdbDesign test coverage - $branch</h1>
-          <p>no coverage report available (last checked $(date -u '+%Y-%m-%dT%H:%M:%SZ'))</p>
-          <p><a href="../">back to coverage index</a></p>
+            <div id="header_wrap" class="outer">
+              <header class="inner">
+                <a id="forkme_banner" href="https://github.com/nam20485/OdbDesign">View on GitHub</a>
+                <h1 id="project_title">OdbDesign test coverage</h1>
+                <h2 id="project_tagline">$branch branch</h2>
+              </header>
+            </div>
+            <div id="main_content_wrap" class="outer">
+              <section id="main_content" class="inner">
+                <h1>$branch</h1>
+                <p>No coverage report is available for this branch right now.</p>
+                <p>Reports are rebuilt by the <a href="https://github.com/nam20485/OdbDesign/actions/workflows/code-coverage.yml">Code Coverage</a> workflow on every push to the branch; this page refreshes on each site deploy and weekly (Mondays 06:00 UTC).</p>
+                <p>Last checked: $(date -u '+%Y-%m-%dT%H:%M:%SZ') &middot; <a href="/coverage/">back to coverage hub</a></p>
+              </section>
+            </div>
+            <div id="footer_wrap" class="outer">
+              <footer class="inner">OdbDesign test coverage &middot; <a href="/">site home</a></footer>
+            </div>
           </body>
           </html>
           HTML
-            printf '<tr><td>%s</td><td colspan="2">no coverage report available</td></tr>\n' "$branch" >> "$rows_file"
+            cat >> "$rows_file" <<ROW
+          <tr class="cov-row cov-missing">
+            <td class="cov-branch"><strong>$branch</strong><span class="cov-desc">$(branch_desc "$branch")</span></td>
+            <td class="cov-meta">&ndash;</td>
+            <td class="cov-chips"><span class="chip chip-none">no report available</span></td>
+            <td class="cov-open">&ndash;</td>
+          </tr>
+          ROW
           done
 
           checked="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
@@ -163,18 +245,53 @@ jobs:
           <html lang="en">
           <head>
             <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
             <title>OdbDesign test coverage</title>
+            <link rel="stylesheet" href="/assets/css/style.css">
+            <style>
+              table.cov-table { width: 100%; border-collapse: collapse; margin: 1.25em 0 0.5em 0; font-size: 1.02em; }
+              .cov-table th { text-align: left; padding: 10px 14px; font-size: 0.78em; letter-spacing: 0.08em; text-transform: uppercase; color: #c9c9c9; background: #3d3d3d; border-bottom: 2px solid #565656; }
+              .cov-table td { padding: 14px; vertical-align: middle; background: #4d4d4d; border-bottom: 1px solid #565656; }
+              .cov-row:hover td { background: #565656; }
+              .cov-branch .cov-link { font-size: 1.15em; font-weight: 700; }
+              .cov-desc { display: block; margin-top: 4px; color: #c9c9c9; font-size: 0.9em; }
+              .cov-meta { white-space: nowrap; color: #e6e6e6; }
+              .cov-meta code { background: #3a3a3a; padding: 2px 6px; border-radius: 4px; }
+              .chip { display: inline-block; padding: 4px 12px; margin: 2px 6px 2px 0; border-radius: 12px; color: #ffffff; font-weight: 600; font-size: 0.88em; white-space: nowrap; }
+              .chip-hi { background: #2f7d43; }
+              .chip-med { background: #b07d2b; }
+              .chip-lo { background: #b04343; }
+              .chip-none { background: #6a6a6a; }
+              .cov-open a { font-weight: 700; white-space: nowrap; }
+              .cov-note { color: #c9c9c9; font-size: 0.9em; }
+              .cov-lead { font-size: 1.05em; }
+            </style>
           </head>
           <body>
-          <h1>OdbDesign test coverage</h1>
-          <p>Per-branch HTML coverage reports, produced by the Code Coverage workflow (<a href="https://github.com/nam20485/OdbDesign/actions/workflows/code-coverage.yml">code-coverage.yml</a>).</p>
-          <table border="1">
-            <tr><th>Branch</th><th>Commit</th><th>Coverage run</th></tr>
+            <div id="header_wrap" class="outer">
+              <header class="inner">
+                <a id="forkme_banner" href="https://github.com/nam20485/OdbDesign">View on GitHub</a>
+                <h1 id="project_title">OdbDesign test coverage</h1>
+                <h2 id="project_tagline">per-branch lcov HTML reports</h2>
+              </header>
+            </div>
+            <div id="main_content_wrap" class="outer">
+              <section id="main_content" class="inner">
+                <h1>Test coverage</h1>
+                <p class="cov-lead">This page is the coverage <strong>hub</strong>: each branch publishes its own <strong>complete lcov report</strong> &mdash; directory tree, per-file statistics, and line-by-line annotated source. Pick a branch below to open its report; the percentages shown are from each branch&rsquo;s most recent coverage run.</p>
+                <table class="cov-table">
+                  <tr><th>Branch</th><th>Latest run</th><th>Coverage</th><th>Report</th></tr>
           HTML
             cat "$rows_file"
             cat <<HTML
-          </table>
-          <p>Reports last checked: $checked (UTC)</p>
+                </table>
+                <p class="cov-note">Reports regenerate on every push to the branch (<a href="https://github.com/nam20485/OdbDesign/actions/workflows/code-coverage.yml">Code Coverage</a> workflow, lcov + genhtml) and this hub refreshes on each site deploy plus weekly on Mondays 06:00 UTC. Chip colors follow the lcov legend: green &gt;= 90%, amber &gt;= 75%, red &lt; 75%.</p>
+                <p class="cov-note">Reports last checked: $checked (UTC) &middot; <a href="/">&larr; site home</a></p>
+              </section>
+            </div>
+            <div id="footer_wrap" class="outer">
+              <footer class="inner">OdbDesign test coverage &middot; <a href="/">site home</a></footer>
+            </div>
           </body>
           </html>
           HTML
