@@ -177,6 +177,19 @@ namespace Utils
                 {
                     destinationDir = std::filesystem::path(L"\\\\?\\" + wide);
                 }
+                // the \\?\ form is literal: normalize separators on the ROOT
+                // too. MSVC's absolute() normalizes via GetFullPathNameW, but
+                // MinGW/libstdc++ preserves input separators for not-yet-
+                // existing components, so a "C:/designs"-style root would
+                // otherwise yield \\?\C:/designs and fail every create/open.
+                destinationDir.make_preferred();
+            }
+            else
+            {
+                // proceeding unprefixed silently disables the long-path fix;
+                // make that degradation visible
+                logwarn("extract: absolute() failed for destination [" + destinationDir.string()
+                    + "]: " + absoluteError.message() + " - proceeding without long-path prefix");
             }
         }
 #endif

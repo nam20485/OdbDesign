@@ -164,8 +164,20 @@ namespace Odb::App::Server
         }
         const auto tempPath = temp_directory_path() / tempName;
         std::ofstream outfile(tempPath, std::ofstream::binary);
+        if (!outfile)
+        {
+            return crow::response(crow::status::INTERNAL_SERVER_ERROR, "failed handling new file");
+        }
         outfile << req.body;
         outfile.close();
+        // check write AND close: an ENOSPC mid-write must not commit a
+        // truncated archive (same fail-closed posture as the multipart path)
+        if (!outfile)
+        {
+            std::error_code removeEc;
+            remove(tempPath, removeEc);
+            return crow::response(crow::status::INTERNAL_SERVER_ERROR, "failed handling new file");
+        }
 
         path finalPath(m_serverApp.args().designsDir());
         finalPath /= safeName.value();
@@ -180,6 +192,10 @@ namespace Odb::App::Server
         }
         if (ec.value() != 0)
         {
+            // no temp leak on a persistently failing move (unwritable designs
+            // dir, cross-device fallback failure)
+            std::error_code removeEc;
+            remove(tempPath, removeEc);
             return crow::response(crow::status::INTERNAL_SERVER_ERROR, "failed handling new file");
         }
 
@@ -286,6 +302,13 @@ namespace Odb::App::Server
                 committedPath /= name;
                 std::error_code removeEc;
                 remove(committedPath, removeEc);
+                if (removeEc)
+                {
+                    // leftover partial state must be diagnosable: the client
+                    // was told the upload failed, but this file survived
+                    CROW_LOG_ERROR << "rollback could not remove committed upload ["
+                                   << committedPath.string() << "]: " << removeEc.message();
+                }
                 // cache keys are design names = archive file stems (see autoWarmDesign)
                 m_serverApp.designs().InvalidateDesign(path(name).stem().string());
             }
