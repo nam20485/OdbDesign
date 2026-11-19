@@ -417,6 +417,74 @@ TEST(MatrixColorTests, ExplicitColor_ProtobufRoundTrip_NonVacuous)
 	EXPECT_FALSE(roundTripped.color.noPreference);
 }
 
+
+TEST(ToolsFileTests, FromProtobuf_OutOfRangeSubType_CoercedToUnknown_SaveRefuses)
+{
+	// proto3 delivers out-of-range enum values verbatim from hostile wire
+	// messages; they must coerce to Unknown so Save()'s refusal catches them
+	// instead of writing unparseable TYPE2=<integer>. The type here is VALID
+	// so Save() reaches the subType guard specifically (with both enums out
+	// of range the pre-existing type guard fires first and the subType guard
+	// is never exercised).
+	Odb::Lib::Protobuf::ToolsFile message;
+	auto* pTool = message.add_tools();
+	pTool->set_num(1);
+	pTool->set_type(Odb::Lib::Protobuf::ToolsFile::VIA);
+	pTool->set_subtype(static_cast<Odb::Lib::Protobuf::ToolsFile::ToolSubType>(99));
+
+	ToolsFile toolsFile;
+	toolsFile.from_protobuf(message);
+
+	const auto& pParsedTool = toolsFile.GetTools().at(0);
+	EXPECT_EQ(pParsedTool->type, ToolsFile::ToolRecord::Type::Via);
+	EXPECT_EQ(pParsedTool->subType, ToolsFile::ToolRecord::SubType::Unknown);
+
+	// Save must refuse via the subType guard (cannot round-trip Unknown)
+	std::ostringstream out;
+	ASSERT_THROW(toolsFile.Save(out), Odb::Lib::FileModel::parse_error);
+}
+
+TEST(ToolsFileTests, FromProtobuf_OutOfRangeType_CoercedToUnknown_SaveRefuses)
+{
+	// symmetric coverage: out-of-range TYPE with a valid sub-type coerces to
+	// Unknown and Save() refuses at the type guard
+	Odb::Lib::Protobuf::ToolsFile message;
+	auto* pTool = message.add_tools();
+	pTool->set_num(1);
+	pTool->set_type(static_cast<Odb::Lib::Protobuf::ToolsFile::ToolType>(99));
+	pTool->set_subtype(Odb::Lib::Protobuf::ToolsFile::STANDARD);
+
+	ToolsFile toolsFile;
+	toolsFile.from_protobuf(message);
+
+	const auto& pParsedTool = toolsFile.GetTools().at(0);
+	EXPECT_EQ(pParsedTool->type, ToolsFile::ToolRecord::Type::Unknown);
+	EXPECT_EQ(pParsedTool->subType, ToolsFile::ToolRecord::SubType::Standard);
+
+	std::ostringstream out;
+	ASSERT_THROW(toolsFile.Save(out), Odb::Lib::FileModel::parse_error);
+}
+
+TEST(ToolsFileTests, FromProtobuf_NumPresence_Tracked)
+{
+	// hasNum must reflect wire presence just as the parse path reflects
+	// "NUM= appeared in the file" — otherwise the invariant diverges
+	// between construction paths
+	Odb::Lib::Protobuf::ToolsFile message;
+	auto* pWithNum = message.add_tools();
+	pWithNum->set_num(7);
+	auto* pWithoutNum = message.add_tools(); // deliberately no num set
+
+	ToolsFile toolsFile;
+	toolsFile.from_protobuf(message);
+
+	const auto& tools = toolsFile.GetTools();
+	ASSERT_EQ(tools.size(), 2u);
+	EXPECT_TRUE(tools.at(0)->hasNum);
+	EXPECT_EQ(tools.at(0)->num, 7u);
+	EXPECT_FALSE(tools.at(1)->hasNum);
+}
+
 TEST(ToolsFileTests, RealDesigns_LayersCarryParsedTools)
 {
 	const char* testDataDir = std::getenv("ODB_TEST_DATA_DIR");

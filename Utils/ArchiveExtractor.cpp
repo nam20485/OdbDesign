@@ -1,14 +1,13 @@
 #include "ArchiveExtractor.h"
-#include "ArchiveExtractor.h"
 #include <filesystem>
 #include "libarchive_extract.h"
 #include "Logger.h"
 #include "str_utils.h"
-#include <cstdlib>
+#include "PathSafety.h"
+#include "ProcessSpawn.h"
 #include <stdexcept>
 #include <string>
 #include "macros.h"
-#include <sstream>
 
 using namespace std::filesystem;
 
@@ -66,36 +65,34 @@ namespace Utils
 
 	bool ArchiveExtractor::ExtractLzmaOutOfProc(const path& destinationPath)
 	{
+		// Security-audit F001: this used to concatenate the archive and
+		// destination paths into a shell command string for std::system(), so
+		// shell metacharacters inside archive-derived paths (nested step/layer
+		// directory names reach here through getUncompressedFilePath) executed
+		// arbitrary commands. The 7z tool is now spawned with an argv array:
+		// every path travels as a single argument and is never re-parsed by a
+		// shell. "-o<dir>" is one argv entry, so paths with spaces need no
+		// quoting at all.
 		// https://documentation.help/7-Zip/extract_full.htm
-
-		std::stringstream ss;
-		ss << "7z"
-			<< " x " /*<< '"'*/ << m_path /*<< '"'*/			// extract w/ full paths and archive path
-			<< " -o" /*<< '"'*/ << destinationPath /*<< '"'*/	// output path
-			<< " -y" 											// yes to all prompts
-			<< " -aoa";											// overwrite all
-
-		if (HIDE_7Z_COMMAND_OUTPUT)
+		const std::vector<std::string> args =
 		{
-			if (Utils::IsWindows())
-			{
-				ss << " >nul 2>nul";
-			}
-			else
-			{
-				ss << " >/dev/null 2>/dev/null";
-			}
+			"x",
+			m_path.string(),
+			"-o" + destinationPath.string(),
+			"-y",		// yes to all prompts
+			"-aoa",		// overwrite all
+		};
+
+		loginfo("running 7z (argv spawn, no shell): x [" + m_path.string() + "] -o[" + destinationPath.string() + "]");
+
+		auto exitCode = run_process("7z", args);
+
+		if (exitCode < 0)
+		{
+			auto message = "failed to start 7z process (is 7z installed and on PATH?)";
+			logerror(message);
+			throw std::runtime_error(message);
 		}
-
-		auto command = ss.str();
-
-		loginfo("running 7z command: [" + command + "]...");
-
-		auto exitCode = std::system(command.c_str());
-
-#if !IS_WINDOWS
-		exitCode = WEXITSTATUS(exitCode);
-#endif
 
 		if (exitCode != static_cast<int>(e7zExitCode::Success) &&
 			exitCode != static_cast<int>(e7zExitCode::Warning))
@@ -104,7 +101,6 @@ namespace Utils
 			message += ", cwd: [" + current_path().string() + "]";
 			logerror(message);
 			throw std::runtime_error(message.c_str());
-			//return false;
 		}
 
 		loginfo("7z command succeeded");
@@ -154,7 +150,22 @@ namespace Utils
 
 	/*static*/ path ArchiveExtractor::getUncompressedFilePath(const path& directory, const std::string& filename)
 	{
-		path uncompressedPath;		
+		path uncompressedPath;
+
+		// Security-audit F001: filename comes from ODB++ file content (feature
+		// list names, eda data names...) and is joined onto an extraction-root
+		// subdirectory below. Reject rooted/traversal/separator-escape names
+		// before they can become filesystem paths (or 7z arguments).
+		if (filename.empty() || !is_safe_relative_entry_path(filename))
+		{
+			// distinguish a rejected hostile name from a merely missing file:
+			// ODB++-derived content failing the safety check is audit-worthy
+			if (!filename.empty())
+			{
+				logwarn("getUncompressedFilePath refused unsafe member name: [" + filename + "]");
+			}
+			return uncompressedPath;
+		}
 
 		path possibleUncompressedFilePath = directory / filename;
 		auto uncompressedFileExists = exists(possibleUncompressedFilePath) && is_regular_file(possibleUncompressedFilePath);
