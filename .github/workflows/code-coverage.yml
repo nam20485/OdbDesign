@@ -8,15 +8,17 @@ on:
     branches: ["development", "staging", "main", "release", "nam20485"]
 
 concurrency:
-  # Group by head repo + branch instead of github.ref: a same-repo PR fires
-  # both the push lane (refs/heads/<branch>) and the pull_request lane
-  # (refs/pull/<n>/merge) for the same commit, and ref-keyed groups let both
-  # run at once. Keying on the head branch puts both lanes in one group, so
-  # the duplicate cancels and each newer commit cancels its predecessor.
-  # Fork PRs stay isolated by their own repo full name. Coverage is a
-  # trend-only metric (not a required status check), so only the latest run
-  # per branch matters.
-  group: code-coverage-${{ github.event_name == 'pull_request' && format('{0}/{1}', github.event.pull_request.head.repo.full_name, github.head_ref) || format('{0}/{1}', github.repository, github.ref_name) }}
+  # Group by EVENT + head repo + branch (PR lane: PR number). A same-repo PR
+  # fires both the push lane and the pull_request lane for the same commit;
+  # they must NOT cancel each other. The Pages coverage hub only downloads
+  # PUSH-lane artifacts (gh run list --event=push), so a cancelled push lane
+  # leaves the hub serving a stale report until the next uncanceled push
+  # (observed 2026-11-19: development's dark-theme artifact was skipped
+  # because a carrier PR's lane cancelled the push run). Within one lane,
+  # newer commits still cancel superseded runs; sibling PRs from the same
+  # head branch get distinct groups via the PR number; fork PRs stay
+  # isolated by their own repo full name.
+  group: code-coverage-${{ github.event_name }}-${{ github.event_name == 'pull_request' && format('{0}/{1}', github.event.pull_request.head.repo.full_name, github.event.number) || format('{0}/{1}', github.repository, github.ref_name) }}
   cancel-in-progress: true
 
 permissions:
