@@ -47,7 +47,7 @@ That headline includes generated protobuf/gRPC code. Recalculating the same trac
 - **70.64% lines:** 5,877 covered of 8,320.
 - **65.02% functions:** 619 covered of 952.
 
-Even those handwritten figures are optimistic as a whole-product baseline: nine substantive production `.cpp` files—five REST controllers, server application/base/main, and the CLI—have no LCOV source record at all. They total approximately 2,815 **physical** lines, but physical lines cannot be substituted for instrumentable-line counts.
+Even those handwritten figures are optimistic as a whole-product baseline: nine substantive production `.cpp` files—five REST controllers, server application/base/main, and the CLI—have no LCOV source record at all. They total approximately 2,904 **physical** lines, but physical lines cannot be substituted for instrumentable-line counts.
 
 The commercial pin has its own matching public CI result: **73.2% lines / 75.5% functions**, or **70.65% represented handwritten lines** after the same generated-code recalculation. The one-covered-line difference from the newer artifact is not meaningful assurance.
 
@@ -413,9 +413,9 @@ Examples:
 |---:|---:|
 | 0 | 1,612 |
 | 1,000 | 2,512 |
-| 2,815, purely illustrative and not an instrumentable-line estimate | 4,145 |
+| 2,904, purely illustrative and not an instrumentable-line estimate | 4,145 |
 
-Do not add the 2,815 physical lines to LCOV totals. Measure `U` in M0 and recalculate after every production correction.
+Do not add the 2,904 physical lines to LCOV totals. Measure `U` in M0 and recalculate after every production correction.
 
 ### 6.3 Required thresholds
 

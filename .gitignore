@@ -73,3 +73,6 @@ docs/plan/comprehensive-security-audit/
 
 # Commercialization planning + prospect correspondence — local working copies only, never commit
 docs/plan/commercialization/
+
+# Release-readiness checker evidence + reports (release_readiness.py working area, never commit)
+release-readiness/

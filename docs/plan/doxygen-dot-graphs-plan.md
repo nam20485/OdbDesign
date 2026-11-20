@@ -8,6 +8,12 @@ Branch when implemented: `nam/doxygen-dot-graphs` → PR → `nam20485` (merge c
 
 - `./scripts/generate-doxygen-docs.sh` exit 0 in **4.6 s wall** (user 37.8 s —
   DOT_MULTI_TARGETS + parallel dot beat the 2-6 min estimate by ~50×).
+- Review round (`3cebed0`) added the promotion-lag fallback in the workflow's
+  Generate step (script-if-present, inline-doxygen-if-absent — see §Changes.2)
+  and hardened the script's `cd` (`top="$(git rev-parse …)" && cd "$top"`, so
+  a failed rev-parse aborts loudly instead of `cd ""` no-op-ing); both
+  conditional branches verified (script branch via this run + the PR's CI
+  lane; fallback branch simulated with the script hidden).
 - **1555 SVG graphs** emitted; `docs/api/graph_legend.html` present.
 - Hub class page (`classOdb_1_1Lib_1_1ProductModel_1_1Design.html`):
   inheritance diagram embedded as interactive-SVG iframe
@@ -53,7 +59,7 @@ graphs, and per-function call / caller graphs.
   build-validation only (no deploy), so the PR that lands this change itself
   exercises the new graph generation end to end.
 - Input set: `OdbDesignLib`, `OdbDesignServer`, `OdbDesignApp`, `Utils`
-  (tests deliberately excluded). ~161 source files, ~91 headers — a moderate
+  (tests deliberately excluded). ~161 input files (70 sources, 91 headers) — a moderate
   load for dot; call/caller graphs will number in the low thousands.
 
 ## Local vs CI parity (the direct answer)
@@ -108,7 +114,13 @@ Unchanged (already correct): `DIRECTORY_GRAPH`, `CLASS_GRAPH`,
 
 - Line 62: `sudo apt install -y doxygen` → `sudo apt install -y doxygen graphviz`.
 - Line 65: replace the inline `doxygen ./OdbDesignLib/doxygen.conf` with
-  `./scripts/generate-doxygen-docs.sh`.
+  `./scripts/generate-doxygen-docs.sh` — **with a promotion-lag fallback**
+  (added during review, `3cebed0`): scheduled runs execute the default
+  branch's workflow file but check out `release`, so between this change
+  landing on the default branch and its promotion to `release` the script is
+  absent from the checked-out tree; the step falls back to the previous
+  inline invocation then (`if [ -f ./scripts/generate-doxygen-docs.sh ]`).
+  The script remains the single canonical entry point wherever it exists.
 - No structural changes: the existing copy step already carries
   `docs/api/.` (including `*.svg`) into `_site/api/`, and Harden-Runner is in
   `audit` mode so the extra apt fetch of graphviz is unaffected.
