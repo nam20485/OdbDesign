@@ -146,8 +146,10 @@ graph-less output (its "dot not found" is only a warning).
 1. Local: run `./scripts/generate-doxygen-docs.sh`; assert exit code 0 and
    that graph artifacts were actually emitted, e.g.
    `find docs/api -name '*.svg' | wc -l` returns a non-trivial count and
-   `docs/api/html/graph_legend.html` exists.
-2. Round-trip in a browser: open `docs/api/html/index.html` locally, navigate
+   `docs/api/graph_legend.html` exists (output is `docs/api/*` directly —
+   `OUTPUT_DIRECTORY = docs`, `HTML_OUTPUT = api`; there is no `html/`
+   level).
+2. Round-trip in a browser: open `docs/api/index.html` locally, navigate
    to a hub class page (e.g. `classOdb_1_1Lib_1_1ProductModel_1_1Design.html`)
    and confirm the collaboration/inheritance SVG renders and zooms; open a
    method page and confirm caller/callee graph presence.
@@ -155,7 +157,8 @@ graph-less output (its "dot not found" is only a warning).
    runs the same script on ubuntu-24.04 — a real generation run gating the PR.
 4. Post-merge: after the change reaches `release` (or a manual
    `workflow_dispatch` against `release`), `curl -fsSI` a known graph asset on
-   the live Pages site (e.g. `/api/html/graph_legend*.html` and one class SVG)
+   the live Pages site (e.g. `/api/graph_legend.html` and one class SVG such
+   as `/api/classOdb_1_1Lib_1_1ProductModel_1_1Design__inherit__graph.svg`)
    and expect HTTP 200 — a real round-trip, not a config grep.
 5. Parity spot-check: diff a file listing of `docs/api` generated locally vs
    the workflow artifact (optional; catches env-driven divergence like a

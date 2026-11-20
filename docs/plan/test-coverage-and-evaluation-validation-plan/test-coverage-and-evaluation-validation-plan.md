@@ -196,14 +196,14 @@ The server aggregate excludes the controllers and application/startup files list
 |---|---:|---|
 | `OdbDesignServer/Controllers/FileModelController.cpp` | 1,318 | Main file-model REST surface |
 | `OdbDesignServer/Controllers/DesignsController.cpp` | 410 | Design list/load/product collections |
-| `OdbDesignServer/Controllers/FileUploadController.cpp` | 322 | Customer upload and hostile-input boundary |
+| `OdbDesignServer/Controllers/FileUploadController.cpp` | 411 | Customer upload and hostile-input boundary |
 | `OdbDesignServer/Controllers/HealthCheckController.cpp` | 41 | Runtime health/readiness surface |
 | `OdbDesignServer/Controllers/HelloWorldController.cpp` | 28 | Basic route/name handling |
 | `OdbDesignServer/OdbDesignServerApp.cpp` | 232 | Server construction, gRPC configuration/listeners |
 | `OdbDesignServer/OdbServerAppBase.cpp` | 298 | REST startup/lifecycle/shutdown |
 | `OdbDesignServer/main.cpp` | 11 | Actual process entry point |
 | `OdbDesignApp/OdbDesignApp.cpp` | 155 | CLI behavior and exit codes |
-| **Total** | **2,815 physical lines** | Instrumentable total must be measured |
+| **Total** | **2,904 physical lines** (as of the #641 review head; `wc -l` at HEAD) | Instrumentable total must be measured |
 
 Five additional absent `.cpp` files are inert (zero-byte or include-only) and need inventory explanations rather than behavioral tests: `IOdbApp.cpp`, `IOdbServerApp.cpp`, `invalid_odb_error.cpp`, `EnumMap.cpp`, and `IJsonable.cpp`.
 
@@ -356,7 +356,7 @@ Use barriers, condition variables, observer hooks, and bounded waits to make int
 
 ### 5.7 Test-architecture and quality problems
 
-1. **Tests do not link the production server composition.** Consolidate on `OdbDesignServerLib`; remove duplicate server `.cpp` and generated gRPC sources from the test target. Use the dynamic-protobuf preset for canonical server coverage and retain a dynamic-release smoke gate.
+1. **Tests do not link the production server composition.** Consolidate on `OdbDesignServerLib`; remove duplicate server `.cpp` and generated gRPC sources from the test target. Use the `linux-dynamic-debug` preset for canonical server coverage and retain a `linux-dynamic-release` smoke gate.
 2. **Generic integration tests overstate signal.** `IntegrationTests.cpp:72-127` checks file existence/size and sleeps; `:270-351` calls a local simulated pipeline; `:201-226` never feeds corrupt/empty files to OdbDesign. Replace these with real archive → parse → model → protobuf/API assertions.
 3. **Generic performance tests are not customer benchmarks.** `PerformanceTests.cpp` primarily measures STL/filesystem/thread helpers. Keep them as microbenchmarks if useful, but measure real parse/REST/gRPC/stream workflows separately.
 4. **Some round trips are shallow.** FileArchive/Design protobuf tests compare only a few top-level fields. Add deep field/record comparisons, explicit optional presence/absence, malformed wire/JSON handling, and wire-size assertions where relevant.
@@ -632,7 +632,7 @@ Implement §5.6 scenarios using real files, actual output, subprocess exit statu
 | Symbols copy occurs after strip | `commercial/CMakeLists.txt:32-40`; package workflow `:155-159` | The copied file may not be the intended unstripped symbols companion; verify/fix |
 | SBOM and CMake package config are unfinished | `README.md:126-131` | Clean `find_package` SDK consumption and delivery SBOM are open |
 | Runtime bundling tolerates missing copies | Package workflow uses conditional copies/`|| true` | Clean-machine execution must detect incomplete runtime closure |
-| Planned .NET samples are not present yet | `docs/plan/commercialization/keiron-mvp-example-plan.md` upstream; no `samples/` in inspected commercial tree | The planned samples cannot yet serve as external-client evidence |
+| Planned .NET samples are not present yet | `docs/plan/commercialization/keiron-mvp-example-plan.md` upstream (local-only working copy, gitignored per `docs/plan/README.md`); no `samples/` in inspected commercial tree | The planned samples cannot yet serve as external-client evidence |
 
 ### 8.3 C0 — Restore packaging and wire commercial CI/coverage
 
@@ -1210,10 +1210,10 @@ The required release harness must additionally assert the expected RPC result re
 ### Related plans and incident context
 
 - `docs/plan/getdesign-streaming-oom-plan.md`
-- `docs/plan/commercialization/keiron-mvp-example-plan.md`
-- `docs/plan/commercialization/keiron-call-summary-2026-11-16.md`
-- `docs/plan/comprehensive-security-audit/comprehensive-security-audit.md` (historical pre-F001–F003-remediation context)
-- `docs/plan/comprehensive-security-audit/remediation-plan.md`
+- `docs/plan/commercialization/keiron-mvp-example-plan.md` *(local-only working copy, not in clones)*
+- `docs/plan/commercialization/keiron-call-summary-2026-11-16.md` *(local-only working copy, not in clones)*
+- `docs/plan/comprehensive-security-audit/comprehensive-security-audit.md` *(local-only working copy, not in clones; historical pre-F001–F003-remediation context — finding IDs inlined here for traceability: F001 Critical, shell command injection through nested archive paths in the unquoted 7z invocation; F002 High, authenticated upload filename traversal / arbitrary file overwrite; F003 High, absolute-path archive entries escaping extraction with attacker-controlled modes; F004 High, built-in REST credentials activating when credential environment values are missing or empty)*
+- `docs/plan/comprehensive-security-audit/remediation-plan.md` *(local-only working copy, not in clones)*
 - `docs/completed/turbot-getdesign-corrupt-protobuf-fix.md`
 - `docs/completed/program-status-2026-11-01.md`
 - `scripts/validate-grpc-exposure.ps1`
