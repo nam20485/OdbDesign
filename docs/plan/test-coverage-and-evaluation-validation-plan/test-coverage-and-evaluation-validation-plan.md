@@ -413,7 +413,7 @@ Examples:
 |---:|---:|
 | 0 | 1,612 |
 | 1,000 | 2,512 |
-| 2,904, purely illustrative and not an instrumentable-line estimate | 4,145 |
+| 2,904, purely illustrative and not an instrumentable-line estimate | 4,225 |
 
 Do not add the 2,904 physical lines to LCOV totals. Measure `U` in M0 and recalculate after every production correction.
 

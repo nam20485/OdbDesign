@@ -1,9 +1,40 @@
 # Release-Readiness Checker — Design / Plan
 
-**Date:** 2026-11-19
-**Status:** Proposed design — awaiting feedback before implementation
+**Date:** 2026-11-19 (design); implemented 2026-11-20
+**Status:** IMPLEMENTED — `scripts/release_readiness.py` + `scripts/release_readiness_criteria.json`
 **Companion to:** [`test-coverage-and-evaluation-validation-plan.md`](test-coverage-and-evaluation-validation-plan.md)
 **Deliverable:** an always-runnable utility that (a) reports completed-vs-remaining release-readiness criteria at any time, and (b) autonomously validates that readiness has been achieved by checking every required criterion against real evidence.
+
+---
+
+## 0. Implementation status (as built, 2026-11-20)
+
+Built complete — no lite version. Files:
+
+- `scripts/release_readiness.py` — engine: registry loader, status model, 8 evaluator
+  types (`repo_file_registered`, `repo_file_exists`, `proto_drift`, `gh_workflow_status`,
+  `coverage`, `junit`, `evidence`, `probe`), real runtime probes, dependency blocking,
+  candidate binding, engine negative controls, `report`/`validate`, human + `--json` output.
+- `scripts/release_readiness_criteria.json` — 52 criteria across all 19 scenario groups
+  and milestones M0–M6 / C0–C4 (+ 4 engine negative controls = 55 required for `eval`).
+- `scripts/README.md` — usage entry. `release-readiness/` evidence dir is gitignored.
+
+Verified behavior:
+
+- `report` exits 0 with a truthful picture; `validate --profile eval|production` exits 1
+  (NOT READY) on the current state. `--no-probes` gives a fast, side-effect-free glance.
+- Real findings already surfaced: `M1-01` batch tests not registered; `PKG-01` commercial
+  packaging latest run cancelled; `PROTO-01/02` drift in 3 model protos vs both clients.
+- Probes attempt real execution: `SEC-01` (F004) launches the server and reports `blocked`
+  with the genuine `libprotobuf.so.33.4.0` missing-lib error in this checkout (the dynamic
+  runtime triplet is absent here); commercial license/loopback probes report `blocked`
+  because the commercial binary is not built. No fabricated passes; clean process teardown.
+- Negative controls 4/4 pass (skip/fail/unknown/mixed-candidate all correctly fail the verdict).
+
+How criteria turn green: deliverable/drift/CI criteria evaluate now; coverage criteria need
+the M0 tracefile in `release-readiness/evidence/coverage.info`; acceptance criteria need their
+run to emit `release-readiness/evidence/<ID>.json` with `{candidate, scenarios:{<ID>:{status:"pass"}}}`;
+runtime probes need their subject built (and, for license/loopback, a signed test license from C1).
 
 ---
 
@@ -160,7 +191,7 @@ A small set of evaluator types, all evidence-driven:
 
 | Criterion group | Today (no new infra) | After M0–M6 / C0–C4 |
 |---|---|---|
-| `SRC-*` coverage | Latest CI artifact numbers (73.16% headline; handwritten recalc) — but **no branch data, no complete denominator** → reported as partial/pending until M0 | Full >90% line/func/branch gate from `check_coverage.py` |
+| `SRC-*` coverage | Latest CI artifact numbers (73.16% headline; handwritten recalc) — but **no branch data, no complete denominator** → reported as partial/pending until M0 | Full >90% line/func + ≥85% branch gate from `check_coverage.py` |
 | `SRC-*` test deliverables | Which required test files exist/registered; skip count from latest results | Real-transport suites present & passing |
 | `PKG-*` | Commercial packaging run status via `gh` (currently **fail**) | Passing run + verified artifact |
 | `PROTO-*` | Drift detector: canonical vs vendored proto diff (currently **3 files differ**) — labeled drift, not proof | Reconciled + real .NET round trips |
