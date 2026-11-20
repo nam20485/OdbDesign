@@ -59,10 +59,13 @@ jobs:
           ref: ${{ github.event_name == 'schedule' && 'release' || github.ref }}
 
       - name: Install Doxygen
-        run: sudo apt install -y doxygen
+        # graphviz is NOT a hard dependency of the doxygen package; without
+        # it HAVE_DOT=YES degrades to graph-less HTML with only a warning.
+        run: sudo apt install -y doxygen graphviz
 
       - name: Generate Doxygen docs
-        run: doxygen ./OdbDesignLib/doxygen.conf
+        # single local/CI entry point; hard-fails if doxygen or dot is missing
+        run: ./scripts/generate-doxygen-docs.sh
 
       - name: Setup Pages
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0

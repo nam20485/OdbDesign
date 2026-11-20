@@ -1,8 +1,26 @@
 # Plan: Enable dot-based graphs in the Doxygen API docs
 
 Date: 2026-11-20
-Status: proposed
+Status: implemented 2026-11-20 on `nam/doxygen-dot-graphs` → PR → `nam20485` (merge commit only)
 Branch when implemented: `nam/doxygen-dot-graphs` → PR → `nam20485` (merge commit only)
+
+## Implementation verification (local, 2026-11-20)
+
+- `./scripts/generate-doxygen-docs.sh` exit 0 in **4.6 s wall** (user 37.8 s —
+  DOT_MULTI_TARGETS + parallel dot beat the 2-6 min estimate by ~50×).
+- **1555 SVG graphs** emitted; `docs/api/graph_legend.html` present.
+- Hub class page (`classOdb_1_1Lib_1_1ProductModel_1_1Design.html`):
+  inheritance diagram embedded as interactive-SVG iframe
+  (`...__inherit__graph.svg`), 33 call/caller-graph sections; controller
+  pages carry "Here is the call graph" sections.
+- Real render check (headless google-chrome): the SVG parses to a DOM with
+  22 shape elements; full-page screenshot pixel analysis shows drawn
+  diagram content (13k+ non-background px, 496 colors in the densest band).
+- 11 doxygen warnings, all PRE-EXISTING doc-comment issues (`\class for` in
+  RgbColor.h, "no matching class member" in FileArchive.cpp/ArchiveExtractor.cpp,
+  unknown `@why` command) — none graph-related; out of scope.
+- Note: output paths are `docs/api/*` (HTML_OUTPUT=api), not `docs/api/html/*`
+  as §Verification item 1 drafted — assertions used the real paths.
 
 ## Goal
 
