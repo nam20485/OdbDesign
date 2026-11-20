@@ -59,10 +59,27 @@ jobs:
           ref: ${{ github.event_name == 'schedule' && 'release' || github.ref }}
 
       - name: Install Doxygen
-        run: sudo apt install -y doxygen
+        # graphviz is NOT a hard dependency of the doxygen package; without
+        # it HAVE_DOT=YES degrades to graph-less HTML with only a warning.
+        run: sudo apt install -y doxygen graphviz
 
       - name: Generate Doxygen docs
-        run: doxygen ./OdbDesignLib/doxygen.conf
+        # Single local/CI entry point when present. Scheduled runs execute
+        # the DEFAULT BRANCH's workflow file but check out `release`, so
+        # between this workflow change landing on the default branch and its
+        # promotion to release, the script does not exist in the checked-out
+        # tree (promotion-lag window). Fall back to the previous inline
+        # invocation then — a silent scheduled failure here stale-dates the
+        # live site (it happened before, see the 2026-10-12 chown note).
+        run: |
+          if [ -f ./scripts/generate-doxygen-docs.sh ]; then
+            ./scripts/generate-doxygen-docs.sh
+          else
+            echo "generate-doxygen-docs.sh absent on this ref (promotion lag) - inline fallback"
+            command -v doxygen >/dev/null || { echo "error: doxygen not installed" >&2; exit 1; }
+            command -v dot      >/dev/null || { echo "error: graphviz 'dot' not installed" >&2; exit 1; }
+            doxygen ./OdbDesignLib/doxygen.conf
+          fi
 
       - name: Setup Pages
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
