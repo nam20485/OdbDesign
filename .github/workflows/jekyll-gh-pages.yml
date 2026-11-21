@@ -61,7 +61,10 @@ jobs:
       - name: Install Doxygen
         # graphviz is NOT a hard dependency of the doxygen package; without
         # it HAVE_DOT=YES degrades to graph-less HTML with only a warning.
-        run: sudo apt install -y doxygen graphviz
+        # apt update first: a stale runner package index 404s on superseded
+        # .deb versions (known hosted-runner flake; code-coverage.yml:70
+        # already uses this pattern). Gates the weekly scheduled refresh.
+        run: sudo apt update && sudo apt install -y doxygen graphviz
 
       - name: Generate Doxygen docs
         # Single local/CI entry point when present. Scheduled runs execute
