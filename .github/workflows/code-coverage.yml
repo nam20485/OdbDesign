@@ -23,8 +23,10 @@ concurrency:
 
 # Least-privilege default: jobs escalate only what they need (Scorecard
 # Token-Permissions). checks:write for the test-reporter lives at job level;
-# the NuGet feed here is READ-only (the warm lane owns feed writes), so no
-# packages scope is needed at all.
+# the NuGet feed is READ-ONLY here (the warm lane owns feed writes), but a
+# read still needs the job-level packages:read scope below — feed downloads
+# 403 without it (public repo, authenticated token required), which is the
+# #657 regression this file documents.
 permissions:
   contents: read
 
