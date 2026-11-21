@@ -55,40 +55,55 @@ namespace Odb::Test
 			return out;
 		}
 
-		// Bounded drain loop for cancellation tests: after TryCancel the
-		// reader must hit end-of-stream promptly. An unbounded Read loop
-		// would hang (not fail) if cancellation stopped working, so the
-		// drain enforces a wall-clock budget.
-		bool drainWithin(grpc::ClientReader<Odb::Lib::Protobuf::FeaturesFile::FeatureRecord>* reader,
+		// Bounded drain loops for cancellation tests: after TryCancel the
+		// reader must hit end-of-stream promptly, and the drain COUNTS what
+		// it consumes so callers can assert on the total delivered — a
+		// count-free drain would silently swallow post-cancel deliveries and
+		// let a server that ignored the cancel pass the test.
+		struct DrainResult
+		{
+			std::uint64_t batches = 0;
+			std::uint64_t records = 0;
+			bool completed = false; // false => budget exceeded before end-of-stream
+		};
+
+		DrainResult drainWithin(grpc::ClientReader<Odb::Lib::Protobuf::FeaturesFile::FeatureRecord>* reader,
 			std::chrono::seconds budget)
 		{
+			DrainResult result;
 			Odb::Lib::Protobuf::FeaturesFile::FeatureRecord record;
 			const auto deadline = std::chrono::steady_clock::now() + budget;
 			while (reader->Read(&record))
 			{
+				++result.records;
 				record.Clear();
 				if (std::chrono::steady_clock::now() > deadline)
 				{
-					return false;
+					return result;
 				}
 			}
-			return true;
+			result.completed = true;
+			return result;
 		}
 
-		bool drainBatchesWithin(grpc::ClientReader<FeatureRecordBatch>* reader,
+		DrainResult drainBatchesWithin(grpc::ClientReader<FeatureRecordBatch>* reader,
 			std::chrono::seconds budget)
 		{
+			DrainResult result;
 			FeatureRecordBatch batch;
 			const auto deadline = std::chrono::steady_clock::now() + budget;
 			while (reader->Read(&batch))
 			{
+				++result.batches;
+				result.records += static_cast<std::uint64_t>(batch.features_size());
 				batch.Clear();
 				if (std::chrono::steady_clock::now() > deadline)
 				{
-					return false;
+					return result;
 				}
 			}
-			return true;
+			result.completed = true;
+			return result;
 		}
 	}
 
@@ -429,23 +444,34 @@ namespace Odb::Test
 		}
 		ASSERT_GE(read, 1000ull) << "the stream must have delivered records before the cancel";
 
-		EXPECT_TRUE(drainWithin(reader.get(), std::chrono::seconds(30)))
+		const auto drained = drainWithin(reader.get(), std::chrono::seconds(30));
+		EXPECT_TRUE(drained.completed)
 			<< "after TryCancel, end-of-stream must arrive promptly, not hang";
 		const auto status = reader->Finish();
 		EXPECT_TRUE(status.error_code() == grpc::StatusCode::CANCELLED || status.ok())
 			<< "cancelled stream: expected CANCELLED (or a racing OK trailer), got "
 			<< status.error_code() << " (" << status.error_message() << ")";
 
+		// Cancellation must actually truncate: the TOTAL delivered (prefix +
+		// post-cancel drain, both counted) must fall short of the complete
+		// stream. The counted drain is what makes this check real — a
+		// count-free drain would silently swallow deliveries from a server
+		// that ignored TryCancel, even when Finish() races to OK.
+		const auto totalDelivered = read + drained.records;
+		EXPECT_LT(totalDelivered, kLayer1RecordCount)
+			<< "cancel must truncate: total delivered must fall short of the complete stream";
+
 		// Truncation shape: the completeness trailer (set server-side before
 		// the cancellation return) must exceed the delivered prefix — a
 		// client that receives it can detect incompleteness and its size.
 		// Trailer delivery to a client that itself cancelled is a gRPC race
-		// (late trailers may be discarded); when it IS delivered, its total
-		// is pinned strictly greater than what arrived.
+		// (late trailers may be discarded; probed 0/10 deliveries on this
+		// build); when it IS delivered, its total is pinned strictly greater
+		// than what arrived.
 		const auto [trailerFound, trailerTotal] = TrailerTotal(ctx);
 		if (trailerFound)
 		{
-			EXPECT_GT(trailerTotal, read)
+			EXPECT_GT(trailerTotal, totalDelivered)
 				<< "a truncated stream's x-total-records must exceed the delivered prefix";
 		}
 
@@ -643,25 +669,35 @@ namespace Odb::Test
 		}
 		ASSERT_GE(batchesRead, 5ull) << "the stream must have delivered full batches before the cancel";
 
-		EXPECT_TRUE(drainBatchesWithin(reader.get(), std::chrono::seconds(30)))
+		const auto drained = drainBatchesWithin(reader.get(), std::chrono::seconds(30));
+		EXPECT_TRUE(drained.completed)
 			<< "after TryCancel, end-of-stream must arrive promptly, not hang";
 		const auto status = reader->Finish();
 		EXPECT_TRUE(status.error_code() == grpc::StatusCode::CANCELLED || status.ok())
 			<< "cancelled stream: expected CANCELLED (or a racing OK trailer), got "
 			<< status.error_code() << " (" << status.error_message() << ")";
-		EXPECT_LT(batchesRead, kLayer1FullBatches)
-			<< "a cancel after 5 batches must not deliver the complete 47-batch stream";
+
+		// Counted totals (prefix + post-cancel drain): the delivered set must
+		// fall short of the complete stream. This is the check that catches a
+		// server ignoring TryCancel — the drain counts what it consumes, so
+		// even a Finish() racing to OK cannot hide a full delivery.
+		const auto totalBatches = batchesRead + drained.batches;
+		const auto totalRecords = recordsRead + drained.records;
+		EXPECT_LT(totalRecords, kLayer1RecordCount)
+			<< "cancel must truncate: delivered records must fall short of the complete stream";
+		EXPECT_LT(totalBatches, kLayer1FullBatches + 1)
+			<< "cancel must truncate: delivered batches must fall short of the complete 48";
 
 		// Truncation shape: when the completeness trailer beats the cancel to
 		// the client, it must exceed the delivered prefix — proving a client
 		// CAN detect incompleteness and its size. Trailer delivery to a
 		// client that itself cancelled is a gRPC race (late trailers may be
-		// discarded), so presence is not asserted here; the success tests
-		// pin the trailer mechanism itself.
+		// discarded; probed 0/10 deliveries on this build), so presence is
+		// not asserted here; the success tests pin the trailer mechanism.
 		const auto [trailerFound, trailerTotal] = TrailerTotal(ctx);
 		if (trailerFound)
 		{
-			EXPECT_GT(trailerTotal, recordsRead)
+			EXPECT_GT(trailerTotal, totalRecords)
 				<< "a truncated stream's x-total-records must exceed the delivered prefix";
 		}
 
@@ -716,32 +752,38 @@ namespace Odb::Test
 		ASSERT_GE(batchesRead, fullBatches)
 			<< "the stream must have delivered all full batches before the cancel";
 
-		EXPECT_TRUE(drainBatchesWithin(reader.get(), std::chrono::seconds(30)))
+		const auto drained = drainBatchesWithin(reader.get(), std::chrono::seconds(30));
+		EXPECT_TRUE(drained.completed)
 			<< "after TryCancel, end-of-stream must arrive promptly, not hang";
 		const auto status = reader->Finish();
 		EXPECT_TRUE(status.error_code() == grpc::StatusCode::CANCELLED || status.ok())
 			<< "cancelled stream: expected CANCELLED (or a racing OK trailer), got "
 			<< status.error_code() << " (" << status.error_message() << ")";
 
-		// Whatever arrived is the exact expected prefix: either all full
-		// batches only (final suppressed by the cancel) or full + final
-		// remainder (final write won the race). Anything else is corruption.
-		EXPECT_TRUE(batchesRead == fullBatches || batchesRead == fullBatches + 1)
+		// Counted totals (prefix + post-cancel drain): either all full batches
+		// only (final suppressed by the cancel) or full + final remainder
+		// (final write won the race). The drain counts post-cancel deliveries,
+		// so both arms of this disjunction are live: a handler that suppressed
+		// the final batch lands in the first arm, one that wrote it before
+		// noticing the cancel lands in the second.
+		const auto totalBatches = batchesRead + drained.batches;
+		const auto totalRecords = recordsRead + drained.records;
+		EXPECT_TRUE(totalBatches == fullBatches || totalBatches == fullBatches + 1)
 			<< "delivered batch count must be either all-full-batches or full+final, got "
-			<< batchesRead;
-		if (batchesRead == fullBatches + 1)
+			<< totalBatches;
+		if (totalBatches == fullBatches + 1)
 		{
-			EXPECT_EQ(recordsRead, total) << "final remainder batch delivered: record count must be complete";
+			EXPECT_EQ(totalRecords, total) << "final remainder batch delivered: record count must be complete";
 		}
 
 		// Truncation shape (only when the stream actually truncated): the
 		// completeness trailer must exceed the delivered prefix. (If the
-		// final write won the race, the stream is complete — recordsRead ==
+		// final write won the race, the stream is complete — totalRecords ==
 		// total — and the trailer equals it.)
 		const auto [trailerFound, trailerTotal] = TrailerTotal(ctx);
-		if (trailerFound && recordsRead < total)
+		if (trailerFound && totalRecords < total)
 		{
-			EXPECT_GT(trailerTotal, recordsRead)
+			EXPECT_GT(trailerTotal, totalRecords)
 				<< "a truncated stream's x-total-records must exceed the delivered prefix";
 		}
 
