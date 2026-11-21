@@ -177,11 +177,18 @@ class _JUnitReader(HTMLParser):
         self.disabled_total = 0
         self.notrun_count = 0
         self._stack: list[str] = []
+        self._root_closed = False
 
-    # -- hardening: DTD / entity declarations are an attack vector ---------
-    # (billion-laughs entity expansion enters via DOCTYPE/ENTITY), so they
-    # raise instead of being parsed. CDATA sections are inert text and are
-    # allowed (their content arrives via handle_data).
+    # -- hardening: DTD / entity / declaration vectors are rejected --------
+    # (billion-laughs entity expansion enters via DOCTYPE/ENTITY, and
+    # html.parser routes several <! ... > spellings to lenient handlers
+    # where an attacker-controlled internal subset could slip through).
+    # This reader therefore rejects EVERY declaration, comment and marked
+    # section unconditionally — including CDATA, whose _markupbase
+    # terminator (]\s*]\s*>) tolerates '] ] >' inside the payload and would
+    # end the section early, mis-parsing the remainder as markup.
+    # ctest's --output-junit emits none of these, so rejection is both safe
+    # for this gate and strictly safer than lenient parsing.
     def handle_decl(self, decl: str) -> None:
         """Reject DOCTYPE declarations (entity-expansion vector)."""
         raise ValueError(
@@ -189,24 +196,55 @@ class _JUnitReader(HTMLParser):
             f"(entity-expansion vector not allowed): <!{decl[:80]}>")
 
     def unknown_decl(self, data: str) -> None:
-        """Allow inert CDATA sections; reject any other XML declaration."""
-        if data.startswith("CDATA["):
-            return
+        """Reject all marked sections, CDATA included (fail closed)."""
         raise ValueError(
-            f"{self._path}: rejected XML declaration <![{data[:80]}>]")
+            f"{self._path}: rejected marked section <![{data[:80]}>")
 
     def handle_comment(self, data: str) -> None:
-        """Reject ENTITY declarations routed here as bogus comments."""
-        # html.parser routes <!ENTITY ...> (a bogus comment outside a DTD)
-        # here; a real XML comment never starts with ENTITY. Fail closed.
-        if data.lstrip().upper().startswith("ENTITY"):
-            raise ValueError(
-                f"{self._path}: rejected ENTITY declaration "
-                f"(entity-expansion vector not allowed): <!{data[:80]}>")
+        """Reject every comment/decl-like bogus comment (fail closed).
+
+        html.parser routes <!DOCTYPE ...>, <!ENTITY ...>, '<! DOCTYPE ...'
+        and any other <! ... > spelling that is not a real declaration to
+        bogus comments here; a real XML comment never appears in
+        ctest-generated JUnit. Enumerating attack spellings is fragile, so
+        the gate rejects the whole class.
+        """
+        raise ValueError(
+            f"{self._path}: rejected comment/declaration <!{data[:80]}>")
+
+    def error(self, message: str) -> None:
+        """Route _markupbase parse errors through the MISCONFIG contract.
+
+        ParserBase.parse_marked_section calls self.error() for keywords
+        outside {temp, cdata, ignore, include, rcdata, if, else, endif}
+        (e.g. <![FOO[..]]>); the base implementation raises
+        NotImplementedError, which escaped this checker's documented
+        exit-2-for-malformed-input behavior as a raw exit-1 traceback.
+        Raising ValueError here sends every parser rejection through the
+        same MISCONFIG path.
+        """
+        raise ValueError(f"{self._path}: malformed JUnit XML: {message}")
 
     # -- structure ---------------------------------------------------------
+    # The JUnit vocabulary this gate accepts. html.parser lowercases tag
+    # names before dispatch (the original case is unrecoverable), so
+    # element-name strictness is restored by rejecting anything outside
+    # the standard JUnit element set instead of by case sensitivity.
+    _KNOWN_TAGS = frozenset({
+        "testsuites", "testsuite", "testcase", "skipped", "failure",
+        "error", "properties", "property", "system-out", "system-err",
+    })
+
     def _start(self, tag: str, attrs: dict[str, str]) -> None:
         """Record root/suite attributes and testcase outcome elements."""
+        if self._root_closed:
+            raise ValueError(
+                f"{self._path}: markup after the document root element "
+                f"closed (truncated or duplicated document?): <{tag}>")
+        if tag not in self._KNOWN_TAGS:
+            raise ValueError(
+                f"{self._path}: unexpected element <{tag}>; not in the "
+                "JUnit vocabulary this gate accepts")
         if self.root_tag is None:
             if tag not in ("testsuites", "testsuite"):
                 raise ValueError(
@@ -245,13 +283,28 @@ class _JUnitReader(HTMLParser):
             # semantics as the previous case.find(...) lookups).
             self.outcome_elements[tag] += 1
 
+    def _checked_attrs(self, tag: str, attrs) -> dict[str, str]:
+        """dict() the attribute list, rejecting duplicates.
+
+        A plain dict() keeps the LAST value of a repeated attribute; the
+        previous xml.etree path raised on duplicates, so the gate rejects
+        them instead of silently changing semantics.
+        """
+        names = [name for name, _ in attrs]
+        if len(names) != len(set(names)):
+            dupes = sorted({n for n in names if names.count(n) > 1})
+            raise ValueError(
+                f"{self._path}: duplicate attribute(s) {dupes} on <{tag}>")
+        return dict(attrs)
+
     def handle_starttag(self, tag: str, attrs) -> None:
         """Start-tag event: record and push onto the nesting stack."""
-        self._start(tag, dict(attrs))
+        self._start(tag, self._checked_attrs(tag, attrs))
 
     def handle_startendtag(self, tag: str, attrs) -> None:
         """Self-closing element (<skipped/>): start+end in one event."""
-        self._start(tag, dict(attrs))
+        checked = self._checked_attrs(tag, attrs)
+        self._start(tag, checked)
         self._end(tag)
 
     def _end(self, tag: str) -> None:
@@ -261,6 +314,8 @@ class _JUnitReader(HTMLParser):
                 f"{self._path}: malformed JUnit XML: unexpected </{tag}>, "
                 f"open elements: {self._stack}")
         self._stack.pop()
+        if self.root_tag is not None and not self._stack:
+            self._root_closed = True
 
     def handle_endtag(self, tag: str) -> None:
         """End-tag event: pop and validate."""
