@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 #include <thread>
+#include <utility>
 #include <vector>
 
 #include "Fixtures/FileArchiveLoadFixture.h"
@@ -159,7 +160,12 @@ namespace Odb::Test
 		// Builds service+server+stub from the CURRENT config. Used by SetUp
 		// and by tests that flip a config flag (e.g. enable_batch_streaming)
 		// and need a fresh service instance registered on a live server.
-		bool StartServer()
+		// maxSendBytes (optional) caps the server's send-message size: a
+		// value below one feature record makes ServerWriter::Write fail on a
+		// LIVE call without any client cancellation — the only loopback shape
+		// that exercises the write-failure branch of the fail-loud contract
+		// from a well-behaved client.
+		bool StartServer(int maxSendBytes = 0)
 		{
 			m_stub.reset();
 			if (m_server != nullptr)
@@ -172,6 +178,10 @@ namespace Odb::Test
 			grpc::ServerBuilder builder;
 			int port = 0;
 			builder.AddListeningPort("127.0.0.1:0", grpc::InsecureServerCredentials(), &port);
+			if (maxSendBytes > 0)
+			{
+				builder.SetMaxSendMessageSize(maxSendBytes);
+			}
 			builder.RegisterService(m_service.get());
 			m_server = builder.BuildAndStart();
 			if (m_server == nullptr || port <= 0)
@@ -224,11 +234,13 @@ namespace Odb::Test
 		}
 
 		// Runs GetLayerFeaturesStream over the real channel and returns every
-		// delivered record deterministically serialized, in order.
+		// delivered record deterministically serialized, in order. The
+		// caller-owned context lets tests read the server trailing metadata
+		// (x-total-records completeness contract) after Finish().
 		std::vector<std::string> StreamAllRecordBytes(const std::string& designName,
-			const std::string& stepName, const std::string& layerName, grpc::Status* statusOut)
+			const std::string& stepName, const std::string& layerName,
+			grpc::ClientContext& ctx, grpc::Status* statusOut)
 		{
-			grpc::ClientContext ctx;
 			GetLayerFeaturesRequest req;
 			req.set_design_name(designName);
 			req.set_step_name(stepName);
@@ -246,8 +258,24 @@ namespace Odb::Test
 			return bytes;
 		}
 
+		// Reads the server's "x-total-records" trailing-metadata entry (the
+		// completeness contract of both layer-feature streams). Call after
+		// Finish(). Returns {found, count}. std::multimap, not a protobuf
+		// Map — find() is the ordinary accessor here (#599 does not apply).
+		static std::pair<bool, std::uint64_t> TrailerTotal(const grpc::ClientContext& ctx)
+		{
+			const auto& trailers = ctx.GetServerTrailingMetadata();
+			const auto it = trailers.find("x-total-records");
+			if (it == trailers.end())
+			{
+				return { false, 0 };
+			}
+			return { true, std::stoull(std::string(it->second.data(), it->second.size())) };
+		}
+
 		// Runs GetLayerFeaturesBatchStream over the real channel; returns the
 		// received batches (in order) alongside the flattened record bytes.
+		// The caller-owned context carries the server trailing metadata.
 		struct BatchStreamResult
 		{
 			std::vector<FeatureRecordBatch> batches;
@@ -255,9 +283,9 @@ namespace Odb::Test
 		};
 
 		BatchStreamResult StreamAllBatches(const std::string& designName,
-			const std::string& stepName, const std::string& layerName, grpc::Status* statusOut)
+			const std::string& stepName, const std::string& layerName,
+			grpc::ClientContext& ctx, grpc::Status* statusOut)
 		{
-			grpc::ClientContext ctx;
 			GetLayerFeaturesRequest req;
 			req.set_design_name(designName);
 			req.set_step_name(stepName);
@@ -305,8 +333,9 @@ namespace Odb::Test
 		ASSERT_EQ(direct.size(), kLayer1RecordCount)
 			<< "TEST_DATA corpus changed: update the pinned record count and batch arithmetic";
 
+		grpc::ClientContext ctx;
 		grpc::Status status;
-		const auto streamed = StreamAllRecordBytes(kDesign, kStep, kLayerWithFeatures, &status);
+		const auto streamed = StreamAllRecordBytes(kDesign, kStep, kLayerWithFeatures, ctx, &status);
 		ASSERT_TRUE(status.ok()) << status.error_message();
 
 		ASSERT_EQ(streamed.size(), direct.size())
@@ -316,28 +345,38 @@ namespace Odb::Test
 			ASSERT_EQ(streamed[i], direct[i])
 				<< "streamed record " << i << " must equal the direct model record (order + content)";
 		}
+
+		// Completeness contract: an OK stream carries x-total-records and it
+		// equals exactly what was delivered.
+		const auto [trailerFound, trailerTotal] = TrailerTotal(ctx);
+		EXPECT_TRUE(trailerFound) << "an OK layer-feature stream must carry the x-total-records trailer";
+		EXPECT_EQ(trailerTotal, direct.size())
+			<< "trailer total must equal the delivered record count on a complete stream";
 	}
 
 	TEST_F(LayerFeatureStreamTest, GetLayerFeaturesStream_MissingDesign_ReturnsNotFound)
 	{
+		grpc::ClientContext ctx;
 		grpc::Status status;
-		const auto streamed = StreamAllRecordBytes("no_such_design_exists", kStep, kLayerWithFeatures, &status);
+		const auto streamed = StreamAllRecordBytes("no_such_design_exists", kStep, kLayerWithFeatures, ctx, &status);
 		EXPECT_EQ(status.error_code(), grpc::StatusCode::NOT_FOUND);
 		EXPECT_TRUE(streamed.empty()) << "an error status must not carry feature records";
 	}
 
 	TEST_F(LayerFeatureStreamTest, GetLayerFeaturesStream_MissingStep_ReturnsNotFound)
 	{
+		grpc::ClientContext ctx;
 		grpc::Status status;
-		const auto streamed = StreamAllRecordBytes(kDesign, kMissingName, kLayerWithFeatures, &status);
+		const auto streamed = StreamAllRecordBytes(kDesign, kMissingName, kLayerWithFeatures, ctx, &status);
 		EXPECT_EQ(status.error_code(), grpc::StatusCode::NOT_FOUND);
 		EXPECT_TRUE(streamed.empty());
 	}
 
 	TEST_F(LayerFeatureStreamTest, GetLayerFeaturesStream_MissingLayer_ReturnsNotFound)
 	{
+		grpc::ClientContext ctx;
 		grpc::Status status;
-		const auto streamed = StreamAllRecordBytes(kDesign, kStep, kMissingName, &status);
+		const auto streamed = StreamAllRecordBytes(kDesign, kStep, kMissingName, ctx, &status);
 		EXPECT_EQ(status.error_code(), grpc::StatusCode::NOT_FOUND);
 		EXPECT_TRUE(streamed.empty());
 	}
@@ -346,19 +385,26 @@ namespace Odb::Test
 	{
 		// comp_+_top exists in layersByName but holds zero records: the
 		// handler must end the stream cleanly (OK, zero messages), not error
-		// and not fabricate records.
+		// and not fabricate records — and the completeness trailer must
+		// report 0.
+		grpc::ClientContext ctx;
 		grpc::Status status;
-		const auto streamed = StreamAllRecordBytes(kDesign, kStep, kEmptyLayer, &status);
+		const auto streamed = StreamAllRecordBytes(kDesign, kStep, kEmptyLayer, ctx, &status);
 		EXPECT_TRUE(status.ok()) << status.error_message();
 		EXPECT_TRUE(streamed.empty());
+
+		const auto [trailerFound, trailerTotal] = TrailerTotal(ctx);
+		EXPECT_TRUE(trailerFound) << "an OK layer-feature stream must carry the x-total-records trailer";
+		EXPECT_EQ(trailerTotal, 0ull) << "an empty layer's completeness total must be 0";
 	}
 
-	// Current server contract under client cancellation: the unbatched path
-	// has no explicit IsCancelled check — the loop breaks when writer->Write
-	// fails after the cancel is observed, and the handler returns OK (see the
-	// writer-failure divergence note at the bottom of this file). The CLIENT
-	// must still observe a prompt end-of-stream with a CANCELLED (or racing
-	// OK) trailer, and the server must stay healthy afterwards.
+	// Server contract under client cancellation (Option A, GetDesignStream
+	// semantics): a cancel observed at the Write-failure site is not a server
+	// error — the handler returns OK and lets the client-side CANCELLED
+	// speak. The CLIENT must still observe a prompt end-of-stream with a
+	// CANCELLED (or racing OK) trailer, the server must stay healthy, and the
+	// truncation shape must be detectable: if the x-total-records trailer
+	// made it back, it reports MORE than the delivered prefix.
 	TEST_F(LayerFeatureStreamTest, GetLayerFeaturesStream_ClientCancelMidStream_StopsPromptlyServerStaysHealthy)
 	{
 		grpc::ClientContext ctx;
@@ -390,6 +436,19 @@ namespace Odb::Test
 			<< "cancelled stream: expected CANCELLED (or a racing OK trailer), got "
 			<< status.error_code() << " (" << status.error_message() << ")";
 
+		// Truncation shape: the completeness trailer (set server-side before
+		// the cancellation return) must exceed the delivered prefix — a
+		// client that receives it can detect incompleteness and its size.
+		// Trailer delivery to a client that itself cancelled is a gRPC race
+		// (late trailers may be discarded); when it IS delivered, its total
+		// is pinned strictly greater than what arrived.
+		const auto [trailerFound, trailerTotal] = TrailerTotal(ctx);
+		if (trailerFound)
+		{
+			EXPECT_GT(trailerTotal, read)
+				<< "a truncated stream's x-total-records must exceed the delivered prefix";
+		}
+
 		EXPECT_TRUE(serverAnswersHealthCheck())
 			<< "a cancelled layer-feature stream must leave the server serving";
 	}
@@ -401,32 +460,36 @@ namespace Odb::Test
 		m_config->enable_batch_streaming = false;
 		ASSERT_TRUE(StartServer()) << "server restart with disabled flag failed";
 
+		grpc::ClientContext ctx;
 		grpc::Status status;
-		const auto result = StreamAllBatches(kDesign, kStep, kLayerWithFeatures, &status);
+		const auto result = StreamAllBatches(kDesign, kStep, kLayerWithFeatures, ctx, &status);
 		EXPECT_EQ(status.error_code(), grpc::StatusCode::UNIMPLEMENTED);
 		EXPECT_TRUE(result.batches.empty()) << "an error status must not carry batches";
 	}
 
 	TEST_F(LayerFeatureStreamTest, GetLayerFeaturesBatchStream_MissingDesign_ReturnsNotFound)
 	{
+		grpc::ClientContext ctx;
 		grpc::Status status;
-		const auto result = StreamAllBatches("no_such_design_exists", kStep, kLayerWithFeatures, &status);
+		const auto result = StreamAllBatches("no_such_design_exists", kStep, kLayerWithFeatures, ctx, &status);
 		EXPECT_EQ(status.error_code(), grpc::StatusCode::NOT_FOUND);
 		EXPECT_TRUE(result.batches.empty());
 	}
 
 	TEST_F(LayerFeatureStreamTest, GetLayerFeaturesBatchStream_MissingStep_ReturnsNotFound)
 	{
+		grpc::ClientContext ctx;
 		grpc::Status status;
-		const auto result = StreamAllBatches(kDesign, kMissingName, kLayerWithFeatures, &status);
+		const auto result = StreamAllBatches(kDesign, kMissingName, kLayerWithFeatures, ctx, &status);
 		EXPECT_EQ(status.error_code(), grpc::StatusCode::NOT_FOUND);
 		EXPECT_TRUE(result.batches.empty());
 	}
 
 	TEST_F(LayerFeatureStreamTest, GetLayerFeaturesBatchStream_MissingLayer_ReturnsNotFound)
 	{
+		grpc::ClientContext ctx;
 		grpc::Status status;
-		const auto result = StreamAllBatches(kDesign, kStep, kMissingName, &status);
+		const auto result = StreamAllBatches(kDesign, kStep, kMissingName, ctx, &status);
 		EXPECT_EQ(status.error_code(), grpc::StatusCode::NOT_FOUND);
 		EXPECT_TRUE(result.batches.empty());
 	}
@@ -436,8 +499,9 @@ namespace Odb::Test
 		// 11868 records at batch size 250: exactly 47 full batches followed by
 		// one 118-record remainder batch (pin verified against the fixture
 		// corpus; the remainder exercises the final-partial-batch write).
+		grpc::ClientContext ctx;
 		grpc::Status status;
-		const auto result = StreamAllBatches(kDesign, kStep, kLayerWithFeatures, &status);
+		const auto result = StreamAllBatches(kDesign, kStep, kLayerWithFeatures, ctx, &status);
 		ASSERT_TRUE(status.ok()) << status.error_message();
 
 		ASSERT_EQ(result.batches.size(), kLayer1FullBatches + 1)
@@ -449,6 +513,19 @@ namespace Odb::Test
 		}
 		ASSERT_EQ(result.batches.back().features_size(), static_cast<int>(kLayer1Remainder))
 			<< "final batch must carry exactly the remaining records";
+
+		// Completeness contract: the FINAL batch carries the whole-stream
+		// total (not its own size), and it equals the trailer and the
+		// received count.
+		const auto [trailerFound, trailerTotal] = TrailerTotal(ctx);
+		EXPECT_TRUE(trailerFound) << "an OK batch stream must carry the x-total-records trailer";
+		EXPECT_TRUE(result.batches.back().has_total_records())
+			<< "the final batch must carry total_records";
+		EXPECT_EQ(result.batches.back().total_records(), kLayer1RecordCount)
+			<< "final batch total_records must be the whole-stream total";
+		EXPECT_EQ(trailerTotal, kLayer1RecordCount);
+		EXPECT_EQ(result.flattenedBytes.size(), static_cast<std::size_t>(kLayer1RecordCount))
+			<< "received count must equal the reported completeness total";
 	}
 
 	TEST_F(LayerFeatureStreamTest, GetLayerFeaturesBatchStream_FlattenedBatchesEqualUnbatchedStreamAndDirectModel)
@@ -456,10 +533,11 @@ namespace Odb::Test
 		const auto direct = DirectRecordBytes(kDesign, kStep, kLayerWithFeatures);
 		ASSERT_EQ(direct.size(), kLayer1RecordCount);
 
+		grpc::ClientContext streamCtx, batchCtx;
 		grpc::Status streamStatus, batchStatus;
-		auto unbatched = StreamAllRecordBytes(kDesign, kStep, kLayerWithFeatures, &streamStatus);
+		auto unbatched = StreamAllRecordBytes(kDesign, kStep, kLayerWithFeatures, streamCtx, &streamStatus);
 		ASSERT_TRUE(streamStatus.ok()) << streamStatus.error_message();
-		const auto batched = StreamAllBatches(kDesign, kStep, kLayerWithFeatures, &batchStatus);
+		const auto batched = StreamAllBatches(kDesign, kStep, kLayerWithFeatures, batchCtx, &batchStatus);
 		ASSERT_TRUE(batchStatus.ok()) << batchStatus.error_message();
 
 		// Three-way equality: direct model == unbatched stream == flattened
@@ -474,36 +552,61 @@ namespace Odb::Test
 			ASSERT_EQ(batched.flattenedBytes[i], direct[i])
 				<< "flattened batch record " << i << " diverged from the direct model";
 		}
+
+		// Both flavors report the same completeness total.
+		const auto [streamTrailerFound, streamTrailerTotal] = TrailerTotal(streamCtx);
+		const auto [batchTrailerFound, batchTrailerTotal] = TrailerTotal(batchCtx);
+		EXPECT_TRUE(streamTrailerFound);
+		EXPECT_TRUE(batchTrailerFound);
+		EXPECT_EQ(streamTrailerTotal, direct.size());
+		EXPECT_EQ(batchTrailerTotal, direct.size());
+		EXPECT_TRUE(batched.batches.back().has_total_records());
+		EXPECT_EQ(batched.batches.back().total_records(), direct.size());
 	}
 
 	TEST_F(LayerFeatureStreamTest, GetLayerFeaturesBatchStream_SmallLayer_EmitsSingleFinalBatchNoFullBatches)
 	{
 		// board-outline.doc holds 10 records (< batch size 250): the only
 		// batch must be the final partial one — no full-size batches, no
-		// padding.
+		// padding — carrying the layer's total (10) as total_records.
+		grpc::ClientContext ctx;
 		grpc::Status status;
-		const auto result = StreamAllBatches(kDesign, kStep, kSmallLayer, &status);
+		const auto result = StreamAllBatches(kDesign, kStep, kSmallLayer, ctx, &status);
 		ASSERT_TRUE(status.ok()) << status.error_message();
 		ASSERT_EQ(result.batches.size(), std::size_t(1));
 		EXPECT_EQ(result.batches[0].features_size(), 10);
+
+		const auto [trailerFound, trailerTotal] = TrailerTotal(ctx);
+		EXPECT_TRUE(trailerFound);
+		EXPECT_TRUE(result.batches[0].has_total_records());
+		EXPECT_EQ(result.batches[0].total_records(), 10ull) << "single final batch must report the whole-stream total";
+		EXPECT_EQ(trailerTotal, 10ull);
+		EXPECT_EQ(result.flattenedBytes.size(), std::size_t(10));
 	}
 
 	TEST_F(LayerFeatureStreamTest, GetLayerFeaturesBatchStream_EmptyLayer_EmitsNoBatches)
 	{
 		// Zero-record layer: the final-batch guard (currentBatchCount > 0)
-		// must suppress the write — no spurious final empty batch.
+		// must suppress the write — no spurious final empty batch — and the
+		// completeness trailer must report 0.
+		grpc::ClientContext ctx;
 		grpc::Status status;
-		const auto result = StreamAllBatches(kDesign, kStep, kEmptyLayer, &status);
+		const auto result = StreamAllBatches(kDesign, kStep, kEmptyLayer, ctx, &status);
 		EXPECT_TRUE(status.ok()) << status.error_message();
 		EXPECT_TRUE(result.batches.empty())
 			<< "an empty layer must end the stream without any (empty) batch";
+
+		const auto [trailerFound, trailerTotal] = TrailerTotal(ctx);
+		EXPECT_TRUE(trailerFound);
+		EXPECT_EQ(trailerTotal, 0ull);
 	}
 
 	// Cancellation while the stream is mid-way through full batches: the
-	// handler checks IsCancelled per record and before each batch write and
-	// returns CANCELLED when it observes it. The client must see a prompt
-	// end-of-stream, everything delivered must be a valid prefix of the
-	// layer's records, and the server must stay healthy.
+	// handler checks IsCancelled per record and before each batch write. The
+	// client must see a prompt end-of-stream, everything delivered must be a
+	// valid prefix of the layer's records, the server must stay healthy, and
+	// the truncation shape must be detectable via the completeness trailer
+	// (when its delivery wins the race against the client-side cancel).
 	TEST_F(LayerFeatureStreamTest, GetLayerFeaturesBatchStream_CancelDuringFullBatchPath_StopsPromptlyDeliveredPrefixValid)
 	{
 		const auto direct = DirectRecordBytes(kDesign, kStep, kLayerWithFeatures);
@@ -549,6 +652,19 @@ namespace Odb::Test
 		EXPECT_LT(batchesRead, kLayer1FullBatches)
 			<< "a cancel after 5 batches must not deliver the complete 47-batch stream";
 
+		// Truncation shape: when the completeness trailer beats the cancel to
+		// the client, it must exceed the delivered prefix — proving a client
+		// CAN detect incompleteness and its size. Trailer delivery to a
+		// client that itself cancelled is a gRPC race (late trailers may be
+		// discarded), so presence is not asserted here; the success tests
+		// pin the trailer mechanism itself.
+		const auto [trailerFound, trailerTotal] = TrailerTotal(ctx);
+		if (trailerFound)
+		{
+			EXPECT_GT(trailerTotal, recordsRead)
+				<< "a truncated stream's x-total-records must exceed the delivered prefix";
+		}
+
 		EXPECT_TRUE(serverAnswersHealthCheck())
 			<< "a cancelled batch stream must leave the server serving";
 	}
@@ -559,7 +675,8 @@ namespace Odb::Test
 	// Either the final batch was already written (client gets it; trailer may
 	// win as OK) or the handler observes the cancel before writing it and
 	// returns CANCELLED — both are accepted, but whatever arrived must be the
-	// exact expected prefix of batches.
+	// exact expected prefix of batches, and the completeness trailer (if it
+	// reaches the cancelled client) must exceed the delivered prefix.
 	TEST_F(LayerFeatureStreamTest, GetLayerFeaturesBatchStream_CancelBeforeFinalBatch_DeliveredPrefixValidServerStaysHealthy)
 	{
 		const auto direct = DirectRecordBytes(kDesign, kStep, kMidLayer);
@@ -617,31 +734,120 @@ namespace Odb::Test
 			EXPECT_EQ(recordsRead, total) << "final remainder batch delivered: record count must be complete";
 		}
 
+		// Truncation shape (only when the stream actually truncated): the
+		// completeness trailer must exceed the delivered prefix. (If the
+		// final write won the race, the stream is complete — recordsRead ==
+		// total — and the trailer equals it.)
+		const auto [trailerFound, trailerTotal] = TrailerTotal(ctx);
+		if (trailerFound && recordsRead < total)
+		{
+			EXPECT_GT(trailerTotal, recordsRead)
+				<< "a truncated stream's x-total-records must exceed the delivered prefix";
+		}
+
 		EXPECT_TRUE(serverAnswersHealthCheck())
 			<< "a cancelled batch stream must leave the server serving";
 	}
 
+	// ---- REAL write-failure truncation, no client cancellation ----
+	//
+	// A server configured with a send-message limit below one feature record
+	// makes ServerWriter::Write fail while the client stays connected and
+	// has NOT cancelled — the only loopback shape that drives the
+	// write-failure branch of the fail-loud contract from a well-behaved
+	// client. The wire outcome is pinned here: the truncated stream NEVER
+	// ends OK (the transport terminates the call with RESOURCE_EXHAUSTED —
+	// in this shape the transport's status supersedes the handler's INTERNAL
+	// return and its trailer, so the wire shows RESOURCE_EXHAUSTED with no
+	// trailer; server-side the handler still takes the non-cancelled
+	// INTERNAL branch, mirrors GetDesignStream, and logs the truncation).
+	// The server must stay healthy afterwards.
+
+	TEST_F(LayerFeatureStreamTest, GetLayerFeaturesStream_ServerSendLimitWriteFailure_NeverEndsOkServerStaysHealthy)
+	{
+		ASSERT_TRUE(StartServer(/*maxSendBytes=*/32)) << "tiny-send-limit server start failed";
+
+		grpc::ClientContext ctx;
+		grpc::Status status;
+		const auto streamed = StreamAllRecordBytes(kDesign, kStep, kLayerWithFeatures, ctx, &status);
+
+		EXPECT_NE(status.error_code(), grpc::StatusCode::OK)
+			<< "a truncated layer-feature stream must NEVER end OK (fail-loud contract)";
+		EXPECT_EQ(status.error_code(), grpc::StatusCode::RESOURCE_EXHAUSTED)
+			<< "the transport's send-limit failure must surface to the client";
+		EXPECT_LT(streamed.size(), static_cast<std::size_t>(kLayer1RecordCount))
+			<< "a send-limit truncated stream must not deliver the full record set";
+
+		EXPECT_TRUE(serverAnswersHealthCheck())
+			<< "a write-failed layer-feature stream must leave the server serving";
+	}
+
+	TEST_F(LayerFeatureStreamTest, GetLayerFeaturesBatchStream_ServerSendLimitWriteFailure_NeverEndsOkServerStaysHealthy)
+	{
+		ASSERT_TRUE(StartServer(/*maxSendBytes=*/32)) << "tiny-send-limit server start failed";
+
+		grpc::ClientContext ctx;
+		grpc::Status status;
+		const auto result = StreamAllBatches(kDesign, kStep, kLayerWithFeatures, ctx, &status);
+
+		EXPECT_NE(status.error_code(), grpc::StatusCode::OK)
+			<< "a truncated batch stream must NEVER end OK (fail-loud contract)";
+		EXPECT_EQ(status.error_code(), grpc::StatusCode::RESOURCE_EXHAUSTED)
+			<< "the transport's send-limit failure must surface to the client";
+		EXPECT_TRUE(result.batches.empty())
+			<< "the first batch (250 records) exceeds the tiny send limit; no batch may be delivered as OK";
+
+		EXPECT_TRUE(serverAnswersHealthCheck())
+			<< "a write-failed batch stream must leave the server serving";
+	}
+
 	// -------------------------------------------------------------------------
-	// FINDING (contract divergence, deliberate decision requested — not hacked
-	// around here): on ServerWriter::Write failure both layer-feature paths
-	// treat the stream as cleanly finished and return grpc::Status::OK —
-	// GetLayerFeaturesStream breaks the loop and returns OK
-	// (OdbDesignServiceImpl.cpp ~line 599-605), and
-	// GetLayerFeaturesBatchStream returns OK at both the full-batch (~line
-	// 712-718) and final-batch (~line 734-740) write sites. GetDesignStream
-	// deliberately chose the opposite contract: a write failure with no client
-	// cancel returns INTERNAL ("write failed, truncated") because the chunk
-	// count is the only completion signal its clients have. For the layer
-	// feature streams a mid-stream writer failure is therefore
-	// indistinguishable from a clean end-of-stream to any client that only
-	// checks Finish() — it must rely on having read the layer's full record
-	// count. These tests pin the CURRENT OK-on-writer-failure behavior only in
-	//sofar as cancellation (the one failure driver exercisable over loopback)
-	// still yields a prompt client-side CANCELLED trailer and a healthy
-	// server; a broken-connection-without-cancel simulation is not reachable
-	// through the sync API on a loopback channel. A deliberate contract
-	// decision (mirror GetDesignStream's INTERNAL, document OK as final, or
-	// add an explicit IsCancelled check to the unbatched path) is a product
-	// call and is reported to the release-readiness aggregator.
+	// PINNED CONTRACT (Option A "fail loud", decided on PR #659):
+	//
+	// 1. Fail loud on writer failure. On ServerWriter::Write failure both
+	//    layer-feature handlers check ServerContext::IsCancelled():
+	//      - cancelled  => return OK (GetDesignStream semantics: cancellation
+	//        is not a server error; the client sees CANCELLED from its own
+	//        cancel, or a racing OK trailer),
+	//      - otherwise  => grpc::StatusCode::INTERNAL with a sent-of-total
+	//        count message ("layer-feature stream write failed after N of T
+	//        records"). No path hands a still-connected client a clean OK
+	//        over a truncated stream.
+	//    These tests pin the cancellation branch (the only failure driver
+	//    exercisable over loopback): prompt end-of-stream, prefix-valid
+	//    delivery, healthy server afterwards.
+	//
+	//    WHY THE INTERNAL BRANCH IS NOT TRANSPORT-TESTABLE HERE (documented,
+	//    not faked): ServerWriter is final and cannot be mocked
+	//    (GrpcBatchStreamTests note), and the handlers take the generated
+	//    signature, so there is no writer seam short of refactoring
+	//    production beyond this decision's scope. Over a loopback channel
+	//    the sync-API Write fails only when the call is dead — client
+	//    TryCancel or deadline expiry (both set IsCancelled(), landing in
+	//    the cancellation branch) — or a connection break without a
+	//    propagated cancel, which a well-behaved client harness cannot
+	//    synthesize.
+	//
+	// 2. Completeness verification (defense-in-depth). Every exit after
+	//    validation carries the "x-total-records" trailing-metadata entry =
+	//    the number of records a COMPLETE stream delivers;
+	//    GetLayerFeaturesBatchStream's FINAL batch additionally carries
+	//    total_records (additive proto field, wire-compatible). The success
+	//    tests pin: received == trailer == final-batch total_records (and
+	//    thereby prove the trailer IS delivered to connected clients on OK
+	//    streams).
+	//
+	//    Empirical wire facts (probed 2026-11-21, this gRPC build):
+	//    - A client that cancels mid-stream NEVER receives the trailer
+	//      (0/10 deliveries, both RPCs) — gRPC discards late trailers for a
+	//      cancelled call. The cancellation tests therefore pin the trailer
+	//      conditionally: whenever it IS delivered, it must exceed the
+	//      delivered prefix.
+	//    - In the send-limit write-failure shape the transport terminates
+	//      the call with RESOURCE_EXHAUSTED before the handler's status is
+	//      sent, so the wire shows the transport's status and NO trailer;
+	//      the handler's INTERNAL + trailer are superseded. The
+	//      never-OK-over-truncation guarantee is what remains wire-visible,
+	//      and it is pinned unconditionally in the send-limit tests.
 	// -------------------------------------------------------------------------
 }
