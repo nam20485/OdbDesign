@@ -150,13 +150,19 @@ install_system_deps() {
                 gcc gcc-c++ make \
                 $base_packages \
                 $docker_packages
-            # Install Docker Compose V2 plugin; if the distro does not ship it,
-            # pull it from Docker's official Fedora repo (GPG-checked) instead
-            # of the old `pip3 install docker-compose` fallback — compose v1 is
-            # EOL, unpinned, and no longer builds against current Python.
-            if [[ "$INSTALL_DOCKER" == "true" ]] && ! sudo dnf list docker-compose-plugin &>/dev/null; then
-                print_status "docker-compose-plugin not in distro repos; adding Docker's official Fedora repo..."
-                sudo tee /etc/yum.repos.d/docker-ce.repo > /dev/null <<'REPO'
+            # Install Docker Compose V2 plugin; if it is not installed and not
+            # in any enabled repo, pull it from Docker's official Fedora repo
+            # (GPG-checked) instead of the old `pip3 install docker-compose`
+            # fallback — compose v1 is EOL, unpinned, and no longer builds
+            # against current Python. NOTE: availability (`dnf list`) is not
+            # enough — a host with docker-ce.repo already configured exits 0
+            # on `dnf list` without the package being installed, which would
+            # silently skip the install; test installation with rpm -q.
+            if [[ "$INSTALL_DOCKER" == "true" ]] && ! rpm -q docker-compose-plugin &>/dev/null; then
+                print_status "docker-compose-plugin not installed; installing..."
+                sudo dnf install -y docker-compose-plugin || {
+                    print_status "not in enabled repos; adding Docker's official Fedora repo..."
+                    sudo tee /etc/yum.repos.d/docker-ce.repo > /dev/null <<'REPO'
 [docker-ce-stable]
 name=Docker CE Stable - $basearch
 baseurl=https://download.docker.com/linux/fedora/$releasever/$basearch/stable
@@ -164,7 +170,8 @@ enabled=1
 gpgcheck=1
 gpgkey=https://download.docker.com/linux/fedora/gpg
 REPO
-                sudo dnf install -y docker-compose-plugin
+                    sudo dnf install -y docker-compose-plugin
+                }
             fi
             ;;
         centos|rhel)

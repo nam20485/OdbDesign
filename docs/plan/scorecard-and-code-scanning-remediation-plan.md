@@ -1,7 +1,7 @@
 # Scorecard & Code-Scanning Remediation Plan
 
 **Status:** Executed on branch `nam/scorecard-hardening` (PR → `nam20485`).
-**Baseline:** OpenSSF Scorecard **6.4/10** (2026-11-21, development@9cf7302); **157 open code-scanning alerts** (2026-11-21).
+**Baseline:** OpenSSF Scorecard **6.4/10** (2026-11-21, development@9cf7302); **157 open code-scanning alerts** (2026-11-21; 128 CVE + 15 TokenPermissions + 7 PinnedDependencies + 1 DangerousWorkflow + 6 file-less check alerts = 157).
 **Methodology:** fixes ranked by aggregate-score gain ÷ effort, same risk²/effort spirit as
 [`docs/plan/comprehensive-security-audit/remediation-plan.md`](../comprehensive-security-audit/remediation-plan.md)
 (uncommitted sibling doc). Aggregate math: checks weight by risk (Critical=10, High=7.5,
@@ -11,7 +11,7 @@ Medium=5, Low=2.5); current published checks total 105 weight points.
 
 | Class | Count | Source |
 |---|---:|---|
-| `CVE-…` alerts | ~132 | Docker Scout SARIF (docker-scout-scan.yml) — OS-package CVEs **inside the published Docker image** (stale `debian:trixie-slim@sha256:d7e12182…` = 2026-08-24 snapshot); locations are container paths like `/usr/share/doc/libssl3t64/copyright` |
+| `CVE-…` alerts | 128 | Docker Scout SARIF (docker-scout-scan.yml) — OS-package CVEs **inside the published Docker image** (stale `debian:trixie-slim@sha256:d7e12182…` = 2026-08-24 snapshot); locations are container paths like `/usr/share/doc/libssl3t64/copyright` |
 | `TokenPermissionsID` | 15 | scorecard-action SARIF — 5 top-level write scopes (instant −10 each), 1 missing top-level block, 9 job-level writes |
 | `PinnedDependenciesID` | 7 | scorecard-action SARIF — 5 unpinned `actions/cache/*@v4` refs, 1 unpinned `curl\|bash` (Codacy get.sh), 1 unpinned `pip3 install` (setup-linux.sh) |
 | `DangerousWorkflowID` | 1 | scorecard-action SARIF — `docker-publish.yml` checks out `github.event.workflow_run.head_sha` directly (untrusted-code-checkout pattern) |
@@ -29,7 +29,7 @@ by PR #648 (merged 3d6ac90) and are closed. Secret-scanning: 0 open alerts. Depe
 | 2 | Top-level `permissions: read-all` (or `contents: read`) on every workflow; write scopes moved to the jobs that need them; vestigial scopes dropped (`code-coverage` packages, `dependency-review` security-events/id-token, `sbom` id-token, `cmake` job contents); `prebuild.yml` **deleted** (its `if: github.repository == 'nam20485/agent-instructions'` guard makes it a permanent no-op in this repo) | Token-Permissions 0→10 (**+0.71**, High) | cmake-multi-platform, code-coverage, vcpkg-cache-warm, swagger-spec-configmap-sync, dependency-review, sbom-generate-submit, jekyll-gh-pages, docker-publish, create-release |
 | 3 | Pin `actions/cache/restore|save` ×5 to v5.0.5 SHA (the version the warm lane already runs, shares keys); Codacy `get.sh` via raw.githubusercontent URL pinned to full commit SHA (the only URL form Scorecard accepts for download-then-run); replace EOL unpinned `pip3 install docker-compose` with Docker's GPG-checked Fedora repo (`docker-compose-plugin`) | Pinned-Dependencies 9→10 (**+0.05**, Medium) | cmake-multi-platform.yml, code-coverage.yml, scripts/setup-linux.sh |
 | 4 | `actions/attest-build-provenance` (v3.2.0) on the three release zips; bundle uploaded as `OdbDesign-binaries.intoto.jsonl` release asset | Signed-Releases 8→10 (**+0.14** at next release, High) | create-release.yml, scripts/create-release.js |
-| 5 | Base-image digest bump `d7e12182…`→`a72b4433…` (2026-11-04 snapshot) ×3 FROMs + `apt-get -y upgrade` in all 3 apt chains; Docker Scout SARIF upload now `only-fixed: true` (unfixable no-DSA CVEs are non-actionable noise; still visible in Scout dashboard/compare) | ~132 CVE alerts close after next image publish + scan | Dockerfile, Dockerfile.prebuilt, docker-scout-scan.yml |
+| 5 | All 128 CVE alerts: base-image digest bump `d7e12182…`→`a72b4433…` (2026-11-04 snapshot) ×3 FROMs + `apt-get -y upgrade` in all 3 apt chains; Docker Scout SARIF upload now `only-fixed: true` (unfixable no-DSA CVEs are non-actionable noise; still visible in Scout dashboard/compare) | all 128 CVE alerts close after next image publish + scan | Dockerfile, Dockerfile.prebuilt, docker-scout-scan.yml |
 
 **Projected aggregate: 6.4 → ~8.2 now, ~8.35 at next signed release.**
 
@@ -49,7 +49,7 @@ by PR #648 (merged 3d6ac90) and are closed. Secret-scanning: 0 open alerts. Depe
 
 - **Auto-close** once scorecard-action/scout re-run on `development`: all top-level TP findings,
   the deleted prebuild.yml's 2, all 7 PinnedDependencies findings, the DangerousWorkflow finding,
-  and every `only-fixed`-filterable / digest-bump-fixable CVE.
+  and every `only-fixed`-filterable / digest-bump-fixable CVE (of the 128).
 - **Dismissed with justification** (sticky; re-dismissal not needed): the ~10 job-level write
   findings that are *inherent* to what each job does (feed pushes, image publish + cosign,
   release creation, dependency submission, test-reporter check runs) — least-privilege scopes

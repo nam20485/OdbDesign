@@ -28,8 +28,9 @@ ARG USE_VCPKG_CACHE=0
 # install dependencies
 RUN apt-get update && \
     # security refresh of base packages (libssl3t64, gnutls, krb5, ...)
-    # that ship inside the snapshot image itself
-    apt-get -y upgrade && \
+    # that ship inside the snapshot image itself; noninteractive so a
+    # stray debconf/conffile prompt can never stall the build
+    DEBIAN_FRONTEND=noninteractive apt-get -y upgrade && \
     apt-get install -y -q --no-install-recommends \
     curl \
     apt-transport-https \
@@ -137,8 +138,9 @@ EXPOSE 8888 50051
 # install dependencies (curl for healthcheck, 7z for archive extraction)
 RUN apt-get update && \
     # security refresh of base packages (libssl3t64, gnutls, krb5, ...)
-    # that ship inside the snapshot image itself
-    apt-get -y upgrade && \
+    # that ship inside the snapshot image itself; noninteractive so a
+    # stray debconf/conffile prompt can never stall the build
+    DEBIAN_FRONTEND=noninteractive apt-get -y upgrade && \
     apt-get install -y -q --no-install-recommends \
     curl \
     apt-transport-https \

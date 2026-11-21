@@ -135,8 +135,10 @@ jobs:
                 ${{ github.workspace }}/artifacts/OdbDesign-MacOS-x64.zip
 
           - name: Stage Provenance Bundle
+            env:
+              BUNDLE_PATH: ${{ steps.attest.outputs.bundle-path }}
             run: |
-              cp "${{ steps.attest.outputs.bundle-path }}" \
+              cp "$BUNDLE_PATH" \
                  "${{ github.workspace }}/artifacts/OdbDesign-binaries.intoto.jsonl"
     
           # create a release

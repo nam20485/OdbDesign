@@ -80,6 +80,9 @@ jobs:
     permissions:
       # NuGet binary-cache feed push (GitHub Packages)
       packages: write
+      # vcpkg dependency-graph submission (VCPKG_FEATURE_FLAGS=dependencygraph
+      # + GITHUB_TOKEN env) uses the Dependency Submission API
+      contents: write
       # dorny/test-reporter creates check runs
       checks: write
     env:
