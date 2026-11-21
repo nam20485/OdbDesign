@@ -250,8 +250,9 @@ jobs:
 
           # Pinned to the commit the Codacy coverage uploader's get.sh lives at
           # (codacy/codacy-coverage-reporter). Scorecard flags download-then-run
-          # pipelines whose URL is not a raw.githubusercontent URL pinned to a
-          # full commit SHA; the mutable coverage.codacy.com redirect would
-          # never satisfy that. Bump the SHA deliberately when adopting a new
-          # uploader version.
-          bash <(curl -Ls https://raw.githubusercontent.com/codacy/codacy-coverage-reporter/54617baa57421746d0afa3df32127d3dd40f3786/get.sh) report -r coverage/coverage.info
+          # pipelines unless the URL is a raw.githubusercontent URL pinned to a
+          # full commit SHA (and the pipe form specifically: the old
+          # `bash <(curl …)` process-substitution form is always treated as an
+          # unpinned executed file). Bump the SHA deliberately when adopting a
+          # new uploader version.
+          curl -Ls https://raw.githubusercontent.com/codacy/codacy-coverage-reporter/54617baa57421746d0afa3df32127d3dd40f3786/get.sh | bash -s -- report -r coverage/coverage.info
