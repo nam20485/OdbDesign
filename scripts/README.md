@@ -42,6 +42,48 @@ python3 scripts/release_readiness.py validate --profile production
 - Acceptance runs emit structured results into `release-readiness/evidence/`
   (gitignored); the checker ingests them. See the companion checker plan for the
   criterion model and how criteria turn green as the plan's milestones land.
+- **Release manifest gate (`--manifest`):** pass an `eval-plan.json` release
+  manifest (schema in `eval-plan.example.json` +
+  `../docs/plan/test-coverage-and-evaluation-validation-plan/eval-plan-manifest-schema.md`)
+  and the run additionally aggregates the acceptance evidence against it —
+  candidate binding, required-scenario coverage per platform — gating `validate`
+  on the aggregation verdict and its negative controls (`EVID-MANIFEST`,
+  `EVID-NC-MAN-*`):
+
+  ```bash
+  python3 scripts/release_readiness.py validate --manifest eval-plan.json --candidate <token>
+  python3 scripts/release_readiness.py report --manifest eval-plan.json   # informational
+  ```
+
+### `eval_manifest.py`
+**eval-plan.json release manifest loader + acceptance-evidence aggregator**
+
+Implements validation-plan §10: schema validation for the immutable release
+manifest (candidate identity, proto/OpenAPI hashes, platform matrix, network
+boundary, corpus aliases, resource envelope, required scenarios per platform,
+public signing-key fingerprints — never secrets), and the aggregator that
+requires every required scenario ID to return a structured `pass`; missing,
+skipped, failed, not-run, or candidate-mismatched evidence fails the overall
+verdict even when later health checks pass.
+
+```bash
+python3 scripts/eval_manifest.py check --manifest eval-plan.json     # schema only
+python3 scripts/eval_manifest.py aggregate --manifest eval-plan.json \
+    --evidence-dir release-readiness/evidence [--candidate <token>] [--json]
+python3 scripts/eval_manifest.py self-test                           # negative controls
+```
+
+Exit codes: `0` ready / `1` verdict NOT READY (or controls failed) / `2` manifest
+missing/invalid.
+
+**Path safety (fail closed):** scenario IDs and platform names must match
+`^[A-Za-z0-9][A-Za-z0-9._-]*$` (no `/`, `\`, `..`, whitespace); evidence file
+names and evidence scenario IDs pass the same gate; every evidence file must
+realpath inside the evidence directory (symlink escapes are quarantined as
+binding violations and never read); `--manifest`/`--evidence-dir`/`--output`
+must not contain `..` components, and manifests must realpath into the repo,
+its sibling-repos parent, or the system temp dir. Traversal attempts are
+proven rejected by the `self-test` negative controls.
 
 ### `run-tests.sh`
 **Comprehensive test runner for local development and CI**
