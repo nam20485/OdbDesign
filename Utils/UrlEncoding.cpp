@@ -27,6 +27,11 @@ namespace Utils
 
         for (const auto& c : unencoded)
         {
+            // extract nibbles from the UNSIGNED byte value: a signed char
+            // would sign-extend in >> and yield a negative remainder for %,
+            // corrupting every byte >= 0x80
+            const unsigned char byte = static_cast<unsigned char>(c);
+
             if ((c >= 'a' && c <= 'z') ||
                 (c >= 'A' && c <= 'Z') ||
                 (c >= '0' && c <= '9'))
@@ -41,8 +46,8 @@ namespace Utils
             }
             else
             {
-                // encode 
-                os << '%' << to_hex(c >> 4) << to_hex(c % 16);
+                // encode
+                os << '%' << to_hex(byte >> 4) << to_hex(byte % 16);
             }
         }
 

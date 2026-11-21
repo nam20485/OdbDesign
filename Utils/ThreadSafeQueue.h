@@ -61,6 +61,14 @@ namespace Utils
          */
         void interrupt();
 
+        /** Clear a previously tripped interrupt so that later wait()s block
+         * again instead of returning immediately. The interrupt is a latch:
+         * interrupt() -> clearInterrupt() restores the queue to its initial
+         * state. (Used by WorkQueueLoopThread::startProcessing so a restarted
+         * loop blocks when idle instead of busy-spinning.)
+         */
+        void clearInterrupt();
+
         /**
          * Wait indefinitely for the _queue to be notified by either push() or interrupt()
          * @return wait_result specifying result of waiting, one of: { notified, interrupted }
@@ -159,6 +167,15 @@ namespace Utils
             _interrupted.store(true);
         }
         _cv.notify_one();
+    }
+
+    template<typename T>
+    void ThreadSafeQueue<T>::clearInterrupt()
+    {
+        // no notify needed: clearing can only make wait()s BLOCK longer,
+        // never wake them
+        std::lock_guard lock(_m);
+        _interrupted.store(false);
     }
 
     template<typename T>

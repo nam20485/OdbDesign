@@ -170,44 +170,26 @@ namespace Utils
 
 	bool Logger::logMessage(const Message& logMessage)
 	{
-		//std::cout << "[Logger::logMessage] enter, formatting message" << std::endl;
-
-		auto message = formatLogMessage(logMessage);
-
-		//std::cout << "[Logger::logMessage] message formatted, writing to cout and cerr" << std::endl;
-
+		// the level filter applies to ALL sinks (console and file alike): a
+		// level-filtered logger that still writes filtered records to disk
+		// defeats the filter
 		if (logMessage.level >= m_level)
 		{
+			auto message = formatLogMessage(logMessage);
+
 			if (m_outputTypes & OutputTypes::StdOut) std::cout << message << std::flush;
 			if (m_outputTypes & OutputTypes::StdErr) std::cerr << message << std::flush;
-		}
 
-		//else if (logMessage.level == Level::Error ||
-		//		 logMessage.level == Level::Warn)
-		//{
-		//	if (m_outputTypes & OutputTypes::StdErr) std::cerr << message << std::flush;
-		//}
-
-		//std::cout << "[Logger::logMessage] wrote to cout and cerr, writing to file..." << std::endl;
-
-		if (m_outputTypes & OutputTypes::File)
-		{
-			//std::cout << "[Logger::logMessage] opening log file stream (" << m_logFilename << ")..." << std::endl;
-
-			m_logFileStream.open(m_logFilename, std::ios::out | std::ios::app);
-			if (m_logFileStream)
+			if (m_outputTypes & OutputTypes::File)
 			{
-				//std::cout << "[Logger::logMessage] file stream opened, writing to file..." << std::endl;
-
-				m_logFileStream << message << std::flush;
-				//m_logFileStream.flush();
-				m_logFileStream.close();
-
-				//std::cout << "[Logger::logMessage] wrote to file and closed stream" << std::endl;
+				m_logFileStream.open(m_logFilename, std::ios::out | std::ios::app);
+				if (m_logFileStream)
+				{
+					m_logFileStream << message << std::flush;
+					m_logFileStream.close();
+				}
 			}
 		}
-
-		//std::cout << "[Logger::logMessage] exit" << std::endl;
 
 		return true;
 	}	

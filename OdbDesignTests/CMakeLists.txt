@@ -46,7 +46,21 @@ add_executable(OdbDesignTests
     "GrpcBatchStreamTests.cpp"
     "FileArchiveLoadTests.cpp"
     "ParserOnlyHeaderTests.cpp"
-    "ToolsFileTests.cpp")
+    "ToolsFileTests.cpp"
+
+    # Utils / app-base / CLI behavior suites (workstream U7). One file per
+    # utility area; each asserts real behavior against known expected values.
+    "UrlEncodingTests.cpp"
+    "StringUtilsTests.cpp"
+    "CommandLineArgsTests.cpp"
+    "OdbDesignArgsTests.cpp"
+    "LoggerTests.cpp"
+    "ThreadSafeQueueTests.cpp"
+    "WorkQueueLoopThreadTests.cpp"
+    "TimestampTests.cpp"
+    "ViaTests.cpp"
+    "EnumMapTests.cpp"
+    "Bin2AsciiTests.cpp")
 
 target_link_libraries(OdbDesignTests PRIVATE GTest::gtest_main GTest::gmock_main)
 
