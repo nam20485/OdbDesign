@@ -369,9 +369,17 @@ set_runtime_dir_args() {
 
 capture_initial() {
     print_status "Capturing INITIAL (zero-hit) coverage from .gcno — before tests..."
+    # 'mismatch' is suppressed HERE ONLY. --capture --initial reads .gcno alone
+    # immediately after a counter reset, so a mismatch cannot be stale runtime
+    # data (the class the loud-mismatch policy exists for); what fires is the
+    # known GCC 13 artifact — libstdc++ headers (stl_construct.h et al.) carry
+    # mismatched exception tags in .gcno-only capture, and geninfo hard-errors
+    # without this flag (deterministic CI failure since the M0 script landed;
+    # the pre-M0 inline workflow carried the same flag on its --capture).
+    # Runtime capture and merges keep 'mismatch' LOUD.
     run_lcov "$OUTPUT_DIR/initial-capture-stderr.log" \
         --capture --initial "${CAPTURE_DIR_ARGS[@]}" \
-        "${LCOV_COMMON[@]}" \
+        "${LCOV_COMMON[@]}" --ignore-errors mismatch \
         --output-file "$INITIAL_INFO" --quiet
     local records
     records=$(grep -c '^SF:' "$INITIAL_INFO" || true)
