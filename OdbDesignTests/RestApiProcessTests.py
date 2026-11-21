@@ -188,9 +188,7 @@ class ServerHandle:
             args.append("--disable-authentication")
         env = _child_env(self.creds)
         self._log_file = open(self.log_path, "wb")
-        # codeql[py/command-line-injection] test harness: the argv comes from the ctest
-        # registration (--server $<TARGET_FILE:OdbDesignServer>), validated in main();
-        # the "user input" is the build system, not an untrusted user.
+        # codeql[py/command-line-injection] test harness: argv is the ctest-provided --server ($<TARGET_FILE:OdbDesignServer>), validated in main().
         self.process = subprocess.Popen(args, cwd=self.workdir, env=env, stdout=self._log_file, stderr=subprocess.STDOUT, start_new_session=IS_POSIX)
 
     def wait_ready(self, timeout=STARTUP_TIMEOUT_S):
@@ -373,11 +371,9 @@ class ArchiveFacts:
 
     def __init__(self, archive_path):
         self.path = archive_path
-        # codeql[py/path-injection] test harness: fixture path from the ctest-provided
-        # ODB_TEST_DATA_DIR, validated in main()/prepare_workdir(); not an untrusted user.
+        # codeql[py/path-injection] test harness: fixture path from the ctest-provided ODB_TEST_DATA_DIR, validated in main()/prepare_workdir().
         self.size = os.path.getsize(archive_path)
-        # codeql[py/path-injection] test harness: fixture path from the ctest-provided
-        # ODB_TEST_DATA_DIR, validated in main()/prepare_workdir(); not an untrusted user.
+        # codeql[py/path-injection] test harness: fixture path from the ctest-provided ODB_TEST_DATA_DIR, validated in main()/prepare_workdir().
         with open(archive_path, "rb") as fh:
             self.sha256 = hashlib.sha256(fh.read()).hexdigest()
 
@@ -1203,9 +1199,7 @@ def scenario_f004_startup_fail_closed(binary, workdir, designs_dir, sc):
     env = _child_env(None)  # credentials scrubbed
     log_path = os.path.join(workdir, "f004_server.log")
     with open(log_path, "wb") as log_file:
-        # codeql[py/command-line-injection] test harness: the argv comes from the ctest
-        # registration (--server $<TARGET_FILE:OdbDesignServer>), validated in main();
-        # the "user input" is the build system, not an untrusted user.
+        # codeql[py/command-line-injection] test harness: argv is the ctest-provided --server ($<TARGET_FILE:OdbDesignServer>), validated in main().
         process = subprocess.Popen(args, cwd=workdir, env=env, stdout=log_file, stderr=subprocess.STDOUT, start_new_session=IS_POSIX)
         try:
             process.wait(timeout=PROCESS_EXIT_TIMEOUT_S)
@@ -1246,8 +1240,7 @@ def prepare_workdir(test_data_dir):
     os.makedirs(designs_dir)
     sample_src = os.path.join(test_data_dir, SAMPLE_ARCHIVE)
     rigid_src = os.path.join(test_data_dir, RIGIDFLEX_ARCHIVE)
-    # codeql[py/path-injection] test harness: fixture paths from the ctest-provided
-    # ODB_TEST_DATA_DIR, validated in main(); not an untrusted user.
+    # codeql[py/path-injection] test harness: fixture paths from the ctest-provided ODB_TEST_DATA_DIR, validated in main().
     for src in (sample_src, rigid_src):
         if not os.path.isfile(src):
             raise HarnessError("missing test fixture archive: %s" % src)
@@ -1302,8 +1295,7 @@ def run(args):
         # ---- Server A: authentication enabled, credentials configured ----
         auth_designs = os.path.join(workdir, "designs_auth")
         os.makedirs(auth_designs)
-        # codeql[py/path-injection] test harness: fixture path from the ctest-provided
-        # ODB_TEST_DATA_DIR, validated in main()/prepare_workdir(); not an untrusted user.
+        # codeql[py/path-injection] test harness: fixture path from the ctest-provided ODB_TEST_DATA_DIR, validated in main()/prepare_workdir().
         shutil.copyfile(sample_src, os.path.join(auth_designs, SAMPLE_ARCHIVE))
         server_a = start_server(args.server, auth_designs, workdir,
                                 disable_auth=False,
@@ -1377,13 +1369,12 @@ def main(argv):
     # Popen runs the server with cwd set to the temp workdir, so a relative
     # --server path must be resolved against the harness's own cwd first.
     args.server = os.path.abspath(args.server)
-    # codeql[py/path-injection] test harness: --server comes from the CMake ctest
-    # registration ($<TARGET_FILE:OdbDesignServer>) and is validated below;
-    # the "user input" is the build system, not an untrusted user.
+    # codeql[py/path-injection] test harness: --server is the CMake ctest registration ($<TARGET_FILE:OdbDesignServer>), validated below.
     if not os.path.isfile(args.server):
         print("ERROR: server binary not found: %s" % args.server,
               file=sys.stderr)
         return EXIT_USAGE_ERROR
+    # codeql[py/path-injection] test harness: --server is the CMake ctest registration ($<TARGET_FILE:OdbDesignServer>), validated here.
     if not os.access(args.server, os.X_OK):
         print("ERROR: server binary is not executable: %s" % args.server,
               file=sys.stderr)
@@ -1397,9 +1388,7 @@ def main(argv):
               "and --test-data-dir was not given; design fixtures are "
               "required for the external-process HTTP suite")
         return EXIT_SKIPPED_NO_TEST_DATA
-    # codeql[py/path-injection] test harness: fixture directory from the ctest
-    # environment (ODB_TEST_DATA_DIR / --test-data-dir), validated here;
-    # not an untrusted user.
+    # codeql[py/path-injection] test harness: fixture directory is the ctest-provided ODB_TEST_DATA_DIR / --test-data-dir, validated here.
     if not os.path.isdir(args.test_data_dir):
         print("ERROR: test data dir not found: %s" % args.test_data_dir,
               file=sys.stderr)
