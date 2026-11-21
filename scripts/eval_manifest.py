@@ -292,15 +292,18 @@ def validate_manifest(m):
     return problems
 
 
-# Manifests may only be loaded from these (non-argv-derived) root trees: the
-# repository, its sibling-repos parent, or the system temp directory. The
-# realpath+startswith guard below is a real security boundary AND the
-# CodeQL-documented barrier for py/path-injection.
+# Manifests and evidence directories may only be loaded from these (non-
+# argv-derived) root trees: the repository, its sibling-repos parent, or the
+# system temp directory. The realpath+startswith guards below are a real
+# security boundary; the *_WITH_SEP constants are plain module-level strings
+# so the confinement comparison is startswith-against-constant.
 _MANIFEST_ALLOWED_ROOTS = tuple(os.path.realpath(str(r)) for r in (
     Path(__file__).resolve().parent.parent,      # repo root
     Path(__file__).resolve().parent.parent.parent,  # sibling repos / worktrees
     Path(tempfile.gettempdir()),
 ))
+_ALLOWED_ROOTS_WITH_SEP = tuple(r + os.sep for r in _MANIFEST_ALLOWED_ROOTS)
+_A0, _A1, _A2 = _ALLOWED_ROOTS_WITH_SEP
 
 
 def _match_allowed_root(real_path):
@@ -345,13 +348,10 @@ def load_manifest(path):
     if ".." in Path(path).parts:
         raise ManifestError(f"manifest path must not contain '..' components: {path}")
     real = os.path.realpath(str(path))
-    sep = os.sep
-    r0, r1, r2 = _MANIFEST_ALLOWED_ROOTS
-    # Inline confinement barrier against UNTAINTED constants (not derived
-    # from argv): dominates os.path.isfile/open below.
-    if not (real == r0 or real.startswith(r0 + sep)
-            or real == r1 or real.startswith(r1 + sep)
-            or real == r2 or real.startswith(r2 + sep)):
+    # Inline confinement barrier: startswith against UNTAINTED module-level
+    # constant strings (not derived from argv) — dominates os.path.isfile and
+    # the open() below.
+    if not (real.startswith(_A0) or real.startswith(_A1) or real.startswith(_A2)):
         raise ManifestError(
             f"manifest path escapes the allowed root trees (repo, repo parent, "
             f"temp dir) after resolving symlinks: {path} -> {real}")
@@ -404,19 +404,13 @@ def _load_evidence(evidence_dir, expected_candidate):
     violations = []
     dir_real = os.path.realpath(str(evidence_dir))
     sep = os.sep
-    r0, r1, r2 = _MANIFEST_ALLOWED_ROOTS
-    # Inline confinement barrier against UNTAINTED constants (never derived
-    # from argv): captures the allowed root that bounds every filesystem
-    # operation below. Direct aggregate() callers get an empty (failing)
-    # result; the CLI rejected out-of-root dirs earlier with exit 2
-    # (safe_evidence_dir).
-    if dir_real == r0 or dir_real.startswith(r0 + sep):
-        bound = r0
-    elif dir_real == r1 or dir_real.startswith(r1 + sep):
-        bound = r1
-    elif dir_real == r2 or dir_real.startswith(r2 + sep):
-        bound = r2
-    else:
+    # Inline confinement barrier: startswith against UNTAINTED module-level
+    # constant strings (never derived from argv). Dominates os.path.isdir,
+    # os.listdir, and every per-file fs operation below. Direct aggregate()
+    # callers get an empty (failing) result; the CLI rejected out-of-root
+    # dirs earlier with exit 2 (safe_evidence_dir).
+    if not (dir_real.startswith(_A0) or dir_real.startswith(_A1)
+            or dir_real.startswith(_A2)):
         return results, violations
     if not os.path.isdir(dir_real):
         return results, violations
@@ -433,11 +427,12 @@ def _load_evidence(evidence_dir, expected_candidate):
             real = os.path.realpath(f)
         except OSError:
             real = None
-        # Confinement barriers, in order: (1) the recognized untainted
-        # allowed-root bound (dominates every fs call below), then (2) the
-        # evidence-dir containment policy + regular-file check. Anything
-        # else is quarantined as a violation and never read.
-        if real is None or not real.startswith(bound + sep):
+        # Confinement barriers, in order: (1) the untainted allowed-root
+        # constants (dominates every fs call below), then (2) the evidence-dir
+        # containment policy + regular-file check. Anything else is
+        # quarantined as a violation and never read.
+        if real is None or not (real.startswith(_A0) or real.startswith(_A1)
+                                or real.startswith(_A2)):
             violations.append(_violation(
                 f, "evidence path escapes the evidence directory "
                    "(symlink or non-regular file); rejected without reading",
