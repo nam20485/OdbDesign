@@ -71,6 +71,11 @@ namespace Utils
 	template<typename E>
 	inline bool EnumMap<E>::contains(const std::string& name) const
 	{
+		// honor the caseInsensitive flag exactly like getValue(string) does
+		if (m_bCaseInsensitive)
+		{
+			return Utils::find_str_icmp(m_names.begin(), m_names.end(), name) != m_names.end();
+		}
 		return std::find(m_names.begin(), m_names.end(), name) != m_names.end();
 	}
 

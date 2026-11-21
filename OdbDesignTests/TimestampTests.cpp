@@ -40,12 +40,11 @@ namespace Odb::Test
         EXPECT_EQ(stamp.substr(stamp.size() - 4), ".000");
     }
 
-    // KNOWN DEFECT TRIPWIRE (currently FAILS): the millisecond part is
-    // computed with `duration % 1000` on a possibly-negative duration
-    // (Utils/timestamp.cpp:29), so pre-epoch timestamps render a NEGATIVE
-    // millisecond field (epoch - 1.5s currently ends in ".-50" instead of the
-    // correct ".500"). This test asserts the CORRECT behavior; fixing the
-    // implementation should make it pass.
+    // REGRESSION GUARD (was a known defect, fixed in this PR): the
+    // millisecond remainder used to come from truncating division, rendering
+    // pre-epoch points with a negative millisecond field ("...59.-500").
+    // make_timestamp() now floors the seconds and normalizes the remainder,
+    // so epoch-1.5s renders "...58.500".
     TEST(TimestampTests, MakeTimestamp_PreEpoch_MillisecondPartIsNonNegative)
     {
         const auto stamp = ::Utils::make_timestamp(timePointFromMs(-1500));

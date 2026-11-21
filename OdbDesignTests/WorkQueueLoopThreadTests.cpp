@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
 #include <atomic>
 #include <chrono>
-#include <csignal>
 #include <functional>
 #include <mutex>
 #include <stdexcept>
@@ -168,42 +167,78 @@ namespace Odb::Test
         EXPECT_EQ(recorder.snapshot(), (std::vector<int>{ 0 }));
     }
 
-    // KNOWN DEFECT (asserted via death test because the failure mode is a
-    // hard crash, not an exception): stopProcessing() before startProcessing()
-    // dereferences the null _processWorkItemsLoopThread unique_ptr
-    // (Utils/WorkQueueLoopThread.h:136 ->join()). Once fixed, this test must
-    // be inverted to assert a clean no-op stop.
-    TEST(WorkQueueLoopThreadDeathTests, StopBeforeStart_CurrentlyCrashes)
+    // was a hard crash (null _processWorkItemsLoopThread dereference in the
+    // unguarded join); stopProcessing() now guards the join, so stopping
+    // before startProcessing() (or stopping twice) is a clean no-op
+    TEST(WorkQueueLoopThreadTests, StopBeforeStart_IsACleanNoOp)
     {
-        ASSERT_DEATH(
-            {
-                WorkQueueLoopThread<WorkItem> loop([](WorkItem&) -> bool { return true; });
-                loop.stopProcessing(); // never started
-            },
-            ".*");
+        Recorder recorder;
+        WorkQueueLoopThread<WorkItem> loop([&recorder](WorkItem& item)
+        {
+            recorder.record(item.value);
+            return true;
+        });
+
+        loop.stopProcessing(); // never started
+        loop.stopProcessing(); // idempotent
+
+        EXPECT_TRUE(recorder.snapshot().empty());
+        EXPECT_EQ(loop.lastProcessingError(), "");
     }
 
-    // KNOWN DEFECT (asserted via death test): processWorkItemsLoop() has no
-    // try/catch, so a throwing processor propagates out of the thread entry
-    // function and calls std::terminate (Utils/WorkQueueLoopThread.h:106).
-    TEST(WorkQueueLoopThreadDeathTests, ProcessorException_CurrentlyTerminates)
+    // was std::terminate (exception escaped the thread entry function);
+    // processWorkItemsLoop() now contains processor exceptions, stops the
+    // loop like a failed work item, and surfaces the error text via
+    // lastProcessingError()
+    TEST(WorkQueueLoopThreadTests, ProcessorException_Contained_StopsLoopAndSurfacesError)
     {
-        ASSERT_DEATH(
+        Recorder recorder;
+        WorkQueueLoopThread<WorkItem> loop([&recorder](WorkItem& item) -> bool
+        {
+            if (item.value == 0)
             {
-                WorkQueueLoopThread<WorkItem> loop([](WorkItem&) -> bool
-                {
-                    throw std::runtime_error("processor boom");
-                });
-                loop.addWorkItem(WorkItem{ 1 });
-                loop.startProcessing();
-                std::this_thread::sleep_for(std::chrono::milliseconds(500));
-            },
-            ".*");
+                throw std::runtime_error("processor boom");
+            }
+            recorder.record(item.value);
+            return true;
+        });
+
+        loop.addWorkItem(WorkItem{ 0 });
+        loop.addWorkItem(WorkItem{ 1 });
+
+        loop.startProcessing();
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
+        loop.stopProcessing(); // loop already exited after the contained failure; joins cleanly
+
+        EXPECT_TRUE(recorder.snapshot().empty());
+        EXPECT_NE(loop.lastProcessingError().find("processor boom"), std::string::npos);
     }
 
-    // KNOWN DEFECT (asserted via death test): destroying a WorkQueueLoopThread
-    // whose loop is still running destroys a joinable std::thread
-    // (unique_ptr<thread> member), which calls std::terminate.
+    TEST(WorkQueueLoopThreadTests, ProcessorException_LastProcessingErrorEmptyWithoutException)
+    {
+        Recorder recorder;
+        WorkQueueLoopThread<WorkItem> loop([&recorder](WorkItem& item)
+        {
+            recorder.record(item.value);
+            return true;
+        });
+
+        loop.addWorkItem(WorkItem{ 5 });
+        loop.startProcessing();
+        ASSERT_TRUE(waitFor([&] { return recorder.snapshot().size() == 1; },
+                            std::chrono::milliseconds(2000)));
+        loop.stopProcessing();
+
+        EXPECT_EQ(loop.lastProcessingError(), "");
+    }
+
+    // STILL a hard-crash path, kept as a death test: destroying a
+    // WorkQueueLoopThread whose loop is still running destroys a joinable
+    // std::thread (unique_ptr<thread> member), which calls std::terminate.
+    // Fixing this would require an implicit-stop destructor -- a lifecycle
+    // design change (RAII-style auto-join) that alters destruction semantics
+    // for every consumer, beyond a contained fix; left as a documented
+    // tripwire so any future RAII change must consciously update it.
     TEST(WorkQueueLoopThreadDeathTests, DestructionWhileRunning_CurrentlyTerminates)
     {
         ASSERT_DEATH(
@@ -220,12 +255,11 @@ namespace Odb::Test
             ".*");
     }
 
-    // KNOWN DEFECT TRIPWIRE (currently FAILS): ThreadSafeQueue::interrupt() is
-    // sticky (the flag is never cleared), so after stopProcessing() the
-    // restarted loop's wait() predicate is instantly true and the idle loop
-    // busy-spins (Utils/ThreadSafeQueue.h:177 + Utils/WorkQueueLoopThread.h:88).
-    // This test asserts the CORRECT behavior: an idle restarted loop blocks in
-    // wait() and burns no CPU.
+    // REGRESSION GUARD (was a known defect, fixed in this PR): the queue's
+    // interrupt latch used to stay set after stopProcessing(), so a
+    // restarted idle loop busy-spinned (~296ms CPU per 300ms window).
+    // startProcessing() now clears the latch via ThreadSafeQueue::
+    // clearInterrupt(), so an idle restarted loop blocks in wait().
     TEST(WorkQueueLoopThreadTests, RestartedIdleLoop_BurnsNoCpu)
     {
         Recorder recorder;

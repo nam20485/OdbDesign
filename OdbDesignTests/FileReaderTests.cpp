@@ -126,7 +126,7 @@ namespace Odb::Test
 	// first copy, so size and the bytes within size stay correct. NOTE: the
 	// buffer is not NUL-terminated (bytes beyond size() are stale leftovers
 	// from the appended second read), so only the exact range is compared;
-	// the grown-file hazard is covered by the changed-file tripwire below
+	// the grown-file regression guard below covers the changed-file case
 	TEST(FileReaderTests, Test_FileReaderRead_RepeatWithoutClear_SameFile_BufferCorrect)
 	{
 		auto tempFile = TestUtils::createManagedTempFile(FILE_CONTENTS, ".txt");
@@ -141,14 +141,11 @@ namespace Odb::Test
 							   fr.GetBuffer().begin()));
 	}
 
-	// KNOWN DEFECT TRIPWIRE (currently FAILS): the buffered strategy appends
-	// into the existing buffer without clearing it first
-	// (Utils/FileReader.cpp:57 m_buffer.insert), then resize()s to the fresh
-	// read count (:62). Re-reading a file that GREW between reads therefore
-	// yields a MIX of old bytes followed by the first bytes of the new
-	// content, reported with the new size. This test asserts the CORRECT
-	// behavior (the buffer holds the current file content); fixing the
-	// implementation should make it pass.
+	// REGRESSION GUARD (was a known defect, fixed in this PR): the buffered
+	// strategy used to append into the stale buffer without clearing it, so
+	// re-reading a file that GREW between reads yielded a mix of old and new
+	// bytes with the new size. Read() now clears the buffer first, so every
+	// read reports exactly the current file content.
 	TEST(FileReaderTests, Test_FileReaderRead_RepeatAfterFileGrew_BufferHoldsCurrentContent)
 	{
 		const std::string originalContents = "AAAA";

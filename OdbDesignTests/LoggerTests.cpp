@@ -238,12 +238,11 @@ TEST_F(LoggerTest, LevelFiltering_ConsoleWritesOnlyAtOrAboveLevel)
     EXPECT_EQ(capturedStr.find("logger stopped"), std::string::npos);
 }
 
-// KNOWN DEFECT TRIPWIRE (currently FAILS): Logger::logMessage() applies the
-// level gate only to the console sinks and writes the file sink
-// unconditionally (Utils/Logger.cpp:193-208), so records below the configured
-// level still land in log.txt. This test asserts the CORRECT behavior (the
-// file respects the level); fixing the implementation should make it pass.
-// Suspected defect, not documented intent.
+// REGRESSION GUARD (was a suspected defect, fixed in this PR): the level
+// gate used to wrap only the console sinks, so records below the configured
+// level still landed in log.txt. The filter now applies to ALL sinks
+// (console and file alike) -- the only non-surprising contract for a
+// level-filtered logger.
 TEST_F(LoggerTest, FileSink_RespectsLogLevel)
 {
     TempDir tempDir;

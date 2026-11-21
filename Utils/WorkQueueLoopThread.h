@@ -5,6 +5,9 @@
 #pragma once
 
 #include "ThreadSafeQueue.h"
+#include <exception>
+#include <mutex>
+#include <string>
 #include <thread>
 #include <memory>
 #include <chrono>
@@ -26,7 +29,15 @@ namespace Utils
         void startProcessing();
         void stopProcessing();
 
-    protected:       
+        /** Text of the last processor exception that stopped the loop
+         * (empty when no exception occurred). A processor exception is
+         * contained here -- it stops the loop like a failed work item
+         * instead of propagating out of the loop thread, which would
+         * std::terminate the whole process.
+         */
+        std::string lastProcessingError() const;
+
+    protected:
         void processWorkItemsLoop();
         virtual bool processWorkItem(TWorkItem& workItem);
 
@@ -38,6 +49,9 @@ namespace Utils
 
         const bool _StopProcessingOnWorkItemFail{ true };
         bool _enableInternalLogging{ false };
+
+        mutable std::mutex _lastProcessingErrorMutex;
+        std::string _lastProcessingError;
 
     };
     
@@ -98,12 +112,34 @@ namespace Utils
 					break;
 				default:
 					break;
-            }                  
+            }
 
             while (!_workItemQueue.empty())
             {
                 auto workItem = _workItemQueue.front(false);
-                if (!processWorkItem(workItem))
+
+                // contain processor exceptions: letting one propagate out of
+                // this (thread entry) function would std::terminate the whole
+                // process; treat it like a failed work item instead
+                bool processed = false;
+                try
+                {
+                    processed = processWorkItem(workItem);
+                }
+                catch (const std::exception& e)
+                {
+                    std::lock_guard lock(_lastProcessingErrorMutex);
+                    _lastProcessingError = e.what();
+                    processed = false;
+                }
+                catch (...)
+                {
+                    std::lock_guard lock(_lastProcessingErrorMutex);
+                    _lastProcessingError = "unknown non-standard exception";
+                    processed = false;
+                }
+
+                if (!processed)
                 {
                     if (_StopProcessingOnWorkItemFail)
                     {
@@ -117,9 +153,20 @@ namespace Utils
     }
 
     template<typename TWorkItem>
+    std::string WorkQueueLoopThread<TWorkItem>::lastProcessingError() const
+    {
+        std::lock_guard lock(_lastProcessingErrorMutex);
+        return _lastProcessingError;
+    }
+
+    template<typename TWorkItem>
     void WorkQueueLoopThread<TWorkItem>::startProcessing()
     {
         _stopProcessingWorkItemsFlag.store(false);
+        // a previous stopProcessing() leaves the queue's interrupt latch set;
+        // clear it so this loop's wait() blocks when idle instead of
+        // busy-spinning on the stale latch
+        _workItemQueue.clearInterrupt();
         //    _processWorkItemsLoopThread = std::make_unique<std::thread>(std::thread([&]
         //                                                                            {
         //                                                                                processWorkItemsLoop();
@@ -133,6 +180,12 @@ namespace Utils
     {
         _stopProcessingWorkItemsFlag.store(true);
         _workItemQueue.interrupt();
-        _processWorkItemsLoopThread->join();
+        // guarded: stopping before startProcessing() (or stopping twice)
+        // must be a clean no-op, not a null/thread-not-joinable crash
+        if (_processWorkItemsLoopThread &&
+            _processWorkItemsLoopThread->joinable())
+        {
+            _processWorkItemsLoopThread->join();
+        }
     }
 }

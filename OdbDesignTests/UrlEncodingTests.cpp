@@ -60,12 +60,10 @@ namespace Odb::Test
                   "name%3DJohn+Smith%26age%3D30");
     }
 
-    // KNOWN DEFECT TRIPWIRE (currently FAILS): encode() computes the hex
-    // digits from a SIGNED char (Utils/UrlEncoding.cpp:45: `c >> 4` and
-    // `c % 16` on `const char& c`), so bytes >= 0x80 encode as garbage
-    // instead of their true hex value (e.g. 0xE9 currently yields "%50"
-    // on Linux rather than "%E9"). This test asserts the CORRECT
-    // behavior; fixing the implementation should make it pass.
+    // REGRESSION GUARD (was a known defect, fixed in this PR): encode()
+    // used to compute the hex digits from a SIGNED char, so bytes >= 0x80
+    // encoded as garbage (0xE9 yielded "%50"). Nibbles are now extracted
+    // from the unsigned byte value.
     TEST(UrlEncodingTests, Encode_NonAsciiByte_TrueHexValue)
     {
         EXPECT_EQ(UrlEncoding::encode(std::string(1, '\xE9')), "%E9");

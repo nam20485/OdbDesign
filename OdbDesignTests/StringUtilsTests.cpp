@@ -114,11 +114,10 @@ namespace Odb::Test
         EXPECT_EQ(original, "MiXeD");
     }
 
-    // KNOWN DEFECT TRIPWIRE (currently FAILS): str_to_upper_copy() builds an
-    // EMPTY string and transforms over it (Utils/str_utils.cpp:130-131:
-    // `std::string copy;` then transform over copy.begin(), copy.end()), so it
-    // returns "" for EVERY input, not just empty input. This test asserts the
-    // CORRECT behavior; fixing the implementation should make it pass.
+    // REGRESSION GUARD (was a known defect, fixed in this PR):
+    // str_to_upper_copy() used to transform an EMPTY string and return ""
+    // for every input; it now copies the source first (mirroring
+    // str_to_lower_copy).
     TEST(StringUtilsTests, ToUpperCopy_KnownVector_SourceUnchanged)
     {
         const std::string original = "MiXeD123";

@@ -26,12 +26,10 @@ namespace Odb::Test
         EXPECT_EQ(bin2hex("\x0D\x0E\x0B\x0E"), "0d0e0b0e");
     }
 
-    // KNOWN DEFECT TRIPWIRE (currently FAILS): bin2hex() computes the high
-    // nibble with `s[i] >> 4` on a SIGNED char and uses the result directly
-    // as an index into a 16-character lookup table (Utils/bin2ascii.h:52-54),
-    // so any byte >= 0x80 indexes out of bounds (undefined behavior / garbage
-    // output) instead of producing "80".."ff". This test asserts the CORRECT
-    // behavior; fixing the implementation should make it pass.
+    // REGRESSION GUARD (was a memory-safety defect, fixed in this PR):
+    // bin2hex() used to sign-extend bytes >= 0x80 and index the 16-entry
+    // lookup table out of bounds (UB, garbage output); it now reads each
+    // byte as unsigned before nibble extraction.
     TEST(Bin2AsciiTests, Bin2Hex_HighBitByte_KnownHexValue)
     {
         EXPECT_EQ(bin2hex(std::string(1, '\x80')), "80");

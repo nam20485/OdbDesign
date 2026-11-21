@@ -109,11 +109,9 @@ namespace Odb::Test
         EXPECT_EQ(map.getValue("gReEn"), TestColor::Green);
     }
 
-    // KNOWN DEFECT TRIPWIRE (currently FAILS): the string overload of
-    // contains() ignores the caseInsensitive flag and always does an exact
-    // find (Utils/EnumMap.h:72-75), unlike getValue(string) which honors it.
-    // This test asserts the CORRECT behavior; fixing the implementation
-    // should make it pass.
+    // REGRESSION GUARD (was a known defect, fixed in this PR): contains()
+    // used to ignore the caseInsensitive flag and always do an exact find,
+    // unlike getValue(string); it now honors the flag identically.
     TEST(EnumMapTests, CaseInsensitive_Contains_HonorsCaseInsensitiveFlag)
     {
         const EnumMap<TestColor> map(colorNames, /*caseInsensitive=*/true);

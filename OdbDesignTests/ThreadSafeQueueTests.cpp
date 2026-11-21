@@ -153,6 +153,34 @@ namespace Odb::Test
         EXPECT_FALSE(queue.empty()); // item is still queued
     }
 
+    TEST(ThreadSafeQueueTests, ClearInterrupt_LetsLaterWaitsBlockAgain)
+    {
+        ThreadSafeQueue<int> queue;
+        queue.interrupt();
+        ASSERT_EQ(queue.wait(), ThreadSafeQueue<int>::wait_result::interrupted);
+
+        // clearInterrupt() resets the latch: an empty-queue wait must BLOCK
+        // (time out) again instead of returning interrupted instantly
+        queue.clearInterrupt();
+        const auto start = steady_clock::now();
+        EXPECT_EQ(queue.wait(std::chrono::milliseconds(80)),
+                  ThreadSafeQueue<int>::wait_result::timed_out);
+        const auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(
+            steady_clock::now() - start);
+        EXPECT_GE(elapsed.count(), 70);
+
+        // and a later interrupt still works after a clear
+        std::atomic<int> result{ -1 };
+        std::thread waiter([&]
+        {
+            result.store(static_cast<int>(queue.wait()));
+        });
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        queue.interrupt();
+        waiter.join();
+        EXPECT_EQ(result.load(), static_cast<int>(ThreadSafeQueue<int>::wait_result::interrupted));
+    }
+
     TEST(ThreadSafeQueueTests, MultipleWaiters_EachInterruptWakesOneWaiter)
     {
         ThreadSafeQueue<int> queue;
