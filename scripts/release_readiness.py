@@ -253,13 +253,25 @@ def ev_coverage(params, ctx):
     return result(PASS, "handwritten coverage meets thresholds", metrics)
 
 
+def _parse_xml_no_entities(path):
+    """XXE-hardened parse for stdlib-only constraint (Codacy
+    use-defused-xml-parse): expat's entity surface requires a DTD, and
+    CI-generated JUnit XML never carries one — refuse any DOCTYPE/ENTITY
+    declaration outright instead of adding a defusedxml dependency."""
+    text = Path(path).read_text(encoding="utf-8", errors="replace")
+    head = text[:65536]
+    if "<!DOCTYPE" in head or "<!ENTITY" in head:
+        raise ET.ParseError("refusing XML with DTD/entity declarations (XXE guard)")
+    return ET.fromstring(text)
+
+
 def ev_junit(params, ctx):
     """Real test outcome from a JUnit XML: expected count, zero fail/skip."""
     f = Path(params.get("file", ctx["evidence_dir"] / "test-results.xml"))
     if not f.exists():
         return result(PENDING, f"no JUnit results at {f}")
     try:
-        root = ET.parse(f).getroot()
+        root = _parse_xml_no_entities(f)
     except ET.ParseError as e:
         return result(UNKNOWN, f"JUnit parse error: {e}")
     suites = root.iter("testsuite")
@@ -571,7 +583,6 @@ def required_for_profile(criterion, profile):
 
 def evaluate(registry, ctx):
     criteria = registry["criteria"]
-    by_id = {c["id"]: c for c in criteria}
     outcomes = {}
 
     # First pass: evaluate each criterion's own evaluator.
