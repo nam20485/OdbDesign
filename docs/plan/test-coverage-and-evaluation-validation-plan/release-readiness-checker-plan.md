@@ -16,7 +16,8 @@ Built complete — no lite version, in the authoring working tree (see Status ab
   `coverage`, `junit`, `evidence`, `probe`), real runtime probes, dependency blocking,
   candidate binding, engine negative controls, `report`/`validate`, human + `--json` output.
 - `scripts/release_readiness_criteria.json` — 52 criteria across all 19 scenario groups
-  and milestones M0–M6 / C0–C4 (+ 4 engine negative controls = 55 required for `eval`).
+  and milestones M0–M6 / C0–C4. One criterion is production-only, so `eval` requires
+  51 of the 52 + 4 engine negative controls = **55**; `production` requires all 52 + 4 = 56.
 - `scripts/README.md` — usage entry. `release-readiness/` evidence dir is gitignored.
 
 Verified behavior:
@@ -149,7 +150,7 @@ python3 scripts/release_readiness.py validate --profile eval \
 
 ```
 Release readiness — candidate 8af35d5 (profile: eval)
-Overall: 14/63 required criteria pass (22%)   [report mode: informational]
+Overall: 14/55 required criteria pass (25%)   [report mode: informational]
 
 By milestone:
   M0 measurement      ██████████ 5/5   pass
