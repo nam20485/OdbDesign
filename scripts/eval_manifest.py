@@ -45,7 +45,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_EVIDENCE_DIR = REPO_ROOT / "release-readiness" / "evidence"
 
 MANIFEST_VERSION = 1
-SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
+SHA256_RE = re.compile(r"^[0-9a-f]{64}\Z")
 # (Codacy 'hardcoded password' false positive avoided: the evidence convention
 # is a lowercase status string; spelled via .lower() so no credential-looking
 # literal appears in source.)
@@ -73,7 +73,7 @@ class ManifestError(Exception):
 # paths may be absolute but must never contain '..' components; files read from
 # the evidence dir are additionally confined by resolve()+is_relative_to, so a
 # symlink pointing outside the dir is rejected, never followed.
-SAFE_NAME_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
+SAFE_NAME_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*\Z")
 FORBIDDEN_NAMES = {".", ".."}
 
 
@@ -111,8 +111,10 @@ def validate_manifest(m):
     if not isinstance(m, dict):
         return ["manifest: top level must be a JSON object"]
 
-    if m.get("manifest_version") != MANIFEST_VERSION:
-        problems.append(f"manifest_version: must be {MANIFEST_VERSION}")
+    # Strict int (bool/float must not pass: True == 1 and 1.0 == 1 in Python).
+    mv = m.get("manifest_version")
+    if not isinstance(mv, int) or isinstance(mv, bool) or mv != MANIFEST_VERSION:
+        problems.append(f"manifest_version: must be the integer {MANIFEST_VERSION}")
     req_str(m, "release_id", "manifest")
     req_str(m, "created_utc", "manifest")
     req_str(m, "candidate", "manifest")
@@ -195,7 +197,8 @@ def validate_manifest(m):
                     continue
                 req_str(c, "alias", f"corpus[{i}]")
                 req_sha(c, "sha256", f"corpus[{i}]")
-                if not isinstance(c.get("size_bytes"), int) or c.get("size_bytes") < 0:
+                sb = c.get("size_bytes")
+                if not isinstance(sb, int) or isinstance(sb, bool) or sb < 0:
                     problems.append(f"corpus[{i}].size_bytes: required non-negative integer")
                 req_str(c, "privacy", f"corpus[{i}]")
                 if "golden_version" in c and not isinstance(c["golden_version"], str):
@@ -241,7 +244,9 @@ def validate_manifest(m):
                         if isinstance(s, str) and not is_safe_path_component(s):
                             problems.append(f"required_scenarios.by_platform.{plat}: unsafe scenario ID {s!r} "
                                             "(must match ^[A-Za-z0-9][A-Za-z0-9._-]*$)")
-        if not allp and not byp:
+        # Fail closed: an empty gate is not a gate. by_platform counts only if
+        # at least one platform actually requires an ID.
+        if not allp and not any(byp.values()):
             problems.append("required_scenarios: at least one required scenario ID overall")
         for lst, where in ((allp, "all_platforms"),):
             dupes = {s for s in lst if lst.count(s) > 1}
@@ -253,6 +258,14 @@ def validate_manifest(m):
                     dupes = {s for s in ids if ids.count(s) > 1}
                     if dupes:
                         problems.append(f"required_scenarios.by_platform.{plat}: duplicate IDs: {sorted(dupes)}")
+            # An ID may appear in exactly one requirement bucket: appearing in
+            # both all_platforms and a platform bucket is ambiguous for the
+            # gate and crashed sorted() before (None < str tuple comparison).
+            overlap = set(allp) & {s for ids in byp.values()
+                                   for s in (ids if isinstance(ids, list) else [])}
+            if overlap:
+                problems.append(f"required_scenarios: scenario IDs required in more than one "
+                                f"bucket (all_platforms + by_platform): {sorted(overlap)}")
 
     # Preapproved not-applicable entries (plan 10.2: support-matrix entry, not run-time).
     na = m.get("not_applicable_scenarios", [])
@@ -325,14 +338,22 @@ def safe_evidence_dir(path):
     """Validate an operator-supplied evidence dir path; return it as a Path.
 
     Rejects '..' components and realpath-escapes from the allowed root trees
-    (repo, repo parent, system temp dir) — exit 2 misconfiguration.
+    (repo, repo parent, system temp dir) — exit 2 misconfiguration. An
+    allowed ROOT itself (repo root, repo parent, temp root) is rejected too:
+    evidence must live in a dedicated subdirectory, never in a whole root
+    tree (scanning it would sweep unrelated JSON files).
     """
     _reject_unsafe_operator_path(path, "evidence directory")
     real = os.path.realpath(str(path))
-    if _match_allowed_root(real) is None:
+    root = _match_allowed_root(real)
+    if root is None:
         raise ManifestError(
             f"evidence directory escapes the allowed root trees (repo, repo parent, "
             f"temp dir) after resolving symlinks: {path} -> {real}")
+    if real == root:
+        raise ManifestError(
+            f"evidence directory must be a dedicated subdirectory, not an allowed "
+            f"root itself: {path} -> {real}")
     return Path(path)
 
 
@@ -502,31 +523,55 @@ def _na_allowed(na_list, scid, platform):
 def _resolve_row(scid, entries, platform, na_list):
     """Resolve one requirement (scid, platform-or-None).
 
-    Returns (status, sources, na_reason, na_preapproved):
-      status is one of: pass | not-applicable | failed | skipped | not-run |
-      pending | unknown | error | missing.
+    Returns (status, sources, na_reason, na_preapproved, conflict_statuses):
+      status is one of: pass | conflict | not-applicable | failed | skipped |
+      not-run | pending | unknown | error | missing.
       na_preapproved is True only when an NA result was accepted via a
       preapproved manifest entry; False when an NA result exists but nothing
       preapproves it (plan 10.2: N/A is never a run-time decision).
+      conflict_statuses is the sorted set of failing/malformed statuses found
+      alongside a `pass` for the same requirement — a `pass` entry NEVER masks
+      a `failed`/`skipped`/`not-run`/... entry for the same (scenario,
+      platform): the row becomes `conflict` and fails the verdict (plan 10.2
+      universal pass rules; the negative controls prove it).
     """
     matching = [(e, f) for e, f in entries
                 if platform is None or e.get("platform") == platform]
     if not matching:
-        return "missing", [], None, None
+        return "missing", [], None, None, ()
+    statuses = {}
     for e, f in matching:
-        if e.get("status") == STATUS_PASS:
-            return STATUS_PASS, [f], None, None
-    for e, f in matching:
-        if e.get("status") == STATUS_NA:
-            na = _na_allowed(na_list, scid, platform)
-            if na is not None:
-                return STATUS_NA, [f], na.get("reason"), True
-            return STATUS_NA, sorted({x for _, x in matching}), None, False
+        s = e.get("status")
+        s = s if isinstance(s, str) else "unknown"
+        if s not in KNOWN_NON_PASS and s not in (STATUS_PASS, STATUS_NA):
+            s = "unknown"
+        statuses.setdefault(s, []).append(f)
+    failing = tuple(sorted(s for s in statuses if s in KNOWN_NON_PASS))
+    if STATUS_PASS in statuses and failing:
+        # Conflicting structured results for one requirement: never let the
+        # pass mask the failures — surface every source, fail the verdict.
+        sources = sorted({f for fs in statuses.values() for f in fs})
+        return "conflict", sources, None, None, failing
+    if STATUS_PASS in statuses:
+        return STATUS_PASS, sorted(set(statuses[STATUS_PASS])), None, None, ()
+    if STATUS_NA in statuses and failing:
+        # Same masking rule as `pass`: a preapproved N/A never papers over a
+        # real failing result for the same requirement — surface every
+        # source (NA and failing alike) and fail the verdict (plan 10.2:
+        # a skipped/failed run cannot be converted to met by an NA entry).
+        sources = sorted({f for fs in statuses.values() for f in fs})
+        return "conflict", sources, None, None, failing
+    if STATUS_NA in statuses:
+        sources = sorted(set(statuses[STATUS_NA]))
+        na = _na_allowed(na_list, scid, platform)
+        if na is not None:
+            return STATUS_NA, sources, na.get("reason"), True, ()
+        return STATUS_NA, sources, None, False, ()
     status = matching[0][0].get("status")
     status = status if isinstance(status, str) else "unknown"
     if status not in KNOWN_NON_PASS and status not in (STATUS_PASS, STATUS_NA):
         status = "unknown"
-    return status, sorted({f for _, f in matching}), None, None
+    return status, sorted({f for _, f in matching}), None, None, ()
 
 
 def aggregate(manifest, evidence_dir, expect_candidate=None):
@@ -571,21 +616,26 @@ def aggregate(manifest, evidence_dir, expect_candidate=None):
     verdict["binding_violations"] = sorted(dedup.values(), key=lambda v: v["file"])
 
     rows = []
-    for scid, platform in sorted(requirements):
-        status, sources, na_reason, na_pre = _resolve_row(scid, accepted_results.get(scid, []),
-                                                          platform, na_list)
+    # Deterministic ordering even for direct callers that hand-build
+    # requirements with overlapping IDs (validated manifests reject overlap).
+    for scid, platform in sorted(requirements, key=lambda t: (t[0], t[1] or "")):
+        status, sources, na_reason, na_pre, conflict = _resolve_row(
+            scid, accepted_results.get(scid, []), platform, na_list)
         req_label = "all" if platform is None else f"platform:{platform}"
         row = {"scenario": scid, "requirement": req_label, "status": status,
                "evidence": sources}
+        if status == "conflict":
+            row["conflicting_statuses"] = list(conflict)
         if na_pre:
             row["not_applicable_reason"] = na_reason
         elif status == STATUS_NA:
             row["not_applicable_unapproved"] = True
         rows.append(row)
 
+    # Counts keys mirror the row status strings exactly ("not-run", "conflict").
     counts = {"required_total": len(rows), STATUS_PASS: 0, STATUS_NA: 0,
-              "not-applicable-unapproved": 0,
-              "failed": 0, "skipped": 0, "not_run": 0, "missing": 0,
+              "not-applicable-unapproved": 0, "conflict": 0,
+              "failed": 0, "skipped": 0, "not-run": 0, "missing": 0,
               "pending": 0, "unknown": 0, "error": 0}
     for r in rows:
         key = r["status"]
@@ -599,7 +649,8 @@ def aggregate(manifest, evidence_dir, expect_candidate=None):
     unmet_rows = [r for r in rows
                   if r["status"] != STATUS_PASS and not (r["status"] == STATUS_NA and not r.get("not_applicable_unapproved"))]
     verdict["ready"] = (
-        not unmet_rows
+        bool(rows)  # fail closed: a manifest requiring nothing is not a gate
+        and not unmet_rows
         and not verdict["binding_violations"]
         and verdict["manifest_candidate_mismatch"] is None
     )
@@ -619,8 +670,10 @@ def render_human(verdict):
         f"Required scenarios: {c['required_total']}  "
         f"pass={c[STATUS_PASS]}  not-applicable={c[STATUS_NA]}  "
         f"na-unapproved={c.get('not-applicable-unapproved', 0)}  "
-        f"failed={c['failed']}  skipped={c['skipped']}  not-run={c['not_run']}  "
-        f"missing={c['missing']}  unknown={c['unknown']}"
+        f"conflict={c.get('conflict', 0)}  "
+        f"failed={c['failed']}  skipped={c['skipped']}  not-run={c.get('not-run', 0)}  "
+        f"missing={c['missing']}  pending={c.get('pending', 0)}  "
+        f"unknown={c['unknown']}  error={c.get('error', 0)}"
     )
     if verdict["manifest_candidate_mismatch"]:
         lines.append(f"CANDIDATE MISMATCH: {verdict['manifest_candidate_mismatch']}")
@@ -637,6 +690,15 @@ def render_human(verdict):
             extra = f" (preapproved: {r['not_applicable_reason']})"
         elif r.get("not_applicable_unapproved"):
             extra = " (NOT preapproved in manifest -> fails the verdict)"
+        elif r.get("conflicting_statuses"):
+            # Accurate for BOTH conflict shapes: pass+failed and
+            # preapproved-NA+failed. The row does not record which
+            # non-failing entry was present, so the render names the
+            # failing statuses and the fact of a co-present non-failing
+            # entry instead of hardcoding "pass".
+            extra = (f" (conflicting statuses: "
+                     f"{','.join(r['conflicting_statuses'])} alongside a "
+                     "non-failing entry -> fails the verdict)")
         else:
             extra = ""
         lines.append(f"  [{r['status']:<14}] {r['scenario']:<{width}}  {r['requirement']:<14}  {src}{extra}")
@@ -811,6 +873,113 @@ def run_negative_controls(self_exe=None):
         controls.append(("NC-MAN-evidence-unsafe-scenario-id-rejected", ok3,
                          f"in-process ready={v['ready']} (want False), CLI exit={rc} (want 1), "
                          f"unsafe-ID violation recorded={badkey}"))
+
+    # ---- Verdict-integrity controls: a pass must never mask a failing result
+    # for the same (scenario, platform) — plan 10.2 universal pass rules. ---- #
+    def check_conflict(control_id, s1_entries, label):
+        with tempfile.TemporaryDirectory(prefix="evalman-nc-conflict-") as td:
+            ev = Path(td) / "evidence"
+            if isinstance(s1_entries, list):
+                # one file, multiple entries for the same scenario
+                _write_evidence(ev / "S1-RPC.json", candidate, {"S1-RPC": s1_entries})
+            else:
+                # dict of file-name -> scenarios map (cross-file variant)
+                for fname, scen in s1_entries.items():
+                    _write_evidence(ev / fname, candidate, scen)
+            _write_evidence(ev / "S2-HEALTH.json", candidate, {"S2-HEALTH": {"status": "pass"}})
+            v = aggregate(manifest, ev)
+            row = next(r for r in v["rows"] if r["scenario"] == "S1-RPC")
+            rc, out, err = cli_run(manifest, ev)
+            ok_json = True
+            try:
+                j = json.loads(out)
+                conflict_bucket = j.get("counts", {}).get("conflict", 0) == 1
+            except json.JSONDecodeError:
+                ok_json = conflict_bucket = False
+            ok = (v["ready"] is False and row["status"] == "conflict"
+                  and row.get("conflicting_statuses") and rc == 1 and ok_json
+                  and conflict_bucket)
+            controls.append((control_id, ok,
+                             f"{label}: row status={row['status']} (want conflict), "
+                             f"in-process ready={v['ready']} (want False), CLI exit={rc} (want 1), "
+                             f"conflict counts bucket={conflict_bucket}"))
+
+    # ---- A preapproved N/A never masks a real failure (kilo round #656) --- #
+    # Evidence for the same requirement carries BOTH a failed result and an
+    # NA result, and the manifest pre-approves that NA. Before the fix the
+    # NA branch won and the verdict went READY despite the failed run; now
+    # the row is a conflict that names every source and fails the gate.
+    with tempfile.TemporaryDirectory(prefix="evalman-nc-na-mask-") as td:
+        ev = Path(td) / "evidence"
+        ev.mkdir()
+        na_manifest = json.loads(json.dumps(manifest))
+        na_manifest["not_applicable_scenarios"] = [
+            {"scenario": "S2-HEALTH", "reason": "pre-approved out of scope"}]
+        _write_evidence(ev / "a.json", candidate,
+                        {"S1-RPC": {"status": "pass"},
+                         "S2-HEALTH": {"status": "failed"}})
+        _write_evidence(ev / "b.json", candidate,
+                        {"S2-HEALTH": {"status": "not-applicable"}})
+        v = aggregate(na_manifest, ev)
+        row = next(r for r in v["rows"] if r.get("scenario") == "S2-HEALTH")
+        rc, out, err = cli_run(na_manifest, ev)
+        ok = (v["ready"] is False and rc == 1
+              and row.get("status") == "conflict"
+              and "failed" in tuple(row.get("conflicting_statuses") or ()))
+        controls.append(("NC-MAN-na-masks-failed-fails", ok,
+                         f"preapproved NA + failed same requirement: "
+                         f"in-process ready={v['ready']} (want False), row "
+                         f"status={row.get('status')} (want conflict), "
+                         f"CLI exit={rc} (want 1)"))
+
+    check_conflict("NC-MAN-pass-failed-masking-conflict-fails",
+                   [{"status": "failed"}, {"status": "pass"}],
+                   "pass+failed entries in one evidence file")
+    check_conflict("NC-MAN-pass-failed-conflict-crossfile-fails",
+                   {"a.json": {"S1-RPC": {"status": "failed"}},
+                    "b.json": {"S1-RPC": {"status": "pass"}}},
+                   "pass and failed in two candidate-matched files")
+
+    # ---- Schema fail-closed controls: misconfigured manifests exit 2. ---- #
+    def check_schema_reject(control_id, mutate, fragment):
+        m_bad = json.loads(json.dumps(manifest))
+        mutate(m_bad)
+        problems = validate_manifest(m_bad)
+        p = subprocess.run(
+            [sys.executable, "-I", self_exe, "aggregate", "--manifest", "-",
+             "--evidence-dir", str(DEFAULT_EVIDENCE_DIR), "--json"],
+            input=json.dumps(m_bad), capture_output=True, text=True, timeout=60,
+        )
+        ok = (bool(problems) and p.returncode == 2 and "Traceback" not in p.stderr
+              and any(fragment in x for x in problems))
+        controls.append((control_id, ok,
+                         f"schema problems={bool(problems)} ({[x for x in problems if fragment in x][:1]}), "
+                         f"CLI exit={p.returncode} (want 2), clean stderr={'Traceback' not in p.stderr}"))
+
+    check_schema_reject("NC-MAN-empty-requirements-rejected",
+                        lambda m_: m_.__setitem__(
+                            "required_scenarios", {"all_platforms": [], "by_platform": {"p": []}}),
+                        "at least one required scenario ID")
+    check_schema_reject("NC-MAN-cross-bucket-duplicate-rejected",
+                        lambda m_: m_.__setitem__(
+                            "required_scenarios", {"all_platforms": ["S1-RPC"],
+                                                   "by_platform": {"p": ["S1-RPC", "S2-HEALTH"]}}),
+                        "more than one bucket")
+    check_schema_reject("NC-MAN-newline-scenario-id-rejected",
+                        lambda m_: m_.__setitem__(
+                            "required_scenarios", {"all_platforms": ["S1-RPC\n", "S2-HEALTH"]}),
+                        "unsafe scenario ID")
+
+    # ---- CLI contract control: invalid JSON on stdin -> clean exit 2. ---- #
+    with tempfile.TemporaryDirectory(prefix="evalman-nc-stdin-") as td:
+        p = subprocess.run(
+            [sys.executable, "-I", self_exe, "aggregate", "--manifest", "-",
+             "--evidence-dir", str(td), "--json"],
+            input="{not valid json", capture_output=True, text=True, timeout=60,
+        )
+        ok = p.returncode == 2 and "Traceback" not in p.stderr
+        controls.append(("NC-MAN-stdin-invalid-json-exit-2", ok,
+                         f"CLI exit={p.returncode} (want 2), clean stderr={'Traceback' not in p.stderr}"))
     return controls
 
 
@@ -819,7 +988,10 @@ def run_negative_controls(self_exe=None):
 # --------------------------------------------------------------------------- #
 def _read_manifest_arg(args):
     if args.manifest == "-":
-        m = json.load(sys.stdin)
+        try:
+            m = json.load(sys.stdin)
+        except (json.JSONDecodeError, OSError, UnicodeDecodeError) as e:
+            raise ManifestError(f"manifest on stdin unreadable/invalid JSON: {e}")
     else:
         m = load_manifest(args.manifest)
     problems = validate_manifest(m)
@@ -878,14 +1050,20 @@ def main(argv=None):
         print(f"ERROR: {e}", file=sys.stderr)
         return 2
     verdict = aggregate(manifest, evidence_dir, expect_candidate=args.candidate)
-    if args.output:
-        out = Path(args.output)
-        out.parent.mkdir(parents=True, exist_ok=True)
-        out.write_text(json.dumps(verdict, indent=2) + "\n", encoding="utf-8")
+    # Print the verdict FIRST so a failed --output write cannot swallow it;
+    # an unwritable output path is misconfiguration -> exit 2.
     if args.json:
         print(json.dumps(verdict, indent=2))
     else:
         print(render_human(verdict))
+    if args.output:
+        try:
+            out = Path(args.output)
+            out.parent.mkdir(parents=True, exist_ok=True)
+            out.write_text(json.dumps(verdict, indent=2) + "\n", encoding="utf-8")
+        except OSError as e:
+            print(f"ERROR: could not write --output {args.output}: {e}", file=sys.stderr)
+            return 2
     return 0 if verdict["ready"] else 1
 
 
