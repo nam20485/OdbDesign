@@ -197,3 +197,17 @@ Delegate **Wave 1** now as parallel subagents: U0, U1, U2, C0, C4(proto), X2.
 Staff U1 and C0 strongest (critical-path unblockers). Request customer corpus data in
 parallel so X3 isn't blocked later. Re-run the checker after Wave 1 merges to confirm the
 Wave-2 frontier is unblocked, then delegate Wave 2.
+
+---
+
+## 8. Parked / later-phase (NOT in the eval graph)
+
+- **Client↔server version gating (handshake).** DEFERRED to production hardening (user
+  directive 2026-11-20: KISS / later phase). No mechanism exists today (no version RPC,
+  interceptor, or REST versioning). Not an eval blocker because the eval ships clients +
+  server **version-locked together** (C4 synced them). When built: a `protocol_version` +
+  `GetServerInfo` RPC + gRPC metadata interceptor (`FAILED_PRECONDITION`) + REST `426 Upgrade
+  Required`, with a declared supported-range policy. Cheap precursor worth doing first:
+  **`buf breaking`** in CI against the last released proto descriptor to catch *accidental*
+  wire breaks (the field-number reuse that caused the current drift). Root discipline:
+  protobuf additive-only evolution + `reserve` removed tags.
