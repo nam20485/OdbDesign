@@ -81,7 +81,7 @@ target_include_directories(OdbDesignTests PRIVATE
 # server binary to prove auth-enabled startup without credentials exits
 # PreServerRunFailed and opens no listener
 target_compile_definitions(OdbDesignTests PRIVATE
-    ODBDESIGN_SERVER_EXECUTABLE_PATH="${ODBDESIGN_SERVER_BINARY_DIR}/OdbDesignServer${CMAKE_EXECUTABLE_SUFFIX}")
+    ODBDESIGN_SERVER_EXECUTABLE_PATH="$<TARGET_FILE:OdbDesignServer>")
 
 # Add generated gRPC sources (required for OdbDesignServiceImpl which uses these types)
 set(GRPC_PROTO_SRCS
