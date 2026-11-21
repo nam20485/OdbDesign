@@ -733,6 +733,7 @@ def main():
     if args.manifest:
         try:
             manifest = eval_manifest.load_manifest(args.manifest)
+            evidence_dir = eval_manifest.safe_evidence_dir(evidence_dir)
         except eval_manifest.ManifestError as e:
             print(f"ERROR: {e}", file=sys.stderr)
             sys.exit(2)

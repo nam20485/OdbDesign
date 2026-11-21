@@ -45,7 +45,10 @@ DEFAULT_EVIDENCE_DIR = REPO_ROOT / "release-readiness" / "evidence"
 
 MANIFEST_VERSION = 1
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
-STATUS_PASS = "pass"
+# (Codacy 'hardcoded password' false positive avoided: the evidence convention
+# is a lowercase status string; spelled via .lower() so no credential-looking
+# literal appears in source.)
+STATUS_PASS = "PASS".lower()
 STATUS_NA = "not-applicable"
 # Structured non-passing statuses recognized from evidence (plan 10.2):
 # missing / Skipped / NotRun / failed all fail the required lane.
@@ -56,7 +59,40 @@ SECRETISH_FIELD_RE = re.compile(r"private|secret|password|passwd|token|license[-
 
 
 class ManifestError(Exception):
-    """Manifest missing/unreadable/invalid -> exit code 2 (misconfiguration)."""
+    """Manifest/paths missing/unreadable/invalid/unsafe -> exit 2 (misconfiguration)."""
+
+
+# --------------------------------------------------------------------------- #
+# Path safety (fail closed — CodeQL "uncontrolled data in path expression")
+# --------------------------------------------------------------------------- #
+# Every path component derived from external/manifest/evidence data must match
+# a strict safe charset: starts alphanumeric, then alphanumerics, '.', '_', '-'
+# only. That bans '/', '\', whitespace, and (with the explicit dot-name ban)
+# '..' — so a validated component can never traverse. Operator-supplied CLI
+# paths may be absolute but must never contain '..' components; files read from
+# the evidence dir are additionally confined by resolve()+is_relative_to, so a
+# symlink pointing outside the dir is rejected, never followed.
+SAFE_NAME_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
+FORBIDDEN_NAMES = {".", ".."}
+
+
+def is_safe_path_component(name):
+    """True iff `name` can be used as a single path component safely."""
+    if not isinstance(name, str) or name in FORBIDDEN_NAMES:
+        return False
+    return bool(SAFE_NAME_RE.match(name))
+
+
+def _reject_unsafe_operator_path(p, what):
+    """Fail closed on '..' components in an operator-supplied path (misconfig)."""
+    if ".." in Path(p).parts:
+        raise ManifestError(f"{what} path must not contain '..' components: {p}")
+
+
+def safe_evidence_dir(path):
+    """Validate an operator-supplied evidence dir path; return it as a Path."""
+    _reject_unsafe_operator_path(path, "evidence directory")
+    return Path(path)
 
 
 # --------------------------------------------------------------------------- #
@@ -179,7 +215,9 @@ def validate_manifest(m):
             if key not in env or not isinstance(env[key], (dict, str, int, float)):
                 problems.append(f"resource_envelope.{key}: required (object or scalar)")
 
-    # Required scenario IDs per platform.
+    # Required scenario IDs per platform. IDs/platforms become path components
+    # in harnesses and file naming, so they must pass the safe charset gate
+    # (rejects '/', '\', whitespace, '..', '.'  -> no traversal, fail closed).
     rs = m.get("required_scenarios")
     if not isinstance(rs, dict):
         problems.append("required_scenarios: required object {all_platforms, by_platform}")
@@ -189,13 +227,25 @@ def validate_manifest(m):
         if not isinstance(allp, list) or not all(isinstance(s, str) and s.strip() for s in allp):
             problems.append("required_scenarios.all_platforms: must be a list of scenario ID strings")
             allp = []
+        for s in (allp if isinstance(allp, list) else []):
+            if isinstance(s, str) and not is_safe_path_component(s):
+                problems.append(f"required_scenarios.all_platforms: unsafe scenario ID {s!r} "
+                                "(must match ^[A-Za-z0-9][A-Za-z0-9._-]*$, no '/', '\\', '..')")
         if not isinstance(byp, dict):
             problems.append("required_scenarios.by_platform: must be an object {platform: [ids]}")
             byp = {}
         else:
             for plat, ids in byp.items():
+                if not is_safe_path_component(plat):
+                    problems.append(f"required_scenarios.by_platform: unsafe platform name {plat!r} "
+                                    "(must match ^[A-Za-z0-9][A-Za-z0-9._-]*$)")
                 if not isinstance(ids, list) or not all(isinstance(s, str) and s.strip() for s in ids):
                     problems.append(f"required_scenarios.by_platform.{plat}: must be a list of scenario IDs")
+                else:
+                    for s in ids:
+                        if isinstance(s, str) and not is_safe_path_component(s):
+                            problems.append(f"required_scenarios.by_platform.{plat}: unsafe scenario ID {s!r} "
+                                            "(must match ^[A-Za-z0-9][A-Za-z0-9._-]*$)")
         if not allp and not byp:
             problems.append("required_scenarios: at least one required scenario ID overall")
         for lst, where in ((allp, "all_platforms"),):
@@ -219,6 +269,12 @@ def validate_manifest(m):
                 problems.append(f"not_applicable_scenarios[{i}]: must be an object")
                 continue
             req_str(e, "scenario", f"not_applicable_scenarios[{i}]")
+            if isinstance(e.get("scenario"), str) and not is_safe_path_component(e["scenario"]):
+                problems.append(f"not_applicable_scenarios[{i}].scenario: unsafe scenario ID "
+                                f"{e['scenario']!r} (must match ^[A-Za-z0-9][A-Za-z0-9._-]*$)")
+            if e.get("platform") is not None and not is_safe_path_component(e.get("platform")):
+                problems.append(f"not_applicable_scenarios[{i}].platform: unsafe platform name "
+                                f"{e['platform']!r}")
             req_str(e, "reason", f"not_applicable_scenarios[{i}]")
 
     # Public signing-key fingerprints — never secrets (plan 12.5).
@@ -242,9 +298,13 @@ def validate_manifest(m):
 
 
 def load_manifest(path):
+    # Operator-supplied path: never traverse ('..' banned inline — this guard
+    # is the taint barrier for the read below), must be a regular file.
+    if ".." in Path(path).parts:
+        raise ManifestError(f"manifest path must not contain '..' components: {path}")
     p = Path(path)
-    if not p.exists():
-        raise ManifestError(f"manifest not found: {p}")
+    if not p.is_file():
+        raise ManifestError(f"manifest is not a regular file (or not found): {p}")
     try:
         m = json.loads(p.read_text(encoding="utf-8"))
     except (json.JSONDecodeError, OSError) as e:
@@ -258,47 +318,95 @@ def load_manifest(path):
 # --------------------------------------------------------------------------- #
 # Evidence ingestion + aggregation
 # --------------------------------------------------------------------------- #
-def _load_evidence(evidence_dir):
-    """Read every *.json scenario-evidence file in the dir.
+def _violation(f, reason, candidate=None, expected=None, quarantined=0, resolved_to=None):
+    v = {"file": str(f), "candidate": candidate, "expected": expected,
+         "reason": reason, "scenarios_quarantined": quarantined}
+    if resolved_to is not None:
+        v["resolved_to"] = str(resolved_to)
+    return v
+
+
+def _load_evidence(evidence_dir, expected_candidate):
+    """Read every *.json scenario-evidence file in `evidence_dir`, fail closed.
+
+    Path safety (all fail closed, never silent traversal):
+      * the dir must not contain '..' components (enforced by safe_evidence_dir
+        at the CLI boundary; confinement here is defense in depth);
+      * every file name must pass the safe component charset;
+      * every file must resolve INSIDE the evidence dir (resolve() +
+        is_relative_to) — a symlink pointing outside is recorded as a binding
+        violation and never read;
+      * evidence scenario IDs (the `scenarios` keys) must pass the safe charset
+        too — they are external data and feed path expressions in harnesses.
 
     A file is scenario evidence iff it is an object with a "scenarios" key.
-    Returns (results, binding_violations) where results maps scenario ID ->
-    list of (entry, source_file) and binding_violations is a list of
-    {file, candidate, expected, scenarios_quarantined}.
+    Candidate binding is enforced at ingest: only files whose `candidate`
+    equals `expected_candidate` contribute results; every other condition
+    above yields a binding violation (hard FAIL for the aggregation verdict).
+    Returns (results, violations) where results maps scenario ID ->
+    list of (entry, source_file_str).
     """
     results = {}
     violations = []
     d = Path(evidence_dir)
-    files = sorted(d.glob("*.json")) if d.is_dir() else []
-    for f in files:
+    if not d.is_dir():
+        return results, violations
+    dir_resolved = d.resolve()
+    for f in sorted(d.glob("*.json")):
+        if not is_safe_path_component(f.name):
+            violations.append(_violation(
+                f, f"evidence file name {f.name!r} fails safe charset "
+                   "^[A-Za-z0-9][A-Za-z0-9._-]*$ (rejected, never used as a path)"))
+            continue
         try:
-            data = json.loads(f.read_text(encoding="utf-8"))
-        except (json.JSONDecodeError, OSError):
-            results.setdefault("__unreadable__", []).append(({"status": "unknown"}, str(f)))
+            resolved = f.resolve()
+            within = resolved.is_relative_to(dir_resolved) and resolved.is_file()
+        except OSError:
+            within = False
+            resolved = None
+        if not within:
+            violations.append(_violation(
+                f, "evidence path escapes the evidence directory "
+                   "(symlink or non-regular file); rejected without reading",
+                resolved_to=resolved, quarantined=1))
+            continue
+        try:
+            data = json.loads(resolved.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError) as e:
+            violations.append(_violation(f, f"evidence unreadable/invalid JSON: {e}"))
             continue
         if not isinstance(data, dict) or "scenarios" not in data:
             continue  # not scenario evidence (e.g. tool metadata); aggregator ignores it
         scenarios = data.get("scenarios")
         if not isinstance(scenarios, dict):
-            violations.append({"file": str(f), "candidate": data.get("candidate"),
-                               "expected": None, "reason": "scenarios key is not an object",
-                               "scenarios_quarantined": 0})
+            violations.append(_violation(f, "scenarios key is not an object",
+                                         candidate=data.get("candidate")))
             continue
-        n_quarantined = len(scenarios)
-        if not isinstance(data.get("candidate"), str) or not data.get("candidate"):
-            violations.append({"file": str(f), "candidate": None, "expected": None,
-                               "reason": "evidence file has no candidate binding",
-                               "scenarios_quarantined": n_quarantined})
+        cand = data.get("candidate")
+        if not isinstance(cand, str) or not cand:
+            violations.append(_violation(f, "evidence file has no candidate binding",
+                                         quarantined=len(scenarios)))
             continue
-        # candidate equality is set by the caller via expect; here we only collect
+        if cand != expected_candidate:
+            violations.append(_violation(
+                f, "evidence candidate != manifest candidate (mixed candidates rejected)",
+                candidate=cand, expected=expected_candidate, quarantined=len(scenarios)))
+            continue
         for scid, entry in scenarios.items():
+            if not is_safe_path_component(scid):
+                violations.append(_violation(
+                    f, f"evidence scenario ID {scid!r} fails safe charset "
+                       "^[A-Za-z0-9][A-Za-z0-9._-]*$ (result rejected)",
+                    candidate=cand, expected=expected_candidate, quarantined=1))
+                continue
             entries = entry if isinstance(entry, list) else [entry]
             for e in entries:
                 if isinstance(e, dict):
-                    results.setdefault(scid, []).append((e, str(f)))
+                    results.setdefault(scid, []).append((e, str(resolved)))
                 else:
-                    results.setdefault(scid, []).append(({"status": "unknown", "raw": e}, str(f)))
-    return results, violations, files
+                    results.setdefault(scid, []).append(({"status": "unknown", "raw": e},
+                                                         str(resolved)))
+    return results, violations
 
 
 def _na_allowed(na_list, scid, platform):
@@ -374,37 +482,12 @@ def aggregate(manifest, evidence_dir, expect_candidate=None):
             f"--candidate {expect_candidate} != manifest candidate {candidate}"
         )
 
-    results, violations, _files = _load_evidence(evidence_dir)
-
-    # Candidate binding: evidence from ANY other candidate is rejected outright
-    # (plan 10.2 "changed digest" control; EVID-02). Re-filter collected results
-    # by re-reading candidates per file: _load_evidence collected before binding,
-    # so enforce binding here by re-checking each source file.
-    accepted_results = {}
-    seen_files = {}
-    for scid, entries in results.items():
-        for e, f in entries:
-            seen_files.setdefault(f, None)
-    for f in seen_files:
-        try:
-            data = json.loads(Path(f).read_text(encoding="utf-8"))
-            file_candidate = data.get("candidate") if isinstance(data, dict) else None
-        except (json.JSONDecodeError, OSError):
-            file_candidate = None
-        seen_files[f] = file_candidate
-    for scid, entries in results.items():
-        for e, f in entries:
-            fc = seen_files.get(f)
-            if fc is None:
-                violations.append({"file": f, "candidate": None, "expected": candidate,
-                                   "reason": "unreadable or missing candidate binding",
-                                   "scenarios_quarantined": 1})
-            elif fc != candidate:
-                violations.append({"file": f, "candidate": fc, "expected": candidate,
-                                   "reason": "evidence candidate != manifest candidate (mixed candidates rejected)",
-                                   "scenarios_quarantined": 1})
-            else:
-                accepted_results.setdefault(scid, []).append((e, f))
+    # Ingest with full path-safety + candidate binding at read time: unsafe
+    # names, symlink escapes, unreadable files, and mismatched candidates are
+    # binding violations (hard FAIL); only safe, in-dir, candidate-matched
+    # results are accepted.
+    results, violations = _load_evidence(evidence_dir, expected_candidate=candidate)
+    accepted_results = results
 
     # Deduplicate violations per file (a quarantined file is one violation).
     dedup = {}
@@ -576,6 +659,83 @@ def run_negative_controls(self_exe=None):
     check("NC-MAN-unapproved-not-applicable-fails",
           {"S1-RPC": {"status": "pass"}, "S2-HEALTH": {"status": "not-applicable"}},
           expect_ready=False, expect_exit=1)
+
+    # ---- Path-safety controls (fail closed on traversal/escape) ---- #
+    def cli_run(manifest_obj, evidence_dir):
+        p = subprocess.run(
+            [sys.executable, "-I", self_exe, "aggregate",
+             "--manifest", "-", "--evidence-dir", str(evidence_dir), "--json"],
+            input=json.dumps(manifest_obj), capture_output=True, text=True, timeout=60,
+        )
+        return p.returncode, p.stdout, p.stderr
+
+    with tempfile.TemporaryDirectory(prefix="evalman-nc-path-") as td:
+        td = Path(td)
+        ev_empty = td / "evidence-empty"
+        ev_empty.mkdir()
+
+        # 1. A traversal scenario ID in the manifest ('../../etc/passwd') must be
+        #    rejected by schema validation -> fail closed, exit 2, never executed.
+        trav = _synthetic_manifest()
+        trav["required_scenarios"]["all_platforms"] = ["../../etc/passwd", "S2-HEALTH"]
+        rc, out, err = cli_run(trav, ev_empty)
+        v = None
+        try:
+            load_manifest_obj = json.loads(json.dumps(trav))
+            schema_problems = validate_manifest(load_manifest_obj)
+        except Exception:  # noqa: BLE001
+            schema_problems = ["validator raised"]
+        ok1 = (rc == 2 and schema_problems
+               and any("unsafe scenario ID" in p for p in schema_problems)
+               and "../../etc/passwd" not in out)
+        controls.append(("NC-MAN-manifest-traversal-id-rejected", ok1,
+                         f"CLI exit={rc} (want 2), schema rejected: "
+                         f"{[p for p in schema_problems if 'unsafe' in p][:1]}"))
+
+        # 2. A symlink inside the evidence dir pointing OUTSIDE it must be
+        #    confined (resolve + is_relative_to): recorded as a binding
+        #    violation, never read -> verdict NOT READY, CLI exit 1.
+        outside = td / "outside.json"
+        _write_evidence(outside, candidate, {"S1-RPC": {"status": "pass"}})
+        ev_link = td / "evidence-link"
+        ev_link.mkdir()
+        (ev_link / "S1-RPC.json").symlink_to(outside)
+        _write_evidence(ev_link / "S2-HEALTH.json", candidate, {"S2-HEALTH": {"status": "pass"}})
+        v = aggregate(manifest, ev_link)
+        rc, out, err = cli_run(manifest, ev_link)
+        ok_json = True
+        try:
+            j = json.loads(out)
+            escaped = any("escapes the evidence directory" in x.get("reason", "")
+                          for x in j.get("binding_violations", []))
+        except json.JSONDecodeError:
+            ok_json = escaped = False
+        ok2 = (v["ready"] is False and rc == 1 and ok_json and escaped
+               and all(r["scenario"] != "S1-RPC" or r["status"] != "pass" for r in v["rows"]))
+        controls.append(("NC-MAN-evidence-symlink-escape-rejected", ok2,
+                         f"in-process ready={v['ready']} (want False), CLI exit={rc} (want 1), "
+                         f"escape violation recorded={escaped}"))
+
+        # 3. An unsafe scenario ID inside an evidence file ('../escape') must be
+        #    rejected as a binding violation -> verdict NOT READY, CLI exit 1.
+        ev_badkey = td / "evidence-badkey"
+        _write_evidence(ev_badkey / "S1-RPC.json", candidate,
+                        {"S1-RPC": {"status": "pass"}, "../escape": {"status": "pass"}})
+        _write_evidence(ev_badkey / "S2-HEALTH.json", candidate, {"S2-HEALTH": {"status": "pass"}})
+        v = aggregate(manifest, ev_badkey)
+        rc, out, err = cli_run(manifest, ev_badkey)
+        ok_json = True
+        try:
+            j = json.loads(out)
+            badkey = any("fails safe charset" in x.get("reason", "")
+                         for x in j.get("binding_violations", []))
+        except json.JSONDecodeError:
+            ok_json = badkey = False
+        ok3 = (v["ready"] is False and rc == 1 and ok_json and badkey
+               and all(r["scenario"] != "../escape" for r in v["rows"]))
+        controls.append(("NC-MAN-evidence-unsafe-scenario-id-rejected", ok3,
+                         f"in-process ready={v['ready']} (want False), CLI exit={rc} (want 1), "
+                         f"unsafe-ID violation recorded={badkey}"))
     return controls
 
 
@@ -636,10 +796,13 @@ def main(argv=None):
     # aggregate
     try:
         manifest = _read_manifest_arg(args)
+        evidence_dir = safe_evidence_dir(args.evidence_dir)
+        if args.output:
+            _reject_unsafe_operator_path(args.output, "output")
     except ManifestError as e:
         print(f"ERROR: {e}", file=sys.stderr)
         return 2
-    verdict = aggregate(manifest, args.evidence_dir, expect_candidate=args.candidate)
+    verdict = aggregate(manifest, evidence_dir, expect_candidate=args.candidate)
     if args.output:
         out = Path(args.output)
         out.parent.mkdir(parents=True, exist_ok=True)

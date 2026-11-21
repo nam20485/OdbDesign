@@ -76,6 +76,14 @@ python3 scripts/eval_manifest.py self-test                           # negative 
 Exit codes: `0` ready / `1` verdict NOT READY (or controls failed) / `2` manifest
 missing/invalid.
 
+**Path safety (fail closed):** scenario IDs and platform names must match
+`^[A-Za-z0-9][A-Za-z0-9._-]*$` (no `/`, `\`, `..`, whitespace); evidence file
+names and evidence scenario IDs pass the same gate; every evidence file must
+resolve inside the evidence directory (symlink escapes are quarantined as
+binding violations and never read); `--manifest`/`--evidence-dir`/`--output`
+must not contain `..` components. Traversal attempts are proven rejected by
+the `self-test` negative controls.
+
 ### `run-tests.sh`
 **Comprehensive test runner for local development and CI**
 

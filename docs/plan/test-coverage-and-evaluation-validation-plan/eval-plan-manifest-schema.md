@@ -36,6 +36,15 @@ All fields are validated by `eval_manifest.validate_manifest()`. Unknown extra t
 
 All `sha256` fields must be lowercase 64-hex. A manifest that fails any rule is **misconfiguration → exit 2** (`eval_manifest.py check --manifest …`).
 
+### 2.1 Path safety (fail closed)
+
+Scenario IDs, platform names, evidence file names, and operator paths are all treated as untrusted input to path expressions:
+
+- **Scenario IDs / platform names** (in `required_scenarios`, `by_platform` keys, `not_applicable_scenarios`) must match `^[A-Za-z0-9][A-Za-z0-9._-]*$` and never be `.` or `..` — this bans `/`, `\`, whitespace, and traversal outright. Violations are schema rejections → exit 2, never executed.
+- **Evidence file names** must pass the same charset; **evidence scenario IDs** (the `scenarios` keys inside evidence files) too — an unsafe ID is a binding violation (hard FAIL) and its result is discarded.
+- **Confinement:** every evidence file is read only if `resolve()` stays inside `evidence_dir.resolve()` (`Path.is_relative_to`) and is a regular file — a symlink pointing outside the evidence directory is recorded as a binding violation and **never read**.
+- **Operator paths:** `--manifest`, `--output`, and `--evidence-dir` must not contain `..` path components (`..` → exit 2 misconfig; absolute paths are allowed).
+
 ## 3. Evidence contract
 
 Acceptance runs drop one JSON file per scenario into `release-readiness/evidence/` (gitignored):
@@ -78,6 +87,9 @@ python3 scripts/eval_manifest.py self-test                                # nega
 | `NC-MAN-failed-rpc-fails-despite-later-health-pass` | scenario 1 `failed`, later health scenario `pass` | NOT READY, exit 1 |
 | `NC-MAN-not-run-fails` | scenario status `not-run` | NOT READY, exit 1 |
 | `NC-MAN-unapproved-not-applicable-fails` | scenario status `not-applicable` with no preapproval in the manifest | NOT READY, exit 1 |
+| `NC-MAN-manifest-traversal-id-rejected` | manifest declares required scenario ID `../../etc/passwd` | schema-rejected, exit 2 (fail closed; ID never used as a path) |
+| `NC-MAN-evidence-symlink-escape-rejected` | symlink inside the evidence dir points to a valid passing result outside it | symlink quarantined as binding violation, NOT READY, exit 1 |
+| `NC-MAN-evidence-unsafe-scenario-id-rejected` | evidence file contains scenario key `../escape` with a passing result | binding violation, NOT READY, exit 1 |
 
 When `release_readiness.py` runs with `--manifest`, these controls execute as part of the gate and are added as required criteria `EVID-NC-MAN-*` alongside the aggregation verdict `EVID-MANIFEST` — so a broken aggregator fails `validate` too.
 
