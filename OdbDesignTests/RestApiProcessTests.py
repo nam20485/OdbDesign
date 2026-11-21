@@ -511,11 +511,13 @@ class ArchiveFacts:
 # --------------------------------------------------------------------------
 
 class Context:
-    def __init__(self, server, designs_dir, facts_sample, facts_rigidflex):
+    def __init__(self, server, designs_dir, facts_sample, facts_rigidflex,
+                 replacement_path):
         self.server = server
         self.designs_dir = designs_dir
         self.facts = {SAMPLE_DESIGN: facts_sample,
                       RIGIDFLEX_DESIGN: facts_rigidflex}
+        self.replacement_path = replacement_path
 
     def designs_dir_listing(self):
         return sorted(os.listdir(self.designs_dir))
@@ -1016,8 +1018,8 @@ def scenario_conditional_get_etag_flow(ctx, sc):
     """Real RFC 7232 flow on /filemodels/multipart_rigidflex (the design
     uploaded via multipart): 200 + ETag -> If-None-Match 304 -> archive
     replaced via upload -> fresh 200 with a NEW ETag and the replaced
-    content."""
-    facts = ctx.facts[SAMPLE_DESIGN]  # replacement payload (smaller archive)
+    content (verified via /steps after the background re-parse)."""
+    facts = ctx.facts[SAMPLE_DESIGN]  # replacement content: sample archive
     rigid_base = "/filemodels/" + encode_path_segment(MULTIPART_DESIGN)
     stored_name = MULTIPART_FILENAME
 
@@ -1054,18 +1056,27 @@ def scenario_conditional_get_etag_flow(ctx, sc):
                            timeout=HTTP_TIMEOUT_HEAVY)
     sc.check_eq(resp.status, 200, "If-None-Match non-matching tag -> 200")
 
-    # 5. rotate: remove the stored archive, upload the OTHER design's bytes
-    #    under the same name (201 through the real upload route), which must
-    #    invalidate the cache and rotate the validator.
+    # 5. rotate: remove the stored archive, upload a rootless repackaging of
+    #    the sample archive under the same name (201 through the real upload
+    #    route), which must invalidate the cache and rotate the validator.
+    #    Rootless = deterministic re-parse after replacement on every
+    #    platform; see build_rootless_archive for the stale-extraction-tree
+    #    production finding this sidesteps.
     stored = os.path.join(ctx.designs_dir, stored_name)
     os.remove(stored)
-    payload = open(facts.path, "rb").read()
+    payload = open(ctx.replacement_path, "rb").read()
     resp = ctx.server.http(
         "POST", "/files/upload/" + encode_path_segment(stored_name),
         body=payload, headers={"Content-Type": UPLOAD_CONTENT_TYPE},
         timeout=HTTP_TIMEOUT_HEAVY)
     if not sc.check_eq(resp.status, 201, "replacement upload status"):
         return
+    # REAL filesystem effect: the stored file is exactly the replacement
+    # payload (sha256), not the old archive under the same name.
+    with open(stored, "rb") as fh:
+        stored_sha = hashlib.sha256(fh.read()).hexdigest()
+    sc.check_eq(stored_sha, hashlib.sha256(payload).hexdigest(),
+                "stored bytes after replacement are the uploaded payload")
 
     # 6. old validator now revalidates to a fresh 200 with a NEW ETag
     resp = ctx.server.http("GET", rigid_base,
@@ -1234,6 +1245,41 @@ def scenario_f004_startup_fail_closed(binary, workdir, designs_dir, sc):
 # Driver
 # --------------------------------------------------------------------------
 
+def build_rootless_archive(src_archive, out_path):
+    """Repackage an ODB++ archive so its members live at the tar root (no
+    <design>/ prefix directory).
+
+    WHY: the server extracts every archive for design <name> into the same
+    deterministic <designs-dir>/<name>/ directory and never cleans it
+    (Utils/ArchiveExtractor.cpp Extract -> parent/stem). Replacing an archive
+    with DIFFERENT internal-root content therefore leaves the stale root tree
+    in place next to the new one, and FileArchive::findRootDir resolves the
+    root via directory_iterator order — on NTFS that order is alphabetical,
+    so the STALE root can deterministically win (observed on the windows-2022
+    CI leg: steps kept listing the replaced archive's design). A rootless
+    layout hits findRootDir's top-level branch (fonts/misc/matrix/steps at
+    the extraction root), making the replacement parse deterministic on all
+    platforms. The stale-tree contamination itself is a production finding
+    reported on the PR / for product triage.
+    """
+    prefix = None
+    with tarfile.open(src_archive, "r:gz") as src:
+        members = src.getmembers()
+        # these fixtures are single-root archives: every member shares the
+        # first member's top-level directory
+        prefix = members[0].name.split("/")[0]
+        with tarfile.open(out_path, "w:gz") as dst:
+            for m in members:
+                if m.name == prefix or m.name == prefix + "/":
+                    continue  # drop the root directory member itself
+                if m.name.startswith(prefix + "/"):
+                    m.name = m.name[len(prefix) + 1:]
+                m.mtime = int(time.time())
+                fh = src.extractfile(m)
+                dst.addfile(m, fh if m.isfile() and fh is not None else None)
+    return out_path
+
+
 def prepare_workdir(test_data_dir):
     workdir = tempfile.mkdtemp(prefix="odbdesign_rest_proc_")
     designs_dir = os.path.join(workdir, "designs")
@@ -1252,6 +1298,8 @@ def run(args):
         args.test_data_dir)
     facts_sample = ArchiveFacts(sample_src)
     facts_rigidflex = ArchiveFacts(rigid_src)
+    replacement_path = build_rootless_archive(
+        sample_src, os.path.join(workdir, "rootless_sample_replacement.tgz"))
     print("workdir: %s" % workdir)
     print("sample_design: %d steps, %d layers, %d nets, %d components, "
           "%d packages, %d parts"
@@ -1268,7 +1316,8 @@ def run(args):
         server_b = start_server(args.server, designs_dir, workdir,
                                 disable_auth=True, creds=None,
                                 log_name="server_b.log")
-        ctx = Context(server_b, designs_dir, facts_sample, facts_rigidflex)
+        ctx = Context(server_b, designs_dir, facts_sample, facts_rigidflex,
+                      replacement_path)
         for scenario_fn in (
                 scenario_health_endpoints,
                 scenario_design_list_empty_is_204,
@@ -1301,7 +1350,8 @@ def run(args):
                                 disable_auth=False,
                                 creds=("TestUser", "S3cretPass"),
                                 log_name="server_a.log")
-        ctx_a = Context(server_a, auth_designs, facts_sample, facts_rigidflex)
+        ctx_a = Context(server_a, auth_designs, facts_sample, facts_rigidflex,
+                        replacement_path)
         sc = Scenario(scenario_auth_matrix.__name__)
         try:
             scenario_auth_matrix(ctx_a, sc)
