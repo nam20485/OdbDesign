@@ -1,0 +1,98 @@
+{
+  "manifest_version": 1,
+  "release_id": "EXAMPLE-PLACEHOLDER-DO-NOT-SHIP",
+  "created_utc": "2026-11-20T00:00:00Z",
+  "candidate": "0000000000000000000000000000000000000000000000000000000000000000",
+  "identity": {
+    "upstream_commit": "0000000000000000000000000000000000000000000000000000000000000001",
+    "commercial_commit": "0000000000000000000000000000000000000000000000000000000000000002",
+    "test_harness_commit": "0000000000000000000000000000000000000000000000000000000000000003",
+    "client_commits": {
+      "odbdesign-3d-client-prototype": "0000000000000000000000000000000000000000000000000000000000000004",
+      "Odbdesign-info-client-india79-b": "0000000000000000000000000000000000000000000000000000000000000005"
+    },
+    "image_digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+    "artifacts": [
+      {
+        "name": "OdbDesignServer-1.0.0-linux-x64.zip",
+        "kind": "zip",
+        "sha256": "2222222222222222222222222222222222222222222222222222222222222222"
+      },
+      {
+        "name": "OdbDesignServer-1.0.0-win-x64.zip",
+        "kind": "zip",
+        "sha256": "3333333333333333333333333333333333333333333333333333333333333333"
+      }
+    ]
+  },
+  "protos": {
+    "OdbDesignLib/protoc/design.proto": "4444444444444444444444444444444444444444444444444444444444444444",
+    "OdbDesignLib/protoc/product_model.proto": "5555555555555555555555555555555555555555555555555555555555555555",
+    "OdbDesignServer/protoc/grpc/service.proto": "6666666666666666666666666666666666666666666666666666666666666666"
+  },
+  "openapi": {
+    "source": "swagger/odbdesign-server-0.9-swagger.yaml",
+    "sha256": "7777777777777777777777777777777777777777777777777777777777777777"
+  },
+  "support_matrix": [
+    { "platform": "windows-x64", "os": "windows-2022", "runtime": "native", "hardware": "x86_64" },
+    { "platform": "linux-x64", "os": "ubuntu-24.04", "runtime": "native", "hardware": "x86_64" },
+    { "platform": "k3s-single-node", "os": "debian-13", "runtime": "container", "hardware": "x86_64" }
+  ],
+  "network_boundary": {
+    "rest": "loopback",
+    "grpc": "loopback",
+    "mode": "eval-loopback-only",
+    "note": "Remote plaintext gRPC and production network security are NOT certified by this manifest."
+  },
+  "corpus": [
+    {
+      "alias": "designodb_rigidflex",
+      "sha256": "8888888888888888888888888888888888888888888888888888888888888888",
+      "size_bytes": 1234567,
+      "golden_version": "golden-2026-11",
+      "privacy": "public-test-data"
+    },
+    {
+      "alias": "customer-largest",
+      "sha256": "9999999999999999999999999999999999999999999999999999999999999999",
+      "size_bytes": 234567890,
+      "golden_version": "customer-approved-2026-11",
+      "privacy": "customer-approved-alias-only; archive stays on approved private infrastructure"
+    }
+  ],
+  "resource_envelope": {
+    "memory": { "max_rss_gib": 6, "max_spool_gib": 1 },
+    "disk": { "min_free_gib": 20 },
+    "timeouts": { "upload_seconds": 300, "parse_seconds": 600, "stream_seconds": 120 },
+    "performance": { "cold_parse_p95_seconds": 120, "note": "serial large-design workflows only" }
+  },
+  "required_scenarios": {
+    "all_platforms": [
+      "M0-02", "M1-02", "M1-03", "GRPC-01", "GRPC-02", "GRPC-03", "GRPC-04",
+      "REST-02", "REST-03", "REST-04", "SEC-02", "SEC-03", "M3-01", "M3-02",
+      "M4-01", "M4-02", "M5-01", "SRC-02", "SRC-03", "SRC-04", "C0-01", "C0-02",
+      "LIC-01", "LIC-02", "PKG-02", "PKG-03", "SDK-01", "DOC-01", "PROTO-03",
+      "DOTNET-02", "E2E-01", "CORP-01", "CORP-02", "PERF-01", "PERF-02",
+      "CONC-01", "RESTART-01", "IMAGE-01", "EVID-01", "EVID-02"
+    ],
+    "by_platform": {
+      "k3s-single-node": ["K8S-01"],
+      "linux-x64": ["LOOP-01"]
+    }
+  },
+  "not_applicable_scenarios": [
+    {
+      "scenario": "K8S-01",
+      "platform": "windows-x64",
+      "reason": "Kubernetes acceptance is scoped to the k3s platform entry only (eval scope)."
+    }
+  ],
+  "signing_keys": [
+    {
+      "fingerprint": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "purpose": "commercial-package-signing",
+      "algorithm": "ed25519"
+    }
+  ]
+}
