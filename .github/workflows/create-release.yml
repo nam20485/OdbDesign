@@ -24,8 +24,11 @@ jobs:
     #needs: build
     #if: ${{ (github.ref_name == 'release') && github.event_name == 'push' }}
     runs-on: ubuntu-24.04
-    permissions: 
+    permissions:
         contents: write
+        # actions/attest-build-provenance: keyless signing via OIDC
+        id-token: write
+        attestations: write
     
     steps:
 
@@ -35,8 +38,13 @@ jobs:
               egress-policy: audit
 
           - name: Check Dispatch ID
+            # Event payload and secret ride env vars — never interpolate
+            # untrusted `${{ }}` expressions into the run script itself.
+            env:
+              DISPATCH_ID: ${{ github.event.client_payload.dispatch_id }}
+              EXPECTED_DISPATCH_ID: ${{ secrets.DISPATCH_ID }}
             run: |
-              if [[ "${{ github.event.client_payload.dispatch_id }}" == "${{ secrets.DISPATCH_ID }}" ]]; then
+              if [[ "$DISPATCH_ID" == "$EXPECTED_DISPATCH_ID" ]]; then
                 echo "Dispatch ID is correct"
               else
                 echo "Dispatch ID is not correct"
@@ -101,20 +109,47 @@ jobs:
               gpg --batch --yes --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" --local-user "$signing_key" --detach-sign --armor OdbDesign-MacOS-x64.zip
     
           - name: Create Release Variables
+            # Env-mediated: the dispatch payload's run_number is untrusted and
+            # must not be interpolated into the run script.
+            env:
+              RELEASE_VERSION_PREFIX: ${{ vars.RELEASE_VERSION_PREFIX }}
+              DISPATCH_RUN_NUMBER: ${{ github.event.client_payload.run_number }}
             run: |
-              export RELEASE_VERSION="${{vars.RELEASE_VERSION_PREFIX}}.${{ github.event.client_payload.run_number }}"
-              echo "RELEASE_VERSION=$RELEASE_VERSION" >> $GITHUB_ENV                    
+              export RELEASE_VERSION="${RELEASE_VERSION_PREFIX}.${DISPATCH_RUN_NUMBER}"
+              echo "RELEASE_VERSION=$RELEASE_VERSION" >> $GITHUB_ENV
               export RELEASE_TAG="v${RELEASE_VERSION}"
               echo "RELEASE_TAG=$RELEASE_TAG" >> $GITHUB_ENV
               export RELEASE_NAME="OdbDesign ${RELEASE_TAG}"
               echo "RELEASE_NAME=$RELEASE_NAME" >> $GITHUB_ENV
+
+          - name: Attest Build Provenance
+            id: attest
+            # SLSA build provenance for the release binaries (Scorecard
+            # Signed-Releases). Produces a single .intoto.jsonl bundle for all
+            # three zips, uploaded as a release asset below (create-release.js).
+            uses: actions/attest-build-provenance@96278af6caaf10aea03fd8d33a09a777ca52d62f # v3.2.0
+            with:
+              subject-path: |
+                ${{ github.workspace }}/artifacts/OdbDesign-Linux-x64.zip
+                ${{ github.workspace }}/artifacts/OdbDesign-Windows-x64.zip
+                ${{ github.workspace }}/artifacts/OdbDesign-MacOS-x64.zip
+
+          - name: Stage Provenance Bundle
+            env:
+              BUNDLE_PATH: ${{ steps.attest.outputs.bundle-path }}
+            run: |
+              cp "$BUNDLE_PATH" \
+                 "${{ github.workspace }}/artifacts/OdbDesign-binaries.intoto.jsonl"
     
           # create a release
           - name: "Create GitHub Release"
             uses: "actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea" # v7.0.1
             id: create-github-release
+            env:
+              WORKSPACE_PATH: ${{ github.workspace }}
+              REF_NAME: ${{ github.ref_name }}
             with:
               github-token: "${{ secrets.GITHUB_TOKEN }}"
               script: |
                 const script = require('./scripts/create-release.js')
-                script({github, context, core}, '${{ github.workspace }}', '${{ github.ref_name }}')     
+                script({github, context, core}, process.env.WORKSPACE_PATH, process.env.REF_NAME)     

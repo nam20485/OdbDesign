@@ -19,12 +19,11 @@ jobs:
   dependency-review:
     runs-on: ubuntu-24.04
     permissions:
-      id-token: write 
+      # dependency submission API (component detection)
       contents: write
+      # comment-summary-in-pr posts the review summary
       pull-requests: write
-      security-events: write
       actions: read
-      
     
     steps:
       - name: Harden Runner
