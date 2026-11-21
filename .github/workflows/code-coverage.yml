@@ -46,7 +46,14 @@ jobs:
   coverage-linux:
     name: Linux Coverage
     runs-on: ubuntu-24.04
-    timeout-minutes: 90
+    # 150 min: a warm-cache steady-state run finishes in ~30-40 min, but a
+    # transitional ABI generation (runner-image compiler bump; warm lane has
+    # not yet repopulated the canonical key) pays ~45 min of NuGet feed
+    # fallback plus the slow -O0 --coverage configure/build — measured runs
+    # died at exactly the old 90-min wall mid-Configure (44905978306,
+    # 44920588541), discarding the rebuild each time because a job timeout
+    # tears down the always() cache-save too.
+    timeout-minutes: 150
     permissions:
       # dorny/test-reporter creates check runs
       checks: write
