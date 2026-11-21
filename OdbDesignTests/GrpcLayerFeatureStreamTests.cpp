@@ -124,6 +124,7 @@ namespace Odb::Test
 	//     board-outline.doc ->   10 feature records
 	//     comp_+_top      ->    0 feature records (empty layer, key exists)
 	//     layer-5         -> 1284 feature records
+	//     layer-3         -> 7000 feature records (exact multiple of 250)
 	// =========================================================================
 	class LayerFeatureStreamTest : public FileArchiveLoadFixture
 	{
@@ -133,6 +134,7 @@ namespace Odb::Test
 		static constexpr const char* kLayerWithFeatures = "layer-1";
 		static constexpr const char* kSmallLayer = "board-outline.doc";
 		static constexpr const char* kMidLayer = "layer-5";
+		static constexpr const char* kExactMultipleLayer = "layer-3"; // 7000 = 28 x 250: stream ends on a FULL batch
 		static constexpr const char* kEmptyLayer = "comp_+_top";
 		static constexpr const char* kMissingName = "no_such_layer_exists";
 
@@ -143,6 +145,11 @@ namespace Odb::Test
 		static constexpr std::uint64_t kLayer1RecordCount = 11868;
 		static constexpr std::uint64_t kLayer1FullBatches = 47;
 		static constexpr std::uint64_t kLayer1Remainder = 118;
+		// layer-3: 7000 records = exactly 28 full batches, NO remainder — the
+		// exact-multiple shape where the stream ends on a full batch written
+		// in-loop (no final-partial-batch write).
+		static constexpr std::uint64_t kLayer3RecordCount = 7000;
+		static constexpr std::uint64_t kLayer3FullBatches = 28;
 
 		void SetUp() override
 		{
@@ -540,15 +547,18 @@ namespace Odb::Test
 		ASSERT_EQ(result.batches.back().features_size(), static_cast<int>(kLayer1Remainder))
 			<< "final batch must carry exactly the remaining records";
 
-		// Completeness contract: the FINAL batch carries the whole-stream
-		// total (not its own size), and it equals the trailer and the
-		// received count.
+		// Completeness contract: EVERY batch carries the whole-stream total
+		// (not its own size); the last batch received equals the trailer and
+		// the received count.
 		const auto [trailerFound, trailerTotal] = TrailerTotal(ctx);
 		EXPECT_TRUE(trailerFound) << "an OK batch stream must carry the x-total-records trailer";
-		EXPECT_TRUE(result.batches.back().has_total_records())
-			<< "the final batch must carry total_records";
-		EXPECT_EQ(result.batches.back().total_records(), kLayer1RecordCount)
-			<< "final batch total_records must be the whole-stream total";
+		for (std::size_t i = 0; i < result.batches.size(); ++i)
+		{
+			ASSERT_TRUE(result.batches[i].has_total_records())
+				<< "batch " << i << " must carry total_records";
+			EXPECT_EQ(result.batches[i].total_records(), kLayer1RecordCount)
+				<< "batch " << i << " total_records must be the whole-stream total";
+		}
 		EXPECT_EQ(trailerTotal, kLayer1RecordCount);
 		EXPECT_EQ(result.flattenedBytes.size(), static_cast<std::size_t>(kLayer1RecordCount))
 			<< "received count must equal the reported completeness total";
@@ -608,6 +618,41 @@ namespace Odb::Test
 		EXPECT_EQ(result.batches[0].total_records(), 10ull) << "single final batch must report the whole-stream total";
 		EXPECT_EQ(trailerTotal, 10ull);
 		EXPECT_EQ(result.flattenedBytes.size(), std::size_t(10));
+	}
+
+	TEST_F(LayerFeatureStreamTest, GetLayerFeaturesBatchStream_ExactMultipleLayer_LastBatchCarriesTotalRecords)
+	{
+		// layer-3 holds 7000 records = exactly 28 full batches at size 250:
+		// the stream ENDS on a full batch written inside the loop, the
+		// final-partial-batch branch never runs. The completeness total must
+		// still be available on the last batch a client receives (the
+		// documented verification sum(received) == last_batch.total_records
+		// must work for exact-multiple layers, not only remainder layers).
+		grpc::ClientContext ctx;
+		grpc::Status status;
+		const auto result = StreamAllBatches(kDesign, kStep, kExactMultipleLayer, ctx, &status);
+		ASSERT_TRUE(status.ok()) << status.error_message();
+
+		ASSERT_EQ(result.batches.size(), kLayer3FullBatches)
+			<< "7000 records at batch size 250 must be exactly 28 full batches (no remainder)";
+		ASSERT_EQ(result.flattenedBytes.size(), static_cast<std::size_t>(kLayer3RecordCount));
+
+		for (std::size_t i = 0; i < result.batches.size(); ++i)
+		{
+			ASSERT_EQ(result.batches[i].features_size(), static_cast<int>(kBatchSize))
+				<< "batch " << i << " must be exactly the configured batch size";
+			ASSERT_TRUE(result.batches[i].has_total_records())
+				<< "batch " << i << " must carry total_records (stream ends on a full batch here)";
+			EXPECT_EQ(result.batches[i].total_records(), kLayer3RecordCount)
+				<< "batch " << i << " total_records must be the whole-stream total";
+		}
+		const auto& lastBatch = result.batches.back();
+		EXPECT_EQ(lastBatch.total_records(), kLayer3RecordCount)
+			<< "the LAST batch received must carry the completeness total";
+
+		const auto [trailerFound, trailerTotal] = TrailerTotal(ctx);
+		EXPECT_TRUE(trailerFound);
+		EXPECT_EQ(trailerTotal, kLayer3RecordCount);
 	}
 
 	TEST_F(LayerFeatureStreamTest, GetLayerFeaturesBatchStream_EmptyLayer_EmitsNoBatches)

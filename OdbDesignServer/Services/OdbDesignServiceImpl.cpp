@@ -776,6 +776,15 @@ namespace OdbDesignServer
                             return {grpc::StatusCode::CANCELLED, "Request cancelled"};
                         }
 
+                        // Completeness contract: EVERY batch carries the
+                        // whole-stream record total — including full batches
+                        // written in-loop, because when the layer's record
+                        // count is an exact multiple of the batch size the
+                        // stream ENDS on a full batch and the final-partial
+                        // branch never runs. The last batch a client receives
+                        // must always carry the total.
+                        batch.set_total_records(totalToSend);
+
                         if (!writer->Write(batch))
                         {
                             // Fail loud (Option A): a write failure the
@@ -823,8 +832,8 @@ namespace OdbDesignServer
                         return {grpc::StatusCode::CANCELLED, "Request cancelled"};
                     }
 
-                    // Completeness contract: the FINAL batch carries the
-                    // whole-stream record total.
+                    // Completeness contract: the final (partial) batch also
+                    // carries the whole-stream record total.
                     batch.set_total_records(totalToSend);
 
                     if (!writer->Write(batch))
