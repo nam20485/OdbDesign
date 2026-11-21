@@ -55,12 +55,19 @@ namespace Odb::Test
     // millisecond remainder used to come from truncating division, rendering
     // pre-epoch points with a negative millisecond field ("...59.-500").
     // make_timestamp() now floors the seconds and normalizes the remainder,
-    // so epoch-1.5s renders "...58.500".
+    // so epoch-1.5s renders "...58.500" on POSIX.
     TEST(TimestampTests, MakeTimestamp_PreEpoch_MillisecondPartIsNonNegative)
     {
         const auto stamp = ::Utils::make_timestamp(timePointFromMs(-1500));
+#ifdef _WIN32
+        // documented production contract: UCRT localtime_s rejects negative
+        // time_t values, and make_timestamp returns "" in that case
+        // (Utils/timestamp.cpp platform guard)
+        EXPECT_EQ(stamp, "");
+#else
         EXPECT_EQ(stamp.substr(stamp.size() - 4), ".500")
             << "actual: " << stamp;
+#endif
     }
 
     TEST(TimestampTests, ParseTimestamp_RoundTrip_FromMakeTimestamp_SecondsGranularity)

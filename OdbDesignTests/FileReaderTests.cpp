@@ -194,13 +194,20 @@ namespace Odb::Test
 		EXPECT_TRUE(frBuffered.GetBuffer().empty());
 	}
 
-	TEST(FileReaderTests, Test_FileReaderRead_Directory_Unbuffered_ThrowsFilesystemError)
+	TEST(FileReaderTests, Test_FileReaderRead_Directory_Unbuffered_PerPlatform)
 	{
 		auto tempDir = TestUtils::createManagedTempDirectory("filereader");
 
-		// unbuffered: file_size() on a directory throws std::filesystem_error
 		FileReader fr(tempDir->path());
+#ifdef _WIN32
+		// Windows: std::filesystem::file_size() SUCCEEDS on a directory, so
+		// the unbuffered path reads nothing and returns 0 without throwing
+		EXPECT_EQ(fr.Read(FileReader::BufferStrategy::Unbuffered), 0LL);
+		EXPECT_TRUE(fr.GetBuffer().empty());
+#else
+		// POSIX: file_size() on a directory throws std::filesystem_error
 		EXPECT_THROW(fr.Read(FileReader::BufferStrategy::Unbuffered),
 					 std::filesystem::filesystem_error);
+#endif
 	}
 }
