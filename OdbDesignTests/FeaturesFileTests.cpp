@@ -690,11 +690,14 @@ TEST(FeaturesFileTests, Parse_NoFeaturesFile_ThrowsInvalidOdbError)
 	EXPECT_THROW(features.Parse(dir), std::exception);
 }
 
-TEST(FeaturesFileTests, Parse_MalformedIdTrailer_SilentlyUnset)
+TEST(FeaturesFileTests, Parse_MalformedIdTrailer_SingleSemicolon_MisroutedToAttributeMap)
 {
-	// documented contract: a rejected ID=<value> in the trailing section
-	// leaves the record id unset (AttributeLookupTable uses from_chars and
-	// skips invalid values) -- the record itself still parses
+	// The trailer string arrives WITH its leading ';' intact, so for the
+	// single-';' form ";ID=abc" ParseAttributeLookupTable treats
+	// "ID=abc" as the ATTRIBUTES section (the same single-';' misroute
+	// pinned on surfaces above): the record id stays unset and a fake
+	// "ID"="abc" attribute is added. Rerouting the uid must flip both
+	// assertions.
 	const auto dir = writeFeatures(
 		"UNITS=MM\n"
 		"L 0 0 1 1 0 P 0 ;ID=abc\n", "bad_id_trailer");
@@ -702,7 +705,30 @@ TEST(FeaturesFileTests, Parse_MalformedIdTrailer_SilentlyUnset)
 	FeaturesFile features;
 	ASSERT_TRUE(features.Parse(dir));
 	ASSERT_EQ(features.GetFeatureRecords().size(), 1U);
-	EXPECT_FALSE(features.GetFeatureRecords().at(0)->id.has_value());
+
+	const auto& line = *features.GetFeatureRecords().at(0);
+	EXPECT_FALSE(line.id.has_value());
+	const auto attributes = snapshotAttributes(line);
+	ASSERT_EQ(attributes.size(), 1U);
+	EXPECT_EQ(attributes.at("ID"), "abc");
+}
+
+TEST(FeaturesFileTests, Parse_MalformedIdTrailer_DoubleSemicolon_FromCharsRejectsSilently)
+{
+	// with the explicit empty attributes section (";;ID=abc") the value
+	// DOES reach the from_chars-guarded uid section, which silently skips
+	// invalid values: id stays unset, no attributes
+	const auto dir = writeFeatures(
+		"UNITS=MM\n"
+		"L 0 0 1 1 0 P 0 ;;ID=abc\n", "bad_id_trailer_double");
+
+	FeaturesFile features;
+	ASSERT_TRUE(features.Parse(dir));
+	ASSERT_EQ(features.GetFeatureRecords().size(), 1U);
+
+	const auto& line = *features.GetFeatureRecords().at(0);
+	EXPECT_FALSE(line.id.has_value());
+	EXPECT_TRUE(line.GetAttributeLookupTable().empty());
 }
 
 TEST(FeaturesFileTests, ProtobufRoundTrip_PreservesAllRecordsAndSymbols)

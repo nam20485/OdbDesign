@@ -21,11 +21,13 @@
 
 #include "FileModel/Design/EdaDataFile.h"
 #include "FileModel/Design/ContourPolygon.h"
+#include "FileModel/Design/FileArchive.h"
 #include "FileModel/parse_error.h"
 #include "FileModel/invalid_odb_error.h"
 
 #include <gtest/gtest.h>
 
+#include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <limits>
@@ -1012,42 +1014,49 @@ TEST(EdaDataFileTests, ProtobufRoundTrip_AbsentOptionalNetId_StaysAbsent)
 TEST(EdaDataFileTests, RealDesigns_NetRecordIdTrailer_LandsInAttributeMapNotIdField)
 {
 	// REAL-CORPUS pin of the NET trailer defect: every NET row in the
-	// local corpora carries the ";;ID=<uid>" trailer, and after a real
-	// parse every net has id unset with "ID"=<uid> sitting in its
-	// attribute lookup table. When the trailer parsing is fixed this test
-	// must flip together with the synthetic pins.
+	// corpus carries the ";;ID=<uid>" trailer, and after a real parse
+	// every net has id unset with "ID"=<uid> sitting in its attribute
+	// lookup table. Consumes the documented .tgz corpus layout through
+	// the production FileArchive pipeline (extraction + full parse), like
+	// the sibling RealDesigns tests, so it runs wherever the corpus
+	// exists. When the trailer parsing is fixed this test must flip
+	// together with the synthetic pins.
 	const char* testDataDir = std::getenv("ODB_TEST_DATA_DIR");
 	if (testDataDir == nullptr || testDataDir[0] == '\0')
 	{
 		GTEST_SKIP() << "ODB_TEST_DATA_DIR not set";
 	}
 
-	const auto edaDir = fs::path(testDataDir) / "designodb_rigidflex" /
-		"designodb_rigidflex" / "steps" / "cellular_flip-phone" / "eda";
-	if (!fs::exists(edaDir))
+	const auto designPath = fs::path(testDataDir) / "designodb_rigidflex.tgz";
+	if (!fs::exists(designPath))
 	{
-		GTEST_SKIP() << "designodb_rigidflex eda dir not in test data dir";
+		GTEST_SKIP() << "designodb_rigidflex.tgz not in test data dir";
 	}
 
-	EdaDataFile eda;
-	ASSERT_TRUE(eda.Parse(edaDir));
+	FileArchive archive(designPath.string());
+	ASSERT_TRUE(archive.ParseFileModel()) << "failed to parse designodb_rigidflex.tgz";
 
-	const auto& nets = eda.GetNetRecords();
-	ASSERT_GT(nets.size(), 0U);
-
+	std::size_t netCount = 0;
 	unsigned withTypedId = 0;
 	unsigned withIdAttribute = 0;
-	for (const auto& net : nets)
+	for (const auto& kvStep : archive.GetStepsByName())
 	{
-		if (net->id.has_value())
+		const auto& nets = kvStep.second->GetEdaDataFile().GetNetRecords();
+		netCount += nets.size();
+		for (const auto& net : nets)
 		{
-			++withTypedId;
-		}
-		if (net->GetAttributeLookupTable().find("ID") != net->GetAttributeLookupTable().end())
-		{
-			++withIdAttribute;
+			if (net->id.has_value())
+			{
+				++withTypedId;
+			}
+			if (net->GetAttributeLookupTable().find("ID") != net->GetAttributeLookupTable().end())
+			{
+				++withIdAttribute;
+			}
 		}
 	}
+
+	ASSERT_GT(netCount, 0U) << "no nets parsed from designodb_rigidflex.tgz";
 	EXPECT_EQ(withTypedId, 0U);
-	EXPECT_EQ(withIdAttribute, nets.size());
+	EXPECT_EQ(withIdAttribute, netCount);
 }
