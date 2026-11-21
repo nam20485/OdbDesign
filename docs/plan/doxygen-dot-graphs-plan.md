@@ -9,11 +9,13 @@ Branch when implemented: `nam/doxygen-dot-graphs` → PR → `nam20485` (merge c
 - `./scripts/generate-doxygen-docs.sh` exit 0 in **4.6 s wall** (user 37.8 s —
   DOT_MULTI_TARGETS + parallel dot beat the 2-6 min estimate by ~50×).
 - Review round (`3cebed0`) added the promotion-lag fallback in the workflow's
-  Generate step (script-if-present, inline-doxygen-if-absent — see §Changes.2)
-  and hardened the script's `cd` (`top="$(git rev-parse …)" && cd "$top"`, so
-  a failed rev-parse aborts loudly instead of `cd ""` no-op-ing); both
-  conditional branches verified (script branch via this run + the PR's CI
-  lane; fallback branch simulated with the script hidden).
+  Generate step (script-if-present, inline-doxygen-if-absent — see §Changes.2);
+  a later round (`172f054`) hardened the script's `cd` to
+  `top="$(git rev-parse …)"; cd "$top"` — a bare assignment (NOT `&& cd`:
+  under errexit a failing substitution in a non-final `&&` position does not
+  abort, so the script would continue in the wrong cwd and die at doxygen's
+  config error). Both conditional branches verified (script branch via this
+  run + the PR's CI lane; fallback branch simulated with the script hidden).
 - **1555 SVG graphs** emitted; `docs/api/graph_legend.html` present.
 - Hub class page (`classOdb_1_1Lib_1_1ProductModel_1_1Design.html`):
   inheritance diagram embedded as interactive-SVG iframe
@@ -132,12 +134,20 @@ Unchanged (already correct): `DIRECTORY_GRAPH`, `CLASS_GRAPH`,
 # Generate the Doxygen API reference into docs/api/ (gitignored).
 # Same entry point for CI (.github/workflows/jekyll-gh-pages.yml) and local use.
 set -euo pipefail
-cd "$(git rev-parse --show-toplevel)"   # doxygen.conf paths are cwd-relative
+# Two statements, deliberately NOT "x="$(...)" && cd": under errexit a
+# failing command substitution inside a && list (non-final position) does
+# NOT abort the script - it would continue in the wrong cwd and die at
+# doxygen's "could not open configuration file" instead. As a bare
+# statement the failed assignment aborts here with git's own message.
+top="$(git rev-parse --show-toplevel)"; cd "$top"   # doxygen.conf paths are cwd-relative
 command -v doxygen >/dev/null || { echo "error: doxygen not installed" >&2; exit 1; }
 command -v dot      >/dev/null || { echo "error: graphviz 'dot' not installed" >&2; exit 1; }
 echo "doxygen $(doxygen --version), $(dot -V 2>&1)"
 doxygen ./OdbDesignLib/doxygen.conf
 ```
+
+(As committed after the review rounds — `scripts/generate-doxygen-docs.sh`
+is canonical; this block mirrors it.)
 
 Fail loudly when `dot` is missing rather than letting doxygen degrade to
 graph-less output (its "dot not found" is only a warning).
