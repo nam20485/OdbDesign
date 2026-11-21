@@ -19,7 +19,7 @@ All fields are validated by `eval_manifest.validate_manifest()`. Unknown extra t
 
 | Field | Type | Required | Notes |
 |---|---|---|---|
-| `manifest_version` | int | yes | Must be `1`. |
+| `manifest_version` | int | yes | Must be the **integer** `1` (strict: `true` and `1.0` are rejected). |
 | `release_id` | string | yes | Non-empty release identifier. |
 | `created_utc` | string | yes | Manifest freeze timestamp. |
 | `candidate` | string | yes | **The canonical candidate binding token.** Every evidence file's `candidate` field must equal this string exactly; anything else is rejected (mixed candidates). |
@@ -30,7 +30,7 @@ All fields are validated by `eval_manifest.validate_manifest()`. Unknown extra t
 | `network_boundary` | object | yes | Non-empty, e.g. `{"rest": "loopback", "grpc": "loopback", "mode": "eval-loopback-only"}`. |
 | `corpus` | list | recommended | Entries: `alias`, `sha256`, `size_bytes` (int ≥ 0), `privacy` (non-empty), optional `golden_version`. Aliases + hashes only — never proprietary archive content (§12.5). |
 | `resource_envelope` | object | yes | Must contain `memory`, `disk`, `timeouts` (object or scalar); optional `performance` acceptance envelope. |
-| `required_scenarios` | object | yes | `all_platforms`: list of scenario IDs required regardless of platform; `by_platform`: `{platform: [scenario IDs]}`. At least one required ID overall; duplicate IDs rejected. |
+| `required_scenarios` | object | yes | `all_platforms`: list of scenario IDs required regardless of platform; `by_platform`: `{platform: [scenario IDs]}`. **At least one required ID overall** (platform lists that are all empty do not count — an empty gate is rejected); duplicates within a list rejected; an ID appearing in **more than one bucket** (`all_platforms` + a platform list) rejected — each ID lives in exactly one requirement bucket. |
 | `not_applicable_scenarios` | list | optional | Preapproved N/A entries: `{scenario, reason}`, optional `platform`. Platform `not-applicable` is a **preapproved support-matrix entry, never a run-time decision** (§10.2). |
 | `signing_keys` | list | yes | Public fingerprint entries. **Only `fingerprint`, `purpose`, `algorithm` fields are allowed**; secret-like field names (`private*`, `secret*`, `password*`, `token*`, `credential*`, …) are rejected outright. Never private keys, passwords, or reusable license documents (§12.5). |
 
@@ -55,6 +55,7 @@ Acceptance runs drop one JSON file per scenario into `release-readiness/evidence
 ```
 
 - `status` must be `pass` to count. Recognized non-passing structured statuses: `failed`, `skipped`, `not-run`, `pending`, `unknown`, `error`, `not-applicable`.
+- **A `pass` never masks a failing result for the same requirement**: if any candidate-matched entry for `(scenario, platform)` is `failed`/`skipped`/`not-run`/`pending`/`unknown`/`error` while another is `pass`, the row resolves to **`conflict`** (with `conflicting_statuses` listed and every evidence source surfaced) and the overall verdict FAILS — both in a single entry list and across files. (`pass` + a preapproved `not-applicable` is not a conflict: the scenario ran and passed.)
 - A scenario entry (or a list of entries) may carry `platform`; **platform-specific requirements are satisfied only by an entry whose `platform` matches** — an entry without a platform satisfies only `all_platforms` requirements.
 - `not-applicable` counts ONLY if `(scenario, platform)` is preapproved in `not_applicable_scenarios`. An unapproved `not-applicable` result is itself a failure (`not-applicable-unapproved` bucket → overall FAIL) — N/A is never a run-time decision.
 - A file is treated as scenario evidence iff it is a JSON object with a `scenarios` key; other JSON files in the dir are ignored. Files that are unreadable or lack a `candidate` are hard violations.
@@ -63,14 +64,14 @@ Acceptance runs drop one JSON file per scenario into `release-readiness/evidence
 
 `eval_manifest.aggregate(manifest, evidence_dir, expect_candidate=None)` produces the machine-generated verdict:
 
-1. **Candidate binding (REJECT on mismatch).** Every scenario-evidence file whose `candidate` ≠ `manifest.candidate` is quarantined (none of its results count) and recorded as a binding violation → overall FAIL. If `expect_candidate` is given (e.g. `release_readiness.py validate --candidate X --manifest …`) and differs from the manifest candidate → FAIL.
+1. **Candidate binding (REJECT on mismatch).** Every scenario-evidence file whose `candidate` ≠ `manifest.candidate` is quarantined (none of its results count) and recorded as a binding violation → overall FAIL. `release_readiness.py validate --manifest …` **always** cross-checks the manifest candidate against the RESOLVED run candidate (explicit `--candidate`, else HEAD) — a manifest frozen for another candidate can never pass the gate; the standalone `eval_manifest.py aggregate` CLI enforces it only when `--candidate` is passed explicitly.
 2. **Required-scenario coverage.** For every `all_platforms` ID and every `(platform, ID)` pair in `by_platform`: exactly a structured `pass` (or a preapproved `not-applicable`) counts. **missing / skipped / failed / not-run / unknown / pending → overall FAIL.**
 3. **Verdict.** `ready` is true only when zero unmet rows, zero binding violations, no candidate mismatch. Emitted as JSON (per-scenario table included) and as a human-readable table. Exit codes: `0` ready / `1` not ready / `2` manifest misconfiguration.
 
 ```bash
 python3 scripts/eval_manifest.py check --manifest eval-plan.json          # schema only
 python3 scripts/eval_manifest.py aggregate --manifest eval-plan.json \
-    --evidence-dir release-readiness/evidence [--candidate <token>] [--json] [--out verdict.json]
+    --evidence-dir release-readiness/evidence [--candidate <token>] [--json] [--output verdict.json]
 python3 scripts/eval_manifest.py self-test                                # negative controls
 ```
 
@@ -90,6 +91,12 @@ python3 scripts/eval_manifest.py self-test                                # nega
 | `NC-MAN-manifest-traversal-id-rejected` | manifest declares required scenario ID `../../etc/passwd` | schema-rejected, exit 2 (fail closed; ID never used as a path) |
 | `NC-MAN-evidence-symlink-escape-rejected` | symlink inside the evidence dir points to a valid passing result outside it | symlink quarantined as binding violation, NOT READY, exit 1 |
 | `NC-MAN-evidence-unsafe-scenario-id-rejected` | evidence file contains scenario key `../escape` with a passing result | binding violation, NOT READY, exit 1 |
+| `NC-MAN-pass-failed-masking-conflict-fails` | one evidence file lists `failed` **and** `pass` entries for the same scenario | row = `conflict` (pass never masks failures), NOT READY, exit 1 |
+| `NC-MAN-pass-failed-conflict-crossfile-fails` | `failed` and `pass` in two candidate-matched files for one scenario | row = `conflict`, both sources surfaced, NOT READY, exit 1 |
+| `NC-MAN-empty-requirements-rejected` | manifest requires nothing (`all_platforms: []`, `by_platform: {"p": []}`) | schema-rejected, exit 2 — an empty gate is not a gate |
+| `NC-MAN-cross-bucket-duplicate-rejected` | same scenario ID in `all_platforms` and a `by_platform` list | schema-rejected, exit 2 |
+| `NC-MAN-newline-scenario-id-rejected` | required scenario ID `"S1-RPC\n"` (regex `$` anchor bypass) | schema-rejected, exit 2 (anchors use `\Z`) |
+| `NC-MAN-stdin-invalid-json-exit-2` | invalid JSON piped to `--manifest -` | clean exit 2 misconfig, no traceback |
 
 When `release_readiness.py` runs with `--manifest`, these controls execute as part of the gate and are added as required criteria `EVID-NC-MAN-*` alongside the aggregation verdict `EVID-MANIFEST` — so a broken aggregator fails `validate` too.
 

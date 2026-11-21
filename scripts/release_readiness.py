@@ -731,27 +731,28 @@ def main():
         "profile": args.profile,
     }
 
-    outcomes = evaluate(registry, ctx)
-    for cid in args.na:
-        if cid in outcomes:
-            outcomes[cid] = result(NA, "pre-approved not-applicable via --na")
-
-    # Optional eval-plan.json manifest aggregation (plan section 10). Adds the
-    # machine-generated aggregation verdict plus manifest negative controls as
-    # required criteria; validate gates on them. Without --manifest, behavior is
+    # Optional eval-plan.json manifest aggregation (plan section 10). Validated
+    # BEFORE evaluate() so a misconfigured --manifest exits 2 without launching
+    # probes or gh queries. Adds the machine-generated aggregation verdict plus
+    # manifest negative controls as required criteria; validate gates on them.
+    # Candidate binding is always enforced against the RESOLVED run candidate
+    # (explicit --candidate, else HEAD): a manifest frozen for another
+    # candidate can never pass the gate. Without --manifest, behavior is
     # exactly the pre-manifest report/validate.
+    manifest_outcomes = {}
     extra_required = None
     if args.manifest:
         try:
             manifest = eval_manifest.load_manifest(args.manifest)
             evidence_dir = eval_manifest.safe_evidence_dir(evidence_dir)
+            ctx["evidence_dir"] = evidence_dir
         except eval_manifest.ManifestError as e:
             print(f"ERROR: {e}", file=sys.stderr)
             sys.exit(2)
-        mv = eval_manifest.aggregate(manifest, evidence_dir, expect_candidate=args.candidate)
+        mv = eval_manifest.aggregate(manifest, evidence_dir, expect_candidate=candidate)
         ctx["manifest_verdict"] = mv
         ctx["manifest_path"] = str(args.manifest)
-        outcomes["EVID-MANIFEST"] = result(
+        manifest_outcomes["EVID-MANIFEST"] = result(
             PASS if mv["ready"] else FAIL,
             ("eval-plan aggregation READY: " if mv["ready"] else "eval-plan aggregation NOT READY: ")
             + f"{mv['counts']['pass']}/{mv['counts']['required_total']} required scenarios pass, "
@@ -762,8 +763,14 @@ def main():
         )
         manifest_ncs = eval_manifest.run_negative_controls()
         for nc_id, ok, detail in manifest_ncs:
-            outcomes[f"EVID-{nc_id}"] = result(PASS if ok else FAIL, detail)
+            manifest_outcomes[f"EVID-{nc_id}"] = result(PASS if ok else FAIL, detail)
         extra_required = ["EVID-MANIFEST"] + [f"EVID-{nc[0]}" for nc in manifest_ncs]
+
+    outcomes = evaluate(registry, ctx)
+    outcomes.update(manifest_outcomes)
+    for cid in args.na:
+        if cid in outcomes:
+            outcomes[cid] = result(NA, "pre-approved not-applicable via --na")
 
     summary = summarize(registry, outcomes, args.profile, extra_required=extra_required)
 
