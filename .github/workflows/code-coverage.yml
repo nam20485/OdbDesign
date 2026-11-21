@@ -21,10 +21,12 @@ concurrency:
   group: code-coverage-${{ github.event_name }}-${{ github.event_name == 'pull_request' && format('{0}/{1}', github.event.pull_request.head.repo.full_name, github.event.number) || format('{0}/{1}', github.repository, github.ref_name) }}
   cancel-in-progress: true
 
+# Least-privilege default: jobs escalate only what they need (Scorecard
+# Token-Permissions). checks:write for the test-reporter lives at job level;
+# the NuGet feed here is READ-only (the warm lane owns feed writes), so no
+# packages scope is needed at all.
 permissions:
   contents: read
-  checks: write
-  packages: write
 
 env:
   VCPKG_ROOT: ${{ github.workspace }}/vcpkg
@@ -45,6 +47,9 @@ jobs:
     name: Linux Coverage
     runs-on: ubuntu-24.04
     timeout-minutes: 90
+    permissions:
+      # dorny/test-reporter creates check runs
+      checks: write
 
     steps:
       - name: Harden Runner
@@ -107,7 +112,7 @@ jobs:
           echo "RUNNER_IMAGE_VERSION=${ImageVersion:-unknown}" >> "$GITHUB_ENV"
 
       - name: Restore vcpkg Binary Cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae  # v5.0.5
         id: vcpkg-restore
         with:
           path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
@@ -141,7 +146,7 @@ jobs:
         # cancellations; guarded to new generations with a real payload (this
         # lane reads the feed, never writes it, so no API key setup here).
         if: always() && steps.vcpkg-restore.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae  # v5.0.5
         with:
           path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
           key: vcpkg-archives-linux-x64-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}-${{ env.VCPKG_COMMIT }}-${{ env.RUNNER_IMAGE_VERSION }}
@@ -243,4 +248,10 @@ jobs:
           [[ -n "${CODACY_PROJECT_TOKEN}" ]] || unset CODACY_PROJECT_TOKEN
           [[ -n "${CODACY_API_TOKEN}" ]] || unset CODACY_API_TOKEN
 
-          bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r coverage/coverage.info
+          # Pinned to the commit the Codacy coverage uploader's get.sh lives at
+          # (codacy/codacy-coverage-reporter). Scorecard flags download-then-run
+          # pipelines whose URL is not a raw.githubusercontent URL pinned to a
+          # full commit SHA; the mutable coverage.codacy.com redirect would
+          # never satisfy that. Bump the SHA deliberately when adopting a new
+          # uploader version.
+          bash <(curl -Ls https://raw.githubusercontent.com/codacy/codacy-coverage-reporter/54617baa57421746d0afa3df32127d3dd40f3786/get.sh) report -r coverage/coverage.info

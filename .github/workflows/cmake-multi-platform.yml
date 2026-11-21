@@ -30,9 +30,11 @@ concurrency:
   group: cmake-multi-platform-${{ github.event_name }}-${{ github.event_name == 'pull_request' && format('{0}/{1}', github.event.pull_request.head.repo.full_name, github.event.number) || format('{0}/{1}', github.repository, github.ref_name) }}
   cancel-in-progress: true
 
+# Least-privilege default: jobs escalate only what they need (Scorecard
+# Token-Permissions). packages:write for the NuGet binary-cache feed push and
+# checks:write for the test-reporter live at the job level below.
 permissions:
   contents: read
-  packages: write
 
 env:
   VCPKG_ROOT: ${{ github.workspace }}/vcpkg
@@ -76,9 +78,10 @@ jobs:
     name: CMake-Multi-Platform-Build (${{ matrix.os }}, ${{ matrix.preset }})
     runs-on: ${{ matrix.os }}
     permissions:
-      contents: write
-      checks: write
+      # NuGet binary-cache feed push (GitHub Packages)
       packages: write
+      # dorny/test-reporter creates check runs
+      checks: write
     env:
       # Disable NuGet credential-provider plugins — WINDOWS ONLY (empty on
       # Unix via the matrix). On Windows nuget.exe, a single-space value is
@@ -233,7 +236,7 @@ jobs:
 
       - name: Restore vcpkg Binary Cache
         id: vcpkg-restore
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae  # v5.0.5
         with:
           path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
           # Canonical key (no run_id): one immutable entry per ABI generation
@@ -400,7 +403,7 @@ jobs:
         # on exact hits — steady-state runs then consume ZERO cache quota instead
         # of the old ~1.4 GB/run that evicted usable entries within hours.
         if: always() && steps.vcpkg-restore.outputs.cache-hit != 'true' && steps.cache-payload.outputs.big == 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae  # v5.0.5
         with:
           path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
           key: vcpkg-archives-${{ matrix.preset }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}-${{ env.VCPKG_COMMIT }}-${{ env.RUNNER_IMAGE_VERSION }}
@@ -410,7 +413,7 @@ jobs:
         # generation was incomplete (e.g. saved by a previously cancelled run).
         # Publish a suffixed copy so later prefix restores pick the complete one.
         if: always() && steps.vcpkg-restore.outputs.cache-hit == 'true' && steps.cache-payload.outputs.grew == 'true' && steps.cache-payload.outputs.big == 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae  # v5.0.5
         with:
           path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
           key: vcpkg-archives-${{ matrix.preset }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}-${{ env.VCPKG_COMMIT }}-${{ env.RUNNER_IMAGE_VERSION }}-${{ github.run_id }}

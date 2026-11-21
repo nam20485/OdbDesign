@@ -1,12 +1,14 @@
 # Debian 13 (Trixie) slim - amd64
-# Version: trixie-slim (pinned digest = 13.6-slim / trixie-20260824-slim, glibc 2.41)
+# Version: trixie-slim (pinned digest = 13.6-slim / trixie-20261104-slim, glibc 2.41)
+# Digest bumped 2026-11-21 (was 20260824) to pick up base-image security
+# fixes; Docker Scout CVEs below are re-scanned on the next publish.
 # NOTE: the previous digest (b6e2a152...) actually resolved to Debian 12
 # (bookworm, glibc 2.36), which is too old for the CI-built binaries
 # (they require GLIBC_2.38 / GLIBCXX_3.4.32) -> CrashLoopBackOff.
 # NOTE: keep the "trixie-slim" tag in the reference. A bare "debian@sha256:..."
 # has no tag for Dependabot to track, so it gets bumped against the full
 # (non-slim) image (see reverted bump 0f10566: 1d3c811 -> 34cd9e9).
-FROM --platform=$BUILDPLATFORM debian:trixie-slim@sha256:d7e12182ce18b85b93007c1dedf31f2d29e01ccf3182cc4017c709b6259bc132 AS build
+FROM --platform=$BUILDPLATFORM debian:trixie-slim@sha256:a72b4433de1cf7d6bae0c4cee74d0547f58601a643b3375f070c51600d63b6b2 AS build
 
 ARG OWNER=nam20485
 ARG VCPKG_BINARY_SOURCES=""
@@ -25,6 +27,9 @@ ARG USE_VCPKG_CACHE=0
 
 # install dependencies
 RUN apt-get update && \
+    # security refresh of base packages (libssl3t64, gnutls, krb5, ...)
+    # that ship inside the snapshot image itself
+    apt-get -y upgrade && \
     apt-get install -y -q --no-install-recommends \
     curl \
     apt-transport-https \
@@ -112,9 +117,11 @@ RUN cmake --build --preset linux-dynamic-release
 
 # much smaller runtime image
 # Debian 13 (Trixie) slim - amd64
-# Version: trixie-slim (pinned digest = 13.6-slim / trixie-20260824-slim, glibc 2.41)
+# Version: trixie-slim (pinned digest = 13.6-slim / trixie-20261104-slim, glibc 2.41)
+# Digest bumped 2026-11-21 (was 20260824) to pick up base-image security
+# fixes; Docker Scout CVEs below are re-scanned on the next publish.
 # NOTE: keep in sync with the build stage digest (see note above).
-FROM debian:trixie-slim@sha256:d7e12182ce18b85b93007c1dedf31f2d29e01ccf3182cc4017c709b6259bc132 AS run
+FROM debian:trixie-slim@sha256:a72b4433de1cf7d6bae0c4cee74d0547f58601a643b3375f070c51600d63b6b2 AS run
 # ARG ODBDESIGN_SERVER_REQUEST_USERNAME=""
 # ARG ODBDESIGN_SERVER_REQUEST_PASSWORD=""
 LABEL org.opencontainers.image.source=https://github.com/nam20485/OdbDesign \
@@ -129,6 +136,9 @@ EXPOSE 8888 50051
 
 # install dependencies (curl for healthcheck, 7z for archive extraction)
 RUN apt-get update && \
+    # security refresh of base packages (libssl3t64, gnutls, krb5, ...)
+    # that ship inside the snapshot image itself
+    apt-get -y upgrade && \
     apt-get install -y -q --no-install-recommends \
     curl \
     apt-transport-https \

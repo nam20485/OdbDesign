@@ -12,9 +12,9 @@ jobs:
   build:
     name: Generate-Submit-SBOM
     runs-on: ubuntu-24.04
-    permissions: 
-        id-token: write
-        contents: write
+    permissions:
+      # SPDX dependency submission API
+      contents: write
 
     steps:
       - name: Harden Runner

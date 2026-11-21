@@ -144,25 +144,27 @@ install_system_deps() {
         fedora)
             local docker_packages=""
             if [[ "$INSTALL_DOCKER" == "true" ]]; then
-                docker_packages="docker python3-pip"
+                docker_packages="docker"
             fi
             sudo dnf install -y \
                 gcc gcc-c++ make \
                 $base_packages \
                 $docker_packages
-            # Install Docker Compose V2 plugin if available, else fallback to pip
-            if [[ "$INSTALL_DOCKER" == "true" ]]; then
-                if sudo dnf list docker-compose-plugin &>/dev/null; then
-                    sudo dnf install -y docker-compose-plugin
-                else
-                    print_status "Installing docker-compose via pip3 (Fedora)..."
-                    pip3 install --user docker-compose
-                    # Add ~/.local/bin to PATH if not already present
-                    if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
-                        export PATH="$HOME/.local/bin:$PATH"
-                        echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
-                    fi
-                fi
+            # Install Docker Compose V2 plugin; if the distro does not ship it,
+            # pull it from Docker's official Fedora repo (GPG-checked) instead
+            # of the old `pip3 install docker-compose` fallback — compose v1 is
+            # EOL, unpinned, and no longer builds against current Python.
+            if [[ "$INSTALL_DOCKER" == "true" ]] && ! sudo dnf list docker-compose-plugin &>/dev/null; then
+                print_status "docker-compose-plugin not in distro repos; adding Docker's official Fedora repo..."
+                sudo tee /etc/yum.repos.d/docker-ce.repo > /dev/null <<'REPO'
+[docker-ce-stable]
+name=Docker CE Stable - $basearch
+baseurl=https://download.docker.com/linux/fedora/$releasever/$basearch/stable
+enabled=1
+gpgcheck=1
+gpgkey=https://download.docker.com/linux/fedora/gpg
+REPO
+                sudo dnf install -y docker-compose-plugin
             fi
             ;;
         centos|rhel)
