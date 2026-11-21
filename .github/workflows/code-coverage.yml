@@ -57,6 +57,15 @@ jobs:
     permissions:
       # dorny/test-reporter creates check runs
       checks: write
+      # GitHub Packages NuGet feed READ (vcpkg binary-cache restore). Without
+      # this scope the job's GITHUB_TOKEN gets 403 Forbidden on every feed
+      # download and vcpkg silently falls back to building grpc/protobuf/asio
+      # & co. from source — which is what blew the 90/150-min job walls from
+      # the #657 merge onward (evidence: run 44930358009 Configure log,
+      # "Your request could not be authenticated by the GitHub Packages
+      # service" before every "Building x64-linux-dbg" from-source pass).
+      # Read-only: the warm lane owns feed writes.
+      packages: read
 
     steps:
       - name: Harden Runner
