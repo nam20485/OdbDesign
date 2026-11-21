@@ -25,6 +25,7 @@ add_executable(OdbDesignTests
     "DesignCacheThreadSafetyTests.cpp"
     "DesignCacheSingleFlightTests.cpp"
     "GrpcServiceConfigTests.cpp"
+    "BasicRequestAuthenticationTests.cpp"
     "Utf8SanitizerTests.cpp"
     "HttpCachingTests.cpp"
 
@@ -73,6 +74,18 @@ target_link_libraries(OdbDesignTests PRIVATE OdbDesignServerLib)
 get_filename_component(REPO_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/.." ABSOLUTE)
 target_include_directories(OdbDesignTests PRIVATE ${REPO_ROOT})
 target_compile_definitions(OdbDesignTests PRIVATE ODBDESIGN_SOURCE_DIR="${REPO_ROOT}")
+# F004 fail-closed test (BasicRequestAuthenticationTests.cpp) spawns the real
+# server binary to prove auth-enabled startup without credentials exits
+# PreServerRunFailed and opens no listener. The genex tracks the actual
+# output path across generators/output-dir changes (OdbDesignServerLib's
+# PUBLIC include dirs already supply the OdbDesignServer/ and generated
+# .pb.h headers, and OdbDesignServerLib owns all server sources + codegen —
+# the hand-compiled sources and duplicate service.pb.cc sources are gone).
+# The dependency orders the server executable build before the test target
+# so the spawned binary exists even for target-scoped builds.
+target_compile_definitions(OdbDesignTests PRIVATE
+    ODBDESIGN_SERVER_EXECUTABLE_PATH="$<TARGET_FILE:OdbDesignServer>")
+add_dependencies(OdbDesignTests OdbDesignServer)
 
 include(GoogleTest)
 # Defer test discovery to ctest time to avoid executing the test binary during build
