@@ -17,7 +17,7 @@ on:
   workflow_run:
     workflows: ["CMake Build Multi-Platform"]
     types: [completed]
-    branches: ["development", "staging", "main", "release"]
+    branches: ["development", "staging", "main", "release", "nam20485"]
 
 permissions:
   contents: read
