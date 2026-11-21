@@ -93,6 +93,28 @@ include(GoogleTest)
 # are not yet available at link/post-build time.
 gtest_discover_tests(OdbDesignTests DISCOVERY_MODE PRE_TEST)
 
+# --- M2 (U3): real external-process REST/HTTP acceptance suite ----------------
+# RestApiProcessTests.py spawns the REAL OdbDesignServer binary on ephemeral
+# ports, drives every customer-facing REST route over real HTTP (stdlib
+# http.client), and asserts real outcomes: statuses, response bodies, ETag /
+# Cache-Control headers, sha256-verified stored bytes on disk, load-endpoint
+# state payloads, and the F004 fail-closed startup exit code + refused ports.
+# Expected values are derived independently from the design archives (tar
+# member listings + record counts) at test time. Needs ODB_TEST_DATA_DIR (the
+# same fixtures the gtest suite uses) and a Python 3 interpreter.
+find_package(Python3 COMPONENTS Interpreter QUIET)
+if(Python3_Interpreter_FOUND)
+    add_test(
+        NAME RestApiProcessTests
+        COMMAND ${Python3_EXECUTABLE} -I
+            "${CMAKE_CURRENT_SOURCE_DIR}/RestApiProcessTests.py"
+            --server "$<TARGET_FILE:OdbDesignServer>"
+    )
+    set_tests_properties(RestApiProcessTests PROPERTIES TIMEOUT 1200)
+else()
+    message(STATUS "Python3 not found: RestApiProcessTests (external-process HTTP acceptance suite) NOT registered")
+endif()
+
 ## PCH
 #if (NOT DEFINED ENV{CI})
     file (GLOB_RECURSE OdbDesignTests_HEADER_FILES "*.h")
