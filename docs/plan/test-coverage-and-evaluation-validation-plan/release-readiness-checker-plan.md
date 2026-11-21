@@ -1,7 +1,7 @@
 # Release-Readiness Checker — Design / Plan
 
 **Date:** 2026-11-19 (design); implemented 2026-11-20
-**Status:** IMPLEMENTED — `scripts/release_readiness.py` + `scripts/release_readiness_criteria.json`
+**Status:** IMPLEMENTED in the local working tree — `scripts/release_readiness.py` + `scripts/release_readiness_criteria.json` are **not yet committed to the repository** (commit pending in the authoring session; until they land, clones do not contain them and this document is the design + build record)
 **Companion to:** [`test-coverage-and-evaluation-validation-plan.md`](test-coverage-and-evaluation-validation-plan.md)
 **Deliverable:** an always-runnable utility that (a) reports completed-vs-remaining release-readiness criteria at any time, and (b) autonomously validates that readiness has been achieved by checking every required criterion against real evidence.
 
@@ -9,7 +9,7 @@
 
 ## 0. Implementation status (as built, 2026-11-20)
 
-Built complete — no lite version. Files:
+Built complete — no lite version, in the authoring working tree (see Status above — the files are not yet in any branch). Files:
 
 - `scripts/release_readiness.py` — engine: registry loader, status model, 8 evaluator
   types (`repo_file_registered`, `repo_file_exists`, `proto_drift`, `gh_workflow_status`,
