@@ -34,6 +34,7 @@ stdlib only. Companion to scripts/release_readiness.py (``validate --manifest``)
 
 import argparse
 import json
+import os
 import re
 import subprocess
 import sys
@@ -297,16 +298,43 @@ def validate_manifest(m):
     return problems
 
 
+# Manifests may only be loaded from these (non-argv-derived) root trees: the
+# repository, its sibling-repos parent, or the system temp directory. The
+# realpath+startswith guard below is a real security boundary AND the
+# CodeQL-documented barrier for py/path-injection.
+_MANIFEST_ALLOWED_ROOTS = tuple(os.path.realpath(str(r)) for r in (
+    Path(__file__).resolve().parent.parent,      # repo root
+    Path(__file__).resolve().parent.parent.parent,  # sibling repos / worktrees
+    Path(tempfile.gettempdir()),
+))
+
+
+def _within_allowed_manifest_root(real_path):
+    sep = os.sep
+    return any(real_path == root or real_path.startswith(root + sep)
+               for root in _MANIFEST_ALLOWED_ROOTS)
+
+
 def load_manifest(path):
-    # Operator-supplied path: never traverse ('..' banned inline — this guard
-    # is the taint barrier for the read below), must be a regular file.
+    """Load + schema-validate the manifest; fail closed on unsafe paths.
+
+    Barriers, in order: '..' components are rejected outright (exit 2); the
+    realpath of the path must stay inside an allowed root tree (repo /
+    sibling repos / system temp dir) — the realpath+startswith confinement
+    guards the read below; the target must be a regular file.
+    """
     if ".." in Path(path).parts:
         raise ManifestError(f"manifest path must not contain '..' components: {path}")
-    p = Path(path)
-    if not p.is_file():
-        raise ManifestError(f"manifest is not a regular file (or not found): {p}")
+    real = os.path.realpath(str(path))
+    if not _within_allowed_manifest_root(real):
+        raise ManifestError(
+            f"manifest path escapes the allowed root trees (repo, repo parent, "
+            f"temp dir) after resolving symlinks: {path} -> {real}")
+    if not os.path.isfile(real):
+        raise ManifestError(f"manifest is not a regular file (or not found): {path}")
     try:
-        m = json.loads(p.read_text(encoding="utf-8"))
+        with open(real, "r", encoding="utf-8") as fh:
+            m = json.load(fh)
     except (json.JSONDecodeError, OSError) as e:
         raise ManifestError(f"manifest unreadable/invalid JSON: {e}")
     problems = validate_manifest(m)
@@ -332,10 +360,11 @@ def _load_evidence(evidence_dir, expected_candidate):
     Path safety (all fail closed, never silent traversal):
       * the dir must not contain '..' components (enforced by safe_evidence_dir
         at the CLI boundary; confinement here is defense in depth);
-      * every file name must pass the safe component charset;
-      * every file must resolve INSIDE the evidence dir (resolve() +
-        is_relative_to) — a symlink pointing outside is recorded as a binding
-        violation and never read;
+      * every directory entry name must pass the safe component charset;
+      * every file's realpath must stay INSIDE the evidence dir's realpath —
+        realpath + startswith confinement (the CodeQL-documented barrier for
+        py/path-injection). A symlink pointing outside is recorded as a
+        binding violation and never read;
       * evidence scenario IDs (the `scenarios` keys) must pass the safe charset
         too — they are external data and feed path expressions in harnesses.
 
@@ -348,30 +377,33 @@ def _load_evidence(evidence_dir, expected_candidate):
     """
     results = {}
     violations = []
-    d = Path(evidence_dir)
-    if not d.is_dir():
+    dir_real = os.path.realpath(str(evidence_dir))
+    if not os.path.isdir(dir_real):
         return results, violations
-    dir_resolved = d.resolve()
-    for f in sorted(d.glob("*.json")):
-        if not is_safe_path_component(f.name):
+    for name in sorted(os.listdir(dir_real)):
+        if not name.endswith(".json"):
+            continue
+        f = os.path.join(dir_real, name)
+        if not is_safe_path_component(name):
             violations.append(_violation(
-                f, f"evidence file name {f.name!r} fails safe charset "
+                f, f"evidence file name {name!r} fails safe charset "
                    "^[A-Za-z0-9][A-Za-z0-9._-]*$ (rejected, never used as a path)"))
             continue
         try:
-            resolved = f.resolve()
-            within = resolved.is_relative_to(dir_resolved) and resolved.is_file()
+            real = os.path.realpath(f)
         except OSError:
-            within = False
-            resolved = None
-        if not within:
+            real = None
+        # Confinement barrier: only read what stays inside the evidence dir.
+        if real is None or not (real.startswith(dir_real + os.sep)
+                                and real != dir_real and os.path.isfile(real)):
             violations.append(_violation(
                 f, "evidence path escapes the evidence directory "
                    "(symlink or non-regular file); rejected without reading",
-                resolved_to=resolved, quarantined=1))
+                resolved_to=real, quarantined=1))
             continue
         try:
-            data = json.loads(resolved.read_text(encoding="utf-8"))
+            with open(real, "r", encoding="utf-8") as fh:
+                data = json.load(fh)
         except (json.JSONDecodeError, OSError) as e:
             violations.append(_violation(f, f"evidence unreadable/invalid JSON: {e}"))
             continue
@@ -402,10 +434,9 @@ def _load_evidence(evidence_dir, expected_candidate):
             entries = entry if isinstance(entry, list) else [entry]
             for e in entries:
                 if isinstance(e, dict):
-                    results.setdefault(scid, []).append((e, str(resolved)))
+                    results.setdefault(scid, []).append((e, real))
                 else:
-                    results.setdefault(scid, []).append(({"status": "unknown", "raw": e},
-                                                         str(resolved)))
+                    results.setdefault(scid, []).append(({"status": "unknown", "raw": e}, real))
     return results, violations
 
 

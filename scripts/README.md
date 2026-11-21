@@ -79,10 +79,11 @@ missing/invalid.
 **Path safety (fail closed):** scenario IDs and platform names must match
 `^[A-Za-z0-9][A-Za-z0-9._-]*$` (no `/`, `\`, `..`, whitespace); evidence file
 names and evidence scenario IDs pass the same gate; every evidence file must
-resolve inside the evidence directory (symlink escapes are quarantined as
+realpath inside the evidence directory (symlink escapes are quarantined as
 binding violations and never read); `--manifest`/`--evidence-dir`/`--output`
-must not contain `..` components. Traversal attempts are proven rejected by
-the `self-test` negative controls.
+must not contain `..` components, and manifests must realpath into the repo,
+its sibling-repos parent, or the system temp dir. Traversal attempts are
+proven rejected by the `self-test` negative controls.
 
 ### `run-tests.sh`
 **Comprehensive test runner for local development and CI**
