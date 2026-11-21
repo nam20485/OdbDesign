@@ -110,7 +110,11 @@ if(Python3_Interpreter_FOUND)
             "${CMAKE_CURRENT_SOURCE_DIR}/RestApiProcessTests.py"
             --server "$<TARGET_FILE:OdbDesignServer>"
     )
-    set_tests_properties(RestApiProcessTests PROPERTIES TIMEOUT 1200)
+    set_tests_properties(RestApiProcessTests PROPERTIES
+        TIMEOUT 1200
+        # exit code 3 = no design fixtures on this machine (ODB_TEST_DATA_DIR
+        # unset) -> SKIPPED, matching the gtest fixtures' GTEST_SKIP posture
+        SKIP_RETURN_CODE 3)
 else()
     message(STATUS "Python3 not found: RestApiProcessTests (external-process HTTP acceptance suite) NOT registered")
 endif()

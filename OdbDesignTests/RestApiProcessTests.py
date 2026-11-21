@@ -21,8 +21,13 @@ Environment:
                        designodb_rigidflex.tgz (same fixtures the gtest suite
                        uses); may also be passed via --test-data-dir.
 
-Exit code: 0 = all scenarios passed, 1 = at least one scenario failed,
-2 = harness usage error (missing server binary / test data).
+Exit codes:
+    0 = all scenarios passed
+    1 = at least one scenario failed
+    2 = harness usage error (bad --server, broken fixture checkout)
+    3 = skipped: no design fixtures available (ODB_TEST_DATA_DIR unset;
+        ctest SKIP_RETURN_CODE maps this to a SKIPPED test, matching the
+        gtest fixtures' GTEST_SKIP-without-fixtures posture)
 """
 
 import argparse
@@ -72,6 +77,12 @@ HTTP_TIMEOUT_HEAVY = 300  # first parse of an archive runs inside a GET
 STARTUP_TIMEOUT_S = 60
 PROCESS_EXIT_TIMEOUT_S = 30
 
+# Exit codes (see the module docstring)
+EXIT_ALL_PASSED = 0
+EXIT_SCENARIOS_FAILED = 1
+EXIT_USAGE_ERROR = 2
+EXIT_SKIPPED_NO_TEST_DATA = 3  # ctest SKIP_RETURN_CODE maps this to SKIPPED
+
 
 class HarnessError(Exception):
     """Fatal harness (not scenario) problem: bad arguments, missing fixtures."""
@@ -88,10 +99,6 @@ class Response:
 
     def json(self):
         return json.loads(self.body.decode("utf-8"))
-
-
-class CheckError(Exception):
-    pass
 
 
 class Scenario:
@@ -181,14 +188,10 @@ class ServerHandle:
             args.append("--disable-authentication")
         env = _child_env(self.creds)
         self._log_file = open(self.log_path, "wb")
-        self.process = subprocess.Popen(
-            args,
-            cwd=self.workdir,
-            env=env,
-            stdout=self._log_file,
-            stderr=subprocess.STDOUT,
-            start_new_session=IS_POSIX,
-        )
+        # codeql[py/uncontrolled-command-line] test harness: the argv comes from the ctest
+        # registration (--server $<TARGET_FILE:OdbDesignServer>), validated in main();
+        # the "user input" is the build system, not an untrusted user.
+        self.process = subprocess.Popen(args, cwd=self.workdir, env=env, stdout=self._log_file, stderr=subprocess.STDOUT, start_new_session=IS_POSIX)
 
     def wait_ready(self, timeout=STARTUP_TIMEOUT_S):
         deadline = time.monotonic() + timeout
@@ -325,11 +328,18 @@ def start_server(binary, designs_dir, workdir, disable_auth, creds, log_name):
     except ServerStartupError:
         handle.stop()
         # The picked port may have been grabbed between our probe and the
-        # server's bind; retry once with fresh ports before failing.
+        # server's bind; retry once with fresh ports before failing. The
+        # retry is guarded the same way: a spawn/startup failure must never
+        # escape with the retried server still running (it would survive as
+        # a session-detached orphan holding ports).
         handle = ServerHandle(binary, designs_dir, workdir, disable_auth,
                               creds, os.path.join(workdir, log_name))
-        handle.start()
-        handle.wait_ready()
+        try:
+            handle.start()
+            handle.wait_ready()
+        except BaseException:
+            handle.stop()
+            raise
     return handle
 
 
@@ -363,7 +373,11 @@ class ArchiveFacts:
 
     def __init__(self, archive_path):
         self.path = archive_path
+        # codeql[py/path-injection] test harness: fixture path from the ctest-provided
+        # ODB_TEST_DATA_DIR, validated in main()/prepare_workdir(); not an untrusted user.
         self.size = os.path.getsize(archive_path)
+        # codeql[py/path-injection] test harness: fixture path from the ctest-provided
+        # ODB_TEST_DATA_DIR, validated in main()/prepare_workdir(); not an untrusted user.
         with open(archive_path, "rb") as fh:
             self.sha256 = hashlib.sha256(fh.read()).hexdigest()
 
@@ -389,7 +403,6 @@ class ArchiveFacts:
             roots = sorted({m.name.split("/")[0] for m in infos})
             self.root = roots[0]
             steps_prefix = self.root + "/steps/"
-            layers_prefix = steps_prefix + "<step>/layers/"
 
             for m in dirs:
                 parts = m.name.split("/")
@@ -1071,12 +1084,20 @@ def scenario_conditional_get_etag_flow(ctx, sc):
              % (etag1, etag2))
 
     # 7. the rotation served REAL replaced content: steps now match the
-    #    replacement archive (poll: the replaced model re-parses in background)
+    #    replacement archive (poll: the replaced model re-parses in background;
+    #    the first iteration can hit that parse, so use the heavy timeout and
+    #    keep retrying inside the deadline instead of letting a socket
+    #    timeout fail the whole scenario)
     expected_steps = facts.steps
     deadline = time.monotonic() + 90
     steps_now = None
     while time.monotonic() < deadline:
-        resp = ctx.server.http("GET", rigid_base + "/steps")
+        try:
+            resp = ctx.server.http("GET", rigid_base + "/steps",
+                                   timeout=HTTP_TIMEOUT_HEAVY)
+        except (OSError, http.client.HTTPException):
+            time.sleep(1.0)
+            continue
         if resp.status == 200:
             steps_now = resp.json().get("steps")
             if steps_now == expected_steps:
@@ -1182,9 +1203,10 @@ def scenario_f004_startup_fail_closed(binary, workdir, designs_dir, sc):
     env = _child_env(None)  # credentials scrubbed
     log_path = os.path.join(workdir, "f004_server.log")
     with open(log_path, "wb") as log_file:
-        process = subprocess.Popen(args, cwd=workdir, env=env,
-                                   stdout=log_file, stderr=subprocess.STDOUT,
-                                   start_new_session=IS_POSIX)
+        # codeql[py/uncontrolled-command-line] test harness: the argv comes from the ctest
+        # registration (--server $<TARGET_FILE:OdbDesignServer>), validated in main();
+        # the "user input" is the build system, not an untrusted user.
+        process = subprocess.Popen(args, cwd=workdir, env=env, stdout=log_file, stderr=subprocess.STDOUT, start_new_session=IS_POSIX)
         try:
             process.wait(timeout=PROCESS_EXIT_TIMEOUT_S)
         except subprocess.TimeoutExpired:
@@ -1224,6 +1246,8 @@ def prepare_workdir(test_data_dir):
     os.makedirs(designs_dir)
     sample_src = os.path.join(test_data_dir, SAMPLE_ARCHIVE)
     rigid_src = os.path.join(test_data_dir, RIGIDFLEX_ARCHIVE)
+    # codeql[py/path-injection] test harness: fixture paths from the ctest-provided
+    # ODB_TEST_DATA_DIR, validated in main(); not an untrusted user.
     for src in (sample_src, rigid_src):
         if not os.path.isfile(src):
             raise HarnessError("missing test fixture archive: %s" % src)
@@ -1278,8 +1302,9 @@ def run(args):
         # ---- Server A: authentication enabled, credentials configured ----
         auth_designs = os.path.join(workdir, "designs_auth")
         os.makedirs(auth_designs)
-        shutil.copyfile(sample_src,
-                        os.path.join(auth_designs, SAMPLE_ARCHIVE))
+        # codeql[py/path-injection] test harness: fixture path from the ctest-provided
+        # ODB_TEST_DATA_DIR, validated in main()/prepare_workdir(); not an untrusted user.
+        shutil.copyfile(sample_src, os.path.join(auth_designs, SAMPLE_ARCHIVE))
         server_a = start_server(args.server, auth_designs, workdir,
                                 disable_auth=False,
                                 creds=("TestUser", "S3cretPass"),
@@ -1322,7 +1347,7 @@ def run(args):
     total = len(results)
     print("scenarios: %d, passed: %d, failed: %d"
           % (total, total - failed, failed))
-    return 0 if failed == 0 else 1
+    return EXIT_ALL_PASSED if failed == 0 else EXIT_SCENARIOS_FAILED
 
 
 def _to_number(text):
@@ -1352,19 +1377,40 @@ def main(argv):
     # Popen runs the server with cwd set to the temp workdir, so a relative
     # --server path must be resolved against the harness's own cwd first.
     args.server = os.path.abspath(args.server)
+    # codeql[py/path-injection] test harness: --server comes from the CMake ctest
+    # registration ($<TARGET_FILE:OdbDesignServer>) and is validated below;
+    # the "user input" is the build system, not an untrusted user.
     if not os.path.isfile(args.server):
         print("ERROR: server binary not found: %s" % args.server,
               file=sys.stderr)
-        return 2
+        return EXIT_USAGE_ERROR
+    if not os.access(args.server, os.X_OK):
+        print("ERROR: server binary is not executable: %s" % args.server,
+              file=sys.stderr)
+        return EXIT_USAGE_ERROR
     if not args.test_data_dir:
-        print("ERROR: ODB_TEST_DATA_DIR is not set and --test-data-dir was "
-              "not given", file=sys.stderr)
-        return 2
+        # Same posture as the gtest fixtures (GTEST_SKIP without fixtures):
+        # no test data on this machine is an environment-driven SKIP, not a
+        # product failure. ctest maps exit code 3 to SKIPPED via the
+        # SKIP_RETURN_CODE test property.
+        print("SKIPPED (RestApiProcessTests): ODB_TEST_DATA_DIR is not set "
+              "and --test-data-dir was not given; design fixtures are "
+              "required for the external-process HTTP suite")
+        return EXIT_SKIPPED_NO_TEST_DATA
+    # codeql[py/path-injection] test harness: fixture directory from the ctest
+    # environment (ODB_TEST_DATA_DIR / --test-data-dir), validated here;
+    # not an untrusted user.
     if not os.path.isdir(args.test_data_dir):
         print("ERROR: test data dir not found: %s" % args.test_data_dir,
               file=sys.stderr)
-        return 2
-    return run(args)
+        return EXIT_USAGE_ERROR
+    try:
+        return run(args)
+    except HarnessError as exc:
+        # broken fixture checkout (missing archives): clean usage error, no
+        # traceback
+        print("ERROR: %s" % exc, file=sys.stderr)
+        return EXIT_USAGE_ERROR
 
 
 if __name__ == "__main__":
