@@ -71,8 +71,10 @@ COVERAGE_LINK_FLAGS="--coverage"
 #     exception-tag artifact. Even there it is suppress-AND-VERIFY: every
 #     demoted mismatch must be in third-party code (/usr, vcpkg) or the run
 #     FAILS (assert_capture_mismatch_policy) — a product-path mismatch
-#     never passes quietly. The artifact is a gcno<->gcda comparison
-#     artifact, so BOTH captures (initial and runtime) suppress-AND-verify.
+#     never passes quietly. The artifacts are gcno<->gcda comparison
+#     artifacts, so BOTH captures (initial and runtime) suppress-AND-verify
+#     BOTH known GCC 13 classes: 'mismatched exception tag' and 'negative'
+#     branch counts (stl_vector.h '-1' — evidenced run 44950837654).
 #   * 'unused' (a filter pattern matched nothing) is benign and expected —
 #     e.g. on machines where some system prefixes are absent.
 #   * 'inconsistent' IS suppressed, but ONLY together with the assertion in
@@ -382,25 +384,42 @@ set_runtime_dir_args() {
 # mismatch in a product .gcno has no later stage that re-reads the gcov data
 # (never-executed TUs produce no .gcda), so it must FAIL here, loudly.
 # Usage: assert_capture_mismatch_policy <stderr-log-file> <stage-label>
+# Verifies BOTH demoted GCC 13 artifact classes: 'mismatched exception tag'
+# (quoted path) and 'Unexpected negative count' (path after " of ", before
+# the trailing :line). Every demoted occurrence must be third-party.
 assert_capture_mismatch_policy() {
     local errlog="$1"
     local line path
     while IFS= read -r line; do
+        # class 1: mismatched exception tag — path is quoted
         path=$(sed -n 's/^.*"\([^"]*\)".*mismatched exception tag.*/\1/p' <<< "$line")
-        [[ -z "$path" ]] && continue
+        if [[ -z "$path" ]]; then
+            # class 2: negative branch count — "... of <path>:<line>."
+            path=$(sed -n 's/.*negative count .* of \(.*\):[0-9]*\.$/\1/p' <<< "$line")
+        fi
+        if [[ -z "$path" ]]; then
+            # FAIL CLOSED: the line matched the artifact grep but neither
+            # extractor could parse its path (wording/punctuation drift in a
+            # future lcov). Verifying nothing here would let a product-path
+            # artifact pass quietly — the exact failure this guard exists to
+            # prevent — so surface the raw line and stop.
+            print_error "Unparsable demoted-artifact line ($2) — update the extractors:"
+            echo "    $line" >&2
+            exit 1
+        fi
         case "$path" in
             /usr/*|*/vcpkg/*|*/vcpkg_installed/*)
-                print_status "Demoted known GCC 13 mismatch artifact in third-party code: $path"
+                print_status "Demoted known GCC 13 gcov artifact in third-party code ($2): $path"
                 continue
                 ;;
             *)
-                print_error "Mismatched exception tag in PRODUCT gcov data ($2): $path"
+                print_error "GCC 13 gcov artifact in PRODUCT gcov data ($2): $path"
                 echo "    $line" >&2
                 print_error "This must be investigated, not suppressed. See $errlog"
                 exit 1
                 ;;
         esac
-    done < <(grep -i 'mismatched exception tag' "$errlog" || true)
+    done < <(grep -iE 'mismatched exception tag|unexpected negative count' "$errlog" || true)
 }
 
 capture_initial() {
@@ -417,7 +436,7 @@ capture_initial() {
     # FAIL. Runtime capture and merges keep 'mismatch' LOUD.
     run_lcov "$OUTPUT_DIR/initial-capture-stderr.log" \
         --capture --initial "${CAPTURE_DIR_ARGS[@]}" \
-        "${LCOV_COMMON[@]}" --ignore-errors mismatch \
+        "${LCOV_COMMON[@]}" --ignore-errors mismatch,negative \
         --output-file "$INITIAL_INFO" --quiet
     assert_capture_mismatch_policy "$OUTPUT_DIR/initial-capture-stderr.log" initial
     local records
@@ -475,7 +494,7 @@ capture_runtime() {
     # never pass quietly.
     run_lcov "$OUTPUT_DIR/runtime-capture-stderr.log" \
         --capture "${RUNTIME_DIR_ARGS[@]}" \
-        "${LCOV_COMMON[@]}" --ignore-errors mismatch \
+        "${LCOV_COMMON[@]}" --ignore-errors mismatch,negative \
         --output-file "$RUNTIME_INFO" --quiet
     assert_capture_mismatch_policy "$OUTPUT_DIR/runtime-capture-stderr.log" runtime
 }
