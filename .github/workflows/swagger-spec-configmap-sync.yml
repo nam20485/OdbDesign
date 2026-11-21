@@ -16,7 +16,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: swagger-spec-configmap-sync
@@ -26,6 +26,9 @@ jobs:
   regen:
     name: Regenerate spec ConfigMap
     runs-on: ubuntu-latest
+    permissions:
+      # commits the regenerated ConfigMap via the Contents API
+      contents: write
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:

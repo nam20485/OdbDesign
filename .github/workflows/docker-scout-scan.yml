@@ -111,6 +111,12 @@ jobs:
           image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.SCAN_TAG }}
           sarif-file: sarif.output.json
           summary: true
+          # Only CVEs with an available fix go into the code-scanning upload.
+          # Unfixable upstream CVEs (Debian marks them no-DSA / wontfix, e.g.
+          # decades-old issues in doc/tooling packages) have no actionable
+          # remediation and would otherwise sit as permanent open alerts;
+          # they remain visible in the Scout report and the compare gate.
+          only-fixed: true
 
       - name: Upload SARIF result
         id: upload-sarif
