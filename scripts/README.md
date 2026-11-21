@@ -4,6 +4,45 @@ This directory contains scripts for automated testing and development workflows.
 
 ## Scripts Overview
 
+### `release_readiness.py`
+**Release-readiness checker — progress reporting + autonomous readiness gate**
+
+Evaluates every release-readiness criterion from the validation plan
+(`docs/plan/test-coverage-and-evaluation-validation-plan/`) against **real evidence**
+and reports completed-vs-remaining, or autonomously gates readiness. Driven by the
+criteria registry `release_readiness_criteria.json` (single source of truth).
+
+```bash
+# Progress view — always runnable, tolerant (exit 0 even when work remains)
+python3 scripts/release_readiness.py report
+python3 scripts/release_readiness.py report --json --candidate <sha-or-digest>
+
+# Fast glance without launching live server probes
+python3 scripts/release_readiness.py report --no-probes
+
+# Strict autonomous gate — exit 0 only if ALL required criteria pass with
+# candidate-matched evidence; exit 1 otherwise (for CI / release sign-off)
+python3 scripts/release_readiness.py validate --profile eval
+python3 scripts/release_readiness.py validate --profile production
+```
+
+- **Statuses:** `pass / fail / pending / blocked / not-applicable / unknown`.
+  `validate` passes only on all-`pass` (or pre-approved `--na ID`); a missing,
+  skipped, or unevidenced criterion can never produce a false green.
+- **No grep-style proof:** criteria pass only on real evidence (coverage tracefile +
+  JUnit, process exit codes, socket probes, HTTP/gRPC round trips, checksums,
+  structured scenario results). Proto/route drift checks are labelled drift signals.
+- **Real probes:** F004 fail-closed auth, server health, commercial license rejection
+  and loopback enforcement actually attempt execution. Where the subject is absent
+  (e.g. an unbuilt binary or missing shared runtime libs) the probe reports `blocked`
+  with the real reason — never a fabricated pass.
+- **Candidate binding:** results bind to a commit/digest; `validate` rejects evidence
+  from a different candidate. Engine negative controls prove a skip/fail/unknown or
+  mixed candidate fails the verdict.
+- Acceptance runs emit structured results into `release-readiness/evidence/`
+  (gitignored); the checker ingests them. See the companion checker plan for the
+  criterion model and how criteria turn green as the plan's milestones land.
+
 ### `run-tests.sh`
 **Comprehensive test runner for local development and CI**
 
