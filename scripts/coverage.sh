@@ -397,7 +397,16 @@ assert_capture_mismatch_policy() {
             # class 2: negative branch count — "... of <path>:<line>."
             path=$(sed -n 's/.*negative count .* of \(.*\):[0-9]*\.$/\1/p' <<< "$line")
         fi
-        [[ -z "$path" ]] && continue
+        if [[ -z "$path" ]]; then
+            # FAIL CLOSED: the line matched the artifact grep but neither
+            # extractor could parse its path (wording/punctuation drift in a
+            # future lcov). Verifying nothing here would let a product-path
+            # artifact pass quietly — the exact failure this guard exists to
+            # prevent — so surface the raw line and stop.
+            print_error "Unparsable demoted-artifact line ($2) — update the extractors:"
+            echo "    $line" >&2
+            exit 1
+        fi
         case "$path" in
             /usr/*|*/vcpkg/*|*/vcpkg_installed/*)
                 print_status "Demoted known GCC 13 gcov artifact in third-party code ($2): $path"
