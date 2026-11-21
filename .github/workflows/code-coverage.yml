@@ -21,10 +21,12 @@ concurrency:
   group: code-coverage-${{ github.event_name }}-${{ github.event_name == 'pull_request' && format('{0}/{1}', github.event.pull_request.head.repo.full_name, github.event.number) || format('{0}/{1}', github.repository, github.ref_name) }}
   cancel-in-progress: true
 
+# Least-privilege default: jobs escalate only what they need (Scorecard
+# Token-Permissions). checks:write for the test-reporter lives at job level;
+# the NuGet feed here is READ-only (the warm lane owns feed writes), so no
+# packages scope is needed at all.
 permissions:
   contents: read
-  checks: write
-  packages: write
 
 env:
   VCPKG_ROOT: ${{ github.workspace }}/vcpkg
@@ -45,6 +47,9 @@ jobs:
     name: Linux Coverage
     runs-on: ubuntu-24.04
     timeout-minutes: 90
+    permissions:
+      # dorny/test-reporter creates check runs
+      checks: write
 
     steps:
       - name: Harden Runner
@@ -112,7 +117,7 @@ jobs:
           echo "RUNNER_IMAGE_VERSION=${ImageVersion:-unknown}" >> "$GITHUB_ENV"
 
       - name: Restore vcpkg Binary Cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae  # v5.0.5
         id: vcpkg-restore
         with:
           path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
@@ -146,7 +151,7 @@ jobs:
         # cancellations; guarded to new generations with a real payload (this
         # lane reads the feed, never writes it, so no API key setup here).
         if: always() && steps.vcpkg-restore.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae  # v5.0.5
         with:
           path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
           key: vcpkg-archives-linux-x64-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}-${{ env.VCPKG_COMMIT }}-${{ env.RUNNER_IMAGE_VERSION }}
@@ -228,4 +233,13 @@ jobs:
           # protobuf/gRPC code is split out into coverage-generated.info and
           # audited via coverage-combined.info), so external coverage
           # tracking measures product code, not codegen.
-          bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r coverage/coverage.info
+          #
+          # The uploader is pinned to the commit the Codacy get.sh lives at
+          # (codacy/codacy-coverage-reporter), fetched in pipe form. Scorecard
+          # flags download-then-run pipelines unless the URL is a
+          # raw.githubusercontent URL pinned to a full commit SHA — and only
+          # the pipe form qualifies (the old `bash <(curl …)` process-
+          # substitution form is always treated as an unpinned executed
+          # file). Bump the SHA deliberately when adopting a new uploader
+          # version.
+          curl -Ls https://raw.githubusercontent.com/codacy/codacy-coverage-reporter/54617baa57421746d0afa3df32127d3dd40f3786/get.sh | bash -s -- report -r coverage/coverage.info
