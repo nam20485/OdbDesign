@@ -3,7 +3,7 @@
 # Canonical M0 coverage pipeline for OdbDesign (truthful measurement).
 #
 # This script and .github/workflows/code-coverage.yml implement the SAME
-# pipeline (see docs/plan/test-coverage-and-evaluation-validation-plan.md,
+# pipeline (see docs/plan/test-coverage-and-evaluation-validation-plan/test-coverage-and-evaluation-validation-plan.md,
 # milestone M0). CI builds with the canonical preset and then invokes this
 # script with --no-build, so the measured numbers can never drift apart.
 #
@@ -213,8 +213,20 @@ while [[ $# -gt 0 ]]; do
             show_usage
             exit 0
             ;;
-        -p|--preset)
-            PRESET="$2"
+        -p|--preset|-o|--output|--css-file|--snow-image)
+            # Value-taking options must fail with the documented
+            # misconfiguration exit (2), not a set -u internals error.
+            if [[ $# -lt 2 ]]; then
+                print_error "Option $1 requires an argument."
+                show_usage
+                exit 2
+            fi
+            case $1 in
+                -p|--preset)     PRESET="$2" ;;
+                -o|--output)     OUTPUT_DIR="$2" ;;
+                --css-file)      CSS_FILE="$2" ;;
+                --snow-image)    SNOW_IMAGE="$2" ;;
+            esac
             shift 2
             ;;
         --no-build)
@@ -229,18 +241,6 @@ while [[ $# -gt 0 ]]; do
             RUN_CHECK=true
             GATE_STRICT=true
             shift
-            ;;
-        -o|--output)
-            OUTPUT_DIR="$2"
-            shift 2
-            ;;
-        --css-file)
-            CSS_FILE="$2"
-            shift 2
-            ;;
-        --snow-image)
-            SNOW_IMAGE="$2"
-            shift 2
             ;;
         *)
             print_error "Unknown option: $1"
@@ -277,7 +277,9 @@ EXCLUDE_PATTERNS=('/usr/*' '*/vcpkg/*' '*/vcpkg_installed/*' '*/_deps/*' '*/OdbD
 
 check_prerequisites() {
     local missing=()
-    for tool in lcov genhtml cmake ninja ctest git; do
+    # python3/nproc/c++ are unconditional pipeline requirements too
+    # (provenance + gate checker, parallel ctest, provenance compiler line).
+    for tool in lcov genhtml cmake ninja ctest git python3 nproc c++; do
         command -v "$tool" >/dev/null 2>&1 || missing+=("$tool")
     done
     if [[ ${#missing[@]} -gt 0 ]]; then
@@ -300,18 +302,22 @@ check_prerequisites() {
         print_error "VCPKG_ROOT is not set; required to build. (Or pass --no-build with an existing coverage build.)"
         exit 2
     fi
-    if [[ "$DO_BUILD" == false && ! -d "$BUILD_DIR" ]]; then
-        print_error "Build dir '$BUILD_DIR' does not exist; configure first (drop --no-build)."
-        exit 2
-    fi
-
-    # The build must actually be instrumented; an uninstrumented build
-    # produces an empty denominator that would silently pass every gate.
-    # (-print -quit avoids a SIGPIPE'd pipeline that set -o pipefail would
-    # misreport as "no files found".)
-    if [[ -z "$(find "$BUILD_DIR" -name '*.gcno' -print -quit)" ]]; then
-        print_error "No .gcno files under $BUILD_DIR; the build was not compiled with --coverage."
-        exit 2
+    if [[ "$DO_BUILD" == false ]]; then
+        if [[ ! -d "$BUILD_DIR" ]]; then
+            print_error "Build dir '$BUILD_DIR' does not exist; configure first (drop --no-build)."
+            exit 2
+        fi
+        # The existing build must actually be instrumented; an uninstrumented
+        # build produces an empty denominator that would silently pass every
+        # gate. (-print -quit avoids a SIGPIPE'd pipeline that set -o
+        # pipefail would misreport as "no files found".) In full-pipeline
+        # mode this check is skipped so a fresh checkout can configure+build
+        # here; an uninstrumented build still fails loudly at initial
+        # capture (lcov errors out without .gcno).
+        if [[ -z "$(find "$BUILD_DIR" -name '*.gcno' -print -quit)" ]]; then
+            print_error "No .gcno files under $BUILD_DIR; the build was not compiled with --coverage."
+            exit 2
+        fi
     fi
 }
 
@@ -374,22 +380,37 @@ capture_initial() {
 
 run_tests() {
     print_status "Running test suite (ctest)..."
-    # Parallel: suite is race-free as of 313918e. ctest's exit code gates the
-    # run: failed tests fail coverage (M0), unlike the old script that
-    # generated reports past red suites.
-    # NOTE: ODB_TEST_ENVIRONMENT_VARIABLE is exported only when actually set —
-    # exporting it EMPTY would flip the cross-platform env tests from skip to
-    # hard failure; an unset var (skip) is what check_coverage.py polices.
-    local -a env_prefix=()
+    # Parallel: suite is race-free as of 313918e. Failed tests fail coverage
+    # (M0), unlike the old script that generated reports past red suites.
+    # ctest's exit status is the COUNT of failed tests (not a boolean), so it
+    # is captured and mapped explicitly: any nonzero is a test failure
+    # (exit 1), never the misconfiguration exit (2).
+    # NOTE: ODB_TEST_ENVIRONMENT_VARIABLE is passed to the child only when
+    # set to a non-empty value — a set-but-EMPTY variable (what the workflow
+    # renders for an unset repo `vars.` entry) would flip the cross-platform
+    # env tests from skip to hard failure, so it is explicitly unset for the
+    # child; an unset var (skip) is what check_coverage.py polices.
+    # env requires options before assignments, so -u must come first.
+    local -a env_args
     if [[ -n "${ODB_TEST_ENVIRONMENT_VARIABLE:-}" ]]; then
-        env_prefix+=(ODB_TEST_ENVIRONMENT_VARIABLE="$ODB_TEST_ENVIRONMENT_VARIABLE")
+        env_args=(ODB_TEST_ENVIRONMENT_VARIABLE="$ODB_TEST_ENVIRONMENT_VARIABLE"
+                  ODB_TEST_DATA_DIR="$ODB_TEST_DATA_DIR")
+    else
+        env_args=(-u ODB_TEST_ENVIRONMENT_VARIABLE
+                  ODB_TEST_DATA_DIR="$ODB_TEST_DATA_DIR")
     fi
-    env ODB_TEST_DATA_DIR="$ODB_TEST_DATA_DIR" "${env_prefix[@]}" \
+    local ctest_rc=0
+    env "${env_args[@]}" \
         ctest --test-dir "$TEST_DIR" \
         -j "$(nproc)" \
         --output-log "$TEST_LOG" \
         --output-junit "$JUNIT_XML" \
-        --output-on-failure
+        --output-on-failure || ctest_rc=$?
+    if [[ $ctest_rc -ne 0 ]]; then
+        # ctest reports the failed-test COUNT in its exit status.
+        print_error "Test suite FAILED ($ctest_rc failing test(s) reported by ctest)."
+        exit 1
+    fi
     print_success "Test suite passed."
 }
 
@@ -544,10 +565,31 @@ run_gate_check() {
     print_success "Coverage gate passed."
 }
 
+# Remove THIS pipeline's known stage outputs so an aborted rerun can never
+# mix artifacts from two generations (the old script's --clean behavior,
+# scoped to files this script owns rather than the whole output dir).
+clear_stage_outputs() {
+    print_status "Clearing previous stage outputs from $OUTPUT_DIR..."
+    rm -f "$OUTPUT_DIR"/initial.info "$OUTPUT_DIR"/runtime.info \
+        "$OUTPUT_DIR"/merged-all.info \
+        "$OUTPUT_DIR"/coverage.info \
+        "$OUTPUT_DIR"/coverage-generated.info \
+        "$OUTPUT_DIR"/coverage-combined.info \
+        "$OUTPUT_DIR"/coverage_summary.txt \
+        "$OUTPUT_DIR"/coverage_generated_summary.txt \
+        "$OUTPUT_DIR"/coverage_combined_summary.txt \
+        "$OUTPUT_DIR"/coverage-testlog.txt \
+        "$OUTPUT_DIR"/coverage-testlog.xml \
+        "$OUTPUT_DIR"/provenance.json \
+        "$OUTPUT_DIR"/*-stderr.log
+    rm -rf "$OUTPUT_DIR"/html "$OUTPUT_DIR"/html-generated "$OUTPUT_DIR"/html-combined
+}
+
 print_status "Starting canonical M0 coverage pipeline (preset: $PRESET)..."
 check_prerequisites
 set_capture_dir_args
 mkdir -p "$OUTPUT_DIR"
+clear_stage_outputs
 
 if [[ "$DO_BUILD" == true ]]; then
     configure_and_build

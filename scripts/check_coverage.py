@@ -41,7 +41,14 @@ scripts/release_readiness.py — never from human-readable summaries. (lcov
 aliases; the recorded rollups remain the authoritative, version-stable
 denominator.)
 
-Standard library only. Run with: python3 -I scripts/check_coverage.py ...
+The JUnit XML is parsed with stdlib html.parser (NOT xml.*): the gate's
+inputs are treated as untrusted, and html.parser's strict-mode reader here
+rejects DOCTYPE/entity declarations outright (the entity-expansion vector
+that the use-defused-xml security rule exists for) while validating tag
+nesting. Standard library only, so the gate runs on machines without
+third-party packages.
+
+Run with: python3 -I scripts/check_coverage.py ...
 """
 
 from __future__ import annotations
@@ -49,7 +56,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-import xml.etree.ElementTree as ET
+from html.parser import HTMLParser
 from pathlib import Path
 
 PASS, FINDING, MISCONFIG = 0, 1, 2
@@ -125,6 +132,7 @@ def parse_lcov(path: Path) -> dict[str, dict[str, int]]:
 
 
 def totals(records: dict[str, dict[str, int]]) -> dict[str, int]:
+    """Sum per-record integer counters into file-level totals."""
     out = {m: 0 for m in METRICS}
     for rec in records.values():
         for m in METRICS:
@@ -143,19 +151,144 @@ def nonstrict_ge(hit: int, found: int, min_pct: int) -> bool:
 
 
 def pct_str(hit: int, found: int) -> str:
+    """Format a hit/found pair as a percentage string (n/a when empty)."""
     return "n/a" if found == 0 else f"{(100 * hit) / found:.2f}% ({hit}/{found})"
+
+
+class _JUnitReader(HTMLParser):
+    """Event reader for JUnit XML that fails closed on XML attacks.
+
+    html.parser is used instead of xml.etree because this gate's inputs are
+    treated as UNTRUSTED (the rule behind Codacy/opengrep use-defused-xml):
+    entity-expansion attacks enter through DTD declarations, so any
+    <!DOCTYPE>/<!ENTITY> declaration raises instead of being parsed.
+    HTMLParser alone is lenient, so tag nesting is validated by hand
+    (mismatched or unclosed tags are errors), preserving the strictness the
+    previous xml.etree path had.
+    """
+
+    def __init__(self, path: Path) -> None:
+        super().__init__(convert_charrefs=True)
+        self._path = path
+        self.root_tag: str | None = None
+        self.root_attrs: dict[str, str] = {}
+        self.suite_attrs: list[dict[str, str]] = []
+        self.outcome_elements = {"skipped": 0, "failure": 0, "error": 0}
+        self.disabled_total = 0
+        self.notrun_count = 0
+        self._stack: list[str] = []
+
+    # -- hardening: DTD / entity declarations are an attack vector ---------
+    # (billion-laughs entity expansion enters via DOCTYPE/ENTITY), so they
+    # raise instead of being parsed. CDATA sections are inert text and are
+    # allowed (their content arrives via handle_data).
+    def handle_decl(self, decl: str) -> None:
+        """Reject DOCTYPE declarations (entity-expansion vector)."""
+        raise ValueError(
+            f"{self._path}: rejected DOCTYPE declaration "
+            f"(entity-expansion vector not allowed): <!{decl[:80]}>")
+
+    def unknown_decl(self, data: str) -> None:
+        """Allow inert CDATA sections; reject any other XML declaration."""
+        if data.startswith("CDATA["):
+            return
+        raise ValueError(
+            f"{self._path}: rejected XML declaration <![{data[:80]}>]")
+
+    def handle_comment(self, data: str) -> None:
+        """Reject ENTITY declarations routed here as bogus comments."""
+        # html.parser routes <!ENTITY ...> (a bogus comment outside a DTD)
+        # here; a real XML comment never starts with ENTITY. Fail closed.
+        if data.lstrip().upper().startswith("ENTITY"):
+            raise ValueError(
+                f"{self._path}: rejected ENTITY declaration "
+                f"(entity-expansion vector not allowed): <!{data[:80]}>")
+
+    # -- structure ---------------------------------------------------------
+    def _start(self, tag: str, attrs: dict[str, str]) -> None:
+        """Record root/suite attributes and testcase outcome elements."""
+        if self.root_tag is None:
+            if tag not in ("testsuites", "testsuite"):
+                raise ValueError(
+                    f"{self._path}: unexpected root element <{tag}>; "
+                    "want testsuites/testsuite")
+            self.root_tag = tag
+            self.root_attrs = attrs
+        self._stack.append(tag)
+        if tag == "testsuite":
+            # Direct children of a <testsuites> root only (depth 2), or a
+            # <testsuite> root itself (depth 1) — mirrors the previous
+            # root.findall("testsuite") semantics.
+            if len(self._stack) <= 2:
+                self.suite_attrs.append(attrs)
+                # gtest producers report deliberately-disabled tests via a
+                # suite-level `disabled` attribute; they did not run, which
+                # is the same gate concern as a skip (fail-safe direction).
+                raw_disabled = attrs.get("disabled")
+                if raw_disabled is not None:
+                    try:
+                        self.disabled_total += int(raw_disabled)
+                    except ValueError as e:
+                        raise ValueError(
+                            f"{self._path}: non-integer disabled={raw_disabled!r}") from e
+        if tag == "testcase" and attrs.get("status") == "notrun":
+            # Older ctest JUnit writers may mark skips ONLY via
+            # status="notrun" (no <skipped> element, no skipped= attribute);
+            # counting them keeps the unexpected-skips finding fail-safe
+            # across the declared ctest support range. Double counting is
+            # avoided by the max() merge in parse_junit.
+            self.notrun_count += 1
+        if (tag in ("skipped", "failure", "error")
+                and len(self._stack) >= 2
+                and self._stack[-2] == "testcase"):
+            # Outcome elements are counted per testcase child (same
+            # semantics as the previous case.find(...) lookups).
+            self.outcome_elements[tag] += 1
+
+    def handle_starttag(self, tag: str, attrs) -> None:
+        """Start-tag event: record and push onto the nesting stack."""
+        self._start(tag, dict(attrs))
+
+    def handle_startendtag(self, tag: str, attrs) -> None:
+        """Self-closing element (<skipped/>): start+end in one event."""
+        self._start(tag, dict(attrs))
+        self._end(tag)
+
+    def _end(self, tag: str) -> None:
+        """Pop the nesting stack, rejecting mismatched end tags."""
+        if not self._stack or self._stack[-1] != tag:
+            raise ValueError(
+                f"{self._path}: malformed JUnit XML: unexpected </{tag}>, "
+                f"open elements: {self._stack}")
+        self._stack.pop()
+
+    def handle_endtag(self, tag: str) -> None:
+        """End-tag event: pop and validate."""
+        self._end(tag)
+
+    def finish(self) -> None:
+        """Final structural validation after the stream ends."""
+        if self.root_tag is None:
+            raise ValueError(f"{self._path}: no XML root element found")
+        if self._stack:
+            raise ValueError(
+                f"{self._path}: malformed JUnit XML: unclosed elements: "
+                f"{self._stack}")
 
 
 def parse_junit(path: Path) -> dict[str, int]:
     """Parse JUnit XML into integer outcome totals (tests/failures/errors/skipped)."""
-    try:
-        root = ET.parse(path).getroot()
-    except ET.ParseError as e:
-        raise ValueError(f"{path}: malformed JUnit XML: {e}") from e
+    reader = _JUnitReader(path)
+    with path.open("r", encoding="utf-8", errors="replace") as f:
+        for chunk in f:
+            reader.feed(chunk)
+    reader.close()
+    reader.finish()
 
     counts = {"tests": 0, "failures": 0, "errors": 0, "skipped": 0}
 
-    def add(attrs: ET._ElementAttributes) -> None:
+    def add(attrs: dict[str, str]) -> None:
+        """Accumulate integer outcome attributes into counts."""
         for key in counts:
             raw = attrs.get(key)
             if raw is not None:
@@ -164,36 +297,24 @@ def parse_junit(path: Path) -> dict[str, int]:
                 except ValueError as e:
                     raise ValueError(f"{path}: non-integer {key}={raw!r}") from e
 
-    suites = []
-    if root.tag == "testsuites":
-        suites = root.findall("testsuite")
-    elif root.tag == "testsuite":
-        suites = [root]
-    else:
-        raise ValueError(f"{path}: unexpected root element <{root.tag}>; want testsuites/testsuite")
-
-    if suites:
-        for suite in suites:
-            add(suite.attrib)
-    else:
+    if reader.root_tag == "testsuites" and not reader.suite_attrs:
         # <testsuites> with no <testsuite> children: attributes live on the root.
-        add(root.attrib)
+        add(reader.root_attrs)
+    else:
+        for attrs in reader.suite_attrs:
+            add(attrs)
 
-    # Fallback: count per-testcase outcome elements even if suite attributes
-    # are missing or under-report (some producers omit the skipped attribute).
-    cases = root.iter("testcase")
-    tc_skipped = tc_failed = tc_error = 0
-    for case in cases:
-        if case.find("skipped") is not None:
-            tc_skipped += 1
-        if case.find("failure") is not None:
-            tc_failed += 1
-        if case.find("error") is not None:
-            tc_error += 1
     # Element counts are authoritative when suite attributes under-report.
-    counts["skipped"] = max(counts["skipped"], tc_skipped)
-    counts["failures"] = max(counts["failures"], tc_failed)
-    counts["errors"] = max(counts["errors"], tc_error)
+    counts["skipped"] = max(counts["skipped"], reader.outcome_elements["skipped"])
+    counts["failures"] = max(counts["failures"], reader.outcome_elements["failure"])
+    counts["errors"] = max(counts["errors"], reader.outcome_elements["error"])
+    # "Did not run" signals beyond <skipped>: gtest `disabled` attributes and
+    # older-ctest status="notrun" testcases. Each is an under-approximation
+    # of tests that did not run as expected, so the max of all signals is the
+    # best estimate and cannot double-count one testcase. Fail-safe: if an
+    # older producer reports skips ONLY this way, the gate still finds them.
+    counts["skipped"] = max(
+        counts["skipped"], reader.disabled_total, reader.notrun_count)
     return counts
 
 
