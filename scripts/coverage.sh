@@ -63,8 +63,15 @@ COVERAGE_LINK_FLAGS="--coverage"
 #
 # NOTE on error suppression (M0 exit criterion: no BROAD suppression hiding
 # unexplained inconsistencies):
-#   * 'mismatch'/'corrupt'/'source' are NEVER suppressed: stale or
-#     unreadable gcov data fails the run loudly.
+#   * 'mismatch'/'corrupt'/'source' are NEVER suppressed on runtime reads:
+#     stale or unreadable gcov data fails the run loudly. ONE exception:
+#     'mismatch' is suppressed ONLY at the initial .gcno-only capture
+#     (capture_initial) — immediately after a counter reset a mismatch there
+#     cannot be stale runtime data; what fires is the known GCC 13 libstdc++
+#     exception-tag artifact. Even there it is suppress-AND-VERIFY: every
+#     demoted mismatch must be in third-party code (/usr, vcpkg) or the run
+#     FAILS (assert_initial_capture_mismatch_policy) — a product-.gcno
+#     mismatch never passes quietly.
 #   * 'unused' (a filter pattern matched nothing) is benign and expected —
 #     e.g. on machines where some system prefixes are absent.
 #   * 'inconsistent' IS suppressed, but ONLY together with the assertion in
@@ -367,12 +374,51 @@ set_runtime_dir_args() {
     fi
 }
 
+# Suppress-AND-VERIFY counterpart for the initial capture's 'mismatch'
+# suppression (mirrors assert_repair_policy's contract for 'inconsistent'):
+# every mismatch geninfo demoted to a WARNING must point at THIRD-PARTY code
+# (/usr, vcpkg) — the known GCC 13 libstdc++ exception-tag artifact. A
+# mismatch in a product .gcno has no later stage that re-reads the gcov data
+# (never-executed TUs produce no .gcda), so it must FAIL here, loudly.
+# Usage: assert_initial_capture_mismatch_policy <stderr-log-file>
+assert_initial_capture_mismatch_policy() {
+    local errlog="$1"
+    local line path
+    while IFS= read -r line; do
+        path=$(sed -n 's/^.*"\([^"]*\)".*mismatched exception tag.*/\1/p' <<< "$line")
+        [[ -z "$path" ]] && continue
+        case "$path" in
+            /usr/*|*/vcpkg/*|*/vcpkg_installed/*)
+                print_status "Demoted known GCC 13 mismatch artifact in third-party code: $path"
+                continue
+                ;;
+            *)
+                print_error "Mismatched exception tag in PRODUCT gcov data: $path"
+                echo "    $line" >&2
+                print_error "This must be investigated, not suppressed. See $errlog"
+                exit 1
+                ;;
+        esac
+    done < <(grep -i 'mismatched exception tag' "$errlog" || true)
+}
+
 capture_initial() {
     print_status "Capturing INITIAL (zero-hit) coverage from .gcno — before tests..."
+    # 'mismatch' is suppressed HERE ONLY. --capture --initial reads .gcno alone
+    # immediately after a counter reset, so a mismatch there cannot be stale
+    # runtime data (the class the loud-mismatch policy guards); what fires is
+    # the known GCC 13 artifact — libstdc++ headers (stl_construct.h et al.)
+    # carry mismatched exception tags in .gcno-only capture, and geninfo
+    # hard-errors without this flag (deterministic CI failure since the M0
+    # script landed; the pre-M0 inline workflow carried the same flag on its
+    # --capture). Suppression is verified by
+    # assert_initial_capture_mismatch_policy: product-path mismatches still
+    # FAIL. Runtime capture and merges keep 'mismatch' LOUD.
     run_lcov "$OUTPUT_DIR/initial-capture-stderr.log" \
         --capture --initial "${CAPTURE_DIR_ARGS[@]}" \
-        "${LCOV_COMMON[@]}" \
+        "${LCOV_COMMON[@]}" --ignore-errors mismatch \
         --output-file "$INITIAL_INFO" --quiet
+    assert_initial_capture_mismatch_policy "$OUTPUT_DIR/initial-capture-stderr.log"
     local records
     records=$(grep -c '^SF:' "$INITIAL_INFO" || true)
     print_status "Initial capture: $records source records (includes never-executed TUs)."
