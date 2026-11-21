@@ -188,7 +188,7 @@ class ServerHandle:
             args.append("--disable-authentication")
         env = _child_env(self.creds)
         self._log_file = open(self.log_path, "wb")
-        # codeql[py/uncontrolled-command-line] test harness: the argv comes from the ctest
+        # codeql[py/command-line-injection] test harness: the argv comes from the ctest
         # registration (--server $<TARGET_FILE:OdbDesignServer>), validated in main();
         # the "user input" is the build system, not an untrusted user.
         self.process = subprocess.Popen(args, cwd=self.workdir, env=env, stdout=self._log_file, stderr=subprocess.STDOUT, start_new_session=IS_POSIX)
@@ -1203,7 +1203,7 @@ def scenario_f004_startup_fail_closed(binary, workdir, designs_dir, sc):
     env = _child_env(None)  # credentials scrubbed
     log_path = os.path.join(workdir, "f004_server.log")
     with open(log_path, "wb") as log_file:
-        # codeql[py/uncontrolled-command-line] test harness: the argv comes from the ctest
+        # codeql[py/command-line-injection] test harness: the argv comes from the ctest
         # registration (--server $<TARGET_FILE:OdbDesignServer>), validated in main();
         # the "user input" is the build system, not an untrusted user.
         process = subprocess.Popen(args, cwd=workdir, env=env, stdout=log_file, stderr=subprocess.STDOUT, start_new_session=IS_POSIX)
