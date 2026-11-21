@@ -50,6 +50,11 @@ namespace Utils
         const bool _StopProcessingOnWorkItemFail{ true };
         bool _enableInternalLogging{ false };
 
+        // set when a work item FAILS (or throws): the loop abandons the rest
+        // of the queue instead of draining it; a NORMAL stopProcessing()
+        // still drains everything queued before the stop call
+        std::atomic_bool _abandonRemainingItems{ false };
+
         mutable std::mutex _lastProcessingErrorMutex;
         std::string _lastProcessingError;
 
@@ -99,8 +104,21 @@ namespace Utils
     template<typename TWorkItem>
     void WorkQueueLoopThread<TWorkItem>::processWorkItemsLoop()
     {
-        while (!_stopProcessingWorkItemsFlag.load())
+        for (;;)
         {
+            // exit only when stopped AND there is nothing (allowed) left to
+            // drain. Order matters: stop flag first, emptiness second. A
+            // normal stopProcessing() therefore FLUSHES everything queued
+            // before the stop call (push happens-before the stop store, and
+            // the emptiness re-check below observes it via the queue mutex +
+            // seq_cst flag). A FAILED work item sets _abandonRemainingItems,
+            // which drops the rest of the queue instead of draining it.
+            if (_stopProcessingWorkItemsFlag.load() &&
+                (_abandonRemainingItems.load() || _workItemQueue.empty()))
+            {
+                break;
+            }
+
             auto wait_result = _workItemQueue.wait(/*std::chrono::milliseconds(1)*/);
             switch (wait_result)
             {
@@ -143,6 +161,7 @@ namespace Utils
                 {
                     if (_StopProcessingOnWorkItemFail)
                     {
+                        _abandonRemainingItems.store(true);
                         _stopProcessingWorkItemsFlag.store(true);
                         break;
                     }
@@ -163,6 +182,7 @@ namespace Utils
     void WorkQueueLoopThread<TWorkItem>::startProcessing()
     {
         _stopProcessingWorkItemsFlag.store(false);
+        _abandonRemainingItems.store(false);
         // a previous stopProcessing() leaves the queue's interrupt latch set;
         // clear it so this loop's wait() blocks when idle instead of
         // busy-spinning on the stale latch

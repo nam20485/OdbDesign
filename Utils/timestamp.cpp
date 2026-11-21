@@ -60,6 +60,12 @@ namespace Utils
         std::istringstream ss(timestamp);
         ss >> std::get_time(&tm, format.c_str());
 
+        // let mktime determine DST from the wall-clock fields: get_time
+        // zero-initializes tm, and tm_isdst == 0 pins the fields to STANDARD
+        // time, so a wall time inside a DST window would parse an hour off
+        // (and fail to round-trip against localtime_r-rendered timestamps)
+        tm.tm_isdst = -1;
+
 #if defined(_DEBUG)
         std::stringstream ss2;
         ss2 << std::put_time(&tm, "%D %T");

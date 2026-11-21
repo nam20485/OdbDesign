@@ -294,8 +294,9 @@ TEST_F(LoggerTest, RepeatedLifecycle_MessagesFromBothCyclesPresent)
 TEST_F(LoggerTest, StopAfterStart_JoinsCleanlyWithoutWork)
 {
     // start + immediate stop must join the loop thread without hanging
-    // or crashing, even with no work items queued
-    m_pLogger->outputTypes(Utils::Logger::OutputTypes::File);
+    // or crashing, even with no work items queued; no output sinks are
+    // enabled, so nothing is written anywhere (fully hermetic)
+    m_pLogger->outputTypes(0);
     start();
     stop();
     SUCCEED();

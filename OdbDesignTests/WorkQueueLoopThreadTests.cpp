@@ -8,7 +8,14 @@
 #include <thread>
 #include <vector>
 
+#ifdef _WIN32
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+#else
 #include <sys/resource.h>
+#endif
 
 #include "WorkQueueLoopThread.h"
 
@@ -57,14 +64,33 @@ namespace Odb::Test
             return condition();
         }
 
+        // total CPU consumed by this process (user + kernel), in ms --
+        // getrusage on POSIX, GetProcessTimes on Windows
         long long processCpuMs()
         {
+#ifdef _WIN32
+            FILETIME createTime{}, exitTime{}, kernelTime{}, userTime{};
+            if (!GetProcessTimes(GetCurrentProcess(), &createTime, &exitTime,
+                                 &kernelTime, &userTime))
+            {
+                return 0LL;
+            }
+            const auto fileTimeToMs = [](const FILETIME& ft)
+            {
+                ULARGE_INTEGER value;
+                value.LowPart = ft.dwLowDateTime;
+                value.HighPart = ft.dwHighDateTime;
+                return static_cast<long long>(value.QuadPart / 10000LL); // 100ns units
+            };
+            return fileTimeToMs(kernelTime) + fileTimeToMs(userTime);
+#else
             rusage usage{};
             getrusage(RUSAGE_SELF, &usage);
             return static_cast<long long>(usage.ru_utime.tv_sec) * 1000LL +
                    usage.ru_utime.tv_usec / 1000LL +
                    static_cast<long long>(usage.ru_stime.tv_sec) * 1000LL +
                    usage.ru_stime.tv_usec / 1000LL;
+#endif
         }
     }
 
@@ -99,8 +125,10 @@ namespace Odb::Test
             return true;
         });
 
-        // warm-up proves the loop thread is up and cycling before the race
-        // window that this test cares about
+        // the loop warm-up is a convenience, not a requirement: since the
+        // stop-flush root fix, the exit check re-reads emptiness AFTER the
+        // stop flag, so a normal stopProcessing() always drains items queued
+        // before the stop call (see the zero-warmup stress test below)
         loop.addWorkItem(WorkItem{ 0 });
         loop.startProcessing();
         ASSERT_TRUE(waitFor([&] { return recorder.snapshot().size() == 1; },
@@ -253,6 +281,34 @@ namespace Odb::Test
                 // scope ends while the loop thread is running
             },
             ".*");
+    }
+
+    // stress: the stop can land anywhere in the loop's cycle -- before the
+    // loop thread even runs its first exit check, or between an emptiness
+    // check and the stop re-read. The flush guarantee must hold with zero
+    // synchronization from the test. REGRESSION GUARD for the old racy
+    // `while (!stop)` outer-loop exit that could abandon queued items.
+    TEST(WorkQueueLoopThreadTests, StopProcessing_FlushesWithoutAnyWarmup_Stress)
+    {
+        constexpr int kCycles = 60;
+        for (int cycle = 0; cycle < kCycles; ++cycle)
+        {
+            Recorder recorder;
+            WorkQueueLoopThread<WorkItem> loop([&recorder](WorkItem& item)
+            {
+                recorder.record(item.value);
+                return true;
+            });
+
+            loop.addWorkItem(WorkItem{ 1 });
+            loop.addWorkItem(WorkItem{ 2 });
+            loop.startProcessing();
+            loop.stopProcessing(); // immediately: races the loop startup on purpose
+
+            const auto values = recorder.snapshot();
+            ASSERT_EQ(values.size(), 2u) << "cycle " << cycle << " dropped flushed items";
+            EXPECT_EQ(loop.lastProcessingError(), "") << "cycle " << cycle;
+        }
     }
 
     // REGRESSION GUARD (was a known defect, fixed in this PR): the queue's

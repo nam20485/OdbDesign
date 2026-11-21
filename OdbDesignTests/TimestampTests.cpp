@@ -17,6 +17,17 @@ namespace Odb::Test
             return std::chrono::system_clock::time_point(
                 std::chrono::duration_cast<system_clock::duration>(milliseconds(msSinceEpoch)));
         }
+
+        // localtime_r is POSIX-only; MSVC/UCRT provides localtime_s with a
+        // different argument order (same guard as Utils/timestamp.cpp)
+        void toLocalTm(std::tm& out, std::time_t timeT)
+        {
+#ifdef _WIN32
+            localtime_s(&out, &timeT);
+#else
+            localtime_r(&timeT, &out);
+#endif
+        }
     }
 
     TEST(TimestampTests, MakeTimestamp_FormatMatchesDdMmYyHhMmSsMmm)
@@ -65,8 +76,8 @@ namespace Odb::Test
         const auto parsed = ::Utils::parse_timestamp("12/25/23 15:45:30", "%D %T");
         std::tm tmResult{};
         const auto timeT = system_clock::to_time_t(parsed);
-        ASSERT_NE(localtime_r(&timeT, &tmResult), nullptr);
-        // assert against localtime_r so the test is timezone-independent
+        toLocalTm(tmResult, timeT);
+        // assert against localtime so the test is timezone-independent
         EXPECT_EQ(tmResult.tm_year, 123); // years since 1900
         EXPECT_EQ(tmResult.tm_mon, 11);   // 0-based: December
         EXPECT_EQ(tmResult.tm_mday, 25);

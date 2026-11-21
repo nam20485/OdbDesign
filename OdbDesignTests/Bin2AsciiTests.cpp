@@ -115,7 +115,12 @@ namespace Odb::Test
 
     TEST(Bin2AsciiTests, B64RoundTrip_BinaryWithNulAndHighBits_Lossless)
     {
-        const std::string binary = std::string("\x00\x41\x80\xFF\xFBbinary\x00", 11);
+        // NOTE: the "\xFB" and the following text are SEPARATE string
+        // literals: "\xFBbinary" would lex "\xFBB" as a single out-of-range
+        // hex escape (compiler warning, mis-lexed bytes, and ill-formed on
+        // stricter compilers). 12 bytes: 00 41 80 FF FB 'b'..'y' 00
+        const std::string binary = std::string("\x00\x41\x80\xFF\xFB" "binary\x00", 12);
+        ASSERT_EQ(binary.size(), 12u);
         EXPECT_EQ(b64_decode(b64_encode(binary)), binary);
     }
 

@@ -196,7 +196,10 @@ namespace Odb::Test
 
     TEST(OdbDesignArgsTests, UsageString_ContainsAllOptionsAndDefaults)
     {
-        auto argv = makeArgv({ "myserver" });
+        // named storage: a temporary would dangle argv before the
+        // constructor copies the pointers' contents (heap-use-after-free)
+        const std::vector<std::string> storage{ "myserver" };
+        auto argv = makeArgv(storage);
         TestableOdbDesignArgs args(static_cast<int>(argv.size()), argv.data());
         const auto usage = args.usageString();
 
@@ -224,7 +227,9 @@ namespace Odb::Test
 
     TEST(OdbDesignArgsTests, PrintUsage_WritesUsageStringToStdout)
     {
-        auto argv = makeArgv({ "myserver" });
+        // named storage: same dangling-argv hazard as in the usage test
+        const std::vector<std::string> storage{ "myserver" };
+        auto argv = makeArgv(storage);
         TestableOdbDesignArgs args(static_cast<int>(argv.size()), argv.data());
 
         std::ostringstream captured;
