@@ -46,8 +46,11 @@ python3 scripts/release_readiness.py validate --profile production
   manifest (schema in `eval-plan.example.json` +
   `../docs/plan/test-coverage-and-evaluation-validation-plan/eval-plan-manifest-schema.md`)
   and the run additionally aggregates the acceptance evidence against it —
-  candidate binding, required-scenario coverage per platform — gating `validate`
-  on the aggregation verdict and its negative controls (`EVID-MANIFEST`,
+  candidate binding (the manifest candidate must equal the explicit
+  `--candidate`, or HEAD when omitted), required-scenario coverage per
+  platform (a `pass` never masks a `failed`/`skipped`/`not-run` entry for the
+  same scenario — conflicts fail the verdict) — gating `validate` on the
+  aggregation verdict and its negative controls (`EVID-MANIFEST`,
   `EVID-NC-MAN-*`):
 
   ```bash
