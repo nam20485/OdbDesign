@@ -691,8 +691,14 @@ def render_human(verdict):
         elif r.get("not_applicable_unapproved"):
             extra = " (NOT preapproved in manifest -> fails the verdict)"
         elif r.get("conflicting_statuses"):
-            extra = (f" (pass MASKED BY {','.join(r['conflicting_statuses'])} "
-                     "for the same requirement -> fails the verdict)")
+            # Accurate for BOTH conflict shapes: pass+failed and
+            # preapproved-NA+failed. The row does not record which
+            # non-failing entry was present, so the render names the
+            # failing statuses and the fact of a co-present non-failing
+            # entry instead of hardcoding "pass".
+            extra = (f" (conflicting statuses: "
+                     f"{','.join(r['conflicting_statuses'])} alongside a "
+                     "non-failing entry -> fails the verdict)")
         else:
             extra = ""
         lines.append(f"  [{r['status']:<14}] {r['scenario']:<{width}}  {r['requirement']:<14}  {src}{extra}")
