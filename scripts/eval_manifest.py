@@ -90,12 +90,6 @@ def _reject_unsafe_operator_path(p, what):
         raise ManifestError(f"{what} path must not contain '..' components: {p}")
 
 
-def safe_evidence_dir(path):
-    """Validate an operator-supplied evidence dir path; return it as a Path."""
-    _reject_unsafe_operator_path(path, "evidence directory")
-    return Path(path)
-
-
 # --------------------------------------------------------------------------- #
 # Manifest schema validation
 # --------------------------------------------------------------------------- #
@@ -309,10 +303,34 @@ _MANIFEST_ALLOWED_ROOTS = tuple(os.path.realpath(str(r)) for r in (
 ))
 
 
-def _within_allowed_manifest_root(real_path):
+def _match_allowed_root(real_path):
+    """Return the allowed root (untainted constant) containing real_path, else None.
+
+    NOTE: static analyzers cannot see through this helper as a taint barrier;
+    the recognized barrier is the inline startswith disjunction against the
+    constants in load_manifest/_load_evidence. This helper is for operator
+    validation only (safe_evidence_dir).
+    """
     sep = os.sep
-    return any(real_path == root or real_path.startswith(root + sep)
-               for root in _MANIFEST_ALLOWED_ROOTS)
+    for root in _MANIFEST_ALLOWED_ROOTS:
+        if real_path == root or real_path.startswith(root + sep):
+            return root
+    return None
+
+
+def safe_evidence_dir(path):
+    """Validate an operator-supplied evidence dir path; return it as a Path.
+
+    Rejects '..' components and realpath-escapes from the allowed root trees
+    (repo, repo parent, system temp dir) — exit 2 misconfiguration.
+    """
+    _reject_unsafe_operator_path(path, "evidence directory")
+    real = os.path.realpath(str(path))
+    if _match_allowed_root(real) is None:
+        raise ManifestError(
+            f"evidence directory escapes the allowed root trees (repo, repo parent, "
+            f"temp dir) after resolving symlinks: {path} -> {real}")
+    return Path(path)
 
 
 def load_manifest(path):
@@ -320,13 +338,20 @@ def load_manifest(path):
 
     Barriers, in order: '..' components are rejected outright (exit 2); the
     realpath of the path must stay inside an allowed root tree (repo /
-    sibling repos / system temp dir) — the realpath+startswith confinement
-    guards the read below; the target must be a regular file.
+    sibling repos / system temp dir) — the inline realpath+startswith
+    disjunction below guards every filesystem operation that follows; the
+    target must be a regular file.
     """
     if ".." in Path(path).parts:
         raise ManifestError(f"manifest path must not contain '..' components: {path}")
     real = os.path.realpath(str(path))
-    if not _within_allowed_manifest_root(real):
+    sep = os.sep
+    r0, r1, r2 = _MANIFEST_ALLOWED_ROOTS
+    # Inline confinement barrier against UNTAINTED constants (not derived
+    # from argv): dominates os.path.isfile/open below.
+    if not (real == r0 or real.startswith(r0 + sep)
+            or real == r1 or real.startswith(r1 + sep)
+            or real == r2 or real.startswith(r2 + sep)):
         raise ManifestError(
             f"manifest path escapes the allowed root trees (repo, repo parent, "
             f"temp dir) after resolving symlinks: {path} -> {real}")
@@ -378,6 +403,21 @@ def _load_evidence(evidence_dir, expected_candidate):
     results = {}
     violations = []
     dir_real = os.path.realpath(str(evidence_dir))
+    sep = os.sep
+    r0, r1, r2 = _MANIFEST_ALLOWED_ROOTS
+    # Inline confinement barrier against UNTAINTED constants (never derived
+    # from argv): captures the allowed root that bounds every filesystem
+    # operation below. Direct aggregate() callers get an empty (failing)
+    # result; the CLI rejected out-of-root dirs earlier with exit 2
+    # (safe_evidence_dir).
+    if dir_real == r0 or dir_real.startswith(r0 + sep):
+        bound = r0
+    elif dir_real == r1 or dir_real.startswith(r1 + sep):
+        bound = r1
+    elif dir_real == r2 or dir_real.startswith(r2 + sep):
+        bound = r2
+    else:
+        return results, violations
     if not os.path.isdir(dir_real):
         return results, violations
     for name in sorted(os.listdir(dir_real)):
@@ -393,9 +433,18 @@ def _load_evidence(evidence_dir, expected_candidate):
             real = os.path.realpath(f)
         except OSError:
             real = None
-        # Confinement barrier: only read what stays inside the evidence dir.
-        if real is None or not (real.startswith(dir_real + os.sep)
-                                and real != dir_real and os.path.isfile(real)):
+        # Confinement barriers, in order: (1) the recognized untainted
+        # allowed-root bound (dominates every fs call below), then (2) the
+        # evidence-dir containment policy + regular-file check. Anything
+        # else is quarantined as a violation and never read.
+        if real is None or not real.startswith(bound + sep):
+            violations.append(_violation(
+                f, "evidence path escapes the evidence directory "
+                   "(symlink or non-regular file); rejected without reading",
+                resolved_to=real, quarantined=1))
+            continue
+        if not (real.startswith(dir_real + sep) and real != dir_real
+                and os.path.isfile(real)):
             violations.append(_violation(
                 f, "evidence path escapes the evidence directory "
                    "(symlink or non-regular file); rejected without reading",
