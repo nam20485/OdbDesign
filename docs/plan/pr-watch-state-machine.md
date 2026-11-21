@@ -20,8 +20,11 @@ stateDiagram-v2
     ApprovalGate --> ApprovalNeeded : approval needed — tell the user, give PR link
     ApprovalGate --> GreenGreen : everything GREEN GREEN
     ApprovalNeeded --> GreenGreen : user approves
-    GreenGreen --> MergeIt : merge it (gh pr merge --merge), or get the user to merge
-    MergeIt --> [*]
+    GreenGreen --> IndependentVerify : merge gate A — independent subagent re-checks EVERYTHING
+    IndependentVerify --> Poll : any claim unsourced/rejected, or a check actually red
+    IndependentVerify --> PreMergeComment : every claim evidenced, all verified green
+    PreMergeComment --> MergeIt : merge gate B — status+checks+outcome comment posted
+    MergeIt --> [*] : gh pr merge --merge
 ```
 
 ## Rules
@@ -35,7 +38,24 @@ stateDiagram-v2
 **Terminal gate:** a PR leaves the loop only when review comments are resolved AND no rule-1/2/3 condition holds.
 
 - **Approval needed** → surface to the user with the PR link (do not silently hold).
-- **Everything GREEN GREEN** → `gh pr merge --merge` it, or get the user to merge.
+- **Everything GREEN GREEN** → pass BOTH merge gates below, then `gh pr merge --merge` (or get the user to merge).
+
+### Merge gate A — independent verification (user directive 2026-11-21)
+
+A **separate, objective subagent** (not the session that did the work) performs **ALL** checks before any merge:
+
+- Re-queries the PR's real state itself: checks rollup, unresolved review threads, behind-status, head SHA.
+- Must present **specific, sourced evidence for every single claim** — the check-run URL, the API response, the commit SHA, the command output it ran. **A claim without sourced evidence is not accepted**, full stop.
+- If any claim is unsourced, any check is actually red, or any rule-1/2/3 condition holds, the merge is refused and the loop returns to Poll.
+
+### Merge gate B — pre-merge summary comment (user directive 2026-11-21)
+
+Immediately **before executing the merge**, post a **new comment on the PR** summarizing:
+
+- overall status, the full checks table (each with outcome), and the expected outcome of merging;
+- the verification evidence basis (gate A's sourced findings).
+
+Only after that comment is posted does the merge execute.
 
 ## Standing constraints (how the loop runs here)
 
