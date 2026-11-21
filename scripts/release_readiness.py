@@ -768,7 +768,17 @@ def main():
 
     outcomes = evaluate(registry, ctx)
     outcomes.update(manifest_outcomes)
+    # Machine-generated gate criteria can never be waved by --na: the
+    # manifest aggregation verdict and every engine negative control exist
+    # to prove the gate itself is honest, so converting one to
+    # not-applicable would defeat the readiness check via a CLI flag.
+    # --na is for the plan-owned registry criteria only (plan 10.2: N/A is
+    # a pre-approved support-matrix entry, never a run-time decision).
     for cid in args.na:
+        if cid == "EVID-MANIFEST" or cid.startswith("EVID-NC-"):
+            print(f"NOTICE: --na {cid} ignored: machine-generated gate "
+                  "criteria can never be waived (fail closed).", file=sys.stderr)
+            continue
         if cid in outcomes:
             outcomes[cid] = result(NA, "pre-approved not-applicable via --na")
 

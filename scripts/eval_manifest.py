@@ -554,6 +554,13 @@ def _resolve_row(scid, entries, platform, na_list):
         return "conflict", sources, None, None, failing
     if STATUS_PASS in statuses:
         return STATUS_PASS, sorted(set(statuses[STATUS_PASS])), None, None, ()
+    if STATUS_NA in statuses and failing:
+        # Same masking rule as `pass`: a preapproved N/A never papers over a
+        # real failing result for the same requirement — surface every
+        # source (NA and failing alike) and fail the verdict (plan 10.2:
+        # a skipped/failed run cannot be converted to met by an NA entry).
+        sources = sorted({f for fs in statuses.values() for f in fs})
+        return "conflict", sources, None, None, failing
     if STATUS_NA in statuses:
         sources = sorted(set(statuses[STATUS_NA]))
         na = _na_allowed(na_list, scid, platform)
@@ -890,6 +897,34 @@ def run_negative_controls(self_exe=None):
                              f"{label}: row status={row['status']} (want conflict), "
                              f"in-process ready={v['ready']} (want False), CLI exit={rc} (want 1), "
                              f"conflict counts bucket={conflict_bucket}"))
+
+    # ---- A preapproved N/A never masks a real failure (kilo round #656) --- #
+    # Evidence for the same requirement carries BOTH a failed result and an
+    # NA result, and the manifest pre-approves that NA. Before the fix the
+    # NA branch won and the verdict went READY despite the failed run; now
+    # the row is a conflict that names every source and fails the gate.
+    with tempfile.TemporaryDirectory(prefix="evalman-nc-na-mask-") as td:
+        ev = Path(td) / "evidence"
+        ev.mkdir()
+        na_manifest = json.loads(json.dumps(manifest))
+        na_manifest["not_applicable_scenarios"] = [
+            {"scenario": "S2-HEALTH", "reason": "pre-approved out of scope"}]
+        _write_evidence(ev / "a.json", candidate,
+                        {"S1-RPC": {"status": "pass"},
+                         "S2-HEALTH": {"status": "failed"}})
+        _write_evidence(ev / "b.json", candidate,
+                        {"S2-HEALTH": {"status": "not-applicable"}})
+        v = aggregate(na_manifest, ev)
+        row = next(r for r in v["rows"] if r.get("scenario") == "S2-HEALTH")
+        rc, out, err = cli_run(na_manifest, ev)
+        ok = (v["ready"] is False and rc == 1
+              and row.get("status") == "conflict"
+              and "failed" in tuple(row.get("conflicting_statuses") or ()))
+        controls.append(("NC-MAN-na-masks-failed-fails", ok,
+                         f"preapproved NA + failed same requirement: "
+                         f"in-process ready={v['ready']} (want False), row "
+                         f"status={row.get('status')} (want conflict), "
+                         f"CLI exit={rc} (want 1)"))
 
     check_conflict("NC-MAN-pass-failed-masking-conflict-fails",
                    [{"status": "failed"}, {"status": "pass"}],
