@@ -279,14 +279,71 @@ constexpr inline static bool CLIP_FILEMODEL_AFTER_BUILD = false;
 
 ## Testing Patterns
 
-### MANDATORY: No grep-style pseudo-validation (user directive 2026-11-07)
+### MANDATORY: No grep-style pseudo-validation (user directive 2026-11-07, reinforced 2026-11-20)
 
-**Never write or accept a test, CI verification step, or self-check whose assertion is "this string exists in this file/config/log" used as proof that a runtime behavior works. This applies everywhere: unit tests, integration tests, CI workflow steps, POCs, and agent self-verification.**
+# 🚫🚫🚫 NO FAKE TESTS. NO GREP-STYLE "COVERAGE". NO SIMULATED WORKFLOWS. EVER. 🚫🚫🚫
 
-- A grep-style check validates the *description* of the wiring, not the wiring. It has zero power to observe an HTTP round-trip, an exit code, a build result, or a restored artifact.
-- Every validation must exercise the real code path and assert on real outcomes: run the actual command and check its exit code, do a write-then-read-back round-trip, compare produced artifacts, or query the external system's state through its API.
-- Canonical incident (why this rule exists): the "Verify NuGet Feed Credentials (Non-Windows)" CI step grepped `nuget.generated.config` for `ClearTextPassword`/`defaultPushSource` and passed on every run while every actual feed write had been failing for 9 months ("Account has reached its billing limit", surfaced only as a non-fatal nuget warning). The grep provided false confidence and hid the outage. The outage itself was fixed in #618 (2026-11-08): v3 push URL, `GITHUB_TOKEN` auth, and a readwrite round-trip tripwire that does a real push-then-restore. The rule stands regardless.
-- If a true end-to-end round-trip is genuinely impossible in a given context, the check must be labeled partial in its own output — never presented as verification.
+**NEVER write or accept a test, CI verification step, or self-check whose assertion is "this string exists in this file/config/log" used as proof that a runtime behavior works. THIS APPLIES EVERYWHERE: unit tests, integration tests, CI workflow steps, POCs, and agent self-verification. NO EXCEPTIONS!!!!!**
+
+**A TEST THAT DOES NOT EXERCISE PRODUCTION CODE AND ASSERT A REAL OUTCOME IS NOT A TEST. IT IS A LIE THAT INFLATES COVERAGE AND HIDES RISK. DELETE IT. DO NOT WRITE IT. DO NOT ACCEPT IT IN REVIEW!!!!!**
+
+- A grep-style check validates the *description* of the wiring, not the wiring. It has ZERO power to observe an HTTP round-trip, an exit code, a build result, or a restored artifact.
+- EVERY validation MUST exercise the real code path and assert on real outcomes: run the actual command and check its exit code, do a write-then-read-back round-trip, compare produced artifacts, or query the external system's state through its API.
+- **STRING PRESENCE IS NEVER PROOF OF RUNTIME BEHAVIOR!!!!!** Finding `"foo"` in a file does not mean `foo` ran, worked, served a request, parsed a design, or returned the right bytes.
+- **DO NOT name a test `Integration`, `Performance`, `ErrorHandling`, `Workflow`, `Stress`, or `Concurrency` unless it ACTUALLY integrates production components, measures production performance, or exercises production error/concurrency paths. A misleading name on a fake test is doubly banned!!!!!**
+- If a true end-to-end round-trip is genuinely impossible in a given context, the check MUST be labeled partial in its own output — NEVER presented as verification.
+
+#### ❌ BANNED — real examples DELETED from this repo on 2026-11-20 (do NOT reintroduce these patterns):
+
+```cpp
+// ❌ BANNED: "integration workflow" that only checks files exist + sleeps. Parses NOTHING.
+EXPECT_TRUE(std::filesystem::exists(designPath));   // ← this is NOT "the design loaded"
+EXPECT_GT(std::filesystem::file_size(designPath), 0);
+std::this_thread::sleep_for(std::chrono::milliseconds(10));  // ← "simulated processing" = LIE
+
+// ❌ BANNED: a local simulate function stood in for the real product pipeline.
+ProcessingResult simulateDataProcessing(const std::filesystem::path& p) { /* sleeps, returns size */ }
+EXPECT_TRUE(result.success);   // ← proves the SIMULATION ran, not OdbDesign
+
+// ❌ BANNED: create a corrupt file, then NEVER feed it to OdbDesign.
+auto corrupt = TestUtils::createManagedTempFile("corrupted data", ".tgz");
+EXPECT_TRUE(std::filesystem::exists(corrupt->path()));  // ← the parser was never invoked!
+
+// ❌ BANNED: "performance test" benchmarking the STL, not the product.
+std::vector<char> buffer(1024*1024); benchmarkFunction([&]{ return buffer.size(); }, 50);
+EXPECT_LT(vectorAllocTime.count(), 50000);  // ← measures std::vector, NOT OdbDesign
+
+// ❌ BANNED: grep a config/source for a string and call the wiring "verified".
+EXPECT_NE(configText.find("ClearTextPassword"), std::string::npos);  // ← proves nothing runs
+```
+
+#### ✅ REQUIRED — what a real test looks like:
+
+```cpp
+// ✅ REAL: parse an actual design and assert actual parsed values.
+auto pDesign = cache->GetDesign("designodb_rigidflex");
+ASSERT_NE(pDesign, nullptr);
+EXPECT_EQ(pDesign->GetSteps().size(), expectedStepCount);   // independent expected value
+
+// ✅ REAL: write through the API, then read back and compare bytes/fields.
+auto status = stub->Upload(&ctx, req, &resp);
+ASSERT_TRUE(status.ok());
+EXPECT_EQ(ReadFileBytes(storedPath), uploadedBytes);        // round-trip, not existence
+
+// ✅ REAL: run the process and assert its exit code + that no socket opened.
+int rc = RunServerWithExpiredLicense(...);
+EXPECT_EQ(rc, 1);
+EXPECT_FALSE(IsPortListening(restPort));                    // real behavior, real outcome
+
+// ✅ REAL: stream over gRPC and compare reassembled content to the monolith.
+ASSERT_TRUE(stream.ok());
+EXPECT_EQ(reassembledBytes, monolithicBytes);               // wire equivalence
+```
+
+**Legitimate string assertions are FINE** when the string IS the product's output (e.g. a formatter, `Utf8Sanitizer`, ETag generation, serialized JSON, log output when logging is the behavior under test). The ban is on string-presence used as a SUBSTITUTE for exercising runtime behavior — not on asserting real output.
+
+- Canonical incident #1 (why this rule exists): the "Verify NuGet Feed Credentials (Non-Windows)" CI step grepped `nuget.generated.config` for `ClearTextPassword`/`defaultPushSource` and passed on every run while every actual feed write had been failing for 9 months ("Account has reached its billing limit", surfaced only as a non-fatal nuget warning). The grep provided false confidence and hid the outage. Fixed in #618 (2026-11-08) with a real push-then-restore round-trip tripwire.
+- Canonical incident #2 (2026-11-20 purge): `IntegrationTests.cpp`, `PerformanceTests.cpp`, and `EnhancedTests.cpp` were DELETED entirely — every test simulated workflows, benchmarked the STL, or checked file existence while asserting nothing about OdbDesign. They inflated the test count and (via fixtures) coverage while providing ZERO assurance. **DO NOT RECREATE THEM. Real replacement suites are tracked in `docs/plan/test-coverage-and-evaluation-validation-plan/`.**
 
 ### Test Fixture Pattern
 
