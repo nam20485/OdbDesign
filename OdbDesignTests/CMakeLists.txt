@@ -25,6 +25,7 @@ add_executable(OdbDesignTests
     "DesignCacheThreadSafetyTests.cpp"
     "DesignCacheSingleFlightTests.cpp"
     "GrpcServiceConfigTests.cpp"
+    "BasicRequestAuthenticationTests.cpp"
     "Utf8SanitizerTests.cpp"
     "HttpCachingTests.cpp"
     "../OdbDesignServer/Config/GrpcServiceConfig.cpp"
@@ -70,11 +71,17 @@ get_filename_component(REPO_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/.." ABSOLUTE)
 target_compile_definitions(OdbDesignTests PRIVATE ODBDESIGN_SOURCE_DIR="${REPO_ROOT}")
 set(ODBDESIGN_SERVER_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/../OdbDesignServer")
 set(GRPC_CODEGEN_DIR "${ODBDESIGN_SERVER_BINARY_DIR}/grpc")
-target_include_directories(OdbDesignTests PRIVATE 
+target_include_directories(OdbDesignTests PRIVATE
     ${REPO_ROOT}                                      # For OdbDesignServer/Services/... includes (repo root)
     ${REPO_ROOT}/OdbDesignServer                     # For Config/GrpcServiceConfig.h
     ${ODBDESIGN_SERVER_BINARY_DIR}                   # For service.grpc.pb.h (generated files)
     ${GRPC_CODEGEN_DIR})                             # For grpc generated files
+
+# F004 fail-closed test (BasicRequestAuthenticationTests.cpp) spawns the real
+# server binary to prove auth-enabled startup without credentials exits
+# PreServerRunFailed and opens no listener
+target_compile_definitions(OdbDesignTests PRIVATE
+    ODBDESIGN_SERVER_EXECUTABLE_PATH="$<TARGET_FILE:OdbDesignServer>")
 
 # Add generated gRPC sources (required for OdbDesignServiceImpl which uses these types)
 set(GRPC_PROTO_SRCS

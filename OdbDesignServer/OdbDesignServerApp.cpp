@@ -225,6 +225,22 @@ namespace Odb::App::Server
 
 		// add authentication
 		bool disableAuth = args().disableAuthentication();
+
+		// F004 fail-closed: refuse to start when authentication is enabled but
+		// credentials are not configured. Returning false aborts Run() with
+		// ExitCode::PreServerRunFailed BEFORE any REST or gRPC listener opens,
+		// so an unconfigured deployment can never fall back to a known default
+		// credential (VerifyCredentials also rejects everything in that state).
+		if (!disableAuth && !BasicRequestAuthentication::AreCredentialsConfigured())
+		{
+			std::cerr << "ERROR: Authentication is enabled, but server credentials are not configured."
+				<< " Set both the " << BasicRequestAuthentication::USERNAME_ENV_NAME << " and the "
+				<< BasicRequestAuthentication::PASSWORD_ENV_NAME << " environment variables to non-empty values,"
+				<< " or pass --disable-authentication to explicitly disable authentication."
+				<< " Refusing to start (fail closed)." << std::endl;
+			return false;
+		}
+
 		auto basicRequestAuth = std::make_unique<BasicRequestAuthentication>(BasicRequestAuthentication(disableAuth));
 		request_auth(std::move(basicRequestAuth));
 
