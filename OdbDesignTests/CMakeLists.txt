@@ -46,7 +46,11 @@ add_executable(OdbDesignTests
     "GrpcBatchStreamTests.cpp"
     "FileArchiveLoadTests.cpp"
     "ParserOnlyHeaderTests.cpp"
-    "ToolsFileTests.cpp")
+    "ToolsFileTests.cpp"
+    "StepHdrFileTests.cpp"
+    "FeaturesFileTests.cpp"
+    "EdaDataFileTests.cpp"
+    "MiscInfoFileTests.cpp")
 
 target_link_libraries(OdbDesignTests PRIVATE GTest::gtest_main GTest::gmock_main)
 
