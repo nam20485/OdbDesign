@@ -7,6 +7,7 @@
 #include <odbdesign_export.h>
 #include <featuresfile.pb.h>
 #include <grpcpp/impl/status.h>
+#include <cstdint>
 #include <string>
 #include <sstream>
 #include <exception>
@@ -146,6 +147,18 @@ namespace OdbDesignServer
                     return Odb::Lib::UnitType::Imperial;
                 }
                 return Odb::Lib::UnitType::None;
+            }
+
+            // Completeness trailer for the layer-feature streams (contract in
+            // service.proto): reports how many records a COMPLETE stream of
+            // this layer delivers. Set on every exit after validation — the
+            // OK (complete) path, the cancellation paths (best-effort: a
+            // cancelled client may not read it) and the truncated INTERNAL
+            // path, where it is the client's definitive "this is how many
+            // SHOULD have arrived" signal.
+            void AddTotalRecordsTrailer(grpc::ServerContext* context, std::uint64_t total)
+            {
+                context->AddTrailingMetadata("x-total-records", std::to_string(total));
             }
 
             // M6: spool cache construction — a configured directory wins; the
@@ -576,6 +589,20 @@ namespace OdbDesignServer
                 const auto &featuresFile = layerIt->second->GetFeaturesFile();
                 const auto &featureRecords = featuresFile.GetFeatureRecords();
 
+                // Completeness contract (service.proto): pre-count the records
+                // a COMPLETE stream delivers (cheap pass, no serialization) so
+                // the "x-total-records" trailer is exact on every exit,
+                // including the truncated-INTERNAL path where the client
+                // learns how many SHOULD have arrived. A defensive
+                // to_protobuf() failure decrements the count — that record is
+                // never emitted on any run.
+                std::uint64_t totalToSend = 0;
+                for (const auto &featureRecord : featureRecords)
+                {
+                    if (featureRecord)
+                        ++totalToSend;
+                }
+
                 // Reuse a single protobuf message instance to avoid per-iteration heap allocations.
                 Odb::Lib::Protobuf::FeaturesFile::FeatureRecord featureRecordMsg;
 
@@ -593,15 +620,36 @@ namespace OdbDesignServer
                     }
                     else
                     {
+                        --totalToSend; // conversion failed: never emits on any run
                         continue; // Skip if conversion failed or returned nullptr.
                     }
 
                     if (!writer->Write(featureRecordMsg))
                     {
-                        loginfo("[ConnTrace] GetLayerFeaturesStream client_disconnected: design=\"" + request->design_name() +
+                        // Fail loud (Option A): a write failure the transport
+                        // did NOT attribute to this client's cancellation
+                        // truncates the stream — mirror GetDesignStream and
+                        // end INTERNAL with the sent count; returning OK here
+                        // would hand a still-connected client a clean trailer
+                        // over a truncated record sequence. A cancel observed
+                        // at the failure is not a server error (GetDesignStream
+                        // semantics): return OK and let the client-side
+                        // CANCELLED speak.
+                        if (context->IsCancelled())
+                        {
+                            loginfo("[ConnTrace] GetLayerFeaturesStream client_cancelled: design=\"" + request->design_name() +
+                                "\" step=\"" + request->step_name() + "\" layer=\"" + request->layer_name() +
+                                "\" sent=" + std::to_string(sentCount));
+                            AddTotalRecordsTrailer(context, totalToSend);
+                            return grpc::Status::OK;
+                        }
+                        logerror("[ConnTrace] GetLayerFeaturesStream write failed: design=\"" + request->design_name() +
                             "\" step=\"" + request->step_name() + "\" layer=\"" + request->layer_name() +
-                            "\" sent=" + std::to_string(sentCount));
-                        break;
+                            "\" sent=" + std::to_string(sentCount) + " total=" + std::to_string(totalToSend));
+                        AddTotalRecordsTrailer(context, totalToSend);
+                        return {grpc::StatusCode::INTERNAL,
+                            "layer-feature stream write failed after " + std::to_string(sentCount) +
+                            " of " + std::to_string(totalToSend) + " records"};
                     }
 
                     ++sentCount;
@@ -613,6 +661,7 @@ namespace OdbDesignServer
                 loginfo("[ConnTrace] GetLayerFeaturesStream done: design=\"" + request->design_name() +
                     "\" step=\"" + request->step_name() + "\" layer=\"" + request->layer_name() +
                     "\" sent=" + std::to_string(sentCount));
+                AddTotalRecordsTrailer(context, totalToSend);
                 return grpc::Status::OK;
             }
             catch (const std::exception &e)
@@ -661,6 +710,22 @@ namespace OdbDesignServer
                 const auto &featuresFile = layerIt->second->GetFeaturesFile();
                 const auto &featureRecords = featuresFile.GetFeatureRecords();
 
+                // Completeness contract (service.proto): pre-count the records
+                // a COMPLETE stream delivers so the "x-total-records" trailer
+                // and the FINAL batch's total_records are exact on every
+                // exit — including the truncated-INTERNAL path, where they
+                // tell the client how many SHOULD have arrived. A defensive
+                // to_protobuf() failure does NOT decrement: it fails the
+                // stream INTERNAL below, because already-written batches
+                // snapshotted this total and decrementing would break the
+                // completeness contract mid-stream.
+                std::uint64_t totalToSend = 0;
+                for (const auto &featureRecord : featureRecords)
+                {
+                    if (featureRecord)
+                        ++totalToSend;
+                }
+
                 // Reuse a single protobuf message instance to avoid per-iteration heap allocations.
                 Odb::Lib::Protobuf::FeaturesFile::FeatureRecord featureRecordMsg;
                 Odb::Grpc::FeatureRecordBatch batch;
@@ -672,9 +737,11 @@ namespace OdbDesignServer
 
                 for (const auto &featureRecord : featureRecords)
                 {
-                    // Check for cancellation
+                    // Check for cancellation (truncation exit: trailer is
+                    // best-effort — a cancelled client may not receive it)
                     if (context->IsCancelled())
                     {
+                        AddTotalRecordsTrailer(context, totalToSend);
                         return {grpc::StatusCode::CANCELLED, "Request cancelled"};
                     }
 
@@ -689,7 +756,22 @@ namespace OdbDesignServer
                     }
                     else
                     {
-                        continue; // Skip if conversion failed or returned nullptr.
+                        // Fail loud (Option A): a conversion failure is a
+                        // data-integrity anomaly, and silently decrementing
+                        // totalToSend here would invalidate the totals that
+                        // ALREADY-WRITTEN batches snapshotted (each batch
+                        // carries the whole-stream total at its write time),
+                        // breaking sum(received) == last_batch.total_records
+                        // == x-total-records on what would otherwise end as a
+                        // complete OK stream. Ending INTERNAL keeps the
+                        // completeness contract scoped to complete OK streams.
+                        logerror("[ConnTrace] GetLayerFeaturesBatchStream to_protobuf failed: design=\"" + request->design_name() +
+                            "\" step=\"" + request->step_name() + "\" layer=\"" + request->layer_name() +
+                            "\" batches=" + std::to_string(batchesSent) + " features=" + std::to_string(featuresSent));
+                        AddTotalRecordsTrailer(context, totalToSend);
+                        return {grpc::StatusCode::INTERNAL,
+                            "layer-feature batch stream record conversion failed after " +
+                            std::to_string(featuresSent) + " of " + std::to_string(totalToSend) + " records"};
                     }
 
                     // Add feature to current batch
@@ -706,15 +788,49 @@ namespace OdbDesignServer
                         // Check for cancellation before writing
                         if (context->IsCancelled())
                         {
+                            AddTotalRecordsTrailer(context, totalToSend);
                             return {grpc::StatusCode::CANCELLED, "Request cancelled"};
                         }
-                        
+
+                        // Completeness contract: EVERY batch carries the
+                        // whole-stream record total — including full batches
+                        // written in-loop, because when the layer's record
+                        // count is an exact multiple of the batch size the
+                        // stream ENDS on a full batch and the final-partial
+                        // branch never runs. The last batch a client receives
+                        // must always carry the total.
+                        batch.set_total_records(totalToSend);
+
                         if (!writer->Write(batch))
                         {
-                            loginfo("[ConnTrace] GetLayerFeaturesBatchStream client_disconnected: design=\"" + request->design_name() +
+                            // Fail loud (Option A): a write failure the
+                            // transport did NOT attribute to this client's
+                            // cancellation truncates the stream — mirror
+                            // GetDesignStream and end INTERNAL with the
+                            // delivered-of-total counts; returning OK here
+                            // would hand a still-connected client a clean
+                            // trailer over a truncated batch sequence. A
+                            // cancel observed at the failure is not a server
+                            // error (GetDesignStream semantics): return OK
+                            // and let the client-side CANCELLED speak.
+                            const auto delivered = featuresSent - static_cast<size_t>(currentBatchCount);
+                            if (context->IsCancelled())
+                            {
+                                loginfo("[ConnTrace] GetLayerFeaturesBatchStream client_cancelled: design=\"" + request->design_name() +
+                                    "\" step=\"" + request->step_name() + "\" layer=\"" + request->layer_name() +
+                                    "\" batches=" + std::to_string(batchesSent) + " features=" + std::to_string(delivered));
+                                AddTotalRecordsTrailer(context, totalToSend);
+                                return grpc::Status::OK;
+                            }
+                            logerror("[ConnTrace] GetLayerFeaturesBatchStream write failed: design=\"" + request->design_name() +
                                 "\" step=\"" + request->step_name() + "\" layer=\"" + request->layer_name() +
-                                "\" batches=" + std::to_string(batchesSent) + " features=" + std::to_string(featuresSent));
-                            return grpc::Status::OK;
+                                "\" batches=" + std::to_string(batchesSent) + " features=" + std::to_string(delivered) +
+                                " total=" + std::to_string(totalToSend));
+                            AddTotalRecordsTrailer(context, totalToSend);
+                            return {grpc::StatusCode::INTERNAL,
+                                "layer-feature batch stream write failed after " + std::to_string(delivered) +
+                                " of " + std::to_string(totalToSend) + " records (" +
+                                std::to_string(batchesSent) + " complete batches sent)"};
                         }
                         batchesSent++;
                         batch.Clear();
@@ -728,15 +844,36 @@ namespace OdbDesignServer
                     // Check for cancellation before writing final batch
                     if (context->IsCancelled())
                     {
+                        AddTotalRecordsTrailer(context, totalToSend);
                         return {grpc::StatusCode::CANCELLED, "Request cancelled"};
                     }
-                    
+
+                    // Completeness contract: the final (partial) batch also
+                    // carries the whole-stream record total.
+                    batch.set_total_records(totalToSend);
+
                     if (!writer->Write(batch))
                     {
-                        loginfo("[ConnTrace] GetLayerFeaturesBatchStream client_disconnected(final): design=\"" + request->design_name() +
+                        // Fail loud: same contract as the full-batch write
+                        // failure above.
+                        const auto delivered = featuresSent - static_cast<size_t>(currentBatchCount);
+                        if (context->IsCancelled())
+                        {
+                            loginfo("[ConnTrace] GetLayerFeaturesBatchStream client_cancelled(final): design=\"" + request->design_name() +
+                                "\" step=\"" + request->step_name() + "\" layer=\"" + request->layer_name() +
+                                "\" batches=" + std::to_string(batchesSent) + " features=" + std::to_string(delivered));
+                            AddTotalRecordsTrailer(context, totalToSend);
+                            return grpc::Status::OK;
+                        }
+                        logerror("[ConnTrace] GetLayerFeaturesBatchStream write failed(final): design=\"" + request->design_name() +
                             "\" step=\"" + request->step_name() + "\" layer=\"" + request->layer_name() +
-                            "\" batches=" + std::to_string(batchesSent) + " features=" + std::to_string(featuresSent));
-                        return grpc::Status::OK;
+                            "\" batches=" + std::to_string(batchesSent) + " features=" + std::to_string(delivered) +
+                            " total=" + std::to_string(totalToSend));
+                        AddTotalRecordsTrailer(context, totalToSend);
+                        return {grpc::StatusCode::INTERNAL,
+                            "layer-feature batch stream write failed after " + std::to_string(delivered) +
+                            " of " + std::to_string(totalToSend) + " records (final batch, " +
+                            std::to_string(batchesSent) + " complete batches sent)"};
                     }
                     batchesSent++;
                 }
@@ -746,6 +883,7 @@ namespace OdbDesignServer
                     "\" step=\"" + request->step_name() + "\" layer=\"" + request->layer_name() +
                     "\" batches=" + std::to_string(batchesSent) + " features=" + std::to_string(featuresSent) +
                     " batch_size=" + std::to_string(batchSize));
+                AddTotalRecordsTrailer(context, totalToSend);
                 return grpc::Status::OK;
             }
             catch (const std::exception &e)

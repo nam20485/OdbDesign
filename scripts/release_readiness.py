@@ -259,8 +259,11 @@ def _parse_xml_no_entities(path):
     CI-generated JUnit XML never carries one — refuse any DOCTYPE/ENTITY
     declaration outright instead of adding a defusedxml dependency."""
     text = Path(path).read_text(encoding="utf-8", errors="replace")
-    head = text[:65536]
-    if "<!DOCTYPE" in head or "<!ENTITY" in head:
+    # Scan the WHOLE text: XML only requires the DOCTYPE to precede the root
+    # element, so a DTD padded past any fixed window (large comment/PI in the
+    # prolog) would otherwise reach ET.fromstring with the entity surface
+    # active. Files here are small; the full scan is free.
+    if "<!DOCTYPE" in text or "<!ENTITY" in text:
         raise ET.ParseError("refusing XML with DTD/entity declarations (XXE guard)")
     return ET.fromstring(text)
 

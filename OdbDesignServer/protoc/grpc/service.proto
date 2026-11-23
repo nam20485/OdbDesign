@@ -36,11 +36,37 @@ service OdbDesignService {
 
   // Server-streaming call for high-performance streaming of layer features.
   // This is the primary performance-critical endpoint.
-  rpc GetLayerFeaturesStream(GetLayerFeaturesRequest) returns (stream .Odb.Lib.Protobuf.FeaturesFile.FeatureRecord); 
+  //
+  // Completeness contract: an OK status means the stream is COMPLETE — the
+  // client received exactly the number of records reported by the
+  // "x-total-records" entry in the server trailing metadata. A truncated
+  // stream NEVER ends OK: on a server-side write failure the handler ends
+  // grpc::StatusCode::INTERNAL whose message reports how many records were
+  // sent ("after N of T records"), having set the trailer to T (the full
+  // count the complete stream would have delivered) before returning.
+  // (When the transport itself terminates the call — e.g. a message-size
+  // limit fails the write before the handler's status is sent — the wire
+  // shows the transport's own non-OK status and the handler's message and
+  // trailer are not delivered; the truncated-never-OK guarantee still
+  // holds.) Client cancellation is not a server error: a cancellation
+  // observed at a failed write ends OK (the client sees its own
+  // CANCELLED); the trailer is set but a cancelling client does not
+  // receive late trailers.
+  rpc GetLayerFeaturesStream(GetLayerFeaturesRequest) returns (stream .Odb.Lib.Protobuf.FeaturesFile.FeatureRecord);
 
   // Batched server-streaming call for high-performance streaming of layer features.
   // Sends features in batches to reduce stream overhead for layers with 10k+ features.
   // Client should use this when server supports it, falling back to GetLayerFeaturesStream if unavailable.
+  //
+  // Completeness contract (same as GetLayerFeaturesStream — truncated
+  // streams never end OK): OK => complete; EVERY batch carries
+  // total_records = the total number of records the complete stream
+  // delivers across all batches, so a client verifies against the LAST
+  // batch it receives: sum(received records) == last_batch.total_records
+  // == "x-total-records" trailer count. (Every batch carries the field so
+  // the verification also holds for layers whose record count is an exact
+  // multiple of the batch size, where the stream ends on a full batch.)
+  // An empty layer completes OK with zero batches and a trailer of 0.
   rpc GetLayerFeaturesBatchStream(GetLayerFeaturesRequest) returns (stream FeatureRecordBatch);
 
   // Unary call to get the symbol list and units metadata for a layer.
@@ -140,6 +166,18 @@ message HealthCheckResponse {
 // Batch container for feature records to reduce stream overhead
 message FeatureRecordBatch {
   repeated .Odb.Lib.Protobuf.FeaturesFile.FeatureRecord features = 1;
+
+  // Total feature records the COMPLETE stream delivers across all batches
+  // (not the size of this batch). Set on EVERY batch; clients verify
+  // against the LAST batch received:
+  //   sum(received records) == total_records (last batch)
+  //                          == "x-total-records" trailing-metadata entry.
+  // Every batch carries the field (not just the final one) because a layer
+  // whose record count is an exact multiple of the batch size ends the
+  // stream on a full batch written in-loop, with no final partial batch.
+  // Additive field: wire-compatible for clients generated from earlier
+  // revisions of this file.
+  optional uint64 total_records = 2;
 }
 
 // ============================================================================

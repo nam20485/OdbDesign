@@ -46,7 +46,15 @@ add_executable(OdbDesignTests
     "GrpcBatchStreamTests.cpp"
     "FileArchiveLoadTests.cpp"
     "ParserOnlyHeaderTests.cpp"
-    "ToolsFileTests.cpp")
+    "ToolsFileTests.cpp"
+
+    # M2 real-transport gRPC coverage (loopback ServerBuilder + generated
+    # stub, the DesignStreamTests pattern): layer-feature streaming RPCs,
+    # HealthCheck, and the contract sweep for RPCs only covered by direct
+    # service-method invocation elsewhere.
+    "GrpcLayerFeatureStreamTests.cpp"
+    "GrpcHealthCheckTests.cpp"
+    "GrpcContractSweepTests.cpp")
 
 target_link_libraries(OdbDesignTests PRIVATE GTest::gtest_main GTest::gmock_main)
 
