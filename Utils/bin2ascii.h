@@ -49,8 +49,11 @@ namespace Utils
 		std::string r;
 		r.reserve(s.size() * 2);
 		for (size_t i = 0; i < s.size(); i++) {
-			unsigned char hi = s[i] >> 4;
-			unsigned char lo = s[i] & 0xf;
+			// unsigned byte value: a signed char would sign-extend in >> 4,
+			// indexing the lookup table far out of bounds for bytes >= 0x80
+			const unsigned char byte = static_cast<unsigned char>(s[i]);
+			const unsigned char hi = byte >> 4;
+			const unsigned char lo = byte & 0xf;
 			r.push_back(lookup[hi]);
 			r.push_back(lookup[lo]);
 		}

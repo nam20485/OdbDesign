@@ -127,10 +127,10 @@ namespace Utils
 
     std::string str_to_upper_copy(const std::string& s)
     {
-        std::string copy;
+        std::string copy = s;
         std::transform(copy.begin(), copy.end(), copy.begin(), [](unsigned char c) { return std::toupper(c); });
         return copy;
-    }   
+    }
 
     bool str_iequals(const std::string& s1, const std::string& s2)
     {

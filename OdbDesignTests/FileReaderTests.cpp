@@ -1,10 +1,16 @@
 #include <gtest/gtest.h>
 #include <filesystem>
+#include <stdexcept>
+#include <cstring>
+#include <memory>
+#include <vector>
 #include "FileReader.h"
 #include "Fixtures/TestDataFixture.h"
+#include "Fixtures/TestUtils.h"
 
 using namespace std::filesystem;
 using namespace Odb::Test::Fixtures;
+using namespace Odb::Test::Utils;
 using namespace testing;
 using namespace Utils;
 
@@ -52,5 +58,156 @@ namespace Odb::Test
 		auto& buffer = fr.GetBuffer();
 		ASSERT_EQ(buffer.size(), fileSize);
 		ASSERT_STREQ(buffer.data(), FILE_CONTENTS);
+	}
+
+	TEST(FileReaderTests, Test_FileReaderRead_MissingFile_ReturnsZeroAndEmptyBuffer)
+	{
+		auto missingPath = temp_directory_path() / "odbtest_does_not_exist_9f2c1.bin";
+
+		FileReader frBuffered(missingPath);
+		EXPECT_EQ(frBuffered.Read(FileReader::BufferStrategy::Buffered), 0LL);
+		EXPECT_TRUE(frBuffered.GetBuffer().empty());
+
+		FileReader frUnbuffered(missingPath);
+		EXPECT_EQ(frUnbuffered.Read(FileReader::BufferStrategy::Unbuffered), 0LL);
+		EXPECT_TRUE(frUnbuffered.GetBuffer().empty());
+	}
+
+	TEST(FileReaderTests, Test_FileReaderRead_EmptyFile_ReturnsZeroAndEmptyBuffer)
+	{
+		auto emptyFile = TestUtils::createManagedTempFile("", ".empty");
+
+		FileReader frBuffered(emptyFile->path());
+		EXPECT_EQ(frBuffered.Read(FileReader::BufferStrategy::Buffered), 0LL);
+		EXPECT_TRUE(frBuffered.GetBuffer().empty());
+
+		FileReader frUnbuffered(emptyFile->path());
+		EXPECT_EQ(frUnbuffered.Read(FileReader::BufferStrategy::Unbuffered), 0LL);
+		EXPECT_TRUE(frUnbuffered.GetBuffer().empty());
+	}
+
+	TEST(FileReaderTests, Test_FileReaderRead_BinaryContent_NulAndHighBitBytes_Buffered)
+	{
+		// NUL and high-bit bytes: Read() must preserve the EXACT bytes,
+		// unlike the existing text-based tests that use ASSERT_STREQ
+		const std::vector<char> binary{ '\x41', '\x00', '\x42', '\xE9', '\xFF', '\x00' };
+		auto binaryFile = std::make_unique<TestUtils::TempResource>(
+			TestUtils::createTempBinaryFile(
+				std::vector<uint8_t>(binary.begin(), binary.end()), ".bin"));
+
+		FileReader fr(binaryFile->path());
+		auto read = fr.Read(FileReader::BufferStrategy::Buffered);
+		ASSERT_EQ(read, static_cast<long long>(binary.size()));
+
+		const auto& buffer = fr.GetBuffer();
+		ASSERT_EQ(buffer.size(), binary.size());
+		EXPECT_TRUE(std::equal(binary.begin(), binary.end(), buffer.begin()));
+	}
+
+	TEST(FileReaderTests, Test_FileReaderRead_BinaryContent_NulAndHighBitBytes_Unbuffered)
+	{
+		const std::vector<char> binary{ '\x00', '\x7F', '\x80', '\xC3', '\x41' };
+		auto binaryFile = std::make_unique<TestUtils::TempResource>(
+			TestUtils::createTempBinaryFile(
+				std::vector<uint8_t>(binary.begin(), binary.end()), ".bin"));
+
+		FileReader fr(binaryFile->path());
+		auto read = fr.Read(FileReader::BufferStrategy::Unbuffered);
+		ASSERT_EQ(read, static_cast<long long>(binary.size()));
+
+		const auto& buffer = fr.GetBuffer();
+		ASSERT_EQ(buffer.size(), binary.size());
+		EXPECT_TRUE(std::equal(binary.begin(), binary.end(), buffer.begin()));
+	}
+
+	// documented actual behavior: repeating Read() on the SAME unchanged file
+	// without Clear() still yields the correct bytes — the buffered strategy
+	// appends the second read and then resize(read) truncates back to the
+	// first copy, so size and the bytes within size stay correct. NOTE: the
+	// buffer is not NUL-terminated (bytes beyond size() are stale leftovers
+	// from the appended second read), so only the exact range is compared;
+	// the grown-file regression guard below covers the changed-file case
+	TEST(FileReaderTests, Test_FileReaderRead_RepeatWithoutClear_SameFile_BufferCorrect)
+	{
+		auto tempFile = TestUtils::createManagedTempFile(FILE_CONTENTS, ".txt");
+
+		FileReader fr(tempFile->path());
+		ASSERT_EQ(fr.Read(), static_cast<long long>(strlen(FILE_CONTENTS)));
+
+		auto second = fr.Read();
+		EXPECT_EQ(second, static_cast<long long>(strlen(FILE_CONTENTS)));
+		ASSERT_EQ(fr.GetBuffer().size(), strlen(FILE_CONTENTS));
+		EXPECT_TRUE(std::equal(FILE_CONTENTS, FILE_CONTENTS + strlen(FILE_CONTENTS),
+							   fr.GetBuffer().begin()));
+	}
+
+	// REGRESSION GUARD (was a known defect, fixed in this PR): the buffered
+	// strategy used to append into the stale buffer without clearing it, so
+	// re-reading a file that GREW between reads yielded a mix of old and new
+	// bytes with the new size. Read() now clears the buffer first, so every
+	// read reports exactly the current file content.
+	TEST(FileReaderTests, Test_FileReaderRead_RepeatAfterFileGrew_BufferHoldsCurrentContent)
+	{
+		const std::string originalContents = "AAAA";
+		const std::string grownContents = "BBBBBBBBBBBB";
+
+		auto tempFile = TestUtils::createManagedTempFile(originalContents, ".grow");
+
+		FileReader fr(tempFile->path());
+		ASSERT_EQ(fr.Read(), static_cast<long long>(originalContents.size()));
+
+		// grow the file between the two reads
+		{
+			std::ofstream grow(tempFile->path(), std::ios::binary | std::ios::trunc);
+			grow.write(grownContents.c_str(), static_cast<std::streamsize>(grownContents.size()));
+			ASSERT_TRUE(grow.good());
+		}
+
+		auto second = fr.Read();
+		EXPECT_EQ(second, static_cast<long long>(grownContents.size()));
+		ASSERT_EQ(fr.GetBuffer().size(), grownContents.size());
+		EXPECT_EQ(std::string(fr.GetBuffer().data(), fr.GetBuffer().size()), grownContents);
+	}
+
+	TEST(FileReaderTests, Test_FileReaderClear_ResetAllowsCleanReread)
+	{
+		auto tempFile = TestUtils::createManagedTempFile(FILE_CONTENTS, ".txt");
+
+		FileReader fr(tempFile->path());
+		ASSERT_EQ(fr.Read(), static_cast<long long>(strlen(FILE_CONTENTS)));
+
+		fr.Clear();
+		EXPECT_TRUE(fr.GetBuffer().empty());
+
+		EXPECT_EQ(fr.Read(), static_cast<long long>(strlen(FILE_CONTENTS)));
+		ASSERT_EQ(fr.GetBuffer().size(), strlen(FILE_CONTENTS));
+		EXPECT_STREQ(fr.GetBuffer().data(), FILE_CONTENTS);
+	}
+
+	TEST(FileReaderTests, Test_FileReaderRead_Directory_BufferedReturnsZero)
+	{
+		auto tempDir = TestUtils::createManagedTempDirectory("filereader");
+
+		// buffered: the stream opens but reads nothing from a directory
+		FileReader frBuffered(tempDir->path());
+		EXPECT_EQ(frBuffered.Read(FileReader::BufferStrategy::Buffered), 0LL);
+		EXPECT_TRUE(frBuffered.GetBuffer().empty());
+	}
+
+	TEST(FileReaderTests, Test_FileReaderRead_Directory_Unbuffered_PerPlatform)
+	{
+		auto tempDir = TestUtils::createManagedTempDirectory("filereader");
+
+		FileReader fr(tempDir->path());
+#ifdef _WIN32
+		// Windows: std::filesystem::file_size() SUCCEEDS on a directory, so
+		// the unbuffered path reads nothing and returns 0 without throwing
+		EXPECT_EQ(fr.Read(FileReader::BufferStrategy::Unbuffered), 0LL);
+		EXPECT_TRUE(fr.GetBuffer().empty());
+#else
+		// POSIX: file_size() on a directory throws std::filesystem_error
+		EXPECT_THROW(fr.Read(FileReader::BufferStrategy::Unbuffered),
+					 std::filesystem::filesystem_error);
+#endif
 	}
 }

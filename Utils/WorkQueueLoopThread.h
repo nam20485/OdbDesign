@@ -5,6 +5,9 @@
 #pragma once
 
 #include "ThreadSafeQueue.h"
+#include <exception>
+#include <mutex>
+#include <string>
 #include <thread>
 #include <memory>
 #include <chrono>
@@ -26,7 +29,15 @@ namespace Utils
         void startProcessing();
         void stopProcessing();
 
-    protected:       
+        /** Text of the last processor exception that stopped the loop
+         * (empty when no exception occurred). A processor exception is
+         * contained here -- it stops the loop like a failed work item
+         * instead of propagating out of the loop thread, which would
+         * std::terminate the whole process.
+         */
+        std::string lastProcessingError() const;
+
+    protected:
         void processWorkItemsLoop();
         virtual bool processWorkItem(TWorkItem& workItem);
 
@@ -38,6 +49,14 @@ namespace Utils
 
         const bool _StopProcessingOnWorkItemFail{ true };
         bool _enableInternalLogging{ false };
+
+        // set when a work item FAILS (or throws): the loop abandons the rest
+        // of the queue instead of draining it; a NORMAL stopProcessing()
+        // still drains everything queued before the stop call
+        std::atomic_bool _abandonRemainingItems{ false };
+
+        mutable std::mutex _lastProcessingErrorMutex;
+        std::string _lastProcessingError;
 
     };
     
@@ -85,8 +104,21 @@ namespace Utils
     template<typename TWorkItem>
     void WorkQueueLoopThread<TWorkItem>::processWorkItemsLoop()
     {
-        while (!_stopProcessingWorkItemsFlag.load())
+        for (;;)
         {
+            // exit only when stopped AND there is nothing (allowed) left to
+            // drain. Order matters: stop flag first, emptiness second. A
+            // normal stopProcessing() therefore FLUSHES everything queued
+            // before the stop call (push happens-before the stop store, and
+            // the emptiness re-check below observes it via the queue mutex +
+            // seq_cst flag). A FAILED work item sets _abandonRemainingItems,
+            // which drops the rest of the queue instead of draining it.
+            if (_stopProcessingWorkItemsFlag.load() &&
+                (_abandonRemainingItems.load() || _workItemQueue.empty()))
+            {
+                break;
+            }
+
             auto wait_result = _workItemQueue.wait(/*std::chrono::milliseconds(1)*/);
             switch (wait_result)
             {
@@ -98,15 +130,38 @@ namespace Utils
 					break;
 				default:
 					break;
-            }                  
+            }
 
             while (!_workItemQueue.empty())
             {
                 auto workItem = _workItemQueue.front(false);
-                if (!processWorkItem(workItem))
+
+                // contain processor exceptions: letting one propagate out of
+                // this (thread entry) function would std::terminate the whole
+                // process; treat it like a failed work item instead
+                bool processed = false;
+                try
+                {
+                    processed = processWorkItem(workItem);
+                }
+                catch (const std::exception& e)
+                {
+                    std::lock_guard lock(_lastProcessingErrorMutex);
+                    _lastProcessingError = e.what();
+                    processed = false;
+                }
+                catch (...)
+                {
+                    std::lock_guard lock(_lastProcessingErrorMutex);
+                    _lastProcessingError = "unknown non-standard exception";
+                    processed = false;
+                }
+
+                if (!processed)
                 {
                     if (_StopProcessingOnWorkItemFail)
                     {
+                        _abandonRemainingItems.store(true);
                         _stopProcessingWorkItemsFlag.store(true);
                         break;
                     }
@@ -117,9 +172,21 @@ namespace Utils
     }
 
     template<typename TWorkItem>
+    std::string WorkQueueLoopThread<TWorkItem>::lastProcessingError() const
+    {
+        std::lock_guard lock(_lastProcessingErrorMutex);
+        return _lastProcessingError;
+    }
+
+    template<typename TWorkItem>
     void WorkQueueLoopThread<TWorkItem>::startProcessing()
     {
         _stopProcessingWorkItemsFlag.store(false);
+        _abandonRemainingItems.store(false);
+        // a previous stopProcessing() leaves the queue's interrupt latch set;
+        // clear it so this loop's wait() blocks when idle instead of
+        // busy-spinning on the stale latch
+        _workItemQueue.clearInterrupt();
         //    _processWorkItemsLoopThread = std::make_unique<std::thread>(std::thread([&]
         //                                                                            {
         //                                                                                processWorkItemsLoop();
@@ -133,6 +200,12 @@ namespace Utils
     {
         _stopProcessingWorkItemsFlag.store(true);
         _workItemQueue.interrupt();
-        _processWorkItemsLoopThread->join();
+        // guarded: stopping before startProcessing() (or stopping twice)
+        // must be a clean no-op, not a null/thread-not-joinable crash
+        if (_processWorkItemsLoopThread &&
+            _processWorkItemsLoopThread->joinable())
+        {
+            _processWorkItemsLoopThread->join();
+        }
     }
 }

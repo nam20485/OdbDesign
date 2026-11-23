@@ -30,6 +30,12 @@ namespace Utils
 	{
 		auto read = 0LL;
 
+		// each Read() produces a FRESH read: the buffered strategy appends
+		// chunk-by-chunk, so a stale buffer from a previous Read() would
+		// otherwise yield a mix of old and new content (and a wrong size)
+		// when the file changed between reads
+		m_buffer.clear();
+
 		std::ifstream file(m_filePath, mode);
 		if (file.is_open())
 		{
