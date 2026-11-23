@@ -158,11 +158,13 @@ install_system_deps() {
             # enough — a host with docker-ce.repo already configured exits 0
             # on `dnf list` without the package being installed, which would
             # silently skip the install; test installation with rpm -q.
+            # The fallback writes a DISTINCT filename so an existing (possibly
+            # disabled/broken/customized) docker-ce.repo is never clobbered.
             if [[ "$INSTALL_DOCKER" == "true" ]] && ! rpm -q docker-compose-plugin &>/dev/null; then
                 print_status "docker-compose-plugin not installed; installing..."
                 sudo dnf install -y docker-compose-plugin || {
                     print_status "not in enabled repos; adding Docker's official Fedora repo..."
-                    sudo tee /etc/yum.repos.d/docker-ce.repo > /dev/null <<'REPO'
+                    sudo tee /etc/yum.repos.d/docker-ce-stable.repo > /dev/null <<'REPO'
 [docker-ce-stable]
 name=Docker CE Stable - $basearch
 baseurl=https://download.docker.com/linux/fedora/$releasever/$basearch/stable

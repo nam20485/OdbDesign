@@ -553,6 +553,15 @@ def _resolve_row(scid, entries, platform, na_list):
         sources = sorted({f for fs in statuses.values() for f in fs})
         return "conflict", sources, None, None, failing
     if STATUS_PASS in statuses:
+        if STATUS_NA in statuses:
+            # §3 carve-out: only a PREAPPROVED NA may ride alongside a pass
+            # (support-matrix entry, not a run-time decision). An UNAPPROVED
+            # NA is itself a failure and must never hide behind the pass —
+            # surface both sources and fail the row as a conflict.
+            na = _na_allowed(na_list, scid, platform)
+            if na is None:
+                sources = sorted({f for fs in statuses.values() for f in fs})
+                return "conflict", sources, None, None, (STATUS_PASS, STATUS_NA)
         return STATUS_PASS, sorted(set(statuses[STATUS_PASS])), None, None, ()
     if STATUS_NA in statuses and failing:
         # Same masking rule as `pass`: a preapproved N/A never papers over a

@@ -715,8 +715,10 @@ namespace OdbDesignServer
                 // and the FINAL batch's total_records are exact on every
                 // exit — including the truncated-INTERNAL path, where they
                 // tell the client how many SHOULD have arrived. A defensive
-                // to_protobuf() failure decrements the count — that record is
-                // never emitted on any run.
+                // to_protobuf() failure does NOT decrement: it fails the
+                // stream INTERNAL below, because already-written batches
+                // snapshotted this total and decrementing would break the
+                // completeness contract mid-stream.
                 std::uint64_t totalToSend = 0;
                 for (const auto &featureRecord : featureRecords)
                 {
@@ -754,8 +756,22 @@ namespace OdbDesignServer
                     }
                     else
                     {
-                        --totalToSend; // conversion failed: never emits on any run
-                        continue; // Skip if conversion failed or returned nullptr.
+                        // Fail loud (Option A): a conversion failure is a
+                        // data-integrity anomaly, and silently decrementing
+                        // totalToSend here would invalidate the totals that
+                        // ALREADY-WRITTEN batches snapshotted (each batch
+                        // carries the whole-stream total at its write time),
+                        // breaking sum(received) == last_batch.total_records
+                        // == x-total-records on what would otherwise end as a
+                        // complete OK stream. Ending INTERNAL keeps the
+                        // completeness contract scoped to complete OK streams.
+                        logerror("[ConnTrace] GetLayerFeaturesBatchStream to_protobuf failed: design=\"" + request->design_name() +
+                            "\" step=\"" + request->step_name() + "\" layer=\"" + request->layer_name() +
+                            "\" batches=" + std::to_string(batchesSent) + " features=" + std::to_string(featuresSent));
+                        AddTotalRecordsTrailer(context, totalToSend);
+                        return {grpc::StatusCode::INTERNAL,
+                            "layer-feature batch stream record conversion failed after " +
+                            std::to_string(featuresSent) + " of " + std::to_string(totalToSend) + " records"};
                     }
 
                     // Add feature to current batch
