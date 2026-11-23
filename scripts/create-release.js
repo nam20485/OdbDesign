@@ -22,7 +22,12 @@ async function createRelease({github, context, core}, workspacePath, refName) {
                 { name: 'OdbDesign-Windows-x64.zip.asc', contentType: 'text/plain' },
                 { name: 'OdbDesign-MacOS-x64.zip', contentType: 'application/zip' },
                 { name: 'OdbDesign-MacOS-x64.zip.sha256sum', contentType: 'text/plain' },
-                { name: 'OdbDesign-MacOS-x64.zip.asc', contentType: 'text/plain' }
+                { name: 'OdbDesign-MacOS-x64.zip.asc', contentType: 'text/plain' },
+                // SLSA build provenance bundle (actions/attest-build-provenance)
+                // covering all three zips; consumed by supply-chain verifiers
+                // (gh attestation verify / cosign verify-blob) and the OpenSSF
+                // Scorecard Signed-Releases check.
+                { name: 'OdbDesign-binaries.intoto.jsonl', contentType: 'application/json' }
             ];
 
         const artifactsPath =  workspacePath + '/' + 'artifacts';

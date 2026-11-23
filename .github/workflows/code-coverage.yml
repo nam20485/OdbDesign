@@ -21,10 +21,14 @@ concurrency:
   group: code-coverage-${{ github.event_name }}-${{ github.event_name == 'pull_request' && format('{0}/{1}', github.event.pull_request.head.repo.full_name, github.event.number) || format('{0}/{1}', github.repository, github.ref_name) }}
   cancel-in-progress: true
 
+# Least-privilege default: jobs escalate only what they need (Scorecard
+# Token-Permissions). checks:write for the test-reporter lives at job level;
+# the NuGet feed is READ-ONLY here (the warm lane owns feed writes), but a
+# read still needs the job-level packages:read scope below — feed downloads
+# 403 without it (public repo, authenticated token required), which is the
+# #657 regression this file documents.
 permissions:
   contents: read
-  checks: write
-  packages: write
 
 env:
   VCPKG_ROOT: ${{ github.workspace }}/vcpkg
@@ -44,7 +48,26 @@ jobs:
   coverage-linux:
     name: Linux Coverage
     runs-on: ubuntu-24.04
-    timeout-minutes: 90
+    # 150 min: a warm-cache steady-state run finishes in ~30-40 min, but a
+    # transitional ABI generation (runner-image compiler bump; warm lane has
+    # not yet repopulated the canonical key) pays ~45 min of NuGet feed
+    # fallback plus the slow -O0 --coverage configure/build — measured runs
+    # died at exactly the old 90-min wall mid-Configure (44905978306,
+    # 44920588541), discarding the rebuild each time because a job timeout
+    # tears down the always() cache-save too.
+    timeout-minutes: 150
+    permissions:
+      # dorny/test-reporter creates check runs
+      checks: write
+      # GitHub Packages NuGet feed READ (vcpkg binary-cache restore). Without
+      # this scope the job's GITHUB_TOKEN gets 403 Forbidden on every feed
+      # download and vcpkg silently falls back to building grpc/protobuf/asio
+      # & co. from source — which is what blew the 90/150-min job walls from
+      # the #657 merge onward (evidence: run 44930358009 Configure log,
+      # "Your request could not be authenticated by the GitHub Packages
+      # service" before every "Building x64-linux-dbg" from-source pass).
+      # Read-only: the warm lane owns feed writes.
+      packages: read
 
     steps:
       - name: Harden Runner
@@ -60,7 +83,12 @@ jobs:
         with:
           repository: "nam20485/OdbDesignTestData"
           path: "OdbDesignTestData"
-          ref: "main"
+          # M0-02: pinned to an EXACT commit, not a floating branch — coverage
+          # must be reproducible against a fixed corpus. The pinned SHA is
+          # also recorded into coverage/provenance.json by scripts/coverage.sh
+          # ("test-data: add IPC-2581 samples ... and degenerate ODB++ designs").
+          # To move the corpus: update this SHA and the comment together.
+          ref: "b58ab88253b979df5fbcee56f1afb64263d4cf97"
 
       - name: Add Problem Matchers
         uses: ammaraskar/gcc-problem-matcher@0f9c86f9e693db67dacf53986e1674de5f2e5f28 # master
@@ -107,7 +135,7 @@ jobs:
           echo "RUNNER_IMAGE_VERSION=${ImageVersion:-unknown}" >> "$GITHUB_ENV"
 
       - name: Restore vcpkg Binary Cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae  # v5.0.5
         id: vcpkg-restore
         with:
           path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
@@ -141,78 +169,54 @@ jobs:
         # cancellations; guarded to new generations with a real payload (this
         # lane reads the feed, never writes it, so no API key setup here).
         if: always() && steps.vcpkg-restore.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae  # v5.0.5
         with:
           path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
           key: vcpkg-archives-linux-x64-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}-${{ env.VCPKG_COMMIT }}-${{ env.RUNNER_IMAGE_VERSION }}
 
+      # Canonical coverage preset (M0): linux-dynamic-debug shares one
+      # protobuf/gRPC runtime across lib, server, and tests (static triplet
+      # trees carry dual descriptor pools; see AGENTS.md learned facts).
       - name: Configure CMake with Coverage Flags
         run: >
-          cmake --preset linux-debug
+          cmake --preset linux-dynamic-debug
           -DCMAKE_CXX_FLAGS="--coverage -g -O0 -fprofile-update=atomic"
           -DCMAKE_EXE_LINKER_FLAGS="--coverage"
           -DCMAKE_SHARED_LINKER_FLAGS="--coverage"
           -DCMAKE_MODULE_LINKER_FLAGS="--coverage"
 
       - name: Build Coverage Configuration
-        run: cmake --build --preset linux-debug
+        run: cmake --build --preset linux-dynamic-debug
 
-      - name: Run Tests
+      # Canonical M0 pipeline (same script as local runs): initial zero-hit
+      # capture from .gcno BEFORE tests, real ctest run (JUnit XML), runtime
+      # capture AFTER tests, merge, disjoint handwritten/generated/combined
+      # scopes, branch coverage everywhere, provenance record. Failed tests
+      # FAIL this step (the script propagates ctest's exit code).
+      # dorny's check-run API intermittently 404s (HttpError: Not Found);
+      # that must not fail a green coverage run (see cmake-multi-platform.yml).
+      - name: Run Coverage Pipeline (initial + tests + runtime + reports)
         env:
           ODB_TEST_DATA_DIR: ${{ github.workspace }}/OdbDesignTestData/TEST_DATA
           ODB_TEST_ENVIRONMENT_VARIABLE: ${{ vars.ODB_TEST_ENVIRONMENT_VARIABLE }}
+        shell: bash
         run: >
-          ctest --test-dir ./out/build/linux-debug/OdbDesignTests
-          -j "$(nproc)"
-          --output-log ${{ github.workspace }}/coverage-testlog.txt
-          --output-junit ${{ github.workspace }}/coverage-testlog.xml
-          --output-on-failure
+          scripts/coverage.sh
+          --preset linux-dynamic-debug
+          --no-build
+          --check
+          --css-file scripts/gcov-dark.css
+          --snow-image scripts/snow-dark.png
 
-      # Annotation only — Run Tests above gates the job on ctest's exit code.
-      # dorny's check-run API intermittently 404s (HttpError: Not Found);
-      # that must not fail a green coverage run (see cmake-multi-platform.yml).
       - name: Report Test Results
         uses: dorny/test-reporter@31a54ee7ebcacc03a09ea97a7e5465a47b84aea5 # v1.9.1
         if: ${{ !cancelled() }}
         continue-on-error: true
         with:
           name: linux-coverage-test-results
-          path: ${{ github.workspace }}/coverage-testlog.xml
+          path: ${{ github.workspace }}/coverage/coverage-testlog.xml
           reporter: java-junit
           fail-on-error: true
-
-      - name: Generate Coverage Report
-        shell: bash
-        run: |
-          mkdir -p coverage/html
-          lcov --capture \
-            --directory ./out/build/linux-debug \
-            --output-file coverage/coverage.info \
-            --quiet \
-            --ignore-errors mismatch \
-            --rc geninfo_unexecuted_blocks=1
-          lcov --remove coverage/coverage.info \
-            '/usr/*' \
-            '*/vcpkg/*' \
-            '*/vcpkg_installed/*' \
-            '*/_deps/*' \
-            '*/OdbDesignTests/*' \
-            --output-file coverage/coverage.info \
-            --quiet \
-            --ignore-errors unused
-          lcov --summary coverage/coverage.info > coverage/coverage_summary.txt
-          genhtml coverage/coverage.info \
-            --output-directory coverage/html \
-            --quiet \
-            --title "OdbDesign Test Coverage" \
-            --css-file scripts/gcov-dark.css \
-            --show-details \
-            --legend
-          # genhtml installs --css-file as gcov.css, replacing the stock
-          # light theme (site dark-chrome match, see scripts/gcov-dark.css).
-          # The bar-segment PNGs cannot be swapped via a flag: overwrite the
-          # white "uncovered" segment so it does not glare on the dark panels.
-          cp scripts/snow-dark.png coverage/html/snow.png
 
       - name: Upload Coverage Artifact
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
@@ -243,4 +247,17 @@ jobs:
           [[ -n "${CODACY_PROJECT_TOKEN}" ]] || unset CODACY_PROJECT_TOKEN
           [[ -n "${CODACY_API_TOKEN}" ]] || unset CODACY_API_TOKEN
 
-          bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r coverage/coverage.info
+          # coverage.info is the HANDWRITTEN tracefile (generated
+          # protobuf/gRPC code is split out into coverage-generated.info and
+          # audited via coverage-combined.info), so external coverage
+          # tracking measures product code, not codegen.
+          #
+          # The uploader is pinned to the commit the Codacy get.sh lives at
+          # (codacy/codacy-coverage-reporter), fetched in pipe form. Scorecard
+          # flags download-then-run pipelines unless the URL is a
+          # raw.githubusercontent URL pinned to a full commit SHA — and only
+          # the pipe form qualifies (the old `bash <(curl …)` process-
+          # substitution form is always treated as an unpinned executed
+          # file). Bump the SHA deliberately when adopting a new uploader
+          # version.
+          curl -Ls https://raw.githubusercontent.com/codacy/codacy-coverage-reporter/54617baa57421746d0afa3df32127d3dd40f3786/get.sh | bash -s -- report -r coverage/coverage.info

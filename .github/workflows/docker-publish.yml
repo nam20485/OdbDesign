@@ -64,6 +64,48 @@ jobs:
         with:
           egress-policy: audit
 
+      # Resolve the ref to check out WITHOUT interpolating event data into the
+      # checkout ref (Scorecard Dangerous-Workflow: untrusted code checkout).
+      # The event values ride env vars; the shell decides, and for workflow_run
+      # it FAILS CLOSED unless the triggering run is a push on this repository.
+      - name: Resolve checkout ref
+        id: ref
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          TRIGGER_EVENT: ${{ github.event.workflow_run.event }}
+          HEAD_REPO: ${{ github.event.workflow_run.head_repository.full_name }}
+          THIS_REPO: ${{ github.repository }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          CURRENT_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          case "$EVENT_NAME" in
+            workflow_run)
+              # The triggering run must originate from this repository and be a
+              # push or a manual dispatch — the trusted event types the CMake
+              # workflow itself declares (pull_request runs can never reach
+              # this workflow's success branch, see the job `if:`, but fail
+              # closed here anyway so the trust decision is explicit rather
+              # than incidental).
+              case "$TRIGGER_EVENT" in
+                push|workflow_dispatch)
+                  if [ "$HEAD_REPO" != "$THIS_REPO" ]; then
+                    echo "::error::refusing cross-repository workflow_run source: repo=$HEAD_REPO"
+                    exit 1
+                  fi
+                  echo "ref=$HEAD_SHA" >> "$GITHUB_OUTPUT"
+                  ;;
+                *)
+                  echo "::error::refusing untrusted workflow_run source: event=$TRIGGER_EVENT repo=$HEAD_REPO"
+                  exit 1
+                  ;;
+              esac
+              ;;
+            *)
+              echo "ref=$CURRENT_SHA" >> "$GITHUB_OUTPUT"
+              ;;
+          esac
+
       - name: Checkout repository
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
@@ -74,7 +116,8 @@ jobs:
           # branch's Dockerfile.prebuilt may be stale (e.g. missing the
           # `*.so*` glob for versioned vcpkg soname symlinks, which produces
           # an image missing libgrpc++_reflection.so.1.81 -> CrashLoopBackOff).
-          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
+          # The value is validated (same-repo push only) by the resolve step.
+          ref: ${{ steps.ref.outputs.ref }}
 
       # Download pre-built Linux artifacts from CMake workflow
       - name: Download Linux Artifacts

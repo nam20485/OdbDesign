@@ -17,16 +17,14 @@ on:
   workflow_run:
     workflows: ["CMake Build Multi-Platform"]
     types: [completed]
-    branches: ["development", "staging", "main", "release"]
+    branches: ["development", "staging", "main", "release", "nam20485"]
 
 permissions:
   contents: read
-  # packages:write is REQUIRED: this job pushes the binary cache to GitHub
-  # Packages with the workflow GITHUB_TOKEN (packages created by GITHUB_TOKEN
-  # inherit the repo's public visibility → free storage; PAT-pushed packages
-  # default private and refill the account's private-package quota — the
-  # 2026-02-14 → 2026-11-08 feed outage).
-  packages: write
+  # packages:write is REQUIRED for the feed push and is granted per job below
+  # (packages created by GITHUB_TOKEN inherit the repo's public visibility →
+  # free storage; PAT-pushed packages default private and refill the account's
+  # private-package quota — the 2026-02-14 → 2026-11-08 feed outage).
 
 env:
   VCPKG_ROOT: ${{ github.workspace }}/vcpkg
@@ -53,6 +51,9 @@ concurrency:
 jobs:
   warm-linux:
     name: Vcpkg-Cache-Warm (Linux)
+    permissions:
+      # binary-cache push to the GitHub Packages NuGet feed
+      packages: write
     if: >
       (github.event_name != 'workflow_run' ||
       (github.event.workflow_run.conclusion == 'success' &&
@@ -221,6 +222,9 @@ jobs:
 
   warm-macos:
     name: Vcpkg-Cache-Warm (macOS)
+    permissions:
+      # binary-cache push to the GitHub Packages NuGet feed
+      packages: write
     if: >
       (github.event_name != 'workflow_run' ||
       (github.event.workflow_run.conclusion == 'success' &&

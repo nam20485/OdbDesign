@@ -25,15 +25,15 @@ add_executable(OdbDesignTests
     "DesignCacheThreadSafetyTests.cpp"
     "DesignCacheSingleFlightTests.cpp"
     "GrpcServiceConfigTests.cpp"
+    "BasicRequestAuthenticationTests.cpp"
     "Utf8SanitizerTests.cpp"
     "HttpCachingTests.cpp"
-    "../OdbDesignServer/Config/GrpcServiceConfig.cpp"
 
-    # Server service implementation compiled into the test executable so service-level
-    # gRPC methods can be unit-tested directly (used by GetStandardFontsTests.cpp).
-    "../OdbDesignServer/Services/OdbDesignServiceImpl.cpp"
-    "../OdbDesignServer/Services/DesignStreamWalker.cpp"
-    "../OdbDesignServer/Services/StreamSpoolCache.cpp"
+    # Server component tests (OdbDesignServiceImpl, config, stream/batch
+    # early-error handling). The server implementation is NOT compiled here:
+    # OdbDesignServerLib (services, config, controllers, generated gRPC code)
+    # is linked below so tests exercise the same composition as production
+    # with exactly one protobuf descriptor pool.
     "GetStandardFontsTests.cpp"
     "GetLayerSymbolsTests.cpp"
     "RequestLoadDesignTests.cpp"
@@ -43,47 +43,56 @@ add_executable(OdbDesignTests
     "DesignFetchBenchmarkTests.cpp"
     "AttributeLookupTableTests.cpp"
     "GrpcParseErrorDetailTests.cpp"
-
-    # NOTE: GrpcBatchStreamTests.cpp temporarily disabled due to CMake coupling concerns
-    # Future: Will create separate test target for server component tests
-    # "GrpcBatchStreamTests.cpp"
-     "FileArchiveLoadTests.cpp"
+    "GrpcBatchStreamTests.cpp"
+    "FileArchiveLoadTests.cpp"
     "ParserOnlyHeaderTests.cpp"
-    "ToolsFileTests.cpp")
+    "ToolsFileTests.cpp"
+
+    # M2 real-transport gRPC coverage (loopback ServerBuilder + generated
+    # stub, the DesignStreamTests pattern): layer-feature streaming RPCs,
+    # HealthCheck, and the contract sweep for RPCs only covered by direct
+    # service-method invocation elsewhere.
+    "GrpcLayerFeatureStreamTests.cpp"
+    "GrpcHealthCheckTests.cpp"
+    "GrpcContractSweepTests.cpp")
 
 target_link_libraries(OdbDesignTests PRIVATE GTest::gtest_main GTest::gmock_main)
 
 # link to OdbDesign library
 target_link_libraries(OdbDesignTests PRIVATE OdbDesign)
 
-# Link gRPC libraries for batch stream tests
-find_package(gRPC CONFIG REQUIRED)
-target_link_libraries(OdbDesignTests PRIVATE gRPC::gpr gRPC::grpc gRPC::grpc++ gRPC::grpc++_reflection)
-
-# Include directories for OdbDesignServer sources and generated gRPC files
-# The generated gRPC files are in OdbDesignServer's binary directory
-get_filename_component(REPO_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/.." ABSOLUTE)
+# Server component tests link the real server library instead of compiling
+# selected OdbDesignServer sources by hand. OdbDesignServerLib owns the
+# services (OdbDesignServiceImpl, DesignStreamWalker, StreamSpoolCache),
+# config (GrpcServiceConfig), controllers and the generated gRPC/protobuf
+# code, and PUBLICly propagates OdbDesign, the gRPC targets and the include
+# dirs for OdbDesignServer/ and the generated .pb.h files. Linking it keeps
+# a single owner for production sources/codegen and exactly one protobuf
+# descriptor pool in the test executable (single shared protobuf runtime
+# under the x64-linux-dynamic triplet).
+target_link_libraries(OdbDesignTests PRIVATE OdbDesignServerLib)
 
 # Source-tree paths for tests (M0.3 golden fixtures, gitignored local design
-# corpora). Must follow the REPO_ROOT set() above or the define expands empty
-# and the paths silently become cwd-relative.
+# corpora) and for the "OdbDesignServer/..." style includes used by server
+# component tests. Everything server-side (OdbDesignServer/, generated
+# service.pb.h / service.grpc.pb.h) comes from OdbDesignServerLib's PUBLIC
+# include dirs; only the repo root must be added here. The define must
+# follow the REPO_ROOT computation above or the paths silently become
+# cwd-relative.
+get_filename_component(REPO_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/.." ABSOLUTE)
+target_include_directories(OdbDesignTests PRIVATE ${REPO_ROOT})
 target_compile_definitions(OdbDesignTests PRIVATE ODBDESIGN_SOURCE_DIR="${REPO_ROOT}")
-set(ODBDESIGN_SERVER_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/../OdbDesignServer")
-set(GRPC_CODEGEN_DIR "${ODBDESIGN_SERVER_BINARY_DIR}/grpc")
-target_include_directories(OdbDesignTests PRIVATE 
-    ${REPO_ROOT}                                      # For OdbDesignServer/Services/... includes (repo root)
-    ${REPO_ROOT}/OdbDesignServer                     # For Config/GrpcServiceConfig.h
-    ${ODBDESIGN_SERVER_BINARY_DIR}                   # For service.grpc.pb.h (generated files)
-    ${GRPC_CODEGEN_DIR})                             # For grpc generated files
-
-# Add generated gRPC sources (required for OdbDesignServiceImpl which uses these types)
-set(GRPC_PROTO_SRCS
-    ${GRPC_CODEGEN_DIR}/service.pb.cc
-    ${GRPC_CODEGEN_DIR}/service.grpc.pb.cc)
-set_source_files_properties(${GRPC_PROTO_SRCS} PROPERTIES GENERATED TRUE)
-target_sources(OdbDesignTests PRIVATE ${GRPC_PROTO_SRCS})
-
-# Ensure OdbDesignServer is built first so gRPC sources are generated
+# F004 fail-closed test (BasicRequestAuthenticationTests.cpp) spawns the real
+# server binary to prove auth-enabled startup without credentials exits
+# PreServerRunFailed and opens no listener. The genex tracks the actual
+# output path across generators/output-dir changes (OdbDesignServerLib's
+# PUBLIC include dirs already supply the OdbDesignServer/ and generated
+# .pb.h headers, and OdbDesignServerLib owns all server sources + codegen —
+# the hand-compiled sources and duplicate service.pb.cc sources are gone).
+# The dependency orders the server executable build before the test target
+# so the spawned binary exists even for target-scoped builds.
+target_compile_definitions(OdbDesignTests PRIVATE
+    ODBDESIGN_SERVER_EXECUTABLE_PATH="$<TARGET_FILE:OdbDesignServer>")
 add_dependencies(OdbDesignTests OdbDesignServer)
 
 include(GoogleTest)

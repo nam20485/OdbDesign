@@ -144,25 +144,36 @@ install_system_deps() {
         fedora)
             local docker_packages=""
             if [[ "$INSTALL_DOCKER" == "true" ]]; then
-                docker_packages="docker python3-pip"
+                docker_packages="docker"
             fi
             sudo dnf install -y \
                 gcc gcc-c++ make \
                 $base_packages \
                 $docker_packages
-            # Install Docker Compose V2 plugin if available, else fallback to pip
-            if [[ "$INSTALL_DOCKER" == "true" ]]; then
-                if sudo dnf list docker-compose-plugin &>/dev/null; then
+            # Install Docker Compose V2 plugin; if it is not installed and not
+            # in any enabled repo, pull it from Docker's official Fedora repo
+            # (GPG-checked) instead of the old `pip3 install docker-compose`
+            # fallback — compose v1 is EOL, unpinned, and no longer builds
+            # against current Python. NOTE: availability (`dnf list`) is not
+            # enough — a host with docker-ce.repo already configured exits 0
+            # on `dnf list` without the package being installed, which would
+            # silently skip the install; test installation with rpm -q.
+            # The fallback writes a DISTINCT filename so an existing (possibly
+            # disabled/broken/customized) docker-ce.repo is never clobbered.
+            if [[ "$INSTALL_DOCKER" == "true" ]] && ! rpm -q docker-compose-plugin &>/dev/null; then
+                print_status "docker-compose-plugin not installed; installing..."
+                sudo dnf install -y docker-compose-plugin || {
+                    print_status "not in enabled repos; adding Docker's official Fedora repo..."
+                    sudo tee /etc/yum.repos.d/docker-ce-stable.repo > /dev/null <<'REPO'
+[docker-ce-stable]
+name=Docker CE Stable - $basearch
+baseurl=https://download.docker.com/linux/fedora/$releasever/$basearch/stable
+enabled=1
+gpgcheck=1
+gpgkey=https://download.docker.com/linux/fedora/gpg
+REPO
                     sudo dnf install -y docker-compose-plugin
-                else
-                    print_status "Installing docker-compose via pip3 (Fedora)..."
-                    pip3 install --user docker-compose
-                    # Add ~/.local/bin to PATH if not already present
-                    if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
-                        export PATH="$HOME/.local/bin:$PATH"
-                        echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
-                    fi
-                fi
+                }
             fi
             ;;
         centos|rhel)

@@ -48,7 +48,11 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 COMMERCIAL_ROOT = REPO_ROOT.parent / "OdbDesign-Commercial"
-REGISTRY_PATH = Path(__file__).resolve().parent / "release_readiness_criteria.json"
+SCRIPT_DIR = Path(__file__).resolve().parent
+REGISTRY_PATH = SCRIPT_DIR / "release_readiness_criteria.json"
+
+sys.path.insert(0, str(SCRIPT_DIR))
+import eval_manifest  # noqa: E402  (sibling module: eval-plan.json manifest + aggregator)
 
 PASS, FAIL, PENDING, BLOCKED, NA, UNKNOWN = (
     "pass", "fail", "pending", "blocked", "not-applicable", "unknown",
@@ -249,13 +253,28 @@ def ev_coverage(params, ctx):
     return result(PASS, "handwritten coverage meets thresholds", metrics)
 
 
+def _parse_xml_no_entities(path):
+    """XXE-hardened parse for stdlib-only constraint (Codacy
+    use-defused-xml-parse): expat's entity surface requires a DTD, and
+    CI-generated JUnit XML never carries one — refuse any DOCTYPE/ENTITY
+    declaration outright instead of adding a defusedxml dependency."""
+    text = Path(path).read_text(encoding="utf-8", errors="replace")
+    # Scan the WHOLE text: XML only requires the DOCTYPE to precede the root
+    # element, so a DTD padded past any fixed window (large comment/PI in the
+    # prolog) would otherwise reach ET.fromstring with the entity surface
+    # active. Files here are small; the full scan is free.
+    if "<!DOCTYPE" in text or "<!ENTITY" in text:
+        raise ET.ParseError("refusing XML with DTD/entity declarations (XXE guard)")
+    return ET.fromstring(text)
+
+
 def ev_junit(params, ctx):
     """Real test outcome from a JUnit XML: expected count, zero fail/skip."""
     f = Path(params.get("file", ctx["evidence_dir"] / "test-results.xml"))
     if not f.exists():
         return result(PENDING, f"no JUnit results at {f}")
     try:
-        root = ET.parse(f).getroot()
+        root = _parse_xml_no_entities(f)
     except ET.ParseError as e:
         return result(UNKNOWN, f"JUnit parse error: {e}")
     suites = root.iter("testsuite")
@@ -567,7 +586,6 @@ def required_for_profile(criterion, profile):
 
 def evaluate(registry, ctx):
     criteria = registry["criteria"]
-    by_id = {c["id"]: c for c in criteria}
     outcomes = {}
 
     # First pass: evaluate each criterion's own evaluator.
@@ -603,7 +621,7 @@ def evaluate(registry, ctx):
     return outcomes
 
 
-def summarize(registry, outcomes, profile):
+def summarize(registry, outcomes, profile, extra_required=None):
     criteria = registry["criteria"]
     nc_ids = {nc[0] for nc in negative_controls({})}
     required = []
@@ -611,6 +629,8 @@ def summarize(registry, outcomes, profile):
         if required_for_profile(c, profile):
             required.append(c["id"])
     required += sorted(nc_ids)  # negative controls always required
+    if extra_required:
+        required += [cid for cid in extra_required if cid not in required]
 
     counts = {s: 0 for s in (PASS, FAIL, PENDING, BLOCKED, NA, UNKNOWN)}
     for cid in required:
@@ -650,6 +670,14 @@ def render_human(registry, outcomes, summary, ctx):
     nc = [cid for cid in outcomes if cid.startswith("EVID-NC-")]
     nc_pass = sum(1 for cid in nc if outcomes[cid]["status"] == PASS)
     lines.append(f"  (includes engine self-tests / negative controls: {nc_pass}/{len(nc)} pass)")
+    mv = ctx.get("manifest_verdict")
+    if mv is not None:
+        lines.append("")
+        lines.append(f"eval-plan manifest {ctx.get('manifest_path')}: "
+                     + ("READY" if mv["ready"] else "NOT READY")
+                     + f" — release {mv['release_id']}, required scenarios "
+                       f"{mv['counts']['pass']}/{mv['counts']['required_total']} pass, "
+                       f"{len(mv['binding_violations'])} candidate-binding violation(s)")
     lines.append("")
 
     # Per-group rollup.
@@ -689,6 +717,10 @@ def main():
     ap.add_argument("--json", action="store_true", help="machine-readable output")
     ap.add_argument("--no-probes", action="store_true", help="skip live probes (fast glance)")
     ap.add_argument("--na", action="append", default=[], help="criterion IDs pre-approved N/A")
+    ap.add_argument("--manifest", default=None,
+                    help="eval-plan.json release manifest: aggregate acceptance evidence "
+                         "against it, verify candidate binding + required scenarios, and "
+                         "(in validate mode) gate readiness on the aggregation verdict")
     args = ap.parse_args()
 
     registry = load_registry()
@@ -702,19 +734,68 @@ def main():
         "profile": args.profile,
     }
 
+    # Optional eval-plan.json manifest aggregation (plan section 10). Validated
+    # BEFORE evaluate() so a misconfigured --manifest exits 2 without launching
+    # probes or gh queries. Adds the machine-generated aggregation verdict plus
+    # manifest negative controls as required criteria; validate gates on them.
+    # Candidate binding is always enforced against the RESOLVED run candidate
+    # (explicit --candidate, else HEAD): a manifest frozen for another
+    # candidate can never pass the gate. Without --manifest, behavior is
+    # exactly the pre-manifest report/validate.
+    manifest_outcomes = {}
+    extra_required = None
+    if args.manifest:
+        try:
+            manifest = eval_manifest.load_manifest(args.manifest)
+            evidence_dir = eval_manifest.safe_evidence_dir(evidence_dir)
+            ctx["evidence_dir"] = evidence_dir
+        except eval_manifest.ManifestError as e:
+            print(f"ERROR: {e}", file=sys.stderr)
+            sys.exit(2)
+        mv = eval_manifest.aggregate(manifest, evidence_dir, expect_candidate=candidate)
+        ctx["manifest_verdict"] = mv
+        ctx["manifest_path"] = str(args.manifest)
+        manifest_outcomes["EVID-MANIFEST"] = result(
+            PASS if mv["ready"] else FAIL,
+            ("eval-plan aggregation READY: " if mv["ready"] else "eval-plan aggregation NOT READY: ")
+            + f"{mv['counts']['pass']}/{mv['counts']['required_total']} required scenarios pass, "
+            f"{len(mv['binding_violations'])} binding violation(s)"
+            + (f"; {mv['manifest_candidate_mismatch']}" if mv["manifest_candidate_mismatch"] else ""),
+            {"release_id": mv["release_id"], "counts": mv["counts"],
+             "rows": mv["rows"], "binding_violations": mv["binding_violations"]},
+        )
+        manifest_ncs = eval_manifest.run_negative_controls()
+        for nc_id, ok, detail in manifest_ncs:
+            manifest_outcomes[f"EVID-{nc_id}"] = result(PASS if ok else FAIL, detail)
+        extra_required = ["EVID-MANIFEST"] + [f"EVID-{nc[0]}" for nc in manifest_ncs]
+
     outcomes = evaluate(registry, ctx)
+    outcomes.update(manifest_outcomes)
+    # Machine-generated gate criteria can never be waved by --na: the
+    # manifest aggregation verdict and every engine negative control exist
+    # to prove the gate itself is honest, so converting one to
+    # not-applicable would defeat the readiness check via a CLI flag.
+    # --na is for the plan-owned registry criteria only (plan 10.2: N/A is
+    # a pre-approved support-matrix entry, never a run-time decision).
     for cid in args.na:
+        if cid == "EVID-MANIFEST" or cid.startswith("EVID-NC-"):
+            print(f"NOTICE: --na {cid} ignored: machine-generated gate "
+                  "criteria can never be waived (fail closed).", file=sys.stderr)
+            continue
         if cid in outcomes:
             outcomes[cid] = result(NA, "pre-approved not-applicable via --na")
 
-    summary = summarize(registry, outcomes, args.profile)
+    summary = summarize(registry, outcomes, args.profile, extra_required=extra_required)
 
     if args.json:
-        print(json.dumps({
+        doc = {
             "candidate": candidate,
             "summary": summary,
             "criteria": {cid: outcomes[cid] for cid in outcomes},
-        }, indent=2))
+        }
+        if "manifest_verdict" in ctx:
+            doc["manifest"] = ctx["manifest_verdict"]
+        print(json.dumps(doc, indent=2))
     else:
         print(render_human(registry, outcomes, summary, ctx))
 

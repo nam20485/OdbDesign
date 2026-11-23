@@ -42,6 +42,51 @@ python3 scripts/release_readiness.py validate --profile production
 - Acceptance runs emit structured results into `release-readiness/evidence/`
   (gitignored); the checker ingests them. See the companion checker plan for the
   criterion model and how criteria turn green as the plan's milestones land.
+- **Release manifest gate (`--manifest`):** pass an `eval-plan.json` release
+  manifest (schema in `eval-plan.example.json` +
+  `../docs/plan/test-coverage-and-evaluation-validation-plan/eval-plan-manifest-schema.md`)
+  and the run additionally aggregates the acceptance evidence against it —
+  candidate binding (the manifest candidate must equal the explicit
+  `--candidate`, or HEAD when omitted), required-scenario coverage per
+  platform (a `pass` never masks a `failed`/`skipped`/`not-run` entry for the
+  same scenario — conflicts fail the verdict) — gating `validate` on the
+  aggregation verdict and its negative controls (`EVID-MANIFEST`,
+  `EVID-NC-MAN-*`):
+
+  ```bash
+  python3 scripts/release_readiness.py validate --manifest eval-plan.json --candidate <token>
+  python3 scripts/release_readiness.py report --manifest eval-plan.json   # informational
+  ```
+
+### `eval_manifest.py`
+**eval-plan.json release manifest loader + acceptance-evidence aggregator**
+
+Implements validation-plan §10: schema validation for the immutable release
+manifest (candidate identity, proto/OpenAPI hashes, platform matrix, network
+boundary, corpus aliases, resource envelope, required scenarios per platform,
+public signing-key fingerprints — never secrets), and the aggregator that
+requires every required scenario ID to return a structured `pass`; missing,
+skipped, failed, not-run, or candidate-mismatched evidence fails the overall
+verdict even when later health checks pass.
+
+```bash
+python3 scripts/eval_manifest.py check --manifest eval-plan.json     # schema only
+python3 scripts/eval_manifest.py aggregate --manifest eval-plan.json \
+    --evidence-dir release-readiness/evidence [--candidate <token>] [--json]
+python3 scripts/eval_manifest.py self-test                           # negative controls
+```
+
+Exit codes: `0` ready / `1` verdict NOT READY (or controls failed) / `2` manifest
+missing/invalid.
+
+**Path safety (fail closed):** scenario IDs and platform names must match
+`^[A-Za-z0-9][A-Za-z0-9._-]*$` (no `/`, `\`, `..`, whitespace); evidence file
+names and evidence scenario IDs pass the same gate; every evidence file must
+realpath inside the evidence directory (symlink escapes are quarantined as
+binding violations and never read); `--manifest`/`--evidence-dir`/`--output`
+must not contain `..` components, and manifests must realpath into the repo,
+its sibling-repos parent, or the system temp dir. Traversal attempts are
+proven rejected by the `self-test` negative controls.
 
 ### `run-tests.sh`
 **Comprehensive test runner for local development and CI**
@@ -71,27 +116,38 @@ python3 scripts/release_readiness.py validate --profile production
 - Colored output and progress reporting
 
 ### `coverage.sh`
-**Test coverage analysis and reporting**
+**Canonical M0 truthful-coverage pipeline** (same as code-coverage.yml):
+initial zero-hit capture from .gcno, ctest run, runtime capture from .gcda,
+merge, disjoint handwritten/generated/combined scopes, branch coverage, and a
+provenance record.
 
 ```bash
-# Basic coverage report
+# Full pipeline for the canonical preset (requires ODB_TEST_DATA_DIR)
+export ODB_TEST_DATA_DIR=/path/to/OdbDesignTestData/TEST_DATA
 ./scripts/coverage.sh
 
-# HTML coverage report
-./scripts/coverage.sh --html
+# Re-run reports only against an existing coverage build
+./scripts/coverage.sh --no-build
 
-# Clean and generate HTML report
-./scripts/coverage.sh --clean --html
+# With the M0-01 inventory/reconciliation gate
+./scripts/coverage.sh --check
 
-# Coverage summary only
-./scripts/coverage.sh --summary
+# Release gate (SRC-01: >90% lines AND functions, >=85% branches, no skips)
+./scripts/coverage.sh --check --gate-strict
+
+# Custom preset / output / report theming
+./scripts/coverage.sh -p linux-dynamic-debug -o ./coverage \
+    --css-file scripts/gcov-dark.css --snow-image scripts/snow-dark.png
 ```
 
-**Features:**
-- gcov-based coverage analysis
-- HTML report generation (with lcov)
-- Automatic test execution
-- Coverage summaries and detailed reports
+**Environment:**
+- `ODB_TEST_DATA_DIR` — REQUIRED (the script hard-fails without it)
+- `ODB_TEST_ENVIRONMENT_VARIABLE` — optional; set to a non-empty value to
+  enable the cross-platform env tests (set-but-empty disables them)
+
+**Key outputs** (in the output directory): `coverage.info` (handwritten
+tracefile — THE GATE), `coverage-generated.info`, `coverage-combined.info`,
+`coverage_summary.txt`, `html/`, `provenance.json`.
 
 ### `setup-linux.sh`
 Automated Linux environment setup. See detailed documentation in [docs/README-SETUP.md](../docs/README-SETUP.md).
@@ -185,7 +241,7 @@ export ODB_TEST_DATA_DIR=./OdbDesignTestData/TEST_DATA
 
 # Full test suite with coverage
 ./scripts/run-tests.sh --clean --coverage
-./scripts/coverage.sh --html
+./scripts/coverage.sh
 
 # Performance regression testing
 ./scripts/run-tests.sh --performance --release
@@ -197,8 +253,8 @@ export ODB_TEST_DATA_DIR=./OdbDesignTestData/TEST_DATA
 # CI test execution
 ./scripts/run-tests.sh --preset linux-dynamic-release --verbose
 
-# Coverage for CI
-./scripts/coverage.sh --summary
+# Coverage for CI (same pipeline as code-coverage.yml)
+./scripts/coverage.sh --no-build --check
 ```
 
 ### Debug and Troubleshooting
@@ -209,7 +265,6 @@ export ODB_TEST_DATA_DIR=./OdbDesignTestData/TEST_DATA
 
 # Clean everything and start fresh
 ./scripts/run-tests.sh --clean
-./scripts/coverage.sh --clean
 ```
 
 ## Script Options Reference
@@ -233,10 +288,13 @@ export ODB_TEST_DATA_DIR=./OdbDesignTestData/TEST_DATA
 | Option | Description |
 |--------|-------------|
 | `-h, --help` | Show help message |
-| `-c, --clean` | Clean previous coverage data |
-| `-o, --output DIR` | Output directory |
-| `--html` | Generate HTML report |
-| `--summary` | Show summary only |
+| `-p, --preset PRESET` | CMake preset to configure/build (default: linux-dynamic-debug) |
+| `--no-build` | Use the existing coverage build; skip configure+build |
+| `--check` | Run scripts/check_coverage.py gate (inventory + branch data + reconciliation) |
+| `--gate-strict` | With --check: enforce the SRC-01 release gate (>90% lines/functions, >=85% branches) |
+| `-o, --output DIR` | Output directory (default: ./coverage) |
+| `--css-file PATH` | genhtml CSS for report theming |
+| `--snow-image PATH` | Replacement image for genhtml uncovered bar |
 
 ## Continuous Integration
 
@@ -248,7 +306,9 @@ These scripts are designed to work in CI environments:
   run: ./scripts/run-tests.sh --preset linux-dynamic-release
 
 - name: Generate Coverage
-  run: ./scripts/coverage.sh --html
+  run: ./scripts/coverage.sh --no-build
+  env:
+    ODB_TEST_DATA_DIR: ${{ github.workspace }}/OdbDesignTestData/TEST_DATA
   
 - name: Upload Coverage
   uses: actions/upload-artifact@v3
@@ -304,15 +364,16 @@ sudo apt-get install gcov lcov  # Ubuntu/Debian
 - Check available system resources
 
 **Large Coverage Reports:**
-- Use `--summary` for quick overview
-- Filter out unnecessary files in coverage.sh
+- Use `--no-build` to regenerate reports from an existing coverage build
+- The pipeline splits handwritten vs generated code into disjoint scopes
+
 
 ### Debug Mode
 
 **Enable verbose logging:**
 ```bash
 ./scripts/run-tests.sh --verbose
-./scripts/coverage.sh --clean --html
+bash -x ./scripts/coverage.sh --no-build
 ```
 
 **Check script execution:**
